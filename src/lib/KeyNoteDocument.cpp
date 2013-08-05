@@ -13,6 +13,7 @@
 #include "KNCollector.h"
 #include "KNParser.h"
 #include "KNSVGGenerator.h"
+#include "KNZipStream.h"
 
 namespace libkeynote
 {
@@ -25,8 +26,15 @@ stream is a KeyNote Document that libkeynote is able to parse
 */
 bool KeyNoteDocument::isSupported(WPXInputStream *const input) try
 {
-  // TODO: implement me
-  (void) input;
+  KNZipStream zipInput(input);
+  if (zipInput.isOLEStream())
+  {
+    WPXInputStream *const index = zipInput.getDocumentOLEStream("index.apxl");
+    if (!index)
+      return false;
+    delete index;
+    return true;
+  }
   return false;
 }
 catch (...)
