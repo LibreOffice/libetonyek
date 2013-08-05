@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+                                                                       
+Name: libkeynote-@KN_MAJOR_VERSION@.@KN_MINOR_VERSION@
+Description: Library for parsing Apple Keynote file format structure
+Version: @VERSION@
+Requires: libwpd-0.9 libwpd-stream-0.9 libwpg-0.2
+Libs: -L${libdir} -lkeynote-@KN_MAJOR_VERSION@.@KN_MINOR_VERSION@
+Cflags: -I${includedir}/libkeynote-@KN_MAJOR_VERSION@.@KN_MINOR_VERSION@

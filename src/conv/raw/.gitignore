@@ -1,0 +1,9 @@
+.deps
+.libs
+*.lo
+*.la
+Makefile
+Makefile.in
+keynote2raw
+keynote2raw.exe
+*.rc

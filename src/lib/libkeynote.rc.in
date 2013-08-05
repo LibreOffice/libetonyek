@@ -1,0 +1,31 @@
+#include <winver.h>
+
+VS_VERSION_INFO VERSIONINFO
+  FILEVERSION @KN_MAJOR_VERSION@,@KN_MINOR_VERSION@,@KN_MICRO_VERSION@,BUILDNUMBER
+  PRODUCTVERSION @KN_MAJOR_VERSION@,@KN_MINOR_VERSION@,@KN_MICRO_VERSION@,0
+  FILEFLAGSMASK 0
+  FILEFLAGS 0
+  FILEOS VOS__WINDOWS32
+  FILETYPE VFT_DLL
+  FILESUBTYPE VFT2_UNKNOWN
+  BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+      BLOCK "040904B0"
+      BEGIN
+	VALUE "CompanyName", "The libkeynote developer community"
+	VALUE "FileDescription", "libkeynote"
+	VALUE "FileVersion", "@KN_MAJOR_VERSION@.@KN_MINOR_VERSION@.@KN_MICRO_VERSION@.BUILDNUMBER"
+	VALUE "InternalName", "libkeynote-0.0"
+	VALUE "LegalCopyright", "Copyright (C) 2013 David Tardon, other contributors"
+	VALUE "OriginalFilename", "libkeynote-0.0.dll"
+	VALUE "ProductName", "libkeynote"
+	VALUE "ProductVersion", "@KN_MAJOR_VERSION@.@KN_MINOR_VERSION@.@KN_MICRO_VERSION@"
+      END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+      VALUE "Translation", 0x409, 1200
+    END
+  END
+
