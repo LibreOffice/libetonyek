@@ -12,69 +12,75 @@
 namespace libkeynote
 {
 
-uint8_t readU8(WPXInputStream *input)
+namespace
+{
+
+void checkStream(WPXInputStream *const input)
 {
   if (!input || input->atEOS())
-  {
-    KN_DEBUG_MSG(("Throwing EndOfStreamException\n"));
     throw EndOfStreamException();
-  }
+}
+
+}
+
+uint8_t readU8(WPXInputStream *input, bool /* bigEndian */)
+{
+  checkStream(input);
+
   unsigned long numBytesRead;
   uint8_t const *p = input->read(sizeof(uint8_t), numBytesRead);
 
   if (p && numBytesRead == sizeof(uint8_t))
     return *(uint8_t const *)(p);
-  KN_DEBUG_MSG(("Throwing EndOfStreamException\n"));
   throw EndOfStreamException();
 }
 
-int8_t readS8(WPXInputStream *input)
+uint16_t readU16(WPXInputStream *input, bool bigEndian)
 {
-  return (int8_t)readU8(input);
-}
+  checkStream(input);
 
-uint16_t readU16(WPXInputStream *input)
-{
-  if (!input || input->atEOS())
-  {
-    KN_DEBUG_MSG(("Throwing EndOfStreamException\n"));
-    throw EndOfStreamException();
-  }
   unsigned long numBytesRead;
   uint8_t const *p = input->read(sizeof(uint16_t), numBytesRead);
 
   if (p && numBytesRead == sizeof(uint16_t))
-    return (uint16_t)p[1]|((uint16_t)p[0]<<8);
-
-  KN_DEBUG_MSG(("Throwing EndOfStreamException\n"));
+  {
+    if (bigEndian)
+      return static_cast<uint16_t>((uint16_t)p[1]|((uint16_t)p[0]<<8));
+    return static_cast<uint16_t>((uint16_t)p[0]|((uint16_t)p[1]<<8));
+  }
   throw EndOfStreamException();
 }
 
-int16_t readS16(WPXInputStream *input)
+uint32_t readU32(WPXInputStream *input, bool bigEndian)
 {
-  return (int16_t)readU16(input);
-}
+  checkStream(input);
 
-uint32_t readU32(WPXInputStream *input)
-{
-  if (!input || input->atEOS())
-  {
-    KN_DEBUG_MSG(("Throwing EndOfStreamException\n"));
-    throw EndOfStreamException();
-  }
   unsigned long numBytesRead;
   uint8_t const *p = input->read(sizeof(uint32_t), numBytesRead);
 
   if (p && numBytesRead == sizeof(uint32_t))
-    return (uint32_t)p[3]|((uint32_t)p[2]<<8)|((uint32_t)p[1]<<16)|((uint32_t)p[0]<<24);
-
-  KN_DEBUG_MSG(("Throwing EndOfStreamException\n"));
+  {
+    if (bigEndian)
+      return (uint32_t)p[3]|((uint32_t)p[2]<<8)|((uint32_t)p[1]<<16)|((uint32_t)p[0]<<24);
+    return (uint32_t)p[0]|((uint32_t)p[1]<<8)|((uint32_t)p[2]<<16)|((uint32_t)p[3]<<24);
+  }
   throw EndOfStreamException();
 }
 
-int32_t readS32(WPXInputStream *input)
+uint64_t readU64(WPXInputStream *input, bool bigEndian)
 {
-  return (int32_t)readU32(input);
+  checkStream(input);
+
+  unsigned long numBytesRead;
+  uint8_t const *p = input->read(sizeof(uint64_t), numBytesRead);
+
+  if (p && numBytesRead == sizeof(uint64_t))
+  {
+    if (bigEndian)
+      return (uint64_t)p[7]|((uint64_t)p[6]<<8)|((uint64_t)p[5]<<16)|((uint64_t)p[4]<<24)|((uint64_t)p[3]<<32)|((uint64_t)p[2]<<40)|((uint64_t)p[1]<<48)|((uint64_t)p[0]<<56);
+    return (uint64_t)p[0]|((uint64_t)p[1]<<8)|((uint64_t)p[2]<<16)|((uint64_t)p[3]<<24)|((uint64_t)p[4]<<32)|((uint64_t)p[5]<<40)|((uint64_t)p[6]<<48)|((uint64_t)p[7]<<56);
+  }
+  throw EndOfStreamException();
 }
 
 }
