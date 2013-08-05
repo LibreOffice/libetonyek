@@ -19,11 +19,15 @@ libkeynote_@KN_MAJOR_VERSION@_@KN_MINOR_VERSION@_la_LDFLAGS = $(version_info) -e
 libkeynote_@KN_MAJOR_VERSION@_@KN_MINOR_VERSION@_la_SOURCES = \
 	KNCollector.cpp \
 	KNCollector.h \
+	KNMemoryStream.cpp \
+	KNMemoryStream.h \
 	KNParser.cpp \
 	KNParser.h \
 	KNStringVector.cpp \
 	KNSVGGenerator.cpp \
 	KNSVGGenerator.h \
+	KNZipStream.cpp \
+	KNZipStream.h \
 	KeyNoteDocument.cpp \
 	libkeynote_utils.cpp \
 	libkeynote_utils.h
