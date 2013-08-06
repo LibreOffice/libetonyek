@@ -13,7 +13,7 @@ namespace libkeynote
 {
 
 KN2Parser::KN2Parser(WPXInputStream *const input, KNCollector *const collector)
-    : KNParser(input, collector)
+  : KNParser(input, collector)
 {
 }
 
@@ -23,9 +23,9 @@ KN2Parser::~KN2Parser()
 
 bool KN2Parser::processXmlNode(xmlTextReaderPtr reader)
 {
-    // TODO: implement me
-    (void) reader;
-    return false;
+  // TODO: implement me
+  (void) reader;
+  return false;
 }
 
 }

@@ -41,7 +41,7 @@ KNMemoryStream::KNMemoryStream(WPXInputStream *const input, const unsigned lengt
 }
 
 KNMemoryStream::KNMemoryStream(std::vector<unsigned char> &data)
-: m_data(0)
+  : m_data(0)
   , m_length(data.size())
   , m_pos(0)
 {

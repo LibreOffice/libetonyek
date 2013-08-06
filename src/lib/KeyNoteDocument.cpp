@@ -87,19 +87,19 @@ bool KeyNoteDocument::parse(::WPXInputStream *const input, libwpg::WPGPaintInter
   KNCollector collector(painter);
   switch (version)
   {
-    case KEYNOTE_1 :
-      {
-        KN1Parser parser(input, &collector);
-        return parser.parse();
-      }
-    case KEYNOTE_2 :
-      {
-        KN2Parser parser(input, &collector);
-        return parser.parse();
-      }
-    default :
-      KN_DEBUG_MSG(("KeyNoteDocument::parse(): unhandled version\n"));
-      break;
+  case KEYNOTE_1 :
+  {
+    KN1Parser parser(input, &collector);
+    return parser.parse();
+  }
+  case KEYNOTE_2 :
+  {
+    KN2Parser parser(input, &collector);
+    return parser.parse();
+  }
+  default :
+    KN_DEBUG_MSG(("KeyNoteDocument::parse(): unhandled version\n"));
+    break;
   }
 
   return false;
