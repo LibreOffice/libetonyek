@@ -78,6 +78,20 @@ PKG_CHECK_MODULES([ZLIB],[zlib],[],[
 AC_SUBST(ZLIB_CFLAGS)
 AC_SUBST(ZLIB_LIBS)
 
+# ==================
+# Find boost headers
+# ==================
+saved_CPPFLAGS="${CPPFLAGS}"
+CPPFLAGS="${BOOST_CFLAGS} ${CPPFLAGS}"
+AC_CHECK_HEADERS(
+        boost/scoped_ptr.hpp,
+    [],
+    [AC_MSG_ERROR([Required boost headers not found.])],
+    []
+)
+CPPFLAGS="${saved_CPPFLAGS}"
+AC_SUBST([BOOST_CFLAGS])
+
 # =================================
 # Libtool/Version Makefile settings
 # =================================

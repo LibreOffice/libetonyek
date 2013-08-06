@@ -14,7 +14,7 @@ libkeynote_@KN_MAJOR_VERSION@_@KN_MINOR_VERSION@_include_HEADERS = \
 	$(top_srcdir)/inc/libkeynote/KeyNoteDocument.h \
 	$(top_srcdir)/inc/libkeynote/KNStringVector.h
 
-AM_CXXFLAGS = -I$(top_srcdir)/inc $(WPD_CFLAGS) $(WPG_CFLAGS) $(XML_CFLAGS) $(ZLIB_CFLAGS) $(DEBUG_CXXFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/inc $(WPD_CFLAGS) $(WPG_CFLAGS) $(XML_CFLAGS) $(ZLIB_CFLAGS) $(BOOST_CFLAGS) $(DEBUG_CXXFLAGS)
 
 libkeynote_@KN_MAJOR_VERSION@_@KN_MINOR_VERSION@_la_LIBADD  = $(WPD_LIBS) $(WPG_LIBS) $(XML_LIBS) $(ZLIB_LIBS) @LIBKEYNOTE_WIN32_RESOURCE@
 libkeynote_@KN_MAJOR_VERSION@_@KN_MINOR_VERSION@_la_DEPENDENCIES = @LIBKEYNOTE_WIN32_RESOURCE@
@@ -37,6 +37,8 @@ libkeynote_@KN_MAJOR_VERSION@_@KN_MINOR_VERSION@_la_SOURCES = \
 	KNToken.h \
 	KNZipStream.cpp \
 	KNZipStream.h \
+	KNZlibStream.cpp \
+	KNZlibStream.h \
 	KeyNoteDocument.cpp \
 	libkeynote_utils.cpp \
 	libkeynote_utils.h
