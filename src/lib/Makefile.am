@@ -26,6 +26,10 @@ libkeynote_@KN_MAJOR_VERSION@_@KN_MINOR_VERSION@_la_SOURCES = \
 	KNMemoryStream.h \
 	KNParser.cpp \
 	KNParser.h \
+	KN1Parser.cpp \
+	KN1Parser.h \
+	KN2Parser.cpp \
+	KN2Parser.h \
 	KNStringVector.cpp \
 	KNSVGGenerator.cpp \
 	KNSVGGenerator.h \

@@ -11,12 +11,47 @@
 
 #include "libkeynote_utils.h"
 #include "KNCollector.h"
-#include "KNParser.h"
+#include "KN1Parser.h"
+#include "KN2Parser.h"
 #include "KNSVGGenerator.h"
 #include "KNZipStream.h"
 
 namespace libkeynote
 {
+
+namespace
+{
+
+enum Version
+{
+  UNKNOWN,
+  KEYNOTE_1,
+  KEYNOTE_2
+};
+
+Version detectVersion(WPXInputStream *const input)
+{
+  Version version = UNKNOWN;
+
+  KNZipStream zipInput(input);
+  if (zipInput.isOLEStream())
+  {
+    WPXInputStream *apxl = zipInput.getDocumentOLEStream("index.apxl");
+    if (apxl)
+      version = KEYNOTE_2;
+    else
+    {
+      apxl = zipInput.getDocumentOLEStream("presentation.apxl");
+      if (apxl)
+        version = KEYNOTE_1;
+    }
+    delete apxl;
+  }
+
+  return version;
+}
+
+}
 
 /**
 Analyzes the content of an input stream to see if it can be parsed
@@ -26,16 +61,8 @@ stream is a KeyNote Document that libkeynote is able to parse
 */
 bool KeyNoteDocument::isSupported(WPXInputStream *const input) try
 {
-  KNZipStream zipInput(input);
-  if (zipInput.isOLEStream())
-  {
-    WPXInputStream *const index = zipInput.getDocumentOLEStream("index.apxl");
-    if (!index)
-      return false;
-    delete index;
-    return true;
-  }
-  return false;
+  const Version version = detectVersion(input);
+  return UNKNOWN != version;
 }
 catch (...)
 {
@@ -52,10 +79,27 @@ WPGPaintInterface class implementation when needed. This is often commonly calle
 */
 bool KeyNoteDocument::parse(::WPXInputStream *const input, libwpg::WPGPaintInterface *const painter) try
 {
-  if (KeyNoteDocument::isSupported(input))
+  const Version version = detectVersion(input);
+
+  if (UNKNOWN == version)
+    return false;
+
+  KNCollector collector(painter);
+  switch (version)
   {
-    KNCollector collector(painter);
-    // TODO: implement me
+    case KEYNOTE_1 :
+      {
+        KN1Parser parser(input, &collector);
+        return parser.parse();
+      }
+    case KEYNOTE_2 :
+      {
+        KN2Parser parser(input, &collector);
+        return parser.parse();
+      }
+    default :
+      KN_DEBUG_MSG(("KeyNoteDocument::parse(): unhandled version\n"));
+      break;
   }
 
   return false;
