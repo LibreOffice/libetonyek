@@ -38,6 +38,8 @@ PKG_PROG_PKG_CONFIG([0.20])
 AC_PROG_EGREP
 AC_PROG_SED
 
+AM_MISSING_PROG([GPERF], [gperf])
+
 # ===========
 # Find libwpd
 # ===========
@@ -56,6 +58,13 @@ PKG_CHECK_MODULES([WPG],[
 ])
 AC_SUBST(WPG_CFLAGS)
 AC_SUBST(WPG_LIBS)
+
+# ============
+# Find libxml2
+# ============
+PKG_CHECK_MODULES([XML],[
+    libxml-2.0
+])
 
 # =========
 # Find zlib

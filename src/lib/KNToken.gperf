@@ -1,0 +1,26 @@
+%includes
+%{
+#include "KNToken.h"
+
+#if defined __GNUC__
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
+
+%}
+%struct-type
+struct KNToken;
+%%
+ID,XML_ID
+http://+www.w3.org/2001/XMLSchema-instance,XML_NS_XSI
+http://developer.apple.com/namespaces/keynote2,XML_NS_KEY
+http://developer.apple.com/namespaces/sf,XML_NS_SF
+http://developer.apple.com/namespaces/sfa,XML_NS_SFA
+kiosk-build-delay,XML_KIOSK_BUILD_DELAY
+kiosk-slide-delay,XML_KIOSK_SLIDE_DELAY
+mode,XML_MODE
+play-mode,XML_PLAY_MODE
+presentation,XML_PRESENTATION
+sticky-visibility,XML_STICKY_VISIBILITY
+version,XML_VERSION
+xmlns,XML_XMLNS
+%%

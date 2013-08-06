@@ -55,8 +55,7 @@ bool KeyNoteDocument::parse(::WPXInputStream *const input, libwpg::WPGPaintInter
   if (KeyNoteDocument::isSupported(input))
   {
     KNCollector collector(painter);
-    KNParser parser(input, &collector);
-    return parser.parse();
+    // TODO: implement me
   }
 
   return false;

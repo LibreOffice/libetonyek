@@ -10,6 +10,8 @@
 #ifndef KNPARSER_H_INCLUDED
 #define KNPARSER_H_INCLUDED
 
+#include <libxml/xmlreader.h>
+
 class WPXInputStream;
 
 namespace libkeynote
@@ -25,8 +27,13 @@ class KNParser
 
 public:
   KNParser(WPXInputStream *input, KNCollector *collector);
-  virtual ~KNParser();
+  virtual ~KNParser() = 0;
   bool parse();
+
+private:
+  virtual bool processXmlNode(xmlTextReaderPtr reader) = 0;
+
+  bool processXmlDocument(xmlTextReaderPtr reader);
 
 private:
   WPXInputStream *m_input;

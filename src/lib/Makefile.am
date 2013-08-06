@@ -1,3 +1,6 @@
+BUILT_SOURCES = KNToken.inc
+GPERFFLAGS = --compare-strncmp --enum --null-strings --readonly-tables
+
 if PLATFORM_WIN32
 version_info = -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) -avoid-version
 else
@@ -11,9 +14,9 @@ libkeynote_@KN_MAJOR_VERSION@_@KN_MINOR_VERSION@_include_HEADERS = \
 	$(top_srcdir)/inc/libkeynote/KeyNoteDocument.h \
 	$(top_srcdir)/inc/libkeynote/KNStringVector.h
 
-AM_CXXFLAGS = -I$(top_srcdir)/inc $(WPD_CFLAGS) $(WPG_CFLAGS) $(ZLIB_CFLAGS) $(DEBUG_CXXFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/inc $(WPD_CFLAGS) $(WPG_CFLAGS) $(XML_CFLAGS) $(ZLIB_CFLAGS) $(DEBUG_CXXFLAGS)
 
-libkeynote_@KN_MAJOR_VERSION@_@KN_MINOR_VERSION@_la_LIBADD  = $(WPD_LIBS) $(ZLIB_LIBS) @LIBKEYNOTE_WIN32_RESOURCE@
+libkeynote_@KN_MAJOR_VERSION@_@KN_MINOR_VERSION@_la_LIBADD  = $(WPD_LIBS) $(WPG_LIBS) $(XML_LIBS) $(ZLIB_LIBS) @LIBKEYNOTE_WIN32_RESOURCE@
 libkeynote_@KN_MAJOR_VERSION@_@KN_MINOR_VERSION@_la_DEPENDENCIES = @LIBKEYNOTE_WIN32_RESOURCE@
 libkeynote_@KN_MAJOR_VERSION@_@KN_MINOR_VERSION@_la_LDFLAGS = $(version_info) -export-dynamic -no-undefined
 libkeynote_@KN_MAJOR_VERSION@_@KN_MINOR_VERSION@_la_SOURCES = \
@@ -26,6 +29,8 @@ libkeynote_@KN_MAJOR_VERSION@_@KN_MINOR_VERSION@_la_SOURCES = \
 	KNStringVector.cpp \
 	KNSVGGenerator.cpp \
 	KNSVGGenerator.h \
+	KNToken.cpp \
+	KNToken.h \
 	KNZipStream.cpp \
 	KNZipStream.h \
 	KeyNoteDocument.cpp \
@@ -41,7 +46,7 @@ if OS_WIN32
 endif
 
 distclean-local :
-	@echo
+	rm -f $(BUILT_SOURCES)
 
 EXTRA_DIST = \
 	libkeynote.rc.in
@@ -49,3 +54,17 @@ EXTRA_DIST = \
 # These may be in the builddir too
 BUILD_EXTRA_DIST = \
 	libkeynote.rc
+
+KNToken.cpp : KNToken.inc
+
+KNToken.inc : KNToken.gperf
+	if $(GPERF) $(GPERFFLAGS) --language C++ $< > $@.tmp; then \
+		mv $@.tmp $@; \
+	else \
+		rm -f $@.tmp; \
+		if $(GPERF) --version >/dev/null 2>&1; then \
+			exit 1; \
+		else \
+			touch $@; \
+		fi \
+	fi

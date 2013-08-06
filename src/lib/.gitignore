@@ -4,5 +4,6 @@
 *.la
 *.o
 *.rc
+KNToken.inc
 Makefile
 Makefile.in
