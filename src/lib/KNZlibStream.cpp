@@ -29,16 +29,26 @@ class ZlibStreamException
 
 KNMemoryStream *getInflatedStream(WPXInputStream *const input)
 {
-  if (0x78 != readU8(input)) // not a zlib stream
-    throw ZlibStreamException();
+  unsigned long offset = 2;
+
+  const unsigned char sig1 = readU8(input);
+  if (0x78 != sig1) // not a zlib stream
+  {
+    offset = 3;
+    const unsigned char sig2 = readU8(input);
+    if ((0x1f != sig1) || (0x8b != sig2))
+      throw ZlibStreamException();
+  }
 
   const bool uncompressed = Z_NO_COMPRESSION == readU8(input);
+  if (uncompressed)
+    offset = 0;
 
   unsigned long begin = input->tell();
   input->seek(0, WPX_SEEK_END);
   unsigned long end = input->tell();
-  unsigned long compressedSize = end - begin;
-  input->seek(begin, WPX_SEEK_SET);
+  unsigned long compressedSize = end - begin + offset;
+  input->seek(begin - offset, WPX_SEEK_SET);
 
   unsigned long numBytesRead = 0;
   unsigned char *compressedData = const_cast<unsigned char *>(input->read(compressedSize, numBytesRead));
@@ -58,15 +68,13 @@ KNMemoryStream *getInflatedStream(WPXInputStream *const input)
     strm.zalloc = Z_NULL;
     strm.zfree = Z_NULL;
     strm.opaque = Z_NULL;
-    strm.avail_in = 0;
-    strm.next_in = Z_NULL;
-    ret = inflateInit2(&strm,-MAX_WBITS);
-    if (ret != Z_OK)
-      throw ZlibStreamException();
-
     strm.avail_in = (unsigned)numBytesRead;
     strm.next_in = (Bytef *)compressedData;
     strm.total_out = 0;
+
+    ret = inflateInit2(&strm, 16 + MAX_WBITS);
+    if (ret != Z_OK)
+      throw ZlibStreamException();
 
     vector<unsigned char> data(2 * compressedSize);
 
