@@ -84,7 +84,8 @@ AC_SUBST(ZLIB_LIBS)
 saved_CPPFLAGS="${CPPFLAGS}"
 CPPFLAGS="${BOOST_CFLAGS} ${CPPFLAGS}"
 AC_CHECK_HEADERS(
-        boost/scoped_ptr.hpp,
+        boost/scoped_ptr.hpp \
+        boost/shared_ptr.hpp,
     [],
     [AC_MSG_ERROR([Required boost headers not found.])],
     []
