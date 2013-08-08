@@ -96,9 +96,9 @@ AC_SUBST([BOOST_CFLAGS])
 # =================================
 # Libtool/Version Makefile settings
 # =================================
-AC_SUBST(KN_MAJOR_VERSION, [libkeynote_version_major])
-AC_SUBST(KN_MINOR_VERSION, [libkeynote_version_minor])
-AC_SUBST(KN_MICRO_VERSION, [libkeynote_version_micro])
+AC_SUBST(KEYNOTE_MAJOR_VERSION, [libkeynote_version_major])
+AC_SUBST(KEYNOTE_MINOR_VERSION, [libkeynote_version_minor])
+AC_SUBST(KEYNOTE_MICRO_VERSION, [libkeynote_version_micro])
 AC_SUBST(KN_VERSION, [libkeynote_version])
 # AC_SUBST(LT_RELEASE, [libkeynote_version_major.libkeynote_version_minor])
 LT_CURRENT=`expr 100 '*' libkeynote_version_major + libkeynote_version_minor`
@@ -268,7 +268,7 @@ build/Makefile
 build/win32/Makefile
 docs/Makefile
 docs/doxygen/Makefile
-libkeynote-$KN_MAJOR_VERSION.$KN_MINOR_VERSION.pc:libkeynote.pc.in
+libkeynote-$KEYNOTE_MAJOR_VERSION.$KEYNOTE_MINOR_VERSION.pc:libkeynote.pc.in
 ])
 AC_OUTPUT
 

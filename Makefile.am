@@ -2,7 +2,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 pkgconfdir = $(libdir)/pkgconfig
 
-pkgconf_DATA = libkeynote-@KN_MAJOR_VERSION@.@KN_MINOR_VERSION@.pc
+pkgconf_DATA = libkeynote-@KEYNOTE_MAJOR_VERSION@.@KEYNOTE_MINOR_VERSION@.pc
 
 SUBDIRS = build inc src docs
 

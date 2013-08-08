@@ -4,7 +4,7 @@ AM_CXXFLAGS = -I$(top_srcdir)/inc -I$(top_builddir)/src/lib $(WPD_CFLAGS) $(WPG_
 
 keynote2xhtml_DEPENDENCIES = @KN2XHTML_WIN32_RESOURCE@
 
-keynote2xhtml_LDADD = ../../lib/libkeynote-@KN_MAJOR_VERSION@.@KN_MINOR_VERSION@.la $(WPD_LIBS) $(ZLIB_LIBS) @KN2XHTML_WIN32_RESOURCE@ 
+keynote2xhtml_LDADD = ../../lib/libkeynote-@KEYNOTE_MAJOR_VERSION@.@KEYNOTE_MINOR_VERSION@.la $(WPD_LIBS) $(ZLIB_LIBS) @KN2XHTML_WIN32_RESOURCE@
 
 keynote2xhtml_SOURCES = \
 	keynote2xhtml.cpp
