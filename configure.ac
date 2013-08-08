@@ -231,6 +231,21 @@ AS_IF([test "x$enable_debug" = "xyes"], [
 ])
 AC_SUBST(DEBUG_CXXFLAGS)
 
+# ==========
+# Unit tests
+# ==========
+AC_ARG_ENABLE([tests],
+    [AS_HELP_STRING([--enable-tests], [Build and run unit tests])],
+    [enable_tests="$enableval"],
+    [enable_tests=yes]
+)
+AS_IF([test "x$enable_tests" = "xyes"], [
+    PKG_CHECK_MODULES([CPPUNIT], [cppunit])
+], [])
+AC_SUBST([CPPUNIT_CFLAGS])
+AC_SUBST([CPPUNIT_LIBS])
+AM_CONDITIONAL(TESTS, [test "x$enable_tests" = "xyes"])
+
 # =============
 # Documentation
 # =============
@@ -262,6 +277,7 @@ src/conv/svg/Makefile
 src/conv/svg/keynote2xhtml.rc
 src/lib/Makefile
 src/lib/libkeynote.rc
+src/test/Makefile
 inc/Makefile
 inc/libkeynote/Makefile
 build/Makefile
@@ -281,6 +297,7 @@ Build configuration:
 	debug:           ${enable_debug}
 	docs:            ${build_docs}
 	static-tools:    ${enable_static_tools}
+	tests:           ${enable_tests}
 	werror:          ${enable_werror}
 ==============================================================================
 ])
