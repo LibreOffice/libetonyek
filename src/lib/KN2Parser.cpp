@@ -44,13 +44,13 @@ bool skipElement(xmlTextReaderPtr reader)
   {
     switch (xmlTextReaderNodeType(reader))
     {
-      case XML_READER_TYPE_ELEMENT :
-        if (!xmlTextReaderIsEmptyElement(reader))
-          ++level;
-        break;
-      case XML_READER_TYPE_END_ELEMENT :
-        --level;
-        break;
+    case XML_READER_TYPE_ELEMENT :
+      if (!xmlTextReaderIsEmptyElement(reader))
+        ++level;
+      break;
+    case XML_READER_TYPE_END_ELEMENT :
+      --level;
+      break;
     }
 
     ret = xmlTextReaderRead(reader);
