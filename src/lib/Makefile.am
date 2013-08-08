@@ -35,6 +35,8 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNSVGGenerator.h \
 	KNToken.cpp \
 	KNToken.h \
+	KNXMLAttributeIterator.cpp \
+	KNXMLAttributeIterator.h \
 	KNZipStream.cpp \
 	KNZipStream.h \
 	KNZlibStream.cpp \
