@@ -23,6 +23,9 @@ public:
 
 private:
   virtual bool processXmlNode(xmlTextReaderPtr reader);
+
+private:
+  unsigned m_version;
 };
 
 }
