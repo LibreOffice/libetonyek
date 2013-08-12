@@ -57,6 +57,7 @@ distclean-local :
 	rm -f $(BUILT_SOURCES)
 
 EXTRA_DIST = \
+	KNToken.gperf \
 	libkeynote.rc.in
 
 # These may be in the builddir too
