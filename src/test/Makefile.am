@@ -4,9 +4,9 @@ check_PROGRAMS = $(target_test)
 
 AM_CXXFLAGS = -I$(top_srcdir)/inc -I$(top_srcdir)/src/lib $(CPPUNIT_CFLAGS) $(XML_CFLAGS) $(DEBUG_CXXFLAGS)
 
-test_LDFLAGS = -L$(top_srcdir)/src/lib
+test_LDFLAGS = -L$(top_builddir)/src/lib
 test_LDADD = \
-	$(top_srcdir)/src/lib/libkeynote-@KEYNOTE_MAJOR_VERSION@.@KEYNOTE_MINOR_VERSION@.la \
+	$(top_builddir)/src/lib/libkeynote-@KEYNOTE_MAJOR_VERSION@.@KEYNOTE_MINOR_VERSION@.la \
 	$(CPPUNIT_LIBS) \
 	$(XML_LIBS)
 
