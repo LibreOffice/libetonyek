@@ -38,6 +38,9 @@ bool moveToNextNode(xmlTextReaderPtr reader)
 
 void skipElement(xmlTextReaderPtr reader)
 {
+  if (xmlTextReaderIsEmptyElement(reader))
+    return;
+
   int level = 1;
 
   int ret = xmlTextReaderRead(reader);
