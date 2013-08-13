@@ -60,7 +60,7 @@ KN2Parser::~KN2Parser()
 
 void KN2Parser::processXmlNode(xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::presentation));
+  assert(checkElement(reader, KN2Token::presentation, KN2Token::NS_URI_KEY));
 
   // read attributes
   KNXMLAttributeIterator attr(reader);
@@ -117,7 +117,7 @@ void KN2Parser::processXmlNode(xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::presentation, false))
+    if (checkElement(reader, KN2Token::presentation, KN2Token::NS_URI_KEY, false))
       break;
 
     if (isEndElement(reader))
