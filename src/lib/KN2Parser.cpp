@@ -138,6 +138,7 @@ void KN2Parser::processXmlNode(xmlTextReaderPtr reader)
       case KN2Token::calc_engine :
       case KN2Token::version_history :
         // TODO: implement me
+        KN_DEBUG_MSG(("skipping element %s%s%s%s\n", ns ? "{" : "", ns, ns ? "}" : "", name));
         skipElement(reader);
         break;
       }
