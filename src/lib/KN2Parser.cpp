@@ -135,12 +135,16 @@ void KN2Parser::processXmlNode(xmlTextReaderPtr reader)
       case KN2Token::metadata :
       case KN2Token::soundtrack_list :
       case KN2Token::calculation_engine :
-      case KN2Token::calc_engine :
       case KN2Token::version_history :
         KN_DEBUG_XML_TODO("element", name, ns);
         skipElement(reader);
         break;
       }
+    }
+    else if (ns && (KN2Token::NS_URI_SF == getKN2TokenID(ns)) && (KN2Token::calc_engine == getKN2TokenID(name)))
+    {
+      KN_DEBUG_XML_TODO("element", name, ns);
+      skipElement(reader);
     }
     else
     {
