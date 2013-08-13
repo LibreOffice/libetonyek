@@ -80,7 +80,7 @@ void KN2Parser::processXmlNode(xmlTextReaderPtr reader)
         case KN2Token::mode :
         case KN2Token::play_mode :
         case KN2Token::sticky_visibility :
-          // TODO: implement me
+          KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
           break;
         case KN2Token::version :
           m_version = getVersion(getKN2TokenID(attr->value));
@@ -90,24 +90,24 @@ void KN2Parser::processXmlNode(xmlTextReaderPtr reader)
           }
           break;
         default :
-          KN_DEBUG_MSG(("unprocessed attribute {%s}%s\n", attr->ns, attr->name));
+          KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
           break;
         }
         break;
       case KN2Token::NS_URI_SFA :
         if (KN2Token::ID != getKN2TokenID(attr->name))
         {
-          KN_DEBUG_MSG(("unprocessed attribute {%s}%s\n", attr->ns, attr->name));
+          KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
         }
         break;
       default :
-        KN_DEBUG_MSG(("unprocessed attribute {%s}%s\n", attr->ns, attr->name));
+        KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
         break;
       }
     }
     else
     {
-      KN_DEBUG_MSG(("unprocessed attribute %s\n", attr->name));
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
     }
   }
 
@@ -137,15 +137,14 @@ void KN2Parser::processXmlNode(xmlTextReaderPtr reader)
       case KN2Token::calculation_engine :
       case KN2Token::calc_engine :
       case KN2Token::version_history :
-        // TODO: implement me
-        KN_DEBUG_MSG(("skipping element %s%s%s%s\n", ns ? "{" : "", ns, ns ? "}" : "", name));
+        KN_DEBUG_XML_TODO("element", name, ns);
         skipElement(reader);
         break;
       }
     }
     else
     {
-      KN_DEBUG_MSG(("unprocessed element %s%s%s%s\n", ns ? "{" : "", ns, ns ? "}" : "", name));
+      KN_DEBUG_XML_UNKNOWN("element", name, ns);
       skipElement(reader);
     }
   }
