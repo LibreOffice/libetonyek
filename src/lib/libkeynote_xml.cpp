@@ -57,7 +57,8 @@ void skipElement(xmlTextReaderPtr reader)
       break;
     }
 
-    ret = xmlTextReaderRead(reader);
+    if (0 < level)
+      ret = xmlTextReaderRead(reader);
   }
 
   if ((-1 == ret) || (0 != level))
