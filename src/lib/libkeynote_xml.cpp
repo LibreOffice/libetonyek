@@ -31,7 +31,7 @@ bool moveToNextNode(xmlTextReaderPtr reader)
       return false;
     type = xmlTextReaderNodeType(reader);
   }
-  while ((XML_READER_TYPE_ELEMENT != type) || (XML_READER_TYPE_END_ELEMENT != type) || (XML_READER_TYPE_TEXT != type));
+  while (!((XML_READER_TYPE_ELEMENT == type) || (XML_READER_TYPE_END_ELEMENT == type) || (XML_READER_TYPE_TEXT == type)));
 
   return true;
 }
