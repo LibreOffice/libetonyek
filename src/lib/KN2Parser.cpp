@@ -128,7 +128,7 @@ void KN2Parser::processXmlNode(const xmlTextReaderPtr reader)
     if (isEndElement(reader))
       throw GenericException();
 
-    if (ns && (KN2Token::NS_URI_KEY == getKN2TokenID(ns)))
+    if (KN2Token::NS_URI_KEY == getKN2TokenID(ns))
     {
       switch (getKN2TokenID(name))
       {
@@ -146,7 +146,7 @@ void KN2Parser::processXmlNode(const xmlTextReaderPtr reader)
         break;
       }
     }
-    else if (ns && (KN2Token::NS_URI_SF == getKN2TokenID(ns)) && (KN2Token::calc_engine == getKN2TokenID(name)))
+    else if ((KN2Token::NS_URI_SF == getKN2TokenID(ns)) && (KN2Token::calc_engine == getKN2TokenID(name)))
     {
       KN_DEBUG_XML_TODO("element", name, ns);
       skipElement(reader);
@@ -167,7 +167,7 @@ void KN2Parser::parseMasterSlides(const xmlTextReaderPtr reader)
   KNXMLAttributeIterator attr(reader);
   while (attr.next())
   {
-    if (attr->ns && (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns)) && (KN2Token::ID == getKN2TokenID(attr->name)))
+    if ((KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns)) && (KN2Token::ID == getKN2TokenID(attr->name)))
     {
       KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
       break;
@@ -190,7 +190,7 @@ void KN2Parser::parseMasterSlides(const xmlTextReaderPtr reader)
     if (isEndElement(reader))
       throw GenericException();
 
-    if (ns && (KN2Token::NS_URI_KEY == getKN2TokenID(ns)) && (KN2Token::master_slide == getKN2TokenID(name)))
+    if ((KN2Token::NS_URI_KEY == getKN2TokenID(ns)) && (KN2Token::master_slide == getKN2TokenID(name)))
     {
       KN_DEBUG_XML_TODO("element", name, ns);
       skipElement(reader);
@@ -226,7 +226,7 @@ void KN2Parser::parseMetadata(const xmlTextReaderPtr reader)
     if (isEndElement(reader))
       throw GenericException();
 
-    if (ns && (KN2Token::NS_URI_KEY == getKN2TokenID(ns)))
+    if (KN2Token::NS_URI_KEY == getKN2TokenID(ns))
     {
       switch (getKN2TokenID(name))
       {
@@ -254,7 +254,7 @@ void KN2Parser::parsePage(const xmlTextReaderPtr reader)
   KNXMLAttributeIterator attr(reader);
   while (attr.next())
   {
-    if (attr->ns && (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns)) && (KN2Token::ID == getKN2TokenID(attr->name)))
+    if ((KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns)) && (KN2Token::ID == getKN2TokenID(attr->name)))
     {
       KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
     }
@@ -276,7 +276,7 @@ void KN2Parser::parsePage(const xmlTextReaderPtr reader)
     if (isEndElement(reader))
       throw GenericException();
 
-    if (ns && (KN2Token::NS_URI_SF == getKN2TokenID(ns)))
+    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
     {
       switch (getKN2TokenID(name))
       {
@@ -310,7 +310,7 @@ void KN2Parser::parseSize(const xmlTextReaderPtr reader, KNSize &size)
   KNXMLAttributeIterator attr(reader);
   while (attr.next())
   {
-    if (attr->ns && KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns))
+    if (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns))
     {
       switch (getKN2TokenID(attr->ns))
       {
@@ -399,7 +399,7 @@ void KN2Parser::parseSlide(const xmlTextReaderPtr reader)
     if (isEndElement(reader))
       throw GenericException();
 
-    if (ns && (KN2Token::NS_URI_KEY == getKN2TokenID(ns)))
+    if (KN2Token::NS_URI_KEY == getKN2TokenID(ns))
     {
       switch (getKN2TokenID(name))
       {
@@ -445,7 +445,7 @@ void KN2Parser::parseSlideList(const xmlTextReaderPtr reader)
   KNXMLAttributeIterator attr(reader);
   while (attr.next())
   {
-    if (attr->ns && (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns)) && (KN2Token::ID == getKN2TokenID(attr->name)))
+    if ((KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns)) && (KN2Token::ID == getKN2TokenID(attr->name)))
     {
       KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
     }
@@ -467,7 +467,7 @@ void KN2Parser::parseSlideList(const xmlTextReaderPtr reader)
     if (isEndElement(reader))
       throw GenericException();
 
-    if (ns && (KN2Token::NS_URI_KEY == getKN2TokenID(ns)) && (KN2Token::slide == getKN2TokenID(name)))
+    if ((KN2Token::NS_URI_KEY == getKN2TokenID(ns)) && (KN2Token::slide == getKN2TokenID(name)))
     {
       parseSlide(reader);
     }
@@ -487,7 +487,7 @@ void KN2Parser::parseStylesheet(const xmlTextReaderPtr reader)
   KNXMLAttributeIterator attr(reader);
   while (attr.next())
   {
-    if (attr->ns && (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns)) && (KN2Token::ID == getKN2TokenID(attr->name)))
+    if ((KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns)) && (KN2Token::ID == getKN2TokenID(attr->name)))
     {
       KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
     }
@@ -509,7 +509,7 @@ void KN2Parser::parseStylesheet(const xmlTextReaderPtr reader)
     if (isEndElement(reader))
       throw GenericException();
 
-    if (ns && (KN2Token::NS_URI_SF == getKN2TokenID(ns)))
+    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
     {
       switch (getKN2TokenID(name))
       {
@@ -589,7 +589,7 @@ void KN2Parser::parseTheme(const xmlTextReaderPtr reader)
     if (isEndElement(reader))
       throw GenericException();
 
-    if (ns && (KN2Token::NS_URI_KEY == getKN2TokenID(ns)))
+    if (KN2Token::NS_URI_KEY == getKN2TokenID(ns))
     {
       switch (getKN2TokenID(name))
       {
@@ -627,7 +627,7 @@ void KN2Parser::parseThemeList(const xmlTextReaderPtr reader)
   KNXMLAttributeIterator attr(reader);
   while (attr.next())
   {
-    if (attr->ns && (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns)) && (KN2Token::ID == getKN2TokenID(attr->name)))
+    if ((KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns)) && (KN2Token::ID == getKN2TokenID(attr->name)))
     {
       KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
     }
@@ -649,7 +649,7 @@ void KN2Parser::parseThemeList(const xmlTextReaderPtr reader)
     if (isEndElement(reader))
       throw GenericException();
 
-    if (ns && (KN2Token::NS_URI_KEY == getKN2TokenID(ns)) && (KN2Token::theme == getKN2TokenID(name)))
+    if ((KN2Token::NS_URI_KEY == getKN2TokenID(ns)) && (KN2Token::theme == getKN2TokenID(name)))
     {
       parseTheme(reader);
     }
