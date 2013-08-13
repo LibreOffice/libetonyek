@@ -20,6 +20,7 @@ namespace libkeynote
 bool moveToNextNode(xmlTextReaderPtr reader);
 void skipElement(xmlTextReaderPtr reader);
 
+bool isElement(xmlTextReaderPtr reader);
 bool isEmptyElement(xmlTextReaderPtr reader);
 bool isStartElement(xmlTextReaderPtr reader);
 bool isEndElement(xmlTextReaderPtr reader);

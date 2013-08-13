@@ -61,6 +61,11 @@ void skipElement(xmlTextReaderPtr reader)
     throw XMLException();
 }
 
+bool isElement(xmlTextReaderPtr reader)
+{
+  return isStartElement(reader) || isEndElement(reader);
+}
+
 bool isEmptyElement(xmlTextReaderPtr reader)
 {
   return xmlTextReaderIsEmptyElement(reader);

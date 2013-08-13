@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <cassert>
+
 #include "libkeynote_utils.h"
 #include "libkeynote_xml.h"
 #include "KN2Parser.h"
@@ -18,6 +20,14 @@ namespace libkeynote
 
 namespace
 {
+
+bool checkElement(xmlTextReaderPtr reader, const int name, const int ns, const bool start = true)
+{
+  return isElement(reader)
+         && getNamespace(reader) && (getKN2TokenID(getNamespace(reader)) == ns)
+         && (getKN2TokenID(getName(reader)) == name)
+         && (isStartElement(reader) == start);
+}
 
 unsigned getVersion(const int token)
 {
@@ -50,13 +60,7 @@ KN2Parser::~KN2Parser()
 
 void KN2Parser::processXmlNode(xmlTextReaderPtr reader)
 {
-  if (!isStartElement(reader))
-    throw GenericException();
-
-  if (!(xmlTextReaderConstNamespaceUri(reader)
-        && (KN2Token::NS_URI_KEY == getKN2TokenID(xmlTextReaderConstNamespaceUri(reader)))
-        && (KN2Token::presentation == getKN2TokenID(xmlTextReaderConstLocalName(reader)))))
-    throw GenericException();
+  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::presentation));
 
   // read attributes
   KNXMLAttributeIterator attr(reader);
@@ -108,18 +112,17 @@ void KN2Parser::processXmlNode(xmlTextReaderPtr reader)
   }
 
   // read elements
-  int ret = xmlTextReaderRead(reader);
-  while (1 == ret)
+  while (moveToNextNode(reader))
   {
-    const int nodeType = xmlTextReaderNodeType(reader);
-    if (!((XML_READER_TYPE_ELEMENT == nodeType) || (XML_READER_TYPE_END_ELEMENT == nodeType)))
-    {
-      ret = xmlTextReaderRead(reader);
-      continue;
-    }
+    const char *const name = getName(reader);
+    const char *const ns = getNamespace(reader);
 
-    const xmlChar *const ns = xmlTextReaderConstNamespaceUri(reader);
-    const xmlChar *const name = xmlTextReaderConstLocalName(reader);
+    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::presentation, false))
+      break;
+
+    if (isEndElement(reader))
+      throw GenericException();
+
     if (ns && (KN2Token::NS_URI_KEY == getKN2TokenID(ns)))
     {
       switch (getKN2TokenID(name))
@@ -137,11 +140,6 @@ void KN2Parser::processXmlNode(xmlTextReaderPtr reader)
         // TODO: implement me
         skipElement(reader);
         break;
-
-      case KN2Token::presentation :
-        if (!isEndElement(reader))
-          throw GenericException();
-        break;
       }
     }
     else
@@ -149,12 +147,7 @@ void KN2Parser::processXmlNode(xmlTextReaderPtr reader)
       KN_DEBUG_MSG(("unprocessed element %s%s%s%s\n", ns ? "{" : "", ns, ns ? "}" : "", name));
       skipElement(reader);
     }
-
-    ret = xmlTextReaderRead(reader);
   }
-
-  if (-1 == ret)
-    throw GenericException();
 }
 
 }
