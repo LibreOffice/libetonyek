@@ -46,7 +46,9 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNZlibStream.h \
 	KeyNoteDocument.cpp \
 	libkeynote_utils.cpp \
-	libkeynote_utils.h
+	libkeynote_utils.h \
+	libkeynote_xml.cpp \
+	libkeynote_xml.h
 
 if OS_WIN32
 

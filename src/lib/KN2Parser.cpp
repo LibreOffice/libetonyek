@@ -8,6 +8,7 @@
  */
 
 #include "libkeynote_utils.h"
+#include "libkeynote_xml.h"
 #include "KN2Parser.h"
 #include "KN2Token.h"
 #include "KNXMLAttributeIterator.h"
@@ -33,30 +34,6 @@ unsigned getVersion(const int token)
   }
 
   return 0;
-}
-
-bool skipElement(xmlTextReaderPtr reader)
-{
-  int level = 1;
-
-  int ret = xmlTextReaderRead(reader);
-  while ((1 == ret) && (0 < level))
-  {
-    switch (xmlTextReaderNodeType(reader))
-    {
-    case XML_READER_TYPE_ELEMENT :
-      if (!xmlTextReaderIsEmptyElement(reader))
-        ++level;
-      break;
-    case XML_READER_TYPE_END_ELEMENT :
-      --level;
-      break;
-    }
-
-    ret = xmlTextReaderRead(reader);
-  }
-
-  return (-1 != ret) && (0 == level);
 }
 
 }
