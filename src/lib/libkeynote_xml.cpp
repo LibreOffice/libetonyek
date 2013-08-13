@@ -19,17 +19,21 @@ struct XMLException {};
 
 }
 
-void moveToNextNode(xmlTextReaderPtr reader)
+bool moveToNextNode(xmlTextReaderPtr reader)
 {
   int type = 0;
   do
   {
     const int ret = xmlTextReaderRead(reader);
-    if (ret != 1)
+    if (ret == -1)
       throw XMLException();
+    else if (ret == 0)
+      return false;
     type = xmlTextReaderNodeType(reader);
   }
   while ((XML_READER_TYPE_ELEMENT != type) || (XML_READER_TYPE_END_ELEMENT != type) || (XML_READER_TYPE_TEXT != type));
+
+  return true;
 }
 
 bool skipElement(xmlTextReaderPtr reader)

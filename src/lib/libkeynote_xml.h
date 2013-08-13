@@ -17,7 +17,7 @@
 namespace libkeynote
 {
 
-void moveToNextNode(xmlTextReaderPtr reader);
+bool moveToNextNode(xmlTextReaderPtr reader);
 bool skipElement(xmlTextReaderPtr reader);
 
 bool isEmptyElement(xmlTextReaderPtr reader);
