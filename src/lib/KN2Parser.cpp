@@ -9,11 +9,16 @@
 
 #include <cassert>
 
+#include <boost/lexical_cast.hpp>
+
 #include "libkeynote_utils.h"
 #include "libkeynote_xml.h"
 #include "KN2Parser.h"
 #include "KN2Token.h"
+#include "KNTypes.h"
 #include "KNXMLAttributeIterator.h"
+
+using boost::lexical_cast;
 
 namespace libkeynote
 {
@@ -275,8 +280,14 @@ void KN2Parser::parsePage(const xmlTextReaderPtr reader)
     {
       switch (getKN2TokenID(name))
       {
-      case KN2Token::geometry :
       case KN2Token::size :
+      {
+        KNSize size;
+        parseSize(reader, size);
+        // TODO: use size
+        break;
+      }
+      case KN2Token::geometry :
       case KN2Token::layers :
         KN_DEBUG_XML_TODO("element", name, ns);
         skipElement(reader);
@@ -291,7 +302,7 @@ void KN2Parser::parsePage(const xmlTextReaderPtr reader)
   }
 }
 
-void KN2Parser::parseSize(const xmlTextReaderPtr reader)
+void KN2Parser::parseSize(const xmlTextReaderPtr reader, KNSize &size)
 {
   assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::size));
 
@@ -299,10 +310,16 @@ void KN2Parser::parseSize(const xmlTextReaderPtr reader)
   KNXMLAttributeIterator attr(reader);
   while (attr.next())
   {
-    if (attr->ns)
+    if (attr->ns && KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns))
     {
       switch (getKN2TokenID(attr->ns))
       {
+      case KN2Token::h :
+        size.height = lexical_cast<unsigned>(attr->value);
+        break;
+      case KN2Token::w :
+        size.width = lexical_cast<unsigned>(attr->value);
+        break;
       default :
         KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
         break;
@@ -578,7 +595,8 @@ void KN2Parser::parseTheme(const xmlTextReaderPtr reader)
       {
       case KN2Token::size :
       {
-        parseSize(reader);
+        KNSize size;
+        parseSize(reader, size);
         break;
       }
       case KN2Token::stylesheet :

@@ -15,6 +15,8 @@
 namespace libkeynote
 {
 
+struct KNSize;
+
 class KN2Parser : public KNParser
 {
 public:
@@ -27,7 +29,7 @@ private:
   void parseMasterSlides(xmlTextReaderPtr reader);
   void parseMetadata(xmlTextReaderPtr reader);
   void parsePage(xmlTextReaderPtr reader);
-  void parseSize(xmlTextReaderPtr reader);
+  void parseSize(xmlTextReaderPtr reader, KNSize &size);
   void parseSlide(xmlTextReaderPtr reader);
   void parseSlideList(xmlTextReaderPtr reader);
   void parseStylesheet(xmlTextReaderPtr reader);
