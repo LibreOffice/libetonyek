@@ -95,7 +95,7 @@ void KN2Parser::processXmlNode(xmlTextReaderPtr reader)
         }
         break;
       case KN2Token::NS_URI_SFA :
-        if (KN2Token::id != getKN2TokenID(attr->name))
+        if (KN2Token::ID != getKN2TokenID(attr->name))
         {
           KN_DEBUG_MSG(("unprocessed attribute {%s}%s\n", attr->ns, attr->name));
         }
