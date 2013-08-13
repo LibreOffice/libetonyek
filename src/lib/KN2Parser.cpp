@@ -48,15 +48,15 @@ KN2Parser::~KN2Parser()
 {
 }
 
-bool KN2Parser::processXmlNode(xmlTextReaderPtr reader)
+void KN2Parser::processXmlNode(xmlTextReaderPtr reader)
 {
-  if (XML_READER_TYPE_ELEMENT != xmlTextReaderNodeType(reader))
-    return false;
+  if (!isStartElement(reader))
+    throw GenericException();
 
   if (!(xmlTextReaderConstNamespaceUri(reader)
         && (KN2Token::NS_URI_KEY == getKN2TokenID(xmlTextReaderConstNamespaceUri(reader)))
         && (KN2Token::presentation == getKN2TokenID(xmlTextReaderConstLocalName(reader)))))
-    return false;
+    throw GenericException();
 
   // read attributes
   KNXMLAttributeIterator attr(reader);
@@ -135,31 +135,26 @@ bool KN2Parser::processXmlNode(xmlTextReaderPtr reader)
       case KN2Token::calc_engine :
       case KN2Token::version_history :
         // TODO: implement me
-        if (!skipElement(reader))
-        {
-          KN_DEBUG_MSG(("failed to skip element {%s}%s\n", ns, name));
-          return false;
-        }
+        skipElement(reader);
         break;
 
       case KN2Token::presentation :
-        return XML_READER_TYPE_END_ELEMENT == nodeType;
+        if (!isEndElement(reader))
+          throw GenericException();
+        break;
       }
     }
     else
     {
       KN_DEBUG_MSG(("unprocessed element %s%s%s%s\n", ns ? "{" : "", ns, ns ? "}" : "", name));
-      if (!skipElement(reader))
-      {
-        KN_DEBUG_MSG(("failed to skip element {%s}%s\n", ns, name));
-        return false;
-      }
+      skipElement(reader);
     }
 
     ret = xmlTextReaderRead(reader);
   }
 
-  return true;
+  if (-1 == ret)
+    throw GenericException();
 }
 
 }

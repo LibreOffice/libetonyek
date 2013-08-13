@@ -21,11 +21,10 @@ KN1Parser::~KN1Parser()
 {
 }
 
-bool KN1Parser::processXmlNode(xmlTextReaderPtr reader)
+void KN1Parser::processXmlNode(xmlTextReaderPtr reader)
 {
   // TODO: implement me
   (void) reader;
-  return false;
 }
 
 }

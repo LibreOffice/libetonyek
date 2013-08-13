@@ -36,7 +36,7 @@ bool moveToNextNode(xmlTextReaderPtr reader)
   return true;
 }
 
-bool skipElement(xmlTextReaderPtr reader)
+void skipElement(xmlTextReaderPtr reader)
 {
   int level = 1;
 
@@ -57,7 +57,8 @@ bool skipElement(xmlTextReaderPtr reader)
     ret = xmlTextReaderRead(reader);
   }
 
-  return (-1 != ret) && (0 == level);
+  if ((-1 == ret) || (0 != level))
+    throw XMLException();
 }
 
 bool isEmptyElement(xmlTextReaderPtr reader)

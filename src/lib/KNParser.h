@@ -31,7 +31,7 @@ public:
   bool parse();
 
 private:
-  virtual bool processXmlNode(xmlTextReaderPtr reader) = 0;
+  virtual void processXmlNode(xmlTextReaderPtr reader) = 0;
 
   bool processXmlDocument(xmlTextReaderPtr reader);
 

@@ -22,7 +22,7 @@ public:
   virtual ~KN2Parser();
 
 private:
-  virtual bool processXmlNode(xmlTextReaderPtr reader);
+  virtual void processXmlNode(xmlTextReaderPtr reader);
 
 private:
   unsigned m_version;

@@ -11,6 +11,7 @@
 
 #include <libwpd-stream/libwpd-stream.h>
 
+#include "libkeynote_xml.h"
 #include "KNParser.h"
 #include "KNCollector.h"
 #include "KNToken.h"
@@ -75,15 +76,13 @@ bool KNParser::parse()
 
 bool KNParser::processXmlDocument(xmlTextReaderPtr reader) try
 {
-  int ret = xmlTextReaderRead(reader);
-  while (1 == ret)
+  if (moveToNextNode(reader))
   {
-    if (!processXmlNode(reader))
-      return false;
-    ret = xmlTextReaderRead(reader);
+    // process root node
+    processXmlNode(reader);
+    return !moveToNextNode(reader); // the whole input has been read
   }
-
-  return true;
+  return false;
 }
 catch (...)
 {
