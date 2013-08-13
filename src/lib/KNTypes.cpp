@@ -24,6 +24,48 @@ KNSize::KNSize(const double w, const double h)
 {
 }
 
+KNPosition::KNPosition()
+  : x(0)
+  , y(0)
+{
+}
+
+KNPosition::KNPosition(const double x_, const double y_)
+  : x(x_)
+  , y(y_)
+{
+}
+
+KNGeometry::KNGeometry()
+  : naturalSize()
+  , size()
+  , position()
+  , angle(0)
+  , shearXAngle(0)
+  , shearYAngle(0)
+  , horizontalFlip(false)
+  , verticalFlip(false)
+  , aspectRatioLocked(false)
+  , sizesLocked(false)
+{
+}
+
+KNColor::KNColor()
+  : red()
+  , green()
+  , blue()
+  , alpha()
+{
+}
+
+KNColor::KNColor(const double r, const double g, const double b, const double a)
+  : red(r)
+  , green(g)
+  , blue(b)
+  , alpha(a)
+{
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

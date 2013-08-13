@@ -85,6 +85,7 @@ saved_CPPFLAGS="${CPPFLAGS}"
 CPPFLAGS="${BOOST_CFLAGS} ${CPPFLAGS}"
 AC_CHECK_HEADERS(
         boost/lexical_cast.hpp \
+        boost/optional.hpp \
         boost/scoped_ptr.hpp \
         boost/shared_ptr.hpp,
     [],

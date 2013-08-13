@@ -10,6 +10,8 @@
 #ifndef KNTYPES_H_INCLUDED
 #define KNTYPES_H_INCLUDED
 
+#include <boost/optional.hpp>
+
 namespace libkeynote
 {
 
@@ -20,6 +22,42 @@ struct KNSize
 
   KNSize();
   KNSize(double w, double h);
+};
+
+struct KNPosition
+{
+  double x;
+  double y;
+
+  KNPosition();
+  KNPosition(double x_, double y_);
+};
+
+struct KNGeometry
+{
+  boost::optional<KNSize> naturalSize;
+  boost::optional<KNSize> size;
+  boost::optional<KNPosition> position;
+  double angle;
+  double shearXAngle;
+  double shearYAngle;
+  bool horizontalFlip;
+  bool verticalFlip;
+  bool aspectRatioLocked;
+  bool sizesLocked;
+
+  KNGeometry();
+};
+
+struct KNColor
+{
+  double red;
+  double green;
+  double blue;
+  double alpha;
+
+  KNColor();
+  KNColor(double r, double g, double b, double a);
 };
 
 }
