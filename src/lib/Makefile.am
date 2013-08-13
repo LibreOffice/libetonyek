@@ -1,4 +1,4 @@
-BUILT_SOURCES = KNToken.inc
+BUILT_SOURCES = KN1Token.inc KN2Token.inc
 GPERFFLAGS = --compare-strncmp --enum --null-strings --readonly-tables
 
 if PLATFORM_WIN32
@@ -20,20 +20,23 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_LIBADD  = $(WPD_LI
 libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_DEPENDENCIES = @LIBKEYNOTE_WIN32_RESOURCE@
 libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_LDFLAGS = $(version_info) -export-dynamic -no-undefined
 libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
+	KN1Parser.cpp \
+	KN1Parser.h \
+	KN1Token.cpp \
+	KN1Token.h \
+	KN2Parser.cpp \
+	KN2Parser.h \
+	KN2Token.cpp \
+	KN2Token.h \
 	KNCollector.cpp \
 	KNCollector.h \
 	KNMemoryStream.cpp \
 	KNMemoryStream.h \
 	KNParser.cpp \
 	KNParser.h \
-	KN1Parser.cpp \
-	KN1Parser.h \
-	KN2Parser.cpp \
-	KN2Parser.h \
 	KNStringVector.cpp \
 	KNSVGGenerator.cpp \
 	KNSVGGenerator.h \
-	KNToken.cpp \
 	KNToken.h \
 	KNXMLAttributeIterator.cpp \
 	KNXMLAttributeIterator.h \
@@ -57,16 +60,18 @@ distclean-local :
 	rm -f $(BUILT_SOURCES)
 
 EXTRA_DIST = \
-	KNToken.gperf \
+	KN1Token.gperf \
+	KN2Token.gperf \
 	libkeynote.rc.in
 
 # These may be in the builddir too
 BUILD_EXTRA_DIST = \
 	libkeynote.rc
 
-KNToken.cpp : KNToken.inc
+KN1Token.cpp : KN1Token.inc
+KN2Token.cpp : KN2Token.inc
 
-KNToken.inc : KNToken.gperf
+%.inc : %.gperf
 	if $(GPERF) $(GPERFFLAGS) --language C++ $< > $@.tmp; then \
 		mv $@.tmp $@; \
 	else \

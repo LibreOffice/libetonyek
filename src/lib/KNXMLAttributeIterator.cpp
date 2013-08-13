@@ -9,7 +9,7 @@
 
 #include <cassert>
 
-#include "KNToken.h"
+#include "KN2Token.h"
 #include "KNXMLAttributeIterator.h"
 
 namespace libkeynote
@@ -115,9 +115,9 @@ bool KNXMLAttributeIterator::test()
 {
   const xmlChar *const prefix = xmlTextReaderConstPrefix(m_reader);
   if (prefix)
-    return XML_XMLNS != getKNTokenID(prefix);
+    return KN2Token::xmlns != getKN2TokenID(prefix);
 
-  return XML_XMLNS != getKNTokenID(xmlTextReaderConstLocalName(m_reader));
+  return KN2Token::xmlns != getKN2TokenID(xmlTextReaderConstLocalName(m_reader));
 }
 
 }

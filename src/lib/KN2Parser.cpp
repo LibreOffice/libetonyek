@@ -9,7 +9,7 @@
 
 #include "libkeynote_utils.h"
 #include "KN2Parser.h"
-#include "KNToken.h"
+#include "KN2Token.h"
 #include "KNXMLAttributeIterator.h"
 
 namespace libkeynote
@@ -22,13 +22,13 @@ unsigned getVersion(const int token)
 {
   switch (token)
   {
-  case XML_VERSION_STR_2 :
+  case KN2Token::VERSION_STR_2 :
     return 2;
-  case XML_VERSION_STR_3 :
+  case KN2Token::VERSION_STR_3 :
     return 3;
-  case XML_VERSION_STR_4 :
+  case KN2Token::VERSION_STR_4 :
     return 4;
-  case XML_VERSION_STR_5 :
+  case KN2Token::VERSION_STR_5 :
     return 5;
   }
 
@@ -77,8 +77,8 @@ bool KN2Parser::processXmlNode(xmlTextReaderPtr reader)
     return false;
 
   if (!(xmlTextReaderConstNamespaceUri(reader)
-        && (XML_NS_KEY == getKNTokenID(xmlTextReaderConstNamespaceUri(reader)))
-        && (XML_PRESENTATION == getKNTokenID(xmlTextReaderConstLocalName(reader)))))
+        && (KN2Token::NS_URI_KEY == getKN2TokenID(xmlTextReaderConstNamespaceUri(reader)))
+        && (KN2Token::presentation == getKN2TokenID(xmlTextReaderConstLocalName(reader)))))
     return false;
 
   // read attributes
@@ -87,22 +87,22 @@ bool KN2Parser::processXmlNode(xmlTextReaderPtr reader)
   {
     if (attr->ns)
     {
-      switch (getKNTokenID(attr->ns))
+      switch (getKN2TokenID(attr->ns))
       {
-      case XML_NS_KEY :
-        switch (getKNTokenID(attr->name))
+      case KN2Token::NS_URI_KEY :
+        switch (getKN2TokenID(attr->name))
         {
-        case XML_ALL_IMAGES_BUNDLED :
-        case XML_COMPATIBLE_VERSION :
-        case XML_KIOSK_BUILD_DELAY :
-        case XML_KIOSK_SLIDE_DELAY :
-        case XML_MODE :
-        case XML_PLAY_MODE :
-        case XML_STICKY_VISIBILITY :
+        case KN2Token::all_images_bundled :
+        case KN2Token::compatible_version :
+        case KN2Token::kiosk_build_delay :
+        case KN2Token::kiosk_slide_delay :
+        case KN2Token::mode :
+        case KN2Token::play_mode :
+        case KN2Token::sticky_visibility :
           // TODO: implement me
           break;
-        case XML_VERSION :
-          m_version = getVersion(getKNTokenID(attr->value));
+        case KN2Token::version :
+          m_version = getVersion(getKN2TokenID(attr->value));
           if (0 == m_version)
           {
             KN_DEBUG_MSG(("unknown version %s\n", attr->value));
@@ -113,8 +113,8 @@ bool KN2Parser::processXmlNode(xmlTextReaderPtr reader)
           break;
         }
         break;
-      case XML_NS_SFA :
-        if (XML_I_D != getKNTokenID(attr->name))
+      case KN2Token::NS_URI_SFA :
+        if (KN2Token::id != getKN2TokenID(attr->name))
         {
           KN_DEBUG_MSG(("unprocessed attribute {%s}%s\n", attr->ns, attr->name));
         }
@@ -143,20 +143,20 @@ bool KN2Parser::processXmlNode(xmlTextReaderPtr reader)
 
     const xmlChar *const ns = xmlTextReaderConstNamespaceUri(reader);
     const xmlChar *const name = xmlTextReaderConstLocalName(reader);
-    if (ns && (XML_NS_KEY == getKNTokenID(ns)))
+    if (ns && (KN2Token::NS_URI_KEY == getKN2TokenID(ns)))
     {
-      switch (getKNTokenID(name))
+      switch (getKN2TokenID(name))
       {
-      case XML_SIZE :
-      case XML_THEME_LIST :
-      case XML_MASTER_ORDER :
-      case XML_SLIDE_LIST :
-      case XML_UI_STATE :
-      case XML_METADATA :
-      case XML_SOUNDTRACK_LIST :
-      case XML_CALCULATION_ENGINE :
-      case XML_CALC_ENGINE :
-      case XML_VERSION_HISTORY :
+      case KN2Token::size :
+      case KN2Token::theme_list :
+      case KN2Token::master_order :
+      case KN2Token::slide_list :
+      case KN2Token::ui_state :
+      case KN2Token::metadata :
+      case KN2Token::soundtrack_list :
+      case KN2Token::calculation_engine :
+      case KN2Token::calc_engine :
+      case KN2Token::version_history :
         // TODO: implement me
         if (!skipElement(reader))
         {
@@ -165,7 +165,7 @@ bool KN2Parser::processXmlNode(xmlTextReaderPtr reader)
         }
         break;
 
-      case XML_PRESENTATION :
+      case KN2Token::presentation :
         return XML_READER_TYPE_END_ELEMENT == nodeType;
       }
     }
