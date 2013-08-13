@@ -58,7 +58,7 @@ KN2Parser::~KN2Parser()
 {
 }
 
-void KN2Parser::processXmlNode(xmlTextReaderPtr reader)
+void KN2Parser::processXmlNode(const xmlTextReaderPtr reader)
 {
   assert(checkElement(reader, KN2Token::presentation, KN2Token::NS_URI_KEY));
 
@@ -153,6 +153,496 @@ void KN2Parser::processXmlNode(xmlTextReaderPtr reader)
     }
   }
 }
+
+void KN2Parser::parseMasterSlides(const xmlTextReaderPtr reader)
+{
+  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::master_slides));
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (attr->ns && (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns)) && (KN2Token::ID == getKN2TokenID(attr->name)))
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+      break;
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+    }
+  }
+
+  // read elements
+  while (moveToNextNode(reader))
+  {
+    const char *const name = getName(reader);
+    const char *const ns = getNamespace(reader);
+
+    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::master_slides, false))
+      break;
+
+    if (isEndElement(reader))
+      throw GenericException();
+
+    if (ns && (KN2Token::NS_URI_KEY == getKN2TokenID(ns)) && (KN2Token::master_slide == getKN2TokenID(name)))
+    {
+      KN_DEBUG_XML_TODO("element", name, ns);
+      skipElement(reader);
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      skipElement(reader);
+    }
+  }
+}
+
+void KN2Parser::parseMetadata(const xmlTextReaderPtr reader)
+{
+  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::metadata));
+
+  // there are no attributes for key:metadata
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+  }
+
+  // read elements
+  while (moveToNextNode(reader))
+  {
+    const char *const name = getName(reader);
+    const char *const ns = getNamespace(reader);
+
+    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::presentation, false))
+      break;
+
+    if (isEndElement(reader))
+      throw GenericException();
+
+    if (ns && (KN2Token::NS_URI_KEY == getKN2TokenID(ns)))
+    {
+      switch (getKN2TokenID(name))
+      {
+      case KN2Token::authors :
+      case KN2Token::keywords :
+      case KN2Token::title :
+        KN_DEBUG_XML_TODO("element", name, ns);
+        skipElement(reader);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      skipElement(reader);
+    }
+  }
+}
+
+void KN2Parser::parsePage(const xmlTextReaderPtr reader)
+{
+  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::page));
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (attr->ns && (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns)) && (KN2Token::ID == getKN2TokenID(attr->name)))
+    {
+      KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+    }
+  }
+
+  // read elements
+  while (moveToNextNode(reader))
+  {
+    const char *const name = getName(reader);
+    const char *const ns = getNamespace(reader);
+
+    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::page, false))
+      break;
+
+    if (isEndElement(reader))
+      throw GenericException();
+
+    if (ns && (KN2Token::NS_URI_SF == getKN2TokenID(ns)))
+    {
+      switch (getKN2TokenID(name))
+      {
+      case KN2Token::geometry :
+      case KN2Token::size :
+      case KN2Token::layers :
+        KN_DEBUG_XML_TODO("element", name, ns);
+        skipElement(reader);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      skipElement(reader);
+    }
+  }
+}
+
+void KN2Parser::parseSize(const xmlTextReaderPtr reader)
+{
+  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::size));
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (attr->ns)
+    {
+      switch (getKN2TokenID(attr->ns))
+      {
+      default :
+        KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+    }
+  }
+
+  if (!isEmptyElement(reader))
+  {
+    // there are no elements
+    while (moveToNextNode(reader))
+    {
+      KN_DEBUG_XML_UNKNOWN("element", getName(reader), getNamespace(reader));
+      skipElement(reader);
+    }
+  }
+}
+
+void KN2Parser::parseSlide(const xmlTextReaderPtr reader)
+{
+  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::slide));
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (attr->ns)
+    {
+      switch (getKN2TokenID(attr->ns))
+      {
+      case KN2Token::NS_URI_KEY :
+        switch (getKN2TokenID(attr->name))
+        {
+        case KN2Token::collapsed :
+        case KN2Token::depth :
+        case KN2Token::hidden :
+          KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+          break;
+        default :
+          KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+          break;
+        }
+      case KN2Token::NS_URI_SFA :
+        if (KN2Token::ID != getKN2TokenID(attr->name))
+        {
+          KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+        }
+        else
+        {
+          KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+        }
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+    }
+  }
+
+  // read elements
+  while (moveToNextNode(reader))
+  {
+    const char *const name = getName(reader);
+    const char *const ns = getNamespace(reader);
+
+    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::slide, false))
+      break;
+
+    if (isEndElement(reader))
+      throw GenericException();
+
+    if (ns && (KN2Token::NS_URI_KEY == getKN2TokenID(ns)))
+    {
+      switch (getKN2TokenID(name))
+      {
+      case KN2Token::page :
+        parsePage(reader);
+        break;
+      case KN2Token::stylesheet :
+        parseStylesheet(reader);
+        break;
+      case KN2Token::style_ref :
+      case KN2Token::title_placeholder :
+      case KN2Token::object_placeholder :
+      case KN2Token::slide_number_placeholder :
+      case KN2Token::bullets :
+      case KN2Token::thumbnails :
+      case KN2Token::build_chunks :
+      case KN2Token::sticky_notes :
+      case KN2Token::master_ref :
+      case KN2Token::notes :
+      case KN2Token::dummy_body_headline :
+        KN_DEBUG_XML_TODO("element", name, ns);
+        skipElement(reader);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        skipElement(reader);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      skipElement(reader);
+    }
+  }
+}
+
+void KN2Parser::parseSlideList(const xmlTextReaderPtr reader)
+{
+  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::slide_list));
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (attr->ns && (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns)) && (KN2Token::ID == getKN2TokenID(attr->name)))
+    {
+      KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+    }
+  }
+
+  // read elements
+  while (moveToNextNode(reader))
+  {
+    const char *const name = getName(reader);
+    const char *const ns = getNamespace(reader);
+
+    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::slide_list, false))
+      break;
+
+    if (isEndElement(reader))
+      throw GenericException();
+
+    if (ns && (KN2Token::NS_URI_KEY == getKN2TokenID(ns)) && (KN2Token::slide == getKN2TokenID(name)))
+    {
+      parseSlide(reader);
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      skipElement(reader);
+    }
+  }
+}
+
+void KN2Parser::parseStylesheet(const xmlTextReaderPtr reader)
+{
+  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::stylesheet));
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (attr->ns && (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns)) && (KN2Token::ID == getKN2TokenID(attr->name)))
+    {
+      KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+    }
+  }
+
+  // read elements
+  while (moveToNextNode(reader))
+  {
+    const char *const name = getName(reader);
+    const char *const ns = getNamespace(reader);
+
+    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::stylesheet, false))
+      break;
+
+    if (isEndElement(reader))
+      throw GenericException();
+
+    if (ns && (KN2Token::NS_URI_SF == getKN2TokenID(ns)))
+    {
+      switch (getKN2TokenID(name))
+      {
+      case KN2Token::styles :
+      case KN2Token::anon_styles :
+      case KN2Token::parent_ref :
+        KN_DEBUG_XML_TODO("element", name, ns);
+        skipElement(reader);
+        break;
+      default :
+        KN_DEBUG_XML_TODO("element", name, ns);
+        skipElement(reader);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      skipElement(reader);
+    }
+  }
+}
+
+void KN2Parser::parseTheme(const xmlTextReaderPtr reader)
+{
+  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::theme));
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (attr->ns)
+    {
+      switch (getKN2TokenID(attr->ns))
+      {
+      case KN2Token::NS_URI_KEY :
+        switch (getKN2TokenID(attr->name))
+        {
+        case KN2Token::decimal_tab :
+        case KN2Token::group_uuid :
+        case KN2Token::name :
+          KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+          break;
+        default :
+          KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+          break;
+        }
+      case KN2Token::NS_URI_SFA :
+        if (KN2Token::ID == getKN2TokenID(attr->name))
+        {
+          KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+        }
+        else
+        {
+          KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+        }
+      default :
+        KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+    }
+  }
+
+  // read elements
+  while (moveToNextNode(reader))
+  {
+    const char *const name = getName(reader);
+    const char *const ns = getNamespace(reader);
+
+    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::theme, false))
+      break;
+
+    if (isEndElement(reader))
+      throw GenericException();
+
+    if (ns && (KN2Token::NS_URI_KEY == getKN2TokenID(ns)))
+    {
+      switch (getKN2TokenID(name))
+      {
+      case KN2Token::size :
+      {
+        parseSize(reader);
+        break;
+      }
+      case KN2Token::stylesheet :
+        parseStylesheet(reader);
+        break;
+      case KN2Token::master_slides :
+        parseMasterSlides(reader);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        skipElement(reader);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      skipElement(reader);
+    }
+  }
+}
+
+void KN2Parser::parseThemeList(const xmlTextReaderPtr reader)
+{
+  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::theme_list));
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (attr->ns && (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns)) && (KN2Token::ID == getKN2TokenID(attr->name)))
+    {
+      KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+    }
+  }
+
+  // read elements
+  while (moveToNextNode(reader))
+  {
+    const char *const name = getName(reader);
+    const char *const ns = getNamespace(reader);
+
+    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::theme_list, false))
+      break;
+
+    if (isEndElement(reader))
+      throw GenericException();
+
+    if (ns && (KN2Token::NS_URI_KEY == getKN2TokenID(ns)) && (KN2Token::theme == getKN2TokenID(name)))
+    {
+      parseTheme(reader);
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      skipElement(reader);
+    }
+  }
+}
+
 
 }
 

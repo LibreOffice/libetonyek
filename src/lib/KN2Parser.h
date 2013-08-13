@@ -24,6 +24,16 @@ public:
 private:
   virtual void processXmlNode(xmlTextReaderPtr reader);
 
+  void parseMasterSlides(xmlTextReaderPtr reader);
+  void parseMetadata(xmlTextReaderPtr reader);
+  void parsePage(xmlTextReaderPtr reader);
+  void parseSize(xmlTextReaderPtr reader);
+  void parseSlide(xmlTextReaderPtr reader);
+  void parseSlideList(xmlTextReaderPtr reader);
+  void parseStylesheet(xmlTextReaderPtr reader);
+  void parseTheme(xmlTextReaderPtr reader);
+  void parseThemeList(xmlTextReaderPtr reader);
+
 private:
   unsigned m_version;
 };
