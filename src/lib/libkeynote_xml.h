@@ -14,6 +14,7 @@
 
 #include "libkeynote_utils.h"
 
+#define KN_DEBUG_XML_NOT_EMPTY(name, ns) KN_DEBUG_MSG(("element %s%s%s%s is not empty, skipping content...\n", ns ? "{" : "", ns, ns ? "}" : "", name))
 #define KN_DEBUG_XML_UNKNOWN(type, name, ns) KN_DEBUG_MSG(("unknown %s %s%s%s%s\n", type, ns ? "{" : "", ns, ns ? "}" : "", name))
 #define KN_DEBUG_XML_TODO(type, name, ns) KN_DEBUG_MSG(("TODO: unprocessed %s %s%s%s%s\n", type, ns ? "{" : "", ns, ns ? "}" : "", name))
 
