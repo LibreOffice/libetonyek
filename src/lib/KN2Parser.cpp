@@ -51,6 +51,43 @@ bool checkNoAttributes(const xmlTextReaderPtr reader)
   return 0 == count;
 }
 
+string readOnlyAttribute(const xmlTextReaderPtr reader, const int name, const int ns)
+{
+  optional<string> value;
+
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if ((getKN2TokenID(attr->ns) == ns) && (getKN2TokenID(attr->name) == name))
+      value = attr->value;
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+    }
+  }
+
+  if (!value)
+    throw GenericException();
+
+  return get(value);
+}
+
+string readOnlyElementAttribute(const xmlTextReaderPtr reader, const int name, const int ns)
+{
+  const char *const elementName = getName(reader);
+  const char *const elementNs = getNamespace(reader);
+
+  const string value = readOnlyAttribute(reader, name, ns);
+
+  if (!isEmptyElement(reader))
+  {
+    KN_DEBUG_XML_NOT_EMPTY(elementName, elementNs);
+    skipElement(reader);
+  }
+
+  return value;
+}
+
 unsigned getVersion(const int token)
 {
   switch (token)
