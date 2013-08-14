@@ -35,6 +35,8 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNParser.cpp \
 	KNParser.h \
 	KNStringVector.cpp \
+	KNStyle.cpp \
+	KNStyle.h \
 	KNSVGGenerator.cpp \
 	KNSVGGenerator.h \
 	KNToken.h \

@@ -66,6 +66,14 @@ KNColor::KNColor(const double r, const double g, const double b, const double a)
 {
 }
 
+KNPadding::KNPadding()
+  : top()
+  , right()
+  , bottom()
+  , left()
+{
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

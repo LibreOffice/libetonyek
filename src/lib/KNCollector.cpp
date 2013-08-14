@@ -11,6 +11,8 @@
 
 #include "KNCollector.h"
 
+using std::string;
+
 namespace libkeynote
 {
 
@@ -21,6 +23,31 @@ KNCollector::KNCollector(libwpg::WPGPaintInterface *const painter) :
 
 KNCollector::~KNCollector()
 {
+}
+
+void KNCollector::collectCharacterStyle(const string &id, const KNStyle &style)
+{
+  m_characterStyles[id] = style;
+}
+
+void KNCollector::collectGraphicStyle(const string &id, const KNStyle &style)
+{
+  m_graphicStyles[id] = style;
+}
+
+void KNCollector::collectHeadlineStyle(const std::string  &id, const KNStyle &style)
+{
+  m_headlineStyles[id] = style;
+}
+
+void KNCollector::collectLayoutStyle(const string &id, const KNStyle &style)
+{
+  m_layoutStyles[id] = style;
+}
+
+void KNCollector::collectParagraphStyle(const string &id, const KNStyle &style)
+{
+  m_paragraphStyles[id] = style;
 }
 
 }

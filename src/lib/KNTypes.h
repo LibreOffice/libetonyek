@@ -60,6 +60,16 @@ struct KNColor
   KNColor(double r, double g, double b, double a);
 };
 
+struct KNPadding
+{
+  boost::optional<int> top;
+  boost::optional<int> right;
+  boost::optional<int> bottom;
+  boost::optional<int> left;
+
+  KNPadding();
+};
+
 }
 
 #endif //  KNTYPES_H_INCLUDED

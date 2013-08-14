@@ -10,6 +10,12 @@
 #ifndef KNCOLLECTOR_H_INCLUDED
 #define KNCOLLECTOR_H_INCLUDED
 
+#include <string>
+
+#include <boost/unordered_map.hpp>
+
+#include "KNStyle.h"
+
 namespace libwpg
 {
 
@@ -22,11 +28,19 @@ namespace libkeynote
 
 class KNCollector
 {
+  typedef boost::unordered_map<std::string, KNStyle> StyleMap_t;
+
 public:
   explicit KNCollector(::libwpg::WPGPaintInterface *painter);
   virtual ~KNCollector();
 
   // collector functions
+
+  void collectCharacterStyle(const std::string  &id, const KNStyle &style);
+  void collectGraphicStyle(const std::string  &id, const KNStyle &style);
+  void collectHeadlineStyle(const std::string  &id, const KNStyle &style);
+  void collectLayoutStyle(const std::string  &id, const KNStyle &style);
+  void collectParagraphStyle(const std::string  &id, const KNStyle &style);
 
 private:
   KNCollector(const KNCollector &);
@@ -36,6 +50,12 @@ private:
 
 private:
   libwpg::WPGPaintInterface *m_painter;
+
+  StyleMap_t m_characterStyles;
+  StyleMap_t m_graphicStyles;
+  StyleMap_t m_headlineStyles;
+  StyleMap_t m_layoutStyles;
+  StyleMap_t m_paragraphStyles;
 };
 
 } // namespace libkeynote

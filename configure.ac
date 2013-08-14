@@ -87,7 +87,8 @@ AC_CHECK_HEADERS(
         boost/lexical_cast.hpp \
         boost/optional.hpp \
         boost/scoped_ptr.hpp \
-        boost/shared_ptr.hpp,
+        boost/shared_ptr.hpp \
+        boost/unordered_map.hpp,
     [],
     [AC_MSG_ERROR([Required boost headers not found.])],
     []
