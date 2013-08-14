@@ -17,9 +17,9 @@ namespace libkeynote
 
 struct KNXMLAttribute
 {
-  const xmlChar *name;
-  const xmlChar *ns;
-  const xmlChar *value;
+  const char *name;
+  const char *ns;
+  const char *value;
 
   KNXMLAttribute();
 };

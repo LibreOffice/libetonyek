@@ -9,6 +9,7 @@
 
 #include <cassert>
 
+#include "libkeynote_xml.h"
 #include "KN2Token.h"
 #include "KNXMLAttributeIterator.h"
 
@@ -106,9 +107,9 @@ bool KNXMLAttributeIterator::move()
 
 void KNXMLAttributeIterator::read()
 {
-  m_current.name = xmlTextReaderConstLocalName(m_reader);
-  m_current.ns = xmlTextReaderConstNamespaceUri(m_reader);
-  m_current.value = xmlTextReaderConstValue(m_reader);
+  m_current.name = getName(m_reader);
+  m_current.ns = getNamespace(m_reader);
+  m_current.value = getText(m_reader);
 }
 
 bool KNXMLAttributeIterator::test()
