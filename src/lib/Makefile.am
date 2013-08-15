@@ -34,6 +34,8 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNMemoryStream.h \
 	KNParser.cpp \
 	KNParser.h \
+	KNPath.pp \
+	KNPath.h \
 	KNStringVector.cpp \
 	KNStyle.cpp \
 	KNStyle.h \

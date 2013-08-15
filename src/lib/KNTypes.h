@@ -10,6 +10,8 @@
 #ifndef KNTYPES_H_INCLUDED
 #define KNTYPES_H_INCLUDED
 
+#include <string>
+
 #include <boost/optional.hpp>
 
 namespace libkeynote
@@ -68,6 +70,42 @@ struct KNPadding
   boost::optional<int> left;
 
   KNPadding();
+};
+
+struct KNPoint
+{
+  double x;
+  double y;
+
+  KNPoint();
+};
+
+struct KNLine
+{
+  KNGeometry geometry;
+  KNPoint head;
+  KNPoint tail;
+
+  KNLine();
+};
+
+struct KNBinary
+{
+  KNSize size;
+  std::string path;
+  boost::optional<std::string> type;
+  boost::optional<unsigned> dataSize;
+
+  KNBinary();
+};
+
+struct KNImage
+{
+  boost::optional<bool> locked;
+  boost::optional<KNGeometry> geometry;
+  boost::optional<KNBinary> binary;
+
+  KNImage();
 };
 
 }

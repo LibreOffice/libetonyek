@@ -74,6 +74,34 @@ KNPadding::KNPadding()
 {
 }
 
+KNPoint::KNPoint()
+  : x(0)
+  , y(0)
+{
+}
+
+KNLine::KNLine()
+  : geometry()
+  , head()
+  , tail()
+{
+}
+
+KNBinary::KNBinary()
+  : size()
+  , path()
+  , type()
+  , dataSize()
+{
+}
+
+KNImage::KNImage()
+  : locked()
+  , geometry()
+  , binary()
+{
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
