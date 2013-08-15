@@ -15,6 +15,7 @@
 #include "libkeynote_xml.h"
 #include "KN2Parser.h"
 #include "KN2Token.h"
+#include "KNCollector.h"
 #include "KNStyle.h"
 #include "KNTypes.h"
 #include "KNXMLAttributeIterator.h"
@@ -1059,9 +1060,10 @@ void KN2Parser::parseSlideList(const xmlTextReaderPtr reader)
   }
 }
 
-void KN2Parser::parseStyle(const xmlTextReaderPtr reader, KNStyle &style)
+ID_t KN2Parser::parseStyle(const xmlTextReaderPtr reader, KNStyle &style)
 {
   const int type = getKN2TokenID(getName(reader));
+  ID_t id;
 
   // read attributes
   KNXMLAttributeIterator attr(reader);
@@ -1075,6 +1077,10 @@ void KN2Parser::parseStyle(const xmlTextReaderPtr reader, KNStyle &style)
     {
       switch (getKN2TokenID(attr->name))
       {
+      case KN2Token::ID :
+        id = attr->value;
+        break;
+
       case KN2Token::ident :
       case KN2Token::parent_ident :
       case KN2Token::name :
@@ -1118,6 +1124,8 @@ void KN2Parser::parseStyle(const xmlTextReaderPtr reader, KNStyle &style)
       skipElement(reader);
     }
   }
+
+  return id;
 }
 
 void KN2Parser::parseStyles(const xmlTextReaderPtr reader, const bool anonymous)
@@ -1141,20 +1149,49 @@ void KN2Parser::parseStyles(const xmlTextReaderPtr reader, const bool anonymous)
 
     if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
     {
-      KNStyle style;
-
       switch (getKN2TokenID(name))
       {
-      case KN2Token::cell_style :
       case KN2Token::characterstyle :
+      {
+        KNStyle style;
+        const ID_t id = parseStyle(reader, style);
+        getCollector()->collectCharacterStyle(id, style);
+        break;
+      }
+      case KN2Token::graphic_style :
+      {
+        KNStyle style;
+        const ID_t id = parseStyle(reader, style);
+        getCollector()->collectGraphicStyle(id, style);
+        break;
+      }
+      case KN2Token::headline_style :
+      {
+        KNStyle style;
+        const ID_t id = parseStyle(reader, style);
+        getCollector()->collectHeadlineStyle(id, style);
+        break;
+      }
+      case KN2Token::layoutstyle :
+      {
+        KNStyle style;
+        const ID_t id = parseStyle(reader, style);
+        getCollector()->collectLayoutStyle(id, style);
+        break;
+      }
+      case KN2Token::paragraphstyle :
+      {
+        KNStyle style;
+        const ID_t id = parseStyle(reader, style);
+        getCollector()->collectParagraphStyle(id, style);
+        break;
+      }
+
+      case KN2Token::cell_style :
       case KN2Token::chart_series_style :
       case KN2Token::chart_style :
       case KN2Token::connection_style :
-      case KN2Token::graphic_style :
-      case KN2Token::headline_style :
-      case KN2Token::layoutstyle :
       case KN2Token::liststyle :
-      case KN2Token::paragraphstyle :
       case KN2Token::placeholder_style :
       case KN2Token::slide_style :
       case KN2Token::table_cell_style :
@@ -1162,10 +1199,6 @@ void KN2Parser::parseStyles(const xmlTextReaderPtr reader, const bool anonymous)
       case KN2Token::table_vector_style :
       case KN2Token::tabular_style :
       case KN2Token::vector_style :
-        parseStyle(reader, style);
-        // TODO: implement me
-        break;
-
       case KN2Token::cell_style_ref :
       case KN2Token::characterstyle_ref :
       case KN2Token::chart_series_style_ref :
@@ -1357,7 +1390,10 @@ void KN2Parser::parseThemeList(const xmlTextReaderPtr reader)
     const char *const ns = getNamespace(reader);
 
     if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::theme_list, false))
+    {
+      getCollector()->collectMasterStyles();
       break;
+    }
 
     if (isEndElement(reader))
       throw GenericException();

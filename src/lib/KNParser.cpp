@@ -74,6 +74,11 @@ bool KNParser::parse()
   return success;
 }
 
+KNCollector *KNParser::getCollector() const
+{
+  return m_collector;
+}
+
 bool KNParser::processXmlDocument(xmlTextReaderPtr reader) try
 {
   if (moveToNextNode(reader))

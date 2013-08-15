@@ -17,11 +17,11 @@ namespace libkeynote
 {
 
 KNCollector::StyleSheet::StyleSheet()
-: characterStyles()
-, graphicStyles()
-, headlineStyles()
-, layoutStyles()
-, paragraphStyles()
+  : characterStyles()
+  , graphicStyles()
+  , headlineStyles()
+  , layoutStyles()
+  , paragraphStyles()
 {
 }
 

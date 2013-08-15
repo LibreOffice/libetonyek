@@ -30,6 +30,8 @@ public:
   virtual ~KNParser() = 0;
   bool parse();
 
+  KNCollector *getCollector() const;
+
 private:
   virtual void processXmlNode(xmlTextReaderPtr reader) = 0;
 

@@ -10,12 +10,16 @@
 #ifndef KNTYPES_H_INCLUDED
 #define KNTYPES_H_INCLUDED
 
+#include <deque>
 #include <string>
 
 #include <boost/optional.hpp>
 
 namespace libkeynote
 {
+
+typedef std::string ID_t;
+typedef std::deque<ID_t> IDs_t;
 
 struct KNSize
 {

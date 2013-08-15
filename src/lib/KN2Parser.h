@@ -11,12 +11,12 @@
 #define KN2PARSER_H_INCLUDED
 
 #include "KNParser.h"
+#include "KNTypes.h"
 
 namespace libkeynote
 {
 
-struct KNSize;
-struct KNStyle;
+class KNStyle;
 
 class KN2Parser : public KNParser
 {
@@ -34,7 +34,7 @@ private:
   void parseSize(xmlTextReaderPtr reader, KNSize &size);
   void parseSlide(xmlTextReaderPtr reader);
   void parseSlideList(xmlTextReaderPtr reader);
-  void parseStyle(xmlTextReaderPtr reader, KNStyle &style);
+  ID_t parseStyle(xmlTextReaderPtr reader, KNStyle &style);
   void parseStyles(xmlTextReaderPtr reader, bool anonymous);
   void parseStylesheet(xmlTextReaderPtr reader);
   void parseTheme(xmlTextReaderPtr reader);
