@@ -60,12 +60,7 @@ Version detectVersion(WPXInputStream *const input, Source &source)
   // check if this is a package
   if (input->isOLEStream())
   {
-    scoped_ptr<WPXInputStream> apxl(input->getDocumentOLEStream("index.apxl"));
-    if (bool(apxl))
-    {
-      source = SOURCE_PACKAGE_APXL;
-      return VERSION_KEYNOTE_2;
-    }
+    scoped_ptr<WPXInputStream> apxl;
 
     apxl.reset(input->getDocumentOLEStream("index.apxl.gz"));
     if (bool(apxl))
@@ -74,17 +69,24 @@ Version detectVersion(WPXInputStream *const input, Source &source)
       return VERSION_KEYNOTE_2;
     }
 
-    apxl.reset(input->getDocumentOLEStream("presentation.apxl"));
-    if (bool(apxl))
-    {
-      source = SOURCE_PACKAGE_APXL;
-      return VERSION_KEYNOTE_1;
-    }
-
     apxl.reset(input->getDocumentOLEStream("presentation.apxl.gz"));
     if (bool(apxl))
     {
       source = SOURCE_PACKAGE_APXL_GZ;
+      return VERSION_KEYNOTE_1;
+    }
+
+    apxl.reset(input->getDocumentOLEStream("index.apxl"));
+    if (bool(apxl))
+    {
+      source = SOURCE_PACKAGE_APXL;
+      return VERSION_KEYNOTE_2;
+    }
+
+    apxl.reset(input->getDocumentOLEStream("presentation.apxl"));
+    if (bool(apxl))
+    {
+      source = SOURCE_PACKAGE_APXL;
       return VERSION_KEYNOTE_1;
     }
   }
