@@ -44,7 +44,7 @@ void KNCollector::collectGraphicStyle(const string &id, const KNStyle &style)
   m_currentStyles.graphicStyles[id] = style;
 }
 
-void KNCollector::collectHeadlineStyle(const std::string  &id, const KNStyle &style)
+void KNCollector::collectHeadlineStyle(const std::string &id, const KNStyle &style)
 {
   m_currentStyles.headlineStyles[id] = style;
 }

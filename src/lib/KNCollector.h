@@ -47,11 +47,11 @@ public:
 
   // collector functions
 
-  void collectCharacterStyle(const std::string  &id, const KNStyle &style);
-  void collectGraphicStyle(const std::string  &id, const KNStyle &style);
-  void collectHeadlineStyle(const std::string  &id, const KNStyle &style);
-  void collectLayoutStyle(const std::string  &id, const KNStyle &style);
-  void collectParagraphStyle(const std::string  &id, const KNStyle &style);
+  void collectCharacterStyle(const std::string &id, const KNStyle &style);
+  void collectGraphicStyle(const std::string &id, const KNStyle &style);
+  void collectHeadlineStyle(const std::string &id, const KNStyle &style);
+  void collectLayoutStyle(const std::string &id, const KNStyle &style);
+  void collectParagraphStyle(const std::string &id, const KNStyle &style);
 
   void collectMasterStyles();
 
