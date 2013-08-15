@@ -26,9 +26,19 @@ class WPGPaintInterface;
 namespace libkeynote
 {
 
+class KNPath;
+
 class KNCollector
 {
   typedef boost::unordered_map<std::string, KNStyle> StyleMap_t;
+  typedef boost::unordered_map<std::string, KNLayer> LayerMap_t;
+
+  typedef boost::unordered_map<std::string, KNGeometry> GeometryMap_t;
+  typedef boost::unordered_map<std::string, KNGroup> GroupMap_t;
+  typedef boost::unordered_map<std::string, KNImage> ImageMap_t;
+  typedef boost::unordered_map<std::string, KNLine> LineMap_t;
+  typedef boost::unordered_map<std::string, KNMedia> MediaMap_t;
+  typedef boost::unordered_map<std::string, KNPath> PathMap_t;
 
   struct StyleSheet
   {
@@ -55,6 +65,13 @@ public:
 
   void collectMasterStyles();
 
+  void collectGeometry(const std::string &id, const KNGeometry &geometry);
+  void collectGroup(const std::string &id, const KNGroup &group);
+  void collectImage(const std::string &id, const KNImage &image);
+  void collectLine(const std::string &id, const KNLine &line);
+  void collectMedia(const std::string &id, const KNMedia &media);
+  void collectPath(const std::string &id, const KNPath &path);
+
 private:
   KNCollector(const KNCollector &);
   KNCollector &operator=(const KNCollector &);
@@ -65,8 +82,21 @@ private:
 
 private:
   libwpg::WPGPaintInterface *m_painter;
+
   StyleSheet m_masterStyles;
   StyleSheet m_currentStyles;
+
+  GeometryMap_t m_currentGeometries;
+  GroupMap_t m_currentGroups;
+  ImageMap_t m_currentImages;
+  LineMap_t m_currentLines;
+  MediaMap_t m_currentMedia;
+  PathMap_t m_currentPaths;
+
+  LayerMap_t m_masterPages;
+  KNLayer m_currentLayer;
+
+  bool m_master;
 };
 
 } // namespace libkeynote

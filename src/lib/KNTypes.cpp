@@ -102,6 +102,43 @@ KNImage::KNImage()
 {
 }
 
+KNMedia::KNMedia()
+  : geometry()
+  , style()
+  , placeholder()
+  , placeholderSize()
+  , cropGeometry()
+  , data()
+{
+}
+
+KNWrap::KNWrap()
+  : path()
+  , geometry()
+{
+}
+
+KNGroup::KNGroup()
+  : geometries()
+  , groups()
+  , images()
+  , lines()
+  , media()
+  , shapes()
+  , wraps()
+{
+}
+
+KNLayer::KNLayer()
+  : type()
+  , groups()
+  , images()
+  , lines()
+  , media()
+  , shapes()
+{
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

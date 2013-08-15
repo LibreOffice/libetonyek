@@ -86,17 +86,17 @@ struct KNPoint
 
 struct KNLine
 {
-  KNGeometry geometry;
-  KNPoint head;
-  KNPoint tail;
+  boost::optional<ID_t> geometry;
+  boost::optional<KNPoint> head;
+  boost::optional<KNPoint> tail;
 
   KNLine();
 };
 
 struct KNBinary
 {
-  KNSize size;
-  std::string path;
+  boost::optional<KNSize> size;
+  boost::optional<std::string> path;
   boost::optional<std::string> type;
   boost::optional<unsigned> dataSize;
 
@@ -106,10 +106,55 @@ struct KNBinary
 struct KNImage
 {
   boost::optional<bool> locked;
-  boost::optional<KNGeometry> geometry;
+  boost::optional<ID_t> geometry;
   boost::optional<KNBinary> binary;
 
   KNImage();
+};
+
+struct KNMedia
+{
+  boost::optional<ID_t> geometry;
+  boost::optional<ID_t> style;
+  boost::optional<bool> placeholder;
+  boost::optional<KNSize> placeholderSize;
+  boost::optional<KNGeometry> cropGeometry;
+  boost::optional<KNBinary> data;
+
+  KNMedia();
+};
+
+struct KNWrap
+{
+  boost::optional<ID_t> path;
+  boost::optional<ID_t> geometry;
+
+  KNWrap();
+};
+
+struct KNGroup
+{
+  IDs_t geometries;
+  IDs_t groups;
+  IDs_t images;
+  IDs_t lines;
+  IDs_t media;
+  IDs_t shapes;
+  IDs_t wraps;
+
+  KNGroup();
+};
+
+struct KNLayer
+{
+  boost::optional<std::string> type;
+  IDs_t groups;
+  IDs_t images;
+  IDs_t lines;
+  IDs_t media;
+  IDs_t shapes;
+
+  KNLayer();
 };
 
 }

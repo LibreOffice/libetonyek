@@ -10,6 +10,7 @@
 #include <libwpg/WPGPaintInterface.h>
 
 #include "KNCollector.h"
+#include "KNPath.h"
 
 using std::string;
 
@@ -64,6 +65,37 @@ void KNCollector::collectMasterStyles()
   m_masterStyles = m_currentStyles;
   m_currentStyles = StyleSheet();
 }
+
+void KNCollector::collectGeometry(const std::string &id, const KNGeometry &geometry)
+{
+  m_currentGeometries[id] = geometry;
+}
+
+void KNCollector::collectGroup(const std::string &id, const KNGroup &group)
+{
+  m_currentGroups[id] = group;
+}
+
+void KNCollector::collectImage(const std::string &id, const KNImage &image)
+{
+  m_currentImages[id] = image;
+}
+
+void KNCollector::collectLine(const std::string &id, const KNLine &line)
+{
+  m_currentLines[id] = line;
+}
+
+void KNCollector::collectMedia(const std::string &id, const KNMedia &media)
+{
+  m_currentMedia[id] = media;
+}
+
+void KNCollector::collectPath(const std::string &id, const KNPath &path)
+{
+  m_currentPaths[id] = path;
+}
+
 
 void KNCollector::resolveStyle(KNStyle &style)
 {
