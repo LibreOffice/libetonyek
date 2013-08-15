@@ -30,6 +30,17 @@ class KNCollector
 {
   typedef boost::unordered_map<std::string, KNStyle> StyleMap_t;
 
+  struct StyleSheet
+  {
+    StyleMap_t characterStyles;
+    StyleMap_t graphicStyles;
+    StyleMap_t headlineStyles;
+    StyleMap_t layoutStyles;
+    StyleMap_t paragraphStyles;
+
+    StyleSheet();
+  };
+
 public:
   explicit KNCollector(::libwpg::WPGPaintInterface *painter);
   virtual ~KNCollector();
@@ -42,20 +53,20 @@ public:
   void collectLayoutStyle(const std::string  &id, const KNStyle &style);
   void collectParagraphStyle(const std::string  &id, const KNStyle &style);
 
+  void collectMasterStyles();
+
 private:
   KNCollector(const KNCollector &);
   KNCollector &operator=(const KNCollector &);
 
   // helper functions
 
+  void resolveStyle(KNStyle &style);
+
 private:
   libwpg::WPGPaintInterface *m_painter;
-
-  StyleMap_t m_characterStyles;
-  StyleMap_t m_graphicStyles;
-  StyleMap_t m_headlineStyles;
-  StyleMap_t m_layoutStyles;
-  StyleMap_t m_paragraphStyles;
+  StyleSheet m_masterStyles;
+  StyleSheet m_currentStyles;
 };
 
 } // namespace libkeynote
