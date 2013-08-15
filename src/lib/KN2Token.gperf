@@ -25,7 +25,7 @@ struct KNToken;
 2005140600,VERSION_STR_3
 72007061400,VERSION_STR_4
 92008102400,VERSION_STR_5
-http://+www.w3.org/2001/XMLSchema-instance,NS_URI_XSI
+http://www.w3.org/2001/XMLSchema-instance,NS_URI_XSI
 http://developer.apple.com/namespaces/keynote2,NS_URI_KEY
 http://developer.apple.com/namespaces/sf,NS_URI_SF
 http://developer.apple.com/namespaces/sfa,NS_URI_SFA
