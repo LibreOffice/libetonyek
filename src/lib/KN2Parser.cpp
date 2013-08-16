@@ -751,7 +751,7 @@ void KN2Parser::parsePage(const xmlTextReaderPtr reader)
   }
 }
 
-void parsePropertyMap(xmlTextReaderPtr reader, KNStyle &style)
+void KN2Parser::parsePropertyMap(xmlTextReaderPtr reader, KNStyle &style)
 {
   assert(checkElement(reader, KN2Token::property_map, KN2Token::NS_URI_SF));
 
