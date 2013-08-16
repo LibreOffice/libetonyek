@@ -570,6 +570,8 @@ void KN2Parser::parseMasterSlide(const xmlTextReaderPtr reader)
     }
   }
 
+  getCollector()->startPage();
+
   if (!isEmptyElement(reader))
   {
     // read elements
@@ -622,6 +624,7 @@ void KN2Parser::parseMasterSlide(const xmlTextReaderPtr reader)
   }
 
   getCollector()->collectPage(id);
+  getCollector()->endPage();
 }
 
 void KN2Parser::parseMasterSlides(const xmlTextReaderPtr reader)
@@ -1365,6 +1368,8 @@ void KN2Parser::parseSlide(const xmlTextReaderPtr reader)
 {
   assert(checkElement(reader, KN2Token::slide, KN2Token::NS_URI_KEY));
 
+  ID_t id;
+
   // read attributes
   KNXMLAttributeIterator attr(reader);
   while (attr.next())
@@ -1388,7 +1393,7 @@ void KN2Parser::parseSlide(const xmlTextReaderPtr reader)
       case KN2Token::NS_URI_SFA :
         if (KN2Token::ID == getKN2TokenID(attr->name))
         {
-          KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+          id = attr->value;
         }
         else
         {
@@ -1405,6 +1410,8 @@ void KN2Parser::parseSlide(const xmlTextReaderPtr reader)
       KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
     }
   }
+
+  getCollector()->startPage();
 
   if (!isEmptyElement(reader))
   {
@@ -1457,6 +1464,9 @@ void KN2Parser::parseSlide(const xmlTextReaderPtr reader)
       }
     }
   }
+
+  getCollector()->collectPage(id);
+  getCollector()->endPage();
 }
 
 void KN2Parser::parseSlideList(const xmlTextReaderPtr reader)
