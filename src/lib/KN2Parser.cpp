@@ -138,7 +138,7 @@ KNPoint readPoint(const xmlTextReaderPtr reader)
   {
     if (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns))
     {
-      switch (getKN2TokenID(attr->ns))
+      switch (getKN2TokenID(attr->name))
       {
       case KN2Token::x :
         point.x = asDouble(attr->value);
@@ -172,7 +172,7 @@ KNPosition readPosition(const xmlTextReaderPtr reader)
   {
     if (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns))
     {
-      switch (getKN2TokenID(attr->ns))
+      switch (getKN2TokenID(attr->name))
       {
       case KN2Token::x :
         position.x = asDouble(attr->value);
@@ -206,7 +206,7 @@ KNSize readSize(const xmlTextReaderPtr reader)
   {
     if (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns))
     {
-      switch (getKN2TokenID(attr->ns))
+      switch (getKN2TokenID(attr->name))
       {
       case KN2Token::h :
         size.height = lexical_cast<unsigned>(attr->value);
