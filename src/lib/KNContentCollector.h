@@ -28,7 +28,7 @@ namespace libkeynote
 class KNContentCollector : public KNCollector
 {
 public:
-  KNContentCollector(::libwpg::WPGPaintInterface *painter, const KNStyleSheet &masterStyles, const KNLayerMap_t &masterPages);
+  KNContentCollector(::libwpg::WPGPaintInterface *painter, const KNStyleSheet &masterStyles, const KNLayerMap_t &masterPages, const KNSize &size);
   virtual ~KNContentCollector();
 
   // collector functions
@@ -46,8 +46,8 @@ public:
   virtual void collectMedia(const std::string &id, const KNMedia &media);
   virtual void collectPath(const std::string &id, const KNPath &path);
 
-  virtual void startSize();
-  virtual void endSize();
+  virtual void collectSize(const KNSize &size);
+
   virtual void startSlides();
   virtual void endSlides();
   virtual void startThemes();
@@ -63,6 +63,7 @@ private:
 
   const KNStyleSheet &m_masterStyles;
   const KNLayerMap_t &m_masterPages;
+  const KNSize &m_size;
 
   KNStyleSheet m_currentStyles;
   KNLayer m_currentLayer;

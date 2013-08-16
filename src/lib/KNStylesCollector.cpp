@@ -14,9 +14,10 @@ using std::string;
 namespace libkeynote
 {
 
-KNStylesCollector::KNStylesCollector(KNStyleSheet &masterStyles, KNLayerMap_t &masterPages)
+KNStylesCollector::KNStylesCollector(KNStyleSheet &masterStyles, KNLayerMap_t &masterPages, KNSize &size)
   : m_currentStyles(masterStyles)
   , m_masterPages(masterPages)
+  , m_size(size)
   , m_currentGeometries()
   , m_currentGroups()
   , m_currentImages()
@@ -98,14 +99,9 @@ void KNStylesCollector::collectPath(const std::string &id, const KNPath &path)
     m_currentPaths[id] = path;
 }
 
-void KNStylesCollector::startSize()
+void KNStylesCollector::collectSize(const KNSize &size)
 {
-  m_collecting = true;
-}
-
-void KNStylesCollector::endSize()
-{
-  m_collecting = false;
+  m_size = size;
 }
 
 void KNStylesCollector::startSlides()

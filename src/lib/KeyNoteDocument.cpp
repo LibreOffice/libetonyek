@@ -345,13 +345,14 @@ bool KeyNoteDocument::parse(::WPXInputStream *const input, libwpg::WPGPaintInter
 
   KNStyleSheet masterStyles;
   KNLayerMap_t masterPages;
+  KNSize presentationSize;
 
-  KNStylesCollector stylesCollector(masterStyles, masterPages);
+  KNStylesCollector stylesCollector(masterStyles, masterPages, presentationSize);
   shared_ptr<KNParser> parser = makeParser(version, &compositeInput, &stylesCollector);
   if (!parser->parse())
     return false;
 
-  KNContentCollector contentCollector(painter, masterStyles, masterPages);
+  KNContentCollector contentCollector(painter, masterStyles, masterPages, presentationSize);
   parser = makeParser(version, &compositeInput, &contentCollector);
   return parser->parse();
 }

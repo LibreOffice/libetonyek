@@ -188,6 +188,12 @@ void KN2Parser::processXmlNode(const xmlTextReaderPtr reader)
       switch (getKN2TokenID(name))
       {
       case KN2Token::size :
+      {
+        KNSize size;
+        parseSize(reader, size);
+        getCollector()->collectSize(size);
+        break;
+      }
       case KN2Token::theme_list :
       case KN2Token::master_order :
       case KN2Token::slide_list :

@@ -14,10 +14,11 @@ using std::string;
 namespace libkeynote
 {
 
-KNContentCollector::KNContentCollector(::libwpg::WPGPaintInterface *const painter, const KNStyleSheet &masterStyles, const KNLayerMap_t &masterPages)
+KNContentCollector::KNContentCollector(::libwpg::WPGPaintInterface *const painter, const KNStyleSheet &masterStyles, const KNLayerMap_t &masterPages, const KNSize &size)
   : m_painter(painter)
   , m_masterStyles(masterStyles)
   , m_masterPages(masterPages)
+  , m_size(size)
   , m_currentStyles()
   , m_currentLayer()
   , m_currentGeometries()
@@ -100,11 +101,7 @@ void KNContentCollector::collectPath(const std::string &id, const KNPath &path)
     m_currentPaths[id] = path;
 }
 
-void KNContentCollector::startSize()
-{
-}
-
-void KNContentCollector::endSize()
+void KNContentCollector::collectSize(const KNSize &)
 {
 }
 

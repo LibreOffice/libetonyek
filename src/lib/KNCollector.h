@@ -28,6 +28,7 @@ class KNImage;
 class KNLine;
 class KNMedia;
 class KNPath;
+class KNSize;
 class KNStyle;
 
 class KNCollector
@@ -50,10 +51,10 @@ public:
   virtual void collectMedia(const std::string &id, const KNMedia &media) = 0;
   virtual void collectPath(const std::string &id, const KNPath &path) = 0;
 
+  virtual void collectSize(const KNSize &size) = 0;
+
   // helper functions
 
-  virtual void startSize() = 0;
-  virtual void endSize() = 0;
   virtual void startSlides() = 0;
   virtual void endSlides() = 0;
   virtual void startThemes() = 0;

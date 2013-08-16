@@ -21,7 +21,7 @@ namespace libkeynote
 class KNStylesCollector : public KNCollector
 {
 public:
-  KNStylesCollector(KNStyleSheet &masterStyles, KNLayerMap_t &masterPages);
+  KNStylesCollector(KNStyleSheet &masterStyles, KNLayerMap_t &masterPages, KNSize &size);
   virtual ~KNStylesCollector();
 
   // collector functions
@@ -41,8 +41,8 @@ public:
   virtual void collectMedia(const std::string &id, const KNMedia &media);
   virtual void collectPath(const std::string &id, const KNPath &path);
 
-  virtual void startSize();
-  virtual void endSize();
+  virtual void collectSize(const KNSize &size);
+
   virtual void startSlides();
   virtual void endSlides();
   virtual void startThemes();
@@ -51,6 +51,7 @@ public:
 private:
   KNStyleSheet &m_currentStyles;
   KNLayerMap_t &m_masterPages;
+  KNSize &m_size;
 
   KNGeometryMap_t m_currentGeometries;
   KNGroupMap_t m_currentGroups;
