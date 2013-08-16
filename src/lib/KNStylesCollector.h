@@ -31,8 +31,6 @@ public:
   virtual void collectLayoutStyle(const ID_t &id, const KNStyle &style);
   virtual void collectParagraphStyle(const ID_t &id, const KNStyle &style);
 
-  virtual void collectSlideMasters();
-
   virtual void collectGeometry(const ID_t &id, const KNGeometry &geometry);
   virtual void collectGroup(const ID_t &id, const KNGroup &group);
   virtual void collectImage(const ID_t &id, const KNImage &image);
