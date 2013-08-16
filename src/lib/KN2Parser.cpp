@@ -762,8 +762,10 @@ void KN2Parser::parsePage(const xmlTextReaderPtr reader)
           // TODO: use size
           break;
         }
-        case KN2Token::geometry :
         case KN2Token::layers :
+          parseLayers(reader);
+          break;
+        case KN2Token::geometry :
           KN_DEBUG_XML_TODO("element", name, ns);
           skipElement(reader);
           break;
