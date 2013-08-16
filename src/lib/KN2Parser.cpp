@@ -1316,6 +1316,8 @@ void KN2Parser::parseProxyMasterLayer(const xmlTextReaderPtr reader)
 
   ID_t ref;
 
+  getCollector()->startLayer();
+
   if (!isEmptyElement(reader))
   {
     // read elements
@@ -1356,6 +1358,7 @@ void KN2Parser::parseProxyMasterLayer(const xmlTextReaderPtr reader)
   }
 
   getCollector()->collectLayer(ref, true);
+  getCollector()->endLayer();
 }
 
 void KN2Parser::parseSize(const xmlTextReaderPtr reader, KNSize &size)
