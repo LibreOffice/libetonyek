@@ -103,10 +103,11 @@ void KNContentCollector::collectSize(const KNSize &)
 {
 }
 
-void KNContentCollector::collectLayer(const ID_t &id)
+void KNContentCollector::collectLayer(const ID_t &id, const bool ref)
 {
   // TODO: implement me
   (void) id;
+  (void) ref;
 }
 
 void KNContentCollector::collectPage(const ID_t &id)

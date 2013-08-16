@@ -102,10 +102,11 @@ void KNStylesCollector::collectSize(const KNSize &size)
   m_size = size;
 }
 
-void KNStylesCollector::collectLayer(const ID_t &id)
+void KNStylesCollector::collectLayer(const ID_t &id, const bool ref)
 {
   // TODO: implement me
   (void) id;
+  (void) ref;
 }
 
 void KNStylesCollector::collectPage(const ID_t &id)

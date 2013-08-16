@@ -27,11 +27,15 @@ public:
 private:
   virtual void processXmlNode(xmlTextReaderPtr reader);
 
+  void parseDrawables(xmlTextReaderPtr reader);
+  void parseLayer(xmlTextReaderPtr reader);
+  void parseLayers(xmlTextReaderPtr reader);
   void parseMasterSlide(xmlTextReaderPtr reader);
   void parseMasterSlides(xmlTextReaderPtr reader);
   void parseMetadata(xmlTextReaderPtr reader);
   void parsePage(xmlTextReaderPtr reader);
   void parsePropertyMap(xmlTextReaderPtr reader, KNStyle &style);
+  void parseProxyMasterLayer(xmlTextReaderPtr reader);
   void parseSize(xmlTextReaderPtr reader, KNSize &size);
   void parseSlide(xmlTextReaderPtr reader);
   void parseSlideList(xmlTextReaderPtr reader);
