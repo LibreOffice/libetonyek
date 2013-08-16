@@ -75,6 +75,9 @@ bool checkNoAttributes(const xmlTextReaderPtr reader)
 
 bool checkEmptyElement(const xmlTextReaderPtr reader)
 {
+  if (-1 == xmlTextReaderMoveToElement(reader))
+    throw GenericException();
+
   bool empty = true;
 
   if (!isEmptyElement(reader))
