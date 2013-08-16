@@ -1267,6 +1267,7 @@ void parsePropertyMap(xmlTextReaderPtr reader, KNStyle &style)
 
       default :
         KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        skipElement(reader);
         break;
       }
     }
@@ -1307,6 +1308,7 @@ void KN2Parser::parseProxyMasterLayer(const xmlTextReaderPtr reader)
         break;
       case KN2Token::type :
         KN_DEBUG_XML_TODO("element", name, ns);
+        skipElement(reader);
         break;
       default :
         KN_DEBUG_XML_UNKNOWN("element", name, ns);
@@ -1620,6 +1622,7 @@ void KN2Parser::parseStyles(const xmlTextReaderPtr reader, const bool anonymous)
       case KN2Token::table_vector_style_ref :
       case KN2Token::vector_style_ref :
         KN_DEBUG_XML_TODO("element", name, ns);
+        skipElement(reader);
         break;
 
       default :
@@ -1905,9 +1908,11 @@ ID_t KN2Parser::parseGeometry(const xmlTextReaderPtr reader)
       case KN2Token::geometry :
         // Huh? I need to find the file that actually contains this...
         KN_DEBUG_XML_TODO("element", name, ns);
+        skipElement(reader);
         break;
       default :
         KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        skipElement(reader);
         break;
       }
     }
@@ -1985,9 +1990,11 @@ ID_t KN2Parser::parseGroup(const xmlTextReaderPtr reader)
         break;
       case KN2Token::wrap :
         KN_DEBUG_XML_TODO("element", name, ns);
+        skipElement(reader);
         break;
       default :
         KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        skipElement(reader);
         break;
       }
     }
@@ -2064,9 +2071,11 @@ ID_t KN2Parser::parseImage(const xmlTextReaderPtr reader)
       case KN2Token::binary :
       case KN2Token::filtered_image :
         KN_DEBUG_XML_TODO("element", name, ns);
+        skipElement(reader);
         break;
       default :
         KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        skipElement(reader);
         break;
       }
     }
@@ -2135,9 +2144,11 @@ ID_t KN2Parser::parseLine(const xmlTextReaderPtr reader)
         break;
       case KN2Token::style :
         KN_DEBUG_XML_TODO("element", name, ns);
+        skipElement(reader);
         break;
       default :
         KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        skipElement(reader);
         break;
       }
     }
@@ -2241,9 +2252,11 @@ ID_t KN2Parser::parseMedia(const xmlTextReaderPtr reader)
       case KN2Token::crop_geometry :
       case KN2Token::content :
         KN_DEBUG_XML_TODO("element", name, ns);
+        skipElement(reader);
         break;
       default :
         KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        skipElement(reader);
         break;
       }
     }
@@ -2331,9 +2344,11 @@ ID_t KN2Parser::parseShape(const xmlTextReaderPtr reader)
       case KN2Token::path :
       case KN2Token::text :
         KN_DEBUG_XML_TODO("element", name, ns);
+        skipElement(reader);
         break;
       default :
         KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        skipElement(reader);
         break;
       }
     }
