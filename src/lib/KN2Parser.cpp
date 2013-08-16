@@ -460,6 +460,7 @@ void KN2Parser::parseLayer(const xmlTextReaderPtr reader)
           break;
         case KN2Token::guides :
           // ignore
+          skipElement(reader);
           break;
         default :
           KN_DEBUG_XML_UNKNOWN("element", name, ns);
