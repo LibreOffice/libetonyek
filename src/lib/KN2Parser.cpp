@@ -226,6 +226,103 @@ void KN2Parser::processXmlNode(const xmlTextReaderPtr reader)
   }
 }
 
+void KN2Parser::parseMasterSlide(const xmlTextReaderPtr reader)
+{
+  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::master_slide));
+
+  ID_t id;
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (attr->ns)
+    {
+      switch (getKN2TokenID(attr->ns))
+      {
+      case KN2Token::NS_URI_KEY :
+        switch (getKN2TokenID(attr->name))
+        {
+        case KN2Token::layer :
+        case KN2Token::name :
+          KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+          break;
+        default :
+          KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+          break;
+        }
+      case KN2Token::NS_URI_SFA :
+        if (KN2Token::ID != getKN2TokenID(attr->name))
+        {
+          id = attr->value;
+        }
+        else
+        {
+          KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+        }
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+    }
+  }
+
+  // read elements
+  while (moveToNextNode(reader))
+  {
+    const char *const name = getName(reader);
+    const char *const ns = getNamespace(reader);
+
+    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::master_slide, false))
+      break;
+
+    if (isEndElement(reader))
+      throw GenericException();
+
+    if (KN2Token::NS_URI_KEY == getKN2TokenID(ns))
+    {
+      switch (getKN2TokenID(name))
+      {
+      case KN2Token::page :
+        parsePage(reader);
+        break;
+      case KN2Token::stylesheet :
+        parseStylesheet(reader);
+        break;
+      case KN2Token::style_ref :
+      case KN2Token::title_placeholder :
+      case KN2Token::body_placeholder :
+      case KN2Token::object_placeholder :
+      case KN2Token::slide_number_placeholder :
+      case KN2Token::bullets :
+      case KN2Token::thumbnails :
+      case KN2Token::build_chunks :
+      case KN2Token::sticky_notes :
+      case KN2Token::events :
+        KN_DEBUG_XML_TODO("element", name, ns);
+        skipElement(reader);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        skipElement(reader);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      skipElement(reader);
+    }
+  }
+
+  getCollector()->collectPage(id);
+}
+
 void KN2Parser::parseMasterSlides(const xmlTextReaderPtr reader)
 {
   assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::master_slides));
@@ -260,7 +357,7 @@ void KN2Parser::parseMasterSlides(const xmlTextReaderPtr reader)
     if ((KN2Token::NS_URI_KEY == getKN2TokenID(ns)) && (KN2Token::master_slide == getKN2TokenID(name)))
     {
       KN_DEBUG_XML_TODO("element", name, ns);
-      skipElement(reader);
+      parseMasterSlide(reader);
     }
     else
     {

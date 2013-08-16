@@ -27,6 +27,7 @@ public:
 private:
   virtual void processXmlNode(xmlTextReaderPtr reader);
 
+  void parseMasterSlide(xmlTextReaderPtr reader);
   void parseMasterSlides(xmlTextReaderPtr reader);
   void parseMetadata(xmlTextReaderPtr reader);
   void parsePage(xmlTextReaderPtr reader);

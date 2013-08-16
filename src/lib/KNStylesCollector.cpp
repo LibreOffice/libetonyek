@@ -102,6 +102,18 @@ void KNStylesCollector::collectSize(const KNSize &size)
   m_size = size;
 }
 
+void KNStylesCollector::collectLayer(const ID_t &id)
+{
+  // TODO: implement me
+  (void) id;
+}
+
+void KNStylesCollector::collectPage(const ID_t &id)
+{
+  // TODO: implement me
+  (void) id;
+}
+
 void KNStylesCollector::startSlides()
 {
 }

@@ -103,6 +103,18 @@ void KNContentCollector::collectSize(const KNSize &)
 {
 }
 
+void KNContentCollector::collectLayer(const ID_t &id)
+{
+  // TODO: implement me
+  (void) id;
+}
+
+void KNContentCollector::collectPage(const ID_t &id)
+{
+  // TODO: implement me
+  (void) id;
+}
+
 void KNContentCollector::startSlides()
 {
   m_collecting = true;

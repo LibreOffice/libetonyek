@@ -47,6 +47,9 @@ public:
 
   virtual void collectSize(const KNSize &size) = 0;
 
+  virtual void collectLayer(const ID_t &id) = 0;
+  virtual void collectPage(const ID_t &id) = 0;
+
   // helper functions
 
   virtual void startSlides() = 0;
