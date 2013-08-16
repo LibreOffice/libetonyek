@@ -369,7 +369,7 @@ void KN2Parser::processXmlNode(const xmlTextReaderPtr reader)
 
 void KN2Parser::parseDrawables(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::drawables));
+  assert(checkElement(reader, KN2Token::drawables, KN2Token::NS_URI_SF));
 
   readOnlyAttribute(reader, KN2Token::ID, KN2Token::NS_URI_SFA);
 
@@ -418,7 +418,7 @@ void KN2Parser::parseDrawables(const xmlTextReaderPtr reader)
 
 void KN2Parser::parseLayer(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::layer));
+  assert(checkElement(reader, KN2Token::layer, KN2Token::NS_URI_SF));
 
   const ID_t id = readOnlyAttribute(reader, KN2Token::ID, KN2Token::NS_URI_SFA);
 
@@ -430,7 +430,7 @@ void KN2Parser::parseLayer(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_SF, KN2Token::layer, false))
+    if (checkElement(reader, KN2Token::layer, KN2Token::NS_URI_SF, false))
       break;
 
     if (isEndElement(reader))
@@ -469,7 +469,7 @@ void KN2Parser::parseLayer(const xmlTextReaderPtr reader)
 
 void KN2Parser::parseLayers(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::layers));
+  assert(checkElement(reader, KN2Token::layers, KN2Token::NS_URI_SF));
 
   readOnlyAttribute(reader, KN2Token::ID, KN2Token::NS_URI_SFA);
 
@@ -479,7 +479,7 @@ void KN2Parser::parseLayers(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_SF, KN2Token::layers, false))
+    if (checkElement(reader, KN2Token::layers, KN2Token::NS_URI_SF, false))
       break;
 
     if (isEndElement(reader))
@@ -511,7 +511,7 @@ void KN2Parser::parseLayers(const xmlTextReaderPtr reader)
 
 void KN2Parser::parseMasterSlide(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::master_slide));
+  assert(checkElement(reader, KN2Token::master_slide, KN2Token::NS_URI_KEY));
 
   ID_t id;
 
@@ -561,7 +561,7 @@ void KN2Parser::parseMasterSlide(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::master_slide, false))
+    if (checkElement(reader, KN2Token::master_slide, KN2Token::NS_URI_KEY, false))
       break;
 
     if (isEndElement(reader))
@@ -608,7 +608,7 @@ void KN2Parser::parseMasterSlide(const xmlTextReaderPtr reader)
 
 void KN2Parser::parseMasterSlides(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::master_slides));
+  assert(checkElement(reader, KN2Token::master_slides, KN2Token::NS_URI_KEY));
 
   // read attributes
   KNXMLAttributeIterator attr(reader);
@@ -631,7 +631,7 @@ void KN2Parser::parseMasterSlides(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::master_slides, false))
+    if (checkElement(reader, KN2Token::master_slides, KN2Token::NS_URI_KEY, false))
       break;
 
     if (isEndElement(reader))
@@ -652,7 +652,7 @@ void KN2Parser::parseMasterSlides(const xmlTextReaderPtr reader)
 
 void KN2Parser::parseMetadata(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::metadata));
+  assert(checkElement(reader, KN2Token::metadata, KN2Token::NS_URI_KEY));
 
   // there are no attributes for key:metadata
   KNXMLAttributeIterator attr(reader);
@@ -667,7 +667,7 @@ void KN2Parser::parseMetadata(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::presentation, false))
+    if (checkElement(reader, KN2Token::presentation, KN2Token::NS_URI_KEY, false))
       break;
 
     if (isEndElement(reader))
@@ -695,7 +695,7 @@ void KN2Parser::parseMetadata(const xmlTextReaderPtr reader)
 
 void KN2Parser::parsePage(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::page));
+  assert(checkElement(reader, KN2Token::page, KN2Token::NS_URI_KEY));
 
   // read attributes
   KNXMLAttributeIterator attr(reader);
@@ -717,7 +717,7 @@ void KN2Parser::parsePage(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::page, false))
+    if (checkElement(reader, KN2Token::page, KN2Token::NS_URI_KEY, false))
       break;
 
     if (isEndElement(reader))
@@ -751,7 +751,7 @@ void KN2Parser::parsePage(const xmlTextReaderPtr reader)
 
 void parsePropertyMap(xmlTextReaderPtr reader, KNStyle &style)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::property_map));
+  assert(checkElement(reader, KN2Token::property_map, KN2Token::NS_URI_KEY));
 
   checkNoAttributes(reader);
 
@@ -761,7 +761,7 @@ void parsePropertyMap(xmlTextReaderPtr reader, KNStyle &style)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::property_map, false))
+    if (checkElement(reader, KN2Token::property_map, KN2Token::NS_URI_KEY, false))
       break;
 
     if (isEndElement(reader))
@@ -1277,7 +1277,7 @@ void parsePropertyMap(xmlTextReaderPtr reader, KNStyle &style)
 
 void KN2Parser::parseProxyMasterLayer(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::proxy_master_layer));
+  assert(checkElement(reader, KN2Token::proxy_master_layer, KN2Token::NS_URI_SF));
 
   readOnlyAttribute(reader, KN2Token::ID, KN2Token::NS_URI_SFA);
 
@@ -1289,7 +1289,7 @@ void KN2Parser::parseProxyMasterLayer(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_SF, KN2Token::proxy_master_layer, false))
+    if (checkElement(reader, KN2Token::proxy_master_layer, KN2Token::NS_URI_SF, false))
       break;
 
     if (isEndElement(reader))
@@ -1323,13 +1323,13 @@ void KN2Parser::parseProxyMasterLayer(const xmlTextReaderPtr reader)
 
 void KN2Parser::parseSize(const xmlTextReaderPtr reader, KNSize &size)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::size));
+  assert(checkElement(reader, KN2Token::size, KN2Token::NS_URI_KEY));
   size = readSize(reader);
 }
 
 void KN2Parser::parseSlide(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::slide));
+  assert(checkElement(reader, KN2Token::slide, KN2Token::NS_URI_KEY));
 
   // read attributes
   KNXMLAttributeIterator attr(reader);
@@ -1378,7 +1378,7 @@ void KN2Parser::parseSlide(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::slide, false))
+    if (checkElement(reader, KN2Token::slide, KN2Token::NS_URI_KEY, false))
       break;
 
     if (isEndElement(reader))
@@ -1424,7 +1424,7 @@ void KN2Parser::parseSlide(const xmlTextReaderPtr reader)
 
 void KN2Parser::parseSlideList(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::slide_list));
+  assert(checkElement(reader, KN2Token::slide_list, KN2Token::NS_URI_KEY));
 
   getCollector()->startSlides();
 
@@ -1448,7 +1448,7 @@ void KN2Parser::parseSlideList(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::slide_list, false))
+    if (checkElement(reader, KN2Token::slide_list, KN2Token::NS_URI_KEY, false))
       break;
 
     if (isEndElement(reader))
@@ -1516,7 +1516,7 @@ ID_t KN2Parser::parseStyle(const xmlTextReaderPtr reader, KNStyle &style)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_KEY, type, false))
+    if (checkElement(reader, type, KN2Token::NS_URI_KEY, false))
       break;
 
     if (isEndElement(reader))
@@ -1539,7 +1539,7 @@ ID_t KN2Parser::parseStyle(const xmlTextReaderPtr reader, KNStyle &style)
 void KN2Parser::parseStyles(const xmlTextReaderPtr reader, const bool anonymous)
 {
   const int type = anonymous ? KN2Token::anon_styles : KN2Token::styles;
-  assert(checkElement(reader, KN2Token::NS_URI_KEY, type));
+  assert(checkElement(reader, type, KN2Token::NS_URI_KEY));
 
   checkNoAttributes(reader);
 
@@ -1549,7 +1549,7 @@ void KN2Parser::parseStyles(const xmlTextReaderPtr reader, const bool anonymous)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_SF, type, false))
+    if (checkElement(reader, type, KN2Token::NS_URI_SF, false))
       break;
 
     if (isEndElement(reader))
@@ -1635,7 +1635,7 @@ void KN2Parser::parseStyles(const xmlTextReaderPtr reader, const bool anonymous)
 
 void KN2Parser::parseStylesheet(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::stylesheet));
+  assert(checkElement(reader, KN2Token::stylesheet, KN2Token::NS_URI_KEY));
 
   // read attributes
   KNXMLAttributeIterator attr(reader);
@@ -1657,7 +1657,7 @@ void KN2Parser::parseStylesheet(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::stylesheet, false))
+    if (checkElement(reader, KN2Token::stylesheet, KN2Token::NS_URI_KEY, false))
       break;
 
     if (isEndElement(reader))
@@ -1693,7 +1693,7 @@ void KN2Parser::parseStylesheet(const xmlTextReaderPtr reader)
 
 void KN2Parser::parseTheme(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::theme));
+  assert(checkElement(reader, KN2Token::theme, KN2Token::NS_URI_KEY));
 
   // read attributes
   KNXMLAttributeIterator attr(reader);
@@ -1741,7 +1741,7 @@ void KN2Parser::parseTheme(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::theme, false))
+    if (checkElement(reader, KN2Token::theme, KN2Token::NS_URI_KEY, false))
       break;
 
     if (isEndElement(reader))
@@ -1779,7 +1779,7 @@ void KN2Parser::parseTheme(const xmlTextReaderPtr reader)
 
 void KN2Parser::parseThemeList(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::theme_list));
+  assert(checkElement(reader, KN2Token::theme_list, KN2Token::NS_URI_KEY));
 
   getCollector()->startThemes();
 
@@ -1803,7 +1803,7 @@ void KN2Parser::parseThemeList(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::theme_list, false))
+    if (checkElement(reader, KN2Token::theme_list, KN2Token::NS_URI_KEY, false))
       break;
 
     if (isEndElement(reader))
@@ -1825,7 +1825,7 @@ void KN2Parser::parseThemeList(const xmlTextReaderPtr reader)
 
 ID_t KN2Parser::parseGeometry(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::geometry));
+  assert(checkElement(reader, KN2Token::geometry, KN2Token::NS_URI_SF));
 
   ID_t id;
   KNGeometry geometry;
@@ -1880,7 +1880,7 @@ ID_t KN2Parser::parseGeometry(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_SF, KN2Token::geometry, false))
+    if (checkElement(reader, KN2Token::geometry, KN2Token::NS_URI_SF, false))
       break;
 
     if (isEndElement(reader))
@@ -1922,7 +1922,7 @@ ID_t KN2Parser::parseGeometry(const xmlTextReaderPtr reader)
 
 ID_t KN2Parser::parseGroup(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::group));
+  assert(checkElement(reader, KN2Token::group, KN2Token::NS_URI_SF));
 
   ID_t id;
 
@@ -1952,7 +1952,7 @@ ID_t KN2Parser::parseGroup(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_SF, KN2Token::group, false))
+    if (checkElement(reader, KN2Token::group, KN2Token::NS_URI_SF, false))
       break;
 
     if (isEndElement(reader))
@@ -2002,7 +2002,7 @@ ID_t KN2Parser::parseGroup(const xmlTextReaderPtr reader)
 
 ID_t KN2Parser::parseImage(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::image));
+  assert(checkElement(reader, KN2Token::image, KN2Token::NS_URI_SF));
 
   ID_t id;
   KNImage image;
@@ -2042,7 +2042,7 @@ ID_t KN2Parser::parseImage(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_SF, KN2Token::image, false))
+    if (checkElement(reader, KN2Token::image, KN2Token::NS_URI_SF, false))
       break;
 
     if (isEndElement(reader))
@@ -2081,7 +2081,7 @@ ID_t KN2Parser::parseImage(const xmlTextReaderPtr reader)
 
 ID_t KN2Parser::parseLine(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::line));
+  assert(checkElement(reader, KN2Token::line, KN2Token::NS_URI_SF));
 
   ID_t id;
 
@@ -2111,7 +2111,7 @@ ID_t KN2Parser::parseLine(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_SF, KN2Token::line, false))
+    if (checkElement(reader, KN2Token::line, KN2Token::NS_URI_SF, false))
       break;
 
     if (isEndElement(reader))
@@ -2152,7 +2152,7 @@ ID_t KN2Parser::parseLine(const xmlTextReaderPtr reader)
 
 ID_t KN2Parser::parseMedia(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::media));
+  assert(checkElement(reader, KN2Token::media, KN2Token::NS_URI_SF));
 
   ID_t id;
   KNMedia media;
@@ -2217,7 +2217,7 @@ ID_t KN2Parser::parseMedia(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_SF, KN2Token::media, false))
+    if (checkElement(reader, KN2Token::media, KN2Token::NS_URI_SF, false))
       break;
 
     if (isEndElement(reader))
@@ -2258,7 +2258,7 @@ ID_t KN2Parser::parseMedia(const xmlTextReaderPtr reader)
 
 ID_t KN2Parser::parseShape(const xmlTextReaderPtr reader)
 {
-  assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::shape));
+  assert(checkElement(reader, KN2Token::shape, KN2Token::NS_URI_SF));
 
   ID_t id;
 
@@ -2313,7 +2313,7 @@ ID_t KN2Parser::parseShape(const xmlTextReaderPtr reader)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::NS_URI_SF, KN2Token::group, false))
+    if (checkElement(reader, KN2Token::group, KN2Token::NS_URI_SF, false))
       break;
 
     if (isEndElement(reader))
