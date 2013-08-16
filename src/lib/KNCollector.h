@@ -10,7 +10,7 @@
 #ifndef KNCOLLECTOR_H_INCLUDED
 #define KNCOLLECTOR_H_INCLUDED
 
-#include <string>
+#include "KNTypes.h"
 
 namespace libwpg
 {
@@ -22,13 +22,7 @@ class WPGPaintInterface;
 namespace libkeynote
 {
 
-class KNGeometry;
-class KNGroup;
-class KNImage;
-class KNLine;
-class KNMedia;
 class KNPath;
-class KNSize;
 class KNStyle;
 
 class KNCollector
@@ -38,18 +32,18 @@ public:
 
   // collector functions
 
-  virtual void collectCharacterStyle(const std::string &id, const KNStyle &style) = 0;
-  virtual void collectGraphicStyle(const std::string &id, const KNStyle &style) = 0;
-  virtual void collectHeadlineStyle(const std::string &id, const KNStyle &style) = 0;
-  virtual void collectLayoutStyle(const std::string &id, const KNStyle &style) = 0;
-  virtual void collectParagraphStyle(const std::string &id, const KNStyle &style) = 0;
+  virtual void collectCharacterStyle(const ID_t &id, const KNStyle &style) = 0;
+  virtual void collectGraphicStyle(const ID_t &id, const KNStyle &style) = 0;
+  virtual void collectHeadlineStyle(const ID_t &id, const KNStyle &style) = 0;
+  virtual void collectLayoutStyle(const ID_t &id, const KNStyle &style) = 0;
+  virtual void collectParagraphStyle(const ID_t &id, const KNStyle &style) = 0;
 
-  virtual void collectGeometry(const std::string &id, const KNGeometry &geometry) = 0;
-  virtual void collectGroup(const std::string &id, const KNGroup &group) = 0;
-  virtual void collectImage(const std::string &id, const KNImage &image) = 0;
-  virtual void collectLine(const std::string &id, const KNLine &line) = 0;
-  virtual void collectMedia(const std::string &id, const KNMedia &media) = 0;
-  virtual void collectPath(const std::string &id, const KNPath &path) = 0;
+  virtual void collectGeometry(const ID_t &id, const KNGeometry &geometry) = 0;
+  virtual void collectGroup(const ID_t &id, const KNGroup &group) = 0;
+  virtual void collectImage(const ID_t &id, const KNImage &image) = 0;
+  virtual void collectLine(const ID_t &id, const KNLine &line) = 0;
+  virtual void collectMedia(const ID_t &id, const KNMedia &media) = 0;
+  virtual void collectPath(const ID_t &id, const KNPath &path) = 0;
 
   virtual void collectSize(const KNSize &size) = 0;
 

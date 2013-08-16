@@ -9,8 +9,6 @@
 
 #include "KNContentCollector.h"
 
-using std::string;
-
 namespace libkeynote
 {
 
@@ -35,67 +33,67 @@ KNContentCollector::~KNContentCollector()
 {
 }
 
-void KNContentCollector::collectCharacterStyle(const string &id, const KNStyle &style)
+void KNContentCollector::collectCharacterStyle(const ID_t &id, const KNStyle &style)
 {
   if (m_collecting)
     m_currentStyles.characterStyles[id] = style;
 }
 
-void KNContentCollector::collectGraphicStyle(const string &id, const KNStyle &style)
+void KNContentCollector::collectGraphicStyle(const ID_t &id, const KNStyle &style)
 {
   if (m_collecting)
     m_currentStyles.graphicStyles[id] = style;
 }
 
-void KNContentCollector::collectHeadlineStyle(const std::string &id, const KNStyle &style)
+void KNContentCollector::collectHeadlineStyle(const ID_t &id, const KNStyle &style)
 {
   if (m_collecting)
     m_currentStyles.headlineStyles[id] = style;
 }
 
-void KNContentCollector::collectLayoutStyle(const string &id, const KNStyle &style)
+void KNContentCollector::collectLayoutStyle(const ID_t &id, const KNStyle &style)
 {
   if (m_collecting)
     m_currentStyles.layoutStyles[id] = style;
 }
 
-void KNContentCollector::collectParagraphStyle(const string &id, const KNStyle &style)
+void KNContentCollector::collectParagraphStyle(const ID_t &id, const KNStyle &style)
 {
   if (m_collecting)
     m_currentStyles.paragraphStyles[id] = style;
 }
 
-void KNContentCollector::collectGeometry(const std::string &id, const KNGeometry &geometry)
+void KNContentCollector::collectGeometry(const ID_t &id, const KNGeometry &geometry)
 {
   if (m_collecting)
     m_currentGeometries[id] = geometry;
 }
 
-void KNContentCollector::collectGroup(const std::string &id, const KNGroup &group)
+void KNContentCollector::collectGroup(const ID_t &id, const KNGroup &group)
 {
   if (m_collecting)
     m_currentGroups[id] = group;
 }
 
-void KNContentCollector::collectImage(const std::string &id, const KNImage &image)
+void KNContentCollector::collectImage(const ID_t &id, const KNImage &image)
 {
   if (m_collecting)
     m_currentImages[id] = image;
 }
 
-void KNContentCollector::collectLine(const std::string &id, const KNLine &line)
+void KNContentCollector::collectLine(const ID_t &id, const KNLine &line)
 {
   if (m_collecting)
     m_currentLines[id] = line;
 }
 
-void KNContentCollector::collectMedia(const std::string &id, const KNMedia &media)
+void KNContentCollector::collectMedia(const ID_t &id, const KNMedia &media)
 {
   if (m_collecting)
     m_currentMedia[id] = media;
 }
 
-void KNContentCollector::collectPath(const std::string &id, const KNPath &path)
+void KNContentCollector::collectPath(const ID_t &id, const KNPath &path)
 {
   if (m_collecting)
     m_currentPaths[id] = path;

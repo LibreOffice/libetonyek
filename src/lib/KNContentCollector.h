@@ -33,18 +33,18 @@ public:
 
   // collector functions
 
-  virtual void collectCharacterStyle(const std::string &id, const KNStyle &style);
-  virtual void collectGraphicStyle(const std::string &id, const KNStyle &style);
-  virtual void collectHeadlineStyle(const std::string &id, const KNStyle &style);
-  virtual void collectLayoutStyle(const std::string &id, const KNStyle &style);
-  virtual void collectParagraphStyle(const std::string &id, const KNStyle &style);
+  virtual void collectCharacterStyle(const ID_t &id, const KNStyle &style);
+  virtual void collectGraphicStyle(const ID_t &id, const KNStyle &style);
+  virtual void collectHeadlineStyle(const ID_t &id, const KNStyle &style);
+  virtual void collectLayoutStyle(const ID_t &id, const KNStyle &style);
+  virtual void collectParagraphStyle(const ID_t &id, const KNStyle &style);
 
-  virtual void collectGeometry(const std::string &id, const KNGeometry &geometry);
-  virtual void collectGroup(const std::string &id, const KNGroup &group);
-  virtual void collectImage(const std::string &id, const KNImage &image);
-  virtual void collectLine(const std::string &id, const KNLine &line);
-  virtual void collectMedia(const std::string &id, const KNMedia &media);
-  virtual void collectPath(const std::string &id, const KNPath &path);
+  virtual void collectGeometry(const ID_t &id, const KNGeometry &geometry);
+  virtual void collectGroup(const ID_t &id, const KNGroup &group);
+  virtual void collectImage(const ID_t &id, const KNImage &image);
+  virtual void collectLine(const ID_t &id, const KNLine &line);
+  virtual void collectMedia(const ID_t &id, const KNMedia &media);
+  virtual void collectPath(const ID_t &id, const KNPath &path);
 
   virtual void collectSize(const KNSize &size);
 
