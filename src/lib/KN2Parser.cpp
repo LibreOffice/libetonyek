@@ -754,7 +754,7 @@ void KN2Parser::parsePage(const xmlTextReaderPtr reader)
 
 void parsePropertyMap(xmlTextReaderPtr reader, KNStyle &style)
 {
-  assert(checkElement(reader, KN2Token::property_map, KN2Token::NS_URI_KEY));
+  assert(checkElement(reader, KN2Token::property_map, KN2Token::NS_URI_SF));
 
   checkNoAttributes(reader);
 
@@ -764,7 +764,7 @@ void parsePropertyMap(xmlTextReaderPtr reader, KNStyle &style)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, KN2Token::property_map, KN2Token::NS_URI_KEY, false))
+    if (checkElement(reader, KN2Token::property_map, KN2Token::NS_URI_SF, false))
       break;
 
     if (isEndElement(reader))
@@ -1519,7 +1519,7 @@ ID_t KN2Parser::parseStyle(const xmlTextReaderPtr reader, KNStyle &style)
     const char *const name = getName(reader);
     const char *const ns = getNamespace(reader);
 
-    if (checkElement(reader, type, KN2Token::NS_URI_KEY, false))
+    if (checkElement(reader, type, KN2Token::NS_URI_SF, false))
       break;
 
     if (isEndElement(reader))
@@ -1542,7 +1542,7 @@ ID_t KN2Parser::parseStyle(const xmlTextReaderPtr reader, KNStyle &style)
 void KN2Parser::parseStyles(const xmlTextReaderPtr reader, const bool anonymous)
 {
   const int type = anonymous ? KN2Token::anon_styles : KN2Token::styles;
-  assert(checkElement(reader, type, KN2Token::NS_URI_KEY));
+  assert(checkElement(reader, type, KN2Token::NS_URI_SF));
 
   checkNoAttributes(reader);
 
