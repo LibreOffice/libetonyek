@@ -387,7 +387,7 @@ void KN2Parser::parseDrawables(const xmlTextReaderPtr reader)
       const char *const name = getName(reader);
       const char *const ns = getNamespace(reader);
 
-      if (checkElement(reader, KN2Token::NS_URI_SF, KN2Token::drawables, false))
+      if (checkElement(reader, KN2Token::drawables, KN2Token::NS_URI_SF, false))
         break;
 
       if (isEndElement(reader))
