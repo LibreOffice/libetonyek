@@ -14,6 +14,7 @@
 #include <string>
 
 #include <boost/optional.hpp>
+#include <boost/unordered_map.hpp>
 
 namespace libkeynote
 {
@@ -156,6 +157,13 @@ struct KNLayer
 
   KNLayer();
 };
+
+typedef boost::unordered_map<std::string, KNGeometry> KNGeometryMap_t;
+typedef boost::unordered_map<std::string, KNGroup> KNGroupMap_t;
+typedef boost::unordered_map<std::string, KNImage> KNImageMap_t;
+typedef boost::unordered_map<std::string, KNLayer> KNLayerMap_t;
+typedef boost::unordered_map<std::string, KNLine> KNLineMap_t;
+typedef boost::unordered_map<std::string, KNMedia> KNMediaMap_t;
 
 }
 

@@ -13,9 +13,10 @@
 #include <libkeynote/KeyNoteDocument.h>
 
 #include "libkeynote_utils.h"
-#include "KNCollector.h"
 #include "KN1Parser.h"
 #include "KN2Parser.h"
+#include "KNContentCollector.h"
+#include "KNStylesCollector.h"
 #include "KNSVGGenerator.h"
 #include "KNZipStream.h"
 #include "KNZlibStream.h"
@@ -122,6 +123,26 @@ Version detectVersion(WPXInputStream *const input)
 {
   Source dummy;
   return detectVersion(input, dummy);
+}
+
+shared_ptr<KNParser> makeParser(const Version version, WPXInputStream *const input, KNCollector *const collector)
+{
+  shared_ptr<KNParser> parser;
+
+  switch (version)
+  {
+  case VERSION_KEYNOTE_1 :
+    parser.reset(new KN1Parser(input, collector));
+    break;
+  case VERSION_KEYNOTE_2 :
+    parser.reset(new KN2Parser(input, collector));
+    break;
+  default :
+    KN_DEBUG_MSG(("KeyNoteDocument::parse(): unhandled version\n"));
+    break;
+  }
+
+  return parser;
 }
 
 }
@@ -321,26 +342,18 @@ bool KeyNoteDocument::parse(::WPXInputStream *const input, libwpg::WPGPaintInter
     return false;
 
   CompositeStream compositeInput(input, version, source);
-  KNCollector collector(painter);
 
-  switch (version)
-  {
-  case VERSION_KEYNOTE_1 :
-  {
-    KN1Parser parser(&compositeInput, &collector);
-    return parser.parse();
-  }
-  case VERSION_KEYNOTE_2 :
-  {
-    KN2Parser parser(&compositeInput, &collector);
-    return parser.parse();
-  }
-  default :
-    KN_DEBUG_MSG(("KeyNoteDocument::parse(): unhandled version\n"));
-    break;
-  }
+  KNStyleSheet masterStyles;
+  KNLayerMap_t masterPages;
 
-  return false;
+  KNStylesCollector stylesCollector(masterStyles, masterPages);
+  shared_ptr<KNParser> parser = makeParser(version, &compositeInput, &stylesCollector);
+  if (!parser->parse())
+    return false;
+
+  KNContentCollector contentCollector(painter, masterStyles, masterPages);
+  parser = makeParser(version, &compositeInput, &contentCollector);
+  return parser->parse();
 }
 catch (...)
 {

@@ -12,10 +12,6 @@
 
 #include <string>
 
-#include <boost/unordered_map.hpp>
-
-#include "KNStyle.h"
-
 namespace libwpg
 {
 
@@ -26,77 +22,42 @@ class WPGPaintInterface;
 namespace libkeynote
 {
 
+class KNGeometry;
+class KNGroup;
+class KNImage;
+class KNLine;
+class KNMedia;
 class KNPath;
+class KNStyle;
 
 class KNCollector
 {
-  typedef boost::unordered_map<std::string, KNStyle> StyleMap_t;
-  typedef boost::unordered_map<std::string, KNLayer> LayerMap_t;
-
-  typedef boost::unordered_map<std::string, KNGeometry> GeometryMap_t;
-  typedef boost::unordered_map<std::string, KNGroup> GroupMap_t;
-  typedef boost::unordered_map<std::string, KNImage> ImageMap_t;
-  typedef boost::unordered_map<std::string, KNLine> LineMap_t;
-  typedef boost::unordered_map<std::string, KNMedia> MediaMap_t;
-  typedef boost::unordered_map<std::string, KNPath> PathMap_t;
-
-  struct StyleSheet
-  {
-    StyleMap_t characterStyles;
-    StyleMap_t graphicStyles;
-    StyleMap_t headlineStyles;
-    StyleMap_t layoutStyles;
-    StyleMap_t paragraphStyles;
-
-    StyleSheet();
-  };
-
 public:
-  explicit KNCollector(::libwpg::WPGPaintInterface *painter);
-  virtual ~KNCollector();
+  virtual ~KNCollector() = 0;
 
   // collector functions
 
-  void collectCharacterStyle(const std::string &id, const KNStyle &style);
-  void collectGraphicStyle(const std::string &id, const KNStyle &style);
-  void collectHeadlineStyle(const std::string &id, const KNStyle &style);
-  void collectLayoutStyle(const std::string &id, const KNStyle &style);
-  void collectParagraphStyle(const std::string &id, const KNStyle &style);
+  virtual void collectCharacterStyle(const std::string &id, const KNStyle &style) = 0;
+  virtual void collectGraphicStyle(const std::string &id, const KNStyle &style) = 0;
+  virtual void collectHeadlineStyle(const std::string &id, const KNStyle &style) = 0;
+  virtual void collectLayoutStyle(const std::string &id, const KNStyle &style) = 0;
+  virtual void collectParagraphStyle(const std::string &id, const KNStyle &style) = 0;
 
-  void collectMasterStyles();
-
-  void collectGeometry(const std::string &id, const KNGeometry &geometry);
-  void collectGroup(const std::string &id, const KNGroup &group);
-  void collectImage(const std::string &id, const KNImage &image);
-  void collectLine(const std::string &id, const KNLine &line);
-  void collectMedia(const std::string &id, const KNMedia &media);
-  void collectPath(const std::string &id, const KNPath &path);
-
-private:
-  KNCollector(const KNCollector &);
-  KNCollector &operator=(const KNCollector &);
+  virtual void collectGeometry(const std::string &id, const KNGeometry &geometry) = 0;
+  virtual void collectGroup(const std::string &id, const KNGroup &group) = 0;
+  virtual void collectImage(const std::string &id, const KNImage &image) = 0;
+  virtual void collectLine(const std::string &id, const KNLine &line) = 0;
+  virtual void collectMedia(const std::string &id, const KNMedia &media) = 0;
+  virtual void collectPath(const std::string &id, const KNPath &path) = 0;
 
   // helper functions
 
-  void resolveStyle(KNStyle &style);
-
-private:
-  libwpg::WPGPaintInterface *m_painter;
-
-  StyleSheet m_masterStyles;
-  StyleSheet m_currentStyles;
-
-  GeometryMap_t m_currentGeometries;
-  GroupMap_t m_currentGroups;
-  ImageMap_t m_currentImages;
-  LineMap_t m_currentLines;
-  MediaMap_t m_currentMedia;
-  PathMap_t m_currentPaths;
-
-  LayerMap_t m_masterPages;
-  KNLayer m_currentLayer;
-
-  bool m_master;
+  virtual void startSize() = 0;
+  virtual void endSize() = 0;
+  virtual void startSlides() = 0;
+  virtual void endSlides() = 0;
+  virtual void startThemes() = 0;
+  virtual void endThemes() = 0;
 };
 
 } // namespace libkeynote

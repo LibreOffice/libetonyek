@@ -30,6 +30,8 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KN2Token.h \
 	KNCollector.cpp \
 	KNCollector.h \
+	KNContentCollector.cpp \
+	KNContentCollector.h \
 	KNMemoryStream.cpp \
 	KNMemoryStream.h \
 	KNParser.cpp \
@@ -39,6 +41,8 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNStringVector.cpp \
 	KNStyle.cpp \
 	KNStyle.h \
+	KNStylesCollector.cpp \
+	KNStylesCollector.h \
 	KNSVGGenerator.cpp \
 	KNSVGGenerator.h \
 	KNToken.h \

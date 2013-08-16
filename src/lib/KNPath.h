@@ -57,6 +57,8 @@ private:
   KNGeometry m_geometry;
 };
 
+typedef boost::unordered_map<std::string, KNPath> KNPathMap_t;
+
 }
 
 #endif //  KNPATH_H_INCLUDED

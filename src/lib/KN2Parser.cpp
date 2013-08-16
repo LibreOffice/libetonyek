@@ -1022,6 +1022,8 @@ void KN2Parser::parseSlideList(const xmlTextReaderPtr reader)
 {
   assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::slide_list));
 
+  getCollector()->startSlides();
+
   // read attributes
   KNXMLAttributeIterator attr(reader);
   while (attr.next())
@@ -1058,6 +1060,8 @@ void KN2Parser::parseSlideList(const xmlTextReaderPtr reader)
       skipElement(reader);
     }
   }
+
+  getCollector()->endSlides();
 }
 
 ID_t KN2Parser::parseStyle(const xmlTextReaderPtr reader, KNStyle &style)
@@ -1369,6 +1373,8 @@ void KN2Parser::parseThemeList(const xmlTextReaderPtr reader)
 {
   assert(checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::theme_list));
 
+  getCollector()->startThemes();
+
   // read attributes
   KNXMLAttributeIterator attr(reader);
   while (attr.next())
@@ -1390,10 +1396,7 @@ void KN2Parser::parseThemeList(const xmlTextReaderPtr reader)
     const char *const ns = getNamespace(reader);
 
     if (checkElement(reader, KN2Token::NS_URI_KEY, KN2Token::theme_list, false))
-    {
-      getCollector()->collectMasterStyles();
       break;
-    }
 
     if (isEndElement(reader))
       throw GenericException();
@@ -1408,6 +1411,8 @@ void KN2Parser::parseThemeList(const xmlTextReaderPtr reader)
       skipElement(reader);
     }
   }
+
+  getCollector()->endThemes();
 }
 
 

@@ -13,6 +13,7 @@
 #include <string>
 
 #include <boost/optional.hpp>
+#include <boost/unordered_map.hpp>
 
 #include "KNTypes.h"
 
@@ -40,6 +41,17 @@ struct KNStyle
   // TODO: and many more... add as necessary
 
   KNStyle();
+};
+
+typedef boost::unordered_map<std::string, KNStyle> KNStyleMap_t;
+
+struct KNStyleSheet
+{
+  KNStyleMap_t characterStyles;
+  KNStyleMap_t graphicStyles;
+  KNStyleMap_t headlineStyles;
+  KNStyleMap_t layoutStyles;
+  KNStyleMap_t paragraphStyles;
 };
 
 }
