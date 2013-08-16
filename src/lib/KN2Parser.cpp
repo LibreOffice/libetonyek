@@ -155,7 +155,7 @@ void KN2Parser::processXmlNode(const xmlTextReaderPtr reader)
         }
         break;
       case KN2Token::NS_URI_SFA :
-        if (KN2Token::ID != getKN2TokenID(attr->name))
+        if (KN2Token::ID == getKN2TokenID(attr->name))
         {
           KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
         }
@@ -391,7 +391,7 @@ void KN2Parser::parseMasterSlide(const xmlTextReaderPtr reader)
           break;
         }
       case KN2Token::NS_URI_SFA :
-        if (KN2Token::ID != getKN2TokenID(attr->name))
+        if (KN2Token::ID == getKN2TokenID(attr->name))
         {
           id = attr->value;
         }
@@ -1242,7 +1242,7 @@ void KN2Parser::parseSlide(const xmlTextReaderPtr reader)
           break;
         }
       case KN2Token::NS_URI_SFA :
-        if (KN2Token::ID != getKN2TokenID(attr->name))
+        if (KN2Token::ID == getKN2TokenID(attr->name))
         {
           KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
         }
