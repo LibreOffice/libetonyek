@@ -834,6 +834,8 @@ enum
   automatic,
   b,
   bottom,
+  can_autosize_h,
+  can_autosize_v,
   cap,
   cell_style_default_line_height,
   chart_data_modified,
@@ -1010,8 +1012,12 @@ enum
   VERSION_STR_3,
   VERSION_STR_4,
   VERSION_STR_5,
+  _0,
+  _1,
+  false_,
+  true_,
 
-  LAST_TOKEN = VERSION_STR_5
+  LAST_TOKEN = true_
 };
 
 }

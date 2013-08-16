@@ -45,6 +45,13 @@ private:
   void parseTheme(xmlTextReaderPtr reader);
   void parseThemeList(xmlTextReaderPtr reader);
 
+  ID_t parseGeometry(xmlTextReaderPtr reader);
+  ID_t parseGroup(xmlTextReaderPtr reader);
+  ID_t parseImage(xmlTextReaderPtr reader);
+  ID_t parseLine(xmlTextReaderPtr reader);
+  ID_t parseMedia(xmlTextReaderPtr reader);
+  ID_t parseShape(xmlTextReaderPtr reader);
+
 private:
   unsigned m_version;
 };

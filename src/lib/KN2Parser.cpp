@@ -31,6 +31,27 @@ namespace libkeynote
 namespace
 {
 
+bool asBool(const char *const value)
+{
+  switch (getKN2TokenID(value))
+  {
+  case KN2Token::_1 :
+  case KN2Token::true_ :
+    return true;
+  case KN2Token::_0 :
+  case KN2Token::false_ :
+  default :
+    return false;
+  }
+
+  return false;
+}
+
+double asDouble(const char *const value)
+{
+  return lexical_cast<double>(value);
+}
+
 bool checkElement(xmlTextReaderPtr reader, const int name, const int ns, const bool start = true)
 {
   return isElement(reader)
@@ -50,6 +71,24 @@ bool checkNoAttributes(const xmlTextReaderPtr reader)
   }
 
   return 0 == count;
+}
+
+bool checkEmptyElement(const xmlTextReaderPtr reader)
+{
+  bool empty = true;
+
+  if (!isEmptyElement(reader))
+  {
+    empty = false;
+    // there are no elements
+    while (moveToNextNode(reader))
+    {
+      KN_DEBUG_XML_UNKNOWN("element", getName(reader), getNamespace(reader));
+      skipElement(reader);
+    }
+  }
+
+  return empty;
 }
 
 string readOnlyAttribute(const xmlTextReaderPtr reader, const int name, const int ns)
@@ -87,6 +126,108 @@ string readOnlyElementAttribute(const xmlTextReaderPtr reader, const int name, c
   }
 
   return value;
+}
+
+KNPoint readPoint(const xmlTextReaderPtr reader)
+{
+  KNPoint point;
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns))
+    {
+      switch (getKN2TokenID(attr->ns))
+      {
+      case KN2Token::x :
+        point.x = asDouble(attr->value);
+        break;
+      case KN2Token::y :
+        point.y = asDouble(attr->value);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+    }
+  }
+
+  checkEmptyElement(reader);
+
+  return point;
+}
+
+KNPosition readPosition(const xmlTextReaderPtr reader)
+{
+  KNPosition position;
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns))
+    {
+      switch (getKN2TokenID(attr->ns))
+      {
+      case KN2Token::x :
+        position.x = asDouble(attr->value);
+        break;
+      case KN2Token::y :
+        position.y = asDouble(attr->value);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+    }
+  }
+
+  checkEmptyElement(reader);
+
+  return position;
+}
+
+KNSize readSize(const xmlTextReaderPtr reader)
+{
+  KNSize size;
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns))
+    {
+      switch (getKN2TokenID(attr->ns))
+      {
+      case KN2Token::h :
+        size.height = lexical_cast<unsigned>(attr->value);
+        break;
+      case KN2Token::w :
+        size.width = lexical_cast<unsigned>(attr->value);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+    }
+  }
+
+  checkEmptyElement(reader);
+
+  return size;
 }
 
 unsigned getVersion(const int token)
@@ -1180,41 +1321,7 @@ void KN2Parser::parseProxyMasterLayer(const xmlTextReaderPtr reader)
 void KN2Parser::parseSize(const xmlTextReaderPtr reader, KNSize &size)
 {
   assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::size));
-
-  // read attributes
-  KNXMLAttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns))
-    {
-      switch (getKN2TokenID(attr->ns))
-      {
-      case KN2Token::h :
-        size.height = lexical_cast<unsigned>(attr->value);
-        break;
-      case KN2Token::w :
-        size.width = lexical_cast<unsigned>(attr->value);
-        break;
-      default :
-        KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
-        break;
-      }
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
-    }
-  }
-
-  if (!isEmptyElement(reader))
-  {
-    // there are no elements
-    while (moveToNextNode(reader))
-    {
-      KN_DEBUG_XML_UNKNOWN("element", getName(reader), getNamespace(reader));
-      skipElement(reader);
-    }
-  }
+  size = readSize(reader);
 }
 
 void KN2Parser::parseSlide(const xmlTextReaderPtr reader)
@@ -1713,6 +1820,526 @@ void KN2Parser::parseThemeList(const xmlTextReaderPtr reader)
   getCollector()->endThemes();
 }
 
+ID_t KN2Parser::parseGeometry(const xmlTextReaderPtr reader)
+{
+  assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::geometry));
+
+  ID_t id;
+  KNGeometry geometry;
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (KN2Token::NS_URI_SF == getKN2TokenID(attr->ns))
+    {
+      switch (getKN2TokenID(attr->name))
+      {
+      case KN2Token::angle :
+        geometry.angle = asDouble(attr->value);
+        break;
+      case KN2Token::aspectRatioLocked :
+        geometry.aspectRatioLocked = asBool(attr->value);
+        break;
+      case KN2Token::horizontalFlip :
+        geometry.horizontalFlip = asBool(attr->value);
+        break;
+      case KN2Token::shearXAngle :
+        geometry.shearXAngle = asDouble(attr->value);
+        break;
+      case KN2Token::shearYAngle :
+        geometry.shearYAngle = asDouble(attr->value);
+        break;
+      case KN2Token::sizesLocked :
+        geometry.sizesLocked = asBool(attr->value);
+        break;
+      case KN2Token::verticalFlip :
+        geometry.verticalFlip = asBool(attr->value);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+        break;
+      }
+    }
+    else if (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns) && (KN2Token::ID == getKN2TokenID (attr->name)))
+    {
+      id = attr->value;
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+    }
+  }
+
+  // read elements
+  while (moveToNextNode(reader))
+  {
+    const char *const name = getName(reader);
+    const char *const ns = getNamespace(reader);
+
+    if (checkElement(reader, KN2Token::NS_URI_SF, KN2Token::geometry, false))
+      break;
+
+    if (isEndElement(reader))
+      throw GenericException();
+
+    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    {
+      switch (getKN2TokenID(name))
+      {
+      case KN2Token::naturalSize :
+        geometry.naturalSize = readSize(reader);
+        break;
+      case KN2Token::size :
+        geometry.size = readSize(reader);
+        break;
+      case KN2Token::position :
+        geometry.position = readPosition(reader);
+        break;
+      case KN2Token::geometry :
+        // Huh? I need to find the file that actually contains this...
+        KN_DEBUG_XML_TODO("element", name, ns);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      skipElement(reader);
+    }
+  }
+
+  getCollector()->collectGeometry(id, geometry);
+
+  return id;
+}
+
+ID_t KN2Parser::parseGroup(const xmlTextReaderPtr reader)
+{
+  assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::group));
+
+  ID_t id;
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if ((KN2Token::NS_URI_SF == getKN2TokenID(attr->ns)) && (KN2Token::href == getKN2TokenID(attr->name)))
+    {
+      KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+    }
+    else if ((KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns)) && (KN2Token::ID == getKN2TokenID(attr->name)))
+    {
+      id = attr->value;
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+    }
+  }
+
+  KNGroup group;
+
+  // read elements
+  while (moveToNextNode(reader))
+  {
+    const char *const name = getName(reader);
+    const char *const ns = getNamespace(reader);
+
+    if (checkElement(reader, KN2Token::NS_URI_SF, KN2Token::group, false))
+      break;
+
+    if (isEndElement(reader))
+      throw GenericException();
+
+    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    {
+      switch (getKN2TokenID(name))
+      {
+      case KN2Token::geometry :
+        group.geometries.push_back(parseGeometry(reader));
+        break;
+      case KN2Token::group :
+        group.groups.push_back(parseGroup(reader));
+        break;
+      case KN2Token::image :
+        group.images.push_back(parseImage(reader));
+        break;
+      case KN2Token::line :
+        group.lines.push_back(parseLine(reader));
+        break;
+      case KN2Token::media :
+        group.media.push_back(parseMedia(reader));
+        break;
+      case KN2Token::shape :
+        group.shapes.push_back(parseShape(reader));
+        break;
+      case KN2Token::wrap :
+        KN_DEBUG_XML_TODO("element", name, ns);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      skipElement(reader);
+    }
+  }
+
+  getCollector()->collectGroup(id, group);
+
+  return id;
+}
+
+ID_t KN2Parser::parseImage(const xmlTextReaderPtr reader)
+{
+  assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::image));
+
+  ID_t id;
+  KNImage image;
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if ((KN2Token::NS_URI_SF == getKN2TokenID(attr->ns)) && (KN2Token::locked == getKN2TokenID(attr->name)))
+    {
+      image.locked = asBool(attr->value);
+    }
+    else if (KN2Token::NS_URI_SFA == getKN2TokenID(attr->name))
+    {
+      switch (getKN2TokenID(attr->name))
+      {
+      case KN2Token::ID :
+        id = attr->value;
+        break;
+      case KN2Token::version :
+        KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+    }
+  }
+
+  // read elements
+  while (moveToNextNode(reader))
+  {
+    const char *const name = getName(reader);
+    const char *const ns = getNamespace(reader);
+
+    if (checkElement(reader, KN2Token::NS_URI_SF, KN2Token::image, false))
+      break;
+
+    if (isEndElement(reader))
+      throw GenericException();
+
+    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    {
+      switch (getKN2TokenID(name))
+      {
+      case KN2Token::geometry :
+        image.geometry = parseGeometry(reader);
+        break;
+      case KN2Token::size :
+      case KN2Token::data :
+      case KN2Token::style :
+      case KN2Token::binary :
+      case KN2Token::filtered_image :
+        KN_DEBUG_XML_TODO("element", name, ns);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      skipElement(reader);
+    }
+  }
+
+  getCollector()->collectImage(id, image);
+
+  return id;
+}
+
+ID_t KN2Parser::parseLine(const xmlTextReaderPtr reader)
+{
+  assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::line));
+
+  ID_t id;
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if ((KN2Token::NS_URI_SF == getKN2TokenID(attr->ns)) && (KN2Token::href == getKN2TokenID(attr->name)))
+    {
+      KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+    }
+    else if ((KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns)) && (KN2Token::ID == getKN2TokenID(attr->name)))
+    {
+      id = attr->value;
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+    }
+  }
+
+  KNLine line;
+
+  // read elements
+  while (moveToNextNode(reader))
+  {
+    const char *const name = getName(reader);
+    const char *const ns = getNamespace(reader);
+
+    if (checkElement(reader, KN2Token::NS_URI_SF, KN2Token::line, false))
+      break;
+
+    if (isEndElement(reader))
+      throw GenericException();
+
+    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    {
+      switch (getKN2TokenID(name))
+      {
+      case KN2Token::geometry :
+        line.geometry = parseGeometry(reader);
+        break;
+      case KN2Token::head :
+        line.head = readPoint(reader);
+        break;
+      case KN2Token::tail :
+        line.tail = readPoint(reader);
+        break;
+      case KN2Token::style :
+        KN_DEBUG_XML_TODO("element", name, ns);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      skipElement(reader);
+    }
+  }
+
+  getCollector()->collectLine(id, line);
+
+  return id;
+}
+
+ID_t KN2Parser::parseMedia(const xmlTextReaderPtr reader)
+{
+  assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::media));
+
+  ID_t id;
+  KNMedia media;
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    switch (getKN2TokenID(attr->ns))
+    {
+    case KN2Token::NS_URI_KEY :
+      switch (getKN2TokenID(attr->name))
+      {
+      case KN2Token::inheritance :
+      case KN2Token::override_geometry_mask :
+      case KN2Token::override_media :
+      case KN2Token::tag :
+        KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+        break;
+      }
+      break;
+    case KN2Token::NS_URI_SF :
+      switch (getKN2TokenID(attr->name))
+      {
+      case KN2Token::placeholder :
+        media.placeholder = asBool(attr->value);
+        break;
+      case KN2Token::locked :
+        KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+        break;
+      }
+      break;
+    case KN2Token::NS_URI_SFA :
+      switch (getKN2TokenID(attr->name))
+      {
+      case KN2Token::ID :
+        id = attr->value;
+        break;
+      case KN2Token::version :
+        KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+        break;
+      }
+      break;
+    default :
+      KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+      break;
+    }
+  }
+
+  // read elements
+  while (moveToNextNode(reader))
+  {
+    const char *const name = getName(reader);
+    const char *const ns = getNamespace(reader);
+
+    if (checkElement(reader, KN2Token::NS_URI_SF, KN2Token::media, false))
+      break;
+
+    if (isEndElement(reader))
+      throw GenericException();
+
+    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    {
+      switch (getKN2TokenID(name))
+      {
+      case KN2Token::geometry :
+        media.geometry = parseGeometry(reader);
+        break;
+      case KN2Token::placeholder_size :
+        media.placeholderSize = readSize(reader);
+        break;
+      case KN2Token::style :
+      case KN2Token::masking_shape_path_source :
+      case KN2Token::crop_geometry :
+      case KN2Token::content :
+        KN_DEBUG_XML_TODO("element", name, ns);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      skipElement(reader);
+    }
+  }
+
+  getCollector()->collectMedia(id, media);
+
+  return id;
+}
+
+ID_t KN2Parser::parseShape(const xmlTextReaderPtr reader)
+{
+  assert(checkElement(reader, KN2Token::NS_URI_SF, KN2Token::shape));
+
+  ID_t id;
+
+  // read attributes
+  KNXMLAttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (attr->ns)
+    {
+      switch (getKN2TokenID(attr->name))
+      {
+      case KN2Token::can_autosize_h :
+      case KN2Token::can_autosize_v :
+        KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+        break;
+      }
+    }
+    else
+    {
+      if (KN2Token::NS_URI_KEY == getKN2TokenID(attr->ns))
+      {
+        switch (getKN2TokenID(attr->name))
+        {
+        case KN2Token::inheritance :
+        case KN2Token::override_autosize :
+        case KN2Token::override_text :
+        case KN2Token::tag :
+          KN_DEBUG_XML_TODO("attribute", attr->name, attr->ns);
+          break;
+        default :
+          KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+          break;
+        }
+      }
+      else if (KN2Token::NS_URI_SFA == getKN2TokenID(attr->ns) && (KN2Token::ID == getKN2TokenID (attr->name)))
+      {
+        id = attr->value;
+      }
+      else
+      {
+        KN_DEBUG_XML_UNKNOWN("attribute", attr->name, attr->ns);
+      }
+    }
+  }
+
+  // read elements
+  while (moveToNextNode(reader))
+  {
+    const char *const name = getName(reader);
+    const char *const ns = getNamespace(reader);
+
+    if (checkElement(reader, KN2Token::NS_URI_SF, KN2Token::group, false))
+      break;
+
+    if (isEndElement(reader))
+      throw GenericException();
+
+    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    {
+      switch (getKN2TokenID(name))
+      {
+      case KN2Token::geometry :
+      case KN2Token::style :
+      case KN2Token::path :
+      case KN2Token::text :
+        KN_DEBUG_XML_TODO("element", name, ns);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      skipElement(reader);
+    }
+  }
+
+  return id;
+}
 
 }
 

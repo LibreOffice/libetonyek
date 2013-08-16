@@ -20,6 +20,8 @@ using namespace KN2Token;
 %struct-type
 struct KNToken;
 %%
+0,_0
+1,_1
 2004102100,VERSION_STR_2
 2005092101,COMPATIBLE_VERSION_STR_3,
 2005140600,VERSION_STR_3
@@ -481,6 +483,8 @@ bullets,bullets
 calc-engine,calc_engine
 calc-engine-entities,calc_engine_entities
 calculation-engine,calculation_engine
+can-autosize-h,can_autosize_h
+can-autosize-v,can_autosize_v
 cap,cap
 capitalization,capitalization
 cell-comment-mapping,cell_comment_mapping
@@ -573,6 +577,7 @@ exclude-tables,exclude_tables
 extent,extent
 external-text-wrap,external_text_wrap
 externalTextWrap,externalTextWrap
+false,false_
 fill,fill
 filled,filled
 filter-col,filter_col
@@ -969,6 +974,7 @@ tracking,tracking
 transition,transition
 transition-attributes,transition_attributes
 transition-attributes-ref,transition_attributes_ref
+true,true_
 tscale,tscale
 type,type
 ui-state,ui_state
