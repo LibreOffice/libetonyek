@@ -642,7 +642,6 @@ void KN2Parser::parseMasterSlides(const xmlTextReaderPtr reader)
 
     if ((KN2Token::NS_URI_KEY == getKN2TokenID(ns)) && (KN2Token::master_slide == getKN2TokenID(name)))
     {
-      KN_DEBUG_XML_TODO("element", name, ns);
       parseMasterSlide(reader);
     }
     else
