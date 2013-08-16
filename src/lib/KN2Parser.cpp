@@ -195,10 +195,16 @@ void KN2Parser::processXmlNode(const xmlTextReaderPtr reader)
         break;
       }
       case KN2Token::theme_list :
-      case KN2Token::master_order :
+        parseThemeList(reader);
+        break;
       case KN2Token::slide_list :
-      case KN2Token::ui_state :
+        parseSlideList(reader);
+        break;
       case KN2Token::metadata :
+        parseMetadata(reader);
+        break;
+      case KN2Token::master_order :
+      case KN2Token::ui_state :
       case KN2Token::soundtrack_list :
       case KN2Token::calculation_engine :
       case KN2Token::version_history :
@@ -1270,7 +1276,11 @@ void KN2Parser::parseStylesheet(const xmlTextReaderPtr reader)
       switch (getKN2TokenID(name))
       {
       case KN2Token::styles :
+        parseStyles(reader, false);
+        break;
       case KN2Token::anon_styles :
+        parseStyles(reader, true);
+        break;
       case KN2Token::parent_ref :
         KN_DEBUG_XML_TODO("element", name, ns);
         skipElement(reader);
