@@ -50,6 +50,11 @@ public:
   virtual void collectLayer(const ID_t &id, bool ref) = 0;
   virtual void collectPage(const ID_t &id) = 0;
 
+  virtual void startPage() = 0;
+  virtual void endPage() = 0;
+  virtual void startLayer() = 0;
+  virtual void endLayer() = 0;
+
   // helper functions
 
   virtual void startSlides() = 0;

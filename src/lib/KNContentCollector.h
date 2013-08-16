@@ -56,6 +56,11 @@ public:
   virtual void startThemes();
   virtual void endThemes();
 
+  virtual void startPage();
+  virtual void endPage();
+  virtual void startLayer();
+  virtual void endLayer();
+
 private:
   // helper functions
 
@@ -79,6 +84,9 @@ private:
   KNPathMap_t m_currentPaths;
 
   bool m_collecting;
+
+  bool m_pageOpened;
+  bool m_layerOpened;
 };
 
 } // namespace libkeynote

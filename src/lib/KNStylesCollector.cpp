@@ -133,6 +133,22 @@ void KNStylesCollector::endThemes()
   m_collecting = false;
 }
 
+void KNStylesCollector::startPage()
+{
+}
+
+void KNStylesCollector::endPage()
+{
+}
+
+void KNStylesCollector::startLayer()
+{
+}
+
+void KNStylesCollector::endLayer()
+{
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

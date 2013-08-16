@@ -50,6 +50,11 @@ public:
   virtual void startThemes();
   virtual void endThemes();
 
+  virtual void startPage();
+  virtual void endPage();
+  virtual void startLayer();
+  virtual void endLayer();
+
 private:
   KNStyleSheet &m_currentStyles;
   KNLayerMap_t &m_masterPages;

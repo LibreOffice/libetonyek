@@ -422,6 +422,8 @@ void KN2Parser::parseLayer(const xmlTextReaderPtr reader)
 
   const ID_t id = readOnlyAttribute(reader, KN2Token::ID, KN2Token::NS_URI_SFA);
 
+  getCollector()->startLayer();
+
   // read elements
   while (moveToNextNode(reader))
   {
@@ -462,6 +464,7 @@ void KN2Parser::parseLayer(const xmlTextReaderPtr reader)
   }
 
   getCollector()->collectLayer(id, false);
+  getCollector()->endLayer();
 }
 
 void KN2Parser::parseLayers(const xmlTextReaderPtr reader)

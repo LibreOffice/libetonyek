@@ -7,6 +7,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <cassert>
+
+#include <libwpg/libwpg.h>
+
 #include "KNContentCollector.h"
 
 namespace libkeynote
@@ -26,11 +30,16 @@ KNContentCollector::KNContentCollector(::libwpg::WPGPaintInterface *const painte
   , m_currentMedia()
   , m_currentPaths()
   , m_collecting(false)
+  , m_pageOpened(false)
+  , m_layerOpened(false)
 {
 }
 
 KNContentCollector::~KNContentCollector()
 {
+  assert(!m_collecting);
+  assert(!m_pageOpened);
+  assert(!m_layerOpened);
 }
 
 void KNContentCollector::collectCharacterStyle(const ID_t &id, const KNStyle &style)
@@ -108,12 +117,12 @@ void KNContentCollector::collectLayer(const ID_t &id, const bool ref)
   // TODO: implement me
   (void) id;
   (void) ref;
+  assert(m_layerOpened);
 }
 
-void KNContentCollector::collectPage(const ID_t &id)
+void KNContentCollector::collectPage(const ID_t &)
 {
-  // TODO: implement me
-  (void) id;
+  assert(m_pageOpened);
 }
 
 void KNContentCollector::startSlides()
@@ -138,6 +147,45 @@ void KNContentCollector::resolveStyle(KNStyle &style)
 {
   // TODO: implement me
   (void) style;
+}
+
+void KNContentCollector::startPage()
+{
+  assert(!m_pageOpened);
+  assert(!m_layerOpened);
+
+  WPXPropertyList props;
+
+  m_pageOpened = true;
+  m_painter->startGraphics(props);
+}
+
+void KNContentCollector::endPage()
+{
+  assert(m_pageOpened);
+
+  m_pageOpened = false;
+  m_painter->endGraphics();
+}
+
+void KNContentCollector::startLayer()
+{
+  assert(m_pageOpened);
+  assert(!m_layerOpened);
+
+  WPXPropertyList props;
+
+  m_layerOpened = true;
+  m_painter->startLayer(props);
+}
+
+void KNContentCollector::endLayer()
+{
+  assert(m_pageOpened);
+  assert(m_layerOpened);
+
+  m_layerOpened = false;
+  m_painter->endLayer();
 }
 
 }
