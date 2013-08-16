@@ -757,6 +757,9 @@ void KN2Parser::parsePropertyMap(xmlTextReaderPtr reader, KNStyle &style)
 
   checkNoAttributes(reader);
 
+  if (isEmptyElement(reader))
+    return;
+
   // read elements
   while (moveToNextNode(reader))
   {
