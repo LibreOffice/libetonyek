@@ -15,14 +15,14 @@ namespace libkeynote
 {
 
 KNPath::KNPath()
-  : m_geometry()
-  , m_elements()
+  : m_elements()
+  , m_geometry()
 {
 }
 
 KNPath::KNPath(const KNGeometry &geometry)
-  : m_geometry(geometry)
-  , m_elements()
+  : m_elements()
+  , m_geometry(geometry)
 {
 }
 
@@ -33,36 +33,53 @@ void KNPath::setGeometry(const KNGeometry &geometry)
 
 void KNPath::appendMoveTo(const KNPoint &point)
 {
+  (void) point;
+  // FIXME: this is not going to work
+#if 0
   Element element;
   element.type = TYPE_MOVE_TO;
   element.value.point = point;
   m_elements.push_back(element);
+#endif
 }
 
 void KNPath::appendLineTo(const KNPoint &point)
 {
+  (void) point;
+  // FIXME: this is not going to work
+#if 0
   Element element;
   element.type = TYPE_LINE_TO;
   element.value.point = point;
   m_elements.push_back(element);
+#endif
 }
 
 void KNPath::appendCurveTo(const KNPoint &controlPoint1, const KNPoint &controlPoint2, const KNPoint &point)
 {
+  (void) point;
+  (void) controlPoint1;
+  (void) controlPoint2;
+  // FIXME: this is not going to work
+#if 0
   Element element;
   element.type = TYPE_CURVE_TO;
-  element.curve.controlPoint1 = controlPoint1;
-  element.curve.controlPoint2 = controlPoint2;
-  element.curve.point = point;
+  element.value.curve.controlPoint1 = controlPoint1;
+  element.value.curve.controlPoint2 = controlPoint2;
+  element.value.curve.point = point;
   m_elements.push_back(element);
+#endif
 }
 
 void KNPath::appendClose()
 {
+  // FIXME: this is not going to work
+#if 0
   Element element;
   element.type = TYPE_CLOSE;
   element.value.close = Close();
   m_elements.push_back(element);
+#endif
 }
 
 }
