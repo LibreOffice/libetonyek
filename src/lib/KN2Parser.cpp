@@ -2363,7 +2363,7 @@ ID_t KN2Parser::parseShape(const xmlTextReaderPtr reader)
   KNXMLAttributeIterator attr(reader);
   while (attr.next())
   {
-    if (attr->ns)
+    if (!attr->ns)
     {
       switch (getKN2TokenID(attr->name))
       {
