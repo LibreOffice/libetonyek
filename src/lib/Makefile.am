@@ -50,6 +50,8 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNTypes.h \
 	KNXMLAttributeIterator.cpp \
 	KNXMLAttributeIterator.h \
+	KNXMLReader.cpp \
+	KNXMLReader.h \
 	KNZipStream.cpp \
 	KNZipStream.h \
 	KNZlibStream.cpp \
