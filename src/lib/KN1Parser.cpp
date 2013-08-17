@@ -8,9 +8,24 @@
  */
 
 #include "KN1Parser.h"
+#include "KN1Token.h"
+#include "KNXMLReader.h"
 
 namespace libkeynote
 {
+
+namespace
+{
+
+struct Tokenizer
+{
+  int operator()(const char *const token) const
+  {
+    return getKN1TokenID(token);
+  }
+};
+
+}
 
 KN1Parser::KN1Parser(WPXInputStream *const input, KNCollector *const collector)
   : KNParser(input, collector)
@@ -21,10 +36,15 @@ KN1Parser::~KN1Parser()
 {
 }
 
-void KN1Parser::processXmlNode(xmlTextReaderPtr reader)
+void KN1Parser::processXmlNode(const KNXMLReader &reader)
 {
   // TODO: implement me
   (void) reader;
+}
+
+KNXMLReader::TokenizerFunction_t KN1Parser::getTokenizer() const
+{
+  return Tokenizer();
 }
 
 }

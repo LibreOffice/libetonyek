@@ -10,8 +10,6 @@
 #ifndef LIBKEYNOTE_XML_H_INCLUDED
 #define LIBKEYNOTE_XML_H_INCLUDED
 
-#include <libxml/xmlreader.h>
-
 #include "libkeynote_utils.h"
 
 #define KN_DEBUG_XML_NOT_EMPTY(name, ns) KN_DEBUG_MSG(("element %s%s%s%s is not empty, skipping content...\n", ns ? "{" : "", ns, ns ? "}" : "", name))
@@ -21,17 +19,9 @@
 namespace libkeynote
 {
 
-bool moveToNextNode(xmlTextReaderPtr reader);
-void skipElement(xmlTextReaderPtr reader);
+class KNXMLReader;
 
-bool isElement(xmlTextReaderPtr reader);
-bool isEmptyElement(xmlTextReaderPtr reader);
-bool isStartElement(xmlTextReaderPtr reader);
-bool isEndElement(xmlTextReaderPtr reader);
-
-const char *getName(xmlTextReaderPtr reader);
-const char *getNamespace(xmlTextReaderPtr reader);
-const char *getText(xmlTextReaderPtr reader);
+void skipElement(const KNXMLReader &reader);
 
 }
 

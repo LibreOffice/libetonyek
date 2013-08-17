@@ -25,32 +25,33 @@ public:
   virtual ~KN2Parser();
 
 private:
-  virtual void processXmlNode(xmlTextReaderPtr reader);
+  virtual void processXmlNode(const KNXMLReader &reader);
+  virtual KNXMLReader::TokenizerFunction_t getTokenizer() const;
 
-  void parseDrawables(xmlTextReaderPtr reader);
-  void parseLayer(xmlTextReaderPtr reader);
-  void parseLayers(xmlTextReaderPtr reader);
-  void parseMasterSlide(xmlTextReaderPtr reader);
-  void parseMasterSlides(xmlTextReaderPtr reader);
-  void parseMetadata(xmlTextReaderPtr reader);
-  void parsePage(xmlTextReaderPtr reader);
-  void parsePropertyMap(xmlTextReaderPtr reader, KNStyle &style);
-  void parseProxyMasterLayer(xmlTextReaderPtr reader);
-  void parseSize(xmlTextReaderPtr reader, KNSize &size);
-  void parseSlide(xmlTextReaderPtr reader);
-  void parseSlideList(xmlTextReaderPtr reader);
-  ID_t parseStyle(xmlTextReaderPtr reader, KNStyle &style);
-  void parseStyles(xmlTextReaderPtr reader, bool anonymous);
-  void parseStylesheet(xmlTextReaderPtr reader);
-  void parseTheme(xmlTextReaderPtr reader);
-  void parseThemeList(xmlTextReaderPtr reader);
+  void parseDrawables(const KNXMLReader &reader);
+  void parseLayer(const KNXMLReader &reader);
+  void parseLayers(const KNXMLReader &reader);
+  void parseMasterSlide(const KNXMLReader &reader);
+  void parseMasterSlides(const KNXMLReader &reader);
+  void parseMetadata(const KNXMLReader &reader);
+  void parsePage(const KNXMLReader &reader);
+  void parsePropertyMap(const KNXMLReader &reader, KNStyle &style);
+  void parseProxyMasterLayer(const KNXMLReader &reader);
+  void parseSize(const KNXMLReader &reader, KNSize &size);
+  void parseSlide(const KNXMLReader &reader);
+  void parseSlideList(const KNXMLReader &reader);
+  ID_t parseStyle(const KNXMLReader &reader, KNStyle &style);
+  void parseStyles(const KNXMLReader &reader, bool anonymous);
+  void parseStylesheet(const KNXMLReader &reader);
+  void parseTheme(const KNXMLReader &reader);
+  void parseThemeList(const KNXMLReader &reader);
 
-  ID_t parseGeometry(xmlTextReaderPtr reader);
-  ID_t parseGroup(xmlTextReaderPtr reader);
-  ID_t parseImage(xmlTextReaderPtr reader);
-  ID_t parseLine(xmlTextReaderPtr reader);
-  ID_t parseMedia(xmlTextReaderPtr reader);
-  ID_t parseShape(xmlTextReaderPtr reader);
+  ID_t parseGeometry(const KNXMLReader &reader);
+  ID_t parseGroup(const KNXMLReader &reader);
+  ID_t parseImage(const KNXMLReader &reader);
+  ID_t parseLine(const KNXMLReader &reader);
+  ID_t parseMedia(const KNXMLReader &reader);
+  ID_t parseShape(const KNXMLReader &reader);
 
 private:
   unsigned m_version;

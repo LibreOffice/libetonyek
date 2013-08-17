@@ -7,46 +7,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <cstring>
-
-#include <libwpd-stream/libwpd-stream.h>
-
-#include "libkeynote_xml.h"
 #include "KNParser.h"
 #include "KNCollector.h"
-#include "KNToken.h"
+#include "KNXMLReader.h"
 
 namespace libkeynote
 {
-
-namespace
-{
-
-extern "C" int readFromStream(void *context, char *buffer, int len)
-{
-  try
-  {
-    WPXInputStream *const input = reinterpret_cast<WPXInputStream *>(context);
-
-    unsigned long bytesRead = 0;
-    const unsigned char *const bytes = input->read(len, bytesRead);
-
-    std::memcpy(buffer, bytes, static_cast<int>(bytesRead));
-    return static_cast<int>(bytesRead);
-  }
-  catch (...)
-  {
-  }
-
-  return -1;
-}
-
-extern "C" int closeStream(void * /* context */)
-{
-  return 0;
-}
-
-}
 
 KNParser::KNParser(WPXInputStream *const input, KNCollector *const collector)
   : m_input(input)
@@ -60,18 +26,8 @@ KNParser::~KNParser()
 
 bool KNParser::parse()
 {
-  m_input->seek(0, WPX_SEEK_SET);
-
-  const xmlTextReaderPtr reader = xmlReaderForIO(readFromStream, closeStream, m_input, "", 0, 0);
-  if (!reader)
-    return false;
-
-  const bool success = processXmlDocument(reader);
-
-  xmlTextReaderClose(reader);
-  xmlFreeTextReader(reader);
-
-  return success;
+  KNXMLReader reader(m_input, getTokenizer());
+  return processXmlDocument(reader);
 }
 
 KNCollector *KNParser::getCollector() const
@@ -79,15 +35,10 @@ KNCollector *KNParser::getCollector() const
   return m_collector;
 }
 
-bool KNParser::processXmlDocument(xmlTextReaderPtr reader) try
+bool KNParser::processXmlDocument(const KNXMLReader &reader) try
 {
-  if (moveToNextNode(reader))
-  {
-    // process root node
-    processXmlNode(reader);
-    return !moveToNextNode(reader); // the whole input has been read
-  }
-  return false;
+  processXmlNode(reader);
+  return true;
 }
 catch (...)
 {

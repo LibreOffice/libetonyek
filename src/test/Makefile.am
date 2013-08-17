@@ -12,8 +12,6 @@ test_LDADD = \
 	$(XML_LIBS)
 
 test_SOURCES = \
-	KNXMLAttributeIteratorTest.cpp \
-	KNXMLAttributeIteratorTest.h \
 	KNXMLReaderTest.cpp \
 	KNXMLReaderTest.h \
 	test.cpp

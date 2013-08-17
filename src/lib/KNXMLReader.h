@@ -25,8 +25,6 @@ class KNXMLReader
 
   struct Impl;
 
-  typedef boost::function<int(const char *)> TokenizerFunction_t;
-
   enum Type
   {
     TYPE_ELEMENT = 0x1,
@@ -124,6 +122,8 @@ public:
   private:
     NodeIterator m_iterator;
   };
+
+  typedef boost::function<int(const char *)> TokenizerFunction_t;
 
 public:
   explicit KNXMLReader(WPXInputStream *input);

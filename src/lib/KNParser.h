@@ -10,7 +10,7 @@
 #ifndef KNPARSER_H_INCLUDED
 #define KNPARSER_H_INCLUDED
 
-#include <libxml/xmlreader.h>
+#include "KNXMLReader.h"
 
 class WPXInputStream;
 
@@ -33,9 +33,10 @@ public:
   KNCollector *getCollector() const;
 
 private:
-  virtual void processXmlNode(xmlTextReaderPtr reader) = 0;
+  virtual void processXmlNode(const KNXMLReader &reader) = 0;
+  virtual KNXMLReader::TokenizerFunction_t getTokenizer() const = 0;
 
-  bool processXmlDocument(xmlTextReaderPtr reader);
+  bool processXmlDocument(const KNXMLReader &reader);
 
 private:
   WPXInputStream *m_input;

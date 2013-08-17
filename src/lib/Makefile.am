@@ -48,8 +48,6 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNToken.h \
 	KNTypes.cpp \
 	KNTypes.h \
-	KNXMLAttributeIterator.cpp \
-	KNXMLAttributeIterator.h \
 	KNXMLReader.cpp \
 	KNXMLReader.h \
 	KNZipStream.cpp \

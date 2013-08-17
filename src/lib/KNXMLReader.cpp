@@ -21,8 +21,7 @@ namespace libkeynote
 namespace
 {
 
-extern "C" int readFromStream(void *context, char *buffer, int len);
-#if 0
+extern "C" int readFromStream(void *context, char *buffer, int len)
 {
   try
   {
@@ -40,14 +39,11 @@ extern "C" int readFromStream(void *context, char *buffer, int len);
 
   return -1;
 }
-#endif
 
-extern "C" int closeStream(void * /* context */);
-#if 0
+extern "C" int closeStream(void * /* context */)
 {
   return 0;
 }
-#endif
 
 }
 

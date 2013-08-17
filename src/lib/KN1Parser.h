@@ -22,7 +22,8 @@ public:
   virtual ~KN1Parser();
 
 private:
-  virtual void processXmlNode(xmlTextReaderPtr reader);
+  virtual void processXmlNode(const KNXMLReader &reader);
+  virtual KNXMLReader::TokenizerFunction_t getTokenizer() const;
 };
 
 }
