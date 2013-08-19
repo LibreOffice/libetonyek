@@ -19,31 +19,25 @@ namespace libkeynote
 
 class KNPath
 {
-  enum Type { TYPE_MOVE_TO, TYPE_LINE_TO, TYPE_CURVE_TO, TYPE_CLOSE };
-
-  struct Close {};
-
-  struct BezierCurve
+public:
+  class Element
   {
-    KNPoint controlPoint1;
-    KNPoint controlPoint2;
-    KNPoint point;
-  };
+  public:
+    virtual ~Element() = 0;
 
-  struct Element
-  {
-    Type type;
-    union
-    {
-      Close close;
-      KNPoint point;
-      BezierCurve curve;
-    } value;
+    virtual Element *clone() const = 0;
   };
 
 public:
   KNPath();
-  KNPath(const KNGeometry &geometry);
+  explicit KNPath(const KNGeometry &geometry);
+  KNPath(const KNPath &other);
+  ~KNPath();
+  KNPath &operator=(const KNPath &other);
+
+  void swap(KNPath &other);
+
+  void clear();
 
   void setGeometry(const KNGeometry &geometry);
 
@@ -53,7 +47,7 @@ public:
   void appendClose();
 
 private:
-  std::deque<Element> m_elements;
+  std::deque<Element *> m_elements;
   KNGeometry m_geometry;
 };
 
