@@ -331,7 +331,7 @@ Parses the input stream content. It will make callbacks to the functions provide
 WPGPaintInterface class implementation when needed. This is often commonly called the
 'main parsing routine'.
 \param input The input stream
-\param painter A WPGPainterInterface implementation
+\param painter A WPGPaintInterface implementation
 \return A value that indicates whether the parsing was successful
 */
 bool KeyNoteDocument::parse(::WPXInputStream *const input, libwpg::WPGPaintInterface *const painter) try
