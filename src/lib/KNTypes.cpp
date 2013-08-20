@@ -7,6 +7,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <libwpd/libwpd.h>
+
+#include <libwpg/libwpg.h>
+
+#include "libkeynote_utils.h"
+#include "KNDictionary.h"
 #include "KNTypes.h"
 
 namespace libkeynote
@@ -138,6 +144,22 @@ KNLayer::KNLayer(const KNObjectList_t &objectList)
 namespace
 {
 
+WPXPropertyList toWPG(const KNPoint &point)
+{
+  WPXPropertyList props;
+
+  // TODO: unit conversion
+  props.insert("svg:x", point.x);
+  props.insert("svg:y", point.y);
+
+  return props;
+}
+
+}
+
+namespace
+{
+
 class GroupObject : public KNObject
 {
 public:
@@ -217,10 +239,29 @@ LineObject::LineObject(const ID_t &id)
 
 void LineObject::draw(libwpg::WPGPaintInterface *const painter, const KNDictionary &dict, const KNTransformation &tr)
 {
-  // TODO: implement me
-  (void) painter;
-  (void) dict;
+  // TODO: transform the line
   (void) tr;
+
+  const KNLineMap_t::const_iterator it = dict.lines.find(m_id);
+  if (dict.lines.end() == it)
+  {
+    KN_DEBUG_MSG(("line %s not found\n", m_id.c_str()));
+  }
+  else
+  {
+    const KNLine &line = it->second;
+    if (line.head && line.tail)
+    {
+      WPXPropertyListVector vertices;
+      vertices.append(toWPG(get(line.head)));
+      vertices.append(toWPG(get(line.tail)));
+      painter->drawPolyline(vertices);
+    }
+    else
+    {
+      KN_DEBUG_MSG(("line %s is missing head or tail point\n", m_id.c_str()));
+    }
+  }
 }
 
 }
