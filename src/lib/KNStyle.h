@@ -45,15 +45,6 @@ struct KNStyle
 
 typedef boost::unordered_map<std::string, KNStyle> KNStyleMap_t;
 
-struct KNStyleSheet
-{
-  KNStyleMap_t characterStyles;
-  KNStyleMap_t graphicStyles;
-  KNStyleMap_t headlineStyles;
-  KNStyleMap_t layoutStyles;
-  KNStyleMap_t paragraphStyles;
-};
-
 }
 
 #endif // KNSTYLE_H_INCLUDED

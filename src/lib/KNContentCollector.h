@@ -11,9 +11,6 @@
 #define KNCONTENTCOLLECTOR_H_INCLUDED
 
 #include "KNCollector.h"
-#include "KNPath.h"
-#include "KNStyle.h"
-#include "KNTypes.h"
 
 namespace libwpg
 {
@@ -25,10 +22,13 @@ class WPGPaintInterface;
 namespace libkeynote
 {
 
+struct KNDictionary;
+struct KNStyle;
+
 class KNContentCollector : public KNCollector
 {
 public:
-  KNContentCollector(::libwpg::WPGPaintInterface *painter, const KNStyleSheet &masterStyles, const KNLayerMap_t &masterPages, const KNSize &size);
+  KNContentCollector(::libwpg::WPGPaintInterface *painter, KNDictionary &dict, const KNLayerMap_t &masterPages, const KNSize &size);
   virtual ~KNContentCollector();
 
   // collector functions
@@ -69,19 +69,11 @@ private:
 private:
   libwpg::WPGPaintInterface *m_painter;
 
-  const KNStyleSheet &m_masterStyles;
+  KNDictionary &m_dict;
   const KNLayerMap_t &m_masterPages;
   const KNSize &m_size;
 
-  KNStyleSheet m_currentStyles;
   KNLayer m_currentLayer;
-
-  KNGeometryMap_t m_currentGeometries;
-  KNGroupMap_t m_currentGroups;
-  KNImageMap_t m_currentImages;
-  KNLineMap_t m_currentLines;
-  KNMediaMap_t m_currentMedia;
-  KNPathMap_t m_currentPaths;
 
   bool m_collecting;
 

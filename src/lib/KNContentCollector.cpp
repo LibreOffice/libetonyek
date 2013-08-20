@@ -12,23 +12,17 @@
 #include <libwpg/libwpg.h>
 
 #include "KNContentCollector.h"
+#include "KNDictionary.h"
 
 namespace libkeynote
 {
 
-KNContentCollector::KNContentCollector(::libwpg::WPGPaintInterface *const painter, const KNStyleSheet &masterStyles, const KNLayerMap_t &masterPages, const KNSize &size)
+KNContentCollector::KNContentCollector(::libwpg::WPGPaintInterface *const painter, KNDictionary &dict, const KNLayerMap_t &masterPages, const KNSize &size)
   : m_painter(painter)
-  , m_masterStyles(masterStyles)
+  , m_dict(dict)
   , m_masterPages(masterPages)
   , m_size(size)
-  , m_currentStyles()
   , m_currentLayer()
-  , m_currentGeometries()
-  , m_currentGroups()
-  , m_currentImages()
-  , m_currentLines()
-  , m_currentMedia()
-  , m_currentPaths()
   , m_collecting(false)
   , m_pageOpened(false)
   , m_layerOpened(false)
@@ -45,67 +39,67 @@ KNContentCollector::~KNContentCollector()
 void KNContentCollector::collectCharacterStyle(const ID_t &id, const KNStyle &style)
 {
   if (m_collecting)
-    m_currentStyles.characterStyles[id] = style;
+    m_dict.characterStyles[id] = style;
 }
 
 void KNContentCollector::collectGraphicStyle(const ID_t &id, const KNStyle &style)
 {
   if (m_collecting)
-    m_currentStyles.graphicStyles[id] = style;
+    m_dict.graphicStyles[id] = style;
 }
 
 void KNContentCollector::collectHeadlineStyle(const ID_t &id, const KNStyle &style)
 {
   if (m_collecting)
-    m_currentStyles.headlineStyles[id] = style;
+    m_dict.headlineStyles[id] = style;
 }
 
 void KNContentCollector::collectLayoutStyle(const ID_t &id, const KNStyle &style)
 {
   if (m_collecting)
-    m_currentStyles.layoutStyles[id] = style;
+    m_dict.layoutStyles[id] = style;
 }
 
 void KNContentCollector::collectParagraphStyle(const ID_t &id, const KNStyle &style)
 {
   if (m_collecting)
-    m_currentStyles.paragraphStyles[id] = style;
+    m_dict.paragraphStyles[id] = style;
 }
 
 void KNContentCollector::collectGeometry(const ID_t &id, const KNGeometry &geometry)
 {
   if (m_collecting)
-    m_currentGeometries[id] = geometry;
+    m_dict.geometries[id] = geometry;
 }
 
 void KNContentCollector::collectGroup(const ID_t &id, const KNGroup &group)
 {
   if (m_collecting)
-    m_currentGroups[id] = group;
+    m_dict.groups[id] = group;
 }
 
 void KNContentCollector::collectImage(const ID_t &id, const KNImage &image)
 {
   if (m_collecting)
-    m_currentImages[id] = image;
+    m_dict.images[id] = image;
 }
 
 void KNContentCollector::collectLine(const ID_t &id, const KNLine &line)
 {
   if (m_collecting)
-    m_currentLines[id] = line;
+    m_dict.lines[id] = line;
 }
 
 void KNContentCollector::collectMedia(const ID_t &id, const KNMedia &media)
 {
   if (m_collecting)
-    m_currentMedia[id] = media;
+    m_dict.media[id] = media;
 }
 
 void KNContentCollector::collectPath(const ID_t &id, const KNPath &path)
 {
   if (m_collecting)
-    m_currentPaths[id] = path;
+    m_dict.paths[id] = path;
 }
 
 void KNContentCollector::collectSize(const KNSize &)

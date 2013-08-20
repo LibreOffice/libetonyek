@@ -7,21 +7,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "KNDictionary.h"
 #include "KNStylesCollector.h"
 
 namespace libkeynote
 {
 
-KNStylesCollector::KNStylesCollector(KNStyleSheet &masterStyles, KNLayerMap_t &masterPages, KNSize &size)
-  : m_currentStyles(masterStyles)
+KNStylesCollector::KNStylesCollector(KNDictionary &dict, KNLayerMap_t &masterPages, KNSize &size)
+  : m_dict(dict)
   , m_masterPages(masterPages)
   , m_size(size)
-  , m_currentGeometries()
-  , m_currentGroups()
-  , m_currentImages()
-  , m_currentLines()
-  , m_currentMedia()
-  , m_currentPaths()
   , m_currentLayer()
   , m_collecting(false)
 {
@@ -34,67 +29,67 @@ KNStylesCollector::~KNStylesCollector()
 void KNStylesCollector::collectCharacterStyle(const ID_t &id, const KNStyle &style)
 {
   if (m_collecting)
-    m_currentStyles.characterStyles[id] = style;
+    m_dict.characterStyles[id] = style;
 }
 
 void KNStylesCollector::collectGraphicStyle(const ID_t &id, const KNStyle &style)
 {
   if (m_collecting)
-    m_currentStyles.graphicStyles[id] = style;
+    m_dict.graphicStyles[id] = style;
 }
 
 void KNStylesCollector::collectHeadlineStyle(const ID_t &id, const KNStyle &style)
 {
   if (m_collecting)
-    m_currentStyles.headlineStyles[id] = style;
+    m_dict.headlineStyles[id] = style;
 }
 
 void KNStylesCollector::collectLayoutStyle(const ID_t &id, const KNStyle &style)
 {
   if (m_collecting)
-    m_currentStyles.layoutStyles[id] = style;
+    m_dict.layoutStyles[id] = style;
 }
 
 void KNStylesCollector::collectParagraphStyle(const ID_t &id, const KNStyle &style)
 {
   if (m_collecting)
-    m_currentStyles.paragraphStyles[id] = style;
+    m_dict.paragraphStyles[id] = style;
 }
 
 void KNStylesCollector::collectGeometry(const ID_t &id, const KNGeometry &geometry)
 {
   if (m_collecting)
-    m_currentGeometries[id] = geometry;
+    m_dict.geometries[id] = geometry;
 }
 
 void KNStylesCollector::collectGroup(const ID_t &id, const KNGroup &group)
 {
   if (m_collecting)
-    m_currentGroups[id] = group;
+    m_dict.groups[id] = group;
 }
 
 void KNStylesCollector::collectImage(const ID_t &id, const KNImage &image)
 {
   if (m_collecting)
-    m_currentImages[id] = image;
+    m_dict.images[id] = image;
 }
 
 void KNStylesCollector::collectLine(const ID_t &id, const KNLine &line)
 {
   if (m_collecting)
-    m_currentLines[id] = line;
+    m_dict.lines[id] = line;
 }
 
 void KNStylesCollector::collectMedia(const ID_t &id, const KNMedia &media)
 {
   if (m_collecting)
-    m_currentMedia[id] = media;
+    m_dict.media[id] = media;
 }
 
 void KNStylesCollector::collectPath(const ID_t &id, const KNPath &path)
 {
   if (m_collecting)
-    m_currentPaths[id] = path;
+    m_dict.paths[id] = path;
 }
 
 void KNStylesCollector::collectSize(const KNSize &size)

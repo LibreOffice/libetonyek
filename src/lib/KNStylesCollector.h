@@ -11,16 +11,17 @@
 #define KNSTYLESCOLLECTOR_H_INCLUDED
 
 #include "KNCollector.h"
-#include "KNPath.h"
-#include "KNStyle.h"
 
 namespace libkeynote
 {
 
+struct KNDictionary;
+struct KNStyle;
+
 class KNStylesCollector : public KNCollector
 {
 public:
-  KNStylesCollector(KNStyleSheet &masterStyles, KNLayerMap_t &masterPages, KNSize &size);
+  KNStylesCollector(KNDictionary &dict, KNLayerMap_t &masterPages, KNSize &size);
   virtual ~KNStylesCollector();
 
   // collector functions
@@ -54,16 +55,9 @@ public:
   virtual void endLayer();
 
 private:
-  KNStyleSheet &m_currentStyles;
+  KNDictionary &m_dict;
   KNLayerMap_t &m_masterPages;
   KNSize &m_size;
-
-  KNGeometryMap_t m_currentGeometries;
-  KNGroupMap_t m_currentGroups;
-  KNImageMap_t m_currentImages;
-  KNLineMap_t m_currentLines;
-  KNMediaMap_t m_currentMedia;
-  KNPathMap_t m_currentPaths;
 
   KNLayer m_currentLayer;
 
