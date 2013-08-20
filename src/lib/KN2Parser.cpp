@@ -340,12 +340,19 @@ void KN2Parser::processXmlNode(const KNXMLReader &reader)
         parseMetadata(reader);
         break;
       case KN2Token::master_order :
-      case KN2Token::ui_state :
       case KN2Token::soundtrack_list :
       case KN2Token::calculation_engine :
-      case KN2Token::version_history :
         KN_DEBUG_XML_TODO("element", name, ns);
         skipElement(element);
+        break;
+
+      case KN2Token::ui_state :
+      case KN2Token::version_history :
+        skipElement(element);
+        break;
+
+      default :
+        KN_DEBUG_XML_UNKNOWN("element", name, ns);
         break;
       }
     }
