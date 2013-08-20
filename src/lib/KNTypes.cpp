@@ -129,13 +129,9 @@ KNGroup::KNGroup()
 {
 }
 
-KNLayer::KNLayer()
+KNLayer::KNLayer(const KNObjectList_t &objectList)
   : type()
-  , groups()
-  , images()
-  , lines()
-  , media()
-  , shapes()
+  , objects(objectList)
 {
 }
 

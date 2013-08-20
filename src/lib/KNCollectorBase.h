@@ -10,7 +10,10 @@
 #ifndef KNCOLLECTORBASE_H_INCLUDED
 #define KNCOLLECTORBASE_H_INCLUDED
 
+#include <stack>
+
 #include "KNCollector.h"
+#include "KNObject.h"
 
 namespace libkeynote
 {
@@ -44,15 +47,23 @@ public:
 
   virtual void collectLayer(const ID_t &id, bool ref);
 
+  virtual void startLayer();
+  virtual void endLayer();
+  virtual void startGroup();
+  virtual void endGroup();
+
   bool getCollecting() const;
   void setCollecting(bool collecting);
 
-  void fillLayer(KNLayer &layer);
+  const KNObjectList_t &getObjects() const;
 
 private:
   KNDictionary &m_dict;
+  std::stack<KNObjectList_t> m_objectsStack;
 
   bool m_collecting;
+  bool m_layerOpened;
+  int m_groupLevel;
 };
 
 } // namespace libkeynote

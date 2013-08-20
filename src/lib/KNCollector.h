@@ -54,6 +54,8 @@ public:
   virtual void endPage() = 0;
   virtual void startLayer() = 0;
   virtual void endLayer() = 0;
+  virtual void startGroup() = 0;
+  virtual void endGroup() = 0;
 
   // helper functions
 

@@ -53,14 +53,14 @@ private:
 
   void resolveStyle(KNStyle &style);
 
+  void drawLayer(const KNObjectList_t &objects);
+
 private:
   libwpg::WPGPaintInterface *m_painter;
 
   KNDictionary &m_dict;
   const KNLayerMap_t &m_masterPages;
   const KNSize &m_size;
-
-  KNLayer m_currentLayer;
 
   bool m_pageOpened;
   bool m_layerOpened;

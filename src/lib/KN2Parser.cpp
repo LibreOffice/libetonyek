@@ -1869,6 +1869,8 @@ ID_t KN2Parser::parseGroup(const KNXMLReader &reader)
 
   KNGroup group;
 
+  getCollector()->startGroup();
+
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
@@ -1915,6 +1917,7 @@ ID_t KN2Parser::parseGroup(const KNXMLReader &reader)
   }
 
   getCollector()->collectGroup(id, group);
+  getCollector()->endGroup();
 
   return id;
 }

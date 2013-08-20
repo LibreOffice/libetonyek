@@ -151,13 +151,9 @@ struct KNGroup
 struct KNLayer
 {
   boost::optional<std::string> type;
-  IDs_t groups;
-  IDs_t images;
-  IDs_t lines;
-  IDs_t media;
-  IDs_t shapes;
+  KNObjectList_t objects;
 
-  KNLayer();
+  explicit KNLayer(const KNObjectList_t &objectList);
 };
 
 typedef boost::unordered_map<std::string, KNGeometry> KNGeometryMap_t;

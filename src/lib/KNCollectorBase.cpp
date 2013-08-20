@@ -17,13 +17,16 @@ namespace libkeynote
 
 KNCollectorBase::KNCollectorBase(KNDictionary &dict)
   : m_dict(dict)
+  , m_objectsStack()
   , m_collecting(false)
+  , m_groupLevel(0)
 {
 }
 
 KNCollectorBase::~KNCollectorBase()
 {
   assert(!m_collecting);
+  assert(m_objectsStack.empty());
 }
 
 void KNCollectorBase::collectCharacterStyle(const ID_t &id, const KNStyle &style)
@@ -64,39 +67,106 @@ void KNCollectorBase::collectGeometry(const ID_t &id, const KNGeometry &geometry
 
 void KNCollectorBase::collectGroup(const ID_t &id, const KNGroup &group)
 {
+  assert(!m_objectsStack.empty());
+
   if (m_collecting)
+  {
     m_dict.groups[id] = group;
+    m_objectsStack.top().push_back(makeGroupObject(id));
+  }
 }
 
 void KNCollectorBase::collectImage(const ID_t &id, const KNImage &image)
 {
+  assert(!m_objectsStack.empty());
+
   if (m_collecting)
+  {
     m_dict.images[id] = image;
+    m_objectsStack.top().push_back(makeImageObject(id));
+  }
 }
 
 void KNCollectorBase::collectLine(const ID_t &id, const KNLine &line)
 {
+  assert(!m_objectsStack.empty());
+
   if (m_collecting)
+  {
     m_dict.lines[id] = line;
+    m_objectsStack.top().push_back(makeLineObject(id));
+  }
 }
 
 void KNCollectorBase::collectMedia(const ID_t &id, const KNMedia &media)
 {
+  assert(!m_objectsStack.empty());
+
   if (m_collecting)
+  {
     m_dict.media[id] = media;
+    m_objectsStack.top().push_back(makeMediaObject(id));
+  }
 }
 
 void KNCollectorBase::collectPath(const ID_t &id, const KNPath &path)
 {
+  assert(!m_objectsStack.empty());
+
   if (m_collecting)
+  {
     m_dict.paths[id] = path;
+    m_objectsStack.top().push_back(makePathObject(id));
+  }
 }
 
-void KNCollectorBase::collectLayer(const ID_t &id, bool ref)
+void KNCollectorBase::collectLayer(const ID_t &, bool)
 {
-  // TODO: implement me
-  (void) id;
-  (void) ref;
+  assert(m_layerOpened);
+  assert(!m_objectsStack.empty());
+}
+
+void KNCollectorBase::startLayer()
+{
+  assert(!m_layerOpened);
+  assert(m_objectsStack.empty());
+
+  m_objectsStack.push(KNObjectList_t());
+  m_layerOpened = true;
+
+  assert(!m_objectsStack.empty());
+}
+
+void KNCollectorBase::endLayer()
+{
+  assert(m_layerOpened);
+  assert(!m_objectsStack.empty());
+
+  m_objectsStack.pop();
+  m_layerOpened = false;
+
+  assert(m_objectsStack.empty());
+}
+
+void KNCollectorBase::startGroup()
+{
+  assert(m_layerOpened);
+  assert(!m_objectsStack.empty());
+
+  m_objectsStack.push(KNObjectList_t());
+  ++m_groupLevel;
+}
+
+void KNCollectorBase::endGroup()
+{
+  assert(m_layerOpened);
+  assert(!m_objectsStack.empty());
+  assert(m_groupLevel > 0);
+
+  m_objectsStack.pop();
+  --m_groupLevel;
+
+  assert(!m_objectsStack.empty());
 }
 
 bool KNCollectorBase::getCollecting() const
@@ -109,10 +179,12 @@ void KNCollectorBase::setCollecting(bool collecting)
   m_collecting = collecting;
 }
 
-void KNCollectorBase::fillLayer(KNLayer &layer)
+const KNObjectList_t &KNCollectorBase::getObjects() const
 {
-  // TODO: implement me
-  (void) layer;
+  assert(m_layerOpened);
+  assert(!m_objectsStack.empty());
+
+  return m_objectsStack.top();
 }
 
 } // namespace libkeynote

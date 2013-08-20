@@ -11,8 +11,10 @@
 
 #include <libwpg/libwpg.h>
 
+#include "libkeynote_utils.h"
 #include "KNContentCollector.h"
 #include "KNDictionary.h"
+#include "KNTransformation.h"
 
 namespace libkeynote
 {
@@ -23,7 +25,6 @@ KNContentCollector::KNContentCollector(::libwpg::WPGPaintInterface *const painte
   , m_dict(dict)
   , m_masterPages(masterPages)
   , m_size(size)
-  , m_currentLayer()
   , m_pageOpened(false)
   , m_layerOpened(false)
 {
@@ -41,10 +42,22 @@ void KNContentCollector::collectSize(const KNSize &)
 
 void KNContentCollector::collectLayer(const ID_t &id, const bool ref)
 {
-  // TODO: implement me
-  (void) id;
-  (void) ref;
   assert(m_layerOpened);
+
+  KNCollectorBase::collectLayer(id, ref);
+
+  if (ref)
+  {
+    const KNLayerMap_t::const_iterator it = m_masterPages.find(id);
+    if (m_masterPages.end() != it)
+      drawLayer(it->second.objects);
+    else
+    {
+      KN_DEBUG_MSG(("master page layer %s not found\n", id.c_str()));
+    }
+  }
+  else
+    drawLayer(getObjects());
 }
 
 void KNContentCollector::collectPage(const ID_t &)
@@ -100,6 +113,8 @@ void KNContentCollector::startLayer()
   assert(m_pageOpened);
   assert(!m_layerOpened);
 
+  KNCollectorBase::startLayer();
+
   WPXPropertyList props;
 
   m_layerOpened = true;
@@ -111,8 +126,17 @@ void KNContentCollector::endLayer()
   assert(m_pageOpened);
   assert(m_layerOpened);
 
+  KNCollectorBase::endLayer();
+
   m_layerOpened = false;
   m_painter->endLayer();
+}
+
+void KNContentCollector::drawLayer(const KNObjectList_t &objects)
+{
+  KNTransformation tr;
+  for (KNObjectList_t::const_iterator it = objects.begin(); it != objects.end(); ++it)
+    (*it)->draw(m_painter, m_dict, tr);
 }
 
 }
