@@ -49,6 +49,8 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNSVGGenerator.cpp \
 	KNSVGGenerator.h \
 	KNToken.h \
+	KNTransformation.cpp \
+	KNTransformation.h \
 	KNTypes.cpp \
 	KNTypes.h \
 	KNXMLReader.cpp \
