@@ -30,6 +30,8 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KN2Token.h \
 	KNCollector.cpp \
 	KNCollector.h \
+	KNCollectorBase.cpp \
+	KNCollectorBase.h \
 	KNContentCollector.cpp \
 	KNContentCollector.h \
 	KNDictionary.h \

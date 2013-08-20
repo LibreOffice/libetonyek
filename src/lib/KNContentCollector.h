@@ -10,7 +10,7 @@
 #ifndef KNCONTENTCOLLECTOR_H_INCLUDED
 #define KNCONTENTCOLLECTOR_H_INCLUDED
 
-#include "KNCollector.h"
+#include "KNCollectorBase.h"
 
 namespace libwpg
 {
@@ -25,26 +25,13 @@ namespace libkeynote
 struct KNDictionary;
 struct KNStyle;
 
-class KNContentCollector : public KNCollector
+class KNContentCollector : public KNCollectorBase
 {
 public:
   KNContentCollector(::libwpg::WPGPaintInterface *painter, KNDictionary &dict, const KNLayerMap_t &masterPages, const KNSize &size);
   virtual ~KNContentCollector();
 
   // collector functions
-
-  virtual void collectCharacterStyle(const ID_t &id, const KNStyle &style);
-  virtual void collectGraphicStyle(const ID_t &id, const KNStyle &style);
-  virtual void collectHeadlineStyle(const ID_t &id, const KNStyle &style);
-  virtual void collectLayoutStyle(const ID_t &id, const KNStyle &style);
-  virtual void collectParagraphStyle(const ID_t &id, const KNStyle &style);
-
-  virtual void collectGeometry(const ID_t &id, const KNGeometry &geometry);
-  virtual void collectGroup(const ID_t &id, const KNGroup &group);
-  virtual void collectImage(const ID_t &id, const KNImage &image);
-  virtual void collectLine(const ID_t &id, const KNLine &line);
-  virtual void collectMedia(const ID_t &id, const KNMedia &media);
-  virtual void collectPath(const ID_t &id, const KNPath &path);
 
   virtual void collectSize(const KNSize &size);
 
@@ -74,8 +61,6 @@ private:
   const KNSize &m_size;
 
   KNLayer m_currentLayer;
-
-  bool m_collecting;
 
   bool m_pageOpened;
   bool m_layerOpened;

@@ -10,7 +10,7 @@
 #ifndef KNSTYLESCOLLECTOR_H_INCLUDED
 #define KNSTYLESCOLLECTOR_H_INCLUDED
 
-#include "KNCollector.h"
+#include "KNCollectorBase.h"
 
 namespace libkeynote
 {
@@ -18,26 +18,13 @@ namespace libkeynote
 struct KNDictionary;
 struct KNStyle;
 
-class KNStylesCollector : public KNCollector
+class KNStylesCollector : public KNCollectorBase
 {
 public:
   KNStylesCollector(KNDictionary &dict, KNLayerMap_t &masterPages, KNSize &size);
   virtual ~KNStylesCollector();
 
   // collector functions
-
-  virtual void collectCharacterStyle(const ID_t &id, const KNStyle &style);
-  virtual void collectGraphicStyle(const ID_t &id, const KNStyle &style);
-  virtual void collectHeadlineStyle(const ID_t &id, const KNStyle &style);
-  virtual void collectLayoutStyle(const ID_t &id, const KNStyle &style);
-  virtual void collectParagraphStyle(const ID_t &id, const KNStyle &style);
-
-  virtual void collectGeometry(const ID_t &id, const KNGeometry &geometry);
-  virtual void collectGroup(const ID_t &id, const KNGroup &group);
-  virtual void collectImage(const ID_t &id, const KNImage &image);
-  virtual void collectLine(const ID_t &id, const KNLine &line);
-  virtual void collectMedia(const ID_t &id, const KNMedia &media);
-  virtual void collectPath(const ID_t &id, const KNPath &path);
 
   virtual void collectSize(const KNSize &size);
 
@@ -58,10 +45,6 @@ private:
   KNDictionary &m_dict;
   KNLayerMap_t &m_masterPages;
   KNSize &m_size;
-
-  KNLayer m_currentLayer;
-
-  bool m_collecting;
 };
 
 } // namespace libkeynote

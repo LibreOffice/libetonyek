@@ -18,12 +18,12 @@ namespace libkeynote
 {
 
 KNContentCollector::KNContentCollector(::libwpg::WPGPaintInterface *const painter, KNDictionary &dict, const KNLayerMap_t &masterPages, const KNSize &size)
-  : m_painter(painter)
+  : KNCollectorBase(dict)
+  , m_painter(painter)
   , m_dict(dict)
   , m_masterPages(masterPages)
   , m_size(size)
   , m_currentLayer()
-  , m_collecting(false)
   , m_pageOpened(false)
   , m_layerOpened(false)
 {
@@ -31,75 +31,8 @@ KNContentCollector::KNContentCollector(::libwpg::WPGPaintInterface *const painte
 
 KNContentCollector::~KNContentCollector()
 {
-  assert(!m_collecting);
   assert(!m_pageOpened);
   assert(!m_layerOpened);
-}
-
-void KNContentCollector::collectCharacterStyle(const ID_t &id, const KNStyle &style)
-{
-  if (m_collecting)
-    m_dict.characterStyles[id] = style;
-}
-
-void KNContentCollector::collectGraphicStyle(const ID_t &id, const KNStyle &style)
-{
-  if (m_collecting)
-    m_dict.graphicStyles[id] = style;
-}
-
-void KNContentCollector::collectHeadlineStyle(const ID_t &id, const KNStyle &style)
-{
-  if (m_collecting)
-    m_dict.headlineStyles[id] = style;
-}
-
-void KNContentCollector::collectLayoutStyle(const ID_t &id, const KNStyle &style)
-{
-  if (m_collecting)
-    m_dict.layoutStyles[id] = style;
-}
-
-void KNContentCollector::collectParagraphStyle(const ID_t &id, const KNStyle &style)
-{
-  if (m_collecting)
-    m_dict.paragraphStyles[id] = style;
-}
-
-void KNContentCollector::collectGeometry(const ID_t &id, const KNGeometry &geometry)
-{
-  if (m_collecting)
-    m_dict.geometries[id] = geometry;
-}
-
-void KNContentCollector::collectGroup(const ID_t &id, const KNGroup &group)
-{
-  if (m_collecting)
-    m_dict.groups[id] = group;
-}
-
-void KNContentCollector::collectImage(const ID_t &id, const KNImage &image)
-{
-  if (m_collecting)
-    m_dict.images[id] = image;
-}
-
-void KNContentCollector::collectLine(const ID_t &id, const KNLine &line)
-{
-  if (m_collecting)
-    m_dict.lines[id] = line;
-}
-
-void KNContentCollector::collectMedia(const ID_t &id, const KNMedia &media)
-{
-  if (m_collecting)
-    m_dict.media[id] = media;
-}
-
-void KNContentCollector::collectPath(const ID_t &id, const KNPath &path)
-{
-  if (m_collecting)
-    m_dict.paths[id] = path;
 }
 
 void KNContentCollector::collectSize(const KNSize &)
@@ -121,12 +54,12 @@ void KNContentCollector::collectPage(const ID_t &)
 
 void KNContentCollector::startSlides()
 {
-  m_collecting = true;
+  setCollecting(true);
 }
 
 void KNContentCollector::endSlides()
 {
-  m_collecting = false;
+  setCollecting(false);
 }
 
 void KNContentCollector::startThemes()
