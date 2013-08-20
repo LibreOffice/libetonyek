@@ -384,10 +384,20 @@ void KN2Parser::parseDrawables(const KNXMLReader &reader)
       switch (getKN2TokenID(name))
       {
       case KN2Token::group :
+        parseGroup(element);
+        break;
       case KN2Token::image :
+        parseImage(element);
+        break;
       case KN2Token::line :
+        parseLine(element);
+        break;
       case KN2Token::media :
+        parseMedia(element);
+        break;
       case KN2Token::shape :
+        parseShape(element);
+        break;
       case KN2Token::body_placeholder_ref :
       case KN2Token::slide_number_placeholder_ref :
       case KN2Token::table_info :
