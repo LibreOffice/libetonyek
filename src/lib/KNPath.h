@@ -53,6 +53,8 @@ private:
 
 typedef boost::unordered_map<std::string, KNPath> KNPathMap_t;
 
+KNObjectPtr_t makePathObject(const ID_t &id);
+
 }
 
 #endif //  KNPATH_H_INCLUDED

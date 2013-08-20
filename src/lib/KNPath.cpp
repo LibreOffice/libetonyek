@@ -202,6 +202,42 @@ void KNPath::appendClose()
   m_elements.push_back(new Close());
 }
 
+namespace
+{
+
+class PathObject : public KNObject
+{
+public:
+  explicit PathObject(const ID_t &id);
+
+private:
+  virtual void draw(libwpg::WPGPaintInterface *painter, const KNDictionary &dict, const KNTransformation &tr);
+
+private:
+  const ID_t m_id;
+};
+
+PathObject::PathObject(const ID_t &id)
+  : m_id(id)
+{
+}
+
+void PathObject::draw(libwpg::WPGPaintInterface *const painter, const KNDictionary &dict, const KNTransformation &tr)
+{
+  // TODO: implement me
+  (void) painter;
+  (void) dict;
+  (void) tr;
+}
+
+}
+
+KNObjectPtr_t makePathObject(const ID_t &id)
+{
+  const KNObjectPtr_t object(new PathObject(id));
+  return object;
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

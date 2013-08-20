@@ -139,6 +139,150 @@ KNLayer::KNLayer()
 {
 }
 
+namespace
+{
+
+class GroupObject : public KNObject
+{
+public:
+  explicit GroupObject(const ID_t &id);
+
+private:
+  virtual void draw(libwpg::WPGPaintInterface *painter, const KNDictionary &dict, const KNTransformation &tr);
+
+private:
+  const ID_t m_id;
+};
+
+GroupObject::GroupObject(const ID_t &id)
+  : m_id(id)
+{
+}
+
+void GroupObject::draw(libwpg::WPGPaintInterface *const painter, const KNDictionary &dict, const KNTransformation &tr)
+{
+  // TODO: implement me
+  (void) painter;
+  (void) dict;
+  (void) tr;
+}
+
+}
+
+namespace
+{
+
+class ImageObject : public KNObject
+{
+public:
+  explicit ImageObject(const ID_t &id);
+
+private:
+  virtual void draw(libwpg::WPGPaintInterface *painter, const KNDictionary &dict, const KNTransformation &tr);
+
+private:
+  const ID_t m_id;
+};
+
+ImageObject::ImageObject(const ID_t &id)
+  : m_id(id)
+{
+}
+
+void ImageObject::draw(libwpg::WPGPaintInterface *const painter, const KNDictionary &dict, const KNTransformation &tr)
+{
+  // TODO: implement me
+  (void) painter;
+  (void) dict;
+  (void) tr;
+}
+
+}
+
+namespace
+{
+
+class LineObject : public KNObject
+{
+public:
+  explicit LineObject(const ID_t &id);
+
+private:
+  virtual void draw(libwpg::WPGPaintInterface *painter, const KNDictionary &dict, const KNTransformation &tr);
+
+private:
+  const ID_t m_id;
+};
+
+LineObject::LineObject(const ID_t &id)
+  : m_id(id)
+{
+}
+
+void LineObject::draw(libwpg::WPGPaintInterface *const painter, const KNDictionary &dict, const KNTransformation &tr)
+{
+  // TODO: implement me
+  (void) painter;
+  (void) dict;
+  (void) tr;
+}
+
+}
+
+namespace
+{
+
+class MediaObject : public KNObject
+{
+public:
+  explicit MediaObject(const ID_t &id);
+
+private:
+  virtual void draw(libwpg::WPGPaintInterface *painter, const KNDictionary &dict, const KNTransformation &tr);
+
+private:
+  const ID_t m_id;
+};
+
+MediaObject::MediaObject(const ID_t &id)
+  : m_id(id)
+{
+}
+
+void MediaObject::draw(libwpg::WPGPaintInterface *const painter, const KNDictionary &dict, const KNTransformation &tr)
+{
+  // TODO: implement me
+  (void) painter;
+  (void) dict;
+  (void) tr;
+}
+
+}
+
+KNObjectPtr_t makeGroupObject(const ID_t &id)
+{
+  const KNObjectPtr_t object(new GroupObject(id));
+  return object;
+}
+
+KNObjectPtr_t makeImageObject(const ID_t &id)
+{
+  const KNObjectPtr_t object(new ImageObject(id));
+  return object;
+}
+
+KNObjectPtr_t makeLineObject(const ID_t &id)
+{
+  const KNObjectPtr_t object(new LineObject(id));
+  return object;
+}
+
+KNObjectPtr_t makeMediaObject(const ID_t &id)
+{
+  const KNObjectPtr_t object(new MediaObject(id));
+  return object;
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

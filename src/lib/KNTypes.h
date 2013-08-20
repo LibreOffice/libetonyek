@@ -16,6 +16,8 @@
 #include <boost/optional.hpp>
 #include <boost/unordered_map.hpp>
 
+#include "KNObject.h"
+
 namespace libkeynote
 {
 
@@ -164,6 +166,11 @@ typedef boost::unordered_map<std::string, KNImage> KNImageMap_t;
 typedef boost::unordered_map<std::string, KNLayer> KNLayerMap_t;
 typedef boost::unordered_map<std::string, KNLine> KNLineMap_t;
 typedef boost::unordered_map<std::string, KNMedia> KNMediaMap_t;
+
+KNObjectPtr_t makeGroupObject(const ID_t &id);
+KNObjectPtr_t makeImageObject(const ID_t &id);
+KNObjectPtr_t makeLineObject(const ID_t &id);
+KNObjectPtr_t makeMediaObject(const ID_t &id);
 
 }
 
