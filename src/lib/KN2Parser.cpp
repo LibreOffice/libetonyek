@@ -198,10 +198,10 @@ KNSize readSize(const KNXMLReader &reader)
       switch (getNameId(attr))
       {
       case KN2Token::h :
-        size.height = lexical_cast<unsigned>(attr.getValue());
+        size.height = asDouble(attr.getValue());
         break;
       case KN2Token::w :
-        size.width = lexical_cast<unsigned>(attr.getValue());
+        size.width = asDouble(attr.getValue());
         break;
       default :
         KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
