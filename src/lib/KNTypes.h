@@ -90,6 +90,7 @@ struct KNPoint
 struct KNLine
 {
   boost::optional<ID_t> geometry;
+  boost::optional<ID_t> style;
   boost::optional<KNPoint> head;
   boost::optional<KNPoint> tail;
 

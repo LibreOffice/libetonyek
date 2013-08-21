@@ -12,6 +12,18 @@
 namespace libkeynote
 {
 
+namespace
+{
+
+void mergeParentStyle(KNStyle &style, const KNStyle &parent)
+{
+  // TODO: implement me
+  (void) style;
+  (void) parent;
+}
+
+}
+
 KNStyle::KNStyle()
   : ident()
   , name()
@@ -25,6 +37,22 @@ KNStyle::KNStyle()
   , layoutParagraphStyle()
   , layoutStyle()
 {
+}
+
+void resolveStyle(KNStyle &style, const KNStyleMap_t &styles)
+{
+  boost::optional<ID_t> parent;
+
+  while (parent)
+  {
+    const KNStyleMap_t::const_iterator it = styles.find(get(parent));
+    if (styles.end() != it)
+    {
+      const KNStyle &parentStyle = it->second;
+      mergeParentStyle(style, parentStyle);
+      // parent = parentStyle.parent;
+    }
+  }
 }
 
 }

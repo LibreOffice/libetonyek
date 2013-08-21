@@ -45,6 +45,10 @@ struct KNStyle
 
 typedef boost::unordered_map<std::string, KNStyle> KNStyleMap_t;
 
+/** Replace reference to a parent style by its content.
+  */
+void resolveStyle(KNStyle &style, const KNStyleMap_t &styles);
+
 }
 
 #endif // KNSTYLE_H_INCLUDED

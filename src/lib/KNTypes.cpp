@@ -13,6 +13,7 @@
 
 #include "libkeynote_utils.h"
 #include "KNDictionary.h"
+#include "KNTransformation.h"
 #include "KNTypes.h"
 
 namespace libkeynote
@@ -155,6 +156,15 @@ WPXPropertyList toWPG(const KNPoint &point)
   return props;
 }
 
+WPXPropertyList makeLineStyle(const KNStyle &style)
+{
+  // TODO: implement me
+  (void) style;
+  WPXPropertyList props;
+
+  return props;
+}
+
 }
 
 namespace
@@ -252,6 +262,20 @@ void LineObject::draw(libwpg::WPGPaintInterface *const painter, const KNDictiona
     const KNLine &line = it->second;
     if (line.head && line.tail)
     {
+      WPXPropertyList props;
+      if (line.style)
+      {
+        // TODO: is it graphic style?
+        const KNStyleMap_t::const_iterator styleIt = dict.graphicStyles.find(get(line.style));
+        if (dict.graphicStyles.end() != styleIt)
+        {
+          KNStyle style = styleIt->second;
+          resolveStyle(style, dict.graphicStyles);
+          props = makeLineStyle(style);
+        }
+      }
+      painter->setStyle(props, WPXPropertyListVector());
+
       WPXPropertyListVector vertices;
       vertices.append(toWPG(get(line.head)));
       vertices.append(toWPG(get(line.tail)));
