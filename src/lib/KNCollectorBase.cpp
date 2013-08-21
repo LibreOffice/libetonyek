@@ -172,10 +172,8 @@ void KNCollectorBase::endGroup()
   assert(!m_objectsStack.empty());
   assert(m_groupLevel > 0);
 
-  m_objectsStack.pop();
   --m_groupLevel;
-
-  assert(!m_objectsStack.empty());
+  // stack is popped in collectGroup already
 }
 
 bool KNCollectorBase::getCollecting() const
