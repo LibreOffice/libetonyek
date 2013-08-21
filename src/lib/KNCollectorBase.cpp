@@ -69,10 +69,10 @@ void KNCollectorBase::collectGeometry(const ID_t &, const KNGeometryPtr_t &geome
 
 void KNCollectorBase::collectGroup(const ID_t &, const KNGroupPtr_t &group)
 {
-  assert(!m_objectsStack.empty());
-
   if (m_collecting)
   {
+    assert(!m_objectsStack.empty());
+
     group->objects = m_objectsStack.top();
     m_objectsStack.pop();
     assert(!m_objectsStack.empty());
@@ -82,10 +82,10 @@ void KNCollectorBase::collectGroup(const ID_t &, const KNGroupPtr_t &group)
 
 void KNCollectorBase::collectImage(const ID_t &id, const KNImagePtr_t &image)
 {
-  assert(!m_objectsStack.empty());
-
   if (m_collecting)
   {
+    assert(!m_objectsStack.empty());
+
     image->geometry = m_currentGeometry;
     m_currentGeometry.reset();
     m_dict.images[id] = image;
@@ -95,10 +95,10 @@ void KNCollectorBase::collectImage(const ID_t &id, const KNImagePtr_t &image)
 
 void KNCollectorBase::collectLine(const ID_t &, const KNLinePtr_t &line)
 {
-  assert(!m_objectsStack.empty());
-
   if (m_collecting)
   {
+    assert(!m_objectsStack.empty());
+
     line->geometry = m_currentGeometry;
     m_currentGeometry.reset();
     m_objectsStack.top().push_back(makeObject(line));
@@ -107,10 +107,10 @@ void KNCollectorBase::collectLine(const ID_t &, const KNLinePtr_t &line)
 
 void KNCollectorBase::collectMedia(const ID_t &, const KNMediaPtr_t &media)
 {
-  assert(!m_objectsStack.empty());
-
   if (m_collecting)
   {
+    assert(!m_objectsStack.empty());
+
     media->geometry = m_currentGeometry;
     m_currentGeometry.reset();
     m_objectsStack.top().push_back(makeObject(media));
@@ -119,10 +119,10 @@ void KNCollectorBase::collectMedia(const ID_t &, const KNMediaPtr_t &media)
 
 void KNCollectorBase::collectPath(const ID_t &, const KNPathPtr_t &path)
 {
-  assert(!m_objectsStack.empty());
-
   if (m_collecting)
   {
+    assert(!m_objectsStack.empty());
+
     path->setGeometry(m_currentGeometry);
     m_currentGeometry.reset();
     m_objectsStack.top().push_back(makeObject(path));
@@ -131,49 +131,64 @@ void KNCollectorBase::collectPath(const ID_t &, const KNPathPtr_t &path)
 
 void KNCollectorBase::collectLayer(const ID_t &, bool)
 {
-  assert(m_layerOpened);
-  assert(!m_objectsStack.empty());
+  if (m_collecting)
+  {
+    assert(m_layerOpened);
+    assert(!m_objectsStack.empty());
+  }
 }
 
 void KNCollectorBase::startLayer()
 {
-  assert(!m_layerOpened);
-  assert(m_objectsStack.empty());
+  if (m_collecting)
+  {
+    assert(!m_layerOpened);
+    assert(m_objectsStack.empty());
 
-  m_objectsStack.push(KNObjectList_t());
-  m_layerOpened = true;
+    m_objectsStack.push(KNObjectList_t());
+    m_layerOpened = true;
 
-  assert(!m_objectsStack.empty());
+    assert(!m_objectsStack.empty());
+  }
 }
 
 void KNCollectorBase::endLayer()
 {
-  assert(m_layerOpened);
-  assert(!m_objectsStack.empty());
+  if (m_collecting)
+  {
+    assert(m_layerOpened);
+    assert(!m_objectsStack.empty());
 
-  m_objectsStack.pop();
-  m_layerOpened = false;
+    m_objectsStack.pop();
+    m_layerOpened = false;
 
-  assert(m_objectsStack.empty());
+    assert(m_objectsStack.empty());
+  }
 }
 
 void KNCollectorBase::startGroup()
 {
-  assert(m_layerOpened);
-  assert(!m_objectsStack.empty());
+  if (m_collecting)
+  {
+    assert(m_layerOpened);
+    assert(!m_objectsStack.empty());
 
-  m_objectsStack.push(KNObjectList_t());
-  ++m_groupLevel;
+    m_objectsStack.push(KNObjectList_t());
+    ++m_groupLevel;
+  }
 }
 
 void KNCollectorBase::endGroup()
 {
-  assert(m_layerOpened);
-  assert(!m_objectsStack.empty());
-  assert(m_groupLevel > 0);
+  if (m_collecting)
+  {
+    assert(m_layerOpened);
+    assert(!m_objectsStack.empty());
+    assert(m_groupLevel > 0);
 
-  --m_groupLevel;
-  // stack is popped in collectGroup already
+    --m_groupLevel;
+    // stack is popped in collectGroup already
+  }
 }
 
 bool KNCollectorBase::getCollecting() const
@@ -188,6 +203,7 @@ void KNCollectorBase::setCollecting(bool collecting)
 
 const KNObjectList_t &KNCollectorBase::getObjects() const
 {
+  assert(m_collecting);
   assert(m_layerOpened);
   assert(!m_objectsStack.empty());
 
