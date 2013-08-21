@@ -10,6 +10,8 @@
 #ifndef LIBKEYNOTE_XML_H_INCLUDED
 #define LIBKEYNOTE_XML_H_INCLUDED
 
+#include <string>
+
 #include "libkeynote_utils.h"
 
 #define KN_DEBUG_XML_NOT_EMPTY(name, ns) KN_DEBUG_MSG(("element %s%s%s%s is not empty, skipping content...\n", ns ? "{" : "", ns, ns ? "}" : "", name))
@@ -21,7 +23,16 @@ namespace libkeynote
 
 class KNXMLReader;
 
+double asDouble(const char *value);
+
 void skipElement(const KNXMLReader &reader);
+
+bool checkElement(const KNXMLReader &reader, int name, int ns);
+bool checkEmptyElement(const KNXMLReader &reader);
+bool checkNoAttributes(const KNXMLReader &reader);
+
+std::string readOnlyAttribute(const KNXMLReader &reader, int name, int ns);
+std::string readOnlyElementAttribute(const KNXMLReader &reader, int name, int ns);
 
 }
 
