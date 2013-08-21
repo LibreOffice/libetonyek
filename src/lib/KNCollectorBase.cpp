@@ -60,22 +60,21 @@ void KNCollectorBase::collectParagraphStyle(const ID_t &id, const KNStylePtr_t &
     m_dict.paragraphStyles[id] = style;
 }
 
-void KNCollectorBase::collectGeometry(const ID_t &id, const KNGeometryPtr_t &geometry)
+void KNCollectorBase::collectGeometry(const ID_t &, const KNGeometryPtr_t &geometry)
 {
   if (m_collecting)
-  {
-    m_dict.geometries[id] = geometry;
     m_currentGeometry = geometry;
-  }
 }
 
-void KNCollectorBase::collectGroup(const ID_t &id, const KNGroupPtr_t &group)
+void KNCollectorBase::collectGroup(const ID_t &, const KNGroupPtr_t &group)
 {
   assert(!m_objectsStack.empty());
 
   if (m_collecting)
   {
-    m_dict.groups[id] = group;
+    group->objects = m_objectsStack.top();
+    m_objectsStack.pop();
+    assert(!m_objectsStack.empty());
     m_objectsStack.top().push_back(makeObject(group));
   }
 }
@@ -93,7 +92,7 @@ void KNCollectorBase::collectImage(const ID_t &id, const KNImagePtr_t &image)
   }
 }
 
-void KNCollectorBase::collectLine(const ID_t &id, const KNLinePtr_t &line)
+void KNCollectorBase::collectLine(const ID_t &, const KNLinePtr_t &line)
 {
   assert(!m_objectsStack.empty());
 
@@ -101,12 +100,11 @@ void KNCollectorBase::collectLine(const ID_t &id, const KNLinePtr_t &line)
   {
     line->geometry = m_currentGeometry;
     m_currentGeometry.reset();
-    m_dict.lines[id] = line;
     m_objectsStack.top().push_back(makeObject(line));
   }
 }
 
-void KNCollectorBase::collectMedia(const ID_t &id, const KNMediaPtr_t &media)
+void KNCollectorBase::collectMedia(const ID_t &, const KNMediaPtr_t &media)
 {
   assert(!m_objectsStack.empty());
 
@@ -114,20 +112,18 @@ void KNCollectorBase::collectMedia(const ID_t &id, const KNMediaPtr_t &media)
   {
     media->geometry = m_currentGeometry;
     m_currentGeometry.reset();
-    m_dict.media[id] = media;
     m_objectsStack.top().push_back(makeObject(media));
   }
 }
 
-void KNCollectorBase::collectPath(const ID_t &id, const KNPathPtr_t &path)
+void KNCollectorBase::collectPath(const ID_t &, const KNPathPtr_t &path)
 {
   assert(!m_objectsStack.empty());
 
   if (m_collecting)
   {
-    // path.setGeometry(m_currentGeometry);
+    path->setGeometry(m_currentGeometry);
     m_currentGeometry.reset();
-    m_dict.paths[id] = path;
     m_objectsStack.top().push_back(makeObject(path));
   }
 }

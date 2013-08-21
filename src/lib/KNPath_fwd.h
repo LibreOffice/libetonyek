@@ -17,7 +17,6 @@ namespace libkeynote
 class KNPath;
 
 typedef boost::shared_ptr<KNPath> KNPathPtr_t;
-typedef boost::unordered_map<ID_t, KNPathPtr_t> KNPathMap_t;
 
 }
 

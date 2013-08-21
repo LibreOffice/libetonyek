@@ -39,12 +39,7 @@ struct KNDictionary
   KNStyleMap_t layoutStyles;
   KNStyleMap_t paragraphStyles;
 
-  KNGeometryMap_t geometries;
-  KNGroupMap_t groups;
   KNImageMap_t images;
-  KNLineMap_t lines;
-  KNMediaMap_t media;
-  KNPathMap_t paths;
 };
 
 }

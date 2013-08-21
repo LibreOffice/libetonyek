@@ -22,12 +22,10 @@ typedef std::string ID_t;
 struct KNGeometry;
 
 typedef boost::shared_ptr<KNGeometry> KNGeometryPtr_t;
-typedef boost::unordered_map<ID_t, KNGeometryPtr_t> KNGeometryMap_t;
 
 struct KNLine;
 
 typedef boost::shared_ptr<KNLine> KNLinePtr_t;
-typedef boost::unordered_map<ID_t, KNLinePtr_t> KNLineMap_t;
 
 struct KNImage;
 
@@ -37,7 +35,6 @@ typedef boost::unordered_map<ID_t, KNImagePtr_t> KNImageMap_t;
 struct KNMedia;
 
 typedef boost::shared_ptr<KNMedia> KNMediaPtr_t;
-typedef boost::unordered_map<ID_t, KNMediaPtr_t> KNMediaMap_t;
 
 struct KNWrap;
 
@@ -46,7 +43,6 @@ typedef boost::shared_ptr<KNWrap> KNWrapPtr_t;
 struct KNGroup;
 
 typedef boost::shared_ptr<KNGroup> KNGroupPtr_t;
-typedef boost::unordered_map<ID_t, KNGroupPtr_t> KNGroupMap_t;
 
 struct KNLayer;
 
