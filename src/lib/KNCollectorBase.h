@@ -55,12 +55,13 @@ public:
   bool getCollecting() const;
   void setCollecting(bool collecting);
 
-  const KNObjectList_t &getObjects() const;
+  const KNLayerPtr_t &getLayer() const;
 
 private:
   KNDictionary &m_dict;
   std::stack<KNObjectList_t> m_objectsStack;
   KNGeometryPtr_t m_currentGeometry;
+  KNLayerPtr_t m_currentLayer;
 
   bool m_collecting;
   bool m_layerOpened;

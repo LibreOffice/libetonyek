@@ -135,6 +135,10 @@ void KNCollectorBase::collectLayer(const ID_t &, bool)
   {
     assert(m_layerOpened);
     assert(!m_objectsStack.empty());
+
+    m_currentLayer.reset(new KNLayer());
+    m_currentLayer->objects = m_objectsStack.top();
+    m_objectsStack.pop();
   }
 }
 
@@ -144,6 +148,7 @@ void KNCollectorBase::startLayer()
   {
     assert(!m_layerOpened);
     assert(m_objectsStack.empty());
+    assert(!m_currentLayer);
 
     m_objectsStack.push(KNObjectList_t());
     m_layerOpened = true;
@@ -157,9 +162,10 @@ void KNCollectorBase::endLayer()
   if (m_collecting)
   {
     assert(m_layerOpened);
-    assert(!m_objectsStack.empty());
+    // object stack is already cleared by collectLayer()
+    assert(m_objectsStack.empty());
 
-    m_objectsStack.pop();
+    m_currentLayer.reset();
     m_layerOpened = false;
 
     assert(m_objectsStack.empty());
@@ -201,13 +207,9 @@ void KNCollectorBase::setCollecting(bool collecting)
   m_collecting = collecting;
 }
 
-const KNObjectList_t &KNCollectorBase::getObjects() const
+const KNLayerPtr_t &KNCollectorBase::getLayer() const
 {
-  assert(m_collecting);
-  assert(m_layerOpened);
-  assert(!m_objectsStack.empty());
-
-  return m_objectsStack.top();
+  return m_currentLayer;
 }
 
 } // namespace libkeynote

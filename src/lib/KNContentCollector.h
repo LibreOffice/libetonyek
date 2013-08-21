@@ -53,7 +53,7 @@ private:
 
   void resolveStyle(KNStyle &style);
 
-  void drawLayer(const KNObjectList_t &objects);
+  void drawLayer(const KNLayerPtr_t &layer);
 
 private:
   libwpg::WPGPaintInterface *m_painter;

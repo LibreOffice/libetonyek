@@ -50,14 +50,14 @@ void KNContentCollector::collectLayer(const ID_t &id, const bool ref)
   {
     const KNLayerMap_t::const_iterator it = m_masterPages.find(id);
     if (m_masterPages.end() != it)
-      drawLayer(it->second->objects);
+      drawLayer(it->second);
     else
     {
       KN_DEBUG_MSG(("master page layer %s not found\n", id.c_str()));
     }
   }
   else
-    drawLayer(getObjects());
+    drawLayer(getLayer());
 }
 
 void KNContentCollector::collectPage(const ID_t &)
@@ -132,11 +132,18 @@ void KNContentCollector::endLayer()
   m_painter->endLayer();
 }
 
-void KNContentCollector::drawLayer(const KNObjectList_t &objects)
+void KNContentCollector::drawLayer(const KNLayerPtr_t &layer)
 {
-  KNTransformation tr;
-  for (KNObjectList_t::const_iterator it = objects.begin(); it != objects.end(); ++it)
-    (*it)->draw(m_painter, tr);
+  if (bool(layer))
+  {
+    KNTransformation tr;
+    for (KNObjectList_t::const_iterator it = layer->objects.begin(); it != layer->objects.end(); ++it)
+      (*it)->draw(m_painter, tr);
+  }
+  else
+  {
+    KN_DEBUG_MSG(("no layer\n"));
+  }
 }
 
 }

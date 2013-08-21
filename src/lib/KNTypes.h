@@ -141,8 +141,6 @@ struct KNLayer
 {
   boost::optional<std::string> type;
   KNObjectList_t objects;
-
-  explicit KNLayer(const KNObjectList_t &objectList);
 };
 
 KNObjectPtr_t makeObject(const KNGroupPtr_t &group);

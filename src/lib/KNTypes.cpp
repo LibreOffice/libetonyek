@@ -125,12 +125,6 @@ KNWrap::KNWrap()
 {
 }
 
-KNLayer::KNLayer(const KNObjectList_t &objectList)
-  : type()
-  , objects(objectList)
-{
-}
-
 namespace
 {
 

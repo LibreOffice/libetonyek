@@ -41,8 +41,13 @@ void KNStylesCollector::collectLayer(const ID_t &id, const bool ref)
   }
   else
   {
-    const KNLayerPtr_t layer(new KNLayer(getObjects()));
-    m_masterPages.insert(KNLayerMap_t::value_type(id, layer));
+    const KNLayerPtr_t layer = getLayer();
+    if (bool(layer))
+      m_masterPages.insert(KNLayerMap_t::value_type(id, layer));
+    else
+    {
+      KN_DEBUG_MSG(("master style layer is empty\n"));
+    }
   }
 }
 
