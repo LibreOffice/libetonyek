@@ -125,17 +125,6 @@ KNWrap::KNWrap()
 {
 }
 
-KNGroup::KNGroup()
-  : geometries()
-  , groups()
-  , images()
-  , lines()
-  , media()
-  , shapes()
-  , wraps()
-{
-}
-
 KNLayer::KNLayer(const KNObjectList_t &objectList)
   : type()
   , objects(objectList)

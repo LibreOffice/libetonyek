@@ -138,15 +138,7 @@ struct KNWrap
 
 struct KNGroup
 {
-  IDs_t geometries;
-  IDs_t groups;
-  IDs_t images;
-  IDs_t lines;
-  IDs_t media;
-  IDs_t shapes;
-  IDs_t wraps;
-
-  KNGroup();
+  KNObjectList_t objects;
 };
 
 struct KNLayer

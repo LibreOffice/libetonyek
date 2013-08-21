@@ -1882,22 +1882,22 @@ ID_t KN2Parser::parseGroup(const KNXMLReader &reader)
       switch (getKN2TokenID(name))
       {
       case KN2Token::geometry :
-        group.geometries.push_back(parseGeometry(reader));
+        parseGeometry(reader);
         break;
       case KN2Token::group :
-        group.groups.push_back(parseGroup(reader));
+        parseGroup(reader);
         break;
       case KN2Token::image :
-        group.images.push_back(parseImage(reader));
+        parseImage(reader);
         break;
       case KN2Token::line :
-        group.lines.push_back(parseLine(reader));
+        parseLine(reader);
         break;
       case KN2Token::media :
-        group.media.push_back(parseMedia(reader));
+        parseMedia(reader);
         break;
       case KN2Token::shape :
-        group.shapes.push_back(parseShape(reader));
+        parseShape(reader);
         break;
       case KN2Token::wrap :
         KN_DEBUG_XML_TODO("element", name, ns);
