@@ -46,12 +46,12 @@ private:
   void parseTheme(const KNXMLReader &reader);
   void parseThemeList(const KNXMLReader &reader);
 
-  ID_t parseGeometry(const KNXMLReader &reader);
-  ID_t parseGroup(const KNXMLReader &reader);
-  ID_t parseImage(const KNXMLReader &reader);
-  ID_t parseLine(const KNXMLReader &reader);
-  ID_t parseMedia(const KNXMLReader &reader);
-  ID_t parseShape(const KNXMLReader &reader);
+  void parseGeometry(const KNXMLReader &reader);
+  void parseGroup(const KNXMLReader &reader);
+  void parseImage(const KNXMLReader &reader);
+  void parseLine(const KNXMLReader &reader);
+  void parseMedia(const KNXMLReader &reader);
+  void parseShape(const KNXMLReader &reader);
 
 private:
   unsigned m_version;

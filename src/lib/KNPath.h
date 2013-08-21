@@ -12,10 +12,13 @@
 
 #include <deque>
 
-#include "KNTypes.h"
+#include "KNObject.h"
+#include "KNPath_fwd.h"
 
 namespace libkeynote
 {
+
+struct KNPoint;
 
 class KNPath
 {
@@ -30,7 +33,7 @@ public:
 
 public:
   KNPath();
-  explicit KNPath(const KNGeometry &geometry);
+  explicit KNPath(const KNGeometryPtr_t &geometry);
   KNPath(const KNPath &other);
   ~KNPath();
   KNPath &operator=(const KNPath &other);
@@ -39,7 +42,7 @@ public:
 
   void clear();
 
-  void setGeometry(const KNGeometry &geometry);
+  void setGeometry(const KNGeometryPtr_t &geometry);
 
   void appendMoveTo(const KNPoint &point);
   void appendLineTo(const KNPoint &point);
@@ -48,12 +51,10 @@ public:
 
 private:
   std::deque<Element *> m_elements;
-  KNGeometry m_geometry;
+  KNGeometryPtr_t m_geometry;
 };
 
-typedef boost::unordered_map<std::string, KNPath> KNPathMap_t;
-
-KNObjectPtr_t makePathObject(const ID_t &id);
+KNObjectPtr_t makeObject(const KNPathPtr_t &path);
 
 }
 

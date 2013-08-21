@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "KNPath.h"
+#include "KNTypes.h"
 
 namespace libkeynote
 {
@@ -129,7 +130,7 @@ KNPath::KNPath()
 {
 }
 
-KNPath::KNPath(const KNGeometry &geometry)
+KNPath::KNPath(const KNGeometryPtr_t &geometry)
   : m_elements()
   , m_geometry(geometry)
 {
@@ -167,7 +168,7 @@ void KNPath::swap(KNPath &other)
 {
   using std::swap;
   swap(m_elements, other.m_elements);
-  swap(m_geometry, other.m_geometry);
+  // swap(m_geometry, other.m_geometry);
 }
 
 void KNPath::clear()
@@ -177,7 +178,7 @@ void KNPath::clear()
   m_elements.clear();
 }
 
-void KNPath::setGeometry(const KNGeometry &geometry)
+void KNPath::setGeometry(const KNGeometryPtr_t &geometry)
 {
   m_geometry = geometry;
 }
@@ -208,17 +209,17 @@ namespace
 class PathObject : public KNObject
 {
 public:
-  explicit PathObject(const ID_t &id);
+  explicit PathObject(const KNPathPtr_t &path);
 
 private:
   virtual void draw(libwpg::WPGPaintInterface *painter, const KNDictionary &dict, const KNTransformation &tr);
 
 private:
-  const ID_t m_id;
+  const KNPathPtr_t m_path;
 };
 
-PathObject::PathObject(const ID_t &id)
-  : m_id(id)
+PathObject::PathObject(const KNPathPtr_t &path)
+  : m_path(path)
 {
 }
 
@@ -232,9 +233,9 @@ void PathObject::draw(libwpg::WPGPaintInterface *const painter, const KNDictiona
 
 }
 
-KNObjectPtr_t makePathObject(const ID_t &id)
+KNObjectPtr_t makeObject(const KNPathPtr_t &path)
 {
-  const KNObjectPtr_t object(new PathObject(id));
+  const KNObjectPtr_t object(new PathObject(path));
   return object;
 }
 

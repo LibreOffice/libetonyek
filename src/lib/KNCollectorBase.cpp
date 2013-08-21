@@ -18,6 +18,7 @@ namespace libkeynote
 KNCollectorBase::KNCollectorBase(KNDictionary &dict)
   : m_dict(dict)
   , m_objectsStack()
+  , m_currentGeometry()
   , m_collecting(false)
   , m_groupLevel(0)
 {
@@ -29,94 +30,105 @@ KNCollectorBase::~KNCollectorBase()
   assert(m_objectsStack.empty());
 }
 
-void KNCollectorBase::collectCharacterStyle(const ID_t &id, const KNStyle &style)
+void KNCollectorBase::collectCharacterStyle(const ID_t &id, const KNStylePtr_t &style)
 {
   if (m_collecting)
     m_dict.characterStyles[id] = style;
 }
 
-void KNCollectorBase::collectGraphicStyle(const ID_t &id, const KNStyle &style)
+void KNCollectorBase::collectGraphicStyle(const ID_t &id, const KNStylePtr_t &style)
 {
   if (m_collecting)
     m_dict.graphicStyles[id] = style;
 }
 
-void KNCollectorBase::collectHeadlineStyle(const ID_t &id, const KNStyle &style)
+void KNCollectorBase::collectHeadlineStyle(const ID_t &id, const KNStylePtr_t &style)
 {
   if (m_collecting)
     m_dict.headlineStyles[id] = style;
 }
 
-void KNCollectorBase::collectLayoutStyle(const ID_t &id, const KNStyle &style)
+void KNCollectorBase::collectLayoutStyle(const ID_t &id, const KNStylePtr_t &style)
 {
   if (m_collecting)
     m_dict.layoutStyles[id] = style;
 }
 
-void KNCollectorBase::collectParagraphStyle(const ID_t &id, const KNStyle &style)
+void KNCollectorBase::collectParagraphStyle(const ID_t &id, const KNStylePtr_t &style)
 {
   if (m_collecting)
     m_dict.paragraphStyles[id] = style;
 }
 
-void KNCollectorBase::collectGeometry(const ID_t &id, const KNGeometry &geometry)
+void KNCollectorBase::collectGeometry(const ID_t &id, const KNGeometryPtr_t &geometry)
 {
   if (m_collecting)
+  {
     m_dict.geometries[id] = geometry;
+    m_currentGeometry = geometry;
+  }
 }
 
-void KNCollectorBase::collectGroup(const ID_t &id, const KNGroup &group)
+void KNCollectorBase::collectGroup(const ID_t &id, const KNGroupPtr_t &group)
 {
   assert(!m_objectsStack.empty());
 
   if (m_collecting)
   {
     m_dict.groups[id] = group;
-    m_objectsStack.top().push_back(makeGroupObject(id));
+    m_objectsStack.top().push_back(makeObject(group));
   }
 }
 
-void KNCollectorBase::collectImage(const ID_t &id, const KNImage &image)
+void KNCollectorBase::collectImage(const ID_t &id, const KNImagePtr_t &image)
 {
   assert(!m_objectsStack.empty());
 
   if (m_collecting)
   {
+    image->geometry = m_currentGeometry;
+    m_currentGeometry.reset();
     m_dict.images[id] = image;
-    m_objectsStack.top().push_back(makeImageObject(id));
+    m_objectsStack.top().push_back(makeObject(image));
   }
 }
 
-void KNCollectorBase::collectLine(const ID_t &id, const KNLine &line)
+void KNCollectorBase::collectLine(const ID_t &id, const KNLinePtr_t &line)
 {
   assert(!m_objectsStack.empty());
 
   if (m_collecting)
   {
+    line->geometry = m_currentGeometry;
+    m_currentGeometry.reset();
     m_dict.lines[id] = line;
-    m_objectsStack.top().push_back(makeLineObject(id));
+    m_objectsStack.top().push_back(makeObject(line));
   }
 }
 
-void KNCollectorBase::collectMedia(const ID_t &id, const KNMedia &media)
+void KNCollectorBase::collectMedia(const ID_t &id, const KNMediaPtr_t &media)
 {
   assert(!m_objectsStack.empty());
 
   if (m_collecting)
   {
+    media->geometry = m_currentGeometry;
+    m_currentGeometry.reset();
     m_dict.media[id] = media;
-    m_objectsStack.top().push_back(makeMediaObject(id));
+    m_objectsStack.top().push_back(makeObject(media));
   }
 }
 
-void KNCollectorBase::collectPath(const ID_t &id, const KNPath &path)
+void KNCollectorBase::collectPath(const ID_t &id, const KNPathPtr_t &path)
 {
   assert(!m_objectsStack.empty());
 
   if (m_collecting)
   {
+    // path.setGeometry(m_currentGeometry);
+    m_currentGeometry.reset();
     m_dict.paths[id] = path;
-    m_objectsStack.top().push_back(makePathObject(id));
+    m_objectsStack.top().push_back(makeObject(path));
   }
 }
 

@@ -32,18 +32,18 @@ public:
 
   // collector functions
 
-  virtual void collectCharacterStyle(const ID_t &id, const KNStyle &style);
-  virtual void collectGraphicStyle(const ID_t &id, const KNStyle &style);
-  virtual void collectHeadlineStyle(const ID_t &id, const KNStyle &style);
-  virtual void collectLayoutStyle(const ID_t &id, const KNStyle &style);
-  virtual void collectParagraphStyle(const ID_t &id, const KNStyle &style);
+  virtual void collectCharacterStyle(const ID_t &id, const KNStylePtr_t &style);
+  virtual void collectGraphicStyle(const ID_t &id, const KNStylePtr_t &style);
+  virtual void collectHeadlineStyle(const ID_t &id, const KNStylePtr_t &style);
+  virtual void collectLayoutStyle(const ID_t &id, const KNStylePtr_t &style);
+  virtual void collectParagraphStyle(const ID_t &id, const KNStylePtr_t &style);
 
-  virtual void collectGeometry(const ID_t &id, const KNGeometry &geometry);
-  virtual void collectGroup(const ID_t &id, const KNGroup &group);
-  virtual void collectImage(const ID_t &id, const KNImage &image);
-  virtual void collectLine(const ID_t &id, const KNLine &line);
-  virtual void collectMedia(const ID_t &id, const KNMedia &media);
-  virtual void collectPath(const ID_t &id, const KNPath &path);
+  virtual void collectGeometry(const ID_t &id, const KNGeometryPtr_t &geometry);
+  virtual void collectGroup(const ID_t &id, const KNGroupPtr_t &group);
+  virtual void collectImage(const ID_t &id, const KNImagePtr_t &image);
+  virtual void collectLine(const ID_t &id, const KNLinePtr_t &line);
+  virtual void collectMedia(const ID_t &id, const KNMediaPtr_t &media);
+  virtual void collectPath(const ID_t &id, const KNPathPtr_t &path);
 
   virtual void collectLayer(const ID_t &id, bool ref);
 
@@ -60,6 +60,7 @@ public:
 private:
   KNDictionary &m_dict;
   std::stack<KNObjectList_t> m_objectsStack;
+  KNGeometryPtr_t m_currentGeometry;
 
   bool m_collecting;
   bool m_layerOpened;

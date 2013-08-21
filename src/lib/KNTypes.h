@@ -11,18 +11,14 @@
 #define KNTYPES_H_INCLUDED
 
 #include <deque>
-#include <string>
-
-#include <boost/optional.hpp>
-#include <boost/unordered_map.hpp>
 
 #include "KNObject.h"
+#include "KNPath_fwd.h"
+#include "KNStyle_fwd.h"
+#include "KNTypes_fwd.h"
 
 namespace libkeynote
 {
-
-typedef std::string ID_t;
-typedef std::deque<ID_t> IDs_t;
 
 struct KNSize
 {
@@ -89,8 +85,8 @@ struct KNPoint
 
 struct KNLine
 {
-  boost::optional<ID_t> geometry;
-  boost::optional<ID_t> style;
+  KNGeometryPtr_t geometry;
+  KNStylePtr_t style;
   boost::optional<KNPoint> head;
   boost::optional<KNPoint> tail;
 
@@ -110,7 +106,7 @@ struct KNBinary
 struct KNImage
 {
   boost::optional<bool> locked;
-  boost::optional<ID_t> geometry;
+  KNGeometryPtr_t geometry;
   boost::optional<KNBinary> binary;
 
   KNImage();
@@ -118,11 +114,11 @@ struct KNImage
 
 struct KNMedia
 {
-  boost::optional<ID_t> geometry;
-  boost::optional<ID_t> style;
+  KNGeometryPtr_t geometry;
+  KNStylePtr_t style;
   boost::optional<bool> placeholder;
   boost::optional<KNSize> placeholderSize;
-  boost::optional<KNGeometry> cropGeometry;
+  KNGeometryPtr_t cropGeometry;
   boost::optional<KNBinary> data;
 
   KNMedia();
@@ -130,8 +126,8 @@ struct KNMedia
 
 struct KNWrap
 {
-  boost::optional<ID_t> path;
-  boost::optional<ID_t> geometry;
+  KNPathPtr_t path;
+  KNGeometryPtr_t geometry;
 
   KNWrap();
 };
@@ -149,17 +145,10 @@ struct KNLayer
   explicit KNLayer(const KNObjectList_t &objectList);
 };
 
-typedef boost::unordered_map<std::string, KNGeometry> KNGeometryMap_t;
-typedef boost::unordered_map<std::string, KNGroup> KNGroupMap_t;
-typedef boost::unordered_map<std::string, KNImage> KNImageMap_t;
-typedef boost::unordered_map<std::string, KNLayer> KNLayerMap_t;
-typedef boost::unordered_map<std::string, KNLine> KNLineMap_t;
-typedef boost::unordered_map<std::string, KNMedia> KNMediaMap_t;
-
-KNObjectPtr_t makeGroupObject(const ID_t &id);
-KNObjectPtr_t makeImageObject(const ID_t &id);
-KNObjectPtr_t makeLineObject(const ID_t &id);
-KNObjectPtr_t makeMediaObject(const ID_t &id);
+KNObjectPtr_t makeObject(const KNGroupPtr_t &group);
+KNObjectPtr_t makeObject(const KNImagePtr_t &image);
+KNObjectPtr_t makeObject(const KNLinePtr_t &line);
+KNObjectPtr_t makeObject(const KNMediaPtr_t &media);
 
 }
 

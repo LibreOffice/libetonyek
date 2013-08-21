@@ -1,8 +1,3 @@
-* The double indirection in storing object ID in pres. objects seems
-  unnecessary. Why not store the real object? (Well, we would still need
-  the dictionary for drawing, unless we resolved _all_ content
-  recursively... Investigate.)
-
 * Override default slide size by size from master slide or slide
   settings. (What to do if sizes of slide and its master do not match?
   If it can happen?)

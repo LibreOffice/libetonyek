@@ -50,7 +50,7 @@ void KNContentCollector::collectLayer(const ID_t &id, const bool ref)
   {
     const KNLayerMap_t::const_iterator it = m_masterPages.find(id);
     if (m_masterPages.end() != it)
-      drawLayer(it->second.objects);
+      drawLayer(it->second->objects);
     else
     {
       KN_DEBUG_MSG(("master page layer %s not found\n", id.c_str()));

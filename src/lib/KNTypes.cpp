@@ -162,17 +162,17 @@ namespace
 class GroupObject : public KNObject
 {
 public:
-  explicit GroupObject(const ID_t &id);
+  explicit GroupObject(const KNGroupPtr_t &group);
 
 private:
   virtual void draw(libwpg::WPGPaintInterface *painter, const KNDictionary &dict, const KNTransformation &tr);
 
 private:
-  const ID_t m_id;
+  const KNGroupPtr_t m_group;
 };
 
-GroupObject::GroupObject(const ID_t &id)
-  : m_id(id)
+GroupObject::GroupObject(const KNGroupPtr_t &group)
+  : m_group(group)
 {
 }
 
@@ -192,17 +192,17 @@ namespace
 class ImageObject : public KNObject
 {
 public:
-  explicit ImageObject(const ID_t &id);
+  explicit ImageObject(const KNImagePtr_t &image);
 
 private:
   virtual void draw(libwpg::WPGPaintInterface *painter, const KNDictionary &dict, const KNTransformation &tr);
 
 private:
-  const ID_t m_id;
+  const KNImagePtr_t m_image;
 };
 
-ImageObject::ImageObject(const ID_t &id)
-  : m_id(id)
+ImageObject::ImageObject(const KNImagePtr_t &image)
+  : m_image(image)
 {
 }
 
@@ -222,17 +222,17 @@ namespace
 class LineObject : public KNObject
 {
 public:
-  explicit LineObject(const ID_t &id);
+  explicit LineObject(const KNLinePtr_t &line);
 
 private:
   virtual void draw(libwpg::WPGPaintInterface *painter, const KNDictionary &dict, const KNTransformation &tr);
 
 private:
-  const ID_t m_id;
+  const KNLinePtr_t m_line;
 };
 
-LineObject::LineObject(const ID_t &id)
-  : m_id(id)
+LineObject::LineObject(const KNLinePtr_t &line)
+  : m_line(line)
 {
 }
 
@@ -240,40 +240,34 @@ void LineObject::draw(libwpg::WPGPaintInterface *const painter, const KNDictiona
 {
   // TODO: transform the line
   (void) tr;
+  (void) dict;
 
-  const KNLineMap_t::const_iterator it = dict.lines.find(m_id);
-  if (dict.lines.end() == it)
+  if (m_line->head && m_line->tail)
   {
-    KN_DEBUG_MSG(("line %s not found\n", m_id.c_str()));
+    WPXPropertyList props;
+#if 0
+    if (line->style)
+    {
+      // TODO: is it graphic style?
+      const KNStyleMap_t::const_iterator styleIt = dict.graphicStyles.find(get(line->style));
+      if (dict.graphicStyles.end() != styleIt)
+      {
+        KNStyle style = *styleIt->second;
+        resolveStyle(style, dict.graphicStyles);
+        props = makeLineStyle(style);
+      }
+    }
+#endif
+    painter->setStyle(props, WPXPropertyListVector());
+
+    WPXPropertyListVector vertices;
+    vertices.append(toWPG(get(m_line->head)));
+    vertices.append(toWPG(get(m_line->tail)));
+    painter->drawPolyline(vertices);
   }
   else
   {
-    const KNLine &line = it->second;
-    if (line.head && line.tail)
-    {
-      WPXPropertyList props;
-      if (line.style)
-      {
-        // TODO: is it graphic style?
-        const KNStyleMap_t::const_iterator styleIt = dict.graphicStyles.find(get(line.style));
-        if (dict.graphicStyles.end() != styleIt)
-        {
-          KNStyle style = styleIt->second;
-          resolveStyle(style, dict.graphicStyles);
-          props = makeLineStyle(style);
-        }
-      }
-      painter->setStyle(props, WPXPropertyListVector());
-
-      WPXPropertyListVector vertices;
-      vertices.append(toWPG(get(line.head)));
-      vertices.append(toWPG(get(line.tail)));
-      painter->drawPolyline(vertices);
-    }
-    else
-    {
-      KN_DEBUG_MSG(("line %s is missing head or tail point\n", m_id.c_str()));
-    }
+    KN_DEBUG_MSG(("line is missing head or tail point\n"));
   }
 }
 
@@ -285,17 +279,17 @@ namespace
 class MediaObject : public KNObject
 {
 public:
-  explicit MediaObject(const ID_t &id);
+  explicit MediaObject(const KNMediaPtr_t &media);
 
 private:
   virtual void draw(libwpg::WPGPaintInterface *painter, const KNDictionary &dict, const KNTransformation &tr);
 
 private:
-  const ID_t m_id;
+  const KNMediaPtr_t m_media;
 };
 
-MediaObject::MediaObject(const ID_t &id)
-  : m_id(id)
+MediaObject::MediaObject(const KNMediaPtr_t &media)
+  : m_media(media)
 {
 }
 
@@ -309,27 +303,27 @@ void MediaObject::draw(libwpg::WPGPaintInterface *const painter, const KNDiction
 
 }
 
-KNObjectPtr_t makeGroupObject(const ID_t &id)
+KNObjectPtr_t makeObject(const KNGroupPtr_t &group)
 {
-  const KNObjectPtr_t object(new GroupObject(id));
+  const KNObjectPtr_t object(new GroupObject(group));
   return object;
 }
 
-KNObjectPtr_t makeImageObject(const ID_t &id)
+KNObjectPtr_t makeObject(const KNImagePtr_t &image)
 {
-  const KNObjectPtr_t object(new ImageObject(id));
+  const KNObjectPtr_t object(new ImageObject(image));
   return object;
 }
 
-KNObjectPtr_t makeLineObject(const ID_t &id)
+KNObjectPtr_t makeObject(const KNLinePtr_t &line)
 {
-  const KNObjectPtr_t object(new LineObject(id));
+  const KNObjectPtr_t object(new LineObject(line));
   return object;
 }
 
-KNObjectPtr_t makeMediaObject(const ID_t &id)
+KNObjectPtr_t makeObject(const KNMediaPtr_t &media)
 {
-  const KNObjectPtr_t object(new MediaObject(id));
+  const KNObjectPtr_t object(new MediaObject(media));
   return object;
 }
 

@@ -40,7 +40,10 @@ void KNStylesCollector::collectLayer(const ID_t &id, const bool ref)
     KN_DEBUG_MSG(("cannot use master page reference %s in a master page\n", id.c_str()));
   }
   else
-    m_masterPages.insert(KNLayerMap_t::value_type(id, KNLayer(getObjects())));
+  {
+    const KNLayerPtr_t layer(new KNLayer(getObjects()));
+    m_masterPages.insert(KNLayerMap_t::value_type(id, layer));
+  }
 }
 
 void KNStylesCollector::collectPage(const ID_t &id)

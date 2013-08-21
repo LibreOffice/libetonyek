@@ -43,9 +43,11 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNParser.h \
 	KNPath.cpp \
 	KNPath.h \
+	KNPath_fwd.h \
 	KNStringVector.cpp \
 	KNStyle.cpp \
 	KNStyle.h \
+	KNStyle_fwd.h \
 	KNStylesCollector.cpp \
 	KNStylesCollector.h \
 	KNSVGGenerator.cpp \
@@ -55,6 +57,7 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNTransformation.h \
 	KNTypes.cpp \
 	KNTypes.h \
+	KNTypes_fwd.h \
 	KNXMLReader.cpp \
 	KNXMLReader.h \
 	KNZipStream.cpp \

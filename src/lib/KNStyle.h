@@ -10,12 +10,9 @@
 #ifndef KNSTYLE_H_INCLUDED
 #define KNSTYLE_H_INCLUDED
 
-#include <string>
-
 #include <boost/optional.hpp>
-#include <boost/unordered_map.hpp>
 
-#include "KNTypes.h"
+#include "KNStyle_fwd.h"
 
 namespace libkeynote
 {
@@ -32,8 +29,8 @@ struct KNStyle
   boost::optional<bool> locked;
 
   boost::optional<std::string> listStyle;
-  boost::optional<KNGeometry> geometry;
-  boost::optional<KNPadding> padding;
+  // boost::optional<KNGeometry> geometry;
+  // boost::optional<KNPadding> padding;
 
   boost::optional<std::string> layoutParagraphStyle;
   boost::optional<std::string> layoutStyle;
@@ -42,8 +39,6 @@ struct KNStyle
 
   KNStyle();
 };
-
-typedef boost::unordered_map<std::string, KNStyle> KNStyleMap_t;
 
 /** Replace reference to a parent style by its content.
   */

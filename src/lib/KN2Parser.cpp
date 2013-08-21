@@ -1510,36 +1510,36 @@ void KN2Parser::parseStyles(const KNXMLReader &reader, const bool anonymous)
       {
       case KN2Token::characterstyle :
       {
-        KNStyle style;
-        const ID_t id = parseStyle(reader, style);
+        KNStylePtr_t style(new KNStyle());
+        const ID_t id = parseStyle(reader, *style);
         getCollector()->collectCharacterStyle(id, style);
         break;
       }
       case KN2Token::graphic_style :
       {
-        KNStyle style;
-        const ID_t id = parseStyle(reader, style);
+        KNStylePtr_t style(new KNStyle());
+        const ID_t id = parseStyle(reader, *style);
         getCollector()->collectGraphicStyle(id, style);
         break;
       }
       case KN2Token::headline_style :
       {
-        KNStyle style;
-        const ID_t id = parseStyle(reader, style);
+        KNStylePtr_t style(new KNStyle());
+        const ID_t id = parseStyle(reader, *style);
         getCollector()->collectHeadlineStyle(id, style);
         break;
       }
       case KN2Token::layoutstyle :
       {
-        KNStyle style;
-        const ID_t id = parseStyle(reader, style);
+        KNStylePtr_t style(new KNStyle());
+        const ID_t id = parseStyle(reader, *style);
         getCollector()->collectLayoutStyle(id, style);
         break;
       }
       case KN2Token::paragraphstyle :
       {
-        KNStyle style;
-        const ID_t id = parseStyle(reader, style);
+        KNStylePtr_t style(new KNStyle());
+        const ID_t id = parseStyle(reader, *style);
         getCollector()->collectParagraphStyle(id, style);
         break;
       }
@@ -1752,12 +1752,12 @@ void KN2Parser::parseThemeList(const KNXMLReader &reader)
   getCollector()->endThemes();
 }
 
-ID_t KN2Parser::parseGeometry(const KNXMLReader &reader)
+void KN2Parser::parseGeometry(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::geometry, KN2Token::NS_URI_SF));
 
   ID_t id;
-  KNGeometry geometry;
+  KNGeometryPtr_t geometry(new KNGeometry());
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -1767,25 +1767,25 @@ ID_t KN2Parser::parseGeometry(const KNXMLReader &reader)
       switch (getNameId(attr))
       {
       case KN2Token::angle :
-        geometry.angle = asDouble(attr.getValue());
+        geometry->angle = asDouble(attr.getValue());
         break;
       case KN2Token::aspectRatioLocked :
-        geometry.aspectRatioLocked = asBool(attr.getValue());
+        geometry->aspectRatioLocked = asBool(attr.getValue());
         break;
       case KN2Token::horizontalFlip :
-        geometry.horizontalFlip = asBool(attr.getValue());
+        geometry->horizontalFlip = asBool(attr.getValue());
         break;
       case KN2Token::shearXAngle :
-        geometry.shearXAngle = asDouble(attr.getValue());
+        geometry->shearXAngle = asDouble(attr.getValue());
         break;
       case KN2Token::shearYAngle :
-        geometry.shearYAngle = asDouble(attr.getValue());
+        geometry->shearYAngle = asDouble(attr.getValue());
         break;
       case KN2Token::sizesLocked :
-        geometry.sizesLocked = asBool(attr.getValue());
+        geometry->sizesLocked = asBool(attr.getValue());
         break;
       case KN2Token::verticalFlip :
-        geometry.verticalFlip = asBool(attr.getValue());
+        geometry->verticalFlip = asBool(attr.getValue());
         break;
       default :
         KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
@@ -1813,13 +1813,13 @@ ID_t KN2Parser::parseGeometry(const KNXMLReader &reader)
       switch (getKN2TokenID(name))
       {
       case KN2Token::naturalSize :
-        geometry.naturalSize = readSize(reader);
+        geometry->naturalSize = readSize(reader);
         break;
       case KN2Token::size :
-        geometry.size = readSize(reader);
+        geometry->size = readSize(reader);
         break;
       case KN2Token::position :
-        geometry.position = readPosition(reader);
+        geometry->position = readPosition(reader);
         break;
       case KN2Token::geometry :
         // Huh? I need to find the file that actually contains this...
@@ -1840,11 +1840,9 @@ ID_t KN2Parser::parseGeometry(const KNXMLReader &reader)
   }
 
   getCollector()->collectGeometry(id, geometry);
-
-  return id;
 }
 
-ID_t KN2Parser::parseGroup(const KNXMLReader &reader)
+void KN2Parser::parseGroup(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::group, KN2Token::NS_URI_SF));
 
@@ -1867,7 +1865,7 @@ ID_t KN2Parser::parseGroup(const KNXMLReader &reader)
     }
   }
 
-  KNGroup group;
+  KNGroupPtr_t group(new KNGroup());
 
   getCollector()->startGroup();
 
@@ -1918,23 +1916,21 @@ ID_t KN2Parser::parseGroup(const KNXMLReader &reader)
 
   getCollector()->collectGroup(id, group);
   getCollector()->endGroup();
-
-  return id;
 }
 
-ID_t KN2Parser::parseImage(const KNXMLReader &reader)
+void KN2Parser::parseImage(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::image, KN2Token::NS_URI_SF));
 
   ID_t id;
-  KNImage image;
+  KNImagePtr_t image(new KNImage());
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((KN2Token::NS_URI_SF == getNamespaceId(attr)) && (KN2Token::locked == getNameId(attr)))
     {
-      image.locked = asBool(attr.getValue());
+      image->locked = asBool(attr.getValue());
     }
     else if (KN2Token::NS_URI_SFA == getNameId(attr))
     {
@@ -1968,7 +1964,7 @@ ID_t KN2Parser::parseImage(const KNXMLReader &reader)
       switch (getKN2TokenID(name))
       {
       case KN2Token::geometry :
-        image.geometry = parseGeometry(reader);
+        parseGeometry(reader);
         break;
       case KN2Token::size :
       case KN2Token::data :
@@ -1992,11 +1988,9 @@ ID_t KN2Parser::parseImage(const KNXMLReader &reader)
   }
 
   getCollector()->collectImage(id, image);
-
-  return id;
 }
 
-ID_t KN2Parser::parseLine(const KNXMLReader &reader)
+void KN2Parser::parseLine(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::line, KN2Token::NS_URI_SF));
 
@@ -2019,7 +2013,7 @@ ID_t KN2Parser::parseLine(const KNXMLReader &reader)
     }
   }
 
-  KNLine line;
+  KNLinePtr_t line(new KNLine());
 
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
@@ -2032,13 +2026,13 @@ ID_t KN2Parser::parseLine(const KNXMLReader &reader)
       switch (getKN2TokenID(name))
       {
       case KN2Token::geometry :
-        line.geometry = parseGeometry(reader);
+        parseGeometry(reader);
         break;
       case KN2Token::head :
-        line.head = readPoint(reader);
+        line->head = readPoint(reader);
         break;
       case KN2Token::tail :
-        line.tail = readPoint(reader);
+        line->tail = readPoint(reader);
         break;
       case KN2Token::style :
         KN_DEBUG_XML_TODO("element", name, ns);
@@ -2058,16 +2052,14 @@ ID_t KN2Parser::parseLine(const KNXMLReader &reader)
   }
 
   getCollector()->collectLine(id, line);
-
-  return id;
 }
 
-ID_t KN2Parser::parseMedia(const KNXMLReader &reader)
+void KN2Parser::parseMedia(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::media, KN2Token::NS_URI_SF));
 
   ID_t id;
-  KNMedia media;
+  KNMediaPtr_t media(new KNMedia());
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -2092,7 +2084,7 @@ ID_t KN2Parser::parseMedia(const KNXMLReader &reader)
       switch (getNameId(attr))
       {
       case KN2Token::placeholder :
-        media.placeholder = asBool(attr.getValue());
+        media->placeholder = asBool(attr.getValue());
         break;
       case KN2Token::locked :
         KN_DEBUG_XML_TODO("attribute", attr.getName(), attr.getNamespace());
@@ -2133,10 +2125,10 @@ ID_t KN2Parser::parseMedia(const KNXMLReader &reader)
       switch (getKN2TokenID(name))
       {
       case KN2Token::geometry :
-        media.geometry = parseGeometry(reader);
+        parseGeometry(reader);
         break;
       case KN2Token::placeholder_size :
-        media.placeholderSize = readSize(reader);
+        media->placeholderSize = readSize(reader);
         break;
       case KN2Token::style :
       case KN2Token::masking_shape_path_source :
@@ -2159,11 +2151,9 @@ ID_t KN2Parser::parseMedia(const KNXMLReader &reader)
   }
 
   getCollector()->collectMedia(id, media);
-
-  return id;
 }
 
-ID_t KN2Parser::parseShape(const KNXMLReader &reader)
+void KN2Parser::parseShape(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::shape, KN2Token::NS_URI_SF));
 
@@ -2242,8 +2232,6 @@ ID_t KN2Parser::parseShape(const KNXMLReader &reader)
       skipElement(element);
     }
   }
-
-  return id;
 }
 
 }
