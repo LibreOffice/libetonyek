@@ -26,6 +26,8 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KN1Token.h \
 	KN2Parser.cpp \
 	KN2Parser.h \
+	KN2StyleParser.cpp \
+	KN2StyleParser.h \
 	KN2Token.cpp \
 	KN2Token.h \
 	KNCollector.cpp \
