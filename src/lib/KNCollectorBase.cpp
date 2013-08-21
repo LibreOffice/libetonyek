@@ -20,6 +20,7 @@ KNCollectorBase::KNCollectorBase(KNDictionary &dict)
   , m_objectsStack()
   , m_currentGeometry()
   , m_collecting(false)
+  , m_layerOpened(false)
   , m_groupLevel(0)
 {
 }
