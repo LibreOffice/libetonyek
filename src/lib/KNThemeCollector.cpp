@@ -9,12 +9,12 @@
 
 #include "libkeynote_utils.h"
 #include "KNDictionary.h"
-#include "KNStylesCollector.h"
+#include "KNThemeCollector.h"
 
 namespace libkeynote
 {
 
-KNStylesCollector::KNStylesCollector(KNDictionary &dict, KNLayerMap_t &masterPages, KNSize &size)
+KNThemeCollector::KNThemeCollector(KNDictionary &dict, KNLayerMap_t &masterPages, KNSize &size)
   : KNCollectorBase(dict)
   , m_dict(dict)
   , m_masterPages(masterPages)
@@ -22,16 +22,16 @@ KNStylesCollector::KNStylesCollector(KNDictionary &dict, KNLayerMap_t &masterPag
 {
 }
 
-KNStylesCollector::~KNStylesCollector()
+KNThemeCollector::~KNThemeCollector()
 {
 }
 
-void KNStylesCollector::collectSize(const KNSize &size)
+void KNThemeCollector::collectSize(const KNSize &size)
 {
   m_size = size;
 }
 
-void KNStylesCollector::collectLayer(const ID_t &id, const bool ref)
+void KNThemeCollector::collectLayer(const ID_t &id, const bool ref)
 {
   KNCollectorBase::collectLayer(id, ref);
 
@@ -51,44 +51,44 @@ void KNStylesCollector::collectLayer(const ID_t &id, const bool ref)
   }
 }
 
-void KNStylesCollector::collectPage(const ID_t &id)
+void KNThemeCollector::collectPage(const ID_t &id)
 {
   // TODO: implement me
   (void) id;
 }
 
-void KNStylesCollector::startSlides()
+void KNThemeCollector::startSlides()
 {
 }
 
-void KNStylesCollector::endSlides()
+void KNThemeCollector::endSlides()
 {
 }
 
-void KNStylesCollector::startThemes()
+void KNThemeCollector::startThemes()
 {
   setCollecting(true);
 }
 
-void KNStylesCollector::endThemes()
+void KNThemeCollector::endThemes()
 {
   setCollecting(false);
 }
 
-void KNStylesCollector::startPage()
+void KNThemeCollector::startPage()
 {
 }
 
-void KNStylesCollector::endPage()
+void KNThemeCollector::endPage()
 {
 }
 
-void KNStylesCollector::startLayer()
+void KNThemeCollector::startLayer()
 {
   KNCollectorBase::startLayer();
 }
 
-void KNStylesCollector::endLayer()
+void KNThemeCollector::endLayer()
 {
   KNCollectorBase::endLayer();
 }

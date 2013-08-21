@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KNSTYLESCOLLECTOR_H_INCLUDED
-#define KNSTYLESCOLLECTOR_H_INCLUDED
+#ifndef KNTHEMECOLLECTOR_H_INCLUDED
+#define KNTHEMECOLLECTOR_H_INCLUDED
 
 #include "KNCollectorBase.h"
 
@@ -18,11 +18,11 @@ namespace libkeynote
 struct KNDictionary;
 struct KNStyle;
 
-class KNStylesCollector : public KNCollectorBase
+class KNThemeCollector : public KNCollectorBase
 {
 public:
-  KNStylesCollector(KNDictionary &dict, KNLayerMap_t &masterPages, KNSize &size);
-  virtual ~KNStylesCollector();
+  KNThemeCollector(KNDictionary &dict, KNLayerMap_t &masterPages, KNSize &size);
+  virtual ~KNThemeCollector();
 
   // collector functions
 
@@ -49,6 +49,6 @@ private:
 
 } // namespace libkeynote
 
-#endif // KNSTYLESCOLLECTOR_H_INCLUDED
+#endif // KNTHEMECOLLECTOR_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
