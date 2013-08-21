@@ -12,6 +12,8 @@
 
 #include <deque>
 
+#include <boost/optional.hpp>
+
 #include "KNObject.h"
 #include "KNPath_fwd.h"
 #include "KNStyle_fwd.h"
