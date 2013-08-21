@@ -136,7 +136,7 @@ void KNContentCollector::drawLayer(const KNObjectList_t &objects)
 {
   KNTransformation tr;
   for (KNObjectList_t::const_iterator it = objects.begin(); it != objects.end(); ++it)
-    (*it)->draw(m_painter, m_dict, tr);
+    (*it)->draw(m_painter, tr);
 }
 
 }

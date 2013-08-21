@@ -40,7 +40,7 @@ class KNObject
 public:
   virtual ~KNObject() = 0;
 
-  virtual void draw(libwpg::WPGPaintInterface *painter, const KNDictionary &dict, const KNTransformation &tr) = 0;
+  virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr) = 0;
 };
 
 typedef boost::shared_ptr<KNObject> KNObjectPtr_t;

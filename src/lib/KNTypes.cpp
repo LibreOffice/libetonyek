@@ -165,7 +165,7 @@ public:
   explicit GroupObject(const KNGroupPtr_t &group);
 
 private:
-  virtual void draw(libwpg::WPGPaintInterface *painter, const KNDictionary &dict, const KNTransformation &tr);
+  virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
 
 private:
   const KNGroupPtr_t m_group;
@@ -176,11 +176,10 @@ GroupObject::GroupObject(const KNGroupPtr_t &group)
 {
 }
 
-void GroupObject::draw(libwpg::WPGPaintInterface *const painter, const KNDictionary &dict, const KNTransformation &tr)
+void GroupObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransformation &tr)
 {
   // TODO: implement me
   (void) painter;
-  (void) dict;
   (void) tr;
 }
 
@@ -195,7 +194,7 @@ public:
   explicit ImageObject(const KNImagePtr_t &image);
 
 private:
-  virtual void draw(libwpg::WPGPaintInterface *painter, const KNDictionary &dict, const KNTransformation &tr);
+  virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
 
 private:
   const KNImagePtr_t m_image;
@@ -206,11 +205,10 @@ ImageObject::ImageObject(const KNImagePtr_t &image)
 {
 }
 
-void ImageObject::draw(libwpg::WPGPaintInterface *const painter, const KNDictionary &dict, const KNTransformation &tr)
+void ImageObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransformation &tr)
 {
   // TODO: implement me
   (void) painter;
-  (void) dict;
   (void) tr;
 }
 
@@ -225,7 +223,7 @@ public:
   explicit LineObject(const KNLinePtr_t &line);
 
 private:
-  virtual void draw(libwpg::WPGPaintInterface *painter, const KNDictionary &dict, const KNTransformation &tr);
+  virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
 
 private:
   const KNLinePtr_t m_line;
@@ -236,11 +234,10 @@ LineObject::LineObject(const KNLinePtr_t &line)
 {
 }
 
-void LineObject::draw(libwpg::WPGPaintInterface *const painter, const KNDictionary &dict, const KNTransformation &tr)
+void LineObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransformation &tr)
 {
   // TODO: transform the line
   (void) tr;
-  (void) dict;
 
   if (m_line->head && m_line->tail)
   {
@@ -282,7 +279,7 @@ public:
   explicit MediaObject(const KNMediaPtr_t &media);
 
 private:
-  virtual void draw(libwpg::WPGPaintInterface *painter, const KNDictionary &dict, const KNTransformation &tr);
+  virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
 
 private:
   const KNMediaPtr_t m_media;
@@ -293,11 +290,10 @@ MediaObject::MediaObject(const KNMediaPtr_t &media)
 {
 }
 
-void MediaObject::draw(libwpg::WPGPaintInterface *const painter, const KNDictionary &dict, const KNTransformation &tr)
+void MediaObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransformation &tr)
 {
   // TODO: implement me
   (void) painter;
-  (void) dict;
   (void) tr;
 }
 
