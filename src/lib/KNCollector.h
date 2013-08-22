@@ -10,6 +10,8 @@
 #ifndef KNCOLLECTOR_H_INCLUDED
 #define KNCOLLECTOR_H_INCLUDED
 
+#include <string>
+
 #include "KNPath_fwd.h"
 #include "KNStyle_fwd.h"
 #include "KNTypes_fwd.h"
@@ -51,12 +53,21 @@ public:
   virtual void collectLayer(const ID_t &id, bool ref) = 0;
   virtual void collectPage(const ID_t &id) = 0;
 
+  virtual void collectText(const std::string &text, const ID_t &style) = 0;
+  virtual void collectTab() = 0;
+  virtual void collectLineBreak() = 0;
+
   virtual void startPage() = 0;
   virtual void endPage() = 0;
   virtual void startLayer() = 0;
   virtual void endLayer() = 0;
   virtual void startGroup() = 0;
   virtual void endGroup() = 0;
+
+  virtual void startParagraph(const ID_t &style) = 0;
+  virtual void endParagraph() = 0;
+  virtual void startTextLayout(const ID_t &style) = 0;
+  virtual void endTextLayout() = 0;
 
   // helper functions
 

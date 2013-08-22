@@ -11,6 +11,7 @@
 
 #include "KNCollectorBase.h"
 #include "KNDictionary.h"
+#include "KNText.h"
 
 namespace libkeynote
 {
@@ -19,6 +20,7 @@ KNCollectorBase::KNCollectorBase(KNDictionary &dict)
   : m_dict(dict)
   , m_objectsStack()
   , m_currentGeometry()
+  , m_currentText()
   , m_collecting(false)
   , m_layerOpened(false)
   , m_groupLevel(0)
@@ -142,6 +144,27 @@ void KNCollectorBase::collectLayer(const ID_t &, bool)
   }
 }
 
+void KNCollectorBase::collectText(const std::string &text, const ID_t &style)
+{
+  assert(bool(m_currentText));
+
+  m_currentText->insertText(text, m_dict.characterStyles[style]);
+}
+
+void KNCollectorBase::collectTab()
+{
+  assert(bool(m_currentText));
+
+  m_currentText->insertTab();
+}
+
+void KNCollectorBase::collectLineBreak()
+{
+  assert(bool(m_currentText));
+
+  m_currentText->insertLineBreak();
+}
+
 void KNCollectorBase::startLayer()
 {
   if (m_collecting)
@@ -195,6 +218,34 @@ void KNCollectorBase::endGroup()
     --m_groupLevel;
     // stack is popped in collectGroup already
   }
+}
+
+void KNCollectorBase::startParagraph(const ID_t &style)
+{
+  assert(bool(m_currentText));
+
+  m_currentText->openParagraph(m_dict.paragraphStyles[style]);
+}
+
+void KNCollectorBase::endParagraph()
+{
+  assert(bool(m_currentText));
+
+  m_currentText->closeParagraph();
+}
+
+void KNCollectorBase::startTextLayout(const ID_t &style)
+{
+  assert(!m_currentText);
+
+  m_currentText.reset(new KNText());
+  const KNStylePtr_t layoutStyle = m_dict.layoutStyles[style];
+  m_currentText->setLayoutStyle(layoutStyle);
+}
+
+void KNCollectorBase::endTextLayout()
+{
+  assert(bool(m_currentText));
 }
 
 bool KNCollectorBase::getCollecting() const

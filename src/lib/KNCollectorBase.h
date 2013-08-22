@@ -14,6 +14,7 @@
 
 #include "KNCollector.h"
 #include "KNObject.h"
+#include "KNText_fwd.h"
 
 namespace libkeynote
 {
@@ -47,10 +48,19 @@ public:
 
   virtual void collectLayer(const ID_t &id, bool ref);
 
+  virtual void collectText(const std::string &text, const ID_t &style);
+  virtual void collectTab();
+  virtual void collectLineBreak();
+
   virtual void startLayer();
   virtual void endLayer();
   virtual void startGroup();
   virtual void endGroup();
+
+  virtual void startParagraph(const ID_t &style);
+  virtual void endParagraph();
+  virtual void startTextLayout(const ID_t &style);
+  virtual void endTextLayout();
 
   bool getCollecting() const;
   void setCollecting(bool collecting);
@@ -62,6 +72,8 @@ private:
   std::stack<KNObjectList_t> m_objectsStack;
   KNGeometryPtr_t m_currentGeometry;
   KNLayerPtr_t m_currentLayer;
+
+  KNTextPtr_t m_currentText;
 
   bool m_collecting;
   bool m_layerOpened;
