@@ -14,6 +14,7 @@
 #include "libkeynote_utils.h"
 #include "KNDictionary.h"
 #include "KNTransformation.h"
+#include "KNText.h"
 #include "KNTypes.h"
 
 namespace libkeynote
@@ -122,6 +123,14 @@ KNMedia::KNMedia()
 KNWrap::KNWrap()
   : path()
   , geometry()
+{
+}
+
+KNTextBody::KNTextBody(bool title_)
+  : title(title_)
+  , empty()
+  , style()
+  , text()
 {
 }
 
@@ -293,6 +302,35 @@ void MediaObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransfo
 
 }
 
+namespace
+{
+
+class TextBodyObject : public KNObject
+{
+public:
+  explicit TextBodyObject(const KNTextBodyPtr_t &body);
+
+private:
+  virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
+
+private:
+  const KNTextBodyPtr_t m_body;
+};
+
+TextBodyObject::TextBodyObject(const KNTextBodyPtr_t &body)
+  : m_body(body)
+{
+}
+
+void TextBodyObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransformation &tr)
+{
+  // TODO: implement me
+  (void) painter;
+  (void) tr;
+}
+
+}
+
 KNObjectPtr_t makeObject(const KNGroupPtr_t &group)
 {
   const KNObjectPtr_t object(new GroupObject(group));
@@ -314,6 +352,12 @@ KNObjectPtr_t makeObject(const KNLinePtr_t &line)
 KNObjectPtr_t makeObject(const KNMediaPtr_t &media)
 {
   const KNObjectPtr_t object(new MediaObject(media));
+  return object;
+}
+
+KNObjectPtr_t makeObject(const KNTextBodyPtr_t &body)
+{
+  const KNObjectPtr_t object(new TextBodyObject(body));
   return object;
 }
 

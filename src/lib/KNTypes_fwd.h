@@ -49,6 +49,10 @@ struct KNLayer;
 typedef boost::shared_ptr<KNLayer> KNLayerPtr_t;
 typedef boost::unordered_map<ID_t, KNLayerPtr_t> KNLayerMap_t;
 
+struct KNTextBody;
+typedef boost::shared_ptr<KNTextBody> KNTextBodyPtr_t;
+typedef boost::unordered_map<ID_t, KNTextBodyPtr_t> KNTextBodyMap_t;
+
 }
 
 #endif //  KNTYPES_FWD_H_INCLUDED

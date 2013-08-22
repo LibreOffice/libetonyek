@@ -17,6 +17,7 @@
 #include "KNObject.h"
 #include "KNPath_fwd.h"
 #include "KNStyle_fwd.h"
+#include "KNText_fwd.h"
 #include "KNTypes_fwd.h"
 
 namespace libkeynote
@@ -145,10 +146,22 @@ struct KNLayer
   KNObjectList_t objects;
 };
 
+struct KNTextBody
+{
+  bool title;
+  boost::optional<bool> empty;
+  KNGeometryPtr_t geometry;
+  KNStylePtr_t style;
+  KNTextPtr_t text;
+
+  explicit KNTextBody(bool title_);
+};
+
 KNObjectPtr_t makeObject(const KNGroupPtr_t &group);
 KNObjectPtr_t makeObject(const KNImagePtr_t &image);
 KNObjectPtr_t makeObject(const KNLinePtr_t &line);
 KNObjectPtr_t makeObject(const KNMediaPtr_t &media);
+KNObjectPtr_t makeObject(const KNTextBodyPtr_t &body);
 
 }
 

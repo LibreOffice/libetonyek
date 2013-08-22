@@ -165,6 +165,16 @@ void KNCollectorBase::collectLineBreak()
   m_currentText->insertLineBreak();
 }
 
+void KNCollectorBase::collectSlideText(const ID_t &id, const bool title)
+{
+  (void) id;
+  (void) title;
+  if (m_collecting)
+  {
+    // TODO: implement me
+  }
+}
+
 void KNCollectorBase::startLayer()
 {
   if (m_collecting)

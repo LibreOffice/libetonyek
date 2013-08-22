@@ -52,6 +52,8 @@ public:
   virtual void collectTab();
   virtual void collectLineBreak();
 
+  virtual void collectSlideText(const ID_t &id, bool title);
+
   virtual void startLayer();
   virtual void endLayer();
   virtual void startGroup();
