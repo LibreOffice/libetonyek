@@ -18,6 +18,11 @@
 #define KN_DEBUG_XML_UNKNOWN(type, name, ns) KN_DEBUG_MSG(("unknown %s %s%s%s%s\n", type, ns ? "{" : "", ns, ns ? "}" : "", name))
 #define KN_DEBUG_XML_TODO(type, name, ns) KN_DEBUG_MSG(("TODO: unprocessed %s %s%s%s%s\n", type, ns ? "{" : "", ns, ns ? "}" : "", name))
 
+#define KN_DEBUG_XML_TODO_ELEMENT(element) KN_DEBUG_XML_TODO("element", (element).getName(), (element).getNamespace())
+#define KN_DEBUG_XML_TODO_ATTRIBUTE(attr) KN_DEBUG_XML_TODO("attribute", (attr).getName(), (attr).getNamespace())
+#define KN_DEBUG_XML_UNKNOWN_ELEMENT(element) KN_DEBUG_XML_UNKNOWN("element", (element).getName(), (element).getNamespace())
+#define KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr) KN_DEBUG_XML_UNKNOWN("attribute", (attr).getName(), (attr).getNamespace())
+
 namespace libkeynote
 {
 
