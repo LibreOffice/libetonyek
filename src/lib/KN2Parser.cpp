@@ -497,9 +497,13 @@ void KN2Parser::parseMasterSlide(const KNXMLReader &reader)
       case KN2Token::stylesheet :
         parseStylesheet(reader);
         break;
-      case KN2Token::style_ref :
       case KN2Token::title_placeholder :
+        parsePlaceholder(element, true);
+        break;
       case KN2Token::body_placeholder :
+        parsePlaceholder(element);
+        break;
+      case KN2Token::style_ref :
       case KN2Token::object_placeholder :
       case KN2Token::slide_number_placeholder :
       case KN2Token::bullets :
@@ -765,8 +769,13 @@ void KN2Parser::parseSlide(const KNXMLReader &reader)
       case KN2Token::stylesheet :
         parseStylesheet(reader);
         break;
-      case KN2Token::style_ref :
       case KN2Token::title_placeholder :
+        parsePlaceholder(element, true);
+        break;
+      case KN2Token::body_placeholder :
+        parsePlaceholder(element);
+        break;
+      case KN2Token::style_ref :
       case KN2Token::object_placeholder :
       case KN2Token::slide_number_placeholder :
       case KN2Token::bullets :
@@ -1551,6 +1560,59 @@ void KN2Parser::parseShape(const KNXMLReader &reader)
       skipElement(element);
     }
   }
+}
+
+void KN2Parser::parsePlaceholder(const KNXMLReader &reader, const bool title)
+{
+  assert(title
+         ? checkElement(reader, KN2Token::body_placeholder, KN2Token::NS_URI_KEY)
+         : checkElement(reader, KN2Token::title_placeholder, KN2Token::NS_URI_KEY));
+
+  ID_t id;
+
+  KNXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (!title && (KN2Token::NS_URI_KEY == getNamespaceId(attr)) && (KN2Token::non_empty == getNameId(attr)))
+    {
+      KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
+    }
+    else if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
+    {
+      id = attr.getValue();
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+    }
+  }
+
+  KNXMLReader::ElementIterator element(reader);
+  while (element.next())
+  {
+    if ((KN2Token::NS_URI_KEY == getNamespaceId(element)) && (KN2Token::text == getNameId(element)))
+      parseText(element);
+    else if (KN2Token::NS_URI_SF == getNamespaceId(element))
+    {
+      switch (getNameId(element))
+      {
+      case KN2Token::geometry :
+        parseGeometry(element);
+        break;
+      case KN2Token::style :
+        KN_DEBUG_XML_TODO_ELEMENT(element);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+    }
+  }
+
+  getCollector()->collectSlideText(id, title);
 }
 
 void KN2Parser::parseBr(const KNXMLReader &reader)

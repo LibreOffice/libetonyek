@@ -50,6 +50,7 @@ private:
   void parseLine(const KNXMLReader &reader);
   void parseMedia(const KNXMLReader &reader);
   void parseShape(const KNXMLReader &reader);
+  void parsePlaceholder(const KNXMLReader &reader, bool title = false);
 
   void parseBr(const KNXMLReader &reader);
   void parseLayout(const KNXMLReader &reader, const boost::optional<ID_t> &layoutStyle);
