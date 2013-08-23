@@ -204,6 +204,16 @@ void KNText::insertLineBreak()
   ++m_lineBreaks;
 }
 
+const KNStylePtr_t &KNText::getLayoutStyle() const
+{
+  return m_layoutStyle;
+}
+
+const KNText::ParagraphList_t &KNText::getParagraphs() const
+{
+  return m_paragraphs;
+}
+
 void KNText::insertDeferredLineBreaks()
 {
   assert(bool(m_currentParagraph));
