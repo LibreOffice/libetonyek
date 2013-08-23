@@ -84,16 +84,28 @@ namespace
 
 class LineBreakObject : public KNObject
 {
+public:
+  explicit LineBreakObject(const KNStylePtr_t &paraStyle);
+
 private:
   virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
+
+private:
+  const KNStylePtr_t m_paraStyle;
 };
+
+LineBreakObject::LineBreakObject(const KNStylePtr_t &paraStyle)
+  : m_paraStyle(paraStyle)
+{
+}
 
 void LineBreakObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransformation &)
 {
+  WPXPropertyList props;
+  // TODO: fill from m_paraStyle
+
   painter->endTextLine();
-  // TODO: this should restart with the same props as the previous line,
-  // i.e., it needs access to the paragraph style
-  painter->startTextLine(WPXPropertyList());
+  painter->startTextLine(props);
 }
 
 }
@@ -198,7 +210,7 @@ void KNText::insertDeferredLineBreaks()
 
   if (0 < m_lineBreaks)
   {
-    const KNObjectPtr_t object(new LineBreakObject());
+    const KNObjectPtr_t object(new LineBreakObject(m_currentParagraph->style));
     m_currentParagraph->objects.insert(m_currentParagraph->objects.end(), m_lineBreaks, object);
     m_lineBreaks = 0;
   }
