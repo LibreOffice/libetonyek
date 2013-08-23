@@ -1553,6 +1553,407 @@ void KN2Parser::parseShape(const KNXMLReader &reader)
   }
 }
 
+void KN2Parser::parseBr(const KNXMLReader &reader)
+{
+  assert(checkElement(reader, KN2Token::br, KN2Token::NS_URI_SF)
+         || checkElement(reader, KN2Token::crbr, KN2Token::NS_URI_SF)
+         || checkElement(reader, KN2Token::intratopicbr, KN2Token::NS_URI_SF)
+         || checkElement(reader, KN2Token::lnbr, KN2Token::NS_URI_SF));
+
+  checkNoAttributes(reader);
+  checkEmptyElement(reader);
+
+  getCollector()->collectLineBreak();
+}
+
+void KN2Parser::parseLayout(const KNXMLReader &reader, const boost::optional<ID_t> &layoutStyle)
+{
+  assert(checkElement(reader, KN2Token::layout, KN2Token::NS_URI_SF));
+
+  ID_t style;
+
+  if (layoutStyle)
+    style = get(layoutStyle);
+
+  KNXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if ((KN2Token::NS_URI_SF == getNamespaceId(attr)) && (KN2Token::style == getNameId(attr)))
+      style = attr.getValue();
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+    }
+  }
+
+  getCollector()->startTextLayout(style);
+
+  KNXMLReader::ElementIterator element(reader);
+  while (element.next())
+  {
+    if ((KN2Token::NS_URI_SF == getNamespaceId(element)) && (KN2Token::p == getNameId(element)))
+      parseP(element);
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+      skipElement(element);
+    }
+  }
+
+  getCollector()->endTextLayout();
+}
+
+void KN2Parser::parseLink(const KNXMLReader &reader, const bool ref)
+{
+  assert(ref
+         ? checkElement(reader, KN2Token::link-ref, KN2Token::NS_URI_SF)
+         : checkElement(reader, KN2Token::link, KN2Token::NS_URI_SF));
+
+  KNXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (!ref && !attr.getNamespace() && (KN2Token::href == getNameId(attr)))
+    {
+      KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
+    }
+    else if (KN2Token::NS_URI_SFA == getNamespaceId(attr))
+    {
+      if (ref && (KN2Token::IDREF == getNameId(attr)))
+      {
+        KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
+      }
+      if (!ref && (KN2Token::ID == getNameId(attr)))
+      {
+        KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
+      }
+      else
+      {
+        KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+      }
+    }
+  }
+
+  KNXMLReader::MixedIterator mixed(reader);
+  while (mixed.next())
+  {
+    if (mixed.isElement())
+    {
+      if (KN2Token::NS_URI_SF == getNamespaceId(mixed))
+      {
+        switch (getNameId(mixed))
+        {
+        case KN2Token::br :
+          parseBr(mixed);
+          break;
+        case KN2Token::span :
+          parseSpan(mixed);
+          break;
+        default :
+          KN_DEBUG_XML_UNKNOWN_ELEMENT(mixed);
+          skipElement(mixed);
+          break;
+        }
+      }
+    }
+    else
+      getCollector()->collectText(mixed.getText(), "");
+  }
+}
+
+void KN2Parser::parseP(const KNXMLReader &reader)
+{
+  assert(checkElement(reader, KN2Token::p, KN2Token::NS_URI_SF));
+
+  ID_t style;
+
+  KNXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (KN2Token::NS_URI_SF == getNamespaceId(attr))
+    {
+      switch (getNameId(attr))
+      {
+      case KN2Token::list_level :
+        KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
+        break;
+      case KN2Token::style :
+        style = attr.getValue();
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+        break;
+      }
+    }
+  }
+
+  getCollector()->startParagraph(style);
+
+  KNXMLReader::MixedIterator mixed(reader);
+  while (mixed.next())
+  {
+    if (mixed.isElement())
+    {
+      if (KN2Token::NS_URI_SF == getNamespaceId(mixed))
+      {
+        switch (getNameId(mixed))
+        {
+        case KN2Token::br :
+        case KN2Token::crbr :
+        case KN2Token::intratopicbr :
+        case KN2Token::lnbr :
+          parseBr(mixed);
+          break;
+        case KN2Token::span :
+          parseSpan(mixed);
+          break;
+        case KN2Token::tab :
+          parseTab(mixed);
+          break;
+        case KN2Token::link :
+          parseLink(mixed);
+          break;
+        case KN2Token::link_ref :
+          parseLink(mixed, true);
+          break;
+        default :
+          KN_DEBUG_XML_UNKNOWN_ELEMENT(mixed);
+          skipElement(mixed);
+          break;
+        }
+      }
+    }
+    else
+    {
+      getCollector()->collectText(mixed.getText(), "");
+    }
+  }
+
+  getCollector()->endParagraph();
+}
+
+void KN2Parser::parseSpan(const KNXMLReader &reader)
+{
+  assert(checkElement(reader, KN2Token::span, KN2Token::NS_URI_SF));
+
+  ID_t style;
+
+  KNXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if ((KN2Token::NS_URI_SF == getNamespaceId(attr)) && (KN2Token::style == getNameId(attr)))
+      style = attr.getValue();
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+    }
+  }
+
+  KNXMLReader::MixedIterator mixed(reader);
+  while (mixed.next())
+  {
+    if (mixed.isElement())
+    {
+      if (KN2Token::NS_URI_KEY == getNamespaceId(mixed))
+      {
+        switch (getNameId(mixed))
+        {
+        case KN2Token::br :
+        case KN2Token::crbr :
+        case KN2Token::intratopicbr :
+        case KN2Token::lnbr :
+          parseBr(mixed);
+          break;
+        case KN2Token::tab :
+          parseTab(mixed);
+          break;
+        default :
+          KN_DEBUG_XML_UNKNOWN_ELEMENT(mixed);
+          skipElement(mixed);
+          break;
+        }
+      }
+    }
+    else
+      getCollector()->collectText(mixed.getText(), style);
+  }
+}
+
+void KN2Parser::parseTab(const KNXMLReader &reader)
+{
+  assert(checkElement(reader, KN2Token::tab, KN2Token::NS_URI_SF));
+
+  checkNoAttributes(reader);
+  checkEmptyElement(reader);
+
+  getCollector()->collectTab();
+}
+
+void KN2Parser::parseText(const KNXMLReader &reader)
+{
+  // NOTE: isn't it wonderful that there are two text elements in two
+  // different namespaces, but with the same schema?
+  assert(checkElement(reader, KN2Token::text, KN2Token::NS_URI_KEY)
+         || checkElement(reader, KN2Token::text, KN2Token::NS_URI_SF));
+
+  optional<ID_t> layoutStyle;
+
+  KNXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (KN2Token::NS_URI_SF == getNamespaceId(attr))
+    {
+      switch (getNameId(attr))
+      {
+      case KN2Token::layoutstyle :
+        layoutStyle = attr.getValue();
+        break;
+      case KN2Token::tscale :
+        KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+        break;
+      }
+    }
+    else if (KN2Token::NS_URI_SFA == getNamespaceId(attr) && (KN2Token::ID == getNameId(attr)))
+    {
+      KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+    }
+  }
+
+  KNXMLReader::ElementIterator element(reader);
+  while (element.next())
+  {
+    if ((KN2Token::NS_URI_SF == getNamespaceId(element)) && (KN2Token::text_storage == getNameId(element)))
+      parseTextStorage(element, layoutStyle);
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+      skipElement(element);
+    }
+  }
+}
+
+void KN2Parser::parseTextBody(const KNXMLReader &reader, const boost::optional<ID_t> &layoutStyle)
+{
+  assert(checkElement(reader, KN2Token::layout, KN2Token::NS_URI_SF));
+
+  checkNoAttributes(reader);
+
+  bool layout = false;
+  bool para = false;
+  KNXMLReader::ElementIterator element(reader);
+  while (element.next())
+  {
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
+    {
+      switch (getNameId(element))
+      {
+      case KN2Token::layout :
+        if (layout || para)
+        {
+          KN_DEBUG_MSG(("layout following another element, not allowed, skipping\n"));
+          skipElement(element);
+        }
+        else
+        {
+          parseLayout(element, layoutStyle);
+          layout = true;
+        }
+        break;
+      case KN2Token::p :
+        if (layout)
+        {
+          KN_DEBUG_MSG(("paragraph following layout, not allowed, skipping\n"));
+          skipElement(element);
+        }
+        else if (para)
+        {
+          parseP(element);
+        }
+        else
+        {
+          ID_t layoutStyleId;
+          if (layoutStyle)
+            layoutStyleId = get(layoutStyle);
+          getCollector()->startTextLayout(layoutStyleId);
+          para = true;
+          parseP(element);
+        }
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+        skipElement(element);
+        break;
+      }
+    }
+  }
+
+  if (para)
+    getCollector()->endTextLayout();
+}
+
+void KN2Parser::parseTextStorage(const KNXMLReader &reader, const boost::optional<ID_t> &layoutStyle)
+{
+  assert(checkElement(reader, KN2Token::text_storage, KN2Token::NS_URI_SF));
+
+  KNXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (KN2Token::NS_URI_SF == getNamespaceId(attr))
+    {
+      switch (getNameId(attr))
+      {
+      case KN2Token::excl :
+      case KN2Token::exclude_attachments :
+      case KN2Token::exclude_charts :
+      case KN2Token::exclude_shapes :
+      case KN2Token::exclude_tables :
+      case KN2Token::kind :
+        KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+        break;
+      }
+    }
+    else if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
+    {
+      KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+    }
+  }
+
+  KNXMLReader::ElementIterator element(reader);
+  while (element.next())
+  {
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
+    {
+      switch (getNameId(element))
+      {
+      case KN2Token::text_body :
+        parseTextBody(element, layoutStyle);
+        break;
+      case KN2Token::stylesheet_ref :
+        KN_DEBUG_XML_TODO_ELEMENT(element);
+        skipElement(element);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+        skipElement(element);
+        break;
+      }
+    }
+  }
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

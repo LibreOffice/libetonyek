@@ -51,6 +51,16 @@ private:
   void parseMedia(const KNXMLReader &reader);
   void parseShape(const KNXMLReader &reader);
 
+  void parseBr(const KNXMLReader &reader);
+  void parseLayout(const KNXMLReader &reader, const boost::optional<ID_t> &layoutStyle);
+  void parseLink(const KNXMLReader &reader, bool ref = false);
+  void parseP(const KNXMLReader &reader);
+  void parseSpan(const KNXMLReader &reader);
+  void parseTab(const KNXMLReader &reader);
+  void parseText(const KNXMLReader &reader);
+  void parseTextBody(const KNXMLReader &reader, const boost::optional<ID_t> &layoutStyle);
+  void parseTextStorage(const KNXMLReader &reader, const boost::optional<ID_t> &layoutStyle);
+
 private:
   unsigned m_version;
 };
