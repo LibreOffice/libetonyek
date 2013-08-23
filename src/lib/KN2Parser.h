@@ -35,12 +35,10 @@ private:
   void parseMasterSlides(const KNXMLReader &reader);
   void parseMetadata(const KNXMLReader &reader);
   void parsePage(const KNXMLReader &reader);
-  void parsePropertyMap(const KNXMLReader &reader, KNStyle &style);
   void parseProxyMasterLayer(const KNXMLReader &reader);
   void parseSize(const KNXMLReader &reader, KNSize &size);
   void parseSlide(const KNXMLReader &reader);
   void parseSlideList(const KNXMLReader &reader);
-  ID_t parseStyle(const KNXMLReader &reader, KNStyle &style);
   void parseStyles(const KNXMLReader &reader, bool anonymous);
   void parseStylesheet(const KNXMLReader &reader);
   void parseTheme(const KNXMLReader &reader);
