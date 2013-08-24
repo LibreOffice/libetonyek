@@ -28,7 +28,7 @@ class KNXMLReader
   enum Type
   {
     TYPE_ELEMENT = 0x1,
-    TYPE_TEXT = 0x2,
+    TYPE_TEXT = 0x2
   };
 
   class NodeIterator
