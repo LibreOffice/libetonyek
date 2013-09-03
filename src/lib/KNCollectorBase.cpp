@@ -176,11 +176,21 @@ void KNCollectorBase::collectLineBreak()
 
 void KNCollectorBase::collectSlideText(const ID_t &id, const bool title)
 {
-  (void) id;
-  (void) title;
   if (m_collecting)
   {
-    // TODO: implement me
+    assert(!m_objectsStack.empty());
+
+    KNTextBodyPtr_t textBody(new KNTextBody(title));
+    textBody->geometry = m_currentGeometry;
+    textBody->text = m_currentText;
+    if (title)
+      m_dict.titlePlaceholders[id] = textBody;
+    else
+      m_dict.bodyPlaceholders[id] = textBody;
+    m_objectsStack.top().push_back(makeObject(textBody));
+
+    m_currentGeometry.reset();
+    m_currentText.reset();
   }
 }
 

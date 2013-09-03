@@ -40,6 +40,9 @@ struct KNDictionary
   KNStyleMap_t paragraphStyles;
 
   KNImageMap_t images;
+
+  KNTextBodyMap_t bodyPlaceholders;
+  KNTextBodyMap_t titlePlaceholders;
 };
 
 }
