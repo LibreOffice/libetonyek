@@ -256,6 +256,8 @@ void KNCollectorBase::startTextLayout(const ID_t &style)
 void KNCollectorBase::endTextLayout()
 {
   assert(bool(m_currentText));
+
+  m_currentText.reset();
 }
 
 bool KNCollectorBase::getCollecting() const
