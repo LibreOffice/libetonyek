@@ -1905,7 +1905,7 @@ void KN2Parser::parseText(const KNXMLReader &reader)
 
 void KN2Parser::parseTextBody(const KNXMLReader &reader, const boost::optional<ID_t> &layoutStyle)
 {
-  assert(checkElement(reader, KN2Token::layout, KN2Token::NS_URI_SF));
+  assert(checkElement(reader, KN2Token::text_body, KN2Token::NS_URI_SF));
 
   checkNoAttributes(reader);
 
