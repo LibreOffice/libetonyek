@@ -1601,14 +1601,17 @@ void KN2Parser::parsePlaceholder(const KNXMLReader &reader, const bool title)
         break;
       case KN2Token::style :
         KN_DEBUG_XML_TODO_ELEMENT(element);
+        skipElement(element);
         break;
       default :
         KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+        skipElement(element);
       }
     }
     else
     {
       KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+      skipElement(element);
     }
   }
 
