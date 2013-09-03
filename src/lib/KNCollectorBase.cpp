@@ -146,23 +146,32 @@ void KNCollectorBase::collectLayer(const ID_t &, bool)
 
 void KNCollectorBase::collectText(const std::string &text, const ID_t &style)
 {
-  assert(bool(m_currentText));
+  if (m_collecting)
+  {
+    assert(bool(m_currentText));
 
-  m_currentText->insertText(text, m_dict.characterStyles[style]);
+    m_currentText->insertText(text, m_dict.characterStyles[style]);
+  }
 }
 
 void KNCollectorBase::collectTab()
 {
-  assert(bool(m_currentText));
+  if (m_collecting)
+  {
+    assert(bool(m_currentText));
 
-  m_currentText->insertTab();
+    m_currentText->insertTab();
+  }
 }
 
 void KNCollectorBase::collectLineBreak()
 {
-  assert(bool(m_currentText));
+  if (m_collecting)
+  {
+    assert(bool(m_currentText));
 
-  m_currentText->insertLineBreak();
+    m_currentText->insertLineBreak();
+  }
 }
 
 void KNCollectorBase::collectSlideText(const ID_t &id, const bool title)
@@ -232,32 +241,44 @@ void KNCollectorBase::endGroup()
 
 void KNCollectorBase::startParagraph(const ID_t &style)
 {
-  assert(bool(m_currentText));
+  if (m_collecting)
+  {
+    assert(bool(m_currentText));
 
-  m_currentText->openParagraph(m_dict.paragraphStyles[style]);
+    m_currentText->openParagraph(m_dict.paragraphStyles[style]);
+  }
 }
 
 void KNCollectorBase::endParagraph()
 {
-  assert(bool(m_currentText));
+  if (m_collecting)
+  {
+    assert(bool(m_currentText));
 
-  m_currentText->closeParagraph();
+    m_currentText->closeParagraph();
+  }
 }
 
 void KNCollectorBase::startTextLayout(const ID_t &style)
 {
-  assert(!m_currentText);
+  if (m_collecting)
+  {
+    assert(!m_currentText);
 
-  m_currentText.reset(new KNText());
-  const KNStylePtr_t layoutStyle = m_dict.layoutStyles[style];
-  m_currentText->setLayoutStyle(layoutStyle);
+    m_currentText.reset(new KNText());
+    const KNStylePtr_t layoutStyle = m_dict.layoutStyles[style];
+    m_currentText->setLayoutStyle(layoutStyle);
+  }
 }
 
 void KNCollectorBase::endTextLayout()
 {
-  assert(bool(m_currentText));
+  if (m_collecting)
+  {
+    assert(bool(m_currentText));
 
-  m_currentText.reset();
+    m_currentText.reset();
+  }
 }
 
 bool KNCollectorBase::getCollecting() const
