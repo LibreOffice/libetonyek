@@ -1565,8 +1565,8 @@ void KN2Parser::parseShape(const KNXMLReader &reader)
 void KN2Parser::parsePlaceholder(const KNXMLReader &reader, const bool title)
 {
   assert(title
-         ? checkElement(reader, KN2Token::body_placeholder, KN2Token::NS_URI_KEY)
-         : checkElement(reader, KN2Token::title_placeholder, KN2Token::NS_URI_KEY));
+         ? checkElement(reader, KN2Token::title_placeholder, KN2Token::NS_URI_KEY)
+         : checkElement(reader, KN2Token::body_placeholder, KN2Token::NS_URI_KEY));
 
   ID_t id;
 
