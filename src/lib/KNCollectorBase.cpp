@@ -178,7 +178,7 @@ void KNCollectorBase::collectSlideText(const ID_t &id, const bool title)
 {
   if (m_collecting)
   {
-    assert(!m_objectsStack.empty());
+    // assert(!m_objectsStack.empty());
 
     KNTextBodyPtr_t textBody(new KNTextBody(title));
     textBody->geometry = m_currentGeometry;
@@ -187,7 +187,7 @@ void KNCollectorBase::collectSlideText(const ID_t &id, const bool title)
       m_dict.titlePlaceholders[id] = textBody;
     else
       m_dict.bodyPlaceholders[id] = textBody;
-    m_objectsStack.top().push_back(makeObject(textBody));
+    // m_objectsStack.top().push_back(makeObject(textBody));
 
     m_currentGeometry.reset();
     m_currentText.reset();
