@@ -181,9 +181,8 @@ GroupObject::GroupObject(const KNGroupPtr_t &group)
 
 void GroupObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransformation &tr)
 {
-  // TODO: implement me
-  (void) painter;
-  (void) tr;
+  for (KNObjectList_t::const_iterator it = m_group->objects.begin(); it != m_group->objects.end(); ++it)
+    (*it)->draw(painter, tr);
 }
 
 }
