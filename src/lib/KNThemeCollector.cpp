@@ -28,25 +28,29 @@ KNThemeCollector::~KNThemeCollector()
 
 void KNThemeCollector::collectSize(const KNSize &size)
 {
-  m_size = size;
+  if (isCollecting())
+    m_size = size;
 }
 
 void KNThemeCollector::collectLayer(const ID_t &id, const bool ref)
 {
-  KNCollectorBase::collectLayer(id, ref);
+  if (isCollecting())
+  {
+    KNCollectorBase::collectLayer(id, ref);
 
-  if (ref)
-  {
-    KN_DEBUG_MSG(("cannot use master page reference %s in a master page\n", id.c_str()));
-  }
-  else
-  {
-    const KNLayerPtr_t layer = getLayer();
-    if (bool(layer))
-      m_masterPages.insert(KNLayerMap_t::value_type(id, layer));
+    if (ref)
+    {
+      KN_DEBUG_MSG(("cannot use master page reference %s in a master page\n", id.c_str()));
+    }
     else
     {
-      KN_DEBUG_MSG(("master style layer is empty\n"));
+      const KNLayerPtr_t layer = getLayer();
+      if (bool(layer))
+        m_masterPages.insert(KNLayerMap_t::value_type(id, layer));
+      else
+      {
+        KN_DEBUG_MSG(("master style layer is empty\n"));
+      }
     }
   }
 }

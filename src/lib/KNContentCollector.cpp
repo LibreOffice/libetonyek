@@ -42,27 +42,31 @@ void KNContentCollector::collectSize(const KNSize &)
 
 void KNContentCollector::collectLayer(const ID_t &id, const bool ref)
 {
-  assert(m_layerOpened);
-
-  KNCollectorBase::collectLayer(id, ref);
-
-  if (ref)
+  if (isCollecting())
   {
-    const KNLayerMap_t::const_iterator it = m_masterPages.find(id);
-    if (m_masterPages.end() != it)
-      drawLayer(it->second);
-    else
+    assert(m_layerOpened);
+
+    KNCollectorBase::collectLayer(id, ref);
+
+    if (ref)
     {
-      KN_DEBUG_MSG(("master page layer %s not found\n", id.c_str()));
+      const KNLayerMap_t::const_iterator it = m_masterPages.find(id);
+      if (m_masterPages.end() != it)
+        drawLayer(it->second);
+      else
+      {
+        KN_DEBUG_MSG(("master page layer %s not found\n", id.c_str()));
+      }
     }
+    else
+      drawLayer(getLayer());
   }
-  else
-    drawLayer(getLayer());
 }
 
 void KNContentCollector::collectPage(const ID_t &)
 {
-  assert(m_pageOpened);
+  if (isCollecting())
+    assert(m_pageOpened);
 }
 
 void KNContentCollector::startSlides()
@@ -91,45 +95,57 @@ void KNContentCollector::resolveStyle(KNStyle &style)
 
 void KNContentCollector::startPage()
 {
-  assert(!m_pageOpened);
-  assert(!m_layerOpened);
+  if (isCollecting())
+  {
+    assert(!m_pageOpened);
+    assert(!m_layerOpened);
 
-  WPXPropertyList props;
+    WPXPropertyList props;
 
-  m_pageOpened = true;
-  m_painter->startGraphics(props);
+    m_pageOpened = true;
+    m_painter->startGraphics(props);
+  }
 }
 
 void KNContentCollector::endPage()
 {
-  assert(m_pageOpened);
+  if (isCollecting())
+  {
+    assert(m_pageOpened);
 
-  m_pageOpened = false;
-  m_painter->endGraphics();
+    m_pageOpened = false;
+    m_painter->endGraphics();
+  }
 }
 
 void KNContentCollector::startLayer()
 {
-  assert(m_pageOpened);
-  assert(!m_layerOpened);
+  if (isCollecting())
+  {
+    assert(m_pageOpened);
+    assert(!m_layerOpened);
 
-  KNCollectorBase::startLayer();
+    KNCollectorBase::startLayer();
 
-  WPXPropertyList props;
+    WPXPropertyList props;
 
-  m_layerOpened = true;
-  m_painter->startLayer(props);
+    m_layerOpened = true;
+    m_painter->startLayer(props);
+  }
 }
 
 void KNContentCollector::endLayer()
 {
-  assert(m_pageOpened);
-  assert(m_layerOpened);
+  if (isCollecting())
+  {
+    assert(m_pageOpened);
+    assert(m_layerOpened);
 
-  KNCollectorBase::endLayer();
+    KNCollectorBase::endLayer();
 
-  m_layerOpened = false;
-  m_painter->endLayer();
+    m_layerOpened = false;
+    m_painter->endLayer();
+  }
 }
 
 void KNContentCollector::drawLayer(const KNLayerPtr_t &layer)
