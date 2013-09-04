@@ -291,7 +291,7 @@ void KNCollectorBase::endTextLayout()
   }
 }
 
-bool KNCollectorBase::getCollecting() const
+bool KNCollectorBase::isCollecting() const
 {
   return m_collecting;
 }

@@ -64,7 +64,7 @@ public:
   virtual void startTextLayout(const ID_t &style);
   virtual void endTextLayout();
 
-  bool getCollecting() const;
+  bool isCollecting() const;
   void setCollecting(bool collecting);
 
   const KNLayerPtr_t &getLayer() const;
