@@ -31,7 +31,6 @@ public:
 
 public:
   KNPath();
-  explicit KNPath(const KNGeometryPtr_t &geometry);
   KNPath(const KNPath &other);
   ~KNPath();
   KNPath &operator=(const KNPath &other);
@@ -40,8 +39,6 @@ public:
 
   void clear();
 
-  void setGeometry(const KNGeometryPtr_t &geometry);
-
   void appendMoveTo(double x, double y);
   void appendLineTo(double x, double y);
   void appendCurveTo(double x1, double y1, double x2, double y2, double x, double y);
@@ -49,7 +46,6 @@ public:
 
 private:
   std::deque<Element *> m_elements;
-  KNGeometryPtr_t m_geometry;
 };
 
 KNObjectPtr_t makeObject(const KNPathPtr_t &path);

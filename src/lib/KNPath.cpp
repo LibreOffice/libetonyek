@@ -136,19 +136,11 @@ KNPath::Element::~Element()
 
 KNPath::KNPath()
   : m_elements()
-  , m_geometry()
-{
-}
-
-KNPath::KNPath(const KNGeometryPtr_t &geometry)
-  : m_elements()
-  , m_geometry(geometry)
 {
 }
 
 KNPath::KNPath(const KNPath &other)
   : m_elements()
-  , m_geometry(other.m_geometry)
 {
   try
   {
@@ -178,7 +170,6 @@ void KNPath::swap(KNPath &other)
 {
   using std::swap;
   swap(m_elements, other.m_elements);
-  // swap(m_geometry, other.m_geometry);
 }
 
 void KNPath::clear()
@@ -186,11 +177,6 @@ void KNPath::clear()
   for (std::deque<Element *>::const_iterator it = m_elements.begin(); it != m_elements.end(); ++it)
     delete *it;
   m_elements.clear();
-}
-
-void KNPath::setGeometry(const KNGeometryPtr_t &geometry)
-{
-  m_geometry = geometry;
 }
 
 void KNPath::appendMoveTo(const double x, const double y)

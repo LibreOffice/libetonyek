@@ -125,8 +125,8 @@ void KNCollectorBase::collectPath(const ID_t &, const KNPathPtr_t &path)
   {
     assert(!m_objectsStack.empty());
 
-    path->setGeometry(m_currentGeometry);
-    m_currentGeometry.reset();
+    // path->setGeometry(m_currentGeometry);
+    // m_currentGeometry.reset();
     m_objectsStack.top().push_back(makeObject(path));
   }
 }
