@@ -22,16 +22,18 @@ namespace
 class MoveTo : public KNPath::Element
 {
 public:
-  explicit MoveTo(const KNPoint &point);
+  MoveTo(double x, double y);
 
   virtual MoveTo *clone() const;
 
 private:
-  const KNPoint m_point;
+  const double m_x;
+  const double m_y;
 };
 
-MoveTo::MoveTo(const KNPoint &point)
-  : m_point(point)
+MoveTo::MoveTo(double x, double y)
+  : m_x(x)
+  , m_y(y)
 {
 }
 
@@ -48,16 +50,18 @@ namespace
 class LineTo : public KNPath::Element
 {
 public:
-  explicit LineTo(const KNPoint &point);
+  LineTo(double x, double y);
 
   virtual LineTo *clone() const;
 
 private:
-  const KNPoint m_point;
+  const double m_x;
+  const double m_y;
 };
 
-LineTo::LineTo(const KNPoint &point)
-  : m_point(point)
+LineTo::LineTo(const double x, const double y)
+  : m_x(x)
+  , m_y(y)
 {
 }
 
@@ -74,20 +78,26 @@ namespace
 class CurveTo : public KNPath::Element
 {
 public:
-  CurveTo(const KNPoint &controlPoint1, const KNPoint &controlPoint2, const KNPoint &point);
+  CurveTo(double x1, double y1, double x2, double y2, double x, double y);
 
   virtual CurveTo *clone() const;
 
 private:
-  const KNPoint m_controlPoint1;
-  const KNPoint m_controlPoint2;
-  const KNPoint m_point;
+  const double m_x1;
+  const double m_y1;
+  const double m_x2;
+  const double m_y2;
+  const double m_x;
+  const double m_y;
 };
 
-CurveTo::CurveTo(const KNPoint &controlPoint1, const KNPoint &controlPoint2, const KNPoint &point)
-  : m_controlPoint1(controlPoint1)
-  , m_controlPoint2(controlPoint2)
-  , m_point(point)
+CurveTo::CurveTo(const double x1, const double y1, const double x2, const double y2, const double x, const double y)
+  : m_x1(x1)
+  , m_y1(y1)
+  , m_x2(x2)
+  , m_y2(y2)
+  , m_x(x)
+  , m_y(y)
 {
 }
 
@@ -183,19 +193,19 @@ void KNPath::setGeometry(const KNGeometryPtr_t &geometry)
   m_geometry = geometry;
 }
 
-void KNPath::appendMoveTo(const KNPoint &point)
+void KNPath::appendMoveTo(const double x, const double y)
 {
-  m_elements.push_back(new MoveTo(point));
+  m_elements.push_back(new MoveTo(x, y));
 }
 
-void KNPath::appendLineTo(const KNPoint &point)
+void KNPath::appendLineTo(const double x, const double y)
 {
-  m_elements.push_back(new LineTo(point));
+  m_elements.push_back(new LineTo(x, y));
 }
 
-void KNPath::appendCurveTo(const KNPoint &controlPoint1, const KNPoint &controlPoint2, const KNPoint &point)
+void KNPath::appendCurveTo(const double x1, const double y1, const double x2, const double y2, const double x, const double y)
 {
-  m_elements.push_back(new CurveTo(controlPoint1, controlPoint2, point));
+  m_elements.push_back(new CurveTo(x1, y1, x2, y2, x, y));
 }
 
 void KNPath::appendClose()

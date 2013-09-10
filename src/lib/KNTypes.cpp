@@ -82,16 +82,12 @@ KNPadding::KNPadding()
 {
 }
 
-KNPoint::KNPoint()
-  : x(0)
-  , y(0)
-{
-}
-
 KNLine::KNLine()
   : geometry()
-  , head()
-  , tail()
+  , x1()
+  , y1()
+  , x2()
+  , y2()
 {
 }
 
@@ -137,13 +133,13 @@ KNTextBody::KNTextBody(bool title_)
 namespace
 {
 
-WPXPropertyList toWPG(const KNPoint &point)
+WPXPropertyList pointToWPG(const double x, const double y)
 {
   WPXPropertyList props;
 
   // TODO: unit conversion
-  props.insert("svg:x", point.x);
-  props.insert("svg:y", point.y);
+  props.insert("svg:x", x);
+  props.insert("svg:y", y);
 
   return props;
 }
@@ -241,7 +237,7 @@ void LineObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransfor
   // TODO: transform the line
   (void) tr;
 
-  if (m_line->head && m_line->tail)
+  if (m_line->x1 && m_line->y1 && m_line->x2 && m_line->y2)
   {
     WPXPropertyList props;
 #if 0
@@ -260,8 +256,8 @@ void LineObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransfor
     painter->setStyle(props, WPXPropertyListVector());
 
     WPXPropertyListVector vertices;
-    vertices.append(toWPG(get(m_line->head)));
-    vertices.append(toWPG(get(m_line->tail)));
+    vertices.append(pointToWPG(get(m_line->x1), get(m_line->y1)));
+    vertices.append(pointToWPG(get(m_line->x2), get(m_line->y2)));
     painter->drawPolyline(vertices);
   }
   else

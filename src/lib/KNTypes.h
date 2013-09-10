@@ -78,20 +78,14 @@ struct KNPadding
   KNPadding();
 };
 
-struct KNPoint
-{
-  double x;
-  double y;
-
-  KNPoint();
-};
-
 struct KNLine
 {
   KNGeometryPtr_t geometry;
   KNStylePtr_t style;
-  boost::optional<KNPoint> head;
-  boost::optional<KNPoint> tail;
+  boost::optional<double> x1;
+  boost::optional<double> y1;
+  boost::optional<double> x2;
+  boost::optional<double> y2;
 
   KNLine();
 };

@@ -45,39 +45,6 @@ bool asBool(const char *const value)
   return false;
 }
 
-KNPoint readPoint(const KNXMLReader &reader)
-{
-  KNPoint point;
-
-  KNXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if (KN2Token::NS_URI_SFA == getNamespaceId(attr))
-    {
-      switch (getNameId(attr))
-      {
-      case KN2Token::x :
-        point.x = asDouble(attr.getValue());
-        break;
-      case KN2Token::y :
-        point.y = asDouble(attr.getValue());
-        break;
-      default :
-        KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
-        break;
-      }
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
-    }
-  }
-
-  checkEmptyElement(reader);
-
-  return point;
-}
-
 KNPosition readPosition(const KNXMLReader &reader)
 {
   KNPosition position;
@@ -1357,11 +1324,19 @@ void KN2Parser::parseLine(const KNXMLReader &reader)
         parseGeometry(reader);
         break;
       case KN2Token::head :
-        line->head = readPoint(reader);
+      {
+        const KNPosition head = readPosition(reader);
+        line->x1 = head.x;
+        line->y1 = head.y;
         break;
+      }
       case KN2Token::tail :
-        line->tail = readPoint(reader);
+      {
+        const KNPosition tail = readPosition(reader);
+        line->x2 = tail.x;
+        line->y2 = tail.y;
         break;
+      }
       case KN2Token::style :
         KN_DEBUG_XML_TODO("element", name, ns);
         skipElement(element);

@@ -18,8 +18,6 @@
 namespace libkeynote
 {
 
-struct KNPoint;
-
 class KNPath
 {
 public:
@@ -44,9 +42,9 @@ public:
 
   void setGeometry(const KNGeometryPtr_t &geometry);
 
-  void appendMoveTo(const KNPoint &point);
-  void appendLineTo(const KNPoint &point);
-  void appendCurveTo(const KNPoint &controlPoint1, const KNPoint &controlPoint2, const KNPoint &point);
+  void appendMoveTo(double x, double y);
+  void appendLineTo(double x, double y);
+  void appendCurveTo(double x1, double y1, double x2, double y2, double x, double y);
   void appendClose();
 
 private:
