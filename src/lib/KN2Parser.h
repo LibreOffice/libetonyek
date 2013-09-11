@@ -44,6 +44,9 @@ private:
   void parseTheme(const KNXMLReader &reader);
   void parseThemeList(const KNXMLReader &reader);
 
+  void parseBezier(const KNXMLReader &reader);
+  void parseBezierPath(const KNXMLReader &reader);
+  void parseBezierRef(const KNXMLReader &reader);
   void parseGeometry(const KNXMLReader &reader);
   void parseGroup(const KNXMLReader &reader);
   void parseImage(const KNXMLReader &reader);

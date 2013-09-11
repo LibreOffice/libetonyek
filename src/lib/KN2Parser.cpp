@@ -15,6 +15,7 @@
 #include "KN2StyleParser.h"
 #include "KN2Token.h"
 #include "KNCollector.h"
+#include "KNPath.h"
 #include "KNStyle.h"
 #include "KNTypes.h"
 #include "KNXMLReader.h"
@@ -1047,6 +1048,94 @@ void KN2Parser::parseThemeList(const KNXMLReader &reader)
   getCollector()->endThemes();
 }
 
+void KN2Parser::parseBezier(const KNXMLReader &reader)
+{
+  assert(checkElement(reader, KN2Token::bezier, KN2Token::NS_URI_SF));
+
+  ID_t id;
+  KNPathPtr_t path;
+
+  KNXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if ((KN2Token::NS_URI_SF == getNamespaceId(attr)))
+    {
+      switch (getNameId(attr))
+      {
+      case KN2Token::ID :
+        id = attr.getValue();
+        break;
+      case KN2Token::path :
+        path.reset(new KNPath(attr.getValue()));
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+    }
+  }
+
+  checkEmptyElement(reader);
+
+  getCollector()->collectBezier(id, path, false);
+}
+
+void KN2Parser::parseBezierPath(const KNXMLReader &reader)
+{
+  assert(checkElement(reader, KN2Token::bezier_path, KN2Token::NS_URI_SF)
+         || checkElement(reader, KN2Token::editable_bezier_path, KN2Token::NS_URI_SF));
+
+  KNXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if ((KN2Token::NS_URI_SF == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
+    {
+      KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+    }
+  }
+
+  KNXMLReader::ElementIterator element(reader);
+  while (element.next())
+  {
+    if (KN2Token::NS_URI_SF == getNamespaceId(attr))
+    {
+      switch (getNameId(element))
+      {
+      case KN2Token::bezier :
+        parseBezier(element);
+        break;
+      case KN2Token::bezier_ref :
+        parseBezierRef(element);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+        skipElement(element);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+      skipElement(element);
+    }
+  }
+}
+
+void KN2Parser::parseBezierRef(const KNXMLReader &reader)
+{
+  assert(checkElement(reader, KN2Token::bezier_ref, KN2Token::NS_URI_SF));
+  const ID_t id = readOnlyAttribute(reader, KN2Token::IDREF, KN2Token::NS_URI_SFA);
+  getCollector()->collectBezier(id, KNPathPtr_t(), true);
+}
+
 void KN2Parser::parseGeometry(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::geometry, KN2Token::NS_URI_SF));
@@ -1490,8 +1579,10 @@ void KN2Parser::parsePath(const KNXMLReader &reader)
       switch (getNameId(element))
       {
       case KN2Token::bezier_path :
-      case KN2Token::callout2_path :
       case KN2Token::editable_bezier_path :
+        parseBezierPath(element);
+        break;
+      case KN2Token::callout2_path :
       case KN2Token::connection_path :
       case KN2Token::point_path :
       case KN2Token::scalar_path :
