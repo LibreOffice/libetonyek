@@ -483,6 +483,7 @@ bullets,bullets
 calc-engine,calc_engine
 calc-engine-entities,calc_engine_entities
 calculation-engine,calculation_engine
+callout2-path,callout2_path
 can-autosize-h,can_autosize_h
 can-autosize-v,can_autosize_v
 cap,cap
@@ -527,6 +528,7 @@ com.apple.iWork.Keynote.KLNSparkle.color,com_apple_iWork_Keynote_KLNSparkle_colo
 compatible-version,compatible_version
 component,component
 components,components
+connection-path,connection_path
 connection-style,connection_style
 content,content
 content-size,content_size

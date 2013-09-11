@@ -49,6 +49,7 @@ private:
   void parseImage(const KNXMLReader &reader);
   void parseLine(const KNXMLReader &reader);
   void parseMedia(const KNXMLReader &reader);
+  void parsePath(const KNXMLReader &reader);
   void parseShape(const KNXMLReader &reader);
   void parsePlaceholder(const KNXMLReader &reader, bool title = false);
 
