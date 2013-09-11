@@ -63,6 +63,16 @@ void KNCollectorBase::collectParagraphStyle(const ID_t &id, const KNStylePtr_t &
     m_dict.paragraphStyles[id] = style;
 }
 
+void KNCollectorBase::collectBezier(const ID_t &, const KNPathPtr_t &path)
+{
+  if (m_collecting)
+  {
+    assert(!m_objectsStack.empty());
+
+    m_objectsStack.top().push_back(makeObject(path));
+  }
+}
+
 void KNCollectorBase::collectGeometry(const ID_t &, const KNGeometryPtr_t &geometry)
 {
   if (m_collecting)
@@ -116,18 +126,6 @@ void KNCollectorBase::collectMedia(const ID_t &, const KNMediaPtr_t &media)
     media->geometry = m_currentGeometry;
     m_currentGeometry.reset();
     m_objectsStack.top().push_back(makeObject(media));
-  }
-}
-
-void KNCollectorBase::collectPath(const ID_t &, const KNPathPtr_t &path)
-{
-  if (m_collecting)
-  {
-    assert(!m_objectsStack.empty());
-
-    // path->setGeometry(m_currentGeometry);
-    // m_currentGeometry.reset();
-    m_objectsStack.top().push_back(makeObject(path));
   }
 }
 

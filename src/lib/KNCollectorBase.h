@@ -39,12 +39,12 @@ public:
   virtual void collectLayoutStyle(const ID_t &id, const KNStylePtr_t &style);
   virtual void collectParagraphStyle(const ID_t &id, const KNStylePtr_t &style);
 
+  virtual void collectBezier(const ID_t &id, const KNPathPtr_t &path);
   virtual void collectGeometry(const ID_t &id, const KNGeometryPtr_t &geometry);
   virtual void collectGroup(const ID_t &id, const KNGroupPtr_t &group);
   virtual void collectImage(const ID_t &id, const KNImagePtr_t &image);
   virtual void collectLine(const ID_t &id, const KNLinePtr_t &line);
   virtual void collectMedia(const ID_t &id, const KNMediaPtr_t &media);
-  virtual void collectPath(const ID_t &id, const KNPathPtr_t &path);
 
   virtual void collectLayer(const ID_t &id, bool ref);
 
