@@ -11,6 +11,7 @@
 #define KNPATH_H_INCLUDED
 
 #include <deque>
+#include <string>
 
 #include "KNObject.h"
 #include "KNPath_fwd.h"
@@ -31,6 +32,7 @@ public:
 
 public:
   KNPath();
+  explicit KNPath(const std::string &path);
   KNPath(const KNPath &other);
   ~KNPath();
   KNPath &operator=(const KNPath &other);

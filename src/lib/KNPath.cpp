@@ -139,6 +139,13 @@ KNPath::KNPath()
 {
 }
 
+KNPath::KNPath(const std::string &path)
+  : m_elements()
+{
+  // TODO: implement me
+  (void) path;
+}
+
 KNPath::KNPath(const KNPath &other)
   : m_elements()
 {
