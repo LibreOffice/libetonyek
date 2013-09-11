@@ -39,7 +39,7 @@ public:
   virtual void collectLayoutStyle(const ID_t &id, const KNStylePtr_t &style);
   virtual void collectParagraphStyle(const ID_t &id, const KNStylePtr_t &style);
 
-  virtual void collectBezier(const ID_t &id, const KNPathPtr_t &path);
+  virtual void collectBezier(const ID_t &id, const KNPathPtr_t &path, bool ref);
   virtual void collectGeometry(const ID_t &id, const KNGeometryPtr_t &geometry);
   virtual void collectGroup(const ID_t &id, const KNGroupPtr_t &group);
   virtual void collectImage(const ID_t &id, const KNImagePtr_t &image);

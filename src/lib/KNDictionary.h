@@ -39,6 +39,8 @@ struct KNDictionary
   KNStyleMap_t layoutStyles;
   KNStyleMap_t paragraphStyles;
 
+  KNPathMap_t beziers;
+
   KNImageMap_t images;
 
   KNTextBodyMap_t bodyPlaceholders;

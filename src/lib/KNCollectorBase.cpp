@@ -9,6 +9,7 @@
 
 #include <cassert>
 
+#include "libkeynote_utils.h"
 #include "KNCollectorBase.h"
 #include "KNDictionary.h"
 #include "KNText.h"
@@ -63,13 +64,27 @@ void KNCollectorBase::collectParagraphStyle(const ID_t &id, const KNStylePtr_t &
     m_dict.paragraphStyles[id] = style;
 }
 
-void KNCollectorBase::collectBezier(const ID_t &, const KNPathPtr_t &path)
+void KNCollectorBase::collectBezier(const ID_t &id, const KNPathPtr_t &path, const bool ref)
 {
   if (m_collecting)
   {
     assert(!m_objectsStack.empty());
 
-    m_objectsStack.top().push_back(makeObject(path));
+    KNPathPtr_t savedPath;
+
+    if (!ref)
+      m_dict.beziers[id] = path;
+
+    savedPath = m_dict.beziers[id];
+
+    if (savedPath)
+    {
+      m_objectsStack.top().push_back(makeObject(savedPath));
+    }
+    else
+    {
+      KN_DEBUG_MSG(("the path is empty\n"));
+    }
   }
 }
 
