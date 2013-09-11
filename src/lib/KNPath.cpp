@@ -8,13 +8,31 @@
  */
 
 #include <cassert>
+#include <sstream>
 #include <utility>
 
 #include "KNPath.h"
 #include "KNTypes.h"
 
+using std::ostringstream;
+using std::string;
+
 namespace libkeynote
 {
+
+/** An element of path.
+  */
+class KNPath::Element
+{
+public:
+  virtual ~Element() = 0;
+
+  virtual Element *clone() const = 0;
+
+  /** Create SVG representation of this path.
+   */
+  virtual void toSvg(ostringstream &out) const = 0;
+};
 
 namespace
 {
@@ -25,6 +43,8 @@ public:
   MoveTo(double x, double y);
 
   virtual MoveTo *clone() const;
+
+  virtual void toSvg(ostringstream &out) const;
 
 private:
   const double m_x;
@@ -42,6 +62,11 @@ MoveTo *MoveTo::clone() const
   return new MoveTo(*this);
 }
 
+void MoveTo::toSvg(ostringstream &out) const
+{
+  out << 'C' << m_x << ' ' << m_y;
+}
+
 }
 
 namespace
@@ -53,6 +78,8 @@ public:
   LineTo(double x, double y);
 
   virtual LineTo *clone() const;
+
+  virtual void toSvg(ostringstream &out) const;
 
 private:
   const double m_x;
@@ -70,6 +97,11 @@ LineTo *LineTo::clone() const
   return new LineTo(*this);
 }
 
+void LineTo::toSvg(ostringstream &out) const
+{
+  out << 'L' << m_x << ' ' << m_y;
+}
+
 }
 
 namespace
@@ -81,6 +113,8 @@ public:
   CurveTo(double x1, double y1, double x2, double y2, double x, double y);
 
   virtual CurveTo *clone() const;
+
+  virtual void toSvg(ostringstream &out) const;
 
 private:
   const double m_x1;
@@ -106,6 +140,14 @@ CurveTo *CurveTo::clone() const
   return new CurveTo(*this);
 }
 
+void CurveTo::toSvg(ostringstream &out) const
+{
+  out << 'C'
+      << m_x1 << ' ' << m_y1 << ' '
+      << m_x2 << ' ' << m_y2 << ' '
+      << m_x << ' ' << m_y;
+}
+
 }
 
 namespace
@@ -117,6 +159,8 @@ public:
   Close();
 
   virtual Close *clone() const;
+
+  virtual void toSvg(ostringstream &out) const;
 };
 
 Close::Close()
@@ -126,6 +170,11 @@ Close::Close()
 Close *Close::clone() const
 {
   return new Close();
+}
+
+void Close::toSvg(ostringstream &out) const
+{
+  out << 'Z';
 }
 
 }
@@ -204,6 +253,24 @@ void KNPath::appendCurveTo(const double x1, const double y1, const double x2, co
 void KNPath::appendClose()
 {
   m_elements.push_back(new Close());
+}
+
+string KNPath::toSvg() const
+{
+  ostringstream out;
+
+  bool first = true;
+  for (std::deque<Element *>::const_iterator it = m_elements.begin(); it != m_elements.end(); ++it)
+  {
+    if (first)
+      first = false;
+    else
+      out << ' ';
+
+    (*it)->toSvg(out);
+  }
+
+  return out.str();
 }
 
 namespace

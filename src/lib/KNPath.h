@@ -22,13 +22,7 @@ namespace libkeynote
 class KNPath
 {
 public:
-  class Element
-  {
-  public:
-    virtual ~Element() = 0;
-
-    virtual Element *clone() const = 0;
-  };
+  class Element;
 
 public:
   KNPath();
@@ -45,6 +39,10 @@ public:
   void appendLineTo(double x, double y);
   void appendCurveTo(double x1, double y1, double x2, double y2, double x, double y);
   void appendClose();
+
+  /** Create SVG representation of this path.
+    */
+  std::string toSvg() const;
 
 private:
   std::deque<Element *> m_elements;
