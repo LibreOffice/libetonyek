@@ -33,6 +33,19 @@ struct KNShape
 
 typedef boost::shared_ptr<KNShape> KNShapePtr_t;
 
+/** Path creator functions for stock shapes.
+ */
+KNPathPtr_t makePolygonPath(const KNSize &size, unsigned edges);
+KNPathPtr_t makeRoundedRectanglePath(const KNSize &size, double radius);
+
+KNPathPtr_t makeArrowPath(const KNSize &size, double headWidth, double stemThickness);
+KNPathPtr_t makeDoubleArrowPath(const KNSize &size, double headWidth, double stemThickness);
+KNPathPtr_t makeStarPath(const KNSize &size, unsigned points, double innerRadius);
+KNPathPtr_t makeConnectionPath(const KNSize &size, double middleX, double middleY);
+
+KNPathPtr_t makeCalloutPath(const KNSize &size, double radius, double tailSize, double tailX, double tailY);
+KNPathPtr_t makeQuoteBubblePath(const KNSize &size, double radius, double tailSize, double tailX, double tailY);
+
 }
 
 #endif // KNSHAPE_H_INCLUDED
