@@ -12,6 +12,8 @@ test_LDADD = \
 	$(XML_LIBS)
 
 test_SOURCES = \
+	KNPathTest.cpp \
+	KNPathTest.h \
 	KNXMLReaderTest.cpp \
 	KNXMLReaderTest.h \
 	test.cpp
