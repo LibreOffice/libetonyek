@@ -1089,12 +1089,14 @@ void KN2Parser::parseBezierPath(const KNXMLReader &reader)
   assert(checkElement(reader, KN2Token::bezier_path, KN2Token::NS_URI_SF)
          || checkElement(reader, KN2Token::editable_bezier_path, KN2Token::NS_URI_SF));
 
+  ID_t id;
+
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((KN2Token::NS_URI_SF == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
     {
-      KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
+      id = attr.getValue();
     }
     else
     {
@@ -1127,6 +1129,8 @@ void KN2Parser::parseBezierPath(const KNXMLReader &reader)
       skipElement(element);
     }
   }
+
+  getCollector()->collectBezierPath(id);
 }
 
 void KN2Parser::parseBezierRef(const KNXMLReader &reader)
