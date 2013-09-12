@@ -1058,7 +1058,7 @@ void KN2Parser::parseBezier(const KNXMLReader &reader)
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((KN2Token::NS_URI_SF == getNamespaceId(attr)))
+    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)))
     {
       switch (getNameId(attr))
       {
@@ -1094,7 +1094,7 @@ void KN2Parser::parseBezierPath(const KNXMLReader &reader)
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((KN2Token::NS_URI_SF == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
+    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
     {
       id = attr.getValue();
     }
