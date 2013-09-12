@@ -25,12 +25,12 @@ public:
 private:
   CPPUNIT_TEST_SUITE(KNPathTest);
   CPPUNIT_TEST(testConstruction);
-  CPPUNIT_TEST(testConstructionFromString);
+  CPPUNIT_TEST(testSVG);
   CPPUNIT_TEST_SUITE_END();
 
 private:
   void testConstruction();
-  void testConstructionFromString();
+  void testSVG();
 };
 
 }

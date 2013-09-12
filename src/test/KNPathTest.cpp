@@ -30,11 +30,6 @@ void KNPathTest::tearDown()
 
 void  KNPathTest::testConstruction()
 {
-  // TODO: implement me
-}
-
-void KNPathTest::testConstructionFromString()
-{
   {
     const string src = "M 0.0 0.0";
     KNPath refPath;
@@ -113,6 +108,11 @@ void KNPathTest::testConstructionFromString()
 
     CPPUNIT_ASSERT(refPath == testPath);
   }
+}
+
+void  KNPathTest::testSVG()
+{
+  // TODO: implement me
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(KNPathTest);
