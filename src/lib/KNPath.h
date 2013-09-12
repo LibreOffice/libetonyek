@@ -21,6 +21,8 @@ namespace libkeynote
 
 class KNPath
 {
+  friend bool operator==(const KNPath &left, const KNPath &right);
+
 public:
   class Element;
 
@@ -47,6 +49,9 @@ public:
 private:
   std::deque<Element *> m_elements;
 };
+
+bool operator==(const KNPath &left, const KNPath &right);
+bool operator!=(const KNPath &left, const KNPath &right);
 
 KNObjectPtr_t makeObject(const KNPathPtr_t &path);
 

@@ -34,6 +34,18 @@ public:
 
   virtual Element *clone() const = 0;
 
+  /** Test whether this element is equal to other.
+    *
+    * @note Because all implementations of this interface are directly
+    * derived from it (i.e., thay have no subclasses), it is enough to
+    * check if @c other has a compatible type, not that @c this and @c
+    * other have the @em same type (which would require double
+    * dispatch).
+    *
+    * @return true if @c this and @c other are equal.
+    */
+  virtual bool equalsTo(const Element *other) const = 0;
+
   /** Create SVG representation of this path.
    */
   virtual void toSvg(ostringstream &out) const = 0;
@@ -48,6 +60,8 @@ public:
   MoveTo(double x, double y);
 
   virtual MoveTo *clone() const;
+
+  virtual bool equalsTo(const Element *other) const;
 
   virtual void toSvg(ostringstream &out) const;
 
@@ -67,6 +81,16 @@ MoveTo *MoveTo::clone() const
   return new MoveTo(*this);
 }
 
+bool MoveTo::equalsTo(const Element *other) const
+{
+  const MoveTo *const that = dynamic_cast<const MoveTo *>(other);
+
+  if (that)
+    return m_x == that->m_x && m_y == that->m_y;
+
+  return false;
+}
+
 void MoveTo::toSvg(ostringstream &out) const
 {
   out << 'C' << m_x << ' ' << m_y;
@@ -83,6 +107,8 @@ public:
   LineTo(double x, double y);
 
   virtual LineTo *clone() const;
+
+  virtual bool equalsTo(const Element *other) const;
 
   virtual void toSvg(ostringstream &out) const;
 
@@ -102,6 +128,16 @@ LineTo *LineTo::clone() const
   return new LineTo(*this);
 }
 
+bool LineTo::equalsTo(const Element *other) const
+{
+  const LineTo *const that = dynamic_cast<const LineTo *>(other);
+
+  if (that)
+    return m_x == that->m_x && m_y == that->m_y;
+
+  return false;
+}
+
 void LineTo::toSvg(ostringstream &out) const
 {
   out << 'L' << m_x << ' ' << m_y;
@@ -118,6 +154,8 @@ public:
   CurveTo(double x1, double y1, double x2, double y2, double x, double y);
 
   virtual CurveTo *clone() const;
+
+  virtual bool equalsTo(const Element *other) const;
 
   virtual void toSvg(ostringstream &out) const;
 
@@ -145,6 +183,19 @@ CurveTo *CurveTo::clone() const
   return new CurveTo(*this);
 }
 
+bool CurveTo::equalsTo(const Element *other) const
+{
+  const CurveTo *const that = dynamic_cast<const CurveTo *>(other);
+
+  if (that)
+    return m_x1 == that->m_x1 && m_y1 == that->m_y1
+           && m_x2 == that->m_x2 && m_y2 == that->m_y2
+           && m_x == that->m_x && m_y == that->m_y
+           ;
+
+  return false;
+}
+
 void CurveTo::toSvg(ostringstream &out) const
 {
   out << 'C'
@@ -165,6 +216,8 @@ public:
 
   virtual Close *clone() const;
 
+  virtual bool equalsTo(const Element *other) const;
+
   virtual void toSvg(ostringstream &out) const;
 };
 
@@ -175,6 +228,11 @@ Close::Close()
 Close *Close::clone() const
 {
   return new Close();
+}
+
+bool Close::equalsTo(const Element *other) const
+{
+  return dynamic_cast<const Close *>(other);
 }
 
 void Close::toSvg(ostringstream &out) const
@@ -300,6 +358,19 @@ string KNPath::toSvg() const
   }
 
   return out.str();
+}
+
+bool operator==(const KNPath &left, const KNPath &right)
+{
+  return left.m_elements.size() == right.m_elements.size()
+         && std::equal(left.m_elements.begin(), left.m_elements.end(), right.m_elements.begin(),
+                       boost::bind(&KNPath::Element::equalsTo, _1, _2))
+         ;
+}
+
+bool operator!=(const KNPath &left, const KNPath &right)
+{
+  return !(left == right);
 }
 
 namespace
