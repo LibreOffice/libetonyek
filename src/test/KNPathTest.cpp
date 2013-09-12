@@ -112,7 +112,70 @@ void  KNPathTest::testConstruction()
 
 void  KNPathTest::testSVG()
 {
-  // TODO: implement me
+  {
+    const string ref = "M 0 0";
+    KNPath path;
+    path.appendMoveTo(0, 0);
+
+    CPPUNIT_ASSERT_EQUAL(ref, path.toSvg());
+  }
+
+  {
+    const string ref = "L 0 0";
+    KNPath path;
+    path.appendLineTo(0, 0);
+
+    CPPUNIT_ASSERT_EQUAL(ref, path.toSvg());
+  }
+
+  {
+    const string ref = "C 1 1 0 0 0.5 0.5";
+    KNPath path;
+    path.appendCurveTo(1, 1, 0, 0, 0.5, 0.5);
+
+    CPPUNIT_ASSERT_EQUAL(ref, path.toSvg());
+  }
+
+  {
+    const string ref = "Z";
+    KNPath path;
+    path.appendClose();
+
+    CPPUNIT_ASSERT_EQUAL(ref, path.toSvg());
+  }
+
+  {
+    const string ref = "M 0 0 L 1 1";
+    KNPath path;
+    path.appendMoveTo(0, 0);
+    path.appendLineTo(1, 1);
+
+    CPPUNIT_ASSERT_EQUAL(ref, path.toSvg());
+  }
+
+  {
+    const string ref = "M 0 0 L 1 0 L 1 1 L 0 1 Z L 0 0";
+    KNPath path;
+    path.appendMoveTo(0, 0);
+    path.appendLineTo(1, 0);
+    path.appendLineTo(1, 1);
+    path.appendLineTo(0, 1);
+    path.appendClose();
+    path.appendLineTo(0, 0);
+
+    CPPUNIT_ASSERT_EQUAL(ref, path.toSvg());
+  }
+
+  {
+    const string ref = "M 0.0 0.0 L 0 1 C 1 1 0.5 0.5 0 0 Z";
+    KNPath path;
+    path.appendMoveTo(0, 0);
+    path.appendLineTo(0, 1);
+    path.appendCurveTo(1, 1, 0.5, 0.5, 0, 0);
+    path.appendClose();
+
+    CPPUNIT_ASSERT_EQUAL(ref, path.toSvg());
+  }
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(KNPathTest);
