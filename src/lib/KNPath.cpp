@@ -11,6 +11,11 @@
 #include <sstream>
 #include <utility>
 
+#include <boost/bind.hpp>
+#include <boost/ref.hpp>
+#include <boost/spirit/include/classic_core.hpp>
+
+#include "libkeynote_utils.h"
 #include "KNPath.h"
 #include "KNTypes.h"
 
@@ -191,8 +196,32 @@ KNPath::KNPath()
 KNPath::KNPath(const std::string &path)
   : m_elements()
 {
-  // TODO: implement me
-  (void) path;
+  using boost::bind;
+  using boost::cref;
+  using namespace boost::spirit::classic;
+
+  double x = 0;
+  double y = 0;
+  double x1 = 0;
+  double y1 = 0;
+  double x2 = 0;
+  double y2 = 0;
+
+  const rule<> r =
+    +(
+      ('C' >> real_p[assign_a(x)] >> real_p[assign_a(y)] >> real_p[assign_a(x1)] >> real_p[assign_a(y1)] >> real_p[assign_a(x2)] >> real_p[assign_a(y2)])
+      [bind(&KNPath::appendCurveTo, this, cref(x), cref(y), cref(x1), cref(y1), cref(x2), cref(y2))]
+      | ('L' >> real_p[assign_a(x)] >> real_p[assign_a(y)])[bind(&KNPath::appendLineTo, this, cref(x), cref(y))]
+      | ('M' >> real_p[assign_a(x)] >> real_p[assign_a(y)])[bind(&KNPath::appendMoveTo, this, cref(x), cref(y))]
+      | ch_p('Z')[bind(&KNPath::appendClose, this)]
+    )
+    ;
+
+  if (!parse(path.c_str(), r, space_p).full)
+  {
+    KN_DEBUG_MSG(("parsing of path '%s' failed\n", path.c_str()));
+    throw GenericException();
+  }
 }
 
 KNPath::KNPath(const KNPath &other)
