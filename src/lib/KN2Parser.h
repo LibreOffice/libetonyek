@@ -39,6 +39,7 @@ private:
   void parseSize(const KNXMLReader &reader, KNSize &size);
   void parseSlide(const KNXMLReader &reader);
   void parseSlideList(const KNXMLReader &reader);
+  void parseStickyNotes(const KNXMLReader &reader);
   void parseStyles(const KNXMLReader &reader, bool anonymous);
   void parseStylesheet(const KNXMLReader &reader);
   void parseTheme(const KNXMLReader &reader);
@@ -46,6 +47,7 @@ private:
 
   void parseBezier(const KNXMLReader &reader);
   void parseBezierRef(const KNXMLReader &reader);
+  void parseConnectionLine(const KNXMLReader &reader);
   void parseGeometry(const KNXMLReader &reader);
   void parseGroup(const KNXMLReader &reader);
   void parseImage(const KNXMLReader &reader);
@@ -53,6 +55,7 @@ private:
   void parseMedia(const KNXMLReader &reader);
   void parsePath(const KNXMLReader &reader);
   void parseShape(const KNXMLReader &reader);
+  void parseStickyNote(const KNXMLReader &reader);
   void parsePlaceholder(const KNXMLReader &reader, bool title = false);
 
   void parseBezierPath(const KNXMLReader &reader);
