@@ -7,11 +7,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <string>
+
 #include "KNPath.h"
 
 #include "KNPathTest.h"
 
 using libkeynote::KNPath;
+
+using std::string;
 
 namespace test
 {
@@ -31,7 +35,84 @@ void  KNPathTest::testConstruction()
 
 void KNPathTest::testConstructionFromString()
 {
-  // TODO: implement me
+  {
+    const string src = "M 0.0 0.0";
+    KNPath refPath;
+    refPath.appendMoveTo(0, 0);
+
+    KNPath testPath(src);
+
+    CPPUNIT_ASSERT(refPath == testPath);
+  }
+
+  {
+    const string src = "L 0.0 0.0";
+    KNPath refPath;
+    refPath.appendLineTo(0, 0);
+
+    KNPath testPath(src);
+
+    CPPUNIT_ASSERT(refPath == testPath);
+  }
+
+  {
+    const string src = "C 0.5 0.5 0 0 1 1";
+    KNPath refPath;
+    refPath.appendCurveTo(0.5, 0.5, 0, 0, 1, 1);
+
+    KNPath testPath(src);
+
+    CPPUNIT_ASSERT(refPath == testPath);
+  }
+
+  {
+    const string src = "Z";
+    KNPath refPath;
+    refPath.appendClose();
+
+    KNPath testPath(src);
+
+    CPPUNIT_ASSERT(refPath == testPath);
+  }
+
+  {
+    const string src = "M 0 0 L 1 1";
+    KNPath refPath;
+    refPath.appendMoveTo(0, 0);
+    refPath.appendLineTo(1, 1);
+
+    KNPath testPath(src);
+
+    CPPUNIT_ASSERT(refPath == testPath);
+  }
+
+  {
+    const string src = "M 0 0 L 1 0 L 1 1 L 0 1 Z L 0 0";
+    KNPath refPath;
+    refPath.appendMoveTo(0, 0);
+    refPath.appendLineTo(1, 0);
+    refPath.appendLineTo(1, 1);
+    refPath.appendLineTo(0, 1);
+    refPath.appendClose();
+    refPath.appendLineTo(0, 0);
+
+    KNPath testPath(src);
+
+    CPPUNIT_ASSERT(refPath == testPath);
+  }
+
+  {
+    const string src = "M 0.0 0.0 L 0 1 C 1 1 0.5 0.5 0 0 Z";
+    KNPath refPath;
+    refPath.appendMoveTo(0, 0);
+    refPath.appendLineTo(0, 1);
+    refPath.appendCurveTo(1, 1, 0.5, 0.5, 0, 0);
+    refPath.appendClose();
+
+    KNPath testPath(src);
+
+    CPPUNIT_ASSERT(refPath == testPath);
+  }
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(KNPathTest);
