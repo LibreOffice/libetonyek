@@ -12,6 +12,7 @@
 #include "libkeynote_utils.h"
 #include "KNCollectorBase.h"
 #include "KNDictionary.h"
+#include "KNShape.h"
 #include "KNText.h"
 
 namespace libkeynote
@@ -68,23 +69,9 @@ void KNCollectorBase::collectBezier(const ID_t &id, const KNPathPtr_t &path, con
 {
   if (m_collecting)
   {
-    assert(!m_objectsStack.empty());
-
-    KNPathPtr_t savedPath;
-
     if (!ref)
       m_dict.beziers[id] = path;
-
-    savedPath = m_dict.beziers[id];
-
-    if (savedPath)
-    {
-      m_objectsStack.top().push_back(makeObject(savedPath));
-    }
-    else
-    {
-      KN_DEBUG_MSG(("the path is empty\n"));
-    }
+    m_currentPath = m_dict.beziers[id];
   }
 }
 
@@ -141,6 +128,27 @@ void KNCollectorBase::collectMedia(const ID_t &, const KNMediaPtr_t &media)
     media->geometry = m_currentGeometry;
     m_currentGeometry.reset();
     m_objectsStack.top().push_back(makeObject(media));
+  }
+}
+
+void KNCollectorBase::collectShape(const ID_t &)
+{
+  if (m_collecting)
+  {
+    assert(!m_objectsStack.empty());
+
+    const KNShapePtr_t shape(new KNShape());
+
+    if (!m_currentPath)
+    {
+      KN_DEBUG_MSG(("the path is empty\n"));
+    }
+    shape->path = m_currentPath;
+    m_currentPath.reset();
+
+    // TODO: fill the other parts of shape as well
+
+    m_objectsStack.top().push_back(makeObject(shape));
   }
 }
 

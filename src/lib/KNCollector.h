@@ -47,6 +47,7 @@ public:
   virtual void collectImage(const ID_t &id, const KNImagePtr_t &image) = 0;
   virtual void collectLine(const ID_t &id, const KNLinePtr_t &line) = 0;
   virtual void collectMedia(const ID_t &id, const KNMediaPtr_t &media) = 0;
+  virtual void collectShape(const ID_t &id) = 0;
 
   virtual void collectSize(const KNSize &size) = 0;
 

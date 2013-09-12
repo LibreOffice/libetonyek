@@ -22,6 +22,13 @@ KNPathPtr_t makePolygonPath(const KNSize &size, const unsigned edges)
   return KNPathPtr_t();
 }
 
+KNObjectPtr_t makeObject(const KNShapePtr_t &shape)
+{
+  // TODO: implement me
+  (void) shape;
+  return KNObjectPtr_t();
+}
+
 KNPathPtr_t makeRoundedRectanglePath(const KNSize &size, const double radius)
 {
   // TODO: implement me

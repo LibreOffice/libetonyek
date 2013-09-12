@@ -45,6 +45,7 @@ public:
   virtual void collectImage(const ID_t &id, const KNImagePtr_t &image);
   virtual void collectLine(const ID_t &id, const KNLinePtr_t &line);
   virtual void collectMedia(const ID_t &id, const KNMediaPtr_t &media);
+  virtual void collectShape(const ID_t &id);
 
   virtual void collectLayer(const ID_t &id, bool ref);
 
@@ -73,6 +74,7 @@ private:
   KNDictionary &m_dict;
   std::stack<KNObjectList_t> m_objectsStack;
   KNGeometryPtr_t m_currentGeometry;
+  KNPathPtr_t m_currentPath;
   KNLayerPtr_t m_currentLayer;
 
   KNTextPtr_t m_currentText;

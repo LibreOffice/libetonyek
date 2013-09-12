@@ -33,6 +33,10 @@ struct KNShape
 
 typedef boost::shared_ptr<KNShape> KNShapePtr_t;
 
+/** Object creator function for shape.
+ */
+KNObjectPtr_t makeObject(const KNShapePtr_t &shape);
+
 /** Path creator functions for stock shapes.
  */
 KNPathPtr_t makePolygonPath(const KNSize &size, unsigned edges);
