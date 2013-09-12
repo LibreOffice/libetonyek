@@ -1108,7 +1108,9 @@ enum
   VERSION_STR_5,
   _0,
   _1,
+  double_,
   false_,
+  star,
   true_,
 
   LAST_TOKEN = true_

@@ -8,6 +8,9 @@
  */
 
 #include <cassert>
+#include <utility>
+
+#include <boost/numeric/conversion/cast.hpp>
 
 #include "libkeynote_utils.h"
 #include "libkeynote_xml.h"
@@ -20,8 +23,11 @@
 #include "KNTypes.h"
 #include "KNXMLReader.h"
 
+using boost::get_optional_value_or;
+using boost::numeric_cast;
 using boost::optional;
 
+using std::pair;
 using std::string;
 
 namespace libkeynote
@@ -46,9 +52,9 @@ bool asBool(const char *const value)
   return false;
 }
 
-KNPosition readPosition(const KNXMLReader &reader)
+pair<optional<double>, optional<double> > readPoint(const KNXMLReader &reader)
 {
-  KNPosition position;
+  pair<optional<double>, optional<double> > point;
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -58,10 +64,10 @@ KNPosition readPosition(const KNXMLReader &reader)
       switch (getNameId(attr))
       {
       case KN2Token::x :
-        position.x = asDouble(attr.getValue());
+        point.first = asDouble(attr.getValue());
         break;
       case KN2Token::y :
-        position.y = asDouble(attr.getValue());
+        point.second = asDouble(attr.getValue());
         break;
       default :
         KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
@@ -75,6 +81,17 @@ KNPosition readPosition(const KNXMLReader &reader)
   }
 
   checkEmptyElement(reader);
+
+  return point;
+}
+
+KNPosition readPosition(const KNXMLReader &reader)
+{
+  pair<optional<double>, optional<double> > point = readPoint(reader);
+
+  KNPosition position;
+  position.x = get_optional_value_or(point.first, 0);
+  position.y = get_optional_value_or(point.second, 0);
 
   return position;
 }
@@ -1084,55 +1101,6 @@ void KN2Parser::parseBezier(const KNXMLReader &reader)
   getCollector()->collectBezier(id, path, false);
 }
 
-void KN2Parser::parseBezierPath(const KNXMLReader &reader)
-{
-  assert(checkElement(reader, KN2Token::bezier_path, KN2Token::NS_URI_SF)
-         || checkElement(reader, KN2Token::editable_bezier_path, KN2Token::NS_URI_SF));
-
-  ID_t id;
-
-  KNXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
-    {
-      id = attr.getValue();
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
-    }
-  }
-
-  KNXMLReader::ElementIterator element(reader);
-  while (element.next())
-  {
-    if (KN2Token::NS_URI_SF == getNamespaceId(attr))
-    {
-      switch (getNameId(element))
-      {
-      case KN2Token::bezier :
-        parseBezier(element);
-        break;
-      case KN2Token::bezier_ref :
-        parseBezierRef(element);
-        break;
-      default :
-        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
-        skipElement(element);
-        break;
-      }
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
-      skipElement(element);
-    }
-  }
-
-  getCollector()->collectBezierPath(id);
-}
-
 void KN2Parser::parseBezierRef(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::bezier_ref, KN2Token::NS_URI_SF));
@@ -1587,11 +1555,16 @@ void KN2Parser::parsePath(const KNXMLReader &reader)
         parseBezierPath(element);
         break;
       case KN2Token::callout2_path :
+        parseCallout2Path(element);
+        break;
       case KN2Token::connection_path :
+        parseConnectionPath(element);
+        break;
       case KN2Token::point_path :
+        parsePointPath(element);
+        break;
       case KN2Token::scalar_path :
-        KN_DEBUG_XML_TODO_ELEMENT(element);
-        skipElement(element);
+        parseScalarPath(element);
         break;
       default :
         KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
@@ -1744,6 +1717,320 @@ void KN2Parser::parsePlaceholder(const KNXMLReader &reader, const bool title)
   }
 
   getCollector()->collectSlideText(id, title);
+}
+
+void KN2Parser::parseBezierPath(const KNXMLReader &reader)
+{
+  assert(checkElement(reader, KN2Token::bezier_path, KN2Token::NS_URI_SF)
+         || checkElement(reader, KN2Token::editable_bezier_path, KN2Token::NS_URI_SF));
+
+  ID_t id;
+
+  KNXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
+    {
+      id = attr.getValue();
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+    }
+  }
+
+  KNXMLReader::ElementIterator element(reader);
+  while (element.next())
+  {
+    if (KN2Token::NS_URI_SF == getNamespaceId(attr))
+    {
+      switch (getNameId(element))
+      {
+      case KN2Token::bezier :
+        parseBezier(element);
+        break;
+      case KN2Token::bezier_ref :
+        parseBezierRef(element);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+        skipElement(element);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+      skipElement(element);
+    }
+  }
+
+  getCollector()->collectBezierPath(id);
+}
+
+void KN2Parser::parseCallout2Path(const KNXMLReader &reader)
+{
+  assert(checkElement(reader, KN2Token::callout2_path, KN2Token::NS_URI_SF));
+
+  ID_t id;
+  double cornerRadius(0);
+  bool tailAtCenter(false);
+  double tailPosX(0);
+  double tailPosY(0);
+  double tailSize(0);
+
+  KNXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if ((KN2Token::NS_URI_SF == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
+    {
+      id = attr.getValue();
+    }
+    else if (KN2Token::NS_URI_SFA == getNamespaceId(attr))
+    {
+      switch (getNameId(attr))
+      {
+      case KN2Token::cornerRadius :
+        cornerRadius = asDouble(attr.getValue());
+        break;
+      case KN2Token::tailAtCenter :
+        tailAtCenter = asBool(attr.getValue());
+        break;
+      case KN2Token::tailPositionX :
+        tailPosX = asDouble(attr.getValue());
+        break;
+      case KN2Token::tailPositionY :
+        tailPosY = asDouble(attr.getValue());
+        break;
+      case KN2Token::tailSize :
+        tailSize = asDouble(attr.getValue());
+        break;
+      case KN2Token::tempScale :
+        KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+    }
+  }
+
+  KNSize size;
+
+  KNXMLReader::ElementIterator element(reader);
+  while (element.next())
+  {
+    if ((KN2Token::NS_URI_SF == getNamespaceId(element)) && (KN2Token::size == getNameId(element)))
+    {
+      size = readSize(reader);
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+      skipElement(element);
+    }
+  }
+
+  getCollector()->collectCalloutPath(id, size, cornerRadius, tailSize, tailPosX, tailPosY, tailAtCenter);
+}
+
+void KN2Parser::parseConnectionPath(const KNXMLReader &reader)
+{
+  assert(checkElement(reader, KN2Token::connection_path, KN2Token::NS_URI_SF));
+
+  ID_t id;
+
+  KNXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
+    {
+      id = attr.getValue();
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+    }
+  }
+
+  KNSize size;
+  pair<optional<double>, optional<double> > point;
+
+  KNXMLReader::ElementIterator element(reader);
+  while (element.next())
+  {
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
+    {
+      switch (getNameId(element))
+      {
+      case KN2Token::point :
+        point = readPoint(element);
+        break;
+      case KN2Token::size :
+        size = readSize(element);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+        skipElement(element);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+      skipElement(element);
+    }
+  }
+
+  getCollector()->collectConnectionPath(id, size, get_optional_value_or(point.first, 0), get_optional_value_or(point.second, 0));
+}
+
+void KN2Parser::parsePointPath(const KNXMLReader &reader)
+{
+  assert(checkElement(reader, KN2Token::point_path, KN2Token::NS_URI_SF));
+
+  ID_t id;
+  bool star = false;
+  // right arrow is the default (by my decree .-)
+  bool doubleArrow = false;
+
+  KNXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if ((KN2Token::NS_URI_SF == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
+    {
+      switch (getKN2TokenID(attr.getValue()))
+      {
+      case KN2Token::double_ :
+        doubleArrow = true;
+        break;
+      case KN2Token::right :
+        break;
+      case KN2Token::star :
+        star = true;
+        break;
+      default :
+        KN_DEBUG_MSG(("unknown point path type: %s\n", attr.getValue()));
+        break;
+      }
+    }
+    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
+    {
+      id = attr.getValue();
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+    }
+  }
+
+  KNSize size;
+  pair<optional<double>, optional<double> > point;
+
+  KNXMLReader::ElementIterator element(reader);
+  while (element.next())
+  {
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
+    {
+      switch (getNameId(element))
+      {
+      case KN2Token::point :
+        point = readPoint(element);
+        break;
+      case KN2Token::size :
+        size = readSize(element);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+        skipElement(element);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+      skipElement(element);
+    }
+  }
+
+  if (star)
+    getCollector()->collectStarPath(id, size, numeric_cast<unsigned>(get_optional_value_or(point.first, 0.0)), get_optional_value_or(point.second, 0));
+  else
+    getCollector()->collectArrowPath(id, size, get_optional_value_or(point.first, 0), get_optional_value_or(point.second, 0), doubleArrow);
+}
+
+void KN2Parser::parseScalarPath(const KNXMLReader &reader)
+{
+  assert(checkElement(reader, KN2Token::scalar_path, KN2Token::NS_URI_SF));
+
+  ID_t id;
+  bool polygon = false;
+  double value = 0;
+
+  KNXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (KN2Token::NS_URI_SF == getNamespaceId(attr))
+    {
+      switch (getNameId(attr))
+      {
+      case KN2Token::scalar :
+        value = asDouble(attr.getValue());
+        break;
+      case KN2Token::type :
+      {
+        switch (getKN2TokenID(attr.getValue()))
+        {
+        case KN2Token::_0 :
+          break;
+        case KN2Token::_1 :
+          polygon = true;
+          break;
+        default :
+          KN_DEBUG_MSG(("unknown scalar path type: %s\n", attr.getValue()));
+          break;
+        }
+      }
+      break;
+      default :
+        KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+        break;
+      }
+    }
+    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
+    {
+      id = attr.getValue();
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+    }
+  }
+
+  KNSize size;
+
+  KNXMLReader::ElementIterator element(reader);
+  while (element.next())
+  {
+    if ((KN2Token::NS_URI_SF == getNamespaceId(element)) && (KN2Token::size == getNameId(element)))
+    {
+      size = readSize(element);
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+      skipElement(element);
+    }
+  }
+
+  if (polygon)
+    getCollector()->collectPolygonPath(id, size, numeric_cast<unsigned>(value));
+  else
+    getCollector()->collectRoundedRectanglePath(id, size, value);
 }
 
 void KN2Parser::parseBr(const KNXMLReader &reader)

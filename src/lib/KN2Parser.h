@@ -45,7 +45,6 @@ private:
   void parseThemeList(const KNXMLReader &reader);
 
   void parseBezier(const KNXMLReader &reader);
-  void parseBezierPath(const KNXMLReader &reader);
   void parseBezierRef(const KNXMLReader &reader);
   void parseGeometry(const KNXMLReader &reader);
   void parseGroup(const KNXMLReader &reader);
@@ -55,6 +54,12 @@ private:
   void parsePath(const KNXMLReader &reader);
   void parseShape(const KNXMLReader &reader);
   void parsePlaceholder(const KNXMLReader &reader, bool title = false);
+
+  void parseBezierPath(const KNXMLReader &reader);
+  void parseCallout2Path(const KNXMLReader &reader);
+  void parseConnectionPath(const KNXMLReader &reader);
+  void parsePointPath(const KNXMLReader &reader);
+  void parseScalarPath(const KNXMLReader &reader);
 
   void parseBr(const KNXMLReader &reader);
   void parseLayout(const KNXMLReader &reader, const boost::optional<ID_t> &layoutStyle);

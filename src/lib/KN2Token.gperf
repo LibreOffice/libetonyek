@@ -582,6 +582,7 @@ dictionary,dictionary
 direction,direction
 disabled,disabled
 displayname,displayname
+double,double_
 drawables,drawables
 dropCap,dropCap
 du,du
@@ -955,6 +956,7 @@ spaceBefore,spaceBefore
 spacing,spacing
 span,span
 spec-count,spec_count
+star,star
 start-index,start_index
 start-time,start_time
 sticky-note,sticky_note
