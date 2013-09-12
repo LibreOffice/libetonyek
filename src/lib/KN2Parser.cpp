@@ -1742,7 +1742,7 @@ void KN2Parser::parseBezierPath(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KN2Token::NS_URI_SF == getNamespaceId(attr))
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
