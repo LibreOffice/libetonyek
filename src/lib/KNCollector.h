@@ -49,6 +49,14 @@ public:
   virtual void collectMedia(const ID_t &id, const KNMediaPtr_t &media) = 0;
   virtual void collectShape(const ID_t &id) = 0;
 
+  virtual void collectBezierPath(const ID_t &id) = 0;
+  virtual void collectPolygonPath(const ID_t &id, const KNSize &size, unsigned edges) = 0;
+  virtual void collectRoundedRectanglePath(const ID_t &id, const KNSize &size, double radius) = 0;
+  virtual void collectArrowPath(const ID_t &id, const KNSize &size, double headWidth, double stemRelYPos, bool doubleSided) = 0;
+  virtual void collectStarPath(const ID_t &id, const KNSize &size, unsigned points, double innerRadius) = 0;
+  virtual void collectConnectionPath(const ID_t &id, const KNSize &size, double middleX, double middleY) = 0;
+  virtual void collectCalloutPath(const ID_t &id, const KNSize &size, double radius, double tailSize, double tailX, double tailY, bool quoteBubble) = 0;
+
   virtual void collectSize(const KNSize &size) = 0;
 
   virtual void collectLayer(const ID_t &id, bool ref) = 0;

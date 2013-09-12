@@ -152,6 +152,57 @@ void KNCollectorBase::collectShape(const ID_t &)
   }
 }
 
+void KNCollectorBase::collectBezierPath(const ID_t &)
+{
+  // nothing needed
+}
+
+void KNCollectorBase::collectPolygonPath(const ID_t &, const KNSize &size, const unsigned edges)
+{
+  if (m_collecting)
+    m_currentPath = makePolygonPath(size, edges);
+}
+
+void KNCollectorBase::collectRoundedRectanglePath(const ID_t &, const KNSize &size, const double radius)
+{
+  if (m_collecting)
+    m_currentPath = makeRoundedRectanglePath(size, radius);
+}
+
+void KNCollectorBase::collectArrowPath(const ID_t &, const KNSize &size, const double headWidth, const double stemRelYPos, bool const doubleSided)
+{
+  if (m_collecting)
+  {
+    if (doubleSided)
+      m_currentPath = makeDoubleArrowPath(size, headWidth, stemRelYPos);
+    else
+      m_currentPath = makeArrowPath(size, headWidth, stemRelYPos);
+  }
+}
+
+void KNCollectorBase::collectStarPath(const ID_t &, const KNSize &size, const unsigned points, const double innerRadius)
+{
+  if (m_collecting)
+    m_currentPath = makeStarPath(size, points, innerRadius);
+}
+
+void KNCollectorBase::collectConnectionPath(const ID_t &, const KNSize &size, const double middleX, const double middleY)
+{
+  if (m_collecting)
+    m_currentPath = makeConnectionPath(size, middleX, middleY);
+}
+
+void KNCollectorBase::collectCalloutPath(const ID_t &, const KNSize &size, const double radius, const double tailSize, const double tailX, const double tailY, bool quoteBubble)
+{
+  if (m_collecting)
+  {
+    if (quoteBubble)
+      m_currentPath = makeQuoteBubblePath(size, radius, tailSize, tailX, tailY);
+    else
+      m_currentPath = makeCalloutPath(size, radius, tailSize, tailX, tailY);
+  }
+}
+
 void KNCollectorBase::collectLayer(const ID_t &, bool)
 {
   if (m_collecting)
