@@ -167,7 +167,7 @@ void  KNPathTest::testSVG()
   }
 
   {
-    const string ref = "M 0.0 0.0 L 0 1 C 1 1 0.5 0.5 0 0 Z";
+    const string ref = "M 0 0 L 0 1 C 1 1 0.5 0.5 0 0 Z";
     KNPath path;
     path.appendMoveTo(0, 0);
     path.appendLineTo(0, 1);

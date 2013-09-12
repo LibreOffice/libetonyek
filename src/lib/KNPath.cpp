@@ -93,7 +93,7 @@ bool MoveTo::equalsTo(const Element *other) const
 
 void MoveTo::toSvg(ostringstream &out) const
 {
-  out << 'C' << m_x << ' ' << m_y;
+  out << 'M' << ' ' << m_x << ' ' << m_y;
 }
 
 }
@@ -140,7 +140,7 @@ bool LineTo::equalsTo(const Element *other) const
 
 void LineTo::toSvg(ostringstream &out) const
 {
-  out << 'L' << m_x << ' ' << m_y;
+  out << 'L' << ' ' << m_x << ' ' << m_y;
 }
 
 }
@@ -199,9 +199,10 @@ bool CurveTo::equalsTo(const Element *other) const
 void CurveTo::toSvg(ostringstream &out) const
 {
   out << 'C'
-      << m_x1 << ' ' << m_y1 << ' '
-      << m_x2 << ' ' << m_y2 << ' '
-      << m_x << ' ' << m_y;
+      << ' ' << m_x1 << ' ' << m_y1
+      << ' ' << m_x2 << ' ' << m_y2
+      << ' ' << m_x << ' ' << m_y
+      ;
 }
 
 }
