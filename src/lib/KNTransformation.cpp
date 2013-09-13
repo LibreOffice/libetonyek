@@ -20,8 +20,6 @@ KNTransformation::KNTransformation()
   , m_yx(0)
   , m_yy(1)
   , m_y1(0)
-  , m_horizontalFlip(false)
-  , m_verticalFlip(false)
 {
 }
 
@@ -32,8 +30,6 @@ KNTransformation::KNTransformation(const double xx, const double xy, const doubl
   , m_yx(yx)
   , m_yy(yy)
   , m_y1(y1)
-  , m_horizontalFlip(false)
-  , m_verticalFlip(false)
 {
 }
 

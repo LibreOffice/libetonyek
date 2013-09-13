@@ -38,9 +38,6 @@ private:
   double m_yx;
   double m_yy;
   double m_y1;
-
-  bool m_horizontalFlip;
-  bool m_verticalFlip;
 };
 
 KNTransformation operator*(const KNTransformation &left, const KNTransformation right);
