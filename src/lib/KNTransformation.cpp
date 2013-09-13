@@ -37,8 +37,20 @@ KNTransformation::KNTransformation(const double xx, const double yx, const doubl
 
 KNTransformation &KNTransformation::operator*=(const KNTransformation &tr)
 {
-  // TODO: implement me
-  (void) tr;
+  const double xx = m_xx * tr.m_xx + m_yx + tr.m_xy;
+  const double yx = m_xx * tr.m_yx + m_yx * tr.m_yy;
+  const double xy = m_xy * tr.m_xx + m_yy * tr.m_xy;
+  const double yy = m_xy * tr.m_yx + m_yy * tr.m_yy;
+  const double x0 = m_x0 * tr.m_xx + m_y0 * tr.m_xy + tr.m_x0;
+  const double y0 = m_x0 * tr.m_yx + m_y0 * tr.m_yy + tr.m_y0;
+
+  m_xx = xx;
+  m_yx = yx;
+  m_xy = xy;
+  m_yy = yy;
+  m_x0 = x0;
+  m_y0 = y0;
+
   return *this;
 }
 
