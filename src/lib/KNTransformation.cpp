@@ -50,9 +50,44 @@ KNTransformation operator*(const KNTransformation &left, const KNTransformation 
 
 KNTransformation makeTransformation(const KNGeometry &geometry)
 {
-  // TODO: implement me
-  (void) geometry;
-  return KNTransformation();
+  using namespace transformations;
+
+  KNTransformation tr;
+
+  double w = 0;
+  double h = 0;
+
+  if (geometry.naturalSize)
+  {
+    w = get(geometry.naturalSize).width;
+    h = get(geometry.naturalSize).height;
+  }
+  else if (geometry.size)
+  {
+    w = get(geometry.size).width;
+    h = get(geometry.size).height;
+  }
+
+  if ((0 != w) || (0 != h))
+    tr *= center(w, h);
+
+  // TODO: make sure the order of transformations is right
+  if (geometry.shearXAngle || geometry.shearYAngle)
+    tr *= shear(geometry.shearXAngle, geometry.shearYAngle);
+
+  if (geometry.horizontalFlip || geometry.verticalFlip)
+    tr *= flip(geometry.horizontalFlip, geometry.verticalFlip);
+
+  if (geometry.angle != 0)
+    tr *= rotate(geometry.angle);
+
+  if ((0 != w) || (0 != h))
+    tr *= decenter(w, h);
+
+  if (geometry.position)
+    tr *= translate(get(geometry.position).x, get(geometry.position).y);
+
+  return tr;
 }
 
 namespace transformations
