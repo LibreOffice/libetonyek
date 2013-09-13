@@ -44,6 +44,15 @@ public:
     */
   KNTransformation &operator*=(const KNTransformation &tr);
 
+  /** Apply transformation to a point or distance.
+    *
+    * @arg[inout] x x coordinate of the point or distance.
+    * @arg[inout] y y coordinate of the point or distance.
+    * @arg[in] distance if @c true, the transformed entity is a
+    *   distance (in that case translation is ignored).
+    */
+  void operator()(double &x, double &y, bool distance = false) const;
+
 private:
   // transformation matrix
   double m_xx;

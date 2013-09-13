@@ -48,6 +48,20 @@ KNTransformation operator*(const KNTransformation &left, const KNTransformation 
   return result *= right;
 }
 
+void KNTransformation::operator()(double &x, double &y, const bool distance) const
+{
+  double x_new = m_xx * x + m_xy * y;
+  double y_new = m_yx * x + m_yy * y;
+  if (distance)
+  {
+    x_new += m_x0;
+    y_new += m_y0;
+  }
+
+  x = x_new;
+  y = y_new;
+}
+
 KNTransformation makeTransformation(const KNGeometry &geometry)
 {
   using namespace transformations;
