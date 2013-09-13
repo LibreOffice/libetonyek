@@ -268,15 +268,17 @@ KNPath::KNPath(const std::string &path)
 
   const rule<> r =
     +(
-      ('C' >> real_p[assign_a(x)] >> real_p[assign_a(y)] >> real_p[assign_a(x1)] >> real_p[assign_a(y1)] >> real_p[assign_a(x2)] >> real_p[assign_a(y2)])
-      [bind(&KNPath::appendCurveTo, this, cref(x), cref(y), cref(x1), cref(y1), cref(x2), cref(y2))]
-      | ('L' >> real_p[assign_a(x)] >> real_p[assign_a(y)])[bind(&KNPath::appendLineTo, this, cref(x), cref(y))]
-      | ('M' >> real_p[assign_a(x)] >> real_p[assign_a(y)])[bind(&KNPath::appendMoveTo, this, cref(x), cref(y))]
-      | ch_p('Z')[bind(&KNPath::appendClose, this)]
+      (
+        ('C' && space_p && real_p[assign_a(x)] && space_p && real_p[assign_a(y)] && space_p && real_p[assign_a(x1)] && space_p && real_p[assign_a(y1)] && space_p && real_p[assign_a(x2)] && space_p && real_p[assign_a(y2)])[bind(&KNPath::appendCurveTo, this, cref(x), cref(y), cref(x1), cref(y1), cref(x2), cref(y2))]
+        | ('L' && space_p && real_p[assign_a(x)] && space_p && real_p[assign_a(y)])[bind(&KNPath::appendLineTo, this, cref(x), cref(y))]
+        | ('M' && space_p && real_p[assign_a(x)] && space_p && real_p[assign_a(y)])[bind(&KNPath::appendMoveTo, this, cref(x), cref(y))]
+        | ch_p('Z')[bind(&KNPath::appendClose, this)]
+      )
+      && *space_p
     )
     ;
 
-  if (!parse(path.c_str(), r, space_p).full)
+  if (!parse(path.c_str(), r).full)
   {
     KN_DEBUG_MSG(("parsing of path '%s' failed\n", path.c_str()));
     throw GenericException();
