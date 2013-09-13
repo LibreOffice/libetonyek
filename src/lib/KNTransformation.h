@@ -70,6 +70,70 @@ KNTransformation operator*(const KNTransformation &left, const KNTransformation 
   */
 KNTransformation makeTransformation(const KNGeometry &geometry);
 
+/// Special transformation constructors.
+namespace transformations
+{
+
+/** Translate to the center of viewport.
+  *
+  * @arg[in] width width of the viewport.
+  * @arg[in] height height of the viewport.
+  * @return the transformation
+  */
+KNTransformation center(double width, double height);
+
+/** Translate from the center of viewport to the origin.
+  *
+  * This is inverse operation to center().
+  *
+  * @arg[in] width width of the viewport.
+  * @arg[in] height height of the viewport.
+  * @return the transformation
+  */
+KNTransformation decenter(double width, double height);
+
+/** Flip horizontally and/or vertically.
+  *
+  * @arg[in] horizontal flip horizontally.
+  * @arg[in] vertical flip vertically.
+  * @return the transformation
+  */
+KNTransformation flip(bool horizontal, bool vertical);
+
+/** Rotate counterclockwise around origin.
+  *
+  * @arg[in] angle rotation angle in radians. 0 is at the @c x axis on
+  *   the right side.
+  * @return the transformation
+  */
+KNTransformation rotate(double angle);
+
+/** Scale along @c x and/or @c y axis.
+  *
+  * @arg[in] ratioX scale ratio along @c x axis.
+  * @arg[in] ratioY scale ratio along @c y axis.
+  * @return the transformation
+  */
+KNTransformation scale(double ratioX, double ratioY);
+
+/** Shear along @c x and/or @c y axis.
+  *
+  * @arg[in] angleX shear angle along @c x axis.
+  * @arg[in] angleY shear angle along @c y axis.
+  * @return the transformation
+  */
+KNTransformation shear(double angleX, double angleY);
+
+/** Translate along @c x and/or @c y axis.
+  *
+  * @arg[in] offsetX translation offset along @c x axis.
+  * @arg[in] offsetY translation offset along @c y axis.
+  * @return the transformation
+  */
+KNTransformation translate(double offsetX, double offsetY);
+
+}
+
 }
 
 #endif // KNTRANSFORMATION_H_INCLUDED

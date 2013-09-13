@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <cmath>
+
 #include "KNTransformation.h"
 #include "KNTypes.h"
 
@@ -51,6 +53,49 @@ KNTransformation makeTransformation(const KNGeometry &geometry)
   // TODO: implement me
   (void) geometry;
   return KNTransformation();
+}
+
+namespace transformations
+{
+
+KNTransformation center(const double width, const double height)
+{
+  return translate(width / 2, height / 2);
+}
+
+KNTransformation decenter(const double width, const double height)
+{
+  return translate(-width / 2, -height / 2);
+}
+
+KNTransformation flip(const bool horizontal, const bool vertical)
+{
+  return scale(horizontal ? -1 : 1, vertical ? -1 : 1);
+}
+
+KNTransformation rotate(const double angle)
+{
+  const double c = std::cos(angle);
+  const double s = std::sin(angle);
+  return KNTransformation(c, s, -s, c, 0, 0);
+}
+
+KNTransformation scale(const double ratioX, const double ratioY)
+{
+  return KNTransformation(ratioX, 0, 0, ratioY, 0, 0);
+}
+
+KNTransformation shear(const double angleX, const double angleY)
+{
+  // TODO: check this
+  return KNTransformation(1, std::tan(angleY), std::tan(angleX), 1, 0, 0);
+}
+
+KNTransformation translate(const double offsetX, const double offsetY)
+{
+  return KNTransformation(1, 0, 0, 1, offsetX, offsetY);
+}
+
 }
 
 }
