@@ -24,7 +24,7 @@ public:
 
   /** Construct a transformation from matrix components.
     */
-  KNTransformation(double xx, double xy, double yx, double yy, double x1, double y1);
+  KNTransformation(double xx, double yx, double xy, double yy, double x0, double y0);
 
   /** Apply another transformation on top of this one.
     */
@@ -32,12 +32,15 @@ public:
 
 private:
   // transformation matrix
+  // (xx yx 0)
+  // (xy yy 0)
+  // (x0 y0 1)
   double m_xx;
-  double m_xy;
-  double m_x1;
   double m_yx;
+  double m_xy;
   double m_yy;
-  double m_y1;
+  double m_x0;
+  double m_y0;
 };
 
 KNTransformation operator*(const KNTransformation &left, const KNTransformation right);

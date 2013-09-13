@@ -15,21 +15,21 @@ namespace libkeynote
 
 KNTransformation::KNTransformation()
   : m_xx(1)
-  , m_xy(0)
-  , m_x1(0)
   , m_yx(0)
+  , m_xy(0)
   , m_yy(1)
-  , m_y1(0)
+  , m_x0(0)
+  , m_y0(0)
 {
 }
 
-KNTransformation::KNTransformation(const double xx, const double xy, const double yx, const double yy, const double x1, const double y1)
+KNTransformation::KNTransformation(const double xx, const double yx, const double xy, const double yy, const double x0, const double y0)
   : m_xx(xx)
-  , m_xy(xy)
-  , m_x1(x1)
   , m_yx(yx)
+  , m_xy(xy)
   , m_yy(yy)
-  , m_y1(y1)
+  , m_x0(x0)
+  , m_y0(y0)
 {
 }
 
