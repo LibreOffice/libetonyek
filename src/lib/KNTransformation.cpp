@@ -25,20 +25,6 @@ KNTransformation::KNTransformation()
 {
 }
 
-KNTransformation::KNTransformation(const KNGeometry &geometry)
-  : m_xx(1)
-  , m_xy(0)
-  , m_x1(0)
-  , m_yx(1)
-  , m_yy(0)
-  , m_y1(0)
-  , m_horizontalFlip(false)
-  , m_verticalFlip(false)
-{
-  // TODO: implement me
-  (void) geometry;
-}
-
 KNTransformation::KNTransformation(const double xx, const double xy, const double yx, const double yy, const double x1, const double y1)
   : m_xx(xx)
   , m_xy(xy)
@@ -62,6 +48,13 @@ KNTransformation operator*(const KNTransformation &left, const KNTransformation 
 {
   KNTransformation result(left);
   return result *= right;
+}
+
+KNTransformation makeTransformation(const KNGeometry &geometry)
+{
+  // TODO: implement me
+  (void) geometry;
+  return KNTransformation();
 }
 
 }

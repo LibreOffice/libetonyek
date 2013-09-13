@@ -22,8 +22,6 @@ public:
     */
   KNTransformation();
 
-  explicit KNTransformation(const KNGeometry &geometry);
-
   /** Construct a transformation from matrix components.
     */
   KNTransformation(double xx, double xy, double yx, double yy, double x1, double y1);
@@ -46,6 +44,13 @@ private:
 };
 
 KNTransformation operator*(const KNTransformation &left, const KNTransformation right);
+
+/** Create a transformation from a geometry.
+  *
+  * @arg[in] a geometry
+  * @return the created transformation
+  */
+KNTransformation makeTransformation(const KNGeometry &geometry);
 
 }
 
