@@ -18,8 +18,15 @@ struct KNGeometry;
 class KNTransformation
 {
 public:
+  /** Construct a unit transformation.
+    */
   KNTransformation();
+
   explicit KNTransformation(const KNGeometry &geometry);
+
+  /** Construct a transformation from matrix components.
+    */
+  KNTransformation(double xx, double xy, double yx, double yy, double x1, double y1);
 
   /** Apply another transformation on top of this one.
     */

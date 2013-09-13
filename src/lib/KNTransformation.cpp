@@ -39,6 +39,18 @@ KNTransformation::KNTransformation(const KNGeometry &geometry)
   (void) geometry;
 }
 
+KNTransformation::KNTransformation(const double xx, const double xy, const double yx, const double yy, const double x1, const double y1)
+  : m_xx(xx)
+  , m_xy(xy)
+  , m_x1(x1)
+  , m_yx(yx)
+  , m_yy(yy)
+  , m_y1(y1)
+  , m_horizontalFlip(false)
+  , m_verticalFlip(false)
+{
+}
+
 KNTransformation &KNTransformation::operator*=(const KNTransformation &tr)
 {
   // TODO: implement me
