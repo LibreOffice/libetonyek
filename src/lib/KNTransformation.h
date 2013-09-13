@@ -15,6 +15,15 @@ namespace libkeynote
 
 struct KNGeometry;
 
+/** Represents an affine transformation.
+  *
+  * The transformation matrix looks like:
+  * <pre>
+  * xx yx 0
+  * xy yy 0
+  * x0 y0 1
+  * </pre>
+  */
 class KNTransformation
 {
 public:
@@ -26,15 +35,17 @@ public:
     */
   KNTransformation(double xx, double yx, double xy, double yy, double x0, double y0);
 
-  /** Apply another transformation on top of this one.
+  /** Apply a transformation on top of this one.
+    *
+    * The effect is as if transformation @tr was applied after @c this.
+    *
+    * @arg[in] tr the transformation to apply after this one
+    * @result this transformation
     */
   KNTransformation &operator*=(const KNTransformation &tr);
 
 private:
   // transformation matrix
-  // (xx yx 0)
-  // (xy yy 0)
-  // (x0 y0 1)
   double m_xx;
   double m_yx;
   double m_xy;
@@ -43,6 +54,13 @@ private:
   double m_y0;
 };
 
+/** Create a new transformation as a composition of two transformations.
+  *
+  * Application of the resulting transformation has the same effect as
+  * if transformation @c left was applied before @c right.
+  *
+  * @return the new transformation
+  */
 KNTransformation operator*(const KNTransformation &left, const KNTransformation right);
 
 /** Create a transformation from a geometry.
