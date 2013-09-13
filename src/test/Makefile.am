@@ -14,6 +14,8 @@ test_LDADD = \
 test_SOURCES = \
 	KNPathTest.cpp \
 	KNPathTest.h \
+	KNTransformationTest.cpp \
+	KNTransformationTest.h \
 	KNXMLReaderTest.cpp \
 	KNXMLReaderTest.h \
 	test.cpp
