@@ -18,6 +18,8 @@
 namespace libkeynote
 {
 
+class KNPropertyMap;
+
 /** Represents a hierarchical style.
   */
 class KNStyle
@@ -36,6 +38,11 @@ public:
     * @todo Will this have any effect on performance anyway?
     */
   virtual void flatten() = 0;
+
+protected:
+  /** Get the style's property map.
+    */
+  virtual const KNPropertyMap &getPropertyMap() const = 0;
 };
 
 typedef boost::shared_ptr<KNStyle> KNStylePtr_t;

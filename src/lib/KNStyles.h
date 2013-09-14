@@ -36,7 +36,7 @@ protected:
   KNStyleBase(const KNPropertyMap &props, const std::string &ident, const std::string &parentIdent);
   virtual ~KNStyleBase();
 
-  const KNPropertyMap &getPropertyMap() const;
+  virtual const KNPropertyMap &getPropertyMap() const;
 
 private:
   KNPropertyMap m_props;
