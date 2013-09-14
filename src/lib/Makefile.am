@@ -53,6 +53,9 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNStringVector.cpp \
 	KNStyle.cpp \
 	KNStyle.h \
+	KNStyles.cpp \
+	KNStyles.h \
+	KNStyles_fwd.h \
 	KNSVGGenerator.cpp \
 	KNSVGGenerator.h \
 	KNText.cpp \
