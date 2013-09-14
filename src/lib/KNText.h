@@ -13,7 +13,7 @@
 #include <deque>
 
 #include "KNObject.h"
-#include "KNStyle_fwd.h"
+#include "KNStyle.h"
 #include "KNText_fwd.h"
 
 namespace libkeynote

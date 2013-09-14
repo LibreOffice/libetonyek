@@ -10,7 +10,7 @@
 #ifndef KN2STYLEPARSER_H_INCLUDED
 #define KN2STYLEPARSER_H_INCLUDED
 
-#include "KNStyle_fwd.h"
+#include "KNStyle.h"
 
 namespace libkeynote
 {

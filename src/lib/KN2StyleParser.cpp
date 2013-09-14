@@ -11,7 +11,6 @@
 #include "KN2StyleParser.h"
 #include "KN2Token.h"
 #include "KNCollector.h"
-#include "KNStyle.h"
 #include "KNXMLReader.h"
 
 namespace libkeynote
@@ -21,7 +20,7 @@ KN2StyleParser::KN2StyleParser(const int nameId, const int nsId, KNCollector *co
   : m_nameId(nameId)
   , m_nsId(nsId)
   , m_collector(collector)
-  , m_style(new KNStyle())
+  , m_style()
 {
 }
 

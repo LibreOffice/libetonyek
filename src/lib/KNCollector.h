@@ -13,7 +13,7 @@
 #include <string>
 
 #include "KNPath_fwd.h"
-#include "KNStyle_fwd.h"
+#include "KNStyle.h"
 #include "KNTypes_fwd.h"
 
 namespace libwpg

@@ -10,39 +10,36 @@
 #ifndef KNSTYLE_H_INCLUDED
 #define KNSTYLE_H_INCLUDED
 
-#include <boost/optional.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/unordered_map.hpp>
 
-#include "KNStyle_fwd.h"
+#include "KNTypes_fwd.h"
 
 namespace libkeynote
 {
 
-// TODO: it might make more sense to have specific structs for various
-// style types. But unfortunately there is no schema available, so I do
-// not know which properties belong to which style type. So I am just
-// going to go with a grab bag of everything...
-struct KNStyle
+/** Represents a hierarchical style.
+  */
+class KNStyle
 {
-  boost::optional<std::string> ident;
-  boost::optional<std::string> name;
-  boost::optional<std::string> parentIdent;
-  boost::optional<bool> locked;
+public:
+  virtual ~KNStyle() = 0;
 
-  boost::optional<std::string> listStyle;
-  // boost::optional<KNGeometry> geometry;
-  // boost::optional<KNPadding> padding;
+  /** Find the parent style by its ID.
+    *
+    * @return @c true if the parent style has been found, @c false otherwise.
+    */
+  virtual bool link() = 0;
 
-  boost::optional<std::string> layoutParagraphStyle;
-  boost::optional<std::string> layoutStyle;
-
-  // TODO: and many more... add as necessary
-
-  KNStyle();
+  /** Copy attributes from parent style (recursively).
+    *
+    * @todo Will this have any effect on performance anyway?
+    */
+  virtual void flatten() = 0;
 };
 
-/** Replace reference to a parent style by its content.
-  */
-void resolveStyle(KNStyle &style, const KNStyleMap_t &styles);
+typedef boost::shared_ptr<KNStyle> KNStylePtr_t;
+typedef boost::unordered_map<ID_t, KNStylePtr_t> KNStyleMap_t;
 
 }
 

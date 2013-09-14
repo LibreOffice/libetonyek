@@ -7,55 +7,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <boost/optional.hpp>
-
 #include "KNStyle.h"
-#include "KNTypes.h"
 
 namespace libkeynote
 {
 
-namespace
+KNStyle::~KNStyle()
 {
-
-void mergeParentStyle(KNStyle &style, const KNStyle &parent)
-{
-  // TODO: implement me
-  (void) style;
-  (void) parent;
-}
-
-}
-
-KNStyle::KNStyle()
-  : ident()
-  , name()
-  , parentIdent()
-  , locked()
-
-  , listStyle()
-  // , geometry()
-  // , padding()
-
-  , layoutParagraphStyle()
-  , layoutStyle()
-{
-}
-
-void resolveStyle(KNStyle &style, const KNStyleMap_t &styles)
-{
-  boost::optional<std::string> parent;
-
-  while (parent)
-  {
-    const KNStyleMap_t::const_iterator it = styles.find(get(parent));
-    if (styles.end() != it)
-    {
-      const KNStylePtr_t parentStyle = it->second;
-      mergeParentStyle(style, *parentStyle);
-      // parent = parentStyle.parent;
-    }
-  }
 }
 
 }
