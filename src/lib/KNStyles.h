@@ -12,6 +12,7 @@
 
 #include <string>
 
+#include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
 
@@ -33,7 +34,7 @@ public:
 
 // ensure that this class cannot be instantiated
 protected:
-  KNStyleBase(const KNPropertyMap &props, const std::string &ident, const std::string &parentIdent);
+  KNStyleBase(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
   virtual ~KNStyleBase();
 
   virtual const KNPropertyMap &getPropertyMap() const;
@@ -41,8 +42,8 @@ protected:
 private:
   KNPropertyMap m_props;
 
-  const std::string m_ident;
-  const std::string m_parentIdent;
+  const boost::optional<std::string> m_ident;
+  const boost::optional<std::string> m_parentIdent;
   KNStylePtr_t m_parent;
 };
 
@@ -51,7 +52,7 @@ private:
 class KNCellStyle : public KNStyleBase
 {
 public:
-  explicit KNCellStyle(const KNPropertyMap &props, const std::string &ident = "", const std::string &parentIdent = "");
+  KNCellStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 };
 
 /** Represents a character style.
@@ -59,7 +60,7 @@ public:
 class KNCharacterStyle : public KNStyleBase
 {
 public:
-  explicit KNCharacterStyle(const KNPropertyMap &props, const std::string &ident = "", const std::string &parentIdent = "");
+  KNCharacterStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 };
 
 /** Represents a connection style.
@@ -67,7 +68,7 @@ public:
 class KNConnectionStyle : public KNStyleBase
 {
 public:
-  explicit KNConnectionStyle(const KNPropertyMap &props, const std::string &ident = "", const std::string &parentIdent = "");
+  KNConnectionStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 };
 
 /** Represents a graphic style.
@@ -75,7 +76,7 @@ public:
 class KNGraphicStyle : public KNStyleBase
 {
 public:
-  explicit KNGraphicStyle(const KNPropertyMap &props, const std::string &ident = "", const std::string &parentIdent = "");
+  KNGraphicStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 };
 
 /** Represents a layout style.
@@ -83,7 +84,7 @@ public:
 class KNLayoutStyle : public KNStyleBase
 {
 public:
-  explicit KNLayoutStyle(const KNPropertyMap &props, const std::string &ident = "", const std::string &parentIdent = "");
+  KNLayoutStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 };
 
 /** Represents a list style.
@@ -91,7 +92,7 @@ public:
 class KNListStyle : public KNStyleBase
 {
 public:
-  explicit KNListStyle(const KNPropertyMap &props, const std::string &ident = "", const std::string &parentIdent = "");
+  KNListStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 };
 
 /** Represents a paragraph style.
@@ -99,7 +100,7 @@ public:
 class KNParagraphStyle : public KNStyleBase
 {
 public:
-  explicit KNParagraphStyle(const KNPropertyMap &props, const std::string &ident = "", const std::string &parentIdent = "");
+  KNParagraphStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 };
 
 /** Represents a placeholder style.
@@ -107,7 +108,7 @@ public:
 class KNPlaceholderStyle : public KNStyleBase
 {
 public:
-  explicit KNPlaceholderStyle(const KNPropertyMap &props, const std::string &ident = "", const std::string &parentIdent = "");
+  KNPlaceholderStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 };
 
 /** Represents a slide style.
@@ -115,7 +116,7 @@ public:
 class KNSlideStyle : public KNStyleBase
 {
 public:
-  explicit KNSlideStyle(const KNPropertyMap &props, const std::string &ident = "", const std::string &parentIdent = "");
+  KNSlideStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 };
 
 /** Represents a tabular style.
@@ -123,7 +124,7 @@ public:
 class KNTabularStyle : public KNStyleBase
 {
 public:
-  explicit KNTabularStyle(const KNPropertyMap &props, const std::string &ident = "", const std::string &parentIdent = "");
+  KNTabularStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 };
 
 /** Represents a vector style.
@@ -131,7 +132,7 @@ public:
 class KNVectorStyle : public KNStyleBase
 {
 public:
-  explicit KNVectorStyle(const KNPropertyMap &props, const std::string &ident = "", const std::string &parentIdent = "");
+  KNVectorStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 };
 
 }

@@ -23,7 +23,7 @@ void KNStyleBase::flatten()
   // TODO: implement me
 }
 
-KNStyleBase::KNStyleBase(const KNPropertyMap &props, const std::string &ident, const std::string &parentIdent)
+KNStyleBase::KNStyleBase(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : m_props(props)
   , m_ident(ident)
   , m_parentIdent(parentIdent)
@@ -40,57 +40,57 @@ const KNPropertyMap &KNStyleBase::getPropertyMap() const
   return m_props;
 }
 
-KNCellStyle::KNCellStyle(const KNPropertyMap &props, const std::string &ident, const std::string &parentIdent)
+KNCellStyle::KNCellStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
 }
 
-KNCharacterStyle::KNCharacterStyle(const KNPropertyMap &props, const std::string &ident, const std::string &parentIdent)
+KNCharacterStyle::KNCharacterStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
 }
 
-KNConnectionStyle::KNConnectionStyle(const KNPropertyMap &props, const std::string &ident, const std::string &parentIdent)
+KNConnectionStyle::KNConnectionStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
 }
 
-KNGraphicStyle::KNGraphicStyle(const KNPropertyMap &props, const std::string &ident, const std::string &parentIdent)
+KNGraphicStyle::KNGraphicStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
 }
 
-KNLayoutStyle::KNLayoutStyle(const KNPropertyMap &props, const std::string &ident, const std::string &parentIdent)
+KNLayoutStyle::KNLayoutStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
 }
 
-KNListStyle::KNListStyle(const KNPropertyMap &props, const std::string &ident, const std::string &parentIdent)
+KNListStyle::KNListStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
 }
 
-KNParagraphStyle::KNParagraphStyle(const KNPropertyMap &props, const std::string &ident, const std::string &parentIdent)
+KNParagraphStyle::KNParagraphStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
 }
 
-KNPlaceholderStyle::KNPlaceholderStyle(const KNPropertyMap &props, const std::string &ident, const std::string &parentIdent)
+KNPlaceholderStyle::KNPlaceholderStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
 }
 
-KNSlideStyle::KNSlideStyle(const KNPropertyMap &props, const std::string &ident, const std::string &parentIdent)
+KNSlideStyle::KNSlideStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
 }
 
-KNTabularStyle::KNTabularStyle(const KNPropertyMap &props, const std::string &ident, const std::string &parentIdent)
+KNTabularStyle::KNTabularStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
 }
 
-KNVectorStyle::KNVectorStyle(const KNPropertyMap &props, const std::string &ident, const std::string &parentIdent)
+KNVectorStyle::KNVectorStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
 }
