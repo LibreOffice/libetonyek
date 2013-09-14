@@ -46,6 +46,8 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNPath.cpp \
 	KNPath.h \
 	KNPath_fwd.h \
+	KNPropertyMap.cpp \
+	KNPropertyMap.h \
 	KNShape.cpp \
 	KNShape.h \
 	KNStringVector.cpp \
