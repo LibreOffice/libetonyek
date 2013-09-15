@@ -35,7 +35,6 @@ public:
 
   virtual void collectCharacterStyle(const boost::optional<ID_t> &id, const KNStylePtr_t &style);
   virtual void collectGraphicStyle(const boost::optional<ID_t> &id, const KNStylePtr_t &style);
-  virtual void collectHeadlineStyle(const boost::optional<ID_t> &id, const KNStylePtr_t &style);
   virtual void collectLayoutStyle(const boost::optional<ID_t> &id, const KNStylePtr_t &style);
   virtual void collectParagraphStyle(const boost::optional<ID_t> &id, const KNStylePtr_t &style);
 

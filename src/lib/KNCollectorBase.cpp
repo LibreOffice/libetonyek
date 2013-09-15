@@ -49,12 +49,6 @@ void KNCollectorBase::collectGraphicStyle(const optional<ID_t> &id, const KNStyl
     m_dict.graphicStyles[get(id)] = style;
 }
 
-void KNCollectorBase::collectHeadlineStyle(const optional<ID_t> &id, const KNStylePtr_t &style)
-{
-  if (m_collecting && id)
-    m_dict.headlineStyles[get(id)] = style;
-}
-
 void KNCollectorBase::collectLayoutStyle(const optional<ID_t> &id, const KNStylePtr_t &style)
 {
   if (m_collecting && id)

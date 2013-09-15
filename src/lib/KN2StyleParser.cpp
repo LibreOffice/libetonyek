@@ -86,9 +86,6 @@ void KN2StyleParser::parse(const KNXMLReader &reader)
         case KN2Token::graphic_style :
           m_collector->collectGraphicStyle(id, m_style);
           break;
-        case KN2Token::headline_style :
-          m_collector->collectHeadlineStyle(id, m_style);
-          break;
         case KN2Token::layoutstyle :
           m_collector->collectLayoutStyle(id, m_style);
           break;

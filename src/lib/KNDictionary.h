@@ -35,7 +35,6 @@ struct KNDictionary
 {
   KNStyleMap_t characterStyles;
   KNStyleMap_t graphicStyles;
-  KNStyleMap_t headlineStyles;
   KNStyleMap_t layoutStyles;
   KNStyleMap_t paragraphStyles;
 
