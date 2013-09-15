@@ -11,7 +11,7 @@
 #define KNDICTIONARY_H_INCLUDED
 
 #include "KNPath.h"
-#include "KNStyle.h"
+#include "KNStyles_fwd.h"
 #include "KNTypes.h"
 
 namespace libkeynote
@@ -33,10 +33,10 @@ namespace libkeynote
   */
 struct KNDictionary
 {
-  KNStyleMap_t characterStyles;
-  KNStyleMap_t graphicStyles;
-  KNStyleMap_t layoutStyles;
-  KNStyleMap_t paragraphStyles;
+  KNCharacterStyleMap_t characterStyles;
+  KNGraphicStyleMap_t graphicStyles;
+  KNLayoutStyleMap_t layoutStyles;
+  KNParagraphStyleMap_t paragraphStyles;
 
   KNPathMap_t beziers;
 

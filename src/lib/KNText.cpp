@@ -22,7 +22,7 @@ namespace libkeynote
 
 struct KNText::Paragraph
 {
-  KNStylePtr_t style;
+  KNParagraphStylePtr_t style;
   KNObjectList_t objects;
 };
 
@@ -33,17 +33,17 @@ namespace
 class TextSpanObject : public KNObject
 {
 public:
-  TextSpanObject(const KNStylePtr_t &style, const string &text);
+  TextSpanObject(const KNCharacterStylePtr_t &style, const string &text);
 
 private:
   virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
 
 private:
-  const KNStylePtr_t m_style;
+  const KNCharacterStylePtr_t m_style;
   const string m_text;
 };
 
-TextSpanObject::TextSpanObject(const KNStylePtr_t &style, const string &text)
+TextSpanObject::TextSpanObject(const KNCharacterStylePtr_t &style, const string &text)
   : m_style(style)
   , m_text(text)
 {
@@ -85,16 +85,16 @@ namespace
 class LineBreakObject : public KNObject
 {
 public:
-  explicit LineBreakObject(const KNStylePtr_t &paraStyle);
+  explicit LineBreakObject(const KNParagraphStylePtr_t &paraStyle);
 
 private:
   virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
 
 private:
-  const KNStylePtr_t m_paraStyle;
+  const KNParagraphStylePtr_t m_paraStyle;
 };
 
-LineBreakObject::LineBreakObject(const KNStylePtr_t &paraStyle)
+LineBreakObject::LineBreakObject(const KNParagraphStylePtr_t &paraStyle)
   : m_paraStyle(paraStyle)
 {
 }
@@ -116,17 +116,17 @@ namespace
 class TextObject : public KNObject
 {
 public:
-  TextObject(const KNStylePtr_t &layoutStyle, const KNText::ParagraphList_t &paragraphs);
+  TextObject(const KNLayoutStylePtr_t &layoutStyle, const KNText::ParagraphList_t &paragraphs);
 
 private:
   virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
 
 private:
-  const KNStylePtr_t m_layoutStyle;
+  const KNLayoutStylePtr_t m_layoutStyle;
   const KNText::ParagraphList_t m_paragraphs;
 };
 
-TextObject::TextObject(const KNStylePtr_t &layoutStyle, const KNText::ParagraphList_t &paragraphs)
+TextObject::TextObject(const KNLayoutStylePtr_t &layoutStyle, const KNText::ParagraphList_t &paragraphs)
   : m_layoutStyle(layoutStyle)
   , m_paragraphs(paragraphs)
 {
@@ -160,12 +160,12 @@ KNText::KNText()
 {
 }
 
-void KNText::setLayoutStyle(const KNStylePtr_t &style)
+void KNText::setLayoutStyle(const KNLayoutStylePtr_t &style)
 {
   m_layoutStyle = style;
 }
 
-void KNText::openParagraph(const KNStylePtr_t &style)
+void KNText::openParagraph(const KNParagraphStylePtr_t &style)
 {
   assert(!m_currentParagraph);
 
@@ -181,7 +181,7 @@ void KNText::closeParagraph()
   m_currentParagraph.reset();
 }
 
-void KNText::insertText(const std::string &text, const KNStylePtr_t &style)
+void KNText::insertText(const std::string &text, const KNCharacterStylePtr_t &style)
 {
   assert(bool(m_currentParagraph));
 
@@ -204,7 +204,7 @@ void KNText::insertLineBreak()
   ++m_lineBreaks;
 }
 
-const KNStylePtr_t &KNText::getLayoutStyle() const
+const KNLayoutStylePtr_t &KNText::getLayoutStyle() const
 {
   return m_layoutStyle;
 }

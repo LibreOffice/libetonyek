@@ -13,7 +13,7 @@
 #include <deque>
 
 #include "KNObject.h"
-#include "KNStyle.h"
+#include "KNStyles_fwd.h"
 #include "KNText_fwd.h"
 
 namespace libkeynote
@@ -30,23 +30,23 @@ public:
 public:
   KNText();
 
-  void setLayoutStyle(const KNStylePtr_t &style);
+  void setLayoutStyle(const KNLayoutStylePtr_t &style);
 
-  void openParagraph(const KNStylePtr_t &style);
+  void openParagraph(const KNParagraphStylePtr_t &style);
   void closeParagraph();
 
-  void insertText(const std::string &text, const KNStylePtr_t &style);
+  void insertText(const std::string &text, const KNCharacterStylePtr_t &style);
   void insertTab();
   void insertLineBreak();
 
-  const KNStylePtr_t &getLayoutStyle() const;
+  const KNLayoutStylePtr_t &getLayoutStyle() const;
   const ParagraphList_t &getParagraphs() const;
 
 private:
   void insertDeferredLineBreaks();
 
 private:
-  KNStylePtr_t m_layoutStyle;
+  KNLayoutStylePtr_t m_layoutStyle;
   ParagraphList_t m_paragraphs;
   ParagraphPtr_t m_currentParagraph;
   int m_lineBreaks;

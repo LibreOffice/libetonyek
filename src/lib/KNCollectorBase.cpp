@@ -37,25 +37,25 @@ KNCollectorBase::~KNCollectorBase()
   assert(m_objectsStack.empty());
 }
 
-void KNCollectorBase::collectCharacterStyle(const optional<ID_t> &id, const KNStylePtr_t &style)
+void KNCollectorBase::collectCharacterStyle(const optional<ID_t> &id, const KNCharacterStylePtr_t &style)
 {
   if (m_collecting && id)
     m_dict.characterStyles[get(id)] = style;
 }
 
-void KNCollectorBase::collectGraphicStyle(const optional<ID_t> &id, const KNStylePtr_t &style)
+void KNCollectorBase::collectGraphicStyle(const optional<ID_t> &id, const KNGraphicStylePtr_t &style)
 {
   if (m_collecting && id)
     m_dict.graphicStyles[get(id)] = style;
 }
 
-void KNCollectorBase::collectLayoutStyle(const optional<ID_t> &id, const KNStylePtr_t &style)
+void KNCollectorBase::collectLayoutStyle(const optional<ID_t> &id, const KNLayoutStylePtr_t &style)
 {
   if (m_collecting && id)
     m_dict.layoutStyles[get(id)] = style;
 }
 
-void KNCollectorBase::collectParagraphStyle(const optional<ID_t> &id, const KNStylePtr_t &style)
+void KNCollectorBase::collectParagraphStyle(const optional<ID_t> &id, const KNParagraphStylePtr_t &style)
 {
   if (m_collecting && id)
     m_dict.paragraphStyles[get(id)] = style;
@@ -222,7 +222,7 @@ void KNCollectorBase::collectText(const optional<ID_t> &style, const std::string
   {
     assert(bool(m_currentText));
 
-    m_currentText->insertText(text, style ? m_dict.characterStyles[get(style)] : KNStylePtr_t());
+    m_currentText->insertText(text, style ? m_dict.characterStyles[get(style)] : KNCharacterStylePtr_t());
   }
 }
 
@@ -330,7 +330,7 @@ void KNCollectorBase::startParagraph(const optional<ID_t> &style)
   {
     assert(bool(m_currentText));
 
-    m_currentText->openParagraph(style ? m_dict.paragraphStyles[get(style)] : KNStylePtr_t());
+    m_currentText->openParagraph(style ? m_dict.paragraphStyles[get(style)] : KNParagraphStylePtr_t());
   }
 }
 
@@ -351,7 +351,7 @@ void KNCollectorBase::startTextLayout(const optional<ID_t> &style)
     assert(!m_currentText);
 
     m_currentText.reset(new KNText());
-    m_currentText->setLayoutStyle(style ? m_dict.layoutStyles[get(style)] : KNStylePtr_t());
+    m_currentText->setLayoutStyle(style ? m_dict.layoutStyles[get(style)] : KNLayoutStylePtr_t());
   }
 }
 
