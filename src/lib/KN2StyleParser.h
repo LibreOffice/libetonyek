@@ -10,7 +10,7 @@
 #ifndef KN2STYLEPARSER_H_INCLUDED
 #define KN2STYLEPARSER_H_INCLUDED
 
-#include "KNStyle.h"
+#include "KNPropertyMap.h"
 
 namespace libkeynote
 {
@@ -32,7 +32,7 @@ private:
   const int m_nameId;
   const int m_nsId;
   KNCollector *const m_collector;
-  KNStylePtr_t m_style;
+  KNPropertyMap m_props;
 };
 
 }

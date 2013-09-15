@@ -11,9 +11,12 @@
 #include "KN2StyleParser.h"
 #include "KN2Token.h"
 #include "KNCollector.h"
+#include "KNStyles.h"
 #include "KNXMLReader.h"
 
 using boost::optional;
+
+using std::string;
 
 namespace libkeynote
 {
@@ -22,13 +25,15 @@ KN2StyleParser::KN2StyleParser(const int nameId, const int nsId, KNCollector *co
   : m_nameId(nameId)
   , m_nsId(nsId)
   , m_collector(collector)
-  , m_style()
+  , m_props()
 {
 }
 
 void KN2StyleParser::parse(const KNXMLReader &reader)
 {
   optional<ID_t> id;
+  optional<string> ident;
+  optional<string> parentIdent;
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -81,17 +86,29 @@ void KN2StyleParser::parse(const KNXMLReader &reader)
         switch (m_nameId)
         {
         case KN2Token::characterstyle :
-          m_collector->collectCharacterStyle(id, m_style);
+        {
+          const KNCharacterStylePtr_t style(new KNCharacterStyle(m_props, ident, parentIdent));
+          m_collector->collectCharacterStyle(id, style);
           break;
+        }
         case KN2Token::graphic_style :
-          m_collector->collectGraphicStyle(id, m_style);
+        {
+          const KNGraphicStylePtr_t style(new KNGraphicStyle(m_props, ident, parentIdent));
+          m_collector->collectGraphicStyle(id, style);
           break;
+        }
         case KN2Token::layoutstyle :
-          m_collector->collectLayoutStyle(id, m_style);
+        {
+          const KNLayoutStylePtr_t style(new KNLayoutStyle(m_props, ident, parentIdent));
+          m_collector->collectLayoutStyle(id, style);
           break;
+        }
         case KN2Token::paragraphstyle :
-          m_collector->collectParagraphStyle(id, m_style);
+        {
+          const KNParagraphStylePtr_t style(new KNParagraphStyle(m_props, ident, parentIdent));
+          m_collector->collectParagraphStyle(id, style);
           break;
+        }
         default :
           KN_DEBUG_MSG(("unhandled style %d:%d\n", m_nsId, m_nameId));
           break;
