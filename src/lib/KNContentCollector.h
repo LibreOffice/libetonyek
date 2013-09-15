@@ -28,7 +28,7 @@ struct KNStyle;
 class KNContentCollector : public KNCollectorBase
 {
 public:
-  KNContentCollector(::libwpg::WPGPaintInterface *painter, KNDictionary &dict, const KNLayerMap_t &masterPages, const KNSize &size);
+  KNContentCollector(::libwpg::WPGPaintInterface *painter, KNDictionary &dict, const KNLayerMap_t &masterPages, const KNSize &size, const KNDefaults &defaults);
   virtual ~KNContentCollector();
 
   // collector functions

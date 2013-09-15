@@ -28,7 +28,7 @@ struct KNDictionary;
 class KNCollectorBase : public KNCollector
 {
 public:
-  explicit KNCollectorBase(KNDictionary &dict);
+  KNCollectorBase(KNDictionary &dict, const KNDefaults &defaults);
   ~KNCollectorBase();
 
   // collector functions
@@ -85,6 +85,8 @@ public:
 
 private:
   KNDictionary &m_dict;
+  const KNDefaults &m_defaults;
+
   std::stack<KNObjectList_t> m_objectsStack;
   KNGeometryPtr_t m_currentGeometry;
   KNPathPtr_t m_currentPath;

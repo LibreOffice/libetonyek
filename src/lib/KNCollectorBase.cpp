@@ -11,6 +11,7 @@
 
 #include "libkeynote_utils.h"
 #include "KNCollectorBase.h"
+#include "KNDefaults.h"
 #include "KNDictionary.h"
 #include "KNShape.h"
 #include "KNText.h"
@@ -78,8 +79,9 @@ T getValue(const optional<ID_t> &id, boost::unordered_map<ID_t, T> &map)
 
 }
 
-KNCollectorBase::KNCollectorBase(KNDictionary &dict)
+KNCollectorBase::KNCollectorBase(KNDictionary &dict, const KNDefaults &defaults)
   : m_dict(dict)
+  , m_defaults(defaults)
   , m_objectsStack()
   , m_currentGeometry()
   , m_currentText()

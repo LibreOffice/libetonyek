@@ -9,14 +9,16 @@
 
 #include "KNParser.h"
 #include "KNCollector.h"
+#include "KNDefaults.h"
 #include "KNXMLReader.h"
 
 namespace libkeynote
 {
 
-KNParser::KNParser(const WPXInputStreamPtr_t &input, KNCollector *const collector)
+KNParser::KNParser(const WPXInputStreamPtr_t &input, KNCollector *const collector, const KNDefaults &defaults)
   : m_input(input)
   , m_collector(collector)
+  , m_defaults(defaults)
 {
 }
 
@@ -33,6 +35,11 @@ bool KNParser::parse()
 KNCollector *KNParser::getCollector() const
 {
   return m_collector;
+}
+
+const KNDefaults &KNParser::getDefaults() const
+{
+  return m_defaults;
 }
 
 bool KNParser::processXmlDocument(const KNXMLReader &reader) try

@@ -21,7 +21,7 @@ class KNStyle;
 class KN2Parser : public KNParser
 {
 public:
-  KN2Parser(const WPXInputStreamPtr_t &input, KNCollector *collector);
+  KN2Parser(const WPXInputStreamPtr_t &input, KNCollector *collector, const KNDefaults &defaults);
   virtual ~KN2Parser();
 
 private:

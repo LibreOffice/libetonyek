@@ -28,6 +28,7 @@ class WPGPaintInterface;
 namespace libkeynote
 {
 
+class KNDefaults;
 struct KNSize;
 
 class KNCollector

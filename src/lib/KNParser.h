@@ -17,6 +17,7 @@ namespace libkeynote
 {
 
 class KNCollector;
+class KNDefaults;
 
 class KNParser
 {
@@ -25,11 +26,12 @@ class KNParser
   KNParser &operator=(const KNParser &);
 
 public:
-  KNParser(const WPXInputStreamPtr_t &input, KNCollector *collector);
+  KNParser(const WPXInputStreamPtr_t &input, KNCollector *collector, const KNDefaults &defaults);
   virtual ~KNParser() = 0;
   bool parse();
 
   KNCollector *getCollector() const;
+  const KNDefaults &getDefaults() const;
 
 private:
   virtual void processXmlNode(const KNXMLReader &reader) = 0;
@@ -40,6 +42,7 @@ private:
 private:
   WPXInputStreamPtr_t m_input;
   KNCollector *m_collector;
+  const KNDefaults &m_defaults;
 };
 
 } // namespace libkeynote

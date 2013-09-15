@@ -21,7 +21,7 @@ struct KNStyle;
 class KNThemeCollector : public KNCollectorBase
 {
 public:
-  KNThemeCollector(KNDictionary &dict, KNLayerMap_t &masterPages, KNSize &size);
+  KNThemeCollector(KNDictionary &dict, KNLayerMap_t &masterPages, KNSize &size, const KNDefaults &defaults);
   virtual ~KNThemeCollector();
 
   // collector functions

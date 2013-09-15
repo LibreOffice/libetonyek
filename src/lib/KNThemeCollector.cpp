@@ -8,14 +8,15 @@
  */
 
 #include "libkeynote_utils.h"
+#include "KNDefaults.h"
 #include "KNDictionary.h"
 #include "KNThemeCollector.h"
 
 namespace libkeynote
 {
 
-KNThemeCollector::KNThemeCollector(KNDictionary &dict, KNLayerMap_t &masterPages, KNSize &size)
-  : KNCollectorBase(dict)
+KNThemeCollector::KNThemeCollector(KNDictionary &dict, KNLayerMap_t &masterPages, KNSize &size, const KNDefaults &defaults)
+  : KNCollectorBase(dict, defaults)
   , m_dict(dict)
   , m_masterPages(masterPages)
   , m_size(size)

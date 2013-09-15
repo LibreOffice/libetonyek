@@ -13,6 +13,7 @@
 
 #include "libkeynote_utils.h"
 #include "KNContentCollector.h"
+#include "KNDefaults.h"
 #include "KNDictionary.h"
 #include "KNTransformation.h"
 
@@ -21,8 +22,8 @@ using boost::optional;
 namespace libkeynote
 {
 
-KNContentCollector::KNContentCollector(::libwpg::WPGPaintInterface *const painter, KNDictionary &dict, const KNLayerMap_t &masterPages, const KNSize &size)
-  : KNCollectorBase(dict)
+KNContentCollector::KNContentCollector(::libwpg::WPGPaintInterface *const painter, KNDictionary &dict, const KNLayerMap_t &masterPages, const KNSize &size, const KNDefaults &defaults)
+  : KNCollectorBase(dict, defaults)
   , m_painter(painter)
   , m_dict(dict)
   , m_masterPages(masterPages)

@@ -16,6 +16,7 @@
 #include "KN1Parser.h"
 #include "KN2Parser.h"
 #include "KNContentCollector.h"
+#include "KNDefaults.h"
 #include "KNDictionary.h"
 #include "KNThemeCollector.h"
 #include "KNSVGGenerator.h"
@@ -133,20 +134,38 @@ Version detectVersion(const WPXInputStreamPtr_t &input)
   return detectVersion(input, dummy);
 }
 
-shared_ptr<KNParser> makeParser(const Version version, const WPXInputStreamPtr_t &input, KNCollector *const collector)
+KNDefaults *makeDefaults(const Version version)
+{
+  switch (version)
+  {
+  case VERSION_KEYNOTE_1 :
+  case VERSION_KEYNOTE_2 :
+  case VERSION_KEYNOTE_3 :
+  case VERSION_KEYNOTE_4 :
+  case VERSION_KEYNOTE_5 :
+    return 0;
+  default :
+    KN_DEBUG_MSG(("unknown version\n"));
+    throw GenericException();
+  }
+
+  return 0;
+}
+
+shared_ptr<KNParser> makeParser(const Version version, const WPXInputStreamPtr_t &input, KNCollector *const collector, const KNDefaults &defaults)
 {
   shared_ptr<KNParser> parser;
 
   switch (version)
   {
   case VERSION_KEYNOTE_1 :
-    parser.reset(new KN1Parser(input, collector));
+    parser.reset(new KN1Parser(input, collector, defaults));
     break;
   case VERSION_KEYNOTE_2 :
   case VERSION_KEYNOTE_3 :
   case VERSION_KEYNOTE_4 :
   case VERSION_KEYNOTE_5 :
-    parser.reset(new KN2Parser(input, collector));
+    parser.reset(new KN2Parser(input, collector, defaults));
     break;
   default :
     KN_DEBUG_MSG(("KeyNoteDocument::parse(): unhandled version\n"));
@@ -353,18 +372,19 @@ bool KeyNoteDocument::parse(::WPXInputStream *const input, libwpg::WPGPaintInter
   KNDictionary dict;
   KNLayerMap_t masterPages;
   KNSize presentationSize;
+  const scoped_ptr<KNDefaults> defaults(makeDefaults(version));
 
   compositeInput.seek(0, WPX_SEEK_SET);
 
-  KNThemeCollector themeCollector(dict, masterPages, presentationSize);
-  shared_ptr<KNParser> parser = makeParser(version, compositeInput_, &themeCollector);
+  KNThemeCollector themeCollector(dict, masterPages, presentationSize, *defaults);
+  shared_ptr<KNParser> parser = makeParser(version, compositeInput_, &themeCollector, *defaults);
   if (!parser->parse())
     return false;
 
   compositeInput.seek(0, WPX_SEEK_SET);
 
-  KNContentCollector contentCollector(painter, dict, masterPages, presentationSize);
-  parser = makeParser(version, compositeInput_, &contentCollector);
+  KNContentCollector contentCollector(painter, dict, masterPages, presentationSize, *defaults);
+  parser = makeParser(version, compositeInput_, &contentCollector, *defaults);
   return parser->parse();
 }
 catch (...)
