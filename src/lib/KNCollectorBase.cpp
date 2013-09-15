@@ -95,28 +95,28 @@ KNCollectorBase::~KNCollectorBase()
   assert(m_objectsStack.empty());
 }
 
-void KNCollectorBase::collectCharacterStyle(const optional<ID_t> &id, const KNCharacterStylePtr_t &style)
+void KNCollectorBase::collectCharacterStyle(const optional<ID_t> &id, const KNCharacterStylePtr_t &style, const bool ref)
 {
-  if (m_collecting && id)
-    m_dict.characterStyles[get(id)] = style;
+  if (m_collecting)
+    getValue(id, style, ref, m_dict.characterStyles);
 }
 
-void KNCollectorBase::collectGraphicStyle(const optional<ID_t> &id, const KNGraphicStylePtr_t &style)
+void KNCollectorBase::collectGraphicStyle(const optional<ID_t> &id, const KNGraphicStylePtr_t &style, const bool ref)
 {
-  if (m_collecting && id)
-    m_dict.graphicStyles[get(id)] = style;
+  if (m_collecting)
+    getValue(id, style, ref, m_dict.graphicStyles);
 }
 
-void KNCollectorBase::collectLayoutStyle(const optional<ID_t> &id, const KNLayoutStylePtr_t &style)
+void KNCollectorBase::collectLayoutStyle(const optional<ID_t> &id, const KNLayoutStylePtr_t &style, const bool ref)
 {
-  if (m_collecting && id)
-    m_dict.layoutStyles[get(id)] = style;
+  if (m_collecting)
+    getValue(id, style, ref, m_dict.layoutStyles);
 }
 
-void KNCollectorBase::collectParagraphStyle(const optional<ID_t> &id, const KNParagraphStylePtr_t &style)
+void KNCollectorBase::collectParagraphStyle(const optional<ID_t> &id, const KNParagraphStylePtr_t &style, const bool ref)
 {
-  if (m_collecting && id)
-    m_dict.paragraphStyles[get(id)] = style;
+  if (m_collecting)
+    getValue(id, style, ref, m_dict.paragraphStyles);
 }
 
 void KNCollectorBase::collectBezier(const optional<ID_t> &id, const KNPathPtr_t &path, const bool ref)

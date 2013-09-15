@@ -33,10 +33,10 @@ public:
 
   // collector functions
 
-  virtual void collectCharacterStyle(const boost::optional<ID_t> &id, const KNCharacterStylePtr_t &style);
-  virtual void collectGraphicStyle(const boost::optional<ID_t> &id, const KNGraphicStylePtr_t &style);
-  virtual void collectLayoutStyle(const boost::optional<ID_t> &id, const KNLayoutStylePtr_t &style);
-  virtual void collectParagraphStyle(const boost::optional<ID_t> &id, const KNParagraphStylePtr_t &style);
+  virtual void collectCharacterStyle(const boost::optional<ID_t> &id, const KNCharacterStylePtr_t &style, bool ref);
+  virtual void collectGraphicStyle(const boost::optional<ID_t> &id, const KNGraphicStylePtr_t &style, bool ref);
+  virtual void collectLayoutStyle(const boost::optional<ID_t> &id, const KNLayoutStylePtr_t &style, bool ref);
+  virtual void collectParagraphStyle(const boost::optional<ID_t> &id, const KNParagraphStylePtr_t &style, bool ref);
 
   virtual void collectBezier(const boost::optional<ID_t> &id, const KNPathPtr_t &path, bool ref);
   virtual void collectGeometry(const boost::optional<ID_t> &id, const KNGeometryPtr_t &geometry);

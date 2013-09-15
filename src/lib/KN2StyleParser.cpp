@@ -88,25 +88,25 @@ void KN2StyleParser::parse(const KNXMLReader &reader)
         case KN2Token::characterstyle :
         {
           const KNCharacterStylePtr_t style(new KNCharacterStyle(m_props, ident, parentIdent));
-          m_collector->collectCharacterStyle(id, style);
+          m_collector->collectCharacterStyle(id, style, false);
           break;
         }
         case KN2Token::graphic_style :
         {
           const KNGraphicStylePtr_t style(new KNGraphicStyle(m_props, ident, parentIdent));
-          m_collector->collectGraphicStyle(id, style);
+          m_collector->collectGraphicStyle(id, style, false);
           break;
         }
         case KN2Token::layoutstyle :
         {
           const KNLayoutStylePtr_t style(new KNLayoutStyle(m_props, ident, parentIdent));
-          m_collector->collectLayoutStyle(id, style);
+          m_collector->collectLayoutStyle(id, style, false);
           break;
         }
         case KN2Token::paragraphstyle :
         {
           const KNParagraphStylePtr_t style(new KNParagraphStyle(m_props, ident, parentIdent));
-          m_collector->collectParagraphStyle(id, style);
+          m_collector->collectParagraphStyle(id, style, false);
           break;
         }
         default :
