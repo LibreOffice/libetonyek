@@ -28,8 +28,8 @@ public:
 
   virtual void collectSize(const KNSize &size);
 
-  virtual void collectLayer(const ID_t &id, bool ref);
-  virtual void collectPage(const ID_t &id);
+  virtual void collectLayer(const boost::optional<ID_t> &id, bool ref);
+  virtual void collectPage(const boost::optional<ID_t> &id);
 
   virtual void startSlides();
   virtual void endSlides();

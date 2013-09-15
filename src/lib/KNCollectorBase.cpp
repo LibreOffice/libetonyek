@@ -15,6 +15,8 @@
 #include "KNShape.h"
 #include "KNText.h"
 
+using boost::optional;
+
 namespace libkeynote
 {
 
@@ -35,53 +37,56 @@ KNCollectorBase::~KNCollectorBase()
   assert(m_objectsStack.empty());
 }
 
-void KNCollectorBase::collectCharacterStyle(const ID_t &id, const KNStylePtr_t &style)
+void KNCollectorBase::collectCharacterStyle(const optional<ID_t> &id, const KNStylePtr_t &style)
 {
-  if (m_collecting)
-    m_dict.characterStyles[id] = style;
+  if (m_collecting && id)
+    m_dict.characterStyles[get(id)] = style;
 }
 
-void KNCollectorBase::collectGraphicStyle(const ID_t &id, const KNStylePtr_t &style)
+void KNCollectorBase::collectGraphicStyle(const optional<ID_t> &id, const KNStylePtr_t &style)
 {
-  if (m_collecting)
-    m_dict.graphicStyles[id] = style;
+  if (m_collecting && id)
+    m_dict.graphicStyles[get(id)] = style;
 }
 
-void KNCollectorBase::collectHeadlineStyle(const ID_t &id, const KNStylePtr_t &style)
+void KNCollectorBase::collectHeadlineStyle(const optional<ID_t> &id, const KNStylePtr_t &style)
 {
-  if (m_collecting)
-    m_dict.headlineStyles[id] = style;
+  if (m_collecting && id)
+    m_dict.headlineStyles[get(id)] = style;
 }
 
-void KNCollectorBase::collectLayoutStyle(const ID_t &id, const KNStylePtr_t &style)
+void KNCollectorBase::collectLayoutStyle(const optional<ID_t> &id, const KNStylePtr_t &style)
 {
-  if (m_collecting)
-    m_dict.layoutStyles[id] = style;
+  if (m_collecting && id)
+    m_dict.layoutStyles[get(id)] = style;
 }
 
-void KNCollectorBase::collectParagraphStyle(const ID_t &id, const KNStylePtr_t &style)
+void KNCollectorBase::collectParagraphStyle(const optional<ID_t> &id, const KNStylePtr_t &style)
 {
-  if (m_collecting)
-    m_dict.paragraphStyles[id] = style;
+  if (m_collecting && id)
+    m_dict.paragraphStyles[get(id)] = style;
 }
 
-void KNCollectorBase::collectBezier(const ID_t &id, const KNPathPtr_t &path, const bool ref)
+void KNCollectorBase::collectBezier(const optional<ID_t> &id, const KNPathPtr_t &path, const bool ref)
 {
   if (m_collecting)
   {
-    if (!ref)
-      m_dict.beziers[id] = path;
-    m_currentPath = m_dict.beziers[id];
+    if (id)
+    {
+      if (!ref)
+        m_dict.beziers[get(id)] = path;
+      m_currentPath = m_dict.beziers[get(id)];
+    }
   }
 }
 
-void KNCollectorBase::collectGeometry(const ID_t &, const KNGeometryPtr_t &geometry)
+void KNCollectorBase::collectGeometry(const optional<ID_t> &, const KNGeometryPtr_t &geometry)
 {
   if (m_collecting)
     m_currentGeometry = geometry;
 }
 
-void KNCollectorBase::collectGroup(const ID_t &, const KNGroupPtr_t &group)
+void KNCollectorBase::collectGroup(const optional<ID_t> &, const KNGroupPtr_t &group)
 {
   if (m_collecting)
   {
@@ -94,7 +99,7 @@ void KNCollectorBase::collectGroup(const ID_t &, const KNGroupPtr_t &group)
   }
 }
 
-void KNCollectorBase::collectImage(const ID_t &id, const KNImagePtr_t &image)
+void KNCollectorBase::collectImage(const optional<ID_t> &id, const KNImagePtr_t &image)
 {
   if (m_collecting)
   {
@@ -102,12 +107,13 @@ void KNCollectorBase::collectImage(const ID_t &id, const KNImagePtr_t &image)
 
     image->geometry = m_currentGeometry;
     m_currentGeometry.reset();
-    m_dict.images[id] = image;
+    if (id)
+      m_dict.images[get(id)] = image;
     m_objectsStack.top().push_back(makeObject(image));
   }
 }
 
-void KNCollectorBase::collectLine(const ID_t &, const KNLinePtr_t &line)
+void KNCollectorBase::collectLine(const optional<ID_t> &, const KNLinePtr_t &line)
 {
   if (m_collecting)
   {
@@ -119,7 +125,7 @@ void KNCollectorBase::collectLine(const ID_t &, const KNLinePtr_t &line)
   }
 }
 
-void KNCollectorBase::collectMedia(const ID_t &, const KNMediaPtr_t &media)
+void KNCollectorBase::collectMedia(const optional<ID_t> &, const KNMediaPtr_t &media)
 {
   if (m_collecting)
   {
@@ -131,7 +137,7 @@ void KNCollectorBase::collectMedia(const ID_t &, const KNMediaPtr_t &media)
   }
 }
 
-void KNCollectorBase::collectShape(const ID_t &)
+void KNCollectorBase::collectShape(const optional<ID_t> &)
 {
   if (m_collecting)
   {
@@ -152,24 +158,24 @@ void KNCollectorBase::collectShape(const ID_t &)
   }
 }
 
-void KNCollectorBase::collectBezierPath(const ID_t &)
+void KNCollectorBase::collectBezierPath(const optional<ID_t> &)
 {
   // nothing needed
 }
 
-void KNCollectorBase::collectPolygonPath(const ID_t &, const KNSize &size, const unsigned edges)
+void KNCollectorBase::collectPolygonPath(const optional<ID_t> &, const KNSize &size, const unsigned edges)
 {
   if (m_collecting)
     m_currentPath = makePolygonPath(size, edges);
 }
 
-void KNCollectorBase::collectRoundedRectanglePath(const ID_t &, const KNSize &size, const double radius)
+void KNCollectorBase::collectRoundedRectanglePath(const optional<ID_t> &, const KNSize &size, const double radius)
 {
   if (m_collecting)
     m_currentPath = makeRoundedRectanglePath(size, radius);
 }
 
-void KNCollectorBase::collectArrowPath(const ID_t &, const KNSize &size, const double headWidth, const double stemRelYPos, bool const doubleSided)
+void KNCollectorBase::collectArrowPath(const optional<ID_t> &, const KNSize &size, const double headWidth, const double stemRelYPos, bool const doubleSided)
 {
   if (m_collecting)
   {
@@ -180,19 +186,19 @@ void KNCollectorBase::collectArrowPath(const ID_t &, const KNSize &size, const d
   }
 }
 
-void KNCollectorBase::collectStarPath(const ID_t &, const KNSize &size, const unsigned points, const double innerRadius)
+void KNCollectorBase::collectStarPath(const optional<ID_t> &, const KNSize &size, const unsigned points, const double innerRadius)
 {
   if (m_collecting)
     m_currentPath = makeStarPath(size, points, innerRadius);
 }
 
-void KNCollectorBase::collectConnectionPath(const ID_t &, const KNSize &size, const double middleX, const double middleY)
+void KNCollectorBase::collectConnectionPath(const optional<ID_t> &, const KNSize &size, const double middleX, const double middleY)
 {
   if (m_collecting)
     m_currentPath = makeConnectionPath(size, middleX, middleY);
 }
 
-void KNCollectorBase::collectCalloutPath(const ID_t &, const KNSize &size, const double radius, const double tailSize, const double tailX, const double tailY, bool quoteBubble)
+void KNCollectorBase::collectCalloutPath(const optional<ID_t> &, const KNSize &size, const double radius, const double tailSize, const double tailX, const double tailY, bool quoteBubble)
 {
   if (m_collecting)
   {
@@ -203,7 +209,7 @@ void KNCollectorBase::collectCalloutPath(const ID_t &, const KNSize &size, const
   }
 }
 
-void KNCollectorBase::collectLayer(const ID_t &, bool)
+void KNCollectorBase::collectLayer(const optional<ID_t> &, bool)
 {
   if (m_collecting)
   {
@@ -216,13 +222,13 @@ void KNCollectorBase::collectLayer(const ID_t &, bool)
   }
 }
 
-void KNCollectorBase::collectText(const std::string &text, const ID_t &style)
+void KNCollectorBase::collectText(const optional<ID_t> &style, const std::string &text)
 {
   if (m_collecting)
   {
     assert(bool(m_currentText));
 
-    m_currentText->insertText(text, m_dict.characterStyles[style]);
+    m_currentText->insertText(text, style ? m_dict.characterStyles[get(style)] : KNStylePtr_t());
   }
 }
 
@@ -246,7 +252,7 @@ void KNCollectorBase::collectLineBreak()
   }
 }
 
-void KNCollectorBase::collectSlideText(const ID_t &id, const bool title)
+void KNCollectorBase::collectSlideText(const optional<ID_t> &id, const bool title)
 {
   if (m_collecting)
   {
@@ -255,10 +261,13 @@ void KNCollectorBase::collectSlideText(const ID_t &id, const bool title)
     KNTextBodyPtr_t textBody(new KNTextBody(title));
     textBody->geometry = m_currentGeometry;
     textBody->text = m_currentText;
-    if (title)
-      m_dict.titlePlaceholders[id] = textBody;
-    else
-      m_dict.bodyPlaceholders[id] = textBody;
+    if (id)
+    {
+      if (title)
+        m_dict.titlePlaceholders[get(id)] = textBody;
+      else
+        m_dict.bodyPlaceholders[get(id)] = textBody;
+    }
     // m_objectsStack.top().push_back(makeObject(textBody));
 
     m_currentGeometry.reset();
@@ -321,13 +330,13 @@ void KNCollectorBase::endGroup()
   }
 }
 
-void KNCollectorBase::startParagraph(const ID_t &style)
+void KNCollectorBase::startParagraph(const optional<ID_t> &style)
 {
   if (m_collecting)
   {
     assert(bool(m_currentText));
 
-    m_currentText->openParagraph(m_dict.paragraphStyles[style]);
+    m_currentText->openParagraph(style ? m_dict.paragraphStyles[get(style)] : KNStylePtr_t());
   }
 }
 
@@ -341,15 +350,14 @@ void KNCollectorBase::endParagraph()
   }
 }
 
-void KNCollectorBase::startTextLayout(const ID_t &style)
+void KNCollectorBase::startTextLayout(const optional<ID_t> &style)
 {
   if (m_collecting)
   {
     assert(!m_currentText);
 
     m_currentText.reset(new KNText());
-    const KNStylePtr_t layoutStyle = m_dict.layoutStyles[style];
-    m_currentText->setLayoutStyle(layoutStyle);
+    m_currentText->setLayoutStyle(style ? m_dict.layoutStyles[get(style)] : KNStylePtr_t());
   }
 }
 

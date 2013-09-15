@@ -13,6 +13,8 @@
 #include "KNCollector.h"
 #include "KNXMLReader.h"
 
+using boost::optional;
+
 namespace libkeynote
 {
 
@@ -26,7 +28,7 @@ KN2StyleParser::KN2StyleParser(const int nameId, const int nsId, KNCollector *co
 
 void KN2StyleParser::parse(const KNXMLReader &reader)
 {
-  ID_t id;
+  optional<ID_t> id;
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())

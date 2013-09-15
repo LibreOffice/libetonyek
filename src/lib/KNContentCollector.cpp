@@ -16,6 +16,8 @@
 #include "KNDictionary.h"
 #include "KNTransformation.h"
 
+using boost::optional;
+
 namespace libkeynote
 {
 
@@ -40,7 +42,7 @@ void KNContentCollector::collectSize(const KNSize &)
 {
 }
 
-void KNContentCollector::collectLayer(const ID_t &id, const bool ref)
+void KNContentCollector::collectLayer(const optional<ID_t> &id, const bool ref)
 {
   if (isCollecting())
   {
@@ -48,14 +50,14 @@ void KNContentCollector::collectLayer(const ID_t &id, const bool ref)
 
     KNCollectorBase::collectLayer(id, ref);
 
-    if (ref)
+    if (ref && id)
     {
-      const KNLayerMap_t::const_iterator it = m_masterPages.find(id);
+      const KNLayerMap_t::const_iterator it = m_masterPages.find(get(id));
       if (m_masterPages.end() != it)
         drawLayer(it->second);
       else
       {
-        KN_DEBUG_MSG(("master page layer %s not found\n", id.c_str()));
+        KN_DEBUG_MSG(("master page layer %s not found\n", get(id).c_str()));
       }
     }
     else
@@ -63,7 +65,7 @@ void KNContentCollector::collectLayer(const ID_t &id, const bool ref)
   }
 }
 
-void KNContentCollector::collectPage(const ID_t &)
+void KNContentCollector::collectPage(const optional<ID_t> &)
 {
   if (isCollecting())
     assert(m_pageOpened);

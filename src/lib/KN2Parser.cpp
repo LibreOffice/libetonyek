@@ -344,7 +344,7 @@ void KN2Parser::parseLayer(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::layer, KN2Token::NS_URI_SF));
 
-  const ID_t id = readOnlyAttribute(reader, KN2Token::ID, KN2Token::NS_URI_SFA);
+  const optional<ID_t> id = readOnlyAttribute(reader, KN2Token::ID, KN2Token::NS_URI_SFA);
 
   getCollector()->startLayer();
 
@@ -426,7 +426,7 @@ void KN2Parser::parseMasterSlide(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::master_slide, KN2Token::NS_URI_KEY));
 
-  ID_t id;
+  optional<ID_t> id;
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -651,7 +651,7 @@ void KN2Parser::parseProxyMasterLayer(const KNXMLReader &reader)
 
   readOnlyAttribute(reader, KN2Token::ID, KN2Token::NS_URI_SFA);
 
-  ID_t ref;
+  optional<ID_t> ref;
 
   getCollector()->startLayer();
 
@@ -699,7 +699,7 @@ void KN2Parser::parseSlide(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::slide, KN2Token::NS_URI_KEY));
 
-  ID_t id;
+  optional<ID_t> id;
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -1108,7 +1108,7 @@ void KN2Parser::parseBezier(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::bezier, KN2Token::NS_URI_SF));
 
-  ID_t id;
+  optional<ID_t> id;
   KNPathPtr_t path;
 
   KNXMLReader::AttributeIterator attr(reader);
@@ -1143,7 +1143,7 @@ void KN2Parser::parseBezier(const KNXMLReader &reader)
 void KN2Parser::parseBezierRef(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::bezier_ref, KN2Token::NS_URI_SF));
-  const ID_t id = readOnlyAttribute(reader, KN2Token::IDREF, KN2Token::NS_URI_SFA);
+  const optional<ID_t> id = readOnlyAttribute(reader, KN2Token::IDREF, KN2Token::NS_URI_SFA);
   getCollector()->collectBezier(id, KNPathPtr_t(), true);
 }
 
@@ -1151,7 +1151,7 @@ void KN2Parser::parseConnectionLine(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::connection_line, KN2Token::NS_URI_SF));
 
-  ID_t id;
+  optional<ID_t> id;
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -1207,7 +1207,7 @@ void KN2Parser::parseGeometry(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::geometry, KN2Token::NS_URI_SF));
 
-  ID_t id;
+  optional<ID_t> id;
   KNGeometryPtr_t geometry(new KNGeometry());
 
   KNXMLReader::AttributeIterator attr(reader);
@@ -1297,7 +1297,7 @@ void KN2Parser::parseGroup(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::group, KN2Token::NS_URI_SF));
 
-  ID_t id;
+  optional<ID_t> id;
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -1373,7 +1373,7 @@ void KN2Parser::parseImage(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::image, KN2Token::NS_URI_SF));
 
-  ID_t id;
+  optional<ID_t> id;
   KNImagePtr_t image(new KNImage());
 
   KNXMLReader::AttributeIterator attr(reader);
@@ -1445,7 +1445,7 @@ void KN2Parser::parseLine(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::line, KN2Token::NS_URI_SF));
 
-  ID_t id;
+  optional<ID_t> id;
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -1517,7 +1517,7 @@ void KN2Parser::parseMedia(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::media, KN2Token::NS_URI_SF));
 
-  ID_t id;
+  optional<ID_t> id;
   KNMediaPtr_t media(new KNMedia());
 
   KNXMLReader::AttributeIterator attr(reader);
@@ -1679,7 +1679,7 @@ void KN2Parser::parseShape(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::shape, KN2Token::NS_URI_SF));
 
-  ID_t id;
+  optional<ID_t> id;
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -1762,7 +1762,7 @@ void KN2Parser::parseStickyNote(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::sticky_note, KN2Token::NS_URI_KEY));
 
-  ID_t id;
+  optional<ID_t> id;
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -1815,7 +1815,7 @@ void KN2Parser::parsePlaceholder(const KNXMLReader &reader, const bool title)
          ? checkElement(reader, KN2Token::title_placeholder, KN2Token::NS_URI_KEY)
          : checkElement(reader, KN2Token::body_placeholder, KN2Token::NS_URI_KEY));
 
-  ID_t id;
+  optional<ID_t> id;
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -1870,7 +1870,7 @@ void KN2Parser::parseBezierPath(const KNXMLReader &reader)
   assert(checkElement(reader, KN2Token::bezier_path, KN2Token::NS_URI_SF)
          || checkElement(reader, KN2Token::editable_bezier_path, KN2Token::NS_URI_SF));
 
-  ID_t id;
+  optional<ID_t> id;
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -1918,7 +1918,7 @@ void KN2Parser::parseCallout2Path(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::callout2_path, KN2Token::NS_URI_SF));
 
-  ID_t id;
+  optional<ID_t> id;
   double cornerRadius(0);
   bool tailAtCenter(false);
   double tailPosX(0);
@@ -1988,7 +1988,7 @@ void KN2Parser::parseConnectionPath(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::connection_path, KN2Token::NS_URI_SF));
 
-  ID_t id;
+  optional<ID_t> id;
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -2039,7 +2039,7 @@ void KN2Parser::parsePointPath(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::point_path, KN2Token::NS_URI_SF));
 
-  ID_t id;
+  optional<ID_t> id;
   bool star = false;
   // right arrow is the default (by my decree .-)
   bool doubleArrow = false;
@@ -2113,7 +2113,7 @@ void KN2Parser::parseScalarPath(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::scalar_path, KN2Token::NS_URI_SF));
 
-  ID_t id;
+  optional<ID_t> id;
   bool polygon = false;
   double value = 0;
 
@@ -2196,7 +2196,7 @@ void KN2Parser::parseLayout(const KNXMLReader &reader, const boost::optional<ID_
 {
   assert(checkElement(reader, KN2Token::layout, KN2Token::NS_URI_SF));
 
-  ID_t style;
+  optional<ID_t> style;
 
   if (layoutStyle)
     style = get(layoutStyle);
@@ -2282,7 +2282,7 @@ void KN2Parser::parseLink(const KNXMLReader &reader, const bool ref)
       }
     }
     else
-      getCollector()->collectText(mixed.getText(), "");
+      getCollector()->collectText(optional<ID_t>(), mixed.getText());
   }
 }
 
@@ -2290,7 +2290,7 @@ void KN2Parser::parseP(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::p, KN2Token::NS_URI_SF));
 
-  ID_t style;
+  optional<ID_t> style;
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -2350,7 +2350,7 @@ void KN2Parser::parseP(const KNXMLReader &reader)
     }
     else
     {
-      getCollector()->collectText(mixed.getText(), "");
+      getCollector()->collectText(style, mixed.getText());
     }
   }
 
@@ -2361,7 +2361,7 @@ void KN2Parser::parseSpan(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::span, KN2Token::NS_URI_SF));
 
-  ID_t style;
+  optional<ID_t> style;
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -2400,7 +2400,7 @@ void KN2Parser::parseSpan(const KNXMLReader &reader)
       }
     }
     else
-      getCollector()->collectText(mixed.getText(), style);
+      getCollector()->collectText(style, mixed.getText());
   }
 }
 
@@ -2503,7 +2503,7 @@ void KN2Parser::parseTextBody(const KNXMLReader &reader, const boost::optional<I
         }
         else
         {
-          ID_t layoutStyleId;
+          optional<ID_t> layoutStyleId;
           if (layoutStyle)
             layoutStyleId = get(layoutStyle);
           getCollector()->startTextLayout(layoutStyleId);

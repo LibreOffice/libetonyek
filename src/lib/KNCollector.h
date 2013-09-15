@@ -12,6 +12,8 @@
 
 #include <string>
 
+#include <boost/optional.hpp>
+
 #include "KNPath_fwd.h"
 #include "KNStyle.h"
 #include "KNTypes_fwd.h"
@@ -35,38 +37,38 @@ public:
 
   // collector functions
 
-  virtual void collectCharacterStyle(const ID_t &id, const KNStylePtr_t &style) = 0;
-  virtual void collectGraphicStyle(const ID_t &id, const KNStylePtr_t &style) = 0;
-  virtual void collectHeadlineStyle(const ID_t &id, const KNStylePtr_t &style) = 0;
-  virtual void collectLayoutStyle(const ID_t &id, const KNStylePtr_t &style) = 0;
-  virtual void collectParagraphStyle(const ID_t &id, const KNStylePtr_t &style) = 0;
+  virtual void collectCharacterStyle(const boost::optional<ID_t> &id, const KNStylePtr_t &style) = 0;
+  virtual void collectGraphicStyle(const boost::optional<ID_t> &id, const KNStylePtr_t &style) = 0;
+  virtual void collectHeadlineStyle(const boost::optional<ID_t> &id, const KNStylePtr_t &style) = 0;
+  virtual void collectLayoutStyle(const boost::optional<ID_t> &id, const KNStylePtr_t &style) = 0;
+  virtual void collectParagraphStyle(const boost::optional<ID_t> &id, const KNStylePtr_t &style) = 0;
 
-  virtual void collectBezier(const ID_t &id, const KNPathPtr_t &path, bool ref) = 0;
-  virtual void collectGeometry(const ID_t &id, const KNGeometryPtr_t &geometry) = 0;
-  virtual void collectGroup(const ID_t &id, const KNGroupPtr_t &group) = 0;
-  virtual void collectImage(const ID_t &id, const KNImagePtr_t &image) = 0;
-  virtual void collectLine(const ID_t &id, const KNLinePtr_t &line) = 0;
-  virtual void collectMedia(const ID_t &id, const KNMediaPtr_t &media) = 0;
-  virtual void collectShape(const ID_t &id) = 0;
+  virtual void collectBezier(const boost::optional<ID_t> &id, const KNPathPtr_t &path, bool ref) = 0;
+  virtual void collectGeometry(const boost::optional<ID_t> &id, const KNGeometryPtr_t &geometry) = 0;
+  virtual void collectGroup(const boost::optional<ID_t> &id, const KNGroupPtr_t &group) = 0;
+  virtual void collectImage(const boost::optional<ID_t> &id, const KNImagePtr_t &image) = 0;
+  virtual void collectLine(const boost::optional<ID_t> &id, const KNLinePtr_t &line) = 0;
+  virtual void collectMedia(const boost::optional<ID_t> &id, const KNMediaPtr_t &media) = 0;
+  virtual void collectShape(const boost::optional<ID_t> &id) = 0;
 
-  virtual void collectBezierPath(const ID_t &id) = 0;
-  virtual void collectPolygonPath(const ID_t &id, const KNSize &size, unsigned edges) = 0;
-  virtual void collectRoundedRectanglePath(const ID_t &id, const KNSize &size, double radius) = 0;
-  virtual void collectArrowPath(const ID_t &id, const KNSize &size, double headWidth, double stemRelYPos, bool doubleSided) = 0;
-  virtual void collectStarPath(const ID_t &id, const KNSize &size, unsigned points, double innerRadius) = 0;
-  virtual void collectConnectionPath(const ID_t &id, const KNSize &size, double middleX, double middleY) = 0;
-  virtual void collectCalloutPath(const ID_t &id, const KNSize &size, double radius, double tailSize, double tailX, double tailY, bool quoteBubble) = 0;
+  virtual void collectBezierPath(const boost::optional<ID_t> &id) = 0;
+  virtual void collectPolygonPath(const boost::optional<ID_t> &id, const KNSize &size, unsigned edges) = 0;
+  virtual void collectRoundedRectanglePath(const boost::optional<ID_t> &id, const KNSize &size, double radius) = 0;
+  virtual void collectArrowPath(const boost::optional<ID_t> &id, const KNSize &size, double headWidth, double stemRelYPos, bool doubleSided) = 0;
+  virtual void collectStarPath(const boost::optional<ID_t> &id, const KNSize &size, unsigned points, double innerRadius) = 0;
+  virtual void collectConnectionPath(const boost::optional<ID_t> &id, const KNSize &size, double middleX, double middleY) = 0;
+  virtual void collectCalloutPath(const boost::optional<ID_t> &id, const KNSize &size, double radius, double tailSize, double tailX, double tailY, bool quoteBubble) = 0;
 
   virtual void collectSize(const KNSize &size) = 0;
 
-  virtual void collectLayer(const ID_t &id, bool ref) = 0;
-  virtual void collectPage(const ID_t &id) = 0;
+  virtual void collectLayer(const boost::optional<ID_t> &id, bool ref) = 0;
+  virtual void collectPage(const boost::optional<ID_t> &id) = 0;
 
-  virtual void collectText(const std::string &text, const ID_t &style) = 0;
+  virtual void collectText(const boost::optional<ID_t> &style, const std::string &text) = 0;
   virtual void collectTab() = 0;
   virtual void collectLineBreak() = 0;
 
-  virtual void collectSlideText(const ID_t &id, bool title) = 0;
+  virtual void collectSlideText(const boost::optional<ID_t> &id, bool title) = 0;
 
   virtual void startPage() = 0;
   virtual void endPage() = 0;
@@ -75,9 +77,9 @@ public:
   virtual void startGroup() = 0;
   virtual void endGroup() = 0;
 
-  virtual void startParagraph(const ID_t &style) = 0;
+  virtual void startParagraph(const boost::optional<ID_t> &style) = 0;
   virtual void endParagraph() = 0;
-  virtual void startTextLayout(const ID_t &style) = 0;
+  virtual void startTextLayout(const boost::optional<ID_t> &style) = 0;
   virtual void endTextLayout() = 0;
 
   // helper functions

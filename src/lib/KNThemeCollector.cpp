@@ -32,7 +32,7 @@ void KNThemeCollector::collectSize(const KNSize &size)
     m_size = size;
 }
 
-void KNThemeCollector::collectLayer(const ID_t &id, const bool ref)
+void KNThemeCollector::collectLayer(const boost::optional<ID_t> &id, const bool ref)
 {
   if (isCollecting())
   {
@@ -40,13 +40,13 @@ void KNThemeCollector::collectLayer(const ID_t &id, const bool ref)
 
     if (ref)
     {
-      KN_DEBUG_MSG(("cannot use master page reference %s in a master page\n", id.c_str()));
+      KN_DEBUG_MSG(("cannot use master page reference %s in a master page\n", id ? get(id).c_str() : ""));
     }
     else
     {
       const KNLayerPtr_t layer = getLayer();
-      if (bool(layer))
-        m_masterPages.insert(KNLayerMap_t::value_type(id, layer));
+      if (bool(layer) && id)
+        m_masterPages.insert(KNLayerMap_t::value_type(get(id), layer));
       else
       {
         KN_DEBUG_MSG(("master style layer is empty\n"));
@@ -55,7 +55,7 @@ void KNThemeCollector::collectLayer(const ID_t &id, const bool ref)
   }
 }
 
-void KNThemeCollector::collectPage(const ID_t &id)
+void KNThemeCollector::collectPage(const boost::optional<ID_t> &id)
 {
   // TODO: implement me
   (void) id;
