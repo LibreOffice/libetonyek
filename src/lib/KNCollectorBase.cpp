@@ -20,6 +20,64 @@ using boost::optional;
 namespace libkeynote
 {
 
+namespace
+{
+
+/** Return value, either directly or by its ID.
+  *
+  * If the input is not a reference, save value to @c map for future use.
+  *
+  * @arg[in] id the value's ID
+  * @arg[in] value a possible value
+  * @arg[in] ref indicator whether the input should be handled as a
+  *   value or a reference
+  * @arg[in] map the map to use to retrieve the value by ID or to save a
+  *   new value
+  * @return the value
+  */
+template<class T>
+T getValue(const optional<ID_t> &id, const T &value, const bool ref, boost::unordered_map<ID_t, T> &map)
+{
+  T retval;
+
+  if (ref)
+  {
+    assert(id);
+
+    const typename boost::unordered_map<ID_t, T>::const_iterator it = map.find(get(id));
+    if (map.end() != it)
+    {
+      retval = it->second;
+    }
+    else
+    {
+      KN_DEBUG_MSG(("item with ID %s does not exist\n", get(id).c_str()));
+    }
+  }
+  else
+  {
+    retval = value;
+    if (id)
+      map[get(id)] = value;
+  }
+
+  return retval;
+}
+
+/** Return value by its ID.
+  *
+  * @arg[in] id the value's ID
+  * @arg[in] map the map to use to retrieve the value
+  * @return the value
+  */
+template<class T>
+T getValue(const optional<ID_t> &id, boost::unordered_map<ID_t, T> &map)
+{
+  return getValue(id, T(), true, map);
+}
+
+}
+
 KNCollectorBase::KNCollectorBase(KNDictionary &dict)
   : m_dict(dict)
   , m_objectsStack()
@@ -64,14 +122,7 @@ void KNCollectorBase::collectParagraphStyle(const optional<ID_t> &id, const KNPa
 void KNCollectorBase::collectBezier(const optional<ID_t> &id, const KNPathPtr_t &path, const bool ref)
 {
   if (m_collecting)
-  {
-    if (id)
-    {
-      if (!ref)
-        m_dict.beziers[get(id)] = path;
-      m_currentPath = m_dict.beziers[get(id)];
-    }
-  }
+    m_currentPath = getValue(id, path, ref, m_dict.beziers);
 }
 
 void KNCollectorBase::collectGeometry(const optional<ID_t> &, const KNGeometryPtr_t &geometry)
@@ -222,7 +273,7 @@ void KNCollectorBase::collectText(const optional<ID_t> &style, const std::string
   {
     assert(bool(m_currentText));
 
-    m_currentText->insertText(text, style ? m_dict.characterStyles[get(style)] : KNCharacterStylePtr_t());
+    m_currentText->insertText(text, getValue(style, m_dict.characterStyles));
   }
 }
 
@@ -330,7 +381,7 @@ void KNCollectorBase::startParagraph(const optional<ID_t> &style)
   {
     assert(bool(m_currentText));
 
-    m_currentText->openParagraph(style ? m_dict.paragraphStyles[get(style)] : KNParagraphStylePtr_t());
+    m_currentText->openParagraph(getValue(style, m_dict.paragraphStyles));
   }
 }
 
@@ -351,7 +402,7 @@ void KNCollectorBase::startTextLayout(const optional<ID_t> &style)
     assert(!m_currentText);
 
     m_currentText.reset(new KNText());
-    m_currentText->setLayoutStyle(style ? m_dict.layoutStyles[get(style)] : KNLayoutStylePtr_t());
+    m_currentText->setLayoutStyle(getValue(style, m_dict.layoutStyles));
   }
 }
 
