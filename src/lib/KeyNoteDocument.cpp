@@ -31,11 +31,18 @@ namespace libkeynote
 namespace
 {
 
+/** Version of the file format.
+  *
+  * Versions 2--5 use the same format, with possible changes.
+  */
 enum Version
 {
   VERSION_UNKNOWN,
   VERSION_KEYNOTE_1,
-  VERSION_KEYNOTE_2
+  VERSION_KEYNOTE_2,
+  VERSION_KEYNOTE_3,
+  VERSION_KEYNOTE_4,
+  VERSION_KEYNOTE_5,
 };
 
 enum Source
@@ -52,7 +59,7 @@ Version detectVersionFromInput(const WPXInputStreamPtr_t &input)
 {
   // TODO: do a real detection
   (void) input;
-  return VERSION_KEYNOTE_2;
+  return VERSION_KEYNOTE_5;
 }
 
 Version detectVersion(const WPXInputStreamPtr_t &input, Source &source)
@@ -68,7 +75,7 @@ Version detectVersion(const WPXInputStreamPtr_t &input, Source &source)
     if (bool(apxl))
     {
       source = SOURCE_PACKAGE_APXL_GZ;
-      return VERSION_KEYNOTE_2;
+      return VERSION_KEYNOTE_5;
     }
 
     apxl.reset(input->getDocumentOLEStream("presentation.apxl.gz"));
@@ -82,7 +89,7 @@ Version detectVersion(const WPXInputStreamPtr_t &input, Source &source)
     if (bool(apxl))
     {
       source = SOURCE_PACKAGE_APXL;
-      return VERSION_KEYNOTE_2;
+      return VERSION_KEYNOTE_5;
     }
 
     apxl.reset(input->getDocumentOLEStream("presentation.apxl"));
@@ -101,7 +108,7 @@ Version detectVersion(const WPXInputStreamPtr_t &input, Source &source)
     if (bool(apxl))
     {
       source = SOURCE_KEY;
-      return VERSION_KEYNOTE_2;
+      return VERSION_KEYNOTE_5;
     }
   }
 
@@ -136,6 +143,9 @@ shared_ptr<KNParser> makeParser(const Version version, const WPXInputStreamPtr_t
     parser.reset(new KN1Parser(input, collector));
     break;
   case VERSION_KEYNOTE_2 :
+  case VERSION_KEYNOTE_3 :
+  case VERSION_KEYNOTE_4 :
+  case VERSION_KEYNOTE_5 :
     parser.reset(new KN2Parser(input, collector));
     break;
   default :
@@ -242,7 +252,7 @@ CompositeStream::CompositeStream(const WPXInputStreamPtr_t &input, const Version
   case SOURCE_PACKAGE_APXL :
     if (VERSION_KEYNOTE_1 == version)
       m_input.reset(input->getDocumentOLEStream("presentation.apxl"));
-    else if (VERSION_KEYNOTE_2 == version)
+    else if (VERSION_UNKNOWN != version)
       m_input.reset(input->getDocumentOLEStream("index.apxl"));
     m_dir = input;
     break;
@@ -251,7 +261,7 @@ CompositeStream::CompositeStream(const WPXInputStreamPtr_t &input, const Version
     WPXInputStreamPtr_t compressedInput;
     if (VERSION_KEYNOTE_1 == version)
       compressedInput.reset(input->getDocumentOLEStream("presentation.apxl.gz"));
-    else if (VERSION_KEYNOTE_2 == version)
+    else if (VERSION_UNKNOWN != version)
       compressedInput.reset(input->getDocumentOLEStream("index.apxl.gz"));
     m_input.reset(new KNZlibStream(compressedInput));
     m_dir = input;
