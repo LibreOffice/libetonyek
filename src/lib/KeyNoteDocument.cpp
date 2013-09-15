@@ -13,7 +13,9 @@
 #include <libkeynote/KeyNoteDocument.h>
 
 #include "libkeynote_utils.h"
+#include "KN1Defaults.h"
 #include "KN1Parser.h"
+#include "KN2Defaults.h"
 #include "KN2Parser.h"
 #include "KNContentCollector.h"
 #include "KNDefaults.h"
@@ -139,11 +141,13 @@ KNDefaults *makeDefaults(const Version version)
   switch (version)
   {
   case VERSION_KEYNOTE_1 :
+    return new KN1Defaults();
   case VERSION_KEYNOTE_2 :
   case VERSION_KEYNOTE_3 :
   case VERSION_KEYNOTE_4 :
   case VERSION_KEYNOTE_5 :
-    return 0;
+    // I am going to suppose these have not changed
+    return new KN2Defaults();
   default :
     KN_DEBUG_MSG(("unknown version\n"));
     throw GenericException();

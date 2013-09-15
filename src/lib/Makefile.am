@@ -20,10 +20,14 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_LIBADD  = $(WPD_LI
 libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_DEPENDENCIES = @LIBKEYNOTE_WIN32_RESOURCE@
 libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_LDFLAGS = $(version_info) -export-dynamic -no-undefined
 libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
+	KN1Defaults.cpp \
+	KN1Defaults.h \
 	KN1Parser.cpp \
 	KN1Parser.h \
 	KN1Token.cpp \
 	KN1Token.h \
+	KN2Defaults.cpp \
+	KN2Defaults.h \
 	KN2Parser.cpp \
 	KN2Parser.h \
 	KN2StyleParser.cpp \
