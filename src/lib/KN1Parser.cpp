@@ -27,7 +27,7 @@ struct Tokenizer
 
 }
 
-KN1Parser::KN1Parser(WPXInputStream *const input, KNCollector *const collector)
+KN1Parser::KN1Parser(const WPXInputStreamPtr_t &input, KNCollector *const collector)
   : KNParser(input, collector)
 {
 }

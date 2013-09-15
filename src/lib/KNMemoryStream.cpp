@@ -15,7 +15,7 @@
 namespace libkeynote
 {
 
-KNMemoryStream::KNMemoryStream(WPXInputStream *const input)
+KNMemoryStream::KNMemoryStream(const WPXInputStreamPtr_t &input)
   : m_data(0)
   , m_length(0)
   , m_pos(0)
@@ -32,7 +32,7 @@ KNMemoryStream::KNMemoryStream(WPXInputStream *const input)
   read(input, static_cast<unsigned>(end - begin));
 }
 
-KNMemoryStream::KNMemoryStream(WPXInputStream *const input, const unsigned length)
+KNMemoryStream::KNMemoryStream(const WPXInputStreamPtr_t &input, const unsigned length)
   : m_data(0)
   , m_length(0)
   , m_pos(0)
@@ -141,10 +141,10 @@ void KNMemoryStream::assign(const unsigned char *const data, const unsigned leng
   m_data = buffer;
 }
 
-void KNMemoryStream::read(WPXInputStream *const input, const unsigned length)
+void KNMemoryStream::read(const WPXInputStreamPtr_t &input, const unsigned length)
 {
   unsigned long readBytes = 0;
-  const unsigned char *const data = input->read(length, readBytes);
+  const unsigned char *const data = bool(input) ? input->read(length, readBytes) : 0;
   if (length != readBytes)
     throw EndOfStreamException();
 

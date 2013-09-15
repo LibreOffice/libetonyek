@@ -48,14 +48,14 @@ enum Source
   SOURCE_KEY
 };
 
-Version detectVersionFromInput(WPXInputStream *const input)
+Version detectVersionFromInput(const WPXInputStreamPtr_t &input)
 {
   // TODO: do a real detection
   (void) input;
   return VERSION_KEYNOTE_2;
 }
 
-Version detectVersion(WPXInputStream *const input, Source &source)
+Version detectVersion(const WPXInputStreamPtr_t &input, Source &source)
 {
   source = SOURCE_UNKNOWN;
 
@@ -109,7 +109,7 @@ Version detectVersion(WPXInputStream *const input, Source &source)
   {
     KNZlibStream compressedInput(input);
     source = SOURCE_APXL_GZ;
-    return detectVersionFromInput(&compressedInput);
+    return detectVersionFromInput(WPXInputStreamPtr_t(&compressedInput, KNDummyDeleter()));
   }
   catch (...)
   {
@@ -120,13 +120,13 @@ Version detectVersion(WPXInputStream *const input, Source &source)
   return detectVersionFromInput(input);
 }
 
-Version detectVersion(WPXInputStream *const input)
+Version detectVersion(const WPXInputStreamPtr_t &input)
 {
   Source dummy;
   return detectVersion(input, dummy);
 }
 
-shared_ptr<KNParser> makeParser(const Version version, WPXInputStream *const input, KNCollector *const collector)
+shared_ptr<KNParser> makeParser(const Version version, const WPXInputStreamPtr_t &input, KNCollector *const collector)
 {
   shared_ptr<KNParser> parser;
 
@@ -203,7 +203,7 @@ class CompositeStream : public WPXInputStream
 {
 
 public:
-  CompositeStream(WPXInputStream *input, Version version, Source source);
+  CompositeStream(const WPXInputStreamPtr_t &input, Version version, Source source);
   virtual ~CompositeStream();
 
   virtual bool isOLEStream();
@@ -215,18 +215,11 @@ public:
   virtual bool atEOS();
 
 private:
-  shared_ptr<WPXInputStream> m_input;
-  shared_ptr<WPXInputStream> m_dir;
+  WPXInputStreamPtr_t m_input;
+  WPXInputStreamPtr_t m_dir;
 };
 
-struct DoNotDelete
-{
-  void operator()(void *)
-  {
-  }
-};
-
-CompositeStream::CompositeStream(WPXInputStream *const input, const Version version, const Source source)
+CompositeStream::CompositeStream(const WPXInputStreamPtr_t &input, const Version version, const Source source)
   : m_input()
   , m_dir()
 {
@@ -239,7 +232,7 @@ CompositeStream::CompositeStream(WPXInputStream *const input, const Version vers
   switch (source)
   {
   case SOURCE_APXL :
-    m_input.reset(input, DoNotDelete());
+    m_input = input;
     m_dir.reset(new DummyOLEStream());
     break;
   case SOURCE_APXL_GZ :
@@ -251,22 +244,22 @@ CompositeStream::CompositeStream(WPXInputStream *const input, const Version vers
       m_input.reset(input->getDocumentOLEStream("presentation.apxl"));
     else if (VERSION_KEYNOTE_2 == version)
       m_input.reset(input->getDocumentOLEStream("index.apxl"));
-    m_dir.reset(input, DoNotDelete());
+    m_dir = input;
     break;
   case SOURCE_PACKAGE_APXL_GZ :
   {
-    scoped_ptr<WPXInputStream> compressedInput;
+    WPXInputStreamPtr_t compressedInput;
     if (VERSION_KEYNOTE_1 == version)
       compressedInput.reset(input->getDocumentOLEStream("presentation.apxl.gz"));
     else if (VERSION_KEYNOTE_2 == version)
       compressedInput.reset(input->getDocumentOLEStream("index.apxl.gz"));
-    m_input.reset(new KNZlibStream(compressedInput.get()));
-    m_dir.reset(input, DoNotDelete());
+    m_input.reset(new KNZlibStream(compressedInput));
+    m_dir = input;
     break;
   }
   case SOURCE_KEY :
     m_input.reset(input->getDocumentOLEStream("index.apxl"));
-    m_dir.reset(input, DoNotDelete());
+    m_dir = input;
     break;
   default :
     KN_DEBUG_MSG(("cannot create a stream for unknown source type\n"));
@@ -318,7 +311,7 @@ stream is a KeyNote Document that libkeynote is able to parse
 */
 bool KeyNoteDocument::isSupported(WPXInputStream *const input) try
 {
-  const Version version = detectVersion(input);
+  const Version version = detectVersion(WPXInputStreamPtr_t(input, KNDummyDeleter()));
   return VERSION_UNKNOWN != version;
 }
 catch (...)
@@ -336,13 +329,16 @@ WPGPaintInterface class implementation when needed. This is often commonly calle
 */
 bool KeyNoteDocument::parse(::WPXInputStream *const input, libwpg::WPGPaintInterface *const painter) try
 {
+  WPXInputStreamPtr_t input_(input, KNDummyDeleter());
+
   Source source = SOURCE_UNKNOWN;
-  const Version version = detectVersion(input, source);
+  const Version version = detectVersion(input_, source);
 
   if (VERSION_UNKNOWN == version)
     return false;
 
-  CompositeStream compositeInput(input, version, source);
+  CompositeStream compositeInput(input_, version, source);
+  const WPXInputStreamPtr_t compositeInput_(&compositeInput, KNDummyDeleter());
 
   KNDictionary dict;
   KNLayerMap_t masterPages;
@@ -351,14 +347,14 @@ bool KeyNoteDocument::parse(::WPXInputStream *const input, libwpg::WPGPaintInter
   compositeInput.seek(0, WPX_SEEK_SET);
 
   KNThemeCollector themeCollector(dict, masterPages, presentationSize);
-  shared_ptr<KNParser> parser = makeParser(version, &compositeInput, &themeCollector);
+  shared_ptr<KNParser> parser = makeParser(version, compositeInput_, &themeCollector);
   if (!parser->parse())
     return false;
 
   compositeInput.seek(0, WPX_SEEK_SET);
 
   KNContentCollector contentCollector(painter, dict, masterPages, presentationSize);
-  parser = makeParser(version, &compositeInput, &contentCollector);
+  parser = makeParser(version, compositeInput_, &contentCollector);
   return parser->parse();
 }
 catch (...)

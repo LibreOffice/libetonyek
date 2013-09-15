@@ -14,7 +14,7 @@
 namespace libkeynote
 {
 
-KNParser::KNParser(WPXInputStream *const input, KNCollector *const collector)
+KNParser::KNParser(const WPXInputStreamPtr_t &input, KNCollector *const collector)
   : m_input(input)
   , m_collector(collector)
 {
@@ -26,7 +26,7 @@ KNParser::~KNParser()
 
 bool KNParser::parse()
 {
-  KNXMLReader reader(m_input, getTokenizer());
+  KNXMLReader reader(m_input.get(), getTokenizer());
   return processXmlDocument(reader);
 }
 

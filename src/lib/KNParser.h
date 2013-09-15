@@ -10,9 +10,8 @@
 #ifndef KNPARSER_H_INCLUDED
 #define KNPARSER_H_INCLUDED
 
+#include "libkeynote_utils.h"
 #include "KNXMLReader.h"
-
-class WPXInputStream;
 
 namespace libkeynote
 {
@@ -26,7 +25,7 @@ class KNParser
   KNParser &operator=(const KNParser &);
 
 public:
-  KNParser(WPXInputStream *input, KNCollector *collector);
+  KNParser(const WPXInputStreamPtr_t &input, KNCollector *collector);
   virtual ~KNParser() = 0;
   bool parse();
 
@@ -39,7 +38,7 @@ private:
   bool processXmlDocument(const KNXMLReader &reader);
 
 private:
-  WPXInputStream *m_input;
+  WPXInputStreamPtr_t m_input;
   KNCollector *m_collector;
 };
 

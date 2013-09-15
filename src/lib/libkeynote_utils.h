@@ -12,6 +12,9 @@
 
 #include <stdio.h>
 #include <string>
+
+#include <boost/shared_ptr.hpp>
+
 #include <libwpd/libwpd.h>
 #include <libwpd-stream/libwpd-stream.h>
 
@@ -70,10 +73,17 @@ typedef int64 int64_t;
 namespace libkeynote
 {
 
-uint8_t readU8(WPXInputStream *input, bool = false);
-uint16_t readU16(WPXInputStream *input, bool bigEndian=false);
-uint32_t readU32(WPXInputStream *input, bool bigEndian=false);
-uint64_t readU64(WPXInputStream *input, bool bigEndian=false);
+struct KNDummyDeleter
+{
+  void operator()(void *) {}
+};
+
+typedef boost::shared_ptr<WPXInputStream> WPXInputStreamPtr_t;
+
+uint8_t readU8(const WPXInputStreamPtr_t &input, bool = false);
+uint16_t readU16(const WPXInputStreamPtr_t &input, bool bigEndian=false);
+uint32_t readU32(const WPXInputStreamPtr_t &input, bool bigEndian=false);
+uint64_t readU64(const WPXInputStreamPtr_t &input, bool bigEndian=false);
 
 class EndOfStreamException
 {

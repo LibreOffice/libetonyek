@@ -12,7 +12,7 @@
 
 #include <vector>
 
-#include <libwpd-stream/libwpd-stream.h>
+#include "libkeynote_utils.h"
 
 namespace libkeynote
 {
@@ -24,8 +24,8 @@ class KNMemoryStream : public WPXInputStream
   KNMemoryStream &operator=(const KNMemoryStream &other);
 
 public:
-  explicit KNMemoryStream(WPXInputStream *input);
-  KNMemoryStream(WPXInputStream *input, unsigned length);
+  explicit KNMemoryStream(const WPXInputStreamPtr_t &input);
+  KNMemoryStream(const WPXInputStreamPtr_t &input, unsigned length);
   explicit KNMemoryStream(std::vector<unsigned char> &data);
   KNMemoryStream(const unsigned char *data, unsigned length);
   virtual ~KNMemoryStream();
@@ -40,7 +40,7 @@ public:
 
 private:
   void assign(const unsigned char *data, unsigned length);
-  void read(WPXInputStream *input, unsigned length);
+  void read(const WPXInputStreamPtr_t &input, unsigned length);
 
 private:
   const unsigned char *m_data;

@@ -15,7 +15,7 @@ namespace libkeynote
 namespace
 {
 
-void checkStream(WPXInputStream *const input)
+void checkStream(const WPXInputStreamPtr_t &input)
 {
   if (!input || input->atEOS())
     throw EndOfStreamException();
@@ -23,7 +23,7 @@ void checkStream(WPXInputStream *const input)
 
 }
 
-uint8_t readU8(WPXInputStream *input, bool /* bigEndian */)
+uint8_t readU8(const WPXInputStreamPtr_t &input, bool /* bigEndian */)
 {
   checkStream(input);
 
@@ -35,7 +35,7 @@ uint8_t readU8(WPXInputStream *input, bool /* bigEndian */)
   throw EndOfStreamException();
 }
 
-uint16_t readU16(WPXInputStream *input, bool bigEndian)
+uint16_t readU16(const WPXInputStreamPtr_t &input, bool bigEndian)
 {
   checkStream(input);
 
@@ -51,7 +51,7 @@ uint16_t readU16(WPXInputStream *input, bool bigEndian)
   throw EndOfStreamException();
 }
 
-uint32_t readU32(WPXInputStream *input, bool bigEndian)
+uint32_t readU32(const WPXInputStreamPtr_t &input, bool bigEndian)
 {
   checkStream(input);
 
@@ -67,7 +67,7 @@ uint32_t readU32(WPXInputStream *input, bool bigEndian)
   throw EndOfStreamException();
 }
 
-uint64_t readU64(WPXInputStream *input, bool bigEndian)
+uint64_t readU64(const WPXInputStreamPtr_t &input, bool bigEndian)
 {
   checkStream(input);
 

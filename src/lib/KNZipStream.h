@@ -12,7 +12,7 @@
 
 #include <vector>
 
-#include <libwpd-stream/libwpd-stream.h>
+#include "libkeynote_utils.h"
 
 namespace libkeynote
 {
@@ -22,7 +22,7 @@ struct KNZipStreamImpl;
 class KNZipStream : public WPXInputStream
 {
 public:
-  KNZipStream(WPXInputStream *input);
+  KNZipStream(const WPXInputStreamPtr_t &input);
   ~KNZipStream();
 
   bool isOLEStream();

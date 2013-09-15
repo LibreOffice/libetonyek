@@ -18,7 +18,7 @@ namespace libkeynote
 class KN1Parser : public KNParser
 {
 public:
-  KN1Parser(WPXInputStream *input, KNCollector *collector);
+  KN1Parser(const WPXInputStreamPtr_t &input, KNCollector *collector);
   virtual ~KN1Parser();
 
 private:

@@ -11,9 +11,6 @@
 #include <zlib.h>
 #include <map>
 
-#include <libwpd-stream/libwpd-stream.h>
-
-#include "libkeynote_utils.h"
 #include "KNMemoryStream.h"
 #include "KNZipStream.h"
 
@@ -63,11 +60,11 @@ namespace libkeynote
 
 struct KNZipStreamImpl
 {
-  WPXInputStream *m_input;
+  WPXInputStreamPtr_t m_input;
   unsigned m_cdir_offset;
   std::map<std::string, CentralDirectoryEntry> m_cdir;
   bool m_initialized;
-  KNZipStreamImpl(WPXInputStream *input)
+  KNZipStreamImpl(const WPXInputStreamPtr_t &input)
     : m_input(input), m_cdir_offset(0), m_cdir(), m_initialized(false) {}
   ~KNZipStreamImpl() {}
 
@@ -84,7 +81,7 @@ private:
   bool areHeadersConsistent(const LocalFileHeader &header, const CentralDirectoryEntry &entry);
 };
 
-KNZipStream::KNZipStream(WPXInputStream *input) :
+KNZipStream::KNZipStream(const WPXInputStreamPtr_t &input) :
   WPXInputStream(),
   m_pImpl(new KNZipStreamImpl(input))
 {

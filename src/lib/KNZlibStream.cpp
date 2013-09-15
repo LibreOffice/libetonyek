@@ -27,7 +27,7 @@ class ZlibStreamException
 {
 };
 
-KNMemoryStream *getInflatedStream(WPXInputStream *const input)
+WPXInputStreamPtr_t getInflatedStream(const WPXInputStreamPtr_t &input)
 {
   unsigned long offset = 2;
 
@@ -57,7 +57,7 @@ KNMemoryStream *getInflatedStream(WPXInputStream *const input)
   {
     if (numBytesRead != compressedSize)
       throw ZlibStreamException();
-    return new KNMemoryStream(compressedData, static_cast<unsigned>(compressedSize));
+    return WPXInputStreamPtr_t(new KNMemoryStream(compressedData, static_cast<unsigned>(compressedSize)));
   }
   else
   {
@@ -99,19 +99,19 @@ KNMemoryStream *getInflatedStream(WPXInputStream *const input)
 
     (void)inflateEnd(&strm);
 
-    return new KNMemoryStream(&data[0], strm.total_out);
+    return WPXInputStreamPtr_t(new KNMemoryStream(&data[0], strm.total_out));
   }
 }
 
 }
 
-KNZlibStream::KNZlibStream(WPXInputStream *const stream)
+KNZlibStream::KNZlibStream(const WPXInputStreamPtr_t &stream)
   : m_stream()
 {
   if (0 != stream->seek(0, WPX_SEEK_SET))
     throw EndOfStreamException();
 
-  m_stream.reset(getInflatedStream(stream));
+  m_stream = getInflatedStream(stream);
 }
 
 KNZlibStream::~KNZlibStream()

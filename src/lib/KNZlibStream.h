@@ -10,9 +10,7 @@
 #ifndef KNZLIBSTREAM_H_INCLUDED
 #define KNZLIBSTREAM_H_INCLUDED
 
-#include <boost/scoped_ptr.hpp>
-
-#include <libwpd-stream/libwpd-stream.h>
+#include "libkeynote_utils.h"
 
 namespace libkeynote
 {
@@ -20,7 +18,7 @@ namespace libkeynote
 class KNZlibStream : public WPXInputStream
 {
 public:
-  KNZlibStream(WPXInputStream *stream);
+  KNZlibStream(const WPXInputStreamPtr_t &stream);
   virtual ~KNZlibStream();
 
   virtual bool isOLEStream();
@@ -32,7 +30,7 @@ public:
   virtual bool atEOS();
 
 private:
-  boost::scoped_ptr<WPXInputStream> m_stream;
+  WPXInputStreamPtr_t m_stream;
 };
 
 }
