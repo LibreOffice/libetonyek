@@ -25,8 +25,6 @@ public:
 
   void parse(const KNXMLReader &reader);
 
-  const KNStylePtr_t &getStyle() const;
-
 private:
   void parsePropertyMap(const KNXMLReader &reader);
 

@@ -109,11 +109,6 @@ void KN2StyleParser::parse(const KNXMLReader &reader)
   }
 }
 
-const KNStylePtr_t &KN2StyleParser::getStyle() const
-{
-  return m_style;
-}
-
 void KN2StyleParser::parsePropertyMap(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::property_map, KN2Token::NS_URI_SF));
