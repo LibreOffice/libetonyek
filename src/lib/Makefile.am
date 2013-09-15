@@ -36,6 +36,8 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNCollectorBase.h \
 	KNContentCollector.cpp \
 	KNContentCollector.h \
+	KNDefaults.cpp \
+	KNDefaults.h \
 	KNDictionary.h \
 	KNMemoryStream.cpp \
 	KNMemoryStream.h \
