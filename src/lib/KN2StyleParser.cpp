@@ -24,6 +24,7 @@ namespace libkeynote
 KN2StyleParser::KN2StyleParser(const int nameId, const int nsId, KNCollector *const collector)
   : m_nameId(nameId)
   , m_nsId(nsId)
+  , m_nested(false)
   , m_collector(collector)
   , m_props()
 {
@@ -88,25 +89,25 @@ void KN2StyleParser::parse(const KNXMLReader &reader)
         case KN2Token::characterstyle :
         {
           const KNCharacterStylePtr_t style(new KNCharacterStyle(m_props, ident, parentIdent));
-          m_collector->collectCharacterStyle(id, style, false);
+          m_collector->collectCharacterStyle(id, style, false, m_nested);
           break;
         }
         case KN2Token::graphic_style :
         {
           const KNGraphicStylePtr_t style(new KNGraphicStyle(m_props, ident, parentIdent));
-          m_collector->collectGraphicStyle(id, style, false);
+          m_collector->collectGraphicStyle(id, style, false, m_nested);
           break;
         }
         case KN2Token::layoutstyle :
         {
           const KNLayoutStylePtr_t style(new KNLayoutStyle(m_props, ident, parentIdent));
-          m_collector->collectLayoutStyle(id, style, false);
+          m_collector->collectLayoutStyle(id, style, false, m_nested);
           break;
         }
         case KN2Token::paragraphstyle :
         {
           const KNParagraphStylePtr_t style(new KNParagraphStyle(m_props, ident, parentIdent));
-          m_collector->collectParagraphStyle(id, style, false);
+          m_collector->collectParagraphStyle(id, style, false, m_nested);
           break;
         }
         default :

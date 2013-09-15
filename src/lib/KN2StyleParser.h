@@ -31,6 +31,7 @@ private:
 private:
   const int m_nameId;
   const int m_nsId;
+  const bool m_nested;
   KNCollector *const m_collector;
   KNPropertyMap m_props;
 };
