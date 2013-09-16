@@ -11,6 +11,7 @@
 #define KNTHEMECOLLECTOR_H_INCLUDED
 
 #include "KNCollectorBase.h"
+#include "KNStylesheet.h"
 
 namespace libkeynote
 {
@@ -21,7 +22,7 @@ struct KNStyle;
 class KNThemeCollector : public KNCollectorBase
 {
 public:
-  KNThemeCollector(KNDictionary &dict, KNLayerMap_t &masterPages, KNSize &size, const KNDefaults &defaults);
+  KNThemeCollector(KNDictionary &dict, KNLayerMap_t &masterPages, KNStylesheetMap_t &masterStylesheets, KNSize &size, const KNDefaults &defaults);
   virtual ~KNThemeCollector();
 
   // collector functions
@@ -44,6 +45,7 @@ public:
 private:
   KNDictionary &m_dict;
   KNLayerMap_t &m_masterPages;
+  KNStylesheetMap_t &m_masterStylesheets;
   KNSize &m_size;
 };
 

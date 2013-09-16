@@ -11,6 +11,7 @@
 #define KNCONTENTCOLLECTOR_H_INCLUDED
 
 #include "KNCollectorBase.h"
+#include "KNStylesheet.h"
 
 namespace libwpg
 {
@@ -28,7 +29,7 @@ struct KNStyle;
 class KNContentCollector : public KNCollectorBase
 {
 public:
-  KNContentCollector(::libwpg::WPGPaintInterface *painter, KNDictionary &dict, const KNLayerMap_t &masterPages, const KNSize &size, const KNDefaults &defaults);
+  KNContentCollector(::libwpg::WPGPaintInterface *painter, KNDictionary &dict, const KNLayerMap_t &masterPages, const KNStylesheetMap_t &masterStylesheets, const KNSize &size, const KNDefaults &defaults);
   virtual ~KNContentCollector();
 
   // collector functions
@@ -60,6 +61,7 @@ private:
 
   KNDictionary &m_dict;
   const KNLayerMap_t &m_masterPages;
+  const KNStylesheetMap_t &m_masterStylesheets;
   const KNSize &m_size;
 
   bool m_pageOpened;
