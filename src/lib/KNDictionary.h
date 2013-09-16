@@ -12,6 +12,7 @@
 
 #include "KNPath.h"
 #include "KNStyles_fwd.h"
+#include "KNStylesheet.h"
 #include "KNTypes.h"
 
 namespace libkeynote
@@ -37,6 +38,8 @@ struct KNDictionary
   KNGraphicStyleMap_t graphicStyles;
   KNLayoutStyleMap_t layoutStyles;
   KNParagraphStyleMap_t paragraphStyles;
+
+  KNStylesheetMap_t stylesheets;
 
   KNPathMap_t beziers;
 
