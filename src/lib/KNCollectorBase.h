@@ -33,16 +33,16 @@ public:
 
   // collector functions
 
-  virtual void collectCellStyle(const boost::optional<ID_t> &id, const KNCellStylePtr_t &style, bool ref, bool nested);
-  virtual void collectCharacterStyle(const boost::optional<ID_t> &id, const KNCharacterStylePtr_t &style, bool ref, bool nested);
-  virtual void collectConnectionStyle(const boost::optional<ID_t> &id, const KNConnectionStylePtr_t &style, bool ref, bool nested);
-  virtual void collectGraphicStyle(const boost::optional<ID_t> &id, const KNGraphicStylePtr_t &style, bool ref, bool nested);
-  virtual void collectLayoutStyle(const boost::optional<ID_t> &id, const KNLayoutStylePtr_t &style, bool ref, bool nested);
-  virtual void collectListStyle(const boost::optional<ID_t> &id, const KNListStylePtr_t &style, bool ref, bool nested);
-  virtual void collectParagraphStyle(const boost::optional<ID_t> &id, const KNParagraphStylePtr_t &style, bool ref, bool nested);
-  virtual void collectSlideStyle(const boost::optional<ID_t> &id, const KNSlideStylePtr_t &style, bool ref, bool nested);
-  virtual void collectTabularStyle(const boost::optional<ID_t> &id, const KNTabularStylePtr_t &style, bool ref, bool nested);
-  virtual void collectVectorStyle(const boost::optional<ID_t> &id, const KNVectorStylePtr_t &style, bool ref, bool nested);
+  virtual void collectCellStyle(const boost::optional<ID_t> &id, const KNCellStylePtr_t &style, bool ref, bool anonymous);
+  virtual void collectCharacterStyle(const boost::optional<ID_t> &id, const KNCharacterStylePtr_t &style, bool ref, bool anonymous);
+  virtual void collectConnectionStyle(const boost::optional<ID_t> &id, const KNConnectionStylePtr_t &style, bool ref, bool anonymous);
+  virtual void collectGraphicStyle(const boost::optional<ID_t> &id, const KNGraphicStylePtr_t &style, bool ref, bool anonymous);
+  virtual void collectLayoutStyle(const boost::optional<ID_t> &id, const KNLayoutStylePtr_t &style, bool ref, bool anonymous);
+  virtual void collectListStyle(const boost::optional<ID_t> &id, const KNListStylePtr_t &style, bool ref, bool anonymous);
+  virtual void collectParagraphStyle(const boost::optional<ID_t> &id, const KNParagraphStylePtr_t &style, bool ref, bool anonymous);
+  virtual void collectSlideStyle(const boost::optional<ID_t> &id, const KNSlideStylePtr_t &style, bool ref, bool anonymous);
+  virtual void collectTabularStyle(const boost::optional<ID_t> &id, const KNTabularStylePtr_t &style, bool ref, bool anonymous);
+  virtual void collectVectorStyle(const boost::optional<ID_t> &id, const KNVectorStylePtr_t &style, bool ref, bool anonymous);
 
   virtual void collectBezier(const boost::optional<ID_t> &id, const KNPathPtr_t &path, bool ref);
   virtual void collectGeometry(const boost::optional<ID_t> &id, const KNGeometryPtr_t &geometry);

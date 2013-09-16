@@ -97,13 +97,13 @@ KNCollectorBase::~KNCollectorBase()
   assert(m_objectsStack.empty());
 }
 
-void KNCollectorBase::collectCellStyle(const boost::optional<ID_t> &id, const KNCellStylePtr_t &style, const bool ref, const bool nested)
+void KNCollectorBase::collectCellStyle(const boost::optional<ID_t> &id, const KNCellStylePtr_t &style, const bool ref, const bool anonymous)
 {
   // TODO: implement me
   (void) id;
   (void) style;
   (void) ref;
-  (void) nested;
+  (void) anonymous;
 }
 
 void KNCollectorBase::collectCharacterStyle(const optional<ID_t> &id, const KNCharacterStylePtr_t &style, const bool ref, bool)
@@ -112,13 +112,13 @@ void KNCollectorBase::collectCharacterStyle(const optional<ID_t> &id, const KNCh
     getValue(id, style, ref, m_dict.characterStyles);
 }
 
-void KNCollectorBase::collectConnectionStyle(const boost::optional<ID_t> &id, const KNConnectionStylePtr_t &style, const bool ref, const bool nested)
+void KNCollectorBase::collectConnectionStyle(const boost::optional<ID_t> &id, const KNConnectionStylePtr_t &style, const bool ref, const bool anonymous)
 {
   // TODO: implement me
   (void) id;
   (void) style;
   (void) ref;
-  (void) nested;
+  (void) anonymous;
 }
 
 void KNCollectorBase::collectGraphicStyle(const optional<ID_t> &id, const KNGraphicStylePtr_t &style, const bool ref, bool)
@@ -133,13 +133,13 @@ void KNCollectorBase::collectLayoutStyle(const optional<ID_t> &id, const KNLayou
     getValue(id, style, ref, m_dict.layoutStyles);
 }
 
-void KNCollectorBase::collectListStyle(const boost::optional<ID_t> &id, const KNListStylePtr_t &style, const bool ref, const bool nested)
+void KNCollectorBase::collectListStyle(const boost::optional<ID_t> &id, const KNListStylePtr_t &style, const bool ref, const bool anonymous)
 {
   // TODO: implement me
   (void) id;
   (void) style;
   (void) ref;
-  (void) nested;
+  (void) anonymous;
 }
 
 void KNCollectorBase::collectParagraphStyle(const optional<ID_t> &id, const KNParagraphStylePtr_t &style, const bool ref, bool)
@@ -148,31 +148,31 @@ void KNCollectorBase::collectParagraphStyle(const optional<ID_t> &id, const KNPa
     getValue(id, style, ref, m_dict.paragraphStyles);
 }
 
-void KNCollectorBase::collectSlideStyle(const boost::optional<ID_t> &id, const KNSlideStylePtr_t &style, const bool ref, const bool nested)
+void KNCollectorBase::collectSlideStyle(const boost::optional<ID_t> &id, const KNSlideStylePtr_t &style, const bool ref, const bool anonymous)
 {
   // TODO: implement me
   (void) id;
   (void) style;
   (void) ref;
-  (void) nested;
+  (void) anonymous;
 }
 
-void KNCollectorBase::collectTabularStyle(const boost::optional<ID_t> &id, const KNTabularStylePtr_t &style, const bool ref, const bool nested)
+void KNCollectorBase::collectTabularStyle(const boost::optional<ID_t> &id, const KNTabularStylePtr_t &style, const bool ref, const bool anonymous)
 {
   // TODO: implement me
   (void) id;
   (void) style;
   (void) ref;
-  (void) nested;
+  (void) anonymous;
 }
 
-void KNCollectorBase::collectVectorStyle(const boost::optional<ID_t> &id, const KNVectorStylePtr_t &style, const bool ref, const bool nested)
+void KNCollectorBase::collectVectorStyle(const boost::optional<ID_t> &id, const KNVectorStylePtr_t &style, const bool ref, const bool anonymous)
 {
   // TODO: implement me
   (void) id;
   (void) style;
   (void) ref;
-  (void) nested;
+  (void) anonymous;
 }
 
 void KNCollectorBase::collectBezier(const optional<ID_t> &id, const KNPathPtr_t &path, const bool ref)
