@@ -82,6 +82,19 @@ deque<Point> rotatePoint(const Point &point, const unsigned n)
   return points;
 }
 
+deque<Point> drawArrowHalf(const double headWidth, const double stemThickness)
+{
+  // user space canvas: [0:1] x [0:1]
+
+  deque<Point> points;
+  points.push_back(Point(0, stemThickness));
+  points.push_back(Point(1 - headWidth, stemThickness));
+  points.push_back(Point(1 - headWidth, 1));
+  points.push_back(Point(1, 0));
+
+  return points;
+}
+
 KNPathPtr_t makePolyLine(const deque<Point> inputPoints, bool close = true)
 {
   KNPathPtr_t path;
@@ -186,20 +199,44 @@ KNPathPtr_t makeRoundedRectanglePath(const KNSize &size, const double radius)
 
 KNPathPtr_t makeArrowPath(const KNSize &size, const double headWidth, const double stemThickness)
 {
-  // TODO: implement me
-  (void) size;
-  (void) headWidth;
-  (void) stemThickness;
-  return KNPathPtr_t();
+  deque<Point> points = drawArrowHalf(headWidth, stemThickness);
+
+  // mirror around the x axis
+  deque<Point> mirroredPoints = points;
+  transform(mirroredPoints, flip(false, true));
+
+  // join the two point sets
+  copy(mirroredPoints.rbegin(), mirroredPoints.rend(), back_inserter(points));
+
+  // transform and create path
+  transform(points, translate(0, 1) * scale(0, 0.5) * scale(size.width, size.height));
+  const KNPathPtr_t path = makePolyLine(points);
+  return path;
 }
 
 KNPathPtr_t makeDoubleArrowPath(const KNSize &size, const double headWidth, const double stemThickness)
 {
-  // TODO: implement me
-  (void) size;
-  (void) headWidth;
-  (void) stemThickness;
-  return KNPathPtr_t();
+  deque<Point> points = drawArrowHalf(2 * headWidth, stemThickness);
+
+  {
+    // mirror around the y axis
+    deque<Point> mirroredPoints = points;
+    transform(mirroredPoints, flip(true, false));
+
+    copy(mirroredPoints.begin(), mirroredPoints.end(), front_inserter(points));
+  }
+
+  {
+    // mirror around the x axis
+    deque<Point> mirroredPoints = points;
+    transform(mirroredPoints, flip(false, true));
+
+    copy(mirroredPoints.rbegin(), mirroredPoints.rend(), back_inserter(points));
+  }
+
+  transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.width, size.height));
+  const KNPathPtr_t path = makePolyLine(points);
+  return path;
 }
 
 KNPathPtr_t makeStarPath(const KNSize &size, const unsigned points, const double innerRadius)
