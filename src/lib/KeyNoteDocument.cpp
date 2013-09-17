@@ -20,7 +20,6 @@
 #include "KNContentCollector.h"
 #include "KNDefaults.h"
 #include "KNDictionary.h"
-#include "KNStylesheet.h"
 #include "KNThemeCollector.h"
 #include "KNSVGGenerator.h"
 #include "KNZipStream.h"
@@ -377,19 +376,18 @@ bool KeyNoteDocument::parse(::WPXInputStream *const input, libwpg::WPGPaintInter
   KNDictionary dict;
   KNLayerMap_t masterPages;
   KNSize presentationSize;
-  KNStylesheetMap_t masterStylesheets;
   const scoped_ptr<KNDefaults> defaults(makeDefaults(version));
 
   compositeInput.seek(0, WPX_SEEK_SET);
 
-  KNThemeCollector themeCollector(dict, masterPages, masterStylesheets, presentationSize, *defaults);
+  KNThemeCollector themeCollector(dict, masterPages, presentationSize, *defaults);
   shared_ptr<KNParser> parser = makeParser(version, compositeInput_, &themeCollector, *defaults);
   if (!parser->parse())
     return false;
 
   compositeInput.seek(0, WPX_SEEK_SET);
 
-  KNContentCollector contentCollector(painter, dict, masterPages, masterStylesheets, presentationSize, *defaults);
+  KNContentCollector contentCollector(painter, dict, masterPages, presentationSize, *defaults);
   parser = makeParser(version, compositeInput_, &contentCollector, *defaults);
   return parser->parse();
 }

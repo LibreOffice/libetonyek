@@ -22,12 +22,11 @@ using boost::optional;
 namespace libkeynote
 {
 
-KNContentCollector::KNContentCollector(::libwpg::WPGPaintInterface *const painter, KNDictionary &dict, const KNLayerMap_t &masterPages, const KNStylesheetMap_t &masterStylesheets, const KNSize &size, const KNDefaults &defaults)
+KNContentCollector::KNContentCollector(::libwpg::WPGPaintInterface *const painter, KNDictionary &dict, const KNLayerMap_t &masterPages, const KNSize &size, const KNDefaults &defaults)
   : KNCollectorBase(dict, defaults)
   , m_painter(painter)
   , m_dict(dict)
   , m_masterPages(masterPages)
-  , m_masterStylesheets(masterStylesheets)
   , m_size(size)
   , m_pageOpened(false)
   , m_layerOpened(false)

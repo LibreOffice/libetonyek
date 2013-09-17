@@ -15,11 +15,10 @@
 namespace libkeynote
 {
 
-KNThemeCollector::KNThemeCollector(KNDictionary &dict, KNLayerMap_t &masterPages, KNStylesheetMap_t &masterStylesheets, KNSize &size, const KNDefaults &defaults)
+KNThemeCollector::KNThemeCollector(KNDictionary &dict, KNLayerMap_t &masterPages, KNSize &size, const KNDefaults &defaults)
   : KNCollectorBase(dict, defaults)
   , m_dict(dict)
   , m_masterPages(masterPages)
-  , m_masterStylesheets(masterStylesheets)
   , m_size(size)
 {
 }
