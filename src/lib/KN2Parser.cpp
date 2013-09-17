@@ -939,18 +939,22 @@ void KN2Parser::parseStylesheet(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::stylesheet, KN2Token::NS_URI_KEY));
 
+  optional<ID_t> id;
+
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
     {
-      KN_DEBUG_XML_TODO("attribute", attr.getName(), attr.getNamespace());
+      id = attr.getValue();
     }
     else
     {
       KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
     }
   }
+
+  optional<ID_t> parent;
 
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
@@ -969,8 +973,7 @@ void KN2Parser::parseStylesheet(const KNXMLReader &reader)
         parseStyles(reader, true);
         break;
       case KN2Token::parent_ref :
-        KN_DEBUG_XML_TODO("element", name, ns);
-        skipElement(element);
+        parent = readOnlyElementAttribute(element, KN2Token::IDREF, KN2Token::NS_URI_SFA);
         break;
       default :
         KN_DEBUG_XML_TODO("element", name, ns);
@@ -984,6 +987,8 @@ void KN2Parser::parseStylesheet(const KNXMLReader &reader)
       skipElement(element);
     }
   }
+
+  getCollector()->collectStylesheet(id, parent);
 }
 
 void KN2Parser::parseTheme(const KNXMLReader &reader)
