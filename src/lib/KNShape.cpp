@@ -134,6 +134,27 @@ KNPathPtr_t makePolyLine(const deque<Point> inputPoints, bool close = true)
   return path;
 }
 
+struct TransformPoint
+{
+  TransformPoint(const KNTransformation &tr)
+    : m_tr(tr)
+  {
+  }
+
+  void operator()(Point &point) const
+  {
+    m_tr(point.x, point.y);
+  }
+
+private:
+  const KNTransformation &m_tr;
+};
+
+void transform(deque<Point> &points, const KNTransformation &tr)
+{
+  for_each(points.begin(), points.end(), TransformPoint(tr));
+}
+
 }
 
 KNObjectPtr_t makeObject(const KNShapePtr_t &shape)
@@ -183,11 +204,33 @@ KNPathPtr_t makeDoubleArrowPath(const KNSize &size, const double headWidth, cons
 
 KNPathPtr_t makeStarPath(const KNSize &size, const unsigned points, const double innerRadius)
 {
-  // TODO: implement me
-  (void) size;
-  (void) points;
-  (void) innerRadius;
-  return KNPathPtr_t();
+  // user space canvas: [-1:1] x [-1:1]
+
+  // create outer points
+  const deque<Point> outerPoints = rotatePoint(Point(0, -1), points);
+
+  // create inner points
+  const double angle = 2 * M_PI / points;
+  deque<Point> innerPoints(points);
+  transform(innerPoints, rotate(angle / 2) * scale(innerRadius, innerRadius));
+
+  // merge them together
+  deque<Point> pathPoints;
+  assert(outerPoints.size() == innerPoints.size());
+  for (deque<Point>::const_iterator itO = outerPoints.begin(), itI = innerPoints.begin();
+       (itO != outerPoints.end()) && (itI != innerPoints.end());
+       ++itO, ++itI)
+  {
+    pathPoints.push_back(*itO);
+    pathPoints.push_back(*itI);
+  }
+
+  // create the path
+  const KNPathPtr_t path = makePolyLine(pathPoints);
+  const KNTransformation &tr = translate(0, 1) * scale(0.5, 0.5) * scale(size.width, size.height);
+  path->transform(tr);
+
+  return path;
 }
 
 KNPathPtr_t makeConnectionPath(const KNSize &size, const double middleX, const double middleY)
