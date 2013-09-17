@@ -84,6 +84,7 @@ KNCollectorBase::KNCollectorBase(KNDictionary &dict, const KNDefaults &defaults)
   , m_defaults(defaults)
   , m_objectsStack()
   , m_currentGeometry()
+  , m_currentStylesheet(new KNStylesheet())
   , m_currentText()
   , m_collecting(false)
   , m_layerOpened(false)
@@ -106,10 +107,16 @@ void KNCollectorBase::collectCellStyle(const boost::optional<ID_t> &id, const KN
   (void) anonymous;
 }
 
-void KNCollectorBase::collectCharacterStyle(const optional<ID_t> &id, const KNCharacterStylePtr_t &style, const bool ref, bool)
+void KNCollectorBase::collectCharacterStyle(const optional<ID_t> &id, const KNCharacterStylePtr_t &style, const bool ref, const bool anonymous)
 {
   if (m_collecting)
-    getValue(id, style, ref, m_dict.characterStyles);
+  {
+    assert(m_currentStylesheet);
+
+    const KNCharacterStylePtr_t charStyle = getValue(id, style, ref, m_dict.characterStyles);
+    if (id && bool(charStyle) && !anonymous)
+      m_currentStylesheet->characterStyles[get(id)] = charStyle;
+  }
 }
 
 void KNCollectorBase::collectConnectionStyle(const boost::optional<ID_t> &id, const KNConnectionStylePtr_t &style, const bool ref, const bool anonymous)
@@ -121,16 +128,28 @@ void KNCollectorBase::collectConnectionStyle(const boost::optional<ID_t> &id, co
   (void) anonymous;
 }
 
-void KNCollectorBase::collectGraphicStyle(const optional<ID_t> &id, const KNGraphicStylePtr_t &style, const bool ref, bool)
+void KNCollectorBase::collectGraphicStyle(const optional<ID_t> &id, const KNGraphicStylePtr_t &style, const bool ref, const bool anonymous)
 {
   if (m_collecting)
-    getValue(id, style, ref, m_dict.graphicStyles);
+  {
+    assert(m_currentStylesheet);
+
+    const KNGraphicStylePtr_t graphicStyle = getValue(id, style, ref, m_dict.graphicStyles);
+    if (id && bool(graphicStyle) && !anonymous)
+      m_currentStylesheet->graphicStyles[get(id)] = graphicStyle;
+  }
 }
 
-void KNCollectorBase::collectLayoutStyle(const optional<ID_t> &id, const KNLayoutStylePtr_t &style, const bool ref, bool)
+void KNCollectorBase::collectLayoutStyle(const optional<ID_t> &id, const KNLayoutStylePtr_t &style, const bool ref, const bool anonymous)
 {
   if (m_collecting)
-    getValue(id, style, ref, m_dict.layoutStyles);
+  {
+    assert(m_currentStylesheet);
+
+    const KNLayoutStylePtr_t layoutStyle = getValue(id, style, ref, m_dict.layoutStyles);
+    if (id && bool(layoutStyle) && !anonymous)
+      m_currentStylesheet->layoutStyles[get(id)] = layoutStyle;
+  }
 }
 
 void KNCollectorBase::collectListStyle(const boost::optional<ID_t> &id, const KNListStylePtr_t &style, const bool ref, const bool anonymous)
@@ -142,10 +161,16 @@ void KNCollectorBase::collectListStyle(const boost::optional<ID_t> &id, const KN
   (void) anonymous;
 }
 
-void KNCollectorBase::collectParagraphStyle(const optional<ID_t> &id, const KNParagraphStylePtr_t &style, const bool ref, bool)
+void KNCollectorBase::collectParagraphStyle(const optional<ID_t> &id, const KNParagraphStylePtr_t &style, const bool ref, const bool anonymous)
 {
   if (m_collecting)
-    getValue(id, style, ref, m_dict.paragraphStyles);
+  {
+    assert(m_currentStylesheet);
+
+    const KNParagraphStylePtr_t paraStyle = getValue(id, style, ref, m_dict.paragraphStyles);
+    if (id && bool(paraStyle) && !anonymous)
+      m_currentStylesheet->paragraphStyles[get(id)] = paraStyle;
+  }
 }
 
 void KNCollectorBase::collectSlideStyle(const boost::optional<ID_t> &id, const KNSlideStylePtr_t &style, const bool ref, const bool anonymous)
@@ -320,6 +345,22 @@ void KNCollectorBase::collectLayer(const optional<ID_t> &, bool)
     m_currentLayer.reset(new KNLayer());
     m_currentLayer->objects = m_objectsStack.top();
     m_objectsStack.pop();
+  }
+}
+
+void KNCollectorBase::collectStylesheet(const boost::optional<ID_t> &id, const boost::optional<ID_t> &parent)
+{
+  if (m_collecting)
+  {
+    assert(m_currentStylesheet);
+
+    if (parent)
+      m_currentStylesheet->parent = m_dict.stylesheets[get(parent)];
+
+    if (id)
+      m_dict.stylesheets[get(id)] = m_currentStylesheet;
+
+    m_currentStylesheet.reset(new KNStylesheet());
   }
 }
 

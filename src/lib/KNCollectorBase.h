@@ -14,6 +14,7 @@
 
 #include "KNCollector.h"
 #include "KNObject.h"
+#include "KNStylesheet.h"
 #include "KNText_fwd.h"
 
 namespace libkeynote
@@ -61,6 +62,7 @@ public:
   virtual void collectCalloutPath(const boost::optional<ID_t> &id, const KNSize &size, double radius, double tailSize, double tailX, double tailY, bool quoteBubble);
 
   virtual void collectLayer(const boost::optional<ID_t> &id, bool ref);
+  virtual void collectStylesheet(const boost::optional<ID_t> &id, const boost::optional<ID_t> &parent);
 
   virtual void collectText(const boost::optional<ID_t> &style, const std::string &text);
   virtual void collectTab();
@@ -91,6 +93,8 @@ private:
   KNGeometryPtr_t m_currentGeometry;
   KNPathPtr_t m_currentPath;
   KNLayerPtr_t m_currentLayer;
+
+  KNStylesheetPtr_t m_currentStylesheet;
 
   KNTextPtr_t m_currentText;
 

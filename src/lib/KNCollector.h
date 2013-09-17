@@ -69,6 +69,7 @@ public:
 
   virtual void collectLayer(const boost::optional<ID_t> &id, bool ref) = 0;
   virtual void collectPage(const boost::optional<ID_t> &id) = 0;
+  virtual void collectStylesheet(const boost::optional<ID_t> &id, const boost::optional<ID_t> &parent) = 0;
 
   virtual void collectText(const boost::optional<ID_t> &style, const std::string &text) = 0;
   virtual void collectTab() = 0;
