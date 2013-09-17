@@ -7,13 +7,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <algorithm>
 #include <cassert>
+
+#include <boost/bind.hpp>
 
 #include "libkeynote_utils.h"
 #include "KNCollectorBase.h"
 #include "KNDefaults.h"
 #include "KNDictionary.h"
 #include "KNShape.h"
+#include "KNStyles.h"
 #include "KNText.h"
 
 using boost::optional;
@@ -85,6 +89,7 @@ KNCollectorBase::KNCollectorBase(KNDictionary &dict, const KNDefaults &defaults)
   , m_objectsStack()
   , m_currentGeometry()
   , m_currentStylesheet(new KNStylesheet())
+  , m_newStyles()
   , m_currentText()
   , m_collecting(false)
   , m_layerOpened(false)
@@ -114,8 +119,13 @@ void KNCollectorBase::collectCharacterStyle(const optional<ID_t> &id, const KNCh
     assert(m_currentStylesheet);
 
     const KNCharacterStylePtr_t charStyle = getValue(id, style, ref, m_dict.characterStyles);
-    if (id && bool(charStyle) && !anonymous)
-      m_currentStylesheet->characterStyles[get(id)] = charStyle;
+    if (bool(charStyle))
+    {
+      if (id && !anonymous)
+        m_currentStylesheet->characterStyles[get(id)] = charStyle;
+      if (!ref)
+        m_newStyles.push_back(charStyle);
+    }
   }
 }
 
@@ -135,8 +145,13 @@ void KNCollectorBase::collectGraphicStyle(const optional<ID_t> &id, const KNGrap
     assert(m_currentStylesheet);
 
     const KNGraphicStylePtr_t graphicStyle = getValue(id, style, ref, m_dict.graphicStyles);
-    if (id && bool(graphicStyle) && !anonymous)
-      m_currentStylesheet->graphicStyles[get(id)] = graphicStyle;
+    if (bool(graphicStyle))
+    {
+      if (id && !anonymous)
+        m_currentStylesheet->graphicStyles[get(id)] = graphicStyle;
+      if (!ref)
+        m_newStyles.push_back(graphicStyle);
+    }
   }
 }
 
@@ -147,8 +162,13 @@ void KNCollectorBase::collectLayoutStyle(const optional<ID_t> &id, const KNLayou
     assert(m_currentStylesheet);
 
     const KNLayoutStylePtr_t layoutStyle = getValue(id, style, ref, m_dict.layoutStyles);
-    if (id && bool(layoutStyle) && !anonymous)
-      m_currentStylesheet->layoutStyles[get(id)] = layoutStyle;
+    if (bool(layoutStyle))
+    {
+      if (id && !anonymous)
+        m_currentStylesheet->layoutStyles[get(id)] = layoutStyle;
+      if (!ref)
+        m_newStyles.push_back(layoutStyle);
+    }
   }
 }
 
@@ -168,8 +188,13 @@ void KNCollectorBase::collectParagraphStyle(const optional<ID_t> &id, const KNPa
     assert(m_currentStylesheet);
 
     const KNParagraphStylePtr_t paraStyle = getValue(id, style, ref, m_dict.paragraphStyles);
-    if (id && bool(paraStyle) && !anonymous)
-      m_currentStylesheet->paragraphStyles[get(id)] = paraStyle;
+    if (bool(paraStyle))
+    {
+      if (id && !anonymous)
+        m_currentStylesheet->paragraphStyles[get(id)] = paraStyle;
+      if (!ref)
+        m_newStyles.push_back(paraStyle);
+    }
   }
 }
 
@@ -360,7 +385,10 @@ void KNCollectorBase::collectStylesheet(const boost::optional<ID_t> &id, const b
     if (id)
       m_dict.stylesheets[get(id)] = m_currentStylesheet;
 
+    for_each(m_newStyles.begin(), m_newStyles.end(), boost::bind(&KNStyle::link, _1, m_currentStylesheet));
+
     m_currentStylesheet.reset(new KNStylesheet());
+    m_newStyles.clear();
   }
 }
 

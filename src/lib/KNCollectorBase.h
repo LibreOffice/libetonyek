@@ -10,10 +10,12 @@
 #ifndef KNCOLLECTORBASE_H_INCLUDED
 #define KNCOLLECTORBASE_H_INCLUDED
 
+#include <deque>
 #include <stack>
 
 #include "KNCollector.h"
 #include "KNObject.h"
+#include "KNStyle.h"
 #include "KNStylesheet.h"
 #include "KNText_fwd.h"
 
@@ -95,6 +97,7 @@ private:
   KNLayerPtr_t m_currentLayer;
 
   KNStylesheetPtr_t m_currentStylesheet;
+  std::deque<KNStylePtr_t> m_newStyles;
 
   KNTextPtr_t m_currentText;
 
