@@ -17,7 +17,11 @@
 
 #include "libkeynote_utils.h"
 #include "KNPath.h"
+#include "KNTransformation.h"
 #include "KNTypes.h"
+
+using boost::bind;
+using boost::cref;
 
 using std::ostringstream;
 using std::string;
@@ -46,6 +50,12 @@ public:
     */
   virtual bool equalsTo(const Element *other) const = 0;
 
+  /** Transform this path element.
+    *
+    * @arg[in] tr the transformation
+    */
+  virtual void transform(const KNTransformation &tr) = 0;
+
   /** Create SVG representation of this path.
    */
   virtual void toSvg(ostringstream &out) const = 0;
@@ -63,11 +73,13 @@ public:
 
   virtual bool equalsTo(const Element *other) const;
 
+  virtual void transform(const KNTransformation &tr);
+
   virtual void toSvg(ostringstream &out) const;
 
 private:
-  const double m_x;
-  const double m_y;
+  double m_x;
+  double m_y;
 };
 
 MoveTo::MoveTo(double x, double y)
@@ -91,6 +103,11 @@ bool MoveTo::equalsTo(const Element *other) const
   return false;
 }
 
+void MoveTo::transform(const KNTransformation &tr)
+{
+  tr(m_x, m_y);
+}
+
 void MoveTo::toSvg(ostringstream &out) const
 {
   out << 'M' << ' ' << m_x << ' ' << m_y;
@@ -110,11 +127,13 @@ public:
 
   virtual bool equalsTo(const Element *other) const;
 
+  virtual void transform(const KNTransformation &tr);
+
   virtual void toSvg(ostringstream &out) const;
 
 private:
-  const double m_x;
-  const double m_y;
+  double m_x;
+  double m_y;
 };
 
 LineTo::LineTo(const double x, const double y)
@@ -138,6 +157,11 @@ bool LineTo::equalsTo(const Element *other) const
   return false;
 }
 
+void LineTo::transform(const KNTransformation &tr)
+{
+  tr(m_x, m_y);
+}
+
 void LineTo::toSvg(ostringstream &out) const
 {
   out << 'L' << ' ' << m_x << ' ' << m_y;
@@ -157,15 +181,17 @@ public:
 
   virtual bool equalsTo(const Element *other) const;
 
+  virtual void transform(const KNTransformation &tr);
+
   virtual void toSvg(ostringstream &out) const;
 
 private:
-  const double m_x1;
-  const double m_y1;
-  const double m_x2;
-  const double m_y2;
-  const double m_x;
-  const double m_y;
+  double m_x1;
+  double m_y1;
+  double m_x2;
+  double m_y2;
+  double m_x;
+  double m_y;
 };
 
 CurveTo::CurveTo(const double x1, const double y1, const double x2, const double y2, const double x, const double y)
@@ -196,6 +222,13 @@ bool CurveTo::equalsTo(const Element *other) const
   return false;
 }
 
+void CurveTo::transform(const KNTransformation &tr)
+{
+  tr(m_x, m_y);
+  tr(m_x1, m_y1);
+  tr(m_x2, m_y2);
+}
+
 void CurveTo::toSvg(ostringstream &out) const
 {
   out << 'C'
@@ -219,6 +252,8 @@ public:
 
   virtual bool equalsTo(const Element *other) const;
 
+  virtual void transform(const KNTransformation &tr);
+
   virtual void toSvg(ostringstream &out) const;
 };
 
@@ -234,6 +269,10 @@ Close *Close::clone() const
 bool Close::equalsTo(const Element *other) const
 {
   return dynamic_cast<const Close *>(other);
+}
+
+void Close::transform(const KNTransformation &)
+{
 }
 
 void Close::toSvg(ostringstream &out) const
@@ -255,8 +294,6 @@ KNPath::KNPath()
 KNPath::KNPath(const std::string &path)
   : m_elements()
 {
-  using boost::bind;
-  using boost::cref;
   using namespace boost::spirit::classic;
 
   double x = 0;
@@ -343,6 +380,11 @@ void KNPath::appendCurveTo(const double x1, const double y1, const double x2, co
 void KNPath::appendClose()
 {
   m_elements.push_back(new Close());
+}
+
+void KNPath::transform(const KNTransformation &tr)
+{
+  for_each(m_elements.begin(), m_elements.end(), bind(&Element::transform, _1, cref(tr)));
 }
 
 string KNPath::toSvg() const

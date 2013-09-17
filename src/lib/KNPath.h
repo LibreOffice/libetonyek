@@ -19,6 +19,8 @@
 namespace libkeynote
 {
 
+class KNTransformation;
+
 class KNPath
 {
   friend bool operator==(const KNPath &left, const KNPath &right);
@@ -41,6 +43,12 @@ public:
   void appendLineTo(double x, double y);
   void appendCurveTo(double x1, double y1, double x2, double y2, double x, double y);
   void appendClose();
+
+  /** Transform all elements of the path.
+    *
+    * @arg[in] tr the transformation
+    */
+  void transform(const KNTransformation &tr);
 
   /** Create SVG representation of this path.
     */
