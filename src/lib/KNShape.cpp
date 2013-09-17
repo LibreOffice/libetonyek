@@ -180,11 +180,11 @@ KNObjectPtr_t makeObject(const KNShapePtr_t &shape)
 KNPathPtr_t makePolygonPath(const KNSize &size, const unsigned edges)
 {
   // user space canvas: [-1:1] x [-1:1]
-  const deque<Point> points = rotatePoint(Point(0, -1), edges);
-  const KNPathPtr_t path = makePolyLine(points);
 
-  const KNTransformation tr = translate(0, 1) * scale(0.5, 0.5) * scale(size.width, size.height);
-  path->transform(tr);
+  deque<Point> points = rotatePoint(Point(0, -1), edges);
+
+  transform(points, translate(0, 1) * scale(0.5, 0.5) * scale(size.width, size.height));
+  const KNPathPtr_t path = makePolyLine(points);
 
   return path;
 }
@@ -263,9 +263,8 @@ KNPathPtr_t makeStarPath(const KNSize &size, const unsigned points, const double
   }
 
   // create the path
+  transform(pathPoints, translate(0, 1) * scale(0.5, 0.5) * scale(size.width, size.height));
   const KNPathPtr_t path = makePolyLine(pathPoints);
-  const KNTransformation &tr = translate(0, 1) * scale(0.5, 0.5) * scale(size.width, size.height);
-  path->transform(tr);
 
   return path;
 }
