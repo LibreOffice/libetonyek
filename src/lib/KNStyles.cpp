@@ -15,9 +15,22 @@ namespace libkeynote
 
 bool KNStyleBase::link(const KNStylesheetPtr_t &stylesheet)
 {
-  // TODO: implement me
-  (void) stylesheet;
-  return false;
+  if (m_parent || !m_parentIdent)
+    return true;
+
+  KNStylesheetPtr_t currentStylesheet = stylesheet;
+
+  if (currentStylesheet && (m_ident == m_parentIdent))
+    currentStylesheet = currentStylesheet->parent;
+
+  if (!stylesheet)
+    return false;
+
+  m_parent = find(currentStylesheet, get(m_parentIdent));
+  if (m_parent)
+    m_props.setParent(&m_parent->getPropertyMap());
+
+  return bool(m_parent);
 }
 
 void KNStyleBase::flatten()
@@ -47,9 +60,19 @@ KNCellStyle::KNCellStyle(const KNPropertyMap &props, const boost::optional<std::
 {
 }
 
+KNStylePtr_t KNCellStyle::find(const KNStylesheetPtr_t &stylesheet, const std::string &ident) const
+{
+  return stylesheet->cellStyles[ident];
+}
+
 KNCharacterStyle::KNCharacterStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
+}
+
+KNStylePtr_t KNCharacterStyle::find(const KNStylesheetPtr_t &stylesheet, const std::string &ident) const
+{
+  return stylesheet->characterStyles[ident];
 }
 
 KNConnectionStyle::KNConnectionStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
@@ -57,9 +80,19 @@ KNConnectionStyle::KNConnectionStyle(const KNPropertyMap &props, const boost::op
 {
 }
 
+KNStylePtr_t KNConnectionStyle::find(const KNStylesheetPtr_t &stylesheet, const std::string &ident) const
+{
+  return stylesheet->connectionStyles[ident];
+}
+
 KNGraphicStyle::KNGraphicStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
+}
+
+KNStylePtr_t KNGraphicStyle::find(const KNStylesheetPtr_t &stylesheet, const std::string &ident) const
+{
+  return stylesheet->graphicStyles[ident];
 }
 
 KNLayoutStyle::KNLayoutStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
@@ -67,9 +100,19 @@ KNLayoutStyle::KNLayoutStyle(const KNPropertyMap &props, const boost::optional<s
 {
 }
 
+KNStylePtr_t KNLayoutStyle::find(const KNStylesheetPtr_t &stylesheet, const std::string &ident) const
+{
+  return stylesheet->layoutStyles[ident];
+}
+
 KNListStyle::KNListStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
+}
+
+KNStylePtr_t KNListStyle::find(const KNStylesheetPtr_t &stylesheet, const std::string &ident) const
+{
+  return stylesheet->listStyles[ident];
 }
 
 KNParagraphStyle::KNParagraphStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
@@ -77,9 +120,19 @@ KNParagraphStyle::KNParagraphStyle(const KNPropertyMap &props, const boost::opti
 {
 }
 
+KNStylePtr_t KNParagraphStyle::find(const KNStylesheetPtr_t &stylesheet, const std::string &ident) const
+{
+  return stylesheet->paragraphStyles[ident];
+}
+
 KNPlaceholderStyle::KNPlaceholderStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
+}
+
+KNStylePtr_t KNPlaceholderStyle::find(const KNStylesheetPtr_t &stylesheet, const std::string &ident) const
+{
+  return stylesheet->placeholderStyles[ident];
 }
 
 KNSlideStyle::KNSlideStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
@@ -87,14 +140,29 @@ KNSlideStyle::KNSlideStyle(const KNPropertyMap &props, const boost::optional<std
 {
 }
 
+KNStylePtr_t KNSlideStyle::find(const KNStylesheetPtr_t &stylesheet, const std::string &ident) const
+{
+  return stylesheet->slideStyles[ident];
+}
+
 KNTabularStyle::KNTabularStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
 }
 
+KNStylePtr_t KNTabularStyle::find(const KNStylesheetPtr_t &stylesheet, const std::string &ident) const
+{
+  return stylesheet->tabularStyles[ident];
+}
+
 KNVectorStyle::KNVectorStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
+}
+
+KNStylePtr_t KNVectorStyle::find(const KNStylesheetPtr_t &stylesheet, const std::string &ident) const
+{
+  return stylesheet->vectorStyles[ident];
 }
 
 }

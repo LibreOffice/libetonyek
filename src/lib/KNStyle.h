@@ -41,7 +41,6 @@ public:
     */
   virtual void flatten() = 0;
 
-protected:
   /** Get the style's property map.
     */
   virtual const KNPropertyMap &getPropertyMap() const = 0;
