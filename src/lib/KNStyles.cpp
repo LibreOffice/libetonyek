@@ -8,13 +8,15 @@
  */
 
 #include "KNStyles.h"
+#include "KNStylesheet.h"
 
 namespace libkeynote
 {
 
-bool KNStyleBase::link()
+bool KNStyleBase::link(const KNStylesheetPtr_t &stylesheet)
 {
   // TODO: implement me
+  (void) stylesheet;
   return false;
 }
 

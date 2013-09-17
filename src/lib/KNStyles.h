@@ -28,7 +28,7 @@ namespace libkeynote
 class KNStyleBase : public KNStyle
 {
 public:
-  virtual bool link();
+  virtual bool link(const KNStylesheetPtr_t &stylesheet);
 
   virtual void flatten();
 

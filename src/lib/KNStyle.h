@@ -13,6 +13,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
 
+#include "KNStylesheet.h"
 #include "KNTypes_fwd.h"
 
 namespace libkeynote
@@ -29,9 +30,10 @@ public:
 
   /** Find the parent style by its ID.
     *
+    * @arg[in] stylesheet the stylesheet to use for looking for parent.
     * @return @c true if the parent style has been found, @c false otherwise.
     */
-  virtual bool link() = 0;
+  virtual bool link(const KNStylesheetPtr_t &stylesheet) = 0;
 
   /** Copy attributes from parent style (recursively).
     *
