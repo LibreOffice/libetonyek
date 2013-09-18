@@ -65,6 +65,12 @@ private:
   void parseScalarPath(const KNXMLReader &reader);
 
   void parseContent(const KNXMLReader &reader);
+  void parseData(const KNXMLReader &reader);
+  void parseFiltered(const KNXMLReader &reader);
+  void parseFilteredImage(const KNXMLReader &reader);
+  void parseImageMedia(const KNXMLReader &reader);
+  void parseLeveled(const KNXMLReader &reader);
+  void parseUnfiltered(const KNXMLReader &reader);
 
   void parseBr(const KNXMLReader &reader);
   void parseLayout(const KNXMLReader &reader, const boost::optional<ID_t> &layoutStyle);
