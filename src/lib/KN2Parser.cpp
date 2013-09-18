@@ -235,6 +235,8 @@ void KN2Parser::processXmlNode(const KNXMLReader &reader)
     }
   }
 
+  optional<KNSize> size;
+
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
@@ -246,11 +248,8 @@ void KN2Parser::processXmlNode(const KNXMLReader &reader)
       switch (getKN2TokenID(name))
       {
       case KN2Token::size :
-      {
-        const KNSize size = readSize(reader);
-        getCollector()->collectSize(size);
+        size = readSize(reader);
         break;
-      }
       case KN2Token::theme_list :
         parseThemeList(reader);
         break;
@@ -288,6 +287,8 @@ void KN2Parser::processXmlNode(const KNXMLReader &reader)
       skipElement(element);
     }
   }
+
+        getCollector()->collectPresentation(size);
 }
 
 KNXMLReader::TokenizerFunction_t KN2Parser::getTokenizer() const

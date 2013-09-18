@@ -26,7 +26,7 @@ public:
 
   // collector functions
 
-  virtual void collectSize(const KNSize &size);
+  virtual void collectPresentation(const boost::optional<KNSize> &size);
 
   virtual void collectLayer(const boost::optional<ID_t> &id, bool ref);
   virtual void collectPage(const boost::optional<ID_t> &id);

@@ -27,10 +27,10 @@ KNThemeCollector::~KNThemeCollector()
 {
 }
 
-void KNThemeCollector::collectSize(const KNSize &size)
+void KNThemeCollector::collectPresentation(const boost::optional<KNSize> &size)
 {
-  if (isCollecting())
-    m_size = size;
+  if (isCollecting() && size)
+    m_size = get(size);
 }
 
 void KNThemeCollector::collectLayer(const boost::optional<ID_t> &id, const bool ref)

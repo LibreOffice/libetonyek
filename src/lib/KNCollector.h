@@ -70,7 +70,7 @@ public:
   virtual void collectFilteredImage(const boost::optional<ID_t> &id, bool ref) = 0;
   virtual void collectMedia(const boost::optional<ID_t> &id) = 0;
 
-  virtual void collectSize(const KNSize &size) = 0;
+  virtual void collectPresentation(const boost::optional<KNSize> &size) = 0;
 
   virtual void collectLayer(const boost::optional<ID_t> &id, bool ref) = 0;
   virtual void collectPage(const boost::optional<ID_t> &id) = 0;

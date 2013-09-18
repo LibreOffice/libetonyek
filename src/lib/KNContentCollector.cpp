@@ -39,7 +39,7 @@ KNContentCollector::~KNContentCollector()
   assert(!m_layerOpened);
 }
 
-void KNContentCollector::collectSize(const KNSize &)
+void KNContentCollector::collectPresentation(const boost::optional<KNSize> &)
 {
 }
 
