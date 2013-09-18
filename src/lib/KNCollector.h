@@ -55,7 +55,6 @@ public:
   virtual void collectGroup(const boost::optional<ID_t> &id, const KNGroupPtr_t &group) = 0;
   virtual void collectImage(const boost::optional<ID_t> &id, const KNImagePtr_t &image) = 0;
   virtual void collectLine(const boost::optional<ID_t> &id, const KNLinePtr_t &line) = 0;
-  virtual void collectMedia(const boost::optional<ID_t> &id, const KNMediaPtr_t &media) = 0;
   virtual void collectShape(const boost::optional<ID_t> &id) = 0;
 
   virtual void collectBezierPath(const boost::optional<ID_t> &id) = 0;
@@ -69,6 +68,7 @@ public:
   virtual void collectData(const boost::optional<ID_t> &id, const WPXInputStreamPtr_t &stream, const boost::optional<std::string> &displayName, const boost::optional<int> &type, bool ref) = 0;
   virtual void collectUnfiltered(const boost::optional<ID_t> &id, const boost::optional<double> &width, const boost::optional<double> &height, bool ref) = 0;
   virtual void collectFilteredImage(const boost::optional<ID_t> &id, bool ref) = 0;
+  virtual void collectMedia(const boost::optional<ID_t> &id) = 0;
 
   virtual void collectSize(const KNSize &size) = 0;
 

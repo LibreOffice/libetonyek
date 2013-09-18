@@ -276,18 +276,6 @@ void KNCollectorBase::collectLine(const optional<ID_t> &, const KNLinePtr_t &lin
   }
 }
 
-void KNCollectorBase::collectMedia(const optional<ID_t> &, const KNMediaPtr_t &media)
-{
-  if (m_collecting)
-  {
-    assert(!m_objectsStack.empty());
-
-    media->geometry = m_currentGeometry;
-    m_currentGeometry.reset();
-    m_objectsStack.top().push_back(makeObject(media));
-  }
-}
-
 void KNCollectorBase::collectShape(const optional<ID_t> &)
 {
   if (m_collecting)
@@ -384,6 +372,19 @@ void KNCollectorBase::collectFilteredImage(const boost::optional<ID_t> &id, cons
   // TODO: implement me
   (void) id;
   (void) ref;
+}
+
+void KNCollectorBase::collectMedia(const optional<ID_t> &)
+{
+  if (m_collecting)
+  {
+    assert(!m_objectsStack.empty());
+
+    // FIXME: build media from collected parts
+    // media->geometry = m_currentGeometry;
+    // m_currentGeometry.reset();
+    // m_objectsStack.top().push_back(makeObject(media));
+  }
 }
 
 void KNCollectorBase::collectLayer(const optional<ID_t> &, bool)

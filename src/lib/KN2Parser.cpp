@@ -1614,7 +1614,7 @@ void KN2Parser::parseMedia(const KNXMLReader &reader)
     }
   }
 
-  getCollector()->collectMedia(id, media);
+  getCollector()->collectMedia(id);
 }
 
 void KN2Parser::parsePath(const KNXMLReader &reader)
