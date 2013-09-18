@@ -36,7 +36,6 @@ private:
   void parseMetadata(const KNXMLReader &reader);
   void parsePage(const KNXMLReader &reader);
   void parseProxyMasterLayer(const KNXMLReader &reader);
-  void parseSize(const KNXMLReader &reader, KNSize &size);
   void parseSlide(const KNXMLReader &reader);
   void parseSlideList(const KNXMLReader &reader);
   void parseStickyNotes(const KNXMLReader &reader);

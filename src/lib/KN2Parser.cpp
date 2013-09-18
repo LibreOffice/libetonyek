@@ -247,8 +247,7 @@ void KN2Parser::processXmlNode(const KNXMLReader &reader)
       {
       case KN2Token::size :
       {
-        KNSize size;
-        parseSize(reader, size);
+        const KNSize size = readSize(reader);
         getCollector()->collectSize(size);
         break;
       }
@@ -635,9 +634,9 @@ void KN2Parser::parsePage(const KNXMLReader &reader)
       {
       case KN2Token::size :
       {
-        KNSize size;
-        parseSize(reader, size);
+        const KNSize size = readSize(reader);
         // TODO: use size
+        (void) size;
         break;
       }
       case KN2Token::layers :
@@ -699,12 +698,6 @@ void KN2Parser::parseProxyMasterLayer(const KNXMLReader &reader)
 
   getCollector()->collectLayer(ref, true);
   getCollector()->endLayer();
-}
-
-void KN2Parser::parseSize(const KNXMLReader &reader, KNSize &size)
-{
-  assert(checkElement(reader, KN2Token::size, KN2Token::NS_URI_KEY));
-  size = readSize(reader);
 }
 
 void KN2Parser::parseSlide(const KNXMLReader &reader)
@@ -1058,8 +1051,9 @@ void KN2Parser::parseTheme(const KNXMLReader &reader)
       {
       case KN2Token::size :
       {
-        KNSize size;
-        parseSize(reader, size);
+        const KNSize size = readSize(reader);
+        // TODO: use size
+        (void) size;
         break;
       }
       case KN2Token::stylesheet :
