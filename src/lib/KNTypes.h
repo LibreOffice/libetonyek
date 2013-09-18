@@ -104,6 +104,11 @@ struct KNUnfiltered
   boost::optional<KNData> data;
 };
 
+struct KNFilteredImage
+{
+  KNUnfilteredPtr_t unfiltered;
+};
+
 struct KNBinary
 {
   boost::optional<KNSize> size;

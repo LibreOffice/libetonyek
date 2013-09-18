@@ -45,6 +45,7 @@ struct KNDictionary
 
   KNDataMap_t data;
   KNUnfilteredMap_t unfiltereds;
+  KNFilteredImageMap_t filteredImages;
   KNImageMap_t images;
 
   KNTextBodyMap_t bodyPlaceholders;
