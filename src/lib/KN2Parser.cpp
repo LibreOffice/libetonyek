@@ -2258,7 +2258,7 @@ void KN2Parser::parseData(const KNXMLReader &reader)
   optional<ID_t> id;
   optional<string> displayName;
   WPXInputStreamPtr_t stream;
-  optional<int> type;
+  optional<unsigned> type;
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -2275,7 +2275,7 @@ void KN2Parser::parseData(const KNXMLReader &reader)
         displayName = attr.getValue();
         break;
       case KN2Token::hfs_type :
-        type = lexical_cast<int>(attr.getValue());
+        type = lexical_cast<unsigned>(attr.getValue());
         break;
       case KN2Token::delay_archiving :
       case KN2Token::path :
