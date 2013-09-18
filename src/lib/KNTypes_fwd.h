@@ -28,10 +28,12 @@ struct KNLine;
 typedef boost::shared_ptr<KNLine> KNLinePtr_t;
 
 struct KNData;
+
 typedef boost::shared_ptr<KNData> KNDataPtr_t;
 typedef boost::unordered_map<ID_t, KNDataPtr_t> KNDataMap_t;
 
 struct KNUnfiltered;
+
 typedef boost::shared_ptr<KNUnfiltered> KNUnfilteredPtr_t;
 typedef boost::unordered_map<ID_t, KNUnfilteredPtr_t> KNUnfilteredMap_t;
 
@@ -58,6 +60,7 @@ typedef boost::shared_ptr<KNLayer> KNLayerPtr_t;
 typedef boost::unordered_map<ID_t, KNLayerPtr_t> KNLayerMap_t;
 
 struct KNTextBody;
+
 typedef boost::shared_ptr<KNTextBody> KNTextBodyPtr_t;
 typedef boost::unordered_map<ID_t, KNTextBodyPtr_t> KNTextBodyMap_t;
 
