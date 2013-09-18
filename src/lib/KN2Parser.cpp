@@ -131,39 +131,6 @@ KNPosition readPosition(const KNXMLReader &reader)
   return position;
 }
 
-pair<optional<double>, optional<double> > readSize_(const KNXMLReader &reader)
-{
-  pair<optional<double>, optional<double> > size;
-
-  KNXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if (KN2Token::NS_URI_SFA == getNamespaceId(attr))
-    {
-      switch (getNameId(attr))
-      {
-      case KN2Token::width :
-        size.first = lexical_cast<double>(attr.getValue());
-        break;
-      case KN2Token::height :
-        size.second = lexical_cast<double>(attr.getValue());
-        break;
-      default :
-        KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
-        break;
-      }
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
-    }
-  }
-
-  checkEmptyElement(reader);
-
-  return size;
-}
-
 KNSize readSize(const KNXMLReader &reader)
 {
   const pair<double, double> size = readAttributePair<double, double>(reader, KN2Token::h, KN2Token::NS_URI_SFA, KN2Token::w, KN2Token::NS_URI_SFA);
@@ -2323,7 +2290,7 @@ void KN2Parser::parseFiltered(const KNXMLReader &reader)
     }
   }
 
-  pair<optional<double>, optional<double> > size;
+  optional<KNSize> size;
 
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
@@ -2333,7 +2300,7 @@ void KN2Parser::parseFiltered(const KNXMLReader &reader)
       switch (getNameId(element))
       {
       case KN2Token::size :
-        size = readSize_(element);
+        size = readSize(element);
         break;
       case KN2Token::data :
         parseData(element);
@@ -2526,7 +2493,7 @@ void KN2Parser::parseUnfiltered(const KNXMLReader &reader)
     }
   }
 
-  pair<optional<double>, optional<double> > size;
+  optional<KNSize> size;
 
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
@@ -2536,7 +2503,7 @@ void KN2Parser::parseUnfiltered(const KNXMLReader &reader)
       switch (getNameId(element))
       {
       case KN2Token::size :
-        size = readSize_(element);
+        size = readSize(element);
         break;
       case KN2Token::data :
         parseData(element);
@@ -2553,7 +2520,7 @@ void KN2Parser::parseUnfiltered(const KNXMLReader &reader)
     }
   }
 
-  getCollector()->collectUnfiltered(id, size.first, size.second, false);
+  getCollector()->collectUnfiltered(id, get(size).width, get(size).height, false);
 }
 
 void KN2Parser::parseBr(const KNXMLReader &reader)
