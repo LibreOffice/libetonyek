@@ -111,7 +111,6 @@ KNMedia::KNMedia()
   , style()
   , placeholder()
   , placeholderSize()
-  , cropGeometry()
   , data()
 {
 }

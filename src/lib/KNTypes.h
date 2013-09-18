@@ -134,7 +134,6 @@ struct KNMedia
   KNStylePtr_t style;
   boost::optional<bool> placeholder;
   boost::optional<KNSize> placeholderSize;
-  KNGeometryPtr_t cropGeometry;
   boost::optional<KNBinary> data;
 
   KNMedia();

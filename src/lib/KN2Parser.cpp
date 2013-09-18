@@ -1596,7 +1596,6 @@ void KN2Parser::parseMedia(const KNXMLReader &reader)
         break;
       case KN2Token::style :
       case KN2Token::masking_shape_path_source :
-      case KN2Token::crop_geometry :
       case KN2Token::content :
         KN_DEBUG_XML_TODO("element", name, ns);
         skipElement(element);
