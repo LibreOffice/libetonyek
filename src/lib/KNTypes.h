@@ -14,6 +14,7 @@
 
 #include <boost/optional.hpp>
 
+#include "libkeynote_utils.h"
 #include "KNObject.h"
 #include "KNPath_fwd.h"
 #include "KNStyle.h"
@@ -88,6 +89,13 @@ struct KNLine
   boost::optional<double> y2;
 
   KNLine();
+};
+
+struct KNData
+{
+  WPXInputStreamPtr_t stream;
+  boost::optional<std::string> displayName;
+  boost::optional<int> type;
 };
 
 struct KNBinary

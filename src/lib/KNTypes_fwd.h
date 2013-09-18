@@ -27,6 +27,10 @@ struct KNLine;
 
 typedef boost::shared_ptr<KNLine> KNLinePtr_t;
 
+struct KNData;
+typedef boost::shared_ptr<KNData> KNDataPtr_t;
+typedef boost::unordered_map<ID_t, KNDataPtr_t> KNDataMap_t;
+
 struct KNImage;
 
 typedef boost::shared_ptr<KNImage> KNImagePtr_t;
