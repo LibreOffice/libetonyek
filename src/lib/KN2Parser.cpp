@@ -1523,7 +1523,6 @@ void KN2Parser::parseMedia(const KNXMLReader &reader)
   assert(checkElement(reader, KN2Token::media, KN2Token::NS_URI_SF));
 
   optional<ID_t> id;
-  KNMediaPtr_t media(new KNMedia());
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -1548,8 +1547,6 @@ void KN2Parser::parseMedia(const KNXMLReader &reader)
       switch (getNameId(attr))
       {
       case KN2Token::placeholder :
-        media->placeholder = asBool(attr.getValue());
-        break;
       case KN2Token::locked :
         KN_DEBUG_XML_TODO("attribute", attr.getName(), attr.getNamespace());
         break;
@@ -1592,8 +1589,6 @@ void KN2Parser::parseMedia(const KNXMLReader &reader)
         parseGeometry(reader);
         break;
       case KN2Token::placeholder_size :
-        media->placeholderSize = readSize(reader);
-        break;
       case KN2Token::style :
       case KN2Token::masking_shape_path_source :
       case KN2Token::content :
