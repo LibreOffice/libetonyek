@@ -38,7 +38,7 @@ namespace libkeynote
 namespace
 {
 
-bool asBool(const char *const value)
+bool bool_cast(const char *const value)
 {
   switch (getKN2TokenID(value))
   {
@@ -1266,10 +1266,10 @@ void KN2Parser::parseGeometry(const KNXMLReader &reader)
         geometry->angle = lexical_cast<double>(attr.getValue());
         break;
       case KN2Token::aspectRatioLocked :
-        geometry->aspectRatioLocked = asBool(attr.getValue());
+        geometry->aspectRatioLocked = bool_cast(attr.getValue());
         break;
       case KN2Token::horizontalFlip :
-        geometry->horizontalFlip = asBool(attr.getValue());
+        geometry->horizontalFlip = bool_cast(attr.getValue());
         break;
       case KN2Token::shearXAngle :
         geometry->shearXAngle = lexical_cast<double>(attr.getValue());
@@ -1278,10 +1278,10 @@ void KN2Parser::parseGeometry(const KNXMLReader &reader)
         geometry->shearYAngle = lexical_cast<double>(attr.getValue());
         break;
       case KN2Token::sizesLocked :
-        geometry->sizesLocked = asBool(attr.getValue());
+        geometry->sizesLocked = bool_cast(attr.getValue());
         break;
       case KN2Token::verticalFlip :
-        geometry->verticalFlip = asBool(attr.getValue());
+        geometry->verticalFlip = bool_cast(attr.getValue());
         break;
       default :
         KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
@@ -1426,7 +1426,7 @@ void KN2Parser::parseImage(const KNXMLReader &reader)
   {
     if ((KN2Token::NS_URI_SF == getNamespaceId(attr)) && (KN2Token::locked == getNameId(attr)))
     {
-      image->locked = asBool(attr.getValue());
+      image->locked = bool_cast(attr.getValue());
     }
     else if (KN2Token::NS_URI_SFA == getNameId(attr))
     {
@@ -1981,7 +1981,7 @@ void KN2Parser::parseCallout2Path(const KNXMLReader &reader)
         cornerRadius = lexical_cast<double>(attr.getValue());
         break;
       case KN2Token::tailAtCenter :
-        tailAtCenter = asBool(attr.getValue());
+        tailAtCenter = bool_cast(attr.getValue());
         break;
       case KN2Token::tailPositionX :
         tailPosX = lexical_cast<double>(attr.getValue());
