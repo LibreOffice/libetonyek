@@ -360,6 +360,16 @@ void KNCollectorBase::collectCalloutPath(const optional<ID_t> &, const KNSize &s
   }
 }
 
+void KNCollectorBase::collectData(const boost::optional<ID_t> &id, const WPXInputStreamPtr_t &stream, const boost::optional<std::string> &displayName, const boost::optional<int> &type, const bool ref)
+{
+  // TODO: implement me
+  (void) id;
+  (void) stream;
+  (void) displayName;
+  (void) type;
+  (void) ref;
+}
+
 void KNCollectorBase::collectLayer(const optional<ID_t> &, bool)
 {
   if (m_collecting)

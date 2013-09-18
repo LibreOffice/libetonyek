@@ -14,6 +14,7 @@
 
 #include <boost/optional.hpp>
 
+#include "libkeynote_utils.h"
 #include "KNPath_fwd.h"
 #include "KNStyles_fwd.h"
 #include "KNTypes_fwd.h"
@@ -64,6 +65,8 @@ public:
   virtual void collectStarPath(const boost::optional<ID_t> &id, const KNSize &size, unsigned points, double innerRadius) = 0;
   virtual void collectConnectionPath(const boost::optional<ID_t> &id, const KNSize &size, double middleX, double middleY) = 0;
   virtual void collectCalloutPath(const boost::optional<ID_t> &id, const KNSize &size, double radius, double tailSize, double tailX, double tailY, bool quoteBubble) = 0;
+
+  virtual void collectData(const boost::optional<ID_t> &id, const WPXInputStreamPtr_t &stream, const boost::optional<std::string> &displayName, const boost::optional<int> &type, bool ref) = 0;
 
   virtual void collectSize(const KNSize &size) = 0;
 
