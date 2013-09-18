@@ -90,6 +90,8 @@ protected:
   bool isCollecting() const;
   void setCollecting(bool collecting);
 
+  const KNDefaults &getDefaults() const;
+
   const KNLayerPtr_t &getLayer() const;
 
 private:

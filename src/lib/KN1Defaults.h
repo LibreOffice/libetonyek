@@ -21,6 +21,8 @@ class KN1Defaults : public KNDefaults
 {
 public:
   virtual ~KN1Defaults();
+
+  virtual void applyPresentationSize(boost::optional<KNSize> &size) const;
 };
 
 }

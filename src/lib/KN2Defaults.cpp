@@ -12,8 +12,21 @@
 namespace libkeynote
 {
 
+namespace
+{
+
+static const KNSize PRESENTATION_SIZE = KNSize(1024, 768);
+
+}
+
 KN2Defaults::~KN2Defaults()
 {
+}
+
+void KN2Defaults::applyPresentationSize(boost::optional<KNSize> &size) const
+{
+  if (!size)
+    size = PRESENTATION_SIZE;
 }
 
 }

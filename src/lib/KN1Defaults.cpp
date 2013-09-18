@@ -16,6 +16,12 @@ KN1Defaults::~KN1Defaults()
 {
 }
 
+void KN1Defaults::applyPresentationSize(boost::optional<KNSize> &size) const
+{
+  // TODO: implement me
+  (void) size;
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

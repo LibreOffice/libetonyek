@@ -577,6 +577,11 @@ void KNCollectorBase::setCollecting(bool collecting)
   m_collecting = collecting;
 }
 
+const KNDefaults &KNCollectorBase::getDefaults() const
+{
+  return m_defaults;
+}
+
 const KNLayerPtr_t &KNCollectorBase::getLayer() const
 {
   return m_currentLayer;

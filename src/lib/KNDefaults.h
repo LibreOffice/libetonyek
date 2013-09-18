@@ -10,6 +10,10 @@
 #ifndef KNDEFAULTS_H_INCLUDED
 #define KNDEFAULTS_H_INCLUDED
 
+#include <boost/optional.hpp>
+
+#include "KNTypes.h"
+
 namespace libkeynote
 {
 
@@ -27,6 +31,8 @@ class KNDefaults
 {
 public:
   virtual ~KNDefaults() = 0;
+
+  virtual void applyPresentationSize(boost::optional<KNSize> &size) const = 0;
 };
 
 }

@@ -12,6 +12,8 @@
 #include "KNDictionary.h"
 #include "KNThemeCollector.h"
 
+using boost::optional;
+
 namespace libkeynote
 {
 
@@ -29,8 +31,13 @@ KNThemeCollector::~KNThemeCollector()
 
 void KNThemeCollector::collectPresentation(const boost::optional<KNSize> &size)
 {
-  if (isCollecting() && size)
-    m_size = get(size);
+  if (isCollecting())
+  {
+    optional<KNSize> size_(size);
+    getDefaults().applyPresentationSize(size_);
+    assert(size_);
+    m_size = get(size_);
+  }
 }
 
 void KNThemeCollector::collectLayer(const boost::optional<ID_t> &id, const bool ref)
