@@ -122,13 +122,9 @@ pair<optional<double>, optional<double> > readPoint(const KNXMLReader &reader)
 
 KNPosition readPosition(const KNXMLReader &reader)
 {
-  pair<optional<double>, optional<double> > point = readPoint(reader);
+  pair<double, double> point = readAttributePair<double, double>(reader, KN2Token::x, KN2Token::NS_URI_SFA, KN2Token::y, KN2Token::NS_URI_SFA);
 
-  KNPosition position;
-  position.x = get_optional_value_or(point.first, 0);
-  position.y = get_optional_value_or(point.second, 0);
-
-  return position;
+  return KNPosition(point.first, point.second);
 }
 
 KNSize readSize(const KNXMLReader &reader)
