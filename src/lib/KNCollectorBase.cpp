@@ -379,6 +379,13 @@ void KNCollectorBase::collectUnfiltered(const boost::optional<ID_t> &id, const b
   (void) ref;
 }
 
+void KNCollectorBase::collectFilteredImage(const boost::optional<ID_t> &id, const bool ref)
+{
+  // TODO: implement me
+  (void) id;
+  (void) ref;
+}
+
 void KNCollectorBase::collectLayer(const optional<ID_t> &, bool)
 {
   if (m_collecting)
