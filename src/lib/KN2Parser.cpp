@@ -133,9 +133,12 @@ KNSize readSize(const KNXMLReader &reader)
   return KNSize(size.first, size.second);
 }
 
-optional<ID_t> readRef(const KNXMLReader &reader)
+ID_t readRef(const KNXMLReader &reader)
 {
-  return readOnlyElementAttribute(reader, KN2Token::IDREF, KN2Token::NS_URI_SFA);
+  optional<ID_t> id = readOnlyElementAttribute(reader, KN2Token::IDREF, KN2Token::NS_URI_SFA);
+  if (!id)
+    throw GenericException();
+  return get(id);
 }
 
 unsigned getVersion(const int token)
