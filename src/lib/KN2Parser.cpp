@@ -1588,10 +1588,12 @@ void KN2Parser::parseMedia(const KNXMLReader &reader)
       case KN2Token::geometry :
         parseGeometry(reader);
         break;
+      case KN2Token::content :
+        parseContent(element);
+        break;
       case KN2Token::placeholder_size :
       case KN2Token::style :
       case KN2Token::masking_shape_path_source :
-      case KN2Token::content :
         KN_DEBUG_XML_TODO("element", name, ns);
         skipElement(element);
         break;
@@ -2176,6 +2178,37 @@ void KN2Parser::parseScalarPath(const KNXMLReader &reader)
     getCollector()->collectPolygonPath(id, size, numeric_cast<unsigned>(value));
   else
     getCollector()->collectRoundedRectanglePath(id, size, value);
+}
+
+void KN2Parser::parseContent(const KNXMLReader &reader)
+{
+  assert(checkElement(reader, KN2Token::content, KN2Token::NS_URI_SF));
+
+  checkNoAttributes(reader);
+
+  KNXMLReader::ElementIterator element(reader);
+  while (element.next())
+  {
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
+    {
+      switch (getNameId(element))
+      {
+      case KN2Token::image_media :
+      case KN2Token::movie_media :
+        KN_DEBUG_XML_TODO_ELEMENT(element);
+        skipElement(element);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+        skipElement(element);
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+      skipElement(element);
+    }
+  }
 }
 
 void KN2Parser::parseBr(const KNXMLReader &reader)

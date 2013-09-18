@@ -64,6 +64,8 @@ private:
   void parsePointPath(const KNXMLReader &reader);
   void parseScalarPath(const KNXMLReader &reader);
 
+  void parseContent(const KNXMLReader &reader);
+
   void parseBr(const KNXMLReader &reader);
   void parseLayout(const KNXMLReader &reader, const boost::optional<ID_t> &layoutStyle);
   void parseLink(const KNXMLReader &reader, bool ref = false);
