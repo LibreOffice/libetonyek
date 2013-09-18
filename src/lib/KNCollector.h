@@ -67,6 +67,7 @@ public:
   virtual void collectCalloutPath(const boost::optional<ID_t> &id, const KNSize &size, double radius, double tailSize, double tailX, double tailY, bool quoteBubble) = 0;
 
   virtual void collectData(const boost::optional<ID_t> &id, const WPXInputStreamPtr_t &stream, const boost::optional<std::string> &displayName, const boost::optional<int> &type, bool ref) = 0;
+  virtual void collectUnfiltered(const boost::optional<ID_t> &id, const boost::optional<double> &width, const boost::optional<double> &height, bool ref) = 0;
 
   virtual void collectSize(const KNSize &size) = 0;
 
