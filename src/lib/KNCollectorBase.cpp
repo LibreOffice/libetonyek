@@ -358,12 +358,11 @@ void KNCollectorBase::collectData(const boost::optional<ID_t> &id, const WPXInpu
   (void) ref;
 }
 
-void KNCollectorBase::collectUnfiltered(const boost::optional<ID_t> &id, const boost::optional<double> &width, const boost::optional<double> &height, const bool ref)
+void KNCollectorBase::collectUnfiltered(const boost::optional<ID_t> &id, const boost::optional<KNSize> &size, const bool ref)
 {
   // TODO: implement me
   (void) id;
-  (void) width;
-  (void) height;
+  (void) size;
   (void) ref;
 }
 

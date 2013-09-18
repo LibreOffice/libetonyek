@@ -2351,8 +2351,7 @@ void KN2Parser::parseFilteredImage(const KNXMLReader &reader)
       case KN2Token::unfiltered_ref :
       {
         optional<ID_t> idref = readRef(element);
-        optional<double> dummy;
-        getCollector()->collectUnfiltered(idref, dummy, dummy, true);
+        getCollector()->collectUnfiltered(idref, optional<KNSize>(), true);
         break;
       }
       case KN2Token::unfiltered :
@@ -2520,7 +2519,7 @@ void KN2Parser::parseUnfiltered(const KNXMLReader &reader)
     }
   }
 
-  getCollector()->collectUnfiltered(id, get(size).width, get(size).height, false);
+  getCollector()->collectUnfiltered(id, size, false);
 }
 
 void KN2Parser::parseBr(const KNXMLReader &reader)
