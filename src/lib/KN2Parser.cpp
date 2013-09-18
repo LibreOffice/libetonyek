@@ -1157,13 +1157,6 @@ void KN2Parser::parseBezier(const KNXMLReader &reader)
   getCollector()->collectBezier(id, path, false);
 }
 
-void KN2Parser::parseBezierRef(const KNXMLReader &reader)
-{
-  assert(checkElement(reader, KN2Token::bezier_ref, KN2Token::NS_URI_SF));
-  const optional<ID_t> id = readOnlyAttribute(reader, KN2Token::IDREF, KN2Token::NS_URI_SFA);
-  getCollector()->collectBezier(id, KNPathPtr_t(), true);
-}
-
 void KN2Parser::parseConnectionLine(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::connection_line, KN2Token::NS_URI_SF));
@@ -1909,8 +1902,11 @@ void KN2Parser::parseBezierPath(const KNXMLReader &reader)
         parseBezier(element);
         break;
       case KN2Token::bezier_ref :
-        parseBezierRef(element);
+      {
+        const ID_t idref = readRef(element);
+        getCollector()->collectBezier(idref, KNPathPtr_t(), true);
         break;
+      }
       default :
         KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
         skipElement(element);
