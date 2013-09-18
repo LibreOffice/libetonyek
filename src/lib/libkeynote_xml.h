@@ -28,8 +28,6 @@ namespace libkeynote
 
 class KNXMLReader;
 
-double asDouble(const char *value);
-
 void skipElement(const KNXMLReader &reader);
 
 bool checkElement(const KNXMLReader &reader, int name, int ns);

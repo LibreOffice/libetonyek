@@ -27,11 +27,6 @@ struct XMLException {};
 
 }
 
-double asDouble(const char *const value)
-{
-  return boost::lexical_cast<double>(value);
-}
-
 void skipElement(const KNXMLReader &reader)
 {
   KNXMLReader::ElementIterator elements(reader);

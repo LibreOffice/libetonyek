@@ -66,10 +66,10 @@ pair<optional<double>, optional<double> > readPoint(const KNXMLReader &reader)
       switch (getNameId(attr))
       {
       case KN2Token::x :
-        point.first = asDouble(attr.getValue());
+        point.first = lexical_cast<double>(attr.getValue());
         break;
       case KN2Token::y :
-        point.second = asDouble(attr.getValue());
+        point.second = lexical_cast<double>(attr.getValue());
         break;
       default :
         KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
@@ -110,10 +110,10 @@ pair<optional<double>, optional<double> > readSize_(const KNXMLReader &reader)
       switch (getNameId(attr))
       {
       case KN2Token::width :
-        size.first = asDouble(attr.getValue());
+        size.first = lexical_cast<double>(attr.getValue());
         break;
       case KN2Token::height :
-        size.second = asDouble(attr.getValue());
+        size.second = lexical_cast<double>(attr.getValue());
         break;
       default :
         KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
@@ -143,10 +143,10 @@ KNSize readSize(const KNXMLReader &reader)
       switch (getNameId(attr))
       {
       case KN2Token::h :
-        size.height = asDouble(attr.getValue());
+        size.height = lexical_cast<double>(attr.getValue());
         break;
       case KN2Token::w :
-        size.width = asDouble(attr.getValue());
+        size.width = lexical_cast<double>(attr.getValue());
         break;
       default :
         KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
@@ -1263,7 +1263,7 @@ void KN2Parser::parseGeometry(const KNXMLReader &reader)
       switch (getNameId(attr))
       {
       case KN2Token::angle :
-        geometry->angle = asDouble(attr.getValue());
+        geometry->angle = lexical_cast<double>(attr.getValue());
         break;
       case KN2Token::aspectRatioLocked :
         geometry->aspectRatioLocked = asBool(attr.getValue());
@@ -1272,10 +1272,10 @@ void KN2Parser::parseGeometry(const KNXMLReader &reader)
         geometry->horizontalFlip = asBool(attr.getValue());
         break;
       case KN2Token::shearXAngle :
-        geometry->shearXAngle = asDouble(attr.getValue());
+        geometry->shearXAngle = lexical_cast<double>(attr.getValue());
         break;
       case KN2Token::shearYAngle :
-        geometry->shearYAngle = asDouble(attr.getValue());
+        geometry->shearYAngle = lexical_cast<double>(attr.getValue());
         break;
       case KN2Token::sizesLocked :
         geometry->sizesLocked = asBool(attr.getValue());
@@ -1978,19 +1978,19 @@ void KN2Parser::parseCallout2Path(const KNXMLReader &reader)
       switch (getNameId(attr))
       {
       case KN2Token::cornerRadius :
-        cornerRadius = asDouble(attr.getValue());
+        cornerRadius = lexical_cast<double>(attr.getValue());
         break;
       case KN2Token::tailAtCenter :
         tailAtCenter = asBool(attr.getValue());
         break;
       case KN2Token::tailPositionX :
-        tailPosX = asDouble(attr.getValue());
+        tailPosX = lexical_cast<double>(attr.getValue());
         break;
       case KN2Token::tailPositionY :
-        tailPosY = asDouble(attr.getValue());
+        tailPosY = lexical_cast<double>(attr.getValue());
         break;
       case KN2Token::tailSize :
-        tailSize = asDouble(attr.getValue());
+        tailSize = lexical_cast<double>(attr.getValue());
         break;
       case KN2Token::tempScale :
         KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
@@ -2166,7 +2166,7 @@ void KN2Parser::parseScalarPath(const KNXMLReader &reader)
       switch (getNameId(attr))
       {
       case KN2Token::scalar :
-        value = asDouble(attr.getValue());
+        value = lexical_cast<double>(attr.getValue());
         break;
       case KN2Token::type :
       {
