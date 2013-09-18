@@ -288,7 +288,7 @@ void KN2Parser::processXmlNode(const KNXMLReader &reader)
     }
   }
 
-        getCollector()->collectPresentation(size);
+  getCollector()->collectPresentation(size);
 }
 
 KNXMLReader::TokenizerFunction_t KN2Parser::getTokenizer() const
@@ -1845,12 +1845,31 @@ void KN2Parser::parsePlaceholder(const KNXMLReader &reader, const bool title)
       switch (getNameId(element))
       {
       case KN2Token::geometry :
-        parseGeometry(element);
-        break;
-      case KN2Token::style :
-        KN_DEBUG_XML_TODO_ELEMENT(element);
+        // ignore; the real geometry comes from style
         skipElement(element);
         break;
+      case KN2Token::style :
+      {
+        KNXMLReader readerStyle(element);
+
+        checkNoAttributes(readerStyle);
+
+        KNXMLReader::ElementIterator elementStyle(readerStyle);
+        while (elementStyle.next())
+        {
+          if ((KN2Token::NS_URI_SF == getNamespaceId(elementStyle)) && (KN2Token::placeholder_style_ref == getNameId(elementStyle)))
+          {
+            const ID_t styleId = readRef(elementStyle);
+            getCollector()->collectPlaceholderStyle(styleId, KNPlaceholderStylePtr_t(), true, false);
+          }
+          else
+          {
+            KN_DEBUG_XML_UNKNOWN_ELEMENT(elementStyle);
+            skipElement(elementStyle);
+          }
+        }
+        break;
+      }
       default :
         KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
         skipElement(element);
