@@ -44,6 +44,7 @@ struct KNDictionary
   KNPathMap_t beziers;
 
   KNDataMap_t data;
+  KNUnfilteredMap_t unfiltereds;
   KNImageMap_t images;
 
   KNTextBodyMap_t bodyPlaceholders;

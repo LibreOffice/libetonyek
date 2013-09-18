@@ -98,6 +98,12 @@ struct KNData
   boost::optional<int> type;
 };
 
+struct KNUnfiltered
+{
+  KNSize size;
+  boost::optional<KNData> data;
+};
+
 struct KNBinary
 {
   boost::optional<KNSize> size;
