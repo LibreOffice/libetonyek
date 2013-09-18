@@ -15,7 +15,8 @@
 #include "KNContentCollector.h"
 #include "KNDefaults.h"
 #include "KNDictionary.h"
-#include "KNTransformation.h"
+#include "KNOutput.h"
+#include "KNStyleContext.h"
 
 using boost::optional;
 
@@ -155,9 +156,10 @@ void KNContentCollector::drawLayer(const KNLayerPtr_t &layer)
 {
   if (bool(layer))
   {
-    KNTransformation tr;
+    KNStyleContext styleContext;
+    const KNOutput output(m_painter, styleContext);
     for (KNObjectList_t::const_iterator it = layer->objects.begin(); it != layer->objects.end(); ++it)
-      (*it)->draw(m_painter, tr);
+      (*it)->draw(output);
   }
   else
   {

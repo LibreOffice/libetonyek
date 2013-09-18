@@ -12,8 +12,7 @@
 #include <libwpg/libwpg.h>
 
 #include "libkeynote_utils.h"
-#include "KNDictionary.h"
-#include "KNTransformation.h"
+#include "KNOutput.h"
 #include "KNText.h"
 #include "KNTypes.h"
 
@@ -163,7 +162,7 @@ public:
   explicit GroupObject(const KNGroupPtr_t &group);
 
 private:
-  virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
+  virtual void draw(const KNOutput &output);
 
 private:
   const KNGroupPtr_t m_group;
@@ -174,10 +173,10 @@ GroupObject::GroupObject(const KNGroupPtr_t &group)
 {
 }
 
-void GroupObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransformation &tr)
+void GroupObject::draw(const KNOutput &output)
 {
   for (KNObjectList_t::const_iterator it = m_group->objects.begin(); it != m_group->objects.end(); ++it)
-    (*it)->draw(painter, tr);
+    (*it)->draw(output);
 }
 
 }
@@ -191,7 +190,7 @@ public:
   explicit ImageObject(const KNImagePtr_t &image);
 
 private:
-  virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
+  virtual void draw(const KNOutput &output);
 
 private:
   const KNImagePtr_t m_image;
@@ -202,11 +201,10 @@ ImageObject::ImageObject(const KNImagePtr_t &image)
 {
 }
 
-void ImageObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransformation &tr)
+void ImageObject::draw(const KNOutput &output)
 {
   // TODO: implement me
-  (void) painter;
-  (void) tr;
+  (void) output;
 }
 
 }
@@ -220,7 +218,7 @@ public:
   explicit LineObject(const KNLinePtr_t &line);
 
 private:
-  virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
+  virtual void draw(const KNOutput &output);
 
 private:
   const KNLinePtr_t m_line;
@@ -231,10 +229,9 @@ LineObject::LineObject(const KNLinePtr_t &line)
 {
 }
 
-void LineObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransformation &tr)
+void LineObject::draw(const KNOutput &output)
 {
   // TODO: transform the line
-  (void) tr;
 
   if (m_line->x1 && m_line->y1 && m_line->x2 && m_line->y2)
   {
@@ -252,12 +249,12 @@ void LineObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransfor
       }
     }
 #endif
-    painter->setStyle(props, WPXPropertyListVector());
+    output.getPainter()->setStyle(props, WPXPropertyListVector());
 
     WPXPropertyListVector vertices;
     vertices.append(pointToWPG(get(m_line->x1), get(m_line->y1)));
     vertices.append(pointToWPG(get(m_line->x2), get(m_line->y2)));
-    painter->drawPolyline(vertices);
+    output.getPainter()->drawPolyline(vertices);
   }
   else
   {
@@ -276,7 +273,7 @@ public:
   explicit MediaObject(const KNMediaPtr_t &media);
 
 private:
-  virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
+  virtual void draw(const KNOutput &output);
 
 private:
   const KNMediaPtr_t m_media;
@@ -287,11 +284,10 @@ MediaObject::MediaObject(const KNMediaPtr_t &media)
 {
 }
 
-void MediaObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransformation &tr)
+void MediaObject::draw(const KNOutput &output)
 {
   // TODO: implement me
-  (void) painter;
-  (void) tr;
+  (void) output;
 }
 
 }
@@ -305,7 +301,7 @@ public:
   explicit TextBodyObject(const KNTextBodyPtr_t &body);
 
 private:
-  virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
+  virtual void draw(const KNOutput &output);
 
 private:
   const KNTextBodyPtr_t m_body;
@@ -316,11 +312,10 @@ TextBodyObject::TextBodyObject(const KNTextBodyPtr_t &body)
 {
 }
 
-void TextBodyObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransformation &tr)
+void TextBodyObject::draw(const KNOutput &output)
 {
   // TODO: implement me
-  (void) painter;
-  (void) tr;
+  (void) output;
 }
 
 }

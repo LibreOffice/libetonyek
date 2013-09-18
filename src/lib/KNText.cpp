@@ -13,6 +13,7 @@
 
 #include <libwpg/libwpg.h>
 
+#include "KNOutput.h"
 #include "KNText.h"
 
 using std::string;
@@ -36,7 +37,7 @@ public:
   TextSpanObject(const KNCharacterStylePtr_t &style, const string &text);
 
 private:
-  virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
+  virtual void draw(const KNOutput &output);
 
 private:
   const KNCharacterStylePtr_t m_style;
@@ -49,14 +50,14 @@ TextSpanObject::TextSpanObject(const KNCharacterStylePtr_t &style, const string 
 {
 }
 
-void TextSpanObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransformation &)
+void TextSpanObject::draw(const KNOutput &output)
 {
   WPXPropertyList props;
   // TODO: fill properties
 
-  painter->startTextSpan(props);
-  painter->insertText(WPXString(m_text.c_str()));
-  painter->endTextSpan();
+  output.getPainter()->startTextSpan(props);
+  output.getPainter()->insertText(WPXString(m_text.c_str()));
+  output.getPainter()->endTextSpan();
 }
 
 }
@@ -67,14 +68,14 @@ namespace
 class TabObject : public KNObject
 {
 private:
-  virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
+  virtual void draw(const KNOutput &output);
 };
 
-void TabObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransformation &)
+void TabObject::draw(const KNOutput &output)
 {
-  painter->startTextSpan(WPXPropertyList());
-  painter->insertText(WPXString("\t"));
-  painter->endTextSpan();
+  output.getPainter()->startTextSpan(WPXPropertyList());
+  output.getPainter()->insertText(WPXString("\t"));
+  output.getPainter()->endTextSpan();
 }
 
 }
@@ -88,7 +89,7 @@ public:
   explicit LineBreakObject(const KNParagraphStylePtr_t &paraStyle);
 
 private:
-  virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
+  virtual void draw(const KNOutput &output);
 
 private:
   const KNParagraphStylePtr_t m_paraStyle;
@@ -99,13 +100,13 @@ LineBreakObject::LineBreakObject(const KNParagraphStylePtr_t &paraStyle)
 {
 }
 
-void LineBreakObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransformation &)
+void LineBreakObject::draw(const KNOutput &output)
 {
   WPXPropertyList props;
   // TODO: fill from m_paraStyle
 
-  painter->endTextLine();
-  painter->startTextLine(props);
+  output.getPainter()->endTextLine();
+  output.getPainter()->startTextLine(props);
 }
 
 }
@@ -119,7 +120,7 @@ public:
   TextObject(const KNLayoutStylePtr_t &layoutStyle, const KNText::ParagraphList_t &paragraphs);
 
 private:
-  virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
+  virtual void draw(const KNOutput &output);
 
 private:
   const KNLayoutStylePtr_t m_layoutStyle;
@@ -132,22 +133,22 @@ TextObject::TextObject(const KNLayoutStylePtr_t &layoutStyle, const KNText::Para
 {
 }
 
-void TextObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransformation &tr)
+void TextObject::draw(const KNOutput &output)
 {
   WPXPropertyList props;
   // TODO: fill properties
 
-  painter->startTextObject(props, WPXPropertyListVector());
+  output.getPainter()->startTextObject(props, WPXPropertyListVector());
 
   for(KNText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
   {
-    painter->startTextLine(WPXPropertyList());
+    output.getPainter()->startTextLine(WPXPropertyList());
     for (KNObjectList_t::const_iterator objIt = (*it)->objects.begin(); (*it)->objects.end() != objIt; ++objIt)
-      (*objIt)->draw(painter, tr);
-    painter->endTextLine();
+      (*objIt)->draw(output);
+    output.getPainter()->endTextLine();
   }
 
-  painter->endTextObject();
+  output.getPainter()->endTextObject();
 }
 
 }

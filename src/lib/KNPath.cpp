@@ -427,7 +427,7 @@ public:
   explicit PathObject(const KNPathPtr_t &path);
 
 private:
-  virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr);
+  virtual void draw(const KNOutput &output);
 
 private:
   const KNPathPtr_t m_path;
@@ -438,11 +438,10 @@ PathObject::PathObject(const KNPathPtr_t &path)
 {
 }
 
-void PathObject::draw(libwpg::WPGPaintInterface *const painter, const KNTransformation &tr)
+void PathObject::draw(const KNOutput &output)
 {
   // TODO: implement me
-  (void) painter;
-  (void) tr;
+  (void) output;
 }
 
 }

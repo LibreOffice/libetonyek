@@ -22,8 +22,7 @@ class WPGPaintInterface;
 namespace libkeynote
 {
 
-struct KNDictionary;
-class KNTransformation;
+class KNOutput;
 
 /** An interface for saved presentation objects.
   *
@@ -40,7 +39,11 @@ class KNObject
 public:
   virtual ~KNObject() = 0;
 
-  virtual void draw(libwpg::WPGPaintInterface *painter, const KNTransformation &tr) = 0;
+  /** Draw the object using @c output as context.
+    *
+    * @arg[in] output the output to use
+    */
+  virtual void draw(const KNOutput &output) = 0;
 };
 
 typedef boost::shared_ptr<KNObject> KNObjectPtr_t;
