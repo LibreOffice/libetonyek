@@ -985,7 +985,7 @@ void KN2Parser::parseStylesheet(const KNXMLReader &reader)
         parseStyles(reader, true);
         break;
       case KN2Token::parent_ref :
-        parent = readOnlyElementAttribute(element, KN2Token::IDREF, KN2Token::NS_URI_SFA);
+        parent = readRef(element);
         break;
       default :
         KN_DEBUG_XML_TODO("element", name, ns);
