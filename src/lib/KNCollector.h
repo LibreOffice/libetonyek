@@ -46,6 +46,7 @@ public:
   virtual void collectLayoutStyle(const boost::optional<ID_t> &id, const KNLayoutStylePtr_t &style, bool ref, bool anonymous) = 0;
   virtual void collectListStyle(const boost::optional<ID_t> &id, const KNListStylePtr_t &style, bool ref, bool anonymous) = 0;
   virtual void collectParagraphStyle(const boost::optional<ID_t> &id, const KNParagraphStylePtr_t &style, bool ref, bool anonymous) = 0;
+  virtual void collectPlaceholderStyle(const boost::optional<ID_t> &id, const KNPlaceholderStylePtr_t &style, bool ref, bool anonymous) = 0;
   virtual void collectSlideStyle(const boost::optional<ID_t> &id, const KNSlideStylePtr_t &style, bool ref, bool anonymous) = 0;
   virtual void collectTabularStyle(const boost::optional<ID_t> &id, const KNTabularStylePtr_t &style, bool ref, bool anonymous) = 0;
   virtual void collectVectorStyle(const boost::optional<ID_t> &id, const KNVectorStylePtr_t &style, bool ref, bool anonymous) = 0;

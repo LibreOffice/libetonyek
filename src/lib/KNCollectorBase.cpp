@@ -198,6 +198,15 @@ void KNCollectorBase::collectParagraphStyle(const optional<ID_t> &id, const KNPa
   }
 }
 
+void KNCollectorBase::collectPlaceholderStyle(const boost::optional<ID_t> &id, const KNPlaceholderStylePtr_t &style, const bool ref, const bool anonymous)
+{
+  // TODO: implement me
+  (void) id;
+  (void) style;
+  (void) ref;
+  (void) anonymous;
+}
+
 void KNCollectorBase::collectSlideStyle(const boost::optional<ID_t> &id, const KNSlideStylePtr_t &style, const bool ref, const bool anonymous)
 {
   // TODO: implement me
