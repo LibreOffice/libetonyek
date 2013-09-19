@@ -74,7 +74,6 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNText_fwd.h \
 	KNThemeCollector.cpp \
 	KNThemeCollector.h \
-	KNToken.h \
 	KNTransformation.cpp \
 	KNTransformation.h \
 	KNTypes.cpp \
