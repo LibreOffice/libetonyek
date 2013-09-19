@@ -27,6 +27,21 @@ void KNTransformationTest::testConstruction()
   // TODO: implement me
 }
 
+void KNTransformationTest::testConstructionFromGeometry()
+{
+  // TODO: implement me
+}
+
+void KNTransformationTest::testIdentities()
+{
+  // TODO: implement me
+}
+
+void KNTransformationTest::testInverseOperations()
+{
+  // TODO: implement me
+}
+
 void KNTransformationTest::testMultiplication()
 {
   // TODO: implement me

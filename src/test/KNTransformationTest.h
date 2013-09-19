@@ -25,11 +25,17 @@ public:
 private:
   CPPUNIT_TEST_SUITE(KNTransformationTest);
   CPPUNIT_TEST(testConstruction);
+  CPPUNIT_TEST(testConstructionFromGeometry);
+  CPPUNIT_TEST(testIdentities);
+  CPPUNIT_TEST(testInverseOperations);
   CPPUNIT_TEST(testMultiplication);
   CPPUNIT_TEST_SUITE_END();
 
 private:
   void testConstruction();
+  void testConstructionFromGeometry();
+  void testIdentities();
+  void testInverseOperations();
   void testMultiplication();
 };
 
