@@ -2098,8 +2098,8 @@ void KN2Parser::parseScalarPath(const KNXMLReader &reader)
           KN_DEBUG_MSG(("unknown scalar path type: %s\n", attr.getValue()));
           break;
         }
+        break;
       }
-      break;
       default :
         KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
         break;
