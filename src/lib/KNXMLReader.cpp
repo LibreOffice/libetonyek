@@ -61,7 +61,7 @@ template<class T>
 int implGetId(const T &token)
 {
   const int name = getNameId(token);
-  const int ns = token.getNamespace() ? getNamespaceId(token) : 0;
+  const int ns = getNamespaceId(token);
   assert((0 == ns) || (ns > name));
 
   return name | ns;
@@ -408,7 +408,7 @@ int getNameId(const KNXMLReader::AttributeIterator &attribute)
 
 int getNamespaceId(const KNXMLReader::AttributeIterator &attribute)
 {
-  return attribute.getToken(attribute.getNamespace());
+  return attribute.getToken(attribute.getNamespace() ? attribute.getNamespace() : "");
 }
 
 int getId(const KNXMLReader::AttributeIterator &attribute)
@@ -428,7 +428,7 @@ int getNameId(const KNXMLReader::ElementIterator &element)
 
 int getNamespaceId(const KNXMLReader::ElementIterator &element)
 {
-  return element.getToken(element.getNamespace());
+  return element.getToken(element.getNamespace() ? element.getNamespace() : "");
 }
 
 int getId(const KNXMLReader::ElementIterator &element)
@@ -448,7 +448,7 @@ int getNameId(const KNXMLReader &reader)
 
 int getNamespaceId(const KNXMLReader &reader)
 {
-  return reader.getToken(reader.getNamespace());
+  return reader.getToken(reader.getNamespace() ? reader.getNamespace() : "");
 }
 
 int getId(const KNXMLReader &reader)

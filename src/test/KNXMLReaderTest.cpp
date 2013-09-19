@@ -441,14 +441,12 @@ void KNXMLReaderTest::testTokenizer()
   elements.next();
 
   CPPUNIT_ASSERT_EQUAL(4, getNameId(elements));
-  // cannot be used
-  // CPPUNIT_ASSERT_EQUAL(0, getNamespaceId(elements));
+  CPPUNIT_ASSERT_EQUAL(0, getNamespaceId(elements));
   CPPUNIT_ASSERT_EQUAL(4, getId(elements));
 
   KNXMLReader nested(elements);
   CPPUNIT_ASSERT_EQUAL(4, getNameId(nested));
-  // cannot be used
-  // CPPUNIT_ASSERT_EQUAL(0, getNamespaceId(nested));
+  CPPUNIT_ASSERT_EQUAL(0, getNamespaceId(nested));
   CPPUNIT_ASSERT_EQUAL(4, getId(nested));
 
 }
