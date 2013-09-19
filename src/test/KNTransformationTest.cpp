@@ -32,6 +32,8 @@ void KNTransformationTest::testMultiplication()
   // TODO: implement me
 }
 
+CPPUNIT_TEST_SUITE_REGISTRATION(KNTransformationTest);
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
