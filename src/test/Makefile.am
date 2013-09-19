@@ -12,6 +12,8 @@ test_LDADD = \
 	$(XML_LIBS)
 
 test_SOURCES = \
+	KN2TokenTest.cpp \
+	KN2TokenTest.h \
 	KNPathTest.cpp \
 	KNPathTest.h \
 	KNTransformationTest.cpp \
