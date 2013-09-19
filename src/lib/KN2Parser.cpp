@@ -141,6 +141,26 @@ ID_t readRef(const KNXMLReader &reader)
   return get(id);
 }
 
+optional<ID_t> readID(const KNXMLReader &reader)
+{
+  optional<ID_t> id;
+
+  KNXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
+    {
+      id = attr.getValue();
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
+    }
+  }
+
+  return id;
+}
+
 unsigned getVersion(const int token)
 {
   switch (token)
