@@ -54,6 +54,21 @@ struct XMLException {};
 
 }
 
+namespace
+{
+
+template<class T>
+int implGetId(const T &token)
+{
+  const int name = getNameId(token);
+  const int ns = token.getNamespace() ? getNamespaceId(token) : 0;
+  assert((0 == ns) || (ns > name));
+
+  return name | ns;
+}
+
+}
+
 struct KNXMLReader::Impl
 {
   xmlTextReaderPtr reader;
@@ -396,6 +411,11 @@ int getNamespaceId(const KNXMLReader::AttributeIterator &attribute)
   return attribute.getToken(attribute.getNamespace());
 }
 
+int getId(const KNXMLReader::AttributeIterator &attribute)
+{
+  return implGetId(attribute);
+}
+
 int getValueId(const KNXMLReader::AttributeIterator &attribute)
 {
   return attribute.getToken(attribute.getValue());
@@ -411,6 +431,11 @@ int getNamespaceId(const KNXMLReader::ElementIterator &element)
   return element.getToken(element.getNamespace());
 }
 
+int getId(const KNXMLReader::ElementIterator &element)
+{
+  return implGetId(element);
+}
+
 int getTextId(const KNXMLReader::ElementIterator &element)
 {
   return element.getToken(element.getText());
@@ -424,6 +449,11 @@ int getNameId(const KNXMLReader &reader)
 int getNamespaceId(const KNXMLReader &reader)
 {
   return reader.getToken(reader.getNamespace());
+}
+
+int getId(const KNXMLReader &reader)
+{
+  return implGetId(reader);
 }
 
 }

@@ -156,14 +156,17 @@ private:
 
 int getNameId(const KNXMLReader::AttributeIterator &attribute);
 int getNamespaceId(const KNXMLReader::AttributeIterator &attribute);
+int getId(const KNXMLReader::AttributeIterator &attribute);
 int getValueId(const KNXMLReader::AttributeIterator &attribute);
 
 int getNameId(const KNXMLReader::ElementIterator &element);
 int getNamespaceId(const KNXMLReader::ElementIterator &element);
+int getId(const KNXMLReader::ElementIterator &element);
 int getTextId(const KNXMLReader::ElementIterator &element);
 
 int getNameId(const KNXMLReader &reader);
 int getNamespaceId(const KNXMLReader &reader);
+int getId(const KNXMLReader &reader);
 
 }
 

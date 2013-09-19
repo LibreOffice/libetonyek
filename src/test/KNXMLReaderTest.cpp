@@ -47,6 +47,10 @@ int Tokenizer::operator()(const char *const token) const
     return 3;
   else if (0 == strcmp(token, "d"))
     return 4;
+  else if (0 == strcmp(token, "m"))
+    return 8;
+  else if (0 == strcmp(token, "n"))
+    return 16;
 
   return 0;
 }
@@ -416,26 +420,37 @@ void KNXMLReaderTest::testElementName()
 
 void KNXMLReaderTest::testTokenizer()
 {
-  const unsigned char xml[] = "<?xml version='1.0'?><a b='c'><d/></a>";
+  const unsigned char xml[] = "<?xml version='1.0'?><m:a n:b='c' xmlns:m='m' xmlns:n='n'><d/></m:a>";
   KNMemoryStream input(xml, sizeof(xml) - 1);
 
   KNXMLReader reader(&input, Tokenizer());
 
   CPPUNIT_ASSERT_EQUAL(1, getNameId(reader));
+  CPPUNIT_ASSERT_EQUAL(8, getNamespaceId(reader));
+  CPPUNIT_ASSERT_EQUAL(1 + 8, getId(reader));
 
   KNXMLReader::AttributeIterator attrs(reader);
   attrs.next();
 
   CPPUNIT_ASSERT_EQUAL(2, getNameId(attrs));
+  CPPUNIT_ASSERT_EQUAL(16, getNamespaceId(attrs));
+  CPPUNIT_ASSERT_EQUAL(2 + 16, getId(attrs));
   CPPUNIT_ASSERT_EQUAL(3, getValueId(attrs));
 
   KNXMLReader::ElementIterator elements(reader);
   elements.next();
 
   CPPUNIT_ASSERT_EQUAL(4, getNameId(elements));
+  // cannot be used
+  // CPPUNIT_ASSERT_EQUAL(0, getNamespaceId(elements));
+  CPPUNIT_ASSERT_EQUAL(4, getId(elements));
 
   KNXMLReader nested(elements);
   CPPUNIT_ASSERT_EQUAL(4, getNameId(nested));
+  // cannot be used
+  // CPPUNIT_ASSERT_EQUAL(0, getNamespaceId(nested));
+  CPPUNIT_ASSERT_EQUAL(4, getId(nested));
+
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(KNXMLReaderTest);
