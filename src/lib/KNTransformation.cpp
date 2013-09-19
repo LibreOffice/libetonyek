@@ -54,7 +54,7 @@ KNTransformation &KNTransformation::operator*=(const KNTransformation &tr)
   return *this;
 }
 
-KNTransformation operator*(const KNTransformation &left, const KNTransformation right)
+KNTransformation operator*(const KNTransformation &left, const KNTransformation &right)
 {
   KNTransformation result(left);
   return result *= right;

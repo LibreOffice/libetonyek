@@ -70,7 +70,7 @@ private:
   *
   * @return the new transformation
   */
-KNTransformation operator*(const KNTransformation &left, const KNTransformation right);
+KNTransformation operator*(const KNTransformation &left, const KNTransformation &right);
 
 /** Create a transformation from a geometry.
   *
