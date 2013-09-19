@@ -2105,7 +2105,7 @@ void KN2Parser::parseScalarPath(const KNXMLReader &reader)
         break;
       }
     }
-    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
+    else if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
     {
       id = attr.getValue();
     }
