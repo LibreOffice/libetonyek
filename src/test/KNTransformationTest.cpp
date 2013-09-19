@@ -87,7 +87,24 @@ void KNTransformationTest::testIdentities()
 
 void KNTransformationTest::testInverseOperations()
 {
-  // TODO: implement me
+  using namespace libkeynote::transformations;
+
+  CPPUNIT_ASSERT(center(10, 20) * decenter(10, 20) == KNTransformation());
+  CPPUNIT_ASSERT(decenter(10, 20) * center(10, 20) == KNTransformation());
+
+  CPPUNIT_ASSERT(flip(true, false) * flip(true, false) == KNTransformation());
+  CPPUNIT_ASSERT(flip(false, true) * flip(false, true) == KNTransformation());
+  CPPUNIT_ASSERT(flip(true, true) * flip(true, true) == KNTransformation());
+
+  // CPPUNIT_ASSERT(rotate(M_PI) * rotate(-M_PI) == KNTransformation());
+
+  CPPUNIT_ASSERT(scale(2, 1) * scale(0.5, 1) == KNTransformation());
+  CPPUNIT_ASSERT(scale(1, 2) * scale(1, 0.5) == KNTransformation());
+  CPPUNIT_ASSERT(scale(3, 2) * scale(1.0 / 3, 0.5) == KNTransformation());
+
+  // CPPUNIT_ASSERT(shear() == KNTransformation());
+
+  CPPUNIT_ASSERT(translate(10, 20) * translate(-10, -20) == KNTransformation());
 }
 
 void KNTransformationTest::testMultiplication()
