@@ -38,22 +38,9 @@ namespace libkeynote
 namespace
 {
 
-struct Tokenizer
-{
-  int operator()(const char *const token) const
-  {
-    return getKN2TokenID(token);
-  }
-};
-
-}
-
-namespace
-{
-
 bool bool_cast(const char *const value)
 {
-  Tokenizer tok;
+  KN2Tokenizer tok;
   switch (tok(value))
   {
   case KN2Token::_1 :
@@ -314,7 +301,7 @@ void KN2Parser::processXmlNode(const KNXMLReader &reader)
 
 KNXMLReader::TokenizerFunction_t KN2Parser::getTokenizer() const
 {
-  return Tokenizer();
+  return KN2Tokenizer();
 }
 
 void KN2Parser::parseDrawables(const KNXMLReader &reader)
