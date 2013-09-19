@@ -143,8 +143,7 @@ void TextObject::draw(const KNOutput &output)
   for(KNText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
   {
     output.getPainter()->startTextLine(WPXPropertyList());
-    for (KNObjectList_t::const_iterator objIt = (*it)->objects.begin(); (*it)->objects.end() != objIt; ++objIt)
-      (*objIt)->draw(output);
+    drawAll((*it)->objects, output);
     output.getPainter()->endTextLine();
   }
 

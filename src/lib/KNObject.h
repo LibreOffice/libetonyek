@@ -52,6 +52,13 @@ typedef boost::shared_ptr<KNObject> KNObjectPtr_t;
   */
 typedef std::deque<KNObjectPtr_t> KNObjectList_t;
 
+/** Draw all objects of list @list using @c output as context.
+  *
+  * @arg[in] list the object list
+  * @arg[in] output the output to use
+  */
+void drawAll(const KNObjectList_t &list, const KNOutput &output);
+
 }
 
 #endif // KNOBJECT_H_INCLUDED

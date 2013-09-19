@@ -7,13 +7,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <algorithm>
+
+#include <boost/bind.hpp>
+
 #include "KNObject.h"
+#include "KNOutput.h"
 
 namespace libkeynote
 {
 
 KNObject::~KNObject()
 {
+}
+
+void drawAll(const KNObjectList_t &list, const KNOutput &output)
+{
+  for_each(list.begin(), list.end(), boost::bind(&KNObject::draw, _1, output));
 }
 
 }

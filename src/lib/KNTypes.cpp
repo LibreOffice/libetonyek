@@ -175,8 +175,7 @@ GroupObject::GroupObject(const KNGroupPtr_t &group)
 
 void GroupObject::draw(const KNOutput &output)
 {
-  for (KNObjectList_t::const_iterator it = m_group->objects.begin(); it != m_group->objects.end(); ++it)
-    (*it)->draw(output);
+  drawAll(m_group->objects, output);
 }
 
 }
