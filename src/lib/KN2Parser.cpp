@@ -320,7 +320,7 @@ void KN2Parser::parseDrawables(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::drawables, KN2Token::NS_URI_SF));
 
-  readOnlyAttribute(reader, KN2Token::ID, KN2Token::NS_URI_SFA);
+  readID(reader);
 
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
@@ -376,7 +376,7 @@ void KN2Parser::parseLayer(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::layer, KN2Token::NS_URI_SF));
 
-  const optional<ID_t> id = readOnlyAttribute(reader, KN2Token::ID, KN2Token::NS_URI_SFA);
+  const optional<ID_t> id = readID(reader);
 
   getCollector()->startLayer();
 
@@ -422,7 +422,7 @@ void KN2Parser::parseLayers(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::layers, KN2Token::NS_URI_SF));
 
-  readOnlyAttribute(reader, KN2Token::ID, KN2Token::NS_URI_SFA);
+  readID(reader);
 
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
@@ -681,7 +681,7 @@ void KN2Parser::parseProxyMasterLayer(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::proxy_master_layer, KN2Token::NS_URI_SF));
 
-  readOnlyAttribute(reader, KN2Token::ID, KN2Token::NS_URI_SFA);
+  readID(reader);
 
   optional<ID_t> ref;
 
@@ -829,18 +829,7 @@ void KN2Parser::parseSlideList(const KNXMLReader &reader)
 
   getCollector()->startSlides();
 
-  KNXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
-    {
-      KN_DEBUG_XML_TODO("attribute", attr.getName(), attr.getNamespace());
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
-    }
-  }
+  readID(reader);
 
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
@@ -866,18 +855,7 @@ void KN2Parser::parseStickyNotes(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::sticky_notes, KN2Token::NS_URI_KEY));
 
-  KNXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
-    {
-      KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
-    }
-  }
+  readID(reader);
 
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
@@ -965,20 +943,7 @@ void KN2Parser::parseStylesheet(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::stylesheet, KN2Token::NS_URI_KEY));
 
-  optional<ID_t> id;
-
-  KNXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
-    {
-      id = attr.getValue();
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
-    }
-  }
+  const optional<ID_t> id = readID(reader);
 
   optional<ID_t> parent;
 
@@ -1103,18 +1068,7 @@ void KN2Parser::parseThemeList(const KNXMLReader &reader)
 
   getCollector()->startThemes();
 
-  KNXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
-    {
-      KN_DEBUG_XML_TODO("attribute", attr.getName(), attr.getNamespace());
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
-    }
-  }
+  readID(reader);
 
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
@@ -1783,20 +1737,7 @@ void KN2Parser::parseStickyNote(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::sticky_note, KN2Token::NS_URI_KEY));
 
-  optional<ID_t> id;
-
-  KNXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if (KN2Token::NS_URI_SFA == getNamespaceId(attr) && (KN2Token::ID == getKN2TokenID (attr.getName())))
-    {
-      id = attr.getValue();
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
-    }
-  }
+  const optional<ID_t> id = readID(reader);
 
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
@@ -1910,20 +1851,7 @@ void KN2Parser::parseBezierPath(const KNXMLReader &reader)
   assert(checkElement(reader, KN2Token::bezier_path, KN2Token::NS_URI_SF)
          || checkElement(reader, KN2Token::editable_bezier_path, KN2Token::NS_URI_SF));
 
-  optional<ID_t> id;
-
-  KNXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
-    {
-      id = attr.getValue();
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
-    }
-  }
+  const optional<ID_t> id = readID(reader);
 
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
@@ -2031,20 +1959,7 @@ void KN2Parser::parseConnectionPath(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::connection_path, KN2Token::NS_URI_SF));
 
-  optional<ID_t> id;
-
-  KNXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
-    {
-      id = attr.getValue();
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
-    }
-  }
+  const optional<ID_t> id = readID(reader);
 
   KNSize size;
   pair<optional<double>, optional<double> > point;
@@ -2306,18 +2221,7 @@ void KN2Parser::parseFiltered(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::filtered, KN2Token::NS_URI_SF));
 
-  KNXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
-    {
-      KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
-    }
-  }
+  readID(reader);
 
   optional<KNSize> size;
 
@@ -2416,18 +2320,7 @@ void KN2Parser::parseImageMedia(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::image_media, KN2Token::NS_URI_SF));
 
-  KNXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
-    {
-      KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
-    }
-  }
+  readID(reader);
 
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
@@ -2460,20 +2353,7 @@ void KN2Parser::parseLeveled(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::leveled, KN2Token::NS_URI_SF));
 
-  optional<ID_t> id;
-
-  KNXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
-    {
-      id = attr.getValue();
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
-    }
-  }
+  const optional<ID_t> id = readID(reader);
 
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
@@ -2506,20 +2386,7 @@ void KN2Parser::parseUnfiltered(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::unfiltered, KN2Token::NS_URI_SF));
 
-  optional<ID_t> id;
-
-  KNXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
-    {
-      id = attr.getValue();
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
-    }
-  }
+  const optional<ID_t> id = readID(reader);
 
   optional<KNSize> size;
 
