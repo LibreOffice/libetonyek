@@ -38,9 +38,23 @@ namespace libkeynote
 namespace
 {
 
+struct Tokenizer
+{
+  int operator()(const char *const token) const
+  {
+    return getKN2TokenID(token);
+  }
+};
+
+}
+
+namespace
+{
+
 bool bool_cast(const char *const value)
 {
-  switch (getKN2TokenID(value))
+  Tokenizer tok;
+  switch (tok(value))
   {
   case KN2Token::_1 :
   case KN2Token::true_ :
@@ -180,19 +194,6 @@ unsigned getVersion(const int token)
 
 }
 
-namespace
-{
-
-struct Tokenizer
-{
-  int operator()(const char *const token) const
-  {
-    return getKN2TokenID(token);
-  }
-};
-
-}
-
 KN2Parser::KN2Parser(const WPXInputStreamPtr_t &input, KNCollector *const collector, const KNDefaults &defaults)
   : KNParser(input, collector, defaults)
   , m_version(0)
@@ -227,7 +228,7 @@ void KN2Parser::processXmlNode(const KNXMLReader &reader)
           KN_DEBUG_XML_TODO("attribute", attr.getName(), attr.getNamespace());
           break;
         case KN2Token::version :
-          m_version = getVersion(getKN2TokenID(attr.getValue()));
+          m_version = getVersion(getValueId(attr));
           if (0 == m_version)
           {
             KN_DEBUG_MSG(("unknown version %s\n", attr.getValue()));
@@ -263,9 +264,9 @@ void KN2Parser::processXmlNode(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_KEY == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_KEY == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::size :
         size = readSize(reader);
@@ -296,7 +297,7 @@ void KN2Parser::processXmlNode(const KNXMLReader &reader)
         break;
       }
     }
-    else if ((KN2Token::NS_URI_SF == getKN2TokenID(ns)) && (KN2Token::calc_engine == getKN2TokenID(name)))
+    else if ((KN2Token::NS_URI_SF == getNamespaceId(element)) && (KN2Token::calc_engine == getNameId(element)))
     {
       KN_DEBUG_XML_TODO("element", name, ns);
       skipElement(element);
@@ -328,9 +329,9 @@ void KN2Parser::parseDrawables(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::connection_line :
         parseConnectionLine(element);
@@ -386,9 +387,9 @@ void KN2Parser::parseLayer(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::drawables :
         parseDrawables(reader);
@@ -430,9 +431,9 @@ void KN2Parser::parseLayers(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::layer :
         parseLayer(reader);
@@ -507,9 +508,9 @@ void KN2Parser::parseMasterSlide(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_KEY == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_KEY == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::page :
         parsePage(reader);
@@ -577,7 +578,7 @@ void KN2Parser::parseMasterSlides(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if ((KN2Token::NS_URI_KEY == getKN2TokenID(ns)) && (KN2Token::master_slide == getKN2TokenID(name)))
+    if ((KN2Token::NS_URI_KEY == getNamespaceId(element)) && (KN2Token::master_slide == getNameId(element)))
     {
       parseMasterSlide(reader);
     }
@@ -606,9 +607,9 @@ void KN2Parser::parseMetadata(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_KEY == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_KEY == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::authors :
       case KN2Token::keywords :
@@ -649,9 +650,9 @@ void KN2Parser::parsePage(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::size :
       {
@@ -693,9 +694,9 @@ void KN2Parser::parseProxyMasterLayer(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::layer_ref :
         ref = readOnlyElementAttribute(reader, KN2Token::IDREF, KN2Token::NS_URI_SFA);
@@ -775,9 +776,9 @@ void KN2Parser::parseSlide(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_KEY == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_KEY == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::page :
         parsePage(reader);
@@ -837,7 +838,7 @@ void KN2Parser::parseSlideList(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if ((KN2Token::NS_URI_KEY == getKN2TokenID(ns)) && (KN2Token::slide == getKN2TokenID(name)))
+    if ((KN2Token::NS_URI_KEY == getNamespaceId(element)) && (KN2Token::slide == getNameId(element)))
     {
       parseSlide(reader);
     }
@@ -885,9 +886,9 @@ void KN2Parser::parseStyles(const KNXMLReader &reader, const bool anonymous)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::characterstyle :
       case KN2Token::graphic_style :
@@ -895,7 +896,7 @@ void KN2Parser::parseStyles(const KNXMLReader &reader, const bool anonymous)
       case KN2Token::layoutstyle :
       case KN2Token::paragraphstyle :
       {
-        KN2StyleParser parser(getKN2TokenID(name), getKN2TokenID(ns), getCollector());
+        KN2StyleParser parser(getNameId(element), getNamespaceId(element), getCollector());
         parser.parse(element);
         break;
       }
@@ -953,9 +954,9 @@ void KN2Parser::parseStylesheet(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::styles :
         parseStyles(reader, false);
@@ -1031,9 +1032,9 @@ void KN2Parser::parseTheme(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_KEY == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_KEY == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::size :
       {
@@ -1076,7 +1077,7 @@ void KN2Parser::parseThemeList(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if ((KN2Token::NS_URI_KEY == getKN2TokenID(ns)) && (KN2Token::theme == getKN2TokenID(name)))
+    if ((KN2Token::NS_URI_KEY == getNamespaceId(element)) && (KN2Token::theme == getNameId(element)))
     {
       parseTheme(reader);
     }
@@ -1139,7 +1140,7 @@ void KN2Parser::parseConnectionLine(const KNXMLReader &reader)
     {
       KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
     }
-    else if (KN2Token::NS_URI_SFA == getNamespaceId(attr) && (KN2Token::ID == getKN2TokenID (attr.getName())))
+    else if (KN2Token::NS_URI_SFA == getNamespaceId(attr) && (KN2Token::ID == getNameId(attr)))
     {
       id = attr.getValue();
     }
@@ -1222,7 +1223,7 @@ void KN2Parser::parseGeometry(const KNXMLReader &reader)
         break;
       }
     }
-    else if (KN2Token::NS_URI_SFA == getNamespaceId(attr) && (KN2Token::ID == getKN2TokenID (attr.getName())))
+    else if (KN2Token::NS_URI_SFA == getNamespaceId(attr) && (KN2Token::ID == getNameId(attr)))
     {
       id = attr.getValue();
     }
@@ -1238,9 +1239,9 @@ void KN2Parser::parseGeometry(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::naturalSize :
         geometry->naturalSize = readSize(reader);
@@ -1305,9 +1306,9 @@ void KN2Parser::parseGroup(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::geometry :
         parseGeometry(reader);
@@ -1389,9 +1390,9 @@ void KN2Parser::parseImage(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::geometry :
         parseGeometry(reader);
@@ -1451,9 +1452,9 @@ void KN2Parser::parseLine(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::geometry :
         parseGeometry(reader);
@@ -1555,9 +1556,9 @@ void KN2Parser::parseMedia(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::geometry :
         parseGeometry(reader);
@@ -1689,7 +1690,7 @@ void KN2Parser::parseShape(const KNXMLReader &reader)
           break;
         }
       }
-      else if (KN2Token::NS_URI_SFA == getNamespaceId(attr) && (KN2Token::ID == getKN2TokenID (attr.getName())))
+      else if (KN2Token::NS_URI_SFA == getNamespaceId(attr) && (KN2Token::ID == getNameId(attr)))
       {
         id = attr.getValue();
       }
@@ -1706,9 +1707,9 @@ void KN2Parser::parseShape(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::path :
         parsePath(element);
@@ -2007,7 +2008,7 @@ void KN2Parser::parsePointPath(const KNXMLReader &reader)
   {
     if ((KN2Token::NS_URI_SF == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
     {
-      switch (getKN2TokenID(attr.getValue()))
+      switch (getValueId(attr))
       {
       case KN2Token::double_ :
         doubleArrow = true;
@@ -2087,7 +2088,7 @@ void KN2Parser::parseScalarPath(const KNXMLReader &reader)
         break;
       case KN2Token::type :
       {
-        switch (getKN2TokenID(attr.getValue()))
+        switch (getValueId(attr))
         {
         case KN2Token::_0 :
           break;

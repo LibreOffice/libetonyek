@@ -78,7 +78,7 @@ void KN2StyleParser::parse(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if ((KN2Token::NS_URI_SF == getKN2TokenID(ns)) && (KN2Token::property_map == getKN2TokenID(name)))
+    if ((KN2Token::NS_URI_SF == getNamespaceId(element)) && (KN2Token::property_map == getNameId(element)))
     {
       parsePropertyMap(reader);
 
@@ -136,9 +136,9 @@ void KN2StyleParser::parsePropertyMap(const KNXMLReader &reader)
     const char *const name = element.getName();
     const char *const ns = element.getNamespace();
 
-    if (KN2Token::NS_URI_SF == getKN2TokenID(ns))
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
-      switch (getKN2TokenID(name))
+      switch (getNameId(element))
       {
       case KN2Token::BGBuildDurationProperty :
       case KN2Token::SFC2DAntialiasingModeProperty :
