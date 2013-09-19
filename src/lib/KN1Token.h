@@ -184,21 +184,7 @@ enum
 
 }
 
-const KNToken *getKN1Token(const char *str, const unsigned length);
-const KNToken *getKN1Token(const char *str);
-const KNToken *getKN1Token(const unsigned char *str);
-
-int getKN1TokenID(const KNToken &token);
-int getKN1TokenID(const KNToken *token);
-int getKN1TokenID(const char *str, const unsigned length);
 int getKN1TokenID(const char *str);
-int getKN1TokenID(const unsigned char *str);
-
-const char *getKN1TokenName(const KNToken &token);
-const char *getKN1TokenName(const KNToken *token);
-const char *getKN1TokenName(const char *str, const unsigned length);
-const char *getKN1TokenName(const char *str);
-const char *getKN1TokenName(const unsigned char *str);
 
 }
 
