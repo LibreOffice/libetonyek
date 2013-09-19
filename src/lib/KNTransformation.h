@@ -53,6 +53,14 @@ public:
     */
   void operator()(double &x, double &y, bool distance = false) const;
 
+  /** Tests for equality of transformations.
+    *
+    * @arg[in] other the transformation for equality comparison
+    * @returns @c true if this transformation and @c other are equal, @c
+    * false otherwise
+    */
+  bool operator==(const KNTransformation &other) const;
+
 private:
   // transformation matrix
   double m_xx;
@@ -71,6 +79,14 @@ private:
   * @return the new transformation
   */
 KNTransformation operator*(const KNTransformation &left, const KNTransformation &right);
+
+/** Tests for inequality of transformations.
+  *
+  * @arg[in] left the first transformation
+  * @arg[in] right the second transformation
+  * @returns @c true if the transformations are not equal, @c false if they are
+  */
+bool operator!=(const KNTransformation &left, const KNTransformation &right);
 
 /** Create a transformation from a geometry.
   *

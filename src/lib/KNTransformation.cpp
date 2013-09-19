@@ -54,6 +54,17 @@ KNTransformation &KNTransformation::operator*=(const KNTransformation &tr)
   return *this;
 }
 
+bool KNTransformation::operator==(const KNTransformation &other) const
+{
+  return m_xx == other.m_xx
+         && m_yx == other.m_yx
+         && m_xy == other.m_xy
+         && m_yy == other.m_yy
+         && m_x0 == other.m_x0
+         && m_y0 == other.m_y0
+         ;
+}
+
 KNTransformation operator*(const KNTransformation &left, const KNTransformation &right)
 {
   KNTransformation result(left);
@@ -72,6 +83,11 @@ void KNTransformation::operator()(double &x, double &y, const bool distance) con
 
   x = x_new;
   y = y_new;
+}
+
+bool operator!=(const KNTransformation &left, const KNTransformation &right)
+{
+  return !(left == right);
 }
 
 KNTransformation makeTransformation(const KNGeometry &geometry)
