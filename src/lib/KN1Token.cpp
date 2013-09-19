@@ -26,24 +26,18 @@ namespace
 namespace libkeynote
 {
 
-const KNToken *getKN1Token(const char *const str, const unsigned length)
+int KN1Tokenizer::operator()(const char *const str) const
 {
-  return Perfect_Hash::in_word_set(str, length);
-}
+  if (!str)
+    return INVALID_TOKEN;
 
-int getKN1TokenID(const KNToken *const token)
-{
+  const size_t length = strlen(str);
+
+  if (0 == length)
+    return INVALID_TOKEN;
+
+  const Token *const token = Perfect_Hash::in_word_set(str, length);
   return token ? token->id : INVALID_TOKEN;
-}
-
-int getKN1TokenID(const char *str, const unsigned length)
-{
-  return getKN1TokenID(getKN1Token(str, length));
-}
-
-int getKN1TokenID(const char *str)
-{
-  return getKN1TokenID(str, strlen(str));
 }
 
 }

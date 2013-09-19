@@ -8,17 +8,18 @@
 
 %includes
 %{
-#include "KNToken.h"
-
 #if defined __GNUC__
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #endif
 
-using libkeynote::KNToken;
 using namespace KN1Token;
 %}
 %struct-type
-struct KNToken;
+struct Token
+{
+  const char *name;
+  int id;
+};
 %%
 altLineOpacity,altLineOpacity
 altLineVisible,altLineVisible

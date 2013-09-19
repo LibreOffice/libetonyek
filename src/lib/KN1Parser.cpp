@@ -14,19 +14,6 @@
 namespace libkeynote
 {
 
-namespace
-{
-
-struct Tokenizer
-{
-  int operator()(const char *const token) const
-  {
-    return getKN1TokenID(token);
-  }
-};
-
-}
-
 KN1Parser::KN1Parser(const WPXInputStreamPtr_t &input, KNCollector *const collector, const KNDefaults &defaults)
   : KNParser(input, collector, defaults)
 {
@@ -44,7 +31,7 @@ void KN1Parser::processXmlNode(const KNXMLReader &reader)
 
 KNXMLReader::TokenizerFunction_t KN1Parser::getTokenizer() const
 {
-  return Tokenizer();
+  return KN1Tokenizer();
 }
 
 }

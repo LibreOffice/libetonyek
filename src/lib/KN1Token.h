@@ -10,8 +10,6 @@
 #ifndef KN1TOKEN_H_INCLUDED
 #define KN1TOKEN_H_INCLUDED
 
-#include "KNToken.h"
-
 namespace libkeynote
 {
 
@@ -184,7 +182,10 @@ enum
 
 }
 
-int getKN1TokenID(const char *str);
+struct KN1Tokenizer
+{
+  int operator()(const char *str) const;
+};
 
 }
 
