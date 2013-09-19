@@ -28,7 +28,8 @@ namespace libkeynote
 
 const KNToken *getKN2Token(const char *const str, const unsigned length)
 {
-  return Perfect_Hash::in_word_set(str, length);
+  static const KNToken empty = {"", NS_NONE};
+  return (length != 0) ? Perfect_Hash::in_word_set(str, length) : &empty;
 }
 
 const KNToken *getKN2Token(const char *const str)
