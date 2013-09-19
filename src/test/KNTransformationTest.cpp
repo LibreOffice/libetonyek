@@ -92,7 +92,13 @@ void KNTransformationTest::testInverseOperations()
 
 void KNTransformationTest::testMultiplication()
 {
-  // TODO: implement me
+  using namespace libkeynote::transformations;
+
+  CPPUNIT_ASSERT(KNTransformation() * KNTransformation() == KNTransformation());
+
+  CPPUNIT_ASSERT(KNTransformation() * KNTransformation(1, 2, 3, 4, 5, 6) == KNTransformation(1, 2, 3, 4, 5, 6));
+  CPPUNIT_ASSERT(KNTransformation(1, 2, 3, 4, 5, 6) * KNTransformation() == KNTransformation(1, 2, 3, 4, 5, 6));
+  CPPUNIT_ASSERT(KNTransformation(1, 2, 3, 4, 5, 6) * KNTransformation(6, 5, 4, 3, 2, 1) == KNTransformation(14, 11, 34, 27, 56, 44));
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(KNTransformationTest);
