@@ -32,21 +32,6 @@ const KNToken *getKN2Token(const char *const str, const unsigned length)
   return (length != 0) ? Perfect_Hash::in_word_set(str, length) : &empty;
 }
 
-const KNToken *getKN2Token(const char *const str)
-{
-  return getKN2Token(str, strlen(str));
-}
-
-const KNToken *getKN2Token(const unsigned char *const str)
-{
-  return getKN2Token(reinterpret_cast<const char *>(str));
-}
-
-int getKN2TokenID(const KNToken &token)
-{
-  return getKN2TokenID(&token);
-}
-
 int getKN2TokenID(const KNToken *const token)
 {
   return token ? token->id : INVALID_TOKEN;
@@ -60,26 +45,6 @@ int getKN2TokenID(const char *str, const unsigned length)
 int getKN2TokenID(const char *str)
 {
   return getKN2TokenID(str, strlen(str));
-}
-
-int getKN2TokenID(const unsigned char *str)
-{
-  return getKN2TokenID(reinterpret_cast<const char *>(str));
-}
-
-const char *getKN2TokenName(const KNToken &token)
-{
-  return getKN2TokenName(&token);
-}
-
-const char *getKN2TokenName(const KNToken *const token)
-{
-  return token ? token->name : 0;
-}
-
-const char *getKN2TokenName(const char *str, const unsigned length)
-{
-  return getKN2TokenName(getKN2Token(str, length));
 }
 
 }
