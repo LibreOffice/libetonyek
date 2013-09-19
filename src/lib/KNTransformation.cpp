@@ -37,7 +37,7 @@ KNTransformation::KNTransformation(const double xx, const double yx, const doubl
 
 KNTransformation &KNTransformation::operator*=(const KNTransformation &tr)
 {
-  const double xx = m_xx * tr.m_xx + m_yx + tr.m_xy;
+  const double xx = m_xx * tr.m_xx + m_yx * tr.m_xy;
   const double yx = m_xx * tr.m_yx + m_yx * tr.m_yy;
   const double xy = m_xy * tr.m_xx + m_yy * tr.m_xy;
   const double yy = m_xy * tr.m_yx + m_yy * tr.m_yy;
