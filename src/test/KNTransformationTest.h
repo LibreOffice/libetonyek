@@ -24,6 +24,7 @@ public:
 
 private:
   CPPUNIT_TEST_SUITE(KNTransformationTest);
+  CPPUNIT_TEST(testApplication);
   CPPUNIT_TEST(testConstruction);
   CPPUNIT_TEST(testConstructionIdentity);
   CPPUNIT_TEST(testConstructionFromGeometry);
@@ -33,6 +34,7 @@ private:
   CPPUNIT_TEST_SUITE_END();
 
 private:
+  void testApplication();
   void testConstruction();
   void testConstructionIdentity();
   void testConstructionFromGeometry();

@@ -26,6 +26,71 @@ void KNTransformationTest::tearDown()
 {
 }
 
+void KNTransformationTest::testApplication()
+{
+  using namespace libkeynote::transformations;
+
+  // identity - point
+  {
+    double x = 20;
+    double y = 40;
+    KNTransformation tr;
+    tr(x, y);
+    CPPUNIT_ASSERT_EQUAL(20.0, x);
+    CPPUNIT_ASSERT_EQUAL(40.0, y);
+  }
+
+  // identity - distance
+  {
+    double x = 20;
+    double y = 40;
+    KNTransformation tr;
+    tr(x, y, true);
+    CPPUNIT_ASSERT_EQUAL(20.0, x);
+    CPPUNIT_ASSERT_EQUAL(40.0, y);
+  }
+
+  // translation - point
+  {
+    double x = 20;
+    double y = 40;
+    KNTransformation tr = translate(10, 20);
+    tr(x, y);
+    CPPUNIT_ASSERT_EQUAL(30.0, x);
+    CPPUNIT_ASSERT_EQUAL(60.0, y);
+  }
+
+  // translation - distance
+  {
+    double x = 20;
+    double y = 40;
+    KNTransformation tr = translate(10, 20);
+    tr(x, y, true);
+    CPPUNIT_ASSERT_EQUAL(20.0, x);
+    CPPUNIT_ASSERT_EQUAL(40.0, y);
+  }
+
+  // non-translating transformation - point
+  {
+    double x = 20;
+    double y = 40;
+    KNTransformation tr = flip(true, false) * scale(0.25, 0.5);
+    tr(x, y);
+    CPPUNIT_ASSERT_EQUAL(-5.0, x);
+    CPPUNIT_ASSERT_EQUAL(20.0, y);
+  }
+
+  // non-translating transformation - distance
+  {
+    double x = 20;
+    double y = 40;
+    KNTransformation tr = flip(true, false) * scale(0.25, 0.5);
+    tr(x, y, true);
+    CPPUNIT_ASSERT_EQUAL(-5.0, x);
+    CPPUNIT_ASSERT_EQUAL(20.0, y);
+  }
+}
+
 void KNTransformationTest::testConstruction()
 {
   // identity
