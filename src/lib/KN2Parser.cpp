@@ -2487,7 +2487,7 @@ void KN2Parser::parseLink(const KNXMLReader &reader, const bool ref)
       {
         KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
       }
-      if (!ref && (KN2Token::ID == getNameId(attr)))
+      else if (!ref && (KN2Token::ID == getNameId(attr)))
       {
         KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
       }
