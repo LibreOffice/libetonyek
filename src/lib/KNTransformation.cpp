@@ -75,7 +75,7 @@ void KNTransformation::operator()(double &x, double &y, const bool distance) con
 {
   double x_new = m_xx * x + m_xy * y;
   double y_new = m_yx * x + m_yy * y;
-  if (distance)
+  if (!distance)
   {
     x_new += m_x0;
     y_new += m_y0;
