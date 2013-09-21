@@ -248,9 +248,6 @@ void KN2Parser::processXmlNode(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_KEY == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -270,7 +267,7 @@ void KN2Parser::processXmlNode(const KNXMLReader &reader)
       case KN2Token::master_order :
       case KN2Token::soundtrack_list :
       case KN2Token::calculation_engine :
-        KN_DEBUG_XML_TODO("element", name, ns);
+        KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
 
@@ -280,18 +277,18 @@ void KN2Parser::processXmlNode(const KNXMLReader &reader)
         break;
 
       default :
-        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
         break;
       }
     }
     else if ((KN2Token::NS_URI_SF == getNamespaceId(element)) && (KN2Token::calc_engine == getNameId(element)))
     {
-      KN_DEBUG_XML_TODO("element", name, ns);
+      KN_DEBUG_XML_TODO_ELEMENT(element);
       skipElement(element);
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -313,9 +310,6 @@ void KN2Parser::parseDrawables(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -343,18 +337,18 @@ void KN2Parser::parseDrawables(const KNXMLReader &reader)
       case KN2Token::table_info :
       case KN2Token::title_placeholder_ref :
       case KN2Token::chart_info :
-        KN_DEBUG_XML_TODO("element", name, ns);
+        KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
       default :
-        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
         skipElement(element);
         break;
       }
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -371,9 +365,6 @@ void KN2Parser::parseLayer(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -382,7 +373,7 @@ void KN2Parser::parseLayer(const KNXMLReader &reader)
         parseDrawables(reader);
         break;
       case KN2Token::type :
-        KN_DEBUG_XML_TODO("element", name, ns);
+        KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
       case KN2Token::guides :
@@ -390,14 +381,14 @@ void KN2Parser::parseLayer(const KNXMLReader &reader)
         skipElement(element);
         break;
       default :
-        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
         skipElement(element);
         break;
       }
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -415,9 +406,6 @@ void KN2Parser::parseLayers(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -429,14 +417,14 @@ void KN2Parser::parseLayers(const KNXMLReader &reader)
         parseProxyMasterLayer(reader);
         break;
       default :
-        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
         skipElement(element);
         break;
       }
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -492,9 +480,6 @@ void KN2Parser::parseMasterSlide(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_KEY == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -521,18 +506,18 @@ void KN2Parser::parseMasterSlide(const KNXMLReader &reader)
       case KN2Token::thumbnails :
       case KN2Token::build_chunks :
       case KN2Token::events :
-        KN_DEBUG_XML_TODO("element", name, ns);
+        KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
       default :
-        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
         skipElement(element);
         break;
       }
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -562,16 +547,13 @@ void KN2Parser::parseMasterSlides(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if ((KN2Token::NS_URI_KEY == getNamespaceId(element)) && (KN2Token::master_slide == getNameId(element)))
     {
       parseMasterSlide(reader);
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -591,9 +573,6 @@ void KN2Parser::parseMetadata(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_KEY == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -601,14 +580,14 @@ void KN2Parser::parseMetadata(const KNXMLReader &reader)
       case KN2Token::authors :
       case KN2Token::keywords :
       case KN2Token::title :
-        KN_DEBUG_XML_TODO("element", name, ns);
+        KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
       }
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -634,9 +613,6 @@ void KN2Parser::parsePage(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -652,14 +628,14 @@ void KN2Parser::parsePage(const KNXMLReader &reader)
         parseLayers(reader);
         break;
       case KN2Token::geometry :
-        KN_DEBUG_XML_TODO("element", name, ns);
+        KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
       }
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -678,9 +654,6 @@ void KN2Parser::parseProxyMasterLayer(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -689,18 +662,18 @@ void KN2Parser::parseProxyMasterLayer(const KNXMLReader &reader)
         ref = readOnlyElementAttribute(reader, KN2Token::IDREF, KN2Token::NS_URI_SFA);
         break;
       case KN2Token::type :
-        KN_DEBUG_XML_TODO("element", name, ns);
+        KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
       default :
-        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
         skipElement(element);
         break;
       }
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -760,9 +733,6 @@ void KN2Parser::parseSlide(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_KEY == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -791,18 +761,18 @@ void KN2Parser::parseSlide(const KNXMLReader &reader)
       case KN2Token::master_ref :
       case KN2Token::notes :
       case KN2Token::dummy_body_headline :
-        KN_DEBUG_XML_TODO("element", name, ns);
+        KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
       default :
-        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
         skipElement(element);
         break;
       }
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -822,16 +792,13 @@ void KN2Parser::parseSlideList(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if ((KN2Token::NS_URI_KEY == getNamespaceId(element)) && (KN2Token::slide == getNameId(element)))
     {
       parseSlide(reader);
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -862,17 +829,14 @@ void KN2Parser::parseStickyNotes(const KNXMLReader &reader)
 
 void KN2Parser::parseStyles(const KNXMLReader &reader, const bool anonymous)
 {
-  const int type = anonymous ? KN2Token::anon_styles : KN2Token::styles;
-  assert(checkElement(reader, type, KN2Token::NS_URI_SF));
+  assert(checkElement(reader, anonymous ? KN2Token::anon_styles : KN2Token::styles, KN2Token::NS_URI_SF));
+  (void) anonymous;
 
   checkNoAttributes(reader);
 
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -909,19 +873,19 @@ void KN2Parser::parseStyles(const KNXMLReader &reader, const bool anonymous)
       case KN2Token::table_cell_style_ref :
       case KN2Token::table_vector_style_ref :
       case KN2Token::vector_style_ref :
-        KN_DEBUG_XML_TODO("element", name, ns);
+        KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
 
       default :
-        KN_DEBUG_XML_TODO("element", name, ns);
+        KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
       }
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -938,9 +902,6 @@ void KN2Parser::parseStylesheet(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -955,14 +916,14 @@ void KN2Parser::parseStylesheet(const KNXMLReader &reader)
         parent = readRef(element);
         break;
       default :
-        KN_DEBUG_XML_TODO("element", name, ns);
+        KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
       }
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -1016,9 +977,6 @@ void KN2Parser::parseTheme(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_KEY == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -1037,14 +995,14 @@ void KN2Parser::parseTheme(const KNXMLReader &reader)
         parseMasterSlides(reader);
         break;
       default :
-        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
         skipElement(element);
         break;
       }
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -1061,16 +1019,13 @@ void KN2Parser::parseThemeList(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if ((KN2Token::NS_URI_KEY == getNamespaceId(element)) && (KN2Token::theme == getNameId(element)))
     {
       parseTheme(reader);
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -1223,9 +1178,6 @@ void KN2Parser::parseGeometry(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -1241,18 +1193,18 @@ void KN2Parser::parseGeometry(const KNXMLReader &reader)
         break;
       case KN2Token::geometry :
         // Huh? I need to find the file that actually contains this...
-        KN_DEBUG_XML_TODO("element", name, ns);
+        KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
       default :
-        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
         skipElement(element);
         break;
       }
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -1290,9 +1242,6 @@ void KN2Parser::parseGroup(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -1316,18 +1265,18 @@ void KN2Parser::parseGroup(const KNXMLReader &reader)
         parseShape(reader);
         break;
       case KN2Token::wrap :
-        KN_DEBUG_XML_TODO("element", name, ns);
+        KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
       default :
-        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
         skipElement(element);
         break;
       }
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -1374,9 +1323,6 @@ void KN2Parser::parseImage(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -1389,18 +1335,18 @@ void KN2Parser::parseImage(const KNXMLReader &reader)
       case KN2Token::style :
       case KN2Token::binary :
       case KN2Token::filtered_image :
-        KN_DEBUG_XML_TODO("element", name, ns);
+        KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
       default :
-        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
         skipElement(element);
         break;
       }
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -1436,9 +1382,6 @@ void KN2Parser::parseLine(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -1461,18 +1404,18 @@ void KN2Parser::parseLine(const KNXMLReader &reader)
         break;
       }
       case KN2Token::style :
-        KN_DEBUG_XML_TODO("element", name, ns);
+        KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
       default :
-        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
         skipElement(element);
         break;
       }
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -1540,9 +1483,6 @@ void KN2Parser::parseMedia(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -1556,18 +1496,18 @@ void KN2Parser::parseMedia(const KNXMLReader &reader)
       case KN2Token::placeholder_size :
       case KN2Token::style :
       case KN2Token::masking_shape_path_source :
-        KN_DEBUG_XML_TODO("element", name, ns);
+        KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
       default :
-        KN_DEBUG_XML_UNKNOWN("element", name, ns);
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
         skipElement(element);
         break;
       }
     }
     else
     {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
@@ -1691,9 +1631,6 @@ void KN2Parser::parseShape(const KNXMLReader &reader)
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    const char *const name = element.getName();
-    const char *const ns = element.getNamespace();
-
     if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
@@ -1704,18 +1641,18 @@ void KN2Parser::parseShape(const KNXMLReader &reader)
       case KN2Token::geometry :
       case KN2Token::style :
       case KN2Token::text :
-        KN_DEBUG_XML_TODO("element", name, ns);
-        skipElement(element);
-        break;
-      default :
-        KN_DEBUG_XML_UNKNOWN("element", name, ns);
-        skipElement(element);
-        break;
-      }
+      KN_DEBUG_XML_TODO_ELEMENT(element);
+      skipElement(element);
+      break;
+    default :
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+      skipElement(element);
+      break;
     }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN("element", name, ns);
+  }
+  else
+  {
+    KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
