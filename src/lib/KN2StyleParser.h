@@ -20,6 +20,10 @@ class KNXMLReader;
 
 class KN2StyleParser
 {
+  // disable copying
+  KN2StyleParser(const KN2StyleParser &other);
+  KN2StyleParser &operator=(const KN2StyleParser &other);
+
 public:
   KN2StyleParser(int nameId, int nsId, KNCollector *collector);
 

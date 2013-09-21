@@ -20,6 +20,10 @@ namespace libkeynote
   */
 class KNPropertyMap
 {
+  // disable copying
+  KNPropertyMap(const KNPropertyMap &other);
+  KNPropertyMap &operator=(const KNPropertyMap &other);
+
   typedef boost::unordered_map<std::string, boost::any> Map_t;
 
 public:

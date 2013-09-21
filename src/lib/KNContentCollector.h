@@ -26,6 +26,10 @@ struct KNDictionary;
 
 class KNContentCollector : public KNCollectorBase
 {
+  // disable copying
+  KNContentCollector(const KNContentCollector &other);
+  KNContentCollector &operator=(const KNContentCollector &other);
+
 public:
   KNContentCollector(::libwpg::WPGPaintInterface *painter, KNDictionary &dict, const KNLayerMap_t &masterPages, const KNSize &size, const KNDefaults &defaults);
   virtual ~KNContentCollector();
