@@ -29,6 +29,7 @@ using boost::lexical_cast;
 using boost::numeric_cast;
 using boost::optional;
 
+using std::make_pair;
 using std::pair;
 using std::string;
 
@@ -1887,7 +1888,9 @@ void KN2Parser::parseConnectionPath(const KNXMLReader &reader)
   const optional<ID_t> id = readID(reader);
 
   KNSize size;
-  pair<optional<double>, optional<double> > point;
+  pair<optional<double>, optional<double> > point = make_pair(0.0, 0.0);
+  point.first.reset();
+  point.second.reset();
 
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
@@ -1958,7 +1961,9 @@ void KN2Parser::parsePointPath(const KNXMLReader &reader)
   }
 
   KNSize size;
-  pair<optional<double>, optional<double> > point;
+  pair<optional<double>, optional<double> > point = make_pair(0.0, 0.0);
+  point.first.reset();
+  point.second.reset();
 
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
