@@ -41,7 +41,6 @@ public:
   virtual void endLayer();
 
 private:
-  KNDictionary &m_dict;
   KNLayerMap_t &m_masterPages;
   KNSize &m_size;
 };
