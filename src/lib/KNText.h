@@ -21,7 +21,7 @@ namespace libkeynote
 
 class KNText
 {
-  class Paragraph;
+  struct Paragraph;
   typedef boost::shared_ptr<Paragraph> ParagraphPtr_t;
 
 public:
