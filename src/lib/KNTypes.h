@@ -150,12 +150,16 @@ struct KNWrap
 struct KNGroup
 {
   KNObjectList_t objects;
+
+  KNGroup();
 };
 
 struct KNLayer
 {
   boost::optional<std::string> type;
   KNObjectList_t objects;
+
+  KNLayer();
 };
 
 struct KNTextBody

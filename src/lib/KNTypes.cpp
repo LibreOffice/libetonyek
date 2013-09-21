@@ -120,6 +120,17 @@ KNWrap::KNWrap()
 {
 }
 
+KNGroup::KNGroup()
+  : objects()
+{
+}
+
+KNLayer::KNLayer()
+  : type()
+  , objects()
+{
+}
+
 KNTextBody::KNTextBody(bool title_)
   : title(title_)
   , empty()
