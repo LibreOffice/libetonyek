@@ -24,6 +24,9 @@ class KNStyleContext;
   */
 class KNOutput
 {
+  // disable assignment
+  KNOutput &operator=(const KNOutput &other);
+
 public:
   /** Create an initial @c KNOutput.
     *
@@ -64,6 +67,12 @@ public:
     * @seealso KNStyleContext
     */
   KNOutput(const KNOutput &output, const KNTransformation &tr, const KNStylePtr_t &style);
+
+  /** Create a @c KNOutput as a copy of an existing one.
+    *
+    * @arg[in] other the copied @c KNOutput instance
+    */
+  KNOutput(const KNOutput &other);
 
   /** Destroy a @c KNOutput instance.
     *

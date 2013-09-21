@@ -49,6 +49,14 @@ KNOutput::KNOutput(const KNOutput &output, const KNTransformation &tr, const KNS
   m_stylePushed = true;
 }
 
+KNOutput::KNOutput(const KNOutput &other)
+  : m_painter(other.m_painter)
+  , m_styleContext(other.m_styleContext)
+  , m_transformation(other.m_transformation)
+  , m_stylePushed(false)
+{
+}
+
 KNOutput::~KNOutput()
 {
   if (m_stylePushed)
