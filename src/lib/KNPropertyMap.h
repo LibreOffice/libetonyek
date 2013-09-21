@@ -20,10 +20,6 @@ namespace libkeynote
   */
 class KNPropertyMap
 {
-  // disable copying
-  KNPropertyMap(const KNPropertyMap &other);
-  KNPropertyMap &operator=(const KNPropertyMap &other);
-
   typedef boost::unordered_map<std::string, boost::any> Map_t;
 
 public:
@@ -36,6 +32,25 @@ public:
     * @arg[in] parent the parent of this map
     */
   explicit KNPropertyMap(const KNPropertyMap *parent);
+
+  /** Construct a map as a copy of existing one.
+    *
+    * @arg[in] other the original
+    */
+  KNPropertyMap(const KNPropertyMap &other);
+
+  /** Assign the content from another map.
+    *
+    * @arg[in] other the source map
+    * @returns this map
+    */
+  KNPropertyMap &operator=(const KNPropertyMap &other);
+
+  /** Swap the content with another map.
+    *
+    * @arg[inout] the other map
+    */
+  void swap(KNPropertyMap &other);
 
   /** Set a new parent for this map.
     *

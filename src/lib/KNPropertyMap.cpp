@@ -24,6 +24,26 @@ KNPropertyMap::KNPropertyMap(const KNPropertyMap *const parent)
 {
 }
 
+KNPropertyMap::KNPropertyMap(const KNPropertyMap &other)
+  : m_map(other.m_map)
+  , m_parent(other.m_parent)
+{
+}
+
+KNPropertyMap &KNPropertyMap::operator=(const KNPropertyMap &other)
+{
+  KNPropertyMap copy(other);
+  swap(copy);
+  return *this;
+}
+
+void KNPropertyMap::swap(KNPropertyMap &other)
+{
+  using std::swap;
+  swap(m_map, other.m_map);
+  swap(m_parent, other.m_parent);
+}
+
 void KNPropertyMap::setParent(const KNPropertyMap *const parent)
 {
   m_parent = parent;
