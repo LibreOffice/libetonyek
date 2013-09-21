@@ -57,9 +57,7 @@ private:
 private:
   libwpg::WPGPaintInterface *m_painter;
 
-  KNDictionary &m_dict;
   const KNLayerMap_t &m_masterPages;
-  const KNSize &m_size;
 
   bool m_pageOpened;
   bool m_layerOpened;
