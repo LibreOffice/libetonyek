@@ -23,7 +23,6 @@ namespace libkeynote
 {
 
 struct KNDictionary;
-struct KNStyle;
 
 class KNContentCollector : public KNCollectorBase
 {
