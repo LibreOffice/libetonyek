@@ -1641,18 +1641,18 @@ void KN2Parser::parseShape(const KNXMLReader &reader)
       case KN2Token::geometry :
       case KN2Token::style :
       case KN2Token::text :
-      KN_DEBUG_XML_TODO_ELEMENT(element);
-      skipElement(element);
-      break;
-    default :
-      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
-      skipElement(element);
-      break;
+        KN_DEBUG_XML_TODO_ELEMENT(element);
+        skipElement(element);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+        skipElement(element);
+        break;
+      }
     }
-  }
-  else
-  {
-    KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
       skipElement(element);
     }
   }
