@@ -25,6 +25,8 @@ struct KNText::Paragraph
 {
   KNParagraphStylePtr_t style;
   KNObjectList_t objects;
+
+  Paragraph();
 };
 
 namespace
@@ -157,6 +159,12 @@ KNText::KNText()
   , m_paragraphs()
   , m_currentParagraph()
   , m_lineBreaks(0)
+{
+}
+
+KNText::Paragraph::Paragraph()
+  : style()
+  , objects()
 {
 }
 
