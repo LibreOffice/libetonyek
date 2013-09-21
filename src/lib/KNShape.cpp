@@ -170,6 +170,14 @@ void transform(deque<Point> &points, const KNTransformation &tr)
 
 }
 
+KNShape::KNShape()
+  : geometry()
+  , style()
+  , path()
+  , text()
+{
+}
+
 KNObjectPtr_t makeObject(const KNShapePtr_t &shape)
 {
   // TODO: implement me

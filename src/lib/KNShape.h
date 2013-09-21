@@ -29,6 +29,8 @@ struct KNShape
   KNStylePtr_t style;
   KNPathPtr_t path;
   KNTextPtr_t text;
+
+  KNShape();
 };
 
 typedef boost::shared_ptr<KNShape> KNShapePtr_t;
