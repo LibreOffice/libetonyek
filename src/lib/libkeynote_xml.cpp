@@ -90,13 +90,10 @@ string readOnlyAttribute(const KNXMLReader &reader, const int name, const int ns
 
 string readOnlyElementAttribute(const KNXMLReader &reader, const int name, const int ns)
 {
-  const char *const elementName = reader.getName();
-  const char *const elementNs = reader.getNamespace();
-
   const string value = readOnlyAttribute(reader, name, ns);
 
   KNXMLReader::ElementIterator element(reader);
-  KN_DEBUG_XML_NOT_EMPTY(elementName, elementNs);
+  KN_DEBUG_XML_NOT_EMPTY(reader.getName(), reader.getNamespace());
   skipElement(element);
 
   return value;
