@@ -76,6 +76,10 @@ struct KNXMLReader::Impl
 
   Impl();
   ~Impl();
+
+  // disable copying
+  Impl(const Impl &other);
+  Impl &operator=(const Impl &other);
 };
 
 KNXMLReader::Impl::Impl()
