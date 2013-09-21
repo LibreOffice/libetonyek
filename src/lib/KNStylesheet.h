@@ -45,6 +45,8 @@ struct KNStylesheet
   KNSlideStyleMap_t slideStyles;
   KNTabularStyleMap_t tabularStyles;
   KNVectorStyleMap_t vectorStyles;
+
+  KNStylesheet();
 };
 
 }
