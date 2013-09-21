@@ -50,6 +50,8 @@ struct KNDictionary
 
   KNTextBodyMap_t bodyPlaceholders;
   KNTextBodyMap_t titlePlaceholders;
+
+  KNDictionary();
 };
 
 }
