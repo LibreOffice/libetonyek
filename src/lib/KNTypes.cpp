@@ -142,15 +142,6 @@ WPXPropertyList pointToWPG(const double x, const double y)
   return props;
 }
 
-WPXPropertyList makeLineStyle(const KNStyle &style)
-{
-  // TODO: implement me
-  (void) style;
-  WPXPropertyList props;
-
-  return props;
-}
-
 }
 
 namespace
