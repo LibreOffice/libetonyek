@@ -306,6 +306,8 @@ void KN2Parser::parseDrawables(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::drawables, KN2Token::NS_URI_SF));
 
+  getCollector()->startLevel();
+
   readID(reader);
 
   KNXMLReader::ElementIterator element(reader);
@@ -353,6 +355,8 @@ void KN2Parser::parseDrawables(const KNXMLReader &reader)
       skipElement(element);
     }
   }
+
+  getCollector()->endLevel();
 }
 
 void KN2Parser::parseLayer(const KNXMLReader &reader)
@@ -1221,6 +1225,8 @@ void KN2Parser::parseGroup(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::group, KN2Token::NS_URI_SF));
 
+  getCollector()->startLevel();
+
   optional<ID_t> id;
 
   KNXMLReader::AttributeIterator attr(reader);
@@ -1288,6 +1294,7 @@ void KN2Parser::parseGroup(const KNXMLReader &reader)
 
   getCollector()->collectGroup(id, group);
   getCollector()->endGroup();
+  getCollector()->endLevel();
 }
 
 void KN2Parser::parseImage(const KNXMLReader &reader)
@@ -1432,6 +1439,8 @@ void KN2Parser::parseMedia(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::media, KN2Token::NS_URI_SF));
 
+  getCollector()->startLevel();
+
   optional<ID_t> id;
 
   KNXMLReader::AttributeIterator attr(reader);
@@ -1518,6 +1527,7 @@ void KN2Parser::parseMedia(const KNXMLReader &reader)
   }
 
   getCollector()->collectMedia(id);
+  getCollector()->endLevel();
 }
 
 void KN2Parser::parsePath(const KNXMLReader &reader)
