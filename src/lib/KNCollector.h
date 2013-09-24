@@ -101,6 +101,9 @@ public:
   virtual void endSlides() = 0;
   virtual void startThemes() = 0;
   virtual void endThemes() = 0;
+
+  virtual void startLevel() = 0;
+  virtual void endLevel() = 0;
 };
 
 } // namespace libkeynote

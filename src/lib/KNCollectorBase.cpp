@@ -578,6 +578,16 @@ void KNCollectorBase::endTextLayout()
   }
 }
 
+void KNCollectorBase::startLevel()
+{
+  // TODO: implement me
+}
+
+void KNCollectorBase::endLevel()
+{
+  // TODO: implement me
+}
+
 bool KNCollectorBase::isCollecting() const
 {
   return m_collecting;

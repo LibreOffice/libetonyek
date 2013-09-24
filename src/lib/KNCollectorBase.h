@@ -87,6 +87,9 @@ public:
   virtual void startTextLayout(const boost::optional<ID_t> &style);
   virtual void endTextLayout();
 
+  virtual void startLevel();
+  virtual void endLevel();
+
 protected:
   bool isCollecting() const;
   void setCollecting(bool collecting);
