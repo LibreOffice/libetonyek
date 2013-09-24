@@ -1201,11 +1201,6 @@ void KN2Parser::parseGeometry(const KNXMLReader &reader)
         // ignore
         skipElement(element);
         break;
-      case KN2Token::geometry :
-        // Huh? I need to find the file that actually contains this...
-        KN_DEBUG_XML_TODO_ELEMENT(element);
-        skipElement(element);
-        break;
       default :
         KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
         skipElement(element);
