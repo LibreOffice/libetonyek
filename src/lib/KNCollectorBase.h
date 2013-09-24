@@ -108,15 +108,16 @@ private:
   KNDictionary &m_dict;
   const KNDefaults &m_defaults;
 
-  std::stack<KNObjectList_t> m_objectsStack;
-  KNGeometryPtr_t m_currentGeometry;
-  KNPathPtr_t m_currentPath;
   KNLayerPtr_t m_currentLayer;
+
+  std::stack<KNObjectList_t> m_objectsStack;
+  std::stack<KNGeometryPtr_t> m_geometryStack;
+  KNPathPtr_t m_currentPath;
+
+  KNTextPtr_t m_currentText;
 
   KNStylesheetPtr_t m_currentStylesheet;
   std::deque<KNStylePtr_t> m_newStyles;
-
-  KNTextPtr_t m_currentText;
 
   bool m_collecting;
   bool m_layerOpened;

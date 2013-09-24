@@ -86,13 +86,13 @@ T getValue(const optional<ID_t> &id, boost::unordered_map<ID_t, T> &map)
 KNCollectorBase::KNCollectorBase(KNDictionary &dict, const KNDefaults &defaults)
   : m_dict(dict)
   , m_defaults(defaults)
-  , m_objectsStack()
-  , m_currentGeometry()
-  , m_currentPath()
   , m_currentLayer()
+  , m_objectsStack()
+  , m_geometryStack()
+  , m_currentPath()
+  , m_currentText()
   , m_currentStylesheet(new KNStylesheet())
   , m_newStyles()
-  , m_currentText()
   , m_collecting(false)
   , m_layerOpened(false)
   , m_groupLevel(0)
@@ -245,19 +245,23 @@ void KNCollectorBase::collectGeometry(boost::optional<ID_t> &,
 {
   if (m_collecting)
   {
+    assert(!m_geometryStack.empty());
+
     m_defaults.applyGeometry(naturalSize, position, angle, shearXAngle, shearYAngle, horizontalFlip, verticalFlip, aspectRatioLocked, sizesLocked);
     assert(naturalSize && position && angle && shearXAngle && shearYAngle && horizontalFlip && verticalFlip && aspectRatioLocked && sizesLocked);
 
-    m_currentGeometry = KNGeometryPtr_t(new KNGeometry);
-    m_currentGeometry->naturalSize = get(naturalSize);
-    m_currentGeometry->position = get(position);
-    m_currentGeometry->angle = get(angle);
-    m_currentGeometry->shearXAngle = get(shearXAngle);
-    m_currentGeometry->shearYAngle = get(shearYAngle);
-    m_currentGeometry->horizontalFlip = get(horizontalFlip);
-    m_currentGeometry->verticalFlip = get(verticalFlip);
-    m_currentGeometry->aspectRatioLocked = get(aspectRatioLocked);
-    m_currentGeometry->sizesLocked = get(sizesLocked);
+    const KNGeometryPtr_t geometry(new KNGeometry);
+    geometry->naturalSize = get(naturalSize);
+    geometry->position = get(position);
+    geometry->angle = get(angle);
+    geometry->shearXAngle = get(shearXAngle);
+    geometry->shearYAngle = get(shearYAngle);
+    geometry->horizontalFlip = get(horizontalFlip);
+    geometry->verticalFlip = get(verticalFlip);
+    geometry->aspectRatioLocked = get(aspectRatioLocked);
+    geometry->sizesLocked = get(sizesLocked);
+
+    m_geometryStack.top() = geometry;
   }
 }
 
@@ -285,9 +289,10 @@ void KNCollectorBase::collectImage(const optional<ID_t> &id, const KNImagePtr_t 
   if (m_collecting)
   {
     assert(!m_objectsStack.empty());
+    assert(!m_geometryStack.empty());
 
-    image->geometry = m_currentGeometry;
-    m_currentGeometry.reset();
+    image->geometry = m_geometryStack.top();
+    m_geometryStack.top().reset();
     if (id)
       m_dict.images[get(id)] = image;
     m_objectsStack.top().push_back(makeObject(image));
@@ -299,9 +304,10 @@ void KNCollectorBase::collectLine(const optional<ID_t> &, const KNLinePtr_t &lin
   if (m_collecting)
   {
     assert(!m_objectsStack.empty());
+    assert(!m_geometryStack.empty());
 
-    line->geometry = m_currentGeometry;
-    m_currentGeometry.reset();
+    line->geometry = m_geometryStack.top();
+    m_geometryStack.top().reset();
     m_objectsStack.top().push_back(makeObject(line));
   }
 }
@@ -483,9 +489,10 @@ void KNCollectorBase::collectSlideText(const optional<ID_t> &id, const bool titl
   if (m_collecting)
   {
     // assert(!m_objectsStack.empty());
+    assert(!m_geometryStack.empty());
 
     KNTextBodyPtr_t textBody(new KNTextBody(title));
-    textBody->geometry = m_currentGeometry;
+    textBody->geometry = m_geometryStack.top();
     textBody->text = m_currentText;
     if (id)
     {
@@ -496,7 +503,7 @@ void KNCollectorBase::collectSlideText(const optional<ID_t> &id, const bool titl
     }
     // m_objectsStack.top().push_back(makeObject(textBody));
 
-    m_currentGeometry.reset();
+    m_geometryStack.top().reset();
     m_currentText.reset();
   }
 }
@@ -599,12 +606,17 @@ void KNCollectorBase::endTextLayout()
 
 void KNCollectorBase::startLevel()
 {
-  // TODO: implement me
+  if (m_collecting)
+    m_geometryStack.push(KNGeometryPtr_t());
 }
 
 void KNCollectorBase::endLevel()
 {
-  // TODO: implement me
+  if (m_collecting)
+  {
+    assert(!m_geometryStack.empty());
+    m_geometryStack.pop();
+  }
 }
 
 bool KNCollectorBase::isCollecting() const
