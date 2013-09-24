@@ -48,8 +48,8 @@ struct KNDictionary
   KNFilteredImageMap_t filteredImages;
   KNImageMap_t images;
 
-  KNTextBodyMap_t bodyPlaceholders;
-  KNTextBodyMap_t titlePlaceholders;
+  KNPlaceholderMap_t bodyPlaceholders;
+  KNPlaceholderMap_t titlePlaceholders;
 
   KNDictionary();
 };

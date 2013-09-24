@@ -132,8 +132,8 @@ KNLayer::KNLayer()
 {
 }
 
-KNTextBody::KNTextBody(bool title_)
-  : title(title_)
+KNPlaceholder::KNPlaceholder()
+  : title()
   , empty()
   , geometry()
   , style()
@@ -298,24 +298,24 @@ void MediaObject::draw(const KNOutput &output)
 namespace
 {
 
-class TextBodyObject : public KNObject
+class PlaceholderObject : public KNObject
 {
 public:
-  explicit TextBodyObject(const KNTextBodyPtr_t &body);
+  explicit PlaceholderObject(const KNPlaceholderPtr_t &body);
 
 private:
   virtual void draw(const KNOutput &output);
 
 private:
-  const KNTextBodyPtr_t m_body;
+  const KNPlaceholderPtr_t m_body;
 };
 
-TextBodyObject::TextBodyObject(const KNTextBodyPtr_t &body)
+PlaceholderObject::PlaceholderObject(const KNPlaceholderPtr_t &body)
   : m_body(body)
 {
 }
 
-void TextBodyObject::draw(const KNOutput &output)
+void PlaceholderObject::draw(const KNOutput &output)
 {
   // TODO: implement me
   (void) output;
@@ -347,9 +347,9 @@ KNObjectPtr_t makeObject(const KNMediaPtr_t &media)
   return object;
 }
 
-KNObjectPtr_t makeObject(const KNTextBodyPtr_t &body)
+KNObjectPtr_t makeObject(const KNPlaceholderPtr_t &body)
 {
-  const KNObjectPtr_t object(new TextBodyObject(body));
+  const KNObjectPtr_t object(new PlaceholderObject(body));
   return object;
 }
 

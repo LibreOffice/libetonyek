@@ -162,22 +162,22 @@ struct KNLayer
   KNLayer();
 };
 
-struct KNTextBody
+struct KNPlaceholder
 {
-  bool title;
+  boost::optional<bool> title;
   boost::optional<bool> empty;
   KNGeometryPtr_t geometry;
-  KNStylePtr_t style;
+  KNPlaceholderStylePtr_t style;
   KNTextPtr_t text;
 
-  explicit KNTextBody(bool title_);
+  KNPlaceholder();
 };
 
 KNObjectPtr_t makeObject(const KNGroupPtr_t &group);
 KNObjectPtr_t makeObject(const KNImagePtr_t &image);
 KNObjectPtr_t makeObject(const KNLinePtr_t &line);
 KNObjectPtr_t makeObject(const KNMediaPtr_t &media);
-KNObjectPtr_t makeObject(const KNTextBodyPtr_t &body);
+KNObjectPtr_t makeObject(const KNPlaceholderPtr_t &placeholder);
 
 }
 
