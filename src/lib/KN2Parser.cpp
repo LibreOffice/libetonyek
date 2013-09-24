@@ -1131,7 +1131,15 @@ void KN2Parser::parseGeometry(const KNXMLReader &reader)
   assert(checkElement(reader, KN2Token::geometry, KN2Token::NS_URI_SF));
 
   optional<ID_t> id;
-  KNGeometryPtr_t geometry(new KNGeometry());
+  optional<KNSize> size;
+  optional<KNPosition> pos;
+  optional<double> angle;
+  optional<double> shearXAngle;
+  optional<double> shearYAngle;
+  optional<bool> aspectRatioLocked;
+  optional<bool> sizesLocked;
+  optional<bool> horizontalFlip;
+  optional<bool> verticalFlip;
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -1141,25 +1149,25 @@ void KN2Parser::parseGeometry(const KNXMLReader &reader)
       switch (getNameId(attr))
       {
       case KN2Token::angle :
-        geometry->angle = lexical_cast<double>(attr.getValue());
+        angle = lexical_cast<double>(attr.getValue());
         break;
       case KN2Token::aspectRatioLocked :
-        geometry->aspectRatioLocked = bool_cast(attr.getValue());
+        aspectRatioLocked = bool_cast(attr.getValue());
         break;
       case KN2Token::horizontalFlip :
-        geometry->horizontalFlip = bool_cast(attr.getValue());
+        horizontalFlip = bool_cast(attr.getValue());
         break;
       case KN2Token::shearXAngle :
-        geometry->shearXAngle = lexical_cast<double>(attr.getValue());
+        shearXAngle = lexical_cast<double>(attr.getValue());
         break;
       case KN2Token::shearYAngle :
-        geometry->shearYAngle = lexical_cast<double>(attr.getValue());
+        shearYAngle = lexical_cast<double>(attr.getValue());
         break;
       case KN2Token::sizesLocked :
-        geometry->sizesLocked = bool_cast(attr.getValue());
+        sizesLocked = bool_cast(attr.getValue());
         break;
       case KN2Token::verticalFlip :
-        geometry->verticalFlip = bool_cast(attr.getValue());
+        verticalFlip = bool_cast(attr.getValue());
         break;
       default :
         KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
@@ -1184,13 +1192,14 @@ void KN2Parser::parseGeometry(const KNXMLReader &reader)
       switch (getNameId(element))
       {
       case KN2Token::naturalSize :
-        geometry->naturalSize = readSize(reader);
-        break;
-      case KN2Token::size :
-        geometry->size = readSize(reader);
+        size = readSize(reader);
         break;
       case KN2Token::position :
-        geometry->position = readPosition(reader);
+        pos = readPosition(reader);
+        break;
+      case KN2Token::size :
+        // ignore
+        skipElement(element);
         break;
       case KN2Token::geometry :
         // Huh? I need to find the file that actually contains this...
@@ -1210,7 +1219,7 @@ void KN2Parser::parseGeometry(const KNXMLReader &reader)
     }
   }
 
-  getCollector()->collectGeometry(id, geometry);
+  getCollector()->collectGeometry(id, size, pos, angle, shearXAngle, shearYAngle, horizontalFlip, verticalFlip, aspectRatioLocked, sizesLocked);
 }
 
 void KN2Parser::parseGroup(const KNXMLReader &reader)

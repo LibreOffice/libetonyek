@@ -51,8 +51,14 @@ public:
   virtual void collectTabularStyle(const boost::optional<ID_t> &id, const KNTabularStylePtr_t &style, bool ref, bool anonymous) = 0;
   virtual void collectVectorStyle(const boost::optional<ID_t> &id, const KNVectorStylePtr_t &style, bool ref, bool anonymous) = 0;
 
+  virtual void collectGeometry(boost::optional<ID_t> &id,
+                               boost::optional<KNSize> &naturalSize, boost::optional<KNPosition> &position,
+                               boost::optional<double> &angle,
+                               boost::optional<double> &shearXAngle, boost::optional<double> &shearYAngle,
+                               boost::optional<bool> &horizontalFlip, boost::optional<bool> &verticalFlip,
+                               boost::optional<bool> &aspectRatioLocked, boost::optional<bool> &sizesLocked) = 0;
+
   virtual void collectBezier(const boost::optional<ID_t> &id, const KNPathPtr_t &path, bool ref) = 0;
-  virtual void collectGeometry(const boost::optional<ID_t> &id, const KNGeometryPtr_t &geometry) = 0;
   virtual void collectGroup(const boost::optional<ID_t> &id, const KNGroupPtr_t &group) = 0;
   virtual void collectImage(const boost::optional<ID_t> &id, const KNImagePtr_t &image) = 0;
   virtual void collectLine(const boost::optional<ID_t> &id, const KNLinePtr_t &line) = 0;

@@ -19,6 +19,9 @@ namespace libkeynote
 
 typedef std::string ID_t;
 
+struct KNSize;
+struct KNPosition;
+
 struct KNGeometry;
 
 typedef boost::shared_ptr<KNGeometry> KNGeometryPtr_t;

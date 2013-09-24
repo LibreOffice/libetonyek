@@ -236,16 +236,35 @@ void KNCollectorBase::collectVectorStyle(const boost::optional<ID_t> &id, const 
   (void) anonymous;
 }
 
+void KNCollectorBase::collectGeometry(boost::optional<ID_t> &,
+                                      boost::optional<KNSize> &naturalSize, boost::optional<KNPosition> &position,
+                                      boost::optional<double> &angle,
+                                      boost::optional<double> &shearXAngle, boost::optional<double> &shearYAngle,
+                                      boost::optional<bool> &horizontalFlip, boost::optional<bool> &verticalFlip,
+                                      boost::optional<bool> &aspectRatioLocked, boost::optional<bool> &sizesLocked)
+{
+  if (m_collecting)
+  {
+    m_defaults.applyGeometry(naturalSize, position, angle, shearXAngle, shearYAngle, horizontalFlip, verticalFlip, aspectRatioLocked, sizesLocked);
+    assert(naturalSize && position && angle && shearXAngle && shearYAngle && horizontalFlip && verticalFlip && aspectRatioLocked && sizesLocked);
+
+    m_currentGeometry = KNGeometryPtr_t(new KNGeometry);
+    m_currentGeometry->naturalSize = get(naturalSize);
+    m_currentGeometry->position = get(position);
+    m_currentGeometry->angle = get(angle);
+    m_currentGeometry->shearXAngle = get(shearXAngle);
+    m_currentGeometry->shearYAngle = get(shearYAngle);
+    m_currentGeometry->horizontalFlip = get(horizontalFlip);
+    m_currentGeometry->verticalFlip = get(verticalFlip);
+    m_currentGeometry->aspectRatioLocked = get(aspectRatioLocked);
+    m_currentGeometry->sizesLocked = get(sizesLocked);
+  }
+}
+
 void KNCollectorBase::collectBezier(const optional<ID_t> &id, const KNPathPtr_t &path, const bool ref)
 {
   if (m_collecting)
     m_currentPath = getValue(id, path, ref, m_dict.beziers);
-}
-
-void KNCollectorBase::collectGeometry(const optional<ID_t> &, const KNGeometryPtr_t &geometry)
-{
-  if (m_collecting)
-    m_currentGeometry = geometry;
 }
 
 void KNCollectorBase::collectGroup(const optional<ID_t> &, const KNGroupPtr_t &group)
