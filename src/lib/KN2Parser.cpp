@@ -1783,7 +1783,7 @@ void KN2Parser::parsePlaceholder(const KNXMLReader &reader, const bool title)
     }
   }
 
-  getCollector()->collectSlideText(id, title);
+  getCollector()->collectTextPlaceholder(id, title);
 }
 
 void KN2Parser::parseBezierPath(const KNXMLReader &reader)

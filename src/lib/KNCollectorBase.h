@@ -81,7 +81,7 @@ public:
   virtual void collectTab();
   virtual void collectLineBreak();
 
-  virtual void collectSlideText(const boost::optional<ID_t> &id, bool title);
+  virtual void collectTextPlaceholder(const boost::optional<ID_t> &id, bool title);
 
   virtual void startLayer();
   virtual void endLayer();

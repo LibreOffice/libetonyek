@@ -484,7 +484,7 @@ void KNCollectorBase::collectLineBreak()
   }
 }
 
-void KNCollectorBase::collectSlideText(const optional<ID_t> &id, const bool title)
+void KNCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const bool title)
 {
   if (m_collecting)
   {
