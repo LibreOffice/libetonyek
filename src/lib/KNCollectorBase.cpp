@@ -484,28 +484,43 @@ void KNCollectorBase::collectLineBreak()
   }
 }
 
-void KNCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const bool title)
+void KNCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const bool title, const bool ref)
 {
   if (m_collecting)
   {
-    // assert(!m_objectsStack.empty());
     assert(!m_geometryStack.empty());
 
-    KNPlaceholderPtr_t placeholder(new KNPlaceholder());
-    placeholder->title = title;
-    placeholder->geometry = m_geometryStack.top();
-    placeholder->text = m_currentText;
-    if (id)
-    {
-      if (title)
-        m_dict.titlePlaceholders[get(id)] = placeholder;
-      else
-        m_dict.bodyPlaceholders[get(id)] = placeholder;
-    }
-    // m_objectsStack.top().push_back(makeObject(placeholder));
+    KNPlaceholderPtr_t placeholder;
+    KNPlaceholderMap_t &placeholderMap = title ? m_dict.titlePlaceholders : m_dict.bodyPlaceholders;
 
-    m_geometryStack.top().reset();
-    m_currentText.reset();
+    if (ref)
+    {
+      assert(!m_objectsStack.empty());
+      if (id)
+        placeholder = placeholderMap[get(id)];
+
+      if (bool(placeholder))
+      {
+        m_objectsStack.top().push_back(makeObject(placeholder));
+      }
+      else
+      {
+        KN_DEBUG_MSG(("no text placeholder found\n"));
+      }
+    }
+    else
+    {
+      placeholder.reset(new KNPlaceholder());
+      placeholder->title = title;
+      placeholder->geometry = m_geometryStack.top();
+      placeholder->text = m_currentText;
+
+      m_geometryStack.top().reset();
+      m_currentText.reset();
+
+      if (id)
+        placeholderMap[get(id)] = placeholder;
+    }
   }
 }
 

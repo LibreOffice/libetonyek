@@ -336,9 +336,19 @@ void KN2Parser::parseDrawables(const KNXMLReader &reader)
         parseShape(element);
         break;
       case KN2Token::body_placeholder_ref :
+      {
+        const optional<ID_t> id = readRef(reader);
+        getCollector()->collectTextPlaceholder(id, false, true);
+        break;
+      }
+      case KN2Token::title_placeholder_ref :
+      {
+        const optional<ID_t> id = readRef(reader);
+        getCollector()->collectTextPlaceholder(id, true, true);
+        break;
+      }
       case KN2Token::slide_number_placeholder_ref :
       case KN2Token::table_info :
-      case KN2Token::title_placeholder_ref :
       case KN2Token::chart_info :
         KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
@@ -1783,7 +1793,7 @@ void KN2Parser::parsePlaceholder(const KNXMLReader &reader, const bool title)
     }
   }
 
-  getCollector()->collectTextPlaceholder(id, title);
+  getCollector()->collectTextPlaceholder(id, title, false);
 }
 
 void KN2Parser::parseBezierPath(const KNXMLReader &reader)

@@ -87,7 +87,7 @@ public:
   virtual void collectTab() = 0;
   virtual void collectLineBreak() = 0;
 
-  virtual void collectTextPlaceholder(const boost::optional<ID_t> &id, bool title) = 0;
+  virtual void collectTextPlaceholder(const boost::optional<ID_t> &id, bool title, bool ref) = 0;
 
   virtual void startPage() = 0;
   virtual void endPage() = 0;
