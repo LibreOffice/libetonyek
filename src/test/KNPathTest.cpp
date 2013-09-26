@@ -8,6 +8,7 @@
  */
 
 #include <string>
+#include <sstream>
 
 #include "KNPath.h"
 
@@ -19,6 +20,50 @@ using std::string;
 
 namespace test
 {
+
+namespace
+{
+
+string toSVG(const KNPath &path)
+{
+  std::ostringstream output;
+
+  const WPXPropertyListVector vec = path.toWPG();
+
+  bool first = true;
+
+  WPXPropertyListVector::Iter it(vec);
+  while (!it.last())
+  {
+    const WPXPropertyList &element = it();
+
+    CPPUNIT_ASSERT(0 != element["libwpg:path-action"]);
+
+    if (first)
+      first = false;
+    else
+      output << ' ';
+    output << element["libwpg:path-action"]->getStr().cstr();
+    if (element["svg:x1"])
+      output << ' ' << element["svg:x1"]->getDouble();
+    if (element["svg:y1"])
+      output << ' ' << element["svg:y1"]->getDouble();
+    if (element["svg:x2"])
+      output << ' ' << element["svg:x2"]->getDouble();
+    if (element["svg:y2"])
+      output << ' ' << element["svg:y2"]->getDouble();
+    if (element["svg:x"])
+      output << ' ' << element["svg:x"]->getDouble();
+    if (element["svg:y"])
+      output << ' ' << element["svg:y"]->getDouble();
+
+    it.next();
+  }
+
+  return output.str();
+}
+
+}
 
 void KNPathTest::setUp()
 {
@@ -110,14 +155,14 @@ void  KNPathTest::testConstruction()
   }
 }
 
-void  KNPathTest::testSVG()
+void  KNPathTest::testConversion()
 {
   {
     const string ref = "M 0 0";
     KNPath path;
     path.appendMoveTo(0, 0);
 
-    CPPUNIT_ASSERT_EQUAL(ref, path.toSvg());
+    CPPUNIT_ASSERT_EQUAL(ref, toSVG(path));
   }
 
   {
@@ -125,7 +170,7 @@ void  KNPathTest::testSVG()
     KNPath path;
     path.appendLineTo(0, 0);
 
-    CPPUNIT_ASSERT_EQUAL(ref, path.toSvg());
+    CPPUNIT_ASSERT_EQUAL(ref, toSVG(path));
   }
 
   {
@@ -133,7 +178,7 @@ void  KNPathTest::testSVG()
     KNPath path;
     path.appendCurveTo(1, 1, 0, 0, 0.5, 0.5);
 
-    CPPUNIT_ASSERT_EQUAL(ref, path.toSvg());
+    CPPUNIT_ASSERT_EQUAL(ref, toSVG(path));
   }
 
   {
@@ -141,7 +186,7 @@ void  KNPathTest::testSVG()
     KNPath path;
     path.appendClose();
 
-    CPPUNIT_ASSERT_EQUAL(ref, path.toSvg());
+    CPPUNIT_ASSERT_EQUAL(ref, toSVG(path));
   }
 
   {
@@ -150,7 +195,7 @@ void  KNPathTest::testSVG()
     path.appendMoveTo(0, 0);
     path.appendLineTo(1, 1);
 
-    CPPUNIT_ASSERT_EQUAL(ref, path.toSvg());
+    CPPUNIT_ASSERT_EQUAL(ref, toSVG(path));
   }
 
   {
@@ -163,7 +208,7 @@ void  KNPathTest::testSVG()
     path.appendClose();
     path.appendLineTo(0, 0);
 
-    CPPUNIT_ASSERT_EQUAL(ref, path.toSvg());
+    CPPUNIT_ASSERT_EQUAL(ref, toSVG(path));
   }
 
   {
@@ -174,7 +219,7 @@ void  KNPathTest::testSVG()
     path.appendCurveTo(1, 1, 0.5, 0.5, 0, 0);
     path.appendClose();
 
-    CPPUNIT_ASSERT_EQUAL(ref, path.toSvg());
+    CPPUNIT_ASSERT_EQUAL(ref, toSVG(path));
   }
 }
 

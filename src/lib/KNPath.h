@@ -13,6 +13,8 @@
 #include <deque>
 #include <string>
 
+#include <libwpd/libwpd.h>
+
 #include "KNObject.h"
 #include "KNPath_fwd.h"
 
@@ -50,9 +52,9 @@ public:
     */
   void transform(const KNTransformation &tr);
 
-  /** Create SVG representation of this path.
+  /** Create WPG representation of this path.
     */
-  std::string toSvg() const;
+  WPXPropertyListVector toWPG() const;
 
 private:
   std::deque<Element *> m_elements;

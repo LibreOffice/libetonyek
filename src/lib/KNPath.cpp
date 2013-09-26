@@ -8,7 +8,6 @@
  */
 
 #include <cassert>
-#include <sstream>
 #include <utility>
 
 #include <boost/bind.hpp>
@@ -23,7 +22,6 @@
 using boost::bind;
 using boost::cref;
 
-using std::ostringstream;
 using std::string;
 
 namespace libkeynote
@@ -56,9 +54,9 @@ public:
     */
   virtual void transform(const KNTransformation &tr) = 0;
 
-  /** Create SVG representation of this path.
+  /** Create WPG representation of this path element.
    */
-  virtual void toSvg(ostringstream &out) const = 0;
+  virtual WPXPropertyList toWPG() const = 0;
 };
 
 namespace
@@ -75,7 +73,7 @@ public:
 
   virtual void transform(const KNTransformation &tr);
 
-  virtual void toSvg(ostringstream &out) const;
+  virtual WPXPropertyList toWPG() const;
 
 private:
   double m_x;
@@ -108,9 +106,15 @@ void MoveTo::transform(const KNTransformation &tr)
   tr(m_x, m_y);
 }
 
-void MoveTo::toSvg(ostringstream &out) const
+WPXPropertyList MoveTo::toWPG() const
 {
-  out << 'M' << ' ' << m_x << ' ' << m_y;
+  WPXPropertyList element;
+
+  element.insert("libwpg:path-action", "M");
+  element.insert("svg:x", m_x);
+  element.insert("svg:y", m_y);
+
+  return element;
 }
 
 }
@@ -129,7 +133,7 @@ public:
 
   virtual void transform(const KNTransformation &tr);
 
-  virtual void toSvg(ostringstream &out) const;
+  virtual WPXPropertyList toWPG() const;
 
 private:
   double m_x;
@@ -162,9 +166,15 @@ void LineTo::transform(const KNTransformation &tr)
   tr(m_x, m_y);
 }
 
-void LineTo::toSvg(ostringstream &out) const
+WPXPropertyList LineTo::toWPG() const
 {
-  out << 'L' << ' ' << m_x << ' ' << m_y;
+  WPXPropertyList element;
+
+  element.insert("libwpg:path-action", "L");
+  element.insert("svg:x", m_x);
+  element.insert("svg:y", m_y);
+
+  return element;
 }
 
 }
@@ -183,7 +193,7 @@ public:
 
   virtual void transform(const KNTransformation &tr);
 
-  virtual void toSvg(ostringstream &out) const;
+  virtual WPXPropertyList toWPG() const;
 
 private:
   double m_x1;
@@ -229,13 +239,19 @@ void CurveTo::transform(const KNTransformation &tr)
   tr(m_x2, m_y2);
 }
 
-void CurveTo::toSvg(ostringstream &out) const
+WPXPropertyList CurveTo::toWPG() const
 {
-  out << 'C'
-      << ' ' << m_x1 << ' ' << m_y1
-      << ' ' << m_x2 << ' ' << m_y2
-      << ' ' << m_x << ' ' << m_y
-      ;
+  WPXPropertyList element;
+
+  element.insert("libwpg:path-action", "C");
+  element.insert("svg:x", m_x);
+  element.insert("svg:y", m_y);
+  element.insert("svg:x1", m_x1);
+  element.insert("svg:y1", m_y1);
+  element.insert("svg:x2", m_x2);
+  element.insert("svg:y2", m_y2);
+
+  return element;
 }
 
 }
@@ -254,7 +270,7 @@ public:
 
   virtual void transform(const KNTransformation &tr);
 
-  virtual void toSvg(ostringstream &out) const;
+  virtual WPXPropertyList toWPG() const;
 };
 
 Close::Close()
@@ -275,9 +291,13 @@ void Close::transform(const KNTransformation &)
 {
 }
 
-void Close::toSvg(ostringstream &out) const
+WPXPropertyList Close::toWPG() const
 {
-  out << 'Z';
+  WPXPropertyList element;
+
+  element.insert("libwpg:path-action", "Z");
+
+  return element;
 }
 
 }
@@ -387,22 +407,14 @@ void KNPath::transform(const KNTransformation &tr)
   for_each(m_elements.begin(), m_elements.end(), bind(&Element::transform, _1, cref(tr)));
 }
 
-string KNPath::toSvg() const
+WPXPropertyListVector KNPath::toWPG() const
 {
-  ostringstream out;
+  WPXPropertyListVector vec;
 
-  bool first = true;
-  for (std::deque<Element *>::const_iterator it = m_elements.begin(); it != m_elements.end(); ++it)
-  {
-    if (first)
-      first = false;
-    else
-      out << ' ';
+  for(std::deque<Element *>::const_iterator it = m_elements.begin(); m_elements.end() != it; ++it)
+    vec.append((*it)->toWPG());
 
-    (*it)->toSvg(out);
-  }
-
-  return out.str();
+  return vec;
 }
 
 bool operator==(const KNPath &left, const KNPath &right)
