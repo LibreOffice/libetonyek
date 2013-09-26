@@ -63,8 +63,6 @@ private:
 bool operator==(const KNPath &left, const KNPath &right);
 bool operator!=(const KNPath &left, const KNPath &right);
 
-KNObjectPtr_t makeObject(const KNPathPtr_t &path);
-
 }
 
 #endif //  KNPATH_H_INCLUDED

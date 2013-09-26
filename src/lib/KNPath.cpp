@@ -430,40 +430,6 @@ bool operator!=(const KNPath &left, const KNPath &right)
   return !(left == right);
 }
 
-namespace
-{
-
-class PathObject : public KNObject
-{
-public:
-  explicit PathObject(const KNPathPtr_t &path);
-
-private:
-  virtual void draw(const KNOutput &output);
-
-private:
-  const KNPathPtr_t m_path;
-};
-
-PathObject::PathObject(const KNPathPtr_t &path)
-  : m_path(path)
-{
-}
-
-void PathObject::draw(const KNOutput &output)
-{
-  // TODO: implement me
-  (void) output;
-}
-
-}
-
-KNObjectPtr_t makeObject(const KNPathPtr_t &path)
-{
-  const KNObjectPtr_t object(new PathObject(path));
-  return object;
-}
-
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
