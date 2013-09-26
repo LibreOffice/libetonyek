@@ -317,6 +317,7 @@ void KNCollectorBase::collectShape(const optional<ID_t> &)
   if (m_collecting)
   {
     assert(!m_objectsStack.empty());
+    assert(!m_geometryStack.empty());
 
     const KNShapePtr_t shape(new KNShape());
 
@@ -327,7 +328,13 @@ void KNCollectorBase::collectShape(const optional<ID_t> &)
     shape->path = m_currentPath;
     m_currentPath.reset();
 
-    // TODO: fill the other parts of shape as well
+    shape->geometry = m_geometryStack.top();
+    m_geometryStack.top().reset();
+
+    shape->text = m_currentText;
+    m_currentText.reset();
+
+    // TODO: fill style
 
     m_objectsStack.top().push_back(makeObject(shape));
   }
