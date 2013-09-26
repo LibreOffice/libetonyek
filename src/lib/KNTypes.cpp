@@ -13,6 +13,7 @@
 
 #include "libkeynote_utils.h"
 #include "KNOutput.h"
+#include "KNStyles.h"
 #include "KNText.h"
 #include "KNTypes.h"
 
@@ -316,8 +317,23 @@ PlaceholderObject::PlaceholderObject(const KNPlaceholderPtr_t &body)
 
 void PlaceholderObject::draw(const KNOutput &output)
 {
-  // TODO: implement me
-  (void) output;
+  if (bool(m_body))
+  {
+    // TODO: create style
+
+    // TODO: get geometry from style
+    const KNTransformation tr;
+
+    const KNOutput newOutput(output, tr, m_body->style);
+
+    libwpg::WPGPaintInterface *const painter = output.getPainter();
+
+    painter->setStyle(WPXPropertyList(), WPXPropertyListVector());
+    painter->startTextObject(WPXPropertyList(), WPXPropertyListVector());
+    if (bool(m_body->text))
+      makeObject(m_body->text)->draw(newOutput);
+    painter->endTextObject();
+  }
 }
 
 }
