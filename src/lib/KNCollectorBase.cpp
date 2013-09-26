@@ -488,8 +488,6 @@ void KNCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const boo
 {
   if (m_collecting)
   {
-    assert(!m_geometryStack.empty());
-
     KNPlaceholderPtr_t placeholder;
     KNPlaceholderMap_t &placeholderMap = title ? m_dict.titlePlaceholders : m_dict.bodyPlaceholders;
 
@@ -512,10 +510,8 @@ void KNCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const boo
     {
       placeholder.reset(new KNPlaceholder());
       placeholder->title = title;
-      placeholder->geometry = m_geometryStack.top();
       placeholder->text = m_currentText;
 
-      m_geometryStack.top().reset();
       m_currentText.reset();
 
       if (id)

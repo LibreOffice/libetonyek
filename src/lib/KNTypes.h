@@ -166,7 +166,6 @@ struct KNPlaceholder
 {
   boost::optional<bool> title;
   boost::optional<bool> empty;
-  KNGeometryPtr_t geometry;
   KNPlaceholderStylePtr_t style;
   KNTextPtr_t text;
 

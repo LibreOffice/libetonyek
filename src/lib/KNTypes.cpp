@@ -135,7 +135,6 @@ KNLayer::KNLayer()
 KNPlaceholder::KNPlaceholder()
   : title()
   , empty()
-  , geometry()
   , style()
   , text()
 {
