@@ -22,6 +22,21 @@ using std::deque;
 namespace libkeynote
 {
 
+KNShape::KNShape()
+  : geometry()
+  , style()
+  , path()
+  , text()
+{
+}
+
+KNObjectPtr_t makeObject(const KNShapePtr_t &shape)
+{
+  // TODO: implement me
+  (void) shape;
+  return KNObjectPtr_t();
+}
+
 namespace
 {
 
@@ -168,21 +183,6 @@ void transform(deque<Point> &points, const KNTransformation &tr)
   for_each(points.begin(), points.end(), TransformPoint(tr));
 }
 
-}
-
-KNShape::KNShape()
-  : geometry()
-  , style()
-  , path()
-  , text()
-{
-}
-
-KNObjectPtr_t makeObject(const KNShapePtr_t &shape)
-{
-  // TODO: implement me
-  (void) shape;
-  return KNObjectPtr_t();
 }
 
 KNPathPtr_t makePolygonPath(const KNSize &size, const unsigned edges)
