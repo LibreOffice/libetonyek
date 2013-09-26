@@ -12,8 +12,10 @@
 
 #include <boost/bind.hpp>
 
+#include "KNOutput.h"
 #include "KNPath.h"
 #include "KNShape.h"
+#include "KNText.h"
 #include "KNTransformation.h"
 #include "KNTypes.h"
 
@@ -28,6 +30,58 @@ KNShape::KNShape()
   , path()
   , text()
 {
+}
+
+namespace
+{
+
+class ShapeObject : public KNObject
+{
+public:
+  ShapeObject(const KNShapePtr_t &shape);
+  virtual ~ShapeObject();
+
+private:
+  virtual void draw(const KNOutput &output);
+
+private:
+  const KNShapePtr_t m_shape;
+};
+
+ShapeObject::ShapeObject(const KNShapePtr_t &shape)
+  : m_shape(shape)
+{
+}
+
+ShapeObject::~ShapeObject()
+{
+}
+
+void ShapeObject::draw(const KNOutput &output)
+{
+  if (bool(m_shape) && bool(m_shape->path))
+  {
+    // TODO: make style
+
+    const KNTransformation myTr = bool(m_shape->geometry) ? makeTransformation(*m_shape->geometry) : KNTransformation();
+    KNOutput newOutput(output, myTr, m_shape->style);
+    KNPath path(*m_shape->path);
+    path.transform(newOutput.getTransformation());
+
+    libwpg::WPGPaintInterface *const painter = output.getPainter();
+
+    painter->setStyle(WPXPropertyList(), WPXPropertyListVector());
+    painter->drawPath(path.toWPG());
+
+    if (bool(m_shape->text))
+    {
+      painter->startTextObject(WPXPropertyList(), WPXPropertyListVector());
+      makeObject(m_shape->text)->draw(newOutput);
+      painter->endTextObject();
+    }
+  }
+}
+
 }
 
 KNObjectPtr_t makeObject(const KNShapePtr_t &shape)
