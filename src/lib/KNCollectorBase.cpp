@@ -86,7 +86,6 @@ T getValue(const optional<ID_t> &id, boost::unordered_map<ID_t, T> &map)
 KNCollectorBase::Level::Level()
   : geometry()
   , graphicStyle()
-  , placeholderStyle()
 {
 }
 
@@ -230,11 +229,7 @@ void KNCollectorBase::collectPlaceholderStyle(const boost::optional<ID_t> &id, c
     }
 
     if (m_layerOpened)
-    {
-      assert(!m_levelStack.empty());
-
-      m_levelStack.top().placeholderStyle = placeholderStyle;
-    }
+      m_currentPlaceholderStyle = placeholderStyle;
   }
 }
 
@@ -545,15 +540,13 @@ void KNCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const boo
     }
     else
     {
-      assert(!m_levelStack.empty());
-
       placeholder.reset(new KNPlaceholder());
       placeholder->title = title;
       placeholder->text = m_currentText;
-      placeholder->style = m_levelStack.top().placeholderStyle;
+      placeholder->style = m_currentPlaceholderStyle;
 
       m_currentText.reset();
-      m_levelStack.top().placeholderStyle.reset();
+      m_currentPlaceholderStyle.reset();
 
       if (id)
         placeholderMap[get(id)] = placeholder;

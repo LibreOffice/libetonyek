@@ -34,7 +34,6 @@ class KNCollectorBase : public KNCollector
   {
     KNGeometryPtr_t geometry;
     KNGraphicStylePtr_t graphicStyle;
-    KNPlaceholderStylePtr_t placeholderStyle;
 
     Level();
   };
@@ -124,6 +123,8 @@ private:
   KNPathPtr_t m_currentPath;
 
   KNTextPtr_t m_currentText;
+
+  KNPlaceholderStylePtr_t m_currentPlaceholderStyle;
 
   KNStylesheetPtr_t m_currentStylesheet;
   std::deque<KNStylePtr_t> m_newStyles;
