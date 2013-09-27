@@ -216,11 +216,26 @@ void KNCollectorBase::collectParagraphStyle(const optional<ID_t> &id, const KNPa
 
 void KNCollectorBase::collectPlaceholderStyle(const boost::optional<ID_t> &id, const KNPlaceholderStylePtr_t &style, const bool ref, const bool anonymous)
 {
-  // TODO: implement me
-  (void) id;
-  (void) style;
-  (void) ref;
-  (void) anonymous;
+  if (m_collecting)
+  {
+    assert(m_currentStylesheet);
+
+    const KNPlaceholderStylePtr_t placeholderStyle = getValue(id, style, ref, m_dict.placeholderStyles);
+    if (bool(placeholderStyle))
+    {
+      if (id && !anonymous)
+        m_currentStylesheet->placeholderStyles[get(id)] = placeholderStyle;
+      if (!ref)
+        m_newStyles.push_back(placeholderStyle);
+    }
+
+    if (m_layerOpened)
+    {
+      assert(!m_levelStack.empty());
+
+      m_levelStack.top().placeholderStyle = placeholderStyle;
+    }
+  }
 }
 
 void KNCollectorBase::collectSlideStyle(const boost::optional<ID_t> &id, const KNSlideStylePtr_t &style, const bool ref, const bool anonymous)

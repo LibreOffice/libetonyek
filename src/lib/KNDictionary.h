@@ -38,6 +38,7 @@ struct KNDictionary
   KNGraphicStyleMap_t graphicStyles;
   KNLayoutStyleMap_t layoutStyles;
   KNParagraphStyleMap_t paragraphStyles;
+  KNPlaceholderStyleMap_t placeholderStyles;
 
   KNStylesheetMap_t stylesheets;
 
