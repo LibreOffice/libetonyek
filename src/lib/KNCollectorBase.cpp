@@ -544,11 +544,15 @@ void KNCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const boo
     }
     else
     {
+      assert(!m_levelStack.empty());
+
       placeholder.reset(new KNPlaceholder());
       placeholder->title = title;
       placeholder->text = m_currentText;
+      placeholder->style = m_levelStack.top().placeholderStyle;
 
       m_currentText.reset();
+      m_levelStack.top().placeholderStyle.reset();
 
       if (id)
         placeholderMap[get(id)] = placeholder;
