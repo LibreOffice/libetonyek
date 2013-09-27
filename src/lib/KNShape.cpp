@@ -204,6 +204,8 @@ KNPathPtr_t makePolyLine(const deque<Point> inputPoints, bool close = true)
   if (points.size() < 2)
     return path;
 
+  path.reset(new KNPath());
+
   deque<Point>::const_iterator it = points.begin();
   path->appendMoveTo(it->x, it->y);
   ++it;
