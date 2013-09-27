@@ -16,7 +16,6 @@
 
 #include "libkeynote_utils.h"
 #include "KNPath_fwd.h"
-#include "KNStyles_fwd.h"
 #include "KNTypes_fwd.h"
 
 namespace libwpg
@@ -30,6 +29,7 @@ namespace libkeynote
 {
 
 class KNDefaults;
+class KNPropertyMap;
 struct KNSize;
 
 class KNCollector
@@ -39,17 +39,50 @@ public:
 
   // collector functions
 
-  virtual void collectCellStyle(const boost::optional<ID_t> &id, const KNCellStylePtr_t &style, bool ref, bool anonymous) = 0;
-  virtual void collectCharacterStyle(const boost::optional<ID_t> &id, const KNCharacterStylePtr_t &style, bool ref, bool anonymous) = 0;
-  virtual void collectConnectionStyle(const boost::optional<ID_t> &id, const KNConnectionStylePtr_t &style, bool ref, bool anonymous) = 0;
-  virtual void collectGraphicStyle(const boost::optional<ID_t> &id, const KNGraphicStylePtr_t &style, bool ref, bool anonymous) = 0;
-  virtual void collectLayoutStyle(const boost::optional<ID_t> &id, const KNLayoutStylePtr_t &style, bool ref, bool anonymous) = 0;
-  virtual void collectListStyle(const boost::optional<ID_t> &id, const KNListStylePtr_t &style, bool ref, bool anonymous) = 0;
-  virtual void collectParagraphStyle(const boost::optional<ID_t> &id, const KNParagraphStylePtr_t &style, bool ref, bool anonymous) = 0;
-  virtual void collectPlaceholderStyle(const boost::optional<ID_t> &id, const KNPlaceholderStylePtr_t &style, bool ref, bool anonymous) = 0;
-  virtual void collectSlideStyle(const boost::optional<ID_t> &id, const KNSlideStylePtr_t &style, bool ref, bool anonymous) = 0;
-  virtual void collectTabularStyle(const boost::optional<ID_t> &id, const KNTabularStylePtr_t &style, bool ref, bool anonymous) = 0;
-  virtual void collectVectorStyle(const boost::optional<ID_t> &id, const KNVectorStylePtr_t &style, bool ref, bool anonymous) = 0;
+  virtual void collectCellStyle(const boost::optional<ID_t> &id,
+                                const boost::optional<KNPropertyMap> &props,
+                                const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                bool ref, bool anonymous) = 0;
+  virtual void collectCharacterStyle(const boost::optional<ID_t> &id,
+                                     const boost::optional<KNPropertyMap> &props,
+                                     const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                     bool ref, bool anonymous) = 0;
+  virtual void collectConnectionStyle(const boost::optional<ID_t> &id,
+                                      const boost::optional<KNPropertyMap> &props,
+                                      const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                      bool ref, bool anonymous) = 0;
+  virtual void collectGraphicStyle(const boost::optional<ID_t> &id,
+                                   const boost::optional<KNPropertyMap> &props,
+                                   const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                   bool ref, bool anonymous) = 0;
+  virtual void collectLayoutStyle(const boost::optional<ID_t> &id,
+                                  const boost::optional<KNPropertyMap> &props,
+                                  const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                  bool ref, bool anonymous) = 0;
+  virtual void collectListStyle(const boost::optional<ID_t> &id,
+                                const boost::optional<KNPropertyMap> &props,
+                                const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                bool ref, bool anonymous) = 0;
+  virtual void collectParagraphStyle(const boost::optional<ID_t> &id,
+                                     const boost::optional<KNPropertyMap> &props,
+                                     const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                     bool ref, bool anonymous) = 0;
+  virtual void collectPlaceholderStyle(const boost::optional<ID_t> &id,
+                                       const boost::optional<KNPropertyMap> &props,
+                                       const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                       bool ref, bool anonymous) = 0;
+  virtual void collectSlideStyle(const boost::optional<ID_t> &id,
+                                 const boost::optional<KNPropertyMap> &props,
+                                 const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                 bool ref, bool anonymous) = 0;
+  virtual void collectTabularStyle(const boost::optional<ID_t> &id,
+                                   const boost::optional<KNPropertyMap> &props,
+                                   const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                   bool ref, bool anonymous) = 0;
+  virtual void collectVectorStyle(const boost::optional<ID_t> &id,
+                                  const boost::optional<KNPropertyMap> &props,
+                                  const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                  bool ref, bool anonymous) = 0;
 
   virtual void collectGeometry(boost::optional<ID_t> &id,
                                boost::optional<KNSize> &naturalSize, boost::optional<KNPosition> &position,

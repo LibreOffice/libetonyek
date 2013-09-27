@@ -111,151 +111,217 @@ KNCollectorBase::~KNCollectorBase()
   assert(m_objectsStack.empty());
 }
 
-void KNCollectorBase::collectCellStyle(const boost::optional<ID_t> &id, const KNCellStylePtr_t &style, const bool ref, const bool anonymous)
+void KNCollectorBase::collectCellStyle(const boost::optional<ID_t> &id,
+                                       const boost::optional<KNPropertyMap> &props,
+                                       const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                       const bool ref, const bool anonymous)
 {
   // TODO: implement me
   (void) id;
-  (void) style;
+  (void) props;
+  (void) ident;
+  (void) parentIdent;
   (void) ref;
   (void) anonymous;
 }
 
-void KNCollectorBase::collectCharacterStyle(const optional<ID_t> &id, const KNCharacterStylePtr_t &style, const bool ref, const bool anonymous)
+void KNCollectorBase::collectCharacterStyle(const optional<ID_t> &id,
+    const boost::optional<KNPropertyMap> &props,
+    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+    const bool ref, const bool anonymous)
 {
   if (m_collecting)
   {
     assert(m_currentStylesheet);
 
-    const KNCharacterStylePtr_t charStyle = getValue(id, style, ref, m_dict.characterStyles);
-    if (bool(charStyle))
+    KNCharacterStylePtr_t newStyle;
+    // TODO: handle default style properties
+    if (!ref && props)
+      newStyle.reset(new KNCharacterStyle(get(props), ident, parentIdent));
+
+    const KNCharacterStylePtr_t style = getValue(id, newStyle, ref, m_dict.characterStyles);
+    if (bool(style))
     {
-      if (id && !anonymous)
-        m_currentStylesheet->characterStyles[get(id)] = charStyle;
+      if (ident && !anonymous)
+        m_currentStylesheet->characterStyles[get(ident)] = style;
       if (!ref)
-        m_newStyles.push_back(charStyle);
+        m_newStyles.push_back(style);
     }
   }
 }
 
-void KNCollectorBase::collectConnectionStyle(const boost::optional<ID_t> &id, const KNConnectionStylePtr_t &style, const bool ref, const bool anonymous)
+void KNCollectorBase::collectConnectionStyle(const boost::optional<ID_t> &id,
+    const boost::optional<KNPropertyMap> &props,
+    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+    const bool ref, const bool anonymous)
 {
   // TODO: implement me
   (void) id;
-  (void) style;
+  (void) props;
+  (void) ident;
+  (void) parentIdent;
   (void) ref;
   (void) anonymous;
 }
 
-void KNCollectorBase::collectGraphicStyle(const optional<ID_t> &id, const KNGraphicStylePtr_t &style, const bool ref, const bool anonymous)
+void KNCollectorBase::collectGraphicStyle(const optional<ID_t> &id,
+    const boost::optional<KNPropertyMap> &props,
+    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+    const bool ref, const bool anonymous)
 {
   if (m_collecting)
   {
     assert(m_currentStylesheet);
 
-    const KNGraphicStylePtr_t graphicStyle = getValue(id, style, ref, m_dict.graphicStyles);
-    if (bool(graphicStyle))
+    KNGraphicStylePtr_t newStyle;
+    if (!ref && props)
+      newStyle.reset(new KNGraphicStyle(get(props), ident, parentIdent));
+
+    const KNGraphicStylePtr_t style = getValue(id, newStyle, ref, m_dict.graphicStyles);
+    if (bool(style))
     {
-      if (id && !anonymous)
-        m_currentStylesheet->graphicStyles[get(id)] = graphicStyle;
+      if (ident && !anonymous)
+        m_currentStylesheet->graphicStyles[get(ident)] = style;
       if (!ref)
-        m_newStyles.push_back(graphicStyle);
+        m_newStyles.push_back(style);
     }
 
     if (m_layerOpened)
     {
       assert(!m_levelStack.empty());
 
-      m_levelStack.top().graphicStyle = graphicStyle;
+      m_levelStack.top().graphicStyle = style;
     }
   }
 }
 
-void KNCollectorBase::collectLayoutStyle(const optional<ID_t> &id, const KNLayoutStylePtr_t &style, const bool ref, const bool anonymous)
+void KNCollectorBase::collectLayoutStyle(const optional<ID_t> &id,
+    const boost::optional<KNPropertyMap> &props,
+    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+    const bool ref, const bool anonymous)
 {
   if (m_collecting)
   {
     assert(m_currentStylesheet);
 
-    const KNLayoutStylePtr_t layoutStyle = getValue(id, style, ref, m_dict.layoutStyles);
-    if (bool(layoutStyle))
+    KNLayoutStylePtr_t newStyle;
+    if (!ref && props)
+      newStyle.reset(new KNLayoutStyle(get(props), ident, parentIdent));
+
+    const KNLayoutStylePtr_t style = getValue(id, newStyle, ref, m_dict.layoutStyles);
+    if (bool(style))
     {
-      if (id && !anonymous)
-        m_currentStylesheet->layoutStyles[get(id)] = layoutStyle;
+      if (ident && !anonymous)
+        m_currentStylesheet->layoutStyles[get(ident)] = style;
       if (!ref)
-        m_newStyles.push_back(layoutStyle);
+        m_newStyles.push_back(style);
     }
   }
 }
 
-void KNCollectorBase::collectListStyle(const boost::optional<ID_t> &id, const KNListStylePtr_t &style, const bool ref, const bool anonymous)
+void KNCollectorBase::collectListStyle(const boost::optional<ID_t> &id,
+                                       const boost::optional<KNPropertyMap> &props,
+                                       const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                       const bool ref, const bool anonymous)
 {
   // TODO: implement me
   (void) id;
-  (void) style;
+  (void) props;
+  (void) ident;
+  (void) parentIdent;
   (void) ref;
   (void) anonymous;
 }
 
-void KNCollectorBase::collectParagraphStyle(const optional<ID_t> &id, const KNParagraphStylePtr_t &style, const bool ref, const bool anonymous)
+void KNCollectorBase::collectParagraphStyle(const optional<ID_t> &id,
+    const boost::optional<KNPropertyMap> &props,
+    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+    const bool ref, const bool anonymous)
 {
   if (m_collecting)
   {
     assert(m_currentStylesheet);
 
-    const KNParagraphStylePtr_t paraStyle = getValue(id, style, ref, m_dict.paragraphStyles);
-    if (bool(paraStyle))
+    KNParagraphStylePtr_t newStyle;
+    if (!ref && props)
+      newStyle.reset(new KNParagraphStyle(get(props), ident, parentIdent));
+
+    const KNParagraphStylePtr_t style = getValue(id, newStyle, ref, m_dict.paragraphStyles);
+    if (bool(style))
     {
-      if (id && !anonymous)
-        m_currentStylesheet->paragraphStyles[get(id)] = paraStyle;
+      if (ident && !anonymous)
+        m_currentStylesheet->paragraphStyles[get(ident)] = style;
       if (!ref)
-        m_newStyles.push_back(paraStyle);
+        m_newStyles.push_back(style);
     }
   }
 }
 
-void KNCollectorBase::collectPlaceholderStyle(const boost::optional<ID_t> &id, const KNPlaceholderStylePtr_t &style, const bool ref, const bool anonymous)
+void KNCollectorBase::collectPlaceholderStyle(const boost::optional<ID_t> &id,
+    const boost::optional<KNPropertyMap> &props,
+    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+    const bool ref, const bool anonymous)
 {
   if (m_collecting)
   {
     assert(m_currentStylesheet);
 
-    const KNPlaceholderStylePtr_t placeholderStyle = getValue(id, style, ref, m_dict.placeholderStyles);
-    if (bool(placeholderStyle))
+    KNPlaceholderStylePtr_t newStyle;
+    if (!ref && props)
+      newStyle.reset(new KNPlaceholderStyle(get(props), ident, parentIdent));
+
+    const KNPlaceholderStylePtr_t style = getValue(id, newStyle, ref, m_dict.placeholderStyles);
+    if (bool(style))
     {
-      if (id && !anonymous)
-        m_currentStylesheet->placeholderStyles[get(id)] = placeholderStyle;
+      if (ident && !anonymous)
+        m_currentStylesheet->placeholderStyles[get(ident)] = style;
       if (!ref)
-        m_newStyles.push_back(placeholderStyle);
+        m_newStyles.push_back(style);
     }
 
     if (m_layerOpened)
-      m_currentPlaceholderStyle = placeholderStyle;
+      m_currentPlaceholderStyle = style;
   }
 }
 
-void KNCollectorBase::collectSlideStyle(const boost::optional<ID_t> &id, const KNSlideStylePtr_t &style, const bool ref, const bool anonymous)
+void KNCollectorBase::collectSlideStyle(const boost::optional<ID_t> &id,
+                                        const boost::optional<KNPropertyMap> &props,
+                                        const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                        const bool ref, const bool anonymous)
 {
   // TODO: implement me
   (void) id;
-  (void) style;
+  (void) props;
+  (void) ident;
+  (void) parentIdent;
   (void) ref;
   (void) anonymous;
 }
 
-void KNCollectorBase::collectTabularStyle(const boost::optional<ID_t> &id, const KNTabularStylePtr_t &style, const bool ref, const bool anonymous)
+void KNCollectorBase::collectTabularStyle(const boost::optional<ID_t> &id,
+    const boost::optional<KNPropertyMap> &props,
+    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+    const bool ref, const bool anonymous)
 {
   // TODO: implement me
   (void) id;
-  (void) style;
+  (void) props;
+  (void) ident;
+  (void) parentIdent;
   (void) ref;
   (void) anonymous;
 }
 
-void KNCollectorBase::collectVectorStyle(const boost::optional<ID_t> &id, const KNVectorStylePtr_t &style, const bool ref, const bool anonymous)
+void KNCollectorBase::collectVectorStyle(const boost::optional<ID_t> &id,
+    const boost::optional<KNPropertyMap> &props,
+    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+    const bool ref, const bool anonymous)
 {
   // TODO: implement me
   (void) id;
-  (void) style;
+  (void) props;
+  (void) ident;
+  (void) parentIdent;
   (void) ref;
   (void) anonymous;
 }

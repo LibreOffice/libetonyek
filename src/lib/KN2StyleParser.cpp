@@ -84,29 +84,17 @@ void KN2StyleParser::parse(const KNXMLReader &reader)
         switch (m_nameId)
         {
         case KN2Token::characterstyle :
-        {
-          const KNCharacterStylePtr_t style(new KNCharacterStyle(m_props, ident, parentIdent));
-          m_collector->collectCharacterStyle(id, style, false, m_nested);
+          m_collector->collectCharacterStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
-        }
         case KN2Token::graphic_style :
-        {
-          const KNGraphicStylePtr_t style(new KNGraphicStyle(m_props, ident, parentIdent));
-          m_collector->collectGraphicStyle(id, style, false, m_nested);
+          m_collector->collectGraphicStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
-        }
         case KN2Token::layoutstyle :
-        {
-          const KNLayoutStylePtr_t style(new KNLayoutStyle(m_props, ident, parentIdent));
-          m_collector->collectLayoutStyle(id, style, false, m_nested);
+          m_collector->collectLayoutStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
-        }
         case KN2Token::paragraphstyle :
-        {
-          const KNParagraphStylePtr_t style(new KNParagraphStyle(m_props, ident, parentIdent));
-          m_collector->collectParagraphStyle(id, style, false, m_nested);
+          m_collector->collectParagraphStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
-        }
         default :
           KN_DEBUG_MSG(("unhandled style %d:%d\n", m_nsId, m_nameId));
           break;

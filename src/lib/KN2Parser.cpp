@@ -1771,7 +1771,8 @@ void KN2Parser::parsePlaceholder(const KNXMLReader &reader, const bool title)
           if ((KN2Token::NS_URI_SF == getNamespaceId(elementStyle)) && (KN2Token::placeholder_style_ref == getNameId(elementStyle)))
           {
             const ID_t styleId = readRef(elementStyle);
-            getCollector()->collectPlaceholderStyle(styleId, KNPlaceholderStylePtr_t(), true, false);
+            const optional<string> none;
+            getCollector()->collectPlaceholderStyle(styleId, optional<KNPropertyMap>(), none, none, true, false);
           }
           else
           {
