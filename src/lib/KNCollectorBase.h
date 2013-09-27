@@ -30,6 +30,15 @@ struct KNDictionary;
   */
 class KNCollectorBase : public KNCollector
 {
+  struct Level
+  {
+    KNGeometryPtr_t geometry;
+    KNGraphicStylePtr_t graphicStyle;
+    KNPlaceholderStylePtr_t placeholderStyle;
+
+    Level();
+  };
+
 public:
   KNCollectorBase(KNDictionary &dict, const KNDefaults &defaults);
   ~KNCollectorBase();
@@ -110,8 +119,8 @@ private:
 
   KNLayerPtr_t m_currentLayer;
 
+  std::stack<Level> m_levelStack;
   std::stack<KNObjectList_t> m_objectsStack;
-  std::stack<KNGeometryPtr_t> m_geometryStack;
   KNPathPtr_t m_currentPath;
 
   KNTextPtr_t m_currentText;
