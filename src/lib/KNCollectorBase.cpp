@@ -363,7 +363,8 @@ void KNCollectorBase::collectShape(const optional<ID_t> &)
     shape->text = m_currentText;
     m_currentText.reset();
 
-    // TODO: fill style
+    shape->style = m_levelStack.top().graphicStyle;
+    m_levelStack.top().graphicStyle.reset();
 
     m_objectsStack.top().push_back(makeObject(shape));
   }
