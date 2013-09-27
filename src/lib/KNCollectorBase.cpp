@@ -567,6 +567,8 @@ void KNCollectorBase::startLayer()
     m_objectsStack.push(KNObjectList_t());
     m_layerOpened = true;
 
+    startLevel();
+
     assert(!m_objectsStack.empty());
   }
 }
@@ -578,6 +580,8 @@ void KNCollectorBase::endLayer()
     assert(m_layerOpened);
     // object stack is already cleared by collectLayer()
     assert(m_objectsStack.empty());
+
+    endLevel();
 
     m_currentLayer.reset();
     m_layerOpened = false;
