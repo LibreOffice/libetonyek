@@ -50,9 +50,13 @@ void KN2StyleParser::parse(const KNXMLReader &reader)
       case KN2Token::ID :
         id = attr.getValue();
         break;
-
       case KN2Token::ident :
+        ident = attr.getValue();
+        break;
       case KN2Token::parent_ident :
+        parentIdent = attr.getValue();
+        break;
+
       case KN2Token::name :
       case KN2Token::cell_style_default_line_height :
       case KN2Token::locked :
