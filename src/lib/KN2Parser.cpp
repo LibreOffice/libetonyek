@@ -1681,6 +1681,8 @@ void KN2Parser::parseShape(const KNXMLReader &reader)
       skipElement(element);
     }
   }
+
+  getCollector()->collectShape(id);
 }
 
 void KN2Parser::parseStickyNote(const KNXMLReader &reader)
