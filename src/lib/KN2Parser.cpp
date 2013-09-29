@@ -845,7 +845,6 @@ void KN2Parser::parseStickyNotes(const KNXMLReader &reader)
 void KN2Parser::parseStyles(const KNXMLReader &reader, const bool anonymous)
 {
   assert(checkElement(reader, anonymous ? KN2Token::anon_styles : KN2Token::styles, KN2Token::NS_URI_SF));
-  (void) anonymous;
 
   checkNoAttributes(reader);
 
@@ -854,41 +853,75 @@ void KN2Parser::parseStyles(const KNXMLReader &reader, const bool anonymous)
   {
     if (KN2Token::NS_URI_SF == getNamespaceId(element))
     {
-      switch (getNameId(element))
+      const int elementToken = getNameId(element);
+
+      switch (elementToken)
       {
+      case KN2Token::cell_style :
       case KN2Token::characterstyle :
+      case KN2Token::connection_style :
       case KN2Token::graphic_style :
       case KN2Token::headline_style :
       case KN2Token::layoutstyle :
+      case KN2Token::liststyle :
+      case KN2Token::placeholder_style :
       case KN2Token::paragraphstyle :
+      case KN2Token::slide_style :
+      case KN2Token::tabular_style :
+      case KN2Token::vector_style :
       {
         KN2StyleParser parser(getNameId(element), getNamespaceId(element), getCollector());
         parser.parse(element);
         break;
       }
 
-      case KN2Token::cell_style :
-      case KN2Token::chart_series_style :
-      case KN2Token::chart_style :
-      case KN2Token::connection_style :
-      case KN2Token::liststyle :
-      case KN2Token::placeholder_style :
-      case KN2Token::slide_style :
-      case KN2Token::table_cell_style :
-      case KN2Token::table_style :
-      case KN2Token::table_vector_style :
-      case KN2Token::tabular_style :
-      case KN2Token::vector_style :
       case KN2Token::cell_style_ref :
       case KN2Token::characterstyle_ref :
-      case KN2Token::chart_series_style_ref :
       case KN2Token::layoutstyle_ref :
       case KN2Token::liststyle_ref :
       case KN2Token::paragraphstyle_ref :
-      case KN2Token::table_cell_style_ref :
-      case KN2Token::table_vector_style_ref :
       case KN2Token::vector_style_ref :
-        KN_DEBUG_XML_TODO_ELEMENT(element);
+      {
+        const optional<ID_t> id = readRef(element);
+        const optional<KNPropertyMap> dummyProps;
+        const optional<string> dummyIdent;
+
+        switch (elementToken)
+        {
+        case KN2Token::cell_style_ref :
+          getCollector()->collectCellStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
+          break;
+        case KN2Token::characterstyle_ref :
+          getCollector()->collectCharacterStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
+          break;
+        case KN2Token::layoutstyle_ref :
+          getCollector()->collectLayoutStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
+          break;
+        case KN2Token::liststyle_ref :
+          getCollector()->collectListStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
+          break;
+        case KN2Token::paragraphstyle_ref :
+          getCollector()->collectParagraphStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
+          break;
+        case KN2Token::vector_style_ref :
+          getCollector()->collectVectorStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
+          break;
+        default :
+          assert(0);
+          break;
+        }
+        break;
+      }
+
+      case KN2Token::chart_series_style :
+      case KN2Token::chart_series_style_ref :
+      case KN2Token::chart_style :
+      case KN2Token::table_cell_style :
+      case KN2Token::table_cell_style_ref :
+      case KN2Token::table_style :
+      case KN2Token::table_vector_style :
+      case KN2Token::table_vector_style_ref :
+        // ignore
         skipElement(element);
         break;
 

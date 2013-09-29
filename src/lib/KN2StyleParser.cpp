@@ -87,8 +87,14 @@ void KN2StyleParser::parse(const KNXMLReader &reader)
       {
         switch (m_nameId)
         {
+        case KN2Token::cell_style :
+          m_collector->collectCellStyle(id, m_props, ident, parentIdent, false, m_nested);
+          break;
         case KN2Token::characterstyle :
           m_collector->collectCharacterStyle(id, m_props, ident, parentIdent, false, m_nested);
+          break;
+        case KN2Token::connection_style :
+          m_collector->collectConnectionStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
         case KN2Token::graphic_style :
           m_collector->collectGraphicStyle(id, m_props, ident, parentIdent, false, m_nested);
@@ -96,8 +102,23 @@ void KN2StyleParser::parse(const KNXMLReader &reader)
         case KN2Token::layoutstyle :
           m_collector->collectLayoutStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
+        case KN2Token::liststyle :
+          m_collector->collectListStyle(id, m_props, ident, parentIdent, false, m_nested);
+          break;
         case KN2Token::paragraphstyle :
           m_collector->collectParagraphStyle(id, m_props, ident, parentIdent, false, m_nested);
+          break;
+        case KN2Token::placeholder_style :
+          m_collector->collectPlaceholderStyle(id, m_props, ident, parentIdent, false, m_nested);
+          break;
+        case KN2Token::slide_style :
+          m_collector->collectSlideStyle(id, m_props, ident, parentIdent, false, m_nested);
+          break;
+        case KN2Token::tabular_style :
+          m_collector->collectTabularStyle(id, m_props, ident, parentIdent, false, m_nested);
+          break;
+        case KN2Token::vector_style :
+          m_collector->collectVectorStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
         default :
           KN_DEBUG_MSG(("unhandled style %d:%d\n", m_nsId, m_nameId));
