@@ -86,9 +86,8 @@ void ShapeObject::draw(const KNOutput &output)
 
 KNObjectPtr_t makeObject(const KNShapePtr_t &shape)
 {
-  // TODO: implement me
-  (void) shape;
-  return KNObjectPtr_t();
+  const KNObjectPtr_t object(new ShapeObject(shape));
+  return object;
 }
 
 namespace
