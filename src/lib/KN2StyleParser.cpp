@@ -134,6 +134,50 @@ void KN2StyleParser::parse(const KNXMLReader &reader)
   }
 }
 
+void KN2StyleParser::parseProperty(const KNXMLReader &reader, const boost::optional<std::string> &key)
+{
+  checkNoAttributes(reader);
+
+  // Parse a property's value, ignoring any extra tags around (there
+  // should be none, but can we on that?) Note that the property can be
+  // empty.
+  KNXMLReader::ElementIterator element(reader);
+  bool done = false;
+  while (element.next())
+  {
+    if (done)
+      skipElement(element);
+    else
+      done = parsePropertyImpl(element, key);
+  }
+}
+
+bool KN2StyleParser::parsePropertyImpl(const KNXMLReader &reader, const boost::optional<std::string> &key)
+{
+  // TODO: parse props
+  (void) key;
+
+  bool parsed = true;
+
+  if (KN2Token::NS_URI_SF == getNamespaceId(reader))
+  {
+    switch (getNameId(reader))
+    {
+    default :
+      parsed = false;
+      skipElement(reader);
+      break;
+    }
+  }
+  else
+  {
+    parsed = false;
+    skipElement(reader);
+  }
+
+  return parsed;
+}
+
 void KN2StyleParser::parsePropertyMap(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::property_map, KN2Token::NS_URI_SF));
