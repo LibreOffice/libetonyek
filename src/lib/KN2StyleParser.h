@@ -25,7 +25,7 @@ class KN2StyleParser
   KN2StyleParser &operator=(const KN2StyleParser &other);
 
 public:
-  KN2StyleParser(int nameId, int nsId, KNCollector *collector);
+  KN2StyleParser(int nameId, int nsId, KNCollector *collector, bool nested = false);
 
   void parse(const KNXMLReader &reader);
 

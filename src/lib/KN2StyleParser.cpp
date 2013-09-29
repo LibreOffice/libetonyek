@@ -21,10 +21,10 @@ using std::string;
 namespace libkeynote
 {
 
-KN2StyleParser::KN2StyleParser(const int nameId, const int nsId, KNCollector *const collector)
+KN2StyleParser::KN2StyleParser(const int nameId, const int nsId, KNCollector *const collector, const bool nested)
   : m_nameId(nameId)
   , m_nsId(nsId)
-  , m_nested(false)
+  , m_nested(nested)
   , m_collector(collector)
   , m_props()
 {
