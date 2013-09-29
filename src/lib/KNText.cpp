@@ -32,7 +32,6 @@ struct KNText::Paragraph
 namespace
 {
 
-// TODO: this might need the paragraph/layout style as well
 class TextSpanObject : public KNObject
 {
 public:
