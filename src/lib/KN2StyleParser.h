@@ -12,11 +12,13 @@
 
 #include "KN2ParserUtils.h"
 #include "KNPropertyMap.h"
+#include "KNTypes_fwd.h"
 
 namespace libkeynote
 {
 
 class KNCollector;
+class KNDefaults;
 class KNXMLReader;
 
 class KN2StyleParser : private KN2ParserUtils
@@ -26,7 +28,7 @@ class KN2StyleParser : private KN2ParserUtils
   KN2StyleParser &operator=(const KN2StyleParser &other);
 
 public:
-  KN2StyleParser(int nameId, int nsId, KNCollector *collector, bool nested = false);
+  KN2StyleParser(int nameId, int nsId, KNCollector *collector, const KNDefaults &defaults, bool nested = false);
 
   void parse(const KNXMLReader &reader);
 
@@ -35,11 +37,14 @@ private:
   bool parsePropertyImpl(const KNXMLReader &reader, const char *key);
   void parsePropertyMap(const KNXMLReader &reader);
 
+  KNGeometryPtr_t readGeometry(const KNXMLReader &reader);
+
 private:
   const int m_nameId;
   const int m_nsId;
   const bool m_nested;
   KNCollector *const m_collector;
+  const KNDefaults &m_defaults;
   KNPropertyMap m_props;
 };
 

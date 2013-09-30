@@ -7,13 +7,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <boost/lexical_cast.hpp>
+
 #include "libkeynote_xml.h"
 #include "KN2StyleParser.h"
 #include "KN2Token.h"
 #include "KNCollector.h"
+#include "KNDefaults.h"
 #include "KNStyles.h"
+#include "KNTypes.h"
 #include "KNXMLReader.h"
 
+using boost::any;
+using boost::lexical_cast;
 using boost::optional;
 
 using std::string;
@@ -21,12 +27,13 @@ using std::string;
 namespace libkeynote
 {
 
-KN2StyleParser::KN2StyleParser(const int nameId, const int nsId, KNCollector *const collector, const bool nested)
+KN2StyleParser::KN2StyleParser(const int nameId, const int nsId, KNCollector *const collector, const KNDefaults &defaults, const bool nested)
   : KN2ParserUtils()
   , m_nameId(nameId)
   , m_nsId(nsId)
   , m_nested(nested)
   , m_collector(collector)
+  , m_defaults(defaults)
   , m_props()
 {
 }
@@ -155,10 +162,8 @@ void KN2StyleParser::parseProperty(const KNXMLReader &reader, const char *const 
 
 bool KN2StyleParser::parsePropertyImpl(const KNXMLReader &reader, const char *const key)
 {
-  // TODO: parse props
-  (void) key;
-
   bool parsed = true;
+  any prop;
 
   const int nsToken = getNamespaceId(reader);
 
@@ -168,12 +173,13 @@ bool KN2StyleParser::parsePropertyImpl(const KNXMLReader &reader, const char *co
 
     switch (nameToken)
     {
+      // nested styles
     case KN2Token::layoutstyle :
     case KN2Token::liststyle :
     case KN2Token::paragraphstyle :
     case KN2Token::vector_style :
     {
-      KN2StyleParser parser(nameToken, nsToken, m_collector, true);
+      KN2StyleParser parser(nameToken, nsToken, m_collector, m_defaults, true);
       parser.parse(reader);
       // TODO: need to get the style
       break;
@@ -207,6 +213,16 @@ bool KN2StyleParser::parsePropertyImpl(const KNXMLReader &reader, const char *co
         break;
       }
     }
+
+    // "normal" properties
+    case KN2Token::geometry :
+    {
+      const KNGeometryPtr_t geometry = readGeometry(reader);
+      if (geometry)
+        prop = geometry;
+      break;
+    }
+
     default :
       parsed = false;
       skipElement(reader);
@@ -218,6 +234,9 @@ bool KN2StyleParser::parsePropertyImpl(const KNXMLReader &reader, const char *co
     parsed = false;
     skipElement(reader);
   }
+
+  if (parsed && key && !prop.empty())
+    m_props.set(key, prop);
 
   return parsed;
 }
@@ -261,6 +280,9 @@ void KN2StyleParser::parsePropertyMap(const KNXMLReader &reader)
       case KN2Token::listStyle :
       case KN2Token::tocStyle :
         parseProperty(element);
+        break;
+      case KN2Token::geometry :
+        parseProperty(element, "geometry");
         break;
 
       case KN2Token::BGBuildDurationProperty :
@@ -650,7 +672,6 @@ void KN2StyleParser::parsePropertyMap(const KNXMLReader &reader)
       case KN2Token::fontColor :
       case KN2Token::fontName :
       case KN2Token::fontSize :
-      case KN2Token::geometry :
       case KN2Token::headLineEnd :
       case KN2Token::headOffset :
       case KN2Token::headlineIndent :
@@ -740,6 +761,108 @@ void KN2StyleParser::parsePropertyMap(const KNXMLReader &reader)
       skipElement(element);
     }
   }
+}
+
+KNGeometryPtr_t KN2StyleParser::readGeometry(const KNXMLReader &reader)
+{
+  optional<KNSize> naturalSize;
+  optional<KNPosition> pos;
+  optional<double> angle;
+  optional<double> shearXAngle;
+  optional<double> shearYAngle;
+  optional<bool> aspectRatioLocked;
+  optional<bool> sizesLocked;
+  optional<bool> horizontalFlip;
+  optional<bool> verticalFlip;
+
+  KNXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    if (KN2Token::NS_URI_SF == getNamespaceId(attr))
+    {
+      switch (getNameId(attr))
+      {
+      case KN2Token::angle :
+        angle = lexical_cast<double>(attr.getValue());
+        break;
+      case KN2Token::aspectRatioLocked :
+        aspectRatioLocked = bool_cast(attr.getValue());
+        break;
+      case KN2Token::horizontalFlip :
+        horizontalFlip = bool_cast(attr.getValue());
+        break;
+      case KN2Token::shearXAngle :
+        shearXAngle = lexical_cast<double>(attr.getValue());
+        break;
+      case KN2Token::shearYAngle :
+        shearYAngle = lexical_cast<double>(attr.getValue());
+        break;
+      case KN2Token::sizesLocked :
+        sizesLocked = bool_cast(attr.getValue());
+        break;
+      case KN2Token::verticalFlip :
+        verticalFlip = bool_cast(attr.getValue());
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
+        break;
+      }
+    }
+    else if (KN2Token::NS_URI_SFA == getNamespaceId(attr) && (KN2Token::ID == getNameId(attr)))
+    {
+      // ignore
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
+    }
+  }
+
+  KNXMLReader::ElementIterator element(reader);
+  while (element.next())
+  {
+    if (KN2Token::NS_URI_SF == getNamespaceId(element))
+    {
+      switch (getNameId(element))
+      {
+      case KN2Token::naturalSize :
+        naturalSize = readSize(reader);
+        break;
+      case KN2Token::position :
+        pos = readPosition(reader);
+        break;
+      case KN2Token::size :
+        // ignore
+        skipElement(element);
+        break;
+      default :
+        KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+        skipElement(element);
+        break;
+      }
+    }
+    else
+    {
+      KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
+      skipElement(element);
+    }
+  }
+
+  m_defaults.applyGeometry(naturalSize, pos, angle, shearXAngle, shearYAngle, horizontalFlip, verticalFlip, aspectRatioLocked, sizesLocked);
+  assert(naturalSize && pos && angle && shearXAngle && shearYAngle && horizontalFlip && verticalFlip && aspectRatioLocked && sizesLocked);
+
+  const KNGeometryPtr_t geometry(new KNGeometry());
+  geometry->naturalSize = get(naturalSize);
+  geometry->position = get(pos);
+  geometry->angle = get(angle);
+  geometry->shearXAngle = get(shearXAngle);
+  geometry->shearYAngle = get(shearYAngle);
+  geometry->horizontalFlip = get(horizontalFlip);
+  geometry->verticalFlip = get(verticalFlip);
+  geometry->aspectRatioLocked = get(aspectRatioLocked);
+  geometry->sizesLocked = get(sizesLocked);
+
+  return geometry;
 }
 
 }

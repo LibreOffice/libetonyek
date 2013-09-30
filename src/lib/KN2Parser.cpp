@@ -747,7 +747,7 @@ void KN2Parser::parseStyles(const KNXMLReader &reader, const bool anonymous)
       case KN2Token::tabular_style :
       case KN2Token::vector_style :
       {
-        KN2StyleParser parser(getNameId(element), getNamespaceId(element), getCollector());
+        KN2StyleParser parser(getNameId(element), getNamespaceId(element), getCollector(), getDefaults());
         parser.parse(element);
         break;
       }
