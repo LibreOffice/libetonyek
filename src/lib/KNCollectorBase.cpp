@@ -712,12 +712,6 @@ void KNCollectorBase::startTextLayout(const optional<ID_t> &style)
 
 void KNCollectorBase::endTextLayout()
 {
-  if (m_collecting)
-  {
-    assert(bool(m_currentText));
-
-    m_currentText.reset();
-  }
 }
 
 void KNCollectorBase::startLevel()
