@@ -319,20 +319,13 @@ void PlaceholderObject::draw(const KNOutput &output)
 {
   if (bool(m_body))
   {
-    // TODO: create style
-
     // TODO: get geometry from style
     const KNTransformation tr;
 
     const KNOutput newOutput(output, tr, m_body->style);
 
-    libwpg::WPGPaintInterface *const painter = output.getPainter();
-
-    painter->setStyle(WPXPropertyList(), WPXPropertyListVector());
-    painter->startTextObject(WPXPropertyList(), WPXPropertyListVector());
     if (bool(m_body->text))
       makeObject(m_body->text)->draw(newOutput);
-    painter->endTextObject();
   }
 }
 

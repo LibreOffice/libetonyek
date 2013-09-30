@@ -56,6 +56,7 @@ void TextSpanObject::draw(const KNOutput &output)
   WPXPropertyList props;
   // TODO: fill properties
 
+  output.getPainter()->setStyle(WPXPropertyList(), WPXPropertyListVector());
   output.getPainter()->startTextSpan(props);
   output.getPainter()->insertText(WPXString(m_text.c_str()));
   output.getPainter()->endTextSpan();
