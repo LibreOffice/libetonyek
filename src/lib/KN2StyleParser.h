@@ -10,8 +10,6 @@
 #ifndef KN2STYLEPARSER_H_INCLUDED
 #define KN2STYLEPARSER_H_INCLUDED
 
-#include <boost/optional.hpp>
-
 #include "KN2ParserUtils.h"
 #include "KNPropertyMap.h"
 
@@ -33,8 +31,8 @@ public:
   void parse(const KNXMLReader &reader);
 
 private:
-  void parseProperty(const KNXMLReader &reader, const boost::optional<std::string> &key = boost::optional<std::string>());
-  bool parsePropertyImpl(const KNXMLReader &reader, const boost::optional<std::string> &key);
+  void parseProperty(const KNXMLReader &reader, const char *key = 0);
+  bool parsePropertyImpl(const KNXMLReader &reader, const char *key);
   void parsePropertyMap(const KNXMLReader &reader);
 
 private:

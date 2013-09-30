@@ -135,7 +135,7 @@ void KN2StyleParser::parse(const KNXMLReader &reader)
   }
 }
 
-void KN2StyleParser::parseProperty(const KNXMLReader &reader, const boost::optional<std::string> &key)
+void KN2StyleParser::parseProperty(const KNXMLReader &reader, const char *const key)
 {
   checkNoAttributes(reader);
 
@@ -153,7 +153,7 @@ void KN2StyleParser::parseProperty(const KNXMLReader &reader, const boost::optio
   }
 }
 
-bool KN2StyleParser::parsePropertyImpl(const KNXMLReader &reader, const boost::optional<std::string> &key)
+bool KN2StyleParser::parsePropertyImpl(const KNXMLReader &reader, const char *const key)
 {
   // TODO: parse props
   (void) key;
