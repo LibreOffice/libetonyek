@@ -1885,11 +1885,11 @@ void KN2Parser::parseCallout2Path(const KNXMLReader &reader)
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((KN2Token::NS_URI_SF == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
+    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
     {
       id = attr.getValue();
     }
-    else if (KN2Token::NS_URI_SFA == getNamespaceId(attr))
+    else if (KN2Token::NS_URI_SF == getNamespaceId(attr))
     {
       switch (getNameId(attr))
       {
