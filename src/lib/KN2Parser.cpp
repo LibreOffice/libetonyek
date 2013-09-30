@@ -39,130 +39,6 @@ namespace libkeynote
 namespace
 {
 
-bool bool_cast(const char *const value)
-{
-  KN2Tokenizer tok;
-  switch (tok(value))
-  {
-  case KN2Token::_1 :
-  case KN2Token::true_ :
-    return true;
-  case KN2Token::_0 :
-  case KN2Token::false_ :
-  default :
-    return false;
-  }
-
-  return false;
-}
-
-template <typename T1, typename T2>
-pair<T1, T2>
-readAttributePair(const KNXMLReader &reader, const int name1, const int ns1, const int name2, const int ns2, const bool empty = true)
-{
-  optional<T1> a1;
-  optional<T2> a2;
-
-  KNXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if ((ns1 == getNamespaceId(attr)) && (name1 == getNameId(attr)))
-    {
-      a1 = lexical_cast<T1>(attr.getValue());
-    }
-    else if ((ns2 == getNamespaceId(attr)) && (name2 == getNameId(attr)))
-    {
-      a2 = lexical_cast<T2>(attr.getValue());
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
-    }
-  }
-
-  if (empty)
-    checkEmptyElement(reader);
-
-  if (!a1 || !a2)
-    throw GenericException();
-
-  return pair<T1, T2>(get(a1), get(a2));
-}
-
-pair<optional<double>, optional<double> > readPoint(const KNXMLReader &reader)
-{
-  pair<optional<double>, optional<double> > point;
-
-  KNXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if (KN2Token::NS_URI_SFA == getNamespaceId(attr))
-    {
-      switch (getNameId(attr))
-      {
-      case KN2Token::x :
-        point.first = lexical_cast<double>(attr.getValue());
-        break;
-      case KN2Token::y :
-        point.second = lexical_cast<double>(attr.getValue());
-        break;
-      default :
-        KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
-        break;
-      }
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
-    }
-  }
-
-  checkEmptyElement(reader);
-
-  return point;
-}
-
-KNPosition readPosition(const KNXMLReader &reader)
-{
-  pair<double, double> point = readAttributePair<double, double>(reader, KN2Token::x, KN2Token::NS_URI_SFA, KN2Token::y, KN2Token::NS_URI_SFA);
-
-  return KNPosition(point.first, point.second);
-}
-
-KNSize readSize(const KNXMLReader &reader)
-{
-  const pair<double, double> size = readAttributePair<double, double>(reader, KN2Token::h, KN2Token::NS_URI_SFA, KN2Token::w, KN2Token::NS_URI_SFA);
-  return KNSize(size.first, size.second);
-}
-
-ID_t readRef(const KNXMLReader &reader)
-{
-  optional<ID_t> id = readOnlyElementAttribute(reader, KN2Token::IDREF, KN2Token::NS_URI_SFA);
-  if (!id)
-    throw GenericException();
-  return get(id);
-}
-
-optional<ID_t> readID(const KNXMLReader &reader)
-{
-  optional<ID_t> id;
-
-  KNXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
-    {
-      id = attr.getValue();
-    }
-    else
-    {
-      KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
-    }
-  }
-
-  return id;
-}
-
 unsigned getVersion(const int token)
 {
   switch (token)
@@ -184,6 +60,7 @@ unsigned getVersion(const int token)
 
 KN2Parser::KN2Parser(const WPXInputStreamPtr_t &input, KNCollector *const collector, const KNDefaults &defaults)
   : KNParser(input, collector, defaults)
+  , KN2ParserUtils()
   , m_version(0)
 {
 }

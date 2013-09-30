@@ -21,21 +21,9 @@ using std::string;
 namespace libkeynote
 {
 
-namespace
-{
-
-ID_t readRef(const KNXMLReader &reader)
-{
-  optional<ID_t> id = readOnlyElementAttribute(reader, KN2Token::IDREF, KN2Token::NS_URI_SFA);
-  if (!id)
-    throw GenericException();
-  return get(id);
-}
-
-}
-
 KN2StyleParser::KN2StyleParser(const int nameId, const int nsId, KNCollector *const collector, const bool nested)
-  : m_nameId(nameId)
+  : KN2ParserUtils()
+  , m_nameId(nameId)
   , m_nsId(nsId)
   , m_nested(nested)
   , m_collector(collector)

@@ -30,6 +30,8 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KN2Defaults.h \
 	KN2Parser.cpp \
 	KN2Parser.h \
+	KN2ParserUtils.cpp \
+	KN2ParserUtils.h \
 	KN2StyleParser.cpp \
 	KN2StyleParser.h \
 	KN2Token.cpp \

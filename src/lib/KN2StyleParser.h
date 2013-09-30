@@ -12,6 +12,7 @@
 
 #include <boost/optional.hpp>
 
+#include "KN2ParserUtils.h"
 #include "KNPropertyMap.h"
 
 namespace libkeynote
@@ -20,7 +21,7 @@ namespace libkeynote
 class KNCollector;
 class KNXMLReader;
 
-class KN2StyleParser
+class KN2StyleParser : private KN2ParserUtils
 {
   // disable copying
   KN2StyleParser(const KN2StyleParser &other);

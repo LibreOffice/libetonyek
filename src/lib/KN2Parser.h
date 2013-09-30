@@ -10,6 +10,7 @@
 #ifndef KN2PARSER_H_INCLUDED
 #define KN2PARSER_H_INCLUDED
 
+#include "KN2ParserUtils.h"
 #include "KNParser.h"
 #include "KNTypes.h"
 
@@ -18,7 +19,7 @@ namespace libkeynote
 
 class KNStyle;
 
-class KN2Parser : public KNParser
+class KN2Parser : public KNParser, private KN2ParserUtils
 {
 public:
   KN2Parser(const WPXInputStreamPtr_t &input, KNCollector *collector, const KNDefaults &defaults);
