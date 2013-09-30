@@ -18,6 +18,7 @@
 
 #include "KNPropertyMap.h"
 #include "KNStyle.h"
+#include "KNStyleContext.h"
 #include "KNStyles_fwd.h"
 
 namespace libkeynote
@@ -132,6 +133,8 @@ class KNPlaceholderStyle : public KNStyleBase
 {
 public:
   KNPlaceholderStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
+
+  KNGeometryPtr_t getGeometry(const KNStyleContext &context = KNStyleContext()) const;
 
 private:
   virtual KNStylePtr_t find(const KNStylesheetPtr_t &stylesheet, const std::string &ident) const;

@@ -10,6 +10,9 @@
 #include "KNStyles.h"
 #include "KNStylesheet.h"
 
+using boost::any;
+using boost::any_cast;
+
 namespace libkeynote
 {
 
@@ -128,6 +131,20 @@ KNStylePtr_t KNParagraphStyle::find(const KNStylesheetPtr_t &stylesheet, const s
 KNPlaceholderStyle::KNPlaceholderStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
   : KNStyleBase(props, ident, parentIdent)
 {
+}
+
+KNGeometryPtr_t KNPlaceholderStyle::getGeometry(const KNStyleContext &context) const
+{
+  const char *const key = "geometry";
+  any prop = getPropertyMap().get(key);
+  if (prop.empty())
+    prop = context.find(key);
+
+  KNGeometryPtr_t value;
+  if (!prop.empty())
+    value = any_cast<KNGeometryPtr_t>(prop);
+
+  return value;
 }
 
 KNStylePtr_t KNPlaceholderStyle::find(const KNStylesheetPtr_t &stylesheet, const std::string &ident) const
