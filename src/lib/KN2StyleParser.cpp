@@ -21,6 +21,19 @@ using std::string;
 namespace libkeynote
 {
 
+namespace
+{
+
+ID_t readRef(const KNXMLReader &reader)
+{
+  optional<ID_t> id = readOnlyElementAttribute(reader, KN2Token::IDREF, KN2Token::NS_URI_SFA);
+  if (!id)
+    throw GenericException();
+  return get(id);
+}
+
+}
+
 KN2StyleParser::KN2StyleParser(const int nameId, const int nsId, KNCollector *const collector, const bool nested)
   : m_nameId(nameId)
   , m_nsId(nsId)
@@ -159,10 +172,53 @@ bool KN2StyleParser::parsePropertyImpl(const KNXMLReader &reader, const boost::o
 
   bool parsed = true;
 
-  if (KN2Token::NS_URI_SF == getNamespaceId(reader))
+  const int nsToken = getNamespaceId(reader);
+
+  if (KN2Token::NS_URI_SF == nsToken)
   {
-    switch (getNameId(reader))
+    const int nameToken = getNameId(reader);
+
+    switch (nameToken)
     {
+    case KN2Token::layoutstyle :
+    case KN2Token::liststyle :
+    case KN2Token::paragraphstyle :
+    case KN2Token::vector_style :
+    {
+      KN2StyleParser parser(nameToken, nsToken, m_collector, true);
+      parser.parse(reader);
+      // TODO: need to get the style
+      break;
+    }
+    case KN2Token::layoutstyle_ref :
+    case KN2Token::liststyle_ref :
+    case KN2Token::paragraphstyle_ref :
+    case KN2Token::vector_style_ref :
+    {
+      const optional<string> dummyIdent;
+      const optional<KNPropertyMap> dummyProps;
+      const optional<ID_t> id = readRef(reader);
+
+      // TODO: need to get the style
+      switch (nameToken)
+      {
+      case KN2Token::layoutstyle_ref :
+        m_collector->collectLayoutStyle(id, dummyProps, dummyIdent, dummyIdent, true, true);
+        break;
+      case KN2Token::liststyle_ref :
+        m_collector->collectListStyle(id, dummyProps, dummyIdent, dummyIdent, true, true);
+        break;
+      case KN2Token::paragraphstyle_ref :
+        m_collector->collectParagraphStyle(id, dummyProps, dummyIdent, dummyIdent, true, true);
+        break;
+      case KN2Token::vector_style_ref :
+        m_collector->collectVectorStyle(id, dummyProps, dummyIdent, dummyIdent, true, true);
+        break;
+      default :
+        assert(0);
+        break;
+      }
+    }
     default :
       parsed = false;
       skipElement(reader);
@@ -191,6 +247,34 @@ void KN2StyleParser::parsePropertyMap(const KNXMLReader &reader)
     {
       switch (getNameId(element))
       {
+      case KN2Token::SFTCellStylePropertyLayoutStyle :
+      case KN2Token::SFTCellStylePropertyParagraphStyle :
+      case KN2Token::SFTableStylePropertyBorderVectorStyle :
+      case KN2Token::SFTableStylePropertyCellLayoutStyle :
+      case KN2Token::SFTableStylePropertyCellParagraphStyle :
+      case KN2Token::SFTableStylePropertyCellStyle :
+      case KN2Token::SFTableStylePropertyHeaderBorderVectorStyle :
+      case KN2Token::SFTableStylePropertyHeaderColumnCellLayoutStyle :
+      case KN2Token::SFTableStylePropertyHeaderColumnCellParagraphStyle :
+      case KN2Token::SFTableStylePropertyHeaderColumnCellStyle :
+      case KN2Token::SFTableStylePropertyHeaderRowCellLayoutStyle :
+      case KN2Token::SFTableStylePropertyHeaderRowCellParagraphStyle :
+      case KN2Token::SFTableStylePropertyHeaderRowCellStyle :
+      case KN2Token::SFTableStylePropertyHeaderSeperatorVectorStyle :
+      case KN2Token::SFTableStylePropertyHeaderVectorStyle :
+      case KN2Token::SFTableStylePropertyVectorStyle :
+      case KN2Token::TableCellStylePropertyFormatNegativeStyle :
+      case KN2Token::bulletListStyle :
+      case KN2Token::followingLayoutStyle :
+      case KN2Token::followingParagraphStyle :
+      case KN2Token::headlineParagraphStyle :
+      case KN2Token::layoutParagraphStyle :
+      case KN2Token::layoutStyle :
+      case KN2Token::listStyle :
+      case KN2Token::tocStyle :
+        parseProperty(element);
+        break;
+
       case KN2Token::BGBuildDurationProperty :
       case KN2Token::SFC2DAntialiasingModeProperty :
       case KN2Token::SFC2DAreaDataPointFillProperty :
@@ -494,9 +578,7 @@ void KN2StyleParser::parsePropertyMap(const KNXMLReader &reader)
       case KN2Token::SFTCellStylePropertyDurationFormat :
       case KN2Token::SFTCellStylePropertyFormatType :
       case KN2Token::SFTCellStylePropertyImplicitFormatType :
-      case KN2Token::SFTCellStylePropertyLayoutStyle :
       case KN2Token::SFTCellStylePropertyNumberFormat :
-      case KN2Token::SFTCellStylePropertyParagraphStyle :
       case KN2Token::SFTCellTextWrapProperty :
       case KN2Token::SFTDefaultBodyCellStyleProperty :
       case KN2Token::SFTDefaultBodyVectorStyleProperty :
@@ -537,26 +619,12 @@ void KN2StyleParser::parsePropertyMap(const KNXMLReader &reader)
       case KN2Token::SFTableCellStylePropertyFill :
       case KN2Token::SFTableCellStylePropertyType :
       case KN2Token::SFTableStylePropertyBackgroundFill :
-      case KN2Token::SFTableStylePropertyBorderVectorStyle :
-      case KN2Token::SFTableStylePropertyCellLayoutStyle :
-      case KN2Token::SFTableStylePropertyCellParagraphStyle :
-      case KN2Token::SFTableStylePropertyCellStyle :
-      case KN2Token::SFTableStylePropertyHeaderBorderVectorStyle :
-      case KN2Token::SFTableStylePropertyHeaderColumnCellLayoutStyle :
-      case KN2Token::SFTableStylePropertyHeaderColumnCellParagraphStyle :
-      case KN2Token::SFTableStylePropertyHeaderColumnCellStyle :
-      case KN2Token::SFTableStylePropertyHeaderRowCellLayoutStyle :
-      case KN2Token::SFTableStylePropertyHeaderRowCellParagraphStyle :
-      case KN2Token::SFTableStylePropertyHeaderRowCellStyle :
-      case KN2Token::SFTableStylePropertyHeaderSeperatorVectorStyle :
-      case KN2Token::SFTableStylePropertyHeaderVectorStyle :
       case KN2Token::SFTableStylePropertyPrototypeColumnCount :
       case KN2Token::SFTableStylePropertyPrototypeGeometry :
       case KN2Token::SFTableStylePropertyPrototypeIsHeaderColumn :
       case KN2Token::SFTableStylePropertyPrototypeIsHeaderRow :
       case KN2Token::SFTableStylePropertyPrototypeIsResize :
       case KN2Token::SFTableStylePropertyPrototypeRowCount :
-      case KN2Token::SFTableStylePropertyVectorStyle :
       case KN2Token::Series_0 :
       case KN2Token::Series_1 :
       case KN2Token::Series_2 :
@@ -565,7 +633,6 @@ void KN2StyleParser::parsePropertyMap(const KNXMLReader &reader)
       case KN2Token::Series_5 :
       case KN2Token::TableCellStylePropertyFormatDecimals :
       case KN2Token::TableCellStylePropertyFormatEnabled :
-      case KN2Token::TableCellStylePropertyFormatNegativeStyle :
       case KN2Token::TableCellStylePropertyFormatPrefix :
       case KN2Token::TableCellStylePropertyFormatSuffix :
       case KN2Token::TableCellStylePropertyFormatThousandsSeparator :
@@ -580,7 +647,6 @@ void KN2StyleParser::parsePropertyMap(const KNXMLReader &reader)
       case KN2Token::blendMode :
       case KN2Token::bodyPlaceholderVisibility :
       case KN2Token::bold :
-      case KN2Token::bulletListStyle :
       case KN2Token::capitalization :
       case KN2Token::columns :
       case KN2Token::decimalTab :
@@ -593,8 +659,6 @@ void KN2StyleParser::parsePropertyMap(const KNXMLReader &reader)
       case KN2Token::filters :
       case KN2Token::firstLineIndent :
       case KN2Token::firstTopicNumber :
-      case KN2Token::followingLayoutStyle :
-      case KN2Token::followingParagraphStyle :
       case KN2Token::fontColor :
       case KN2Token::fontName :
       case KN2Token::fontSize :
@@ -602,7 +666,6 @@ void KN2StyleParser::parsePropertyMap(const KNXMLReader &reader)
       case KN2Token::headLineEnd :
       case KN2Token::headOffset :
       case KN2Token::headlineIndent :
-      case KN2Token::headlineParagraphStyle :
       case KN2Token::hidden :
       case KN2Token::hyphenate :
       case KN2Token::italic :
@@ -621,8 +684,6 @@ void KN2StyleParser::parsePropertyMap(const KNXMLReader &reader)
       case KN2Token::language :
       case KN2Token::layoutContinuous :
       case KN2Token::layoutMargins :
-      case KN2Token::layoutParagraphStyle :
-      case KN2Token::layoutStyle :
       case KN2Token::leftIndent :
       case KN2Token::ligatures :
       case KN2Token::lineSpacing :
@@ -630,7 +691,6 @@ void KN2StyleParser::parsePropertyMap(const KNXMLReader &reader)
       case KN2Token::listLabelIndents :
       case KN2Token::listLabelTypes :
       case KN2Token::listLevels :
-      case KN2Token::listStyle :
       case KN2Token::listTextIndents :
       case KN2Token::minimumHorizontalInset :
       case KN2Token::objectPlaceholderVisibility :
@@ -666,7 +726,6 @@ void KN2StyleParser::parsePropertyMap(const KNXMLReader &reader)
       case KN2Token::textBorders :
       case KN2Token::textShadow :
       case KN2Token::titlePlaceholderVisibility :
-      case KN2Token::tocStyle :
       case KN2Token::tracking :
       case KN2Token::transition :
       case KN2Token::underline :
