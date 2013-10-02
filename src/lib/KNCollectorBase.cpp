@@ -100,6 +100,7 @@ KNCollectorBase::KNCollectorBase(KNDictionary &dict, const KNDefaults &defaults)
   , m_currentStylesheet(new KNStylesheet())
   , m_newStyles()
   , m_collecting(false)
+  , m_pageOpened(false)
   , m_layerOpened(false)
   , m_groupLevel(0)
 {
@@ -279,7 +280,7 @@ void KNCollectorBase::collectPlaceholderStyle(const boost::optional<ID_t> &id,
         m_newStyles.push_back(style);
     }
 
-    if (m_layerOpened)
+    if (m_pageOpened)
       m_currentPlaceholderStyle = style;
   }
 }
@@ -617,6 +618,26 @@ void KNCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const boo
       if (id)
         placeholderMap[get(id)] = placeholder;
     }
+  }
+}
+
+void KNCollectorBase::startPage()
+{
+  if (m_collecting)
+  {
+    assert(!m_pageOpened);
+
+    m_pageOpened = true;
+  }
+}
+
+void KNCollectorBase::endPage()
+{
+  if (m_collecting)
+  {
+    assert(m_pageOpened);
+
+    m_pageOpened = false;
   }
 }
 

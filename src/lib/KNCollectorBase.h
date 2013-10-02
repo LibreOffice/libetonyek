@@ -124,6 +124,8 @@ public:
 
   virtual void collectTextPlaceholder(const boost::optional<ID_t> &id, bool title, bool ref);
 
+  virtual void startPage();
+  virtual void endPage();
   virtual void startLayer();
   virtual void endLayer();
   virtual void startGroup();
@@ -163,6 +165,7 @@ private:
   std::deque<KNStylePtr_t> m_newStyles;
 
   bool m_collecting;
+  bool m_pageOpened;
   bool m_layerOpened;
   int m_groupLevel;
 };

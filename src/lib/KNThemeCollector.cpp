@@ -88,10 +88,12 @@ void KNThemeCollector::endThemes()
 
 void KNThemeCollector::startPage()
 {
+  KNCollectorBase::startPage();
 }
 
 void KNThemeCollector::endPage()
 {
+  KNCollectorBase::endPage();
 }
 
 void KNThemeCollector::startLayer()
