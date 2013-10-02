@@ -317,15 +317,14 @@ PlaceholderObject::PlaceholderObject(const KNPlaceholderPtr_t &body)
 
 void PlaceholderObject::draw(const KNOutput &output)
 {
-  if (bool(m_body))
+  if (bool(m_body) && bool(m_body->style) && bool(m_body->text))
   {
-    // TODO: get geometry from style
-    const KNTransformation tr;
-
-    const KNOutput newOutput(output, tr, m_body->style);
-
-    if (bool(m_body->text))
+    const KNGeometryPtr_t geometry = m_body->style->getGeometry(output.getStyleContext());
+    if (bool(geometry))
+    {
+      const KNOutput newOutput(output, makeTransformation(*geometry), m_body->style);
       makeObject(m_body->text)->draw(newOutput);
+    }
   }
 }
 
