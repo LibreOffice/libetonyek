@@ -49,15 +49,12 @@ void KN2StyleParser::parse(const KNXMLReader &reader)
   {
     if ((KN2Token::NS_URI_SFA == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
     {
-      KN_DEBUG_XML_TODO("attribute", attr.getName(), attr.getNamespace());
+      id = attr.getValue();
     }
     else if (KN2Token::NS_URI_SF == getNamespaceId(attr))
     {
       switch (getNameId(attr))
       {
-      case KN2Token::ID :
-        id = attr.getValue();
-        break;
       case KN2Token::ident :
         ident = attr.getValue();
         break;
