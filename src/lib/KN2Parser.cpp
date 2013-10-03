@@ -1457,11 +1457,14 @@ void KN2Parser::parsePath(const KNXMLReader &reader)
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
+    if ((KN2Token::NS_URI_SF == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
+    {
+      KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
+    }
     if (KN2Token::NS_URI_SF == getNamespaceId(attr))
     {
       switch (getNameId(attr))
       {
-      case KN2Token::ID :
       case KN2Token::path :
         KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
         break;
@@ -1870,7 +1873,7 @@ void KN2Parser::parsePointPath(const KNXMLReader &reader)
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((KN2Token::NS_URI_SF == getNamespaceId(attr)) && (KN2Token::ID == getNameId(attr)))
+    if ((KN2Token::NS_URI_SF == getNamespaceId(attr)) && (KN2Token::type == getNameId(attr)))
     {
       switch (getValueId(attr))
       {
