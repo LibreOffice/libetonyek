@@ -16,6 +16,8 @@ test_SOURCES = \
 	KN2TokenTest.h \
 	KNPathTest.cpp \
 	KNPathTest.h \
+	KNPropertyMapTest.cpp \
+	KNPropertyMapTest.h \
 	KNShapeTest.cpp \
 	KNShapeTest.h \
 	KNTransformationTest.cpp \
