@@ -72,14 +72,16 @@ private:
   void parseUnfiltered(const KNXMLReader &reader);
 
   void parseBr(const KNXMLReader &reader);
-  void parseLayout(const KNXMLReader &reader, const boost::optional<ID_t> &layoutStyle);
+  void parseLayout(const KNXMLReader &reader);
   void parseLink(const KNXMLReader &reader, bool ref = false);
   void parseP(const KNXMLReader &reader);
   void parseSpan(const KNXMLReader &reader);
   void parseTab(const KNXMLReader &reader);
   void parseText(const KNXMLReader &reader);
-  void parseTextBody(const KNXMLReader &reader, const boost::optional<ID_t> &layoutStyle);
-  void parseTextStorage(const KNXMLReader &reader, const boost::optional<ID_t> &layoutStyle);
+  void parseTextBody(const KNXMLReader &reader);
+  void parseTextStorage(const KNXMLReader &reader);
+
+  void emitLayoutStyle(const ID_t &id);
 
 private:
   unsigned m_version;

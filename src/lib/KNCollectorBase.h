@@ -133,8 +133,8 @@ public:
 
   virtual void startParagraph(const boost::optional<ID_t> &style);
   virtual void endParagraph();
-  virtual void startTextLayout(const boost::optional<ID_t> &style);
-  virtual void endTextLayout();
+  virtual void startText();
+  virtual void endText();
 
   virtual void startLevel();
   virtual void endLevel();

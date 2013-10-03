@@ -234,6 +234,11 @@ void KNText::insertDeferredLineBreaks()
   }
 }
 
+bool KNText::empty() const
+{
+  return m_paragraphs.empty();
+}
+
 KNObjectPtr_t makeObject(const KNTextPtr_t &text)
 {
   const KNObjectPtr_t object(new TextObject(text->getLayoutStyle(), text->getParagraphs()));

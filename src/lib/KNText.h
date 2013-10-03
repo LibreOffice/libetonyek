@@ -42,6 +42,8 @@ public:
   const KNLayoutStylePtr_t &getLayoutStyle() const;
   const ParagraphList_t &getParagraphs() const;
 
+  bool empty() const;
+
 private:
   void insertDeferredLineBreaks();
 

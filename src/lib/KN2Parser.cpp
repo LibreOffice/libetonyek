@@ -1520,6 +1520,8 @@ void KN2Parser::parseShape(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::shape, KN2Token::NS_URI_SF));
 
+  getCollector()->startText();
+
   optional<ID_t> id;
 
   KNXMLReader::AttributeIterator attr(reader);
@@ -1596,11 +1598,14 @@ void KN2Parser::parseShape(const KNXMLReader &reader)
   }
 
   getCollector()->collectShape(id);
+  getCollector()->endText();
 }
 
 void KN2Parser::parseStickyNote(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::sticky_note, KN2Token::NS_URI_KEY));
+
+  getCollector()->startText();
 
   const optional<ID_t> id = readID(reader);
 
@@ -1634,6 +1639,8 @@ void KN2Parser::parseStickyNote(const KNXMLReader &reader)
   }
 
   // TODO: collect
+
+  getCollector()->endText();
 }
 
 void KN2Parser::parsePlaceholder(const KNXMLReader &reader, const bool title)
@@ -1641,6 +1648,8 @@ void KN2Parser::parsePlaceholder(const KNXMLReader &reader, const bool title)
   assert(title
          ? checkElement(reader, KN2Token::title_placeholder, KN2Token::NS_URI_KEY)
          : checkElement(reader, KN2Token::body_placeholder, KN2Token::NS_URI_KEY));
+
+  getCollector()->startText();
 
   optional<ID_t> id;
 
@@ -1710,6 +1719,7 @@ void KN2Parser::parsePlaceholder(const KNXMLReader &reader, const bool title)
   }
 
   getCollector()->collectTextPlaceholder(id, title, false);
+  getCollector()->endText();
 }
 
 void KN2Parser::parseBezierPath(const KNXMLReader &reader)
@@ -2301,27 +2311,22 @@ void KN2Parser::parseBr(const KNXMLReader &reader)
   getCollector()->collectLineBreak();
 }
 
-void KN2Parser::parseLayout(const KNXMLReader &reader, const boost::optional<ID_t> &layoutStyle)
+void KN2Parser::parseLayout(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::layout, KN2Token::NS_URI_SF));
-
-  optional<ID_t> style;
-
-  if (layoutStyle)
-    style = get(layoutStyle);
 
   KNXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((KN2Token::NS_URI_SF == getNamespaceId(attr)) && (KN2Token::style == getNameId(attr)))
-      style = attr.getValue();
+    {
+      emitLayoutStyle(attr.getValue());
+    }
     else
     {
       KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
     }
   }
-
-  getCollector()->startTextLayout(style);
 
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
@@ -2334,8 +2339,6 @@ void KN2Parser::parseLayout(const KNXMLReader &reader, const boost::optional<ID_
       skipElement(element);
     }
   }
-
-  getCollector()->endTextLayout();
 }
 
 void KN2Parser::parseLink(const KNXMLReader &reader, const bool ref)
@@ -2540,7 +2543,7 @@ void KN2Parser::parseText(const KNXMLReader &reader)
       switch (getNameId(attr))
       {
       case KN2Token::layoutstyle :
-        layoutStyle = attr.getValue();
+        emitLayoutStyle(attr.getValue());
         break;
       case KN2Token::tscale :
         KN_DEBUG_XML_TODO_ATTRIBUTE(attr);
@@ -2564,7 +2567,7 @@ void KN2Parser::parseText(const KNXMLReader &reader)
   while (element.next())
   {
     if ((KN2Token::NS_URI_SF == getNamespaceId(element)) && (KN2Token::text_storage == getNameId(element)))
-      parseTextStorage(element, layoutStyle);
+      parseTextStorage(element);
     else
     {
       KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
@@ -2573,7 +2576,7 @@ void KN2Parser::parseText(const KNXMLReader &reader)
   }
 }
 
-void KN2Parser::parseTextBody(const KNXMLReader &reader, const boost::optional<ID_t> &layoutStyle)
+void KN2Parser::parseTextBody(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::text_body, KN2Token::NS_URI_SF));
 
@@ -2596,7 +2599,7 @@ void KN2Parser::parseTextBody(const KNXMLReader &reader, const boost::optional<I
         }
         else
         {
-          parseLayout(element, layoutStyle);
+          parseLayout(element);
           layout = true;
         }
         break;
@@ -2612,10 +2615,6 @@ void KN2Parser::parseTextBody(const KNXMLReader &reader, const boost::optional<I
         }
         else
         {
-          optional<ID_t> layoutStyleId;
-          if (layoutStyle)
-            layoutStyleId = get(layoutStyle);
-          getCollector()->startTextLayout(layoutStyleId);
           para = true;
           parseP(element);
         }
@@ -2627,12 +2626,9 @@ void KN2Parser::parseTextBody(const KNXMLReader &reader, const boost::optional<I
       }
     }
   }
-
-  if (para)
-    getCollector()->endTextLayout();
 }
 
-void KN2Parser::parseTextStorage(const KNXMLReader &reader, const boost::optional<ID_t> &layoutStyle)
+void KN2Parser::parseTextStorage(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::text_storage, KN2Token::NS_URI_SF));
 
@@ -2674,7 +2670,7 @@ void KN2Parser::parseTextStorage(const KNXMLReader &reader, const boost::optiona
       switch (getNameId(element))
       {
       case KN2Token::text_body :
-        parseTextBody(element, layoutStyle);
+        parseTextBody(element);
         break;
       case KN2Token::stylesheet_ref :
         KN_DEBUG_XML_TODO_ELEMENT(element);
@@ -2687,6 +2683,13 @@ void KN2Parser::parseTextStorage(const KNXMLReader &reader, const boost::optiona
       }
     }
   }
+}
+
+void KN2Parser::emitLayoutStyle(const ID_t &id)
+{
+  optional<KNPropertyMap> dummyProps;
+  optional<string> dummyIdent;
+  getCollector()->collectLayoutStyle(id, dummyProps, dummyIdent, dummyIdent, true, false);
 }
 
 }

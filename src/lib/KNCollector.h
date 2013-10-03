@@ -131,8 +131,20 @@ public:
 
   virtual void startParagraph(const boost::optional<ID_t> &style) = 0;
   virtual void endParagraph() = 0;
-  virtual void startTextLayout(const boost::optional<ID_t> &style) = 0;
-  virtual void endTextLayout() = 0;
+
+  /** Start of a block that can contain text.
+    *
+    * This can be:
+    * * a text shape
+    * * a sticky note
+    * * a placeholder
+    * * a note.
+    */
+  virtual void startText() = 0;
+
+  /** End of a text block.
+    */
+  virtual void endText() = 0;
 
   // helper functions
 

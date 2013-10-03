@@ -216,6 +216,9 @@ void KNCollectorBase::collectLayoutStyle(const optional<ID_t> &id,
         m_currentStylesheet->layoutStyles[get(ident)] = style;
       if (!ref)
         m_newStyles.push_back(style);
+
+      if (bool(m_currentText))
+        m_currentText->setLayoutStyle(style);
     }
   }
 }
@@ -607,9 +610,12 @@ void KNCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const boo
     }
     else
     {
+      assert(bool(m_currentText));
+
       placeholder.reset(new KNPlaceholder());
       placeholder->title = title;
-      placeholder->text = m_currentText;
+      if (!m_currentText->empty())
+        placeholder->text = m_currentText;
       placeholder->style = m_currentPlaceholderStyle;
 
       m_currentText.reset();
@@ -720,19 +726,27 @@ void KNCollectorBase::endParagraph()
   }
 }
 
-void KNCollectorBase::startTextLayout(const optional<ID_t> &style)
+void KNCollectorBase::startText()
 {
   if (m_collecting)
   {
     assert(!m_currentText);
 
     m_currentText.reset(new KNText());
-    m_currentText->setLayoutStyle(getValue(style, m_dict.layoutStyles));
+
+    assert(m_currentText->empty());
   }
 }
 
-void KNCollectorBase::endTextLayout()
+void KNCollectorBase::endText()
 {
+  if (m_collecting)
+  {
+    // text is reset at the place where it is used
+    assert(!m_currentText || m_currentText->empty());
+
+    m_currentText.reset();
+  }
 }
 
 void KNCollectorBase::startLevel()
