@@ -26,7 +26,7 @@ bool KNStyleBase::link(const KNStylesheetPtr_t &stylesheet)
   if (currentStylesheet && (m_ident == m_parentIdent))
     currentStylesheet = currentStylesheet->parent;
 
-  if (!stylesheet)
+  if (!currentStylesheet)
     return false;
 
   m_parent = find(currentStylesheet, get(m_parentIdent));
