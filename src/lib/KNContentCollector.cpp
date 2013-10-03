@@ -97,8 +97,6 @@ void KNContentCollector::resolveStyle(KNStyle &style)
 
 void KNContentCollector::startPage()
 {
-  KNCollectorBase::startPage();
-
   if (isCollecting())
   {
     assert(!m_pageOpened);
@@ -113,8 +111,6 @@ void KNContentCollector::startPage()
 
 void KNContentCollector::endPage()
 {
-  KNCollectorBase::endPage();
-
   if (isCollecting())
   {
     assert(m_pageOpened);
