@@ -209,6 +209,8 @@ bool KN2StyleParser::parsePropertyImpl(const KNXMLReader &reader, const char *co
         assert(0);
         break;
       }
+
+      break;
     }
 
     // "normal" properties
