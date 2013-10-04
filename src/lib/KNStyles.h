@@ -42,6 +42,14 @@ protected:
 
   virtual KNStylePtr_t find(const KNStylesheetPtr_t &stylesheet, const std::string &ident) const = 0;
 
+  /** Look up a property in this style.
+    *
+    * @arg[in] property the property to look up
+    * @arg[in] context the context for dynamic lookup
+    * @returns the found property or empty boost::any
+    */
+  boost::any lookup(const char *property, const KNStyleContext &context = KNStyleContext()) const;
+
 private:
   KNPropertyMap m_props;
 

@@ -12,9 +12,33 @@
 
 using boost::any;
 using boost::any_cast;
+using boost::optional;
 
 namespace libkeynote
 {
+
+namespace
+{
+
+template<typename T>
+T extract(const any &property)
+{
+  T value;
+  if (!property.empty())
+    value = any_cast<T>(property);
+  return value;
+}
+
+template<typename T>
+optional<T> extractOptional(const any &property)
+{
+  optional<T> value;
+  if (!property.empty())
+    value = any_cast<T>(property);
+  return value;
+}
+
+}
 
 bool KNStyleBase::link(const KNStylesheetPtr_t &stylesheet)
 {
@@ -56,6 +80,15 @@ KNStyleBase::~KNStyleBase()
 const KNPropertyMap &KNStyleBase::getPropertyMap() const
 {
   return m_props;
+}
+
+boost::any KNStyleBase::lookup(const char *property, const KNStyleContext &context) const
+{
+  any value = getPropertyMap().get(property, true);
+  if (value.empty())
+    value = context.find(property, true);
+
+  return value;
 }
 
 KNCellStyle::KNCellStyle(const KNPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
@@ -135,16 +168,7 @@ KNPlaceholderStyle::KNPlaceholderStyle(const KNPropertyMap &props, const boost::
 
 KNGeometryPtr_t KNPlaceholderStyle::getGeometry(const KNStyleContext &context) const
 {
-  const char *const key = "geometry";
-  any prop = getPropertyMap().get(key, true);
-  if (prop.empty())
-    prop = context.find(key, true);
-
-  KNGeometryPtr_t value;
-  if (!prop.empty())
-    value = any_cast<KNGeometryPtr_t>(prop);
-
-  return value;
+  return extract<KNGeometryPtr_t>(lookup("geometry", context));
 }
 
 KNStylePtr_t KNPlaceholderStyle::find(const KNStylesheetPtr_t &stylesheet, const std::string &ident) const
