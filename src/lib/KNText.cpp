@@ -14,6 +14,7 @@
 #include <libwpg/libwpg.h>
 
 #include "KNOutput.h"
+#include "KNPath.h"
 #include "KNText.h"
 
 using std::string;
@@ -140,7 +141,15 @@ void TextObject::draw(const KNOutput &output)
   WPXPropertyList props;
   // TODO: fill properties
 
-  output.getPainter()->startTextObject(props, WPXPropertyListVector());
+  KNPath path;
+  path.appendMoveTo(0, 0);
+  path.appendLineTo(0, 1);
+  path.appendLineTo(1, 1);
+  path.appendLineTo(1, 0);
+  path.appendClose();
+  path.transform(output.getTransformation());
+
+  output.getPainter()->startTextObject(props, path.toWPG());
 
   for(KNText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
   {
