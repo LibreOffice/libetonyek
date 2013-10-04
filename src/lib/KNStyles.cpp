@@ -136,9 +136,9 @@ KNPlaceholderStyle::KNPlaceholderStyle(const KNPropertyMap &props, const boost::
 KNGeometryPtr_t KNPlaceholderStyle::getGeometry(const KNStyleContext &context) const
 {
   const char *const key = "geometry";
-  any prop = getPropertyMap().get(key);
+  any prop = getPropertyMap().get(key, true);
   if (prop.empty())
-    prop = context.find(key);
+    prop = context.find(key, true);
 
   KNGeometryPtr_t value;
   if (!prop.empty())
