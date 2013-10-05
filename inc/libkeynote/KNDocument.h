@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef LIBKEYNOTE_KEYNOTEDOCUMENT_H_INCLUDED
-#define LIBKEYNOTE_KEYNOTEDOCUMENT_H_INCLUDED
+#ifndef LIBKEYNOTE_KNDOCUMENT_H_INCLUDED
+#define LIBKEYNOTE_KNDOCUMENT_H_INCLUDED
 
 #include <libwpd/libwpd.h>
 #include <libwpg/libwpg.h>
@@ -20,7 +20,7 @@ class WPXInputStream;
 namespace libkeynote
 {
 
-class KeyNoteDocument
+class KNDocument
 {
 public:
 
@@ -33,6 +33,6 @@ public:
 
 } // namespace libkeynote
 
-#endif // LIBKEYNOTE_KEYNOTEDOCUMENT_H_INCLUDED
+#endif // LIBKEYNOTE_KNDOCUMENT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

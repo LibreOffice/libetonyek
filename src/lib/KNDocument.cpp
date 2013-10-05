@@ -10,7 +10,7 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <libkeynote/KeyNoteDocument.h>
+#include <libkeynote/KNDocument.h>
 
 #include "libkeynote_utils.h"
 #include "KN1Defaults.h"
@@ -172,7 +172,7 @@ shared_ptr<KNParser> makeParser(const Version version, const WPXInputStreamPtr_t
     parser.reset(new KN2Parser(input, collector, defaults));
     break;
   default :
-    KN_DEBUG_MSG(("KeyNoteDocument::parse(): unhandled version\n"));
+    KN_DEBUG_MSG(("KNDocument::parse(): unhandled version\n"));
     break;
   }
 
@@ -340,9 +340,9 @@ bool CompositeStream::atEOS()
 Analyzes the content of an input stream to see if it can be parsed
 \param input The input stream
 \return A value that indicates whether the content from the input
-stream is a KeyNote Document that libkeynote is able to parse
+stream is a KN Document that libkeynote is able to parse
 */
-bool KeyNoteDocument::isSupported(WPXInputStream *const input) try
+bool KNDocument::isSupported(WPXInputStream *const input) try
 {
   const Version version = detectVersion(WPXInputStreamPtr_t(input, KNDummyDeleter()));
   return VERSION_UNKNOWN != version;
@@ -360,7 +360,7 @@ WPGPaintInterface class implementation when needed. This is often commonly calle
 \param painter A WPGPaintInterface implementation
 \return A value that indicates whether the parsing was successful
 */
-bool KeyNoteDocument::parse(::WPXInputStream *const input, libwpg::WPGPaintInterface *const painter) try
+bool KNDocument::parse(::WPXInputStream *const input, libwpg::WPGPaintInterface *const painter) try
 {
   WPXInputStreamPtr_t input_(input, KNDummyDeleter());
 
@@ -403,10 +403,10 @@ Provided as a convenience function for applications that support SVG internally.
 \param output The output string whose content is the resulting SVG
 \return A value that indicates whether the SVG generation was successful.
 */
-bool KeyNoteDocument::generateSVG(::WPXInputStream *const input, KNStringVector &output) try
+bool KNDocument::generateSVG(::WPXInputStream *const input, KNStringVector &output) try
 {
   KNSVGGenerator generator(output);
-  bool result = KeyNoteDocument::parse(input, &generator);
+  bool result = KNDocument::parse(input, &generator);
   return result;
 }
 catch (...)

@@ -11,7 +11,7 @@ lib_LTLIBRARIES = libkeynote-@KEYNOTE_MAJOR_VERSION@.@KEYNOTE_MINOR_VERSION@.la
 libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_includedir = $(includedir)/libkeynote-@KEYNOTE_MAJOR_VERSION@.@KEYNOTE_MINOR_VERSION@/libkeynote
 libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_include_HEADERS = \
 	$(top_srcdir)/inc/libkeynote/libkeynote.h \
-	$(top_srcdir)/inc/libkeynote/KeyNoteDocument.h \
+	$(top_srcdir)/inc/libkeynote/KNDocument.h \
 	$(top_srcdir)/inc/libkeynote/KNStringVector.h
 
 AM_CXXFLAGS = -I$(top_srcdir)/inc $(WPD_CFLAGS) $(WPG_CFLAGS) $(XML_CFLAGS) $(ZLIB_CFLAGS) $(BOOST_CFLAGS) $(DEBUG_CXXFLAGS)
@@ -46,6 +46,7 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNDefaults.h \
 	KNDictionary.cpp \
 	KNDictionary.h \
+	KNDocument.cpp \
 	KNMemoryStream.cpp \
 	KNMemoryStream.h \
 	KNObject.cpp \
@@ -59,6 +60,8 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNPath_fwd.h \
 	KNPropertyMap.cpp \
 	KNPropertyMap.h \
+	KNSVGGenerator.cpp \
+	KNSVGGenerator.h \
 	KNShape.cpp \
 	KNShape.h \
 	KNStringVector.cpp \
@@ -71,8 +74,6 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNStyles_fwd.h \
 	KNStylesheet.cpp \
 	KNStylesheet.h \
-	KNSVGGenerator.cpp \
-	KNSVGGenerator.h \
 	KNText.cpp \
 	KNText.h \
 	KNText_fwd.h \
@@ -89,7 +90,6 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_la_SOURCES = \
 	KNZipStream.h \
 	KNZlibStream.cpp \
 	KNZlibStream.h \
-	KeyNoteDocument.cpp \
 	libkeynote_utils.cpp \
 	libkeynote_utils.h \
 	libkeynote_xml.cpp \

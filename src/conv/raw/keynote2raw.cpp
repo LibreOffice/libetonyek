@@ -230,14 +230,14 @@ int main(int argc, char *argv[])
 
   WPXFileStream input(file);
 
-  if (!libkeynote::KeyNoteDocument::isSupported(&input))
+  if (!libkeynote::KNDocument::isSupported(&input))
   {
     fprintf(stderr, "ERROR: Unsupported file format!\n");
     return 1;
   }
 
   RawPainter painter;
-  libkeynote::KeyNoteDocument::parse(&input, &painter);
+  libkeynote::KNDocument::parse(&input, &painter);
 
   return 0;
 }

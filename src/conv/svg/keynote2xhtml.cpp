@@ -49,14 +49,14 @@ int main(int argc, char *argv[])
 
   WPXFileStream input(file);
 
-  if (!libkeynote::KeyNoteDocument::isSupported(&input))
+  if (!libkeynote::KNDocument::isSupported(&input))
   {
     std::cerr << "ERROR: Unsupported file format!" << std::endl;
     return 1;
   }
 
   libkeynote::KNStringVector output;
-  if (!libkeynote::KeyNoteDocument::generateSVG(&input, output))
+  if (!libkeynote::KNDocument::generateSVG(&input, output))
   {
     std::cerr << "ERROR: SVG Generation failed!" << std::endl;
     return 1;
