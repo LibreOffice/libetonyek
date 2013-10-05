@@ -32,6 +32,8 @@ class KN2ParserUtils
   KN2ParserUtils &operator=(const KN2ParserUtils &other);
 
 public:
+  virtual ~KN2ParserUtils();
+
   /** Read sfa:ID attribute of an element.
     *
     * ID is expected to be the only attribute.

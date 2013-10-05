@@ -63,6 +63,10 @@ readAttributePair(const KNXMLReader &reader, const int name1, const int ns1, con
 
 }
 
+KN2ParserUtils::~KN2ParserUtils()
+{
+}
+
 optional<ID_t> KN2ParserUtils::readID(const KNXMLReader &reader)
 {
   optional<ID_t> id;
