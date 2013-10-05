@@ -11,6 +11,7 @@
 #include <deque>
 
 #include <boost/bind.hpp>
+#include <boost/math/constants/constants.hpp>
 
 #include "KNOutput.h"
 #include "KNPath.h"
@@ -18,6 +19,8 @@
 #include "KNText.h"
 #include "KNTransformation.h"
 #include "KNTypes.h"
+
+namespace m = boost::math::double_constants;
 
 using std::deque;
 
@@ -141,7 +144,7 @@ deque<Point> rotatePoint(const Point &point, const unsigned n)
   deque<Point> points;
 
 
-  const double angle = 2 * M_PI / n;
+  const double angle = m::two_pi / n;
 
   points.push_back(point);
   for (unsigned i = 1; i < n; ++i)
@@ -317,7 +320,7 @@ KNPathPtr_t makeStarPath(const KNSize &size, const unsigned points, const double
   const deque<Point> outerPoints = rotatePoint(Point(0, -1), points);
 
   // create inner points
-  const double angle = 2 * M_PI / points;
+  const double angle = m::two_pi / points;
   deque<Point> innerPoints(points);
   transform(innerPoints, rotate(angle / 2) * scale(innerRadius, innerRadius));
 

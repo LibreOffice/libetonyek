@@ -7,7 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <cmath>
+#include <boost/math/constants/constants.hpp>
 
 #include "KNTransformation.h"
 
@@ -15,6 +15,8 @@
 
 namespace test
 {
+
+namespace m = boost::math::double_constants;
 
 using libkeynote::KNTransformation;
 
@@ -108,7 +110,7 @@ void KNTransformationTest::testConstruction()
   CPPUNIT_ASSERT(flip(true, true) == KNTransformation(-1, 0, 0, -1, 0, 0));
 
   // rotating
-  CPPUNIT_ASSERT(rotate(M_PI / 2) == KNTransformation(0, 1, -1, 0, 0, 0));
+  CPPUNIT_ASSERT(rotate(m::half_pi) == KNTransformation(0, 1, -1, 0, 0, 0));
 
   // scaling
   CPPUNIT_ASSERT(scale(2, 1) == KNTransformation(2, 0, 0, 1, 0, 0));
@@ -117,9 +119,9 @@ void KNTransformationTest::testConstruction()
 
   // shearing
   // FIXME: find the problem and enable
-  // CPPUNIT_ASSERT(shear(M_PI / 4, 0) == KNTransformation(1, 2, 0, 1, 0, 0));
-  // CPPUNIT_ASSERT(shear(0, M_PI / 4) == KNTransformation(1, 0, 2, 1, 0, 0));
-  // CPPUNIT_ASSERT(shear(M_PI / 4, M_PI / 4) == KNTransformation(1, 2, 2, 1, 0, 0));
+  // CPPUNIT_ASSERT(shear(m::pi / 4, 0) == KNTransformation(1, 2, 0, 1, 0, 0));
+  // CPPUNIT_ASSERT(shear(0, m::pi / 4) == KNTransformation(1, 0, 2, 1, 0, 0));
+  // CPPUNIT_ASSERT(shear(m::pi / 4, m::pi / 4) == KNTransformation(1, 2, 2, 1, 0, 0));
 
   // translating
   CPPUNIT_ASSERT(translate(100, 0) == KNTransformation(1, 0, 0, 1, 100, 0));
@@ -135,7 +137,7 @@ void KNTransformationTest::testConstructionIdentity()
   CPPUNIT_ASSERT(decenter(0, 0) == KNTransformation());
   CPPUNIT_ASSERT(flip(false, false) == KNTransformation());
   CPPUNIT_ASSERT(rotate(0) == KNTransformation());
-  CPPUNIT_ASSERT(rotate(2 * M_PI) == KNTransformation());
+  CPPUNIT_ASSERT(rotate(m::two_pi) == KNTransformation());
   CPPUNIT_ASSERT(scale(1, 1) == KNTransformation());
   CPPUNIT_ASSERT(shear(0, 0) == KNTransformation());
   CPPUNIT_ASSERT(translate(0, 0) == KNTransformation());
@@ -162,7 +164,7 @@ void KNTransformationTest::testInverseOperations()
   CPPUNIT_ASSERT(flip(false, true) * flip(false, true) == KNTransformation());
   CPPUNIT_ASSERT(flip(true, true) * flip(true, true) == KNTransformation());
 
-  CPPUNIT_ASSERT(rotate(M_PI) * rotate(-M_PI) == KNTransformation());
+  CPPUNIT_ASSERT(rotate(m::pi) * rotate(-m::pi) == KNTransformation());
 
   CPPUNIT_ASSERT(scale(2, 1) * scale(0.5, 1) == KNTransformation());
   CPPUNIT_ASSERT(scale(1, 2) * scale(1, 0.5) == KNTransformation());

@@ -7,7 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <cmath>
+#include <boost/math/constants/constants.hpp>
 
 #include "KNObject.h"
 #include "KNPath.h"
@@ -18,6 +18,8 @@
 
 namespace test
 {
+
+namespace m = boost::math::double_constants;
 
 using libkeynote::KNPath;
 using libkeynote::KNPathPtr_t;
@@ -39,7 +41,7 @@ void KNShapeTest::testMakePolygonPath()
 
   // triangle
   {
-    const double d = 25 * (2 - std::sqrt(3));
+    const double d = 25 * (2 - m::root_three);
 
     // FIXME: the shape is not scaled to whole width...
     KNPath ref;
@@ -71,7 +73,7 @@ void KNShapeTest::testMakePolygonPath()
 
   // octagon
   {
-    const double d = 25 * (2 - M_SQRT2);
+    const double d = 25 * (2 - m::root_two);
 
     KNPath ref;
     ref.appendMoveTo(50, 0);

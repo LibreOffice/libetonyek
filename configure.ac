@@ -88,6 +88,7 @@ AC_CHECK_HEADERS(
         boost/bind.hpp \
         boost/function.hpp \
         boost/lexical_cast.hpp \
+        boost/math/constants/constants.hpp \
         boost/numeric/conversion/cast.hpp \
         boost/optional.hpp \
         boost/ref.hpp \
