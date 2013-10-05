@@ -25,6 +25,8 @@ test_SOURCES = \
 	KNShapeTest.h \
 	KNStyleContextTest.cpp \
 	KNStyleContextTest.h \
+	KNStylesTest.cpp \
+	KNStylesTest.h \
 	KNTransformationTest.cpp \
 	KNTransformationTest.h \
 	KNXMLReaderTest.cpp \
