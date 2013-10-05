@@ -63,8 +63,8 @@ void ShapeObject::draw(const KNOutput &output)
   {
     // TODO: make style
 
-    const KNTransformation myTr = bool(m_shape->geometry) ? makeTransformation(*m_shape->geometry) : KNTransformation();
-    KNOutput newOutput(output, myTr, m_shape->style);
+    const KNTransformation tr = bool(m_shape->geometry) ? makeTransformation(*m_shape->geometry) : KNTransformation();
+    KNOutput newOutput(output, tr, m_shape->style);
     const KNPath path = *m_shape->path * newOutput.getTransformation();
 
     libwpg::WPGPaintInterface *const painter = output.getPainter();
