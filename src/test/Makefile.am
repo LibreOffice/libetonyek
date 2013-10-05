@@ -20,6 +20,8 @@ test_SOURCES = \
 	KNPropertyMapTest.h \
 	KNShapeTest.cpp \
 	KNShapeTest.h \
+	KNStyleContextTest.cpp \
+	KNStyleContextTest.h \
 	KNTransformationTest.cpp \
 	KNTransformationTest.h \
 	KNXMLReaderTest.cpp \
