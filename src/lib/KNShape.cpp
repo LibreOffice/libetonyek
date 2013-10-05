@@ -114,9 +114,15 @@ Point::Point(const double x_, const double y_)
 {
 }
 
+bool approxEqual(const Point &left, const Point &right, const double eps = KN_EPSILON)
+{
+  using libkeynote::approxEqual;
+  return approxEqual(left.x, right.x, eps) && approxEqual(left.y, right.y, eps);
+}
+
 bool operator==(const Point &left, const Point &right)
 {
-  return (left.x == right.x) && (left.y == right.y);
+  return approxEqual(left, right);
 }
 
 bool operator!=(const Point &left, const Point &right)

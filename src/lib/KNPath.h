@@ -15,6 +15,7 @@
 
 #include <libwpd/libwpd.h>
 
+#include "libkeynote_utils.h"
 #include "KNObject.h"
 #include "KNPath_fwd.h"
 
@@ -25,7 +26,7 @@ class KNTransformation;
 
 class KNPath
 {
-  friend bool operator==(const KNPath &left, const KNPath &right);
+  friend bool approxEqual(const KNPath &left, const KNPath &right, const double eps);
 
 public:
   class Element;
@@ -60,6 +61,7 @@ private:
   std::deque<Element *> m_elements;
 };
 
+bool approxEqual(const KNPath &left, const KNPath &right, double eps = KN_EPSILON);
 bool operator==(const KNPath &left, const KNPath &right);
 bool operator!=(const KNPath &left, const KNPath &right);
 

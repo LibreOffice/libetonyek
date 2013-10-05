@@ -46,7 +46,7 @@ public:
     *
     * @return true if @c this and @c other are equal.
     */
-  virtual bool equalsTo(const Element *other) const = 0;
+  virtual bool approxEqualsTo(const Element *other, double eps) const = 0;
 
   /** Transform this path element.
     *
@@ -69,7 +69,7 @@ public:
 
   virtual MoveTo *clone() const;
 
-  virtual bool equalsTo(const Element *other) const;
+  virtual bool approxEqualsTo(const Element *other, double eps) const;
 
   virtual void transform(const KNTransformation &tr);
 
@@ -91,12 +91,12 @@ MoveTo *MoveTo::clone() const
   return new MoveTo(*this);
 }
 
-bool MoveTo::equalsTo(const Element *other) const
+bool MoveTo::approxEqualsTo(const Element *other, const double eps) const
 {
   const MoveTo *const that = dynamic_cast<const MoveTo *>(other);
 
   if (that)
-    return m_x == that->m_x && m_y == that->m_y;
+    return approxEqual(m_x, that->m_x, eps) && approxEqual(m_y, that->m_y, eps);
 
   return false;
 }
@@ -129,7 +129,7 @@ public:
 
   virtual LineTo *clone() const;
 
-  virtual bool equalsTo(const Element *other) const;
+  virtual bool approxEqualsTo(const Element *other, double eps) const;
 
   virtual void transform(const KNTransformation &tr);
 
@@ -151,12 +151,12 @@ LineTo *LineTo::clone() const
   return new LineTo(*this);
 }
 
-bool LineTo::equalsTo(const Element *other) const
+bool LineTo::approxEqualsTo(const Element *other, const double eps) const
 {
   const LineTo *const that = dynamic_cast<const LineTo *>(other);
 
   if (that)
-    return m_x == that->m_x && m_y == that->m_y;
+    return approxEqual(m_x, that->m_x, eps) && approxEqual(m_y, that->m_y, eps);
 
   return false;
 }
@@ -189,7 +189,7 @@ public:
 
   virtual CurveTo *clone() const;
 
-  virtual bool equalsTo(const Element *other) const;
+  virtual bool approxEqualsTo(const Element *other, double eps) const;
 
   virtual void transform(const KNTransformation &tr);
 
@@ -219,14 +219,14 @@ CurveTo *CurveTo::clone() const
   return new CurveTo(*this);
 }
 
-bool CurveTo::equalsTo(const Element *other) const
+bool CurveTo::approxEqualsTo(const Element *other, const double eps) const
 {
   const CurveTo *const that = dynamic_cast<const CurveTo *>(other);
 
   if (that)
-    return m_x1 == that->m_x1 && m_y1 == that->m_y1
-           && m_x2 == that->m_x2 && m_y2 == that->m_y2
-           && m_x == that->m_x && m_y == that->m_y
+    return approxEqual(m_x1, that->m_x1, eps) && approxEqual(m_y1, that->m_y1, eps)
+           && approxEqual(m_x2, that->m_x2, eps) && approxEqual(m_y2, that->m_y2, eps)
+           && approxEqual(m_x, that->m_x, eps) && approxEqual(m_y, that->m_y, eps)
            ;
 
   return false;
@@ -266,7 +266,7 @@ public:
 
   virtual Close *clone() const;
 
-  virtual bool equalsTo(const Element *other) const;
+  virtual bool approxEqualsTo(const Element *other, double eps) const;
 
   virtual void transform(const KNTransformation &tr);
 
@@ -282,7 +282,7 @@ Close *Close::clone() const
   return new Close();
 }
 
-bool Close::equalsTo(const Element *other) const
+bool Close::approxEqualsTo(const Element *other, double) const
 {
   return dynamic_cast<const Close *>(other);
 }
@@ -417,12 +417,17 @@ WPXPropertyListVector KNPath::toWPG() const
   return vec;
 }
 
-bool operator==(const KNPath &left, const KNPath &right)
+bool approxEqual(const KNPath &left, const KNPath &right, const double eps)
 {
   return left.m_elements.size() == right.m_elements.size()
          && std::equal(left.m_elements.begin(), left.m_elements.end(), right.m_elements.begin(),
-                       boost::bind(&KNPath::Element::equalsTo, _1, _2))
+                       boost::bind(&KNPath::Element::approxEqualsTo, _1, _2, eps))
          ;
+}
+
+bool operator==(const KNPath &left, const KNPath &right)
+{
+  return approxEqual(left, right);
 }
 
 bool operator!=(const KNPath &left, const KNPath &right)

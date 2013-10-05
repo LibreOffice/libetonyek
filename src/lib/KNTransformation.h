@@ -10,6 +10,8 @@
 #ifndef KNTRANSFORMATION_H_INCLUDED
 #define KNTRANSFORMATION_H_INCLUDED
 
+#include "libkeynote_utils.h"
+
 namespace libkeynote
 {
 
@@ -53,13 +55,14 @@ public:
     */
   void operator()(double &x, double &y, bool distance = false) const;
 
-  /** Tests for equality of transformations.
+  /** Tests for approximate equality of transformations.
     *
     * @arg[in] other the transformation for equality comparison
+    * @arg[in] eps precision
     * @returns @c true if this transformation and @c other are equal, @c
     * false otherwise
     */
-  bool operator==(const KNTransformation &other) const;
+  bool approxEqual(const KNTransformation &other, double eps = KN_EPSILON) const;
 
 private:
   // transformation matrix
@@ -79,6 +82,14 @@ private:
   * @return the new transformation
   */
 KNTransformation operator*(const KNTransformation &left, const KNTransformation &right);
+
+/** Tests for equality of transformations.
+  *
+  * @arg[in] left the first transformation
+  * @arg[in] right the second transformation
+  * @returns @c true if the transformations are equal, @c false if they are not
+  */
+bool operator==(const KNTransformation &left, const KNTransformation &right);
 
 /** Tests for inequality of transformations.
   *
