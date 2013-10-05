@@ -150,7 +150,16 @@ void KNTransformationTest::testConstructionFromGeometry()
 
 void KNTransformationTest::testIdentities()
 {
-  // TODO: implement me
+  using namespace libkeynote::transformations;
+
+  CPPUNIT_ASSERT(center(100, 50) == translate(50, 25));
+  CPPUNIT_ASSERT(decenter(100, 50) == translate(-50, -25));
+  CPPUNIT_ASSERT((flip(true, false) * flip(false, true)) == flip(true, true));
+  CPPUNIT_ASSERT((flip(false, true) * flip(true, false)) == flip(true, true));
+  CPPUNIT_ASSERT((rotate(m::half_pi) * rotate(m::third_pi)) == (rotate(m::third_pi) * rotate(m::half_pi)));
+  CPPUNIT_ASSERT(scale(-1, -1) == flip(true, true));
+  CPPUNIT_ASSERT((translate(10, 20) * translate(80, 40)) == (translate(80, 40) * translate(10, 20)));
+  CPPUNIT_ASSERT((translate(1, 2) * scale(2, 2)) == (scale(2, 2) * translate(2, 4)));
 }
 
 void KNTransformationTest::testInverseOperations()
