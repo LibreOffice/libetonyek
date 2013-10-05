@@ -147,7 +147,7 @@ void TextObject::draw(const KNOutput &output)
   path.appendLineTo(1, 1);
   path.appendLineTo(1, 0);
   path.appendClose();
-  path.transform(output.getTransformation());
+  path *= output.getTransformation();
 
   output.getPainter()->startTextObject(props, path.toWPG());
 

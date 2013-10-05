@@ -402,7 +402,7 @@ void KNPath::appendClose()
   m_elements.push_back(new Close());
 }
 
-void KNPath::transform(const KNTransformation &tr)
+void KNPath::operator*=(const KNTransformation &tr)
 {
   for_each(m_elements.begin(), m_elements.end(), bind(&Element::transform, _1, cref(tr)));
 }
@@ -433,6 +433,13 @@ bool operator==(const KNPath &left, const KNPath &right)
 bool operator!=(const KNPath &left, const KNPath &right)
 {
   return !(left == right);
+}
+
+KNPath operator*(const KNPath &path, const KNTransformation &tr)
+{
+  KNPath newPath(path);
+  newPath *= tr;
+  return newPath;
 }
 
 }

@@ -51,7 +51,7 @@ public:
     *
     * @arg[in] tr the transformation
     */
-  void transform(const KNTransformation &tr);
+  void operator*=(const KNTransformation &tr);
 
   /** Create WPG representation of this path.
     */
@@ -64,6 +64,14 @@ private:
 bool approxEqual(const KNPath &left, const KNPath &right, double eps = KN_EPSILON);
 bool operator==(const KNPath &left, const KNPath &right);
 bool operator!=(const KNPath &left, const KNPath &right);
+
+/** Create a transformed path.
+  *
+  * @arg[in] path the path
+  * @arg[in] tr the transformation
+  * @returns the transformed path
+  */
+KNPath operator*(const KNPath &path, const KNTransformation &tr);
 
 }
 
