@@ -83,6 +83,11 @@ uint64_t readU64(const WPXInputStreamPtr_t &input, bool bigEndian)
   throw EndOfStreamException();
 }
 
+bool approxEqual(const double x, const double y, const double eps)
+{
+  return std::fabs(x - y) < eps;
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

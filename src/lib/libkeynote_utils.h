@@ -10,6 +10,7 @@
 #ifndef LIBKEYNOTE_UTILS_H_INCLUDED
 #define LIBKEYNOTE_UTILS_H_INCLUDED
 
+#include <cmath>
 #include <stdio.h>
 #include <string>
 
@@ -53,6 +54,9 @@ typedef int64 int64_t;
 
 #endif
 
+#define KN_EPSILON 1e-9
+#define KN_ALMOST_ZERO(x) (std::fabs(x) < KN_EPSILON)
+
 // debug message includes source file and line number
 //#define VERBOSE_DEBUG 1
 
@@ -84,6 +88,14 @@ uint8_t readU8(const WPXInputStreamPtr_t &input, bool = false);
 uint16_t readU16(const WPXInputStreamPtr_t &input, bool bigEndian=false);
 uint32_t readU32(const WPXInputStreamPtr_t &input, bool bigEndian=false);
 uint64_t readU64(const WPXInputStreamPtr_t &input, bool bigEndian=false);
+
+/** Test two floating point numbers for equality.
+  *
+  * @arg[in] x first number
+  * @arg[in] y second number
+  * @arg[in] eps precision
+  */
+bool approxEqual(double x, double y, double eps = KN_EPSILON);
 
 class EndOfStreamException
 {
