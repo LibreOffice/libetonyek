@@ -123,9 +123,7 @@ void KNShapeTest::testMakeQuoteBubblePath()
   // TODO: implement me
 }
 
-
-// FIXME: enable
-// CPPUNIT_TEST_SUITE_REGISTRATION(KNShapeTest);
+CPPUNIT_TEST_SUITE_REGISTRATION(KNShapeTest);
 
 }
 
