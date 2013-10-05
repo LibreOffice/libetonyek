@@ -251,6 +251,8 @@ KNPathPtr_t makePolygonPath(const KNSize &size, const unsigned edges)
 
   deque<Point> points = rotatePoint(Point(0, -1), edges);
 
+  // FIXME: the shape should probably be scaled to whole width/height.
+  // Check.
   transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.width, size.height));
   const KNPathPtr_t path = makePolyLine(points);
 

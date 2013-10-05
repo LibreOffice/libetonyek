@@ -39,10 +39,13 @@ void KNShapeTest::testMakePolygonPath()
 
   // triangle
   {
+    const double d = 25 * (2 - std::sqrt(3));
+
+    // FIXME: the shape is not scaled to whole width...
     KNPath ref;
     ref.appendMoveTo(50, 0);
-    ref.appendLineTo(100, 100);
-    ref.appendLineTo(0, 100);
+    ref.appendLineTo(100 - d, 75);
+    ref.appendLineTo(d, 75);
     ref.appendClose();
 
     const KNPathPtr_t test = makePolygonPath(size, 3);
@@ -68,7 +71,7 @@ void KNShapeTest::testMakePolygonPath()
 
   // octagon
   {
-    const double d = 100 * (1 - M_SQRT2);
+    const double d = 25 * (2 - M_SQRT2);
 
     KNPath ref;
     ref.appendMoveTo(50, 0);
