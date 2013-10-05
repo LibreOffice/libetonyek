@@ -108,7 +108,7 @@ void KNTransformationTest::testConstruction()
   CPPUNIT_ASSERT(flip(true, true) == KNTransformation(-1, 0, 0, -1, 0, 0));
 
   // rotating
-  CPPUNIT_ASSERT(rotate(M_PI / 2) == KNTransformation(0, -1, 1, 0, 0, 0));
+  CPPUNIT_ASSERT(rotate(M_PI / 2) == KNTransformation(0, 1, -1, 0, 0, 0));
 
   // scaling
   CPPUNIT_ASSERT(scale(2, 1) == KNTransformation(2, 0, 0, 1, 0, 0));
