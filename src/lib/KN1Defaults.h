@@ -24,11 +24,7 @@ public:
 
   virtual void applyPresentationSize(boost::optional<KNSize> &size) const;
 
-  virtual void applyGeometry(boost::optional<KNSize> &naturalSize, boost::optional<KNPosition> &position,
-                             boost::optional<double> &angle,
-                             boost::optional<double> &shearXAngle, boost::optional<double> &shearYAngle,
-                             boost::optional<bool> &horizontalFlip, boost::optional<bool> &verticalFlip,
-                             boost::optional<bool> &aspectRatioLocked, boost::optional<bool> &sizesLocked) const;
+  virtual void applyGeometry(boost::optional<KNSize> &naturalSize, boost::optional<KNPosition> &position) const;
 };
 
 }

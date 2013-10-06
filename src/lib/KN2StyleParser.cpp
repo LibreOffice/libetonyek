@@ -847,19 +847,19 @@ KNGeometryPtr_t KN2StyleParser::readGeometry(const KNXMLReader &reader)
     }
   }
 
-  m_defaults.applyGeometry(naturalSize, pos, angle, shearXAngle, shearYAngle, horizontalFlip, verticalFlip, aspectRatioLocked, sizesLocked);
-  assert(naturalSize && pos && angle && shearXAngle && shearYAngle && horizontalFlip && verticalFlip && aspectRatioLocked && sizesLocked);
+  m_defaults.applyGeometry(naturalSize, pos);
+  assert(naturalSize && pos);
 
   const KNGeometryPtr_t geometry(new KNGeometry());
   geometry->naturalSize = get(naturalSize);
   geometry->position = get(pos);
-  geometry->angle = get(angle);
-  geometry->shearXAngle = get(shearXAngle);
-  geometry->shearYAngle = get(shearYAngle);
-  geometry->horizontalFlip = get(horizontalFlip);
-  geometry->verticalFlip = get(verticalFlip);
-  geometry->aspectRatioLocked = get(aspectRatioLocked);
-  geometry->sizesLocked = get(sizesLocked);
+  geometry->angle = angle;
+  geometry->shearXAngle = shearXAngle;
+  geometry->shearYAngle = shearYAngle;
+  geometry->horizontalFlip = horizontalFlip;
+  geometry->verticalFlip = verticalFlip;
+  geometry->aspectRatioLocked = aspectRatioLocked;
+  geometry->sizesLocked = sizesLocked;
 
   return geometry;
 }

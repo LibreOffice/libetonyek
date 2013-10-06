@@ -102,33 +102,25 @@ KNTransformation makeTransformation(const KNGeometry &geometry)
 
   KNTransformation tr;
 
-  double w = 0;
-  double h = 0;
+  const double w = geometry.naturalSize.width;
+  const double h = geometry.naturalSize.height;
 
-  if (geometry.naturalSize)
-  {
-    w = get(geometry.naturalSize).width;
-    h = get(geometry.naturalSize).height;
-  }
-
-  if ((0 != w) || (0 != h))
-    tr *= center(w, h);
+  tr *= center(w, h);
 
   // TODO: make sure the order of transformations is right
   if (geometry.shearXAngle || geometry.shearYAngle)
-    tr *= shear(geometry.shearXAngle, geometry.shearYAngle);
+    tr *= shear(get_optional_value_or(geometry.shearXAngle, 0), get_optional_value_or(geometry.shearYAngle, 0));
 
-  if (geometry.horizontalFlip || geometry.verticalFlip)
-    tr *= flip(geometry.horizontalFlip, geometry.verticalFlip);
+  if (geometry.horizontalFlip)
+    tr *= flip(get(geometry.horizontalFlip), false);
+    if (geometry.verticalFlip)
+    tr *= flip(false, get(geometry.verticalFlip));
 
-  if (geometry.angle != 0)
-    tr *= rotate(geometry.angle);
+  if (geometry.angle)
+    tr *= rotate(get(geometry.angle));
 
-  if ((0 != w) || (0 != h))
-    tr *= decenter(w, h);
-
-  if (geometry.position)
-    tr *= translate(get(geometry.position).x, get(geometry.position).y);
+  tr *= decenter(w, h);
+  tr *= translate(geometry.position.x, geometry.position.y);
 
   return tr;
 }

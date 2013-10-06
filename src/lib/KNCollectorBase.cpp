@@ -340,19 +340,19 @@ void KNCollectorBase::collectGeometry(boost::optional<ID_t> &,
   {
     assert(!m_levelStack.empty());
 
-    m_defaults.applyGeometry(naturalSize, position, angle, shearXAngle, shearYAngle, horizontalFlip, verticalFlip, aspectRatioLocked, sizesLocked);
-    assert(naturalSize && position && angle && shearXAngle && shearYAngle && horizontalFlip && verticalFlip && aspectRatioLocked && sizesLocked);
+    m_defaults.applyGeometry(naturalSize, position);
+    assert(naturalSize && position);
 
     const KNGeometryPtr_t geometry(new KNGeometry);
     geometry->naturalSize = get(naturalSize);
     geometry->position = get(position);
-    geometry->angle = get(angle);
-    geometry->shearXAngle = get(shearXAngle);
-    geometry->shearYAngle = get(shearYAngle);
-    geometry->horizontalFlip = get(horizontalFlip);
-    geometry->verticalFlip = get(verticalFlip);
-    geometry->aspectRatioLocked = get(aspectRatioLocked);
-    geometry->sizesLocked = get(sizesLocked);
+    geometry->angle = angle;
+    geometry->shearXAngle = shearXAngle;
+    geometry->shearYAngle = shearYAngle;
+    geometry->horizontalFlip = horizontalFlip;
+    geometry->verticalFlip = verticalFlip;
+    geometry->aspectRatioLocked = aspectRatioLocked;
+    geometry->sizesLocked = sizesLocked;
 
     m_levelStack.top().geometry = geometry;
   }

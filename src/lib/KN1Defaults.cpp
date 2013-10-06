@@ -22,22 +22,11 @@ void KN1Defaults::applyPresentationSize(boost::optional<KNSize> &size) const
   (void) size;
 }
 
-void KN1Defaults::applyGeometry(boost::optional<KNSize> &naturalSize, boost::optional<KNPosition> &position,
-                                boost::optional<double> &angle,
-                                boost::optional<double> &shearXAngle, boost::optional<double> &shearYAngle,
-                                boost::optional<bool> &horizontalFlip, boost::optional<bool> &verticalFlip,
-                                boost::optional<bool> &aspectRatioLocked, boost::optional<bool> &sizesLocked) const
+void KN1Defaults::applyGeometry(boost::optional<KNSize> &naturalSize, boost::optional<KNPosition> &position) const
 {
   // TODO: implement me
   (void) naturalSize;
   (void) position;
-  (void) angle;
-  (void) shearXAngle;
-  (void) shearYAngle;
-  (void) horizontalFlip;
-  (void) verticalFlip;
-  (void) aspectRatioLocked;
-  (void) sizesLocked;
 }
 
 }
