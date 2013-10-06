@@ -46,7 +46,6 @@ KNPosition::KNPosition(const double x_, const double y_)
 
 KNGeometry::KNGeometry()
   : naturalSize()
-  , size()
   , position()
   , angle(0)
   , shearXAngle(0)

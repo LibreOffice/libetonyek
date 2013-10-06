@@ -110,11 +110,6 @@ KNTransformation makeTransformation(const KNGeometry &geometry)
     w = get(geometry.naturalSize).width;
     h = get(geometry.naturalSize).height;
   }
-  else if (geometry.size)
-  {
-    w = get(geometry.size).width;
-    h = get(geometry.size).height;
-  }
 
   if ((0 != w) || (0 != h))
     tr *= center(w, h);

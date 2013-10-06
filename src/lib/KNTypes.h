@@ -45,7 +45,6 @@ struct KNPosition
 struct KNGeometry
 {
   boost::optional<KNSize> naturalSize;
-  boost::optional<KNSize> size;
   boost::optional<KNPosition> position;
   double angle;
   double shearXAngle;
