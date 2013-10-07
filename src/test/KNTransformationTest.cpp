@@ -10,6 +10,7 @@
 #include <boost/math/constants/constants.hpp>
 
 #include "KNTransformation.h"
+#include "KNTypes.h"
 
 #include "KNTransformationTest.h"
 
@@ -19,6 +20,17 @@ namespace test
 namespace m = boost::math::double_constants;
 
 using libkeynote::KNTransformation;
+
+namespace
+{
+
+KNTransformation wrap(const double width, const double height, const KNTransformation &tr)
+{
+  using namespace libkeynote::transformations;
+  return decenter(width, height) * tr * center(width, height);
+}
+
+}
 
 void KNTransformationTest::setUp()
 {
@@ -145,7 +157,69 @@ void KNTransformationTest::testConstructionIdentity()
 
 void KNTransformationTest::testConstructionFromGeometry()
 {
-  // TODO: implement me
+  using namespace libkeynote::transformations;
+
+  using libkeynote::KNGeometry;
+  using libkeynote::KNPosition;
+  using libkeynote::KNSize;
+
+  {
+    KNGeometry g;
+    g.naturalSize = KNSize(100, 100);
+    g.position = KNPosition(0, 0);
+
+    const KNTransformation tr = makeTransformation(g);
+    CPPUNIT_ASSERT(KNTransformation() == tr);
+  }
+
+  {
+    KNGeometry g;
+    g.naturalSize = KNSize(100, 100);
+    g.position = KNPosition(200, 150);
+
+    const KNTransformation tr = makeTransformation(g);
+    CPPUNIT_ASSERT(translate(200, 150) == tr);
+  }
+
+  {
+    KNGeometry g;
+    g.naturalSize = KNSize(100, 100);
+    g.position = KNPosition(0, 0);
+    g.angle = m::half_pi;
+
+    const KNTransformation tr = makeTransformation(g);
+    CPPUNIT_ASSERT(wrap(100, 100, rotate(m::half_pi)) == tr);
+  }
+
+  {
+    KNGeometry g;
+    g.naturalSize = KNSize(100, 100);
+    g.position = KNPosition(0, 0);
+    g.horizontalFlip = true;
+
+    const KNTransformation tr = makeTransformation(g);
+    CPPUNIT_ASSERT(wrap(100, 100, flip(true, false)) == tr);
+  }
+
+  {
+    KNGeometry g;
+    g.naturalSize = KNSize(100, 100);
+    g.position = KNPosition(0, 0);
+    g.verticalFlip = true;
+
+    const KNTransformation tr = makeTransformation(g);
+    CPPUNIT_ASSERT(wrap(100, 100, flip(false, true)) == tr);
+  }
+
+  {
+    KNGeometry g;
+    g.naturalSize = KNSize(100, 100);
+    g.position = KNPosition(200, 150);
+    g.angle = m::half_pi;
+
+    const KNTransformation tr = makeTransformation(g);
+    CPPUNIT_ASSERT(wrap(100, 100, rotate(m::half_pi) * translate(200, 150)) == tr);
+  }
 }
 
 void KNTransformationTest::testIdentities()

@@ -105,7 +105,7 @@ KNTransformation makeTransformation(const KNGeometry &geometry)
   const double w = geometry.naturalSize.width;
   const double h = geometry.naturalSize.height;
 
-  tr *= center(w, h);
+  tr *= decenter(w, h);
 
   // TODO: make sure the order of transformations is right
   if (geometry.shearXAngle || geometry.shearYAngle)
@@ -113,13 +113,13 @@ KNTransformation makeTransformation(const KNGeometry &geometry)
 
   if (geometry.horizontalFlip)
     tr *= flip(get(geometry.horizontalFlip), false);
-    if (geometry.verticalFlip)
+  if (geometry.verticalFlip)
     tr *= flip(false, get(geometry.verticalFlip));
 
   if (geometry.angle)
     tr *= rotate(get(geometry.angle));
 
-  tr *= decenter(w, h);
+  tr *= center(w, h);
   tr *= translate(geometry.position.x, geometry.position.y);
 
   return tr;
