@@ -27,7 +27,7 @@ namespace
 KNTransformation wrap(const double width, const double height, const KNTransformation &tr)
 {
   using namespace libkeynote::transformations;
-  return decenter(width, height) * tr * center(width, height);
+  return origin(width, height) * tr * center(width, height);
 }
 
 }
@@ -114,7 +114,7 @@ void KNTransformationTest::testConstruction()
 
   // centering
   CPPUNIT_ASSERT(center(200, 100) == KNTransformation(1, 0, 0, 1, 100, 50));
-  CPPUNIT_ASSERT(decenter(200, 100) == KNTransformation(1, 0, 0, 1, -100, -50));
+  CPPUNIT_ASSERT(origin(200, 100) == KNTransformation(1, 0, 0, 1, -100, -50));
 
   // flipping
   CPPUNIT_ASSERT(flip(true, false) == KNTransformation(-1, 0, 0, 1, 0, 0));
@@ -146,7 +146,7 @@ void KNTransformationTest::testConstructionIdentity()
   using namespace libkeynote::transformations;
 
   CPPUNIT_ASSERT(center(0, 0) == KNTransformation());
-  CPPUNIT_ASSERT(decenter(0, 0) == KNTransformation());
+  CPPUNIT_ASSERT(origin(0, 0) == KNTransformation());
   CPPUNIT_ASSERT(flip(false, false) == KNTransformation());
   CPPUNIT_ASSERT(rotate(0) == KNTransformation());
   CPPUNIT_ASSERT(rotate(m::two_pi) == KNTransformation());
@@ -227,7 +227,7 @@ void KNTransformationTest::testIdentities()
   using namespace libkeynote::transformations;
 
   CPPUNIT_ASSERT(center(100, 50) == translate(50, 25));
-  CPPUNIT_ASSERT(decenter(100, 50) == translate(-50, -25));
+  CPPUNIT_ASSERT(origin(100, 50) == translate(-50, -25));
   CPPUNIT_ASSERT((flip(true, false) * flip(false, true)) == flip(true, true));
   CPPUNIT_ASSERT((flip(false, true) * flip(true, false)) == flip(true, true));
   CPPUNIT_ASSERT((rotate(m::half_pi) * rotate(m::third_pi)) == (rotate(m::third_pi) * rotate(m::half_pi)));
@@ -240,8 +240,8 @@ void KNTransformationTest::testInverseOperations()
 {
   using namespace libkeynote::transformations;
 
-  CPPUNIT_ASSERT(center(10, 20) * decenter(10, 20) == KNTransformation());
-  CPPUNIT_ASSERT(decenter(10, 20) * center(10, 20) == KNTransformation());
+  CPPUNIT_ASSERT(center(10, 20) * origin(10, 20) == KNTransformation());
+  CPPUNIT_ASSERT(origin(10, 20) * center(10, 20) == KNTransformation());
 
   CPPUNIT_ASSERT(flip(true, false) * flip(true, false) == KNTransformation());
   CPPUNIT_ASSERT(flip(false, true) * flip(false, true) == KNTransformation());

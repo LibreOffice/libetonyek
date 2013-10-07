@@ -105,7 +105,7 @@ KNTransformation makeTransformation(const KNGeometry &geometry)
   const double w = geometry.naturalSize.width;
   const double h = geometry.naturalSize.height;
 
-  tr *= decenter(w, h);
+  tr *= origin(w, h);
 
   // TODO: make sure the order of transformations is right
   if (geometry.shearXAngle || geometry.shearYAngle)
@@ -133,7 +133,7 @@ KNTransformation center(const double width, const double height)
   return translate(width / 2, height / 2);
 }
 
-KNTransformation decenter(const double width, const double height)
+KNTransformation origin(const double width, const double height)
 {
   return translate(-width / 2, -height / 2);
 }

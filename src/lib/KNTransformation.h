@@ -126,7 +126,7 @@ KNTransformation center(double width, double height);
   * @arg[in] height height of the viewport.
   * @return the transformation
   */
-KNTransformation decenter(double width, double height);
+KNTransformation origin(double width, double height);
 
 /** Flip horizontally and/or vertically.
   *
