@@ -147,9 +147,8 @@ WPXPropertyList pointToWPG(const double x, const double y)
 {
   WPXPropertyList props;
 
-  // TODO: unit conversion
-  props.insert("svg:x", x);
-  props.insert("svg:y", y);
+  props.insert("svg:x", x, WPX_POINT);
+  props.insert("svg:y", y, WPX_POINT);
 
   return props;
 }
