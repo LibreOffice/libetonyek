@@ -1073,7 +1073,7 @@ void KN2Parser::parseGeometry(const KNXMLReader &reader)
       switch (getNameId(attr))
       {
       case KN2Token::angle :
-        angle = lexical_cast<double>(attr.getValue());
+        angle = deg2rad(lexical_cast<double>(attr.getValue()));
         break;
       case KN2Token::aspectRatioLocked :
         aspectRatioLocked = bool_cast(attr.getValue());
@@ -1082,10 +1082,10 @@ void KN2Parser::parseGeometry(const KNXMLReader &reader)
         horizontalFlip = bool_cast(attr.getValue());
         break;
       case KN2Token::shearXAngle :
-        shearXAngle = lexical_cast<double>(attr.getValue());
+        shearXAngle = deg2rad(lexical_cast<double>(attr.getValue()));
         break;
       case KN2Token::shearYAngle :
-        shearYAngle = lexical_cast<double>(attr.getValue());
+        shearYAngle = deg2rad(lexical_cast<double>(attr.getValue()));
         break;
       case KN2Token::sizesLocked :
         sizesLocked = bool_cast(attr.getValue());

@@ -82,6 +82,8 @@ public:
     */
   static bool bool_cast(const char *value);
 
+  static double deg2rad(double value);
+
 protected:
   KN2ParserUtils();
 };

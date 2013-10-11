@@ -8,6 +8,7 @@
  */
 
 #include <boost/lexical_cast.hpp>
+#include <boost/math/constants/constants.hpp>
 
 #include "libkeynote_xml.h"
 #include "KN2ParserUtils.h"
@@ -156,6 +157,18 @@ bool KN2ParserUtils::bool_cast(const char *const value)
   }
 
   return false;
+}
+
+double KN2ParserUtils::deg2rad(double value)
+{
+  // normalize range
+  while (360 <= value)
+    value -= 360;
+  while (0 > value)
+    value += 360;
+
+  // convert
+  return boost::math::double_constants::pi / 180 * value;
 }
 
 KN2ParserUtils::KN2ParserUtils()
