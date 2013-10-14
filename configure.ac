@@ -274,6 +274,22 @@ AS_IF([test "x$with_docs" != "xno"], [
 ], [build_docs=no])
 AM_CONDITIONAL([WITH_LIBKEYNOTE_DOCS], [test "x$build_docs" != "xno"])
 
+# ================
+# Conversion tools
+# ================
+AC_ARG_WITH(tools,
+	[AS_HELP_STRING([--without-tools], [Do not build command line conversion tools])],
+	[with_tools="$withval"],
+	[]
+)
+AS_IF([test "x$with_tools" != "xno"], [
+	AX_BOOST_BASE
+	AX_BOOST_FILESYSTEM
+	AX_BOOST_SYSTEM
+	build_tools=yes
+], [build_tools=no])
+AM_CONDITIONAL([WITH_LIBKEYNOTE_TOOLS], [test "x$build_tools" != "xno"])
+
 # =====================
 # Prepare all .in files
 # =====================
@@ -281,6 +297,7 @@ AC_CONFIG_FILES([
 Makefile
 src/Makefile
 src/conv/Makefile
+src/conv/common/Makefile
 src/conv/raw/Makefile
 src/conv/raw/keynote2raw.rc
 src/conv/svg/Makefile

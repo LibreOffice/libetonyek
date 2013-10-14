@@ -150,20 +150,20 @@ KNDefaults *makeDefaults(const Version version)
   return 0;
 }
 
-shared_ptr<KNParser> makeParser(const Version version, const WPXInputStreamPtr_t &input, KNCollector *const collector, const KNDefaults &defaults)
+shared_ptr<KNParser> makeParser(const Version version, const WPXInputStreamPtr_t &input, const WPXInputStreamPtr_t &package, KNCollector *const collector, const KNDefaults &defaults)
 {
   shared_ptr<KNParser> parser;
 
   switch (version)
   {
   case VERSION_KEYNOTE_1 :
-    parser.reset(new KN1Parser(input, collector, defaults));
+    parser.reset(new KN1Parser(input, package, collector, defaults));
     break;
   case VERSION_KEYNOTE_2 :
   case VERSION_KEYNOTE_3 :
   case VERSION_KEYNOTE_4 :
   case VERSION_KEYNOTE_5 :
-    parser.reset(new KN2Parser(input, collector, defaults));
+    parser.reset(new KN2Parser(input, package, collector, defaults));
     break;
   default :
     KN_DEBUG_MSG(("KNDocument::parse(): unhandled version\n"));
@@ -171,161 +171,6 @@ shared_ptr<KNParser> makeParser(const Version version, const WPXInputStreamPtr_t
   }
 
   return parser;
-}
-
-}
-
-namespace
-{
-
-class DummyOLEStream : public WPXInputStream
-{
-public:
-  virtual bool isOLEStream();
-  virtual WPXInputStream *getDocumentOLEStream(const char *name);
-
-  virtual const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
-  virtual int seek(long offset, WPX_SEEK_TYPE seekType);
-  virtual long tell();
-  virtual bool atEOS();
-};
-
-bool DummyOLEStream::isOLEStream()
-{
-  return true;
-}
-
-WPXInputStream *DummyOLEStream::getDocumentOLEStream(const char *)
-{
-  return 0;
-}
-
-const unsigned char *DummyOLEStream::read(unsigned long, unsigned long &numBytesRead)
-{
-  numBytesRead = 0;
-  return 0;
-}
-
-int DummyOLEStream::seek(long, WPX_SEEK_TYPE)
-{
-  return -1;
-}
-
-long DummyOLEStream::tell()
-{
-  return 0;
-}
-
-bool DummyOLEStream::atEOS()
-{
-  return true;
-}
-
-}
-
-namespace
-{
-
-class CompositeStream : public WPXInputStream
-{
-
-public:
-  CompositeStream(const WPXInputStreamPtr_t &input, Version version, Source source);
-  virtual ~CompositeStream();
-
-  virtual bool isOLEStream();
-  virtual WPXInputStream *getDocumentOLEStream(const char *name);
-
-  virtual const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
-  virtual int seek(long offset, WPX_SEEK_TYPE seekType);
-  virtual long tell();
-  virtual bool atEOS();
-
-private:
-  WPXInputStreamPtr_t m_input;
-  WPXInputStreamPtr_t m_dir;
-};
-
-CompositeStream::CompositeStream(const WPXInputStreamPtr_t &input, const Version version, const Source source)
-  : m_input()
-  , m_dir()
-{
-  if (VERSION_UNKNOWN == version)
-  {
-    KN_DEBUG_MSG(("cannot create a stream for unknown version\n"));
-    throw GenericException();
-  }
-
-  switch (source)
-  {
-  case SOURCE_APXL :
-    m_input = input;
-    m_dir.reset(new DummyOLEStream());
-    break;
-  case SOURCE_APXL_GZ :
-    m_input.reset(new KNZlibStream(input));
-    m_dir.reset(new DummyOLEStream());
-    break;
-  case SOURCE_PACKAGE_APXL :
-    if (VERSION_KEYNOTE_1 == version)
-      m_input.reset(input->getDocumentOLEStream("presentation.apxl"));
-    else if (VERSION_UNKNOWN != version)
-      m_input.reset(input->getDocumentOLEStream("index.apxl"));
-    m_dir = input;
-    break;
-  case SOURCE_PACKAGE_APXL_GZ :
-  {
-    WPXInputStreamPtr_t compressedInput;
-    if (VERSION_KEYNOTE_1 == version)
-      compressedInput.reset(input->getDocumentOLEStream("presentation.apxl.gz"));
-    else if (VERSION_UNKNOWN != version)
-      compressedInput.reset(input->getDocumentOLEStream("index.apxl.gz"));
-    m_input.reset(new KNZlibStream(compressedInput));
-    m_dir = input;
-    break;
-  }
-  case SOURCE_KEY :
-    m_input.reset(input->getDocumentOLEStream("index.apxl"));
-    m_dir = input;
-    break;
-  default :
-    KN_DEBUG_MSG(("cannot create a stream for unknown source type\n"));
-    throw GenericException();
-  }
-}
-
-CompositeStream::~CompositeStream()
-{
-}
-
-bool CompositeStream::isOLEStream()
-{
-  return true;
-}
-
-WPXInputStream *CompositeStream::getDocumentOLEStream(const char *const name)
-{
-  return m_dir->getDocumentOLEStream(name);
-}
-
-const unsigned char *CompositeStream::read(const unsigned long numBytes, unsigned long &numBytesRead)
-{
-  return m_input->read(numBytes, numBytesRead);
-}
-
-int CompositeStream::seek(const long offset, const WPX_SEEK_TYPE seekType)
-{
-  return m_input->seek(offset, seekType);
-}
-
-long CompositeStream::tell()
-{
-  return m_input->tell();
-}
-
-bool CompositeStream::atEOS()
-{
-  return m_input->atEOS();
 }
 
 }
@@ -388,25 +233,42 @@ bool KNDocument::parse(::WPXInputStream *const input, libwpg::WPGPaintInterface 
   if (VERSION_UNKNOWN == version)
     return false;
 
-  CompositeStream compositeInput(input_, version, source);
-  const WPXInputStreamPtr_t compositeInput_(&compositeInput, KNDummyDeleter());
+  WPXInputStreamPtr_t package;
+  switch (source)
+  {
+    case SOURCE_PACKAGE_APXL :
+      package = input_;
+      input_.reset(package->getDocumentOLEStream((VERSION_KEYNOTE_1 == version) ? "presentation.apxl" : "index.apxl"));
+      break;
+    case SOURCE_PACKAGE_APXL_GZ :
+      package = input_;
+      input_.reset(package->getDocumentOLEStream((VERSION_KEYNOTE_1 == version) ? "presentation.apxl.gz" : "index.apxl.gz"));
+      break;
+    case SOURCE_KEY :
+      package = input_;
+      input_.reset(package->getDocumentOLEStream("index.apxl"));
+      break;
+    default :
+      // nothing
+      break;
+  }
 
   KNDictionary dict;
   KNLayerMap_t masterPages;
   KNSize presentationSize;
   const scoped_ptr<KNDefaults> defaults(makeDefaults(version));
 
-  compositeInput.seek(0, WPX_SEEK_SET);
+  input_->seek(0, WPX_SEEK_SET);
 
   KNThemeCollector themeCollector(dict, masterPages, presentationSize, *defaults);
-  shared_ptr<KNParser> parser = makeParser(version, compositeInput_, &themeCollector, *defaults);
+  shared_ptr<KNParser> parser = makeParser(version, input_, package, &themeCollector, *defaults);
   if (!parser->parse())
     return false;
 
-  compositeInput.seek(0, WPX_SEEK_SET);
+  input_->seek(0, WPX_SEEK_SET);
 
   KNContentCollector contentCollector(painter, dict, masterPages, presentationSize, *defaults);
-  parser = makeParser(version, compositeInput_, &contentCollector, *defaults);
+  parser = makeParser(version, input_, package, &contentCollector, *defaults);
   return parser->parse();
 }
 catch (...)

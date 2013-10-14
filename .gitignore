@@ -18,6 +18,8 @@ libkeynote-zip
 libkeynote-*.tar.*
 ltmain.sh
 m4
+# FIXME: this does not work; I must be doing something wrong...
+!m4/ax_*.m4
 missing
 mkinstalldirs
 stamp-h1

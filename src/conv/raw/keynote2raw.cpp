@@ -15,6 +15,8 @@
 #include <libwpg/libwpg.h>
 #include <libkeynote/libkeynote.h>
 
+#include "KNDirectoryStream.h"
+
 class RawPainter : public libwpg::WPGPaintInterface
 {
 public:
@@ -201,7 +203,7 @@ namespace
 
 int printUsage()
 {
-  printf("Usage: keynote2raw [OPTION] <KeyNote Document>\n");
+  printf("Usage: keynote2raw [OPTION] <KeyNote Document> | <KeyNote Directory>\n");
   printf("\n");
   printf("Options:\n");
   printf("--help                Shows this help message\n");
@@ -228,16 +230,31 @@ int main(int argc, char *argv[])
   if (!file)
     return printUsage();
 
-  WPXFileStream input(file);
+  using boost::shared_ptr;
+  namespace fs = boost::filesystem;
 
-  if (!libkeynote::KNDocument::isSupported(&input))
+  fs::path path(file);
+  shared_ptr<WPXInputStream> input;
+  if (is_directory(path))
+   input.reset(new conv::KNDirectoryStream(path));
+  else
+   input.reset(new WPXFileStream(file));
+
+  libkeynote::KNDocumentType type = libkeynote::KN_DOCUMENT_TYPE_UNKNOWN;
+  if (!libkeynote::KNDocument::isSupported(input.get(), &type))
   {
     fprintf(stderr, "ERROR: Unsupported file format!\n");
     return 1;
   }
 
+  if (libkeynote::KN_DOCUMENT_TYPE_APXL_FILE == type)
+  {
+    path.remove_filename();
+    input.reset(new conv::KNDirectoryStream(path));
+  }
+
   RawPainter painter;
-  libkeynote::KNDocument::parse(&input, &painter);
+  libkeynote::KNDocument::parse(input.get(), &painter);
 
   return 0;
 }

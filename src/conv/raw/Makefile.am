@@ -1,9 +1,10 @@
 bin_PROGRAMS = keynote2raw
 
-AM_CXXFLAGS = -I$(top_srcdir)/inc -I$(top_builddir)/src/lib $(WPD_CFLAGS) $(WPG_CFLAGS) $(DEBUG_CXXFLAGS)
+AM_CXXFLAGS = -I../common -I$(top_srcdir)/inc -I$(top_builddir)/src/lib $(WPD_CFLAGS) $(WPG_CFLAGS) $(BOOST_CFLAGS) $(DEBUG_CXXFLAGS)
 
 keynote2raw_DEPENDENCIES = @KN2RAW_WIN32_RESOURCE@
-keynote2raw_LDADD = ../../lib/libkeynote-@KEYNOTE_MAJOR_VERSION@.@KEYNOTE_MINOR_VERSION@.la $(WPD_LIBS) $(ZLIB_LIBS) @KN2RAW_WIN32_RESOURCE@
+keynote2raw_LDFLAGS = $(BOOST_LDFLAGS)
+keynote2raw_LDADD = ../common/libcommon.a ../../lib/libkeynote-@KEYNOTE_MAJOR_VERSION@.@KEYNOTE_MINOR_VERSION@.la $(WPD_LIBS) $(ZLIB_LIBS) $(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB) @KN2RAW_WIN32_RESOURCE@
 
 keynote2raw_SOURCES = \
 	keynote2raw.cpp

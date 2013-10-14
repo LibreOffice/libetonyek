@@ -14,7 +14,7 @@
 namespace libkeynote
 {
 
-KN1Parser::KN1Parser(const WPXInputStreamPtr_t &input, KNCollector *const collector, const KNDefaults &defaults)
+KN1Parser::KN1Parser(const WPXInputStreamPtr_t &input, const WPXInputStreamPtr_t &, KNCollector *const collector, const KNDefaults &defaults)
   : KNParser(input, collector, defaults)
 {
 }

@@ -58,9 +58,10 @@ unsigned getVersion(const int token)
 
 }
 
-KN2Parser::KN2Parser(const WPXInputStreamPtr_t &input, KNCollector *const collector, const KNDefaults &defaults)
+KN2Parser::KN2Parser(const WPXInputStreamPtr_t &input, const WPXInputStreamPtr_t &package, KNCollector *const collector, const KNDefaults &defaults)
   : KNParser(input, collector, defaults)
   , KN2ParserUtils()
+    , m_package(package)
   , m_version(0)
 {
 }

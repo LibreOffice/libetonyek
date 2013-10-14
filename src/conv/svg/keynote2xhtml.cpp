@@ -7,6 +7,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <boost/filesystem.hpp>
+#include <boost/shared_ptr.hpp>
+
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
@@ -15,12 +18,14 @@
 #include <libwpd/libwpd.h>
 #include <libkeynote/libkeynote.h>
 
+#include "KNDirectoryStream.h"
+
 namespace
 {
 
 int printUsage()
 {
-  printf("Usage: vsd2xhtml [OPTION] <KeyNote Document>\n");
+  printf("Usage: vsd2xhtml [OPTION] <KeyNote Document> | <KeyNote Directory>\n");
   printf("\n");
   printf("Options:\n");
   printf("--help                Shows this help message\n");
@@ -47,16 +52,31 @@ int main(int argc, char *argv[])
   if (!file)
     return printUsage();
 
-  WPXFileStream input(file);
+  using boost::shared_ptr;
+  namespace fs = boost::filesystem;
 
-  if (!libkeynote::KNDocument::isSupported(&input))
+  fs::path path(file);
+  shared_ptr<WPXInputStream> input;
+  if (is_directory(path))
+   input.reset(new conv::KNDirectoryStream(path));
+  else
+   input.reset(new WPXFileStream(file));
+
+  libkeynote::KNDocumentType type = libkeynote::KN_DOCUMENT_TYPE_UNKNOWN;
+  if (!libkeynote::KNDocument::isSupported(input.get(), &type))
   {
     std::cerr << "ERROR: Unsupported file format!" << std::endl;
     return 1;
   }
 
+  if (libkeynote::KN_DOCUMENT_TYPE_APXL_FILE == type)
+  {
+    path.remove_filename();
+    input.reset(new conv::KNDirectoryStream(path));
+  }
+
   libkeynote::KNStringVector output;
-  if (!libkeynote::KNDocument::generateSVG(&input, output))
+  if (!libkeynote::KNDocument::generateSVG(input.get(), output))
   {
     std::cerr << "ERROR: SVG Generation failed!" << std::endl;
     return 1;

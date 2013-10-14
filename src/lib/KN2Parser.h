@@ -22,7 +22,7 @@ class KNStyle;
 class KN2Parser : public KNParser, private KN2ParserUtils
 {
 public:
-  KN2Parser(const WPXInputStreamPtr_t &input, KNCollector *collector, const KNDefaults &defaults);
+  KN2Parser(const WPXInputStreamPtr_t &input, const WPXInputStreamPtr_t &package, KNCollector *collector, const KNDefaults &defaults);
   virtual ~KN2Parser();
 
 private:
@@ -84,6 +84,7 @@ private:
   void emitLayoutStyle(const ID_t &id);
 
 private:
+  WPXInputStreamPtr_t m_package;
   unsigned m_version;
 };
 
