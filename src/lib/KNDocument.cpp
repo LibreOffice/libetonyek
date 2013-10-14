@@ -130,12 +130,6 @@ Version detectVersion(const WPXInputStreamPtr_t &input, Source &source)
   return detectVersionFromInput(input);
 }
 
-Version detectVersion(const WPXInputStreamPtr_t &input)
-{
-  Source dummy;
-  return detectVersion(input, dummy);
-}
-
 KNDefaults *makeDefaults(const Version version)
 {
   switch (version)
@@ -342,9 +336,33 @@ Analyzes the content of an input stream to see if it can be parsed
 \return A value that indicates whether the content from the input
 stream is a KN Document that libkeynote is able to parse
 */
-bool KNDocument::isSupported(WPXInputStream *const input) try
+bool KNDocument::isSupported(WPXInputStream *const input, KNDocumentType *type) try
 {
-  const Version version = detectVersion(WPXInputStreamPtr_t(input, KNDummyDeleter()));
+  if (type)
+    *type = KN_DOCUMENT_TYPE_UNKNOWN;
+
+  Source source = SOURCE_UNKNOWN;
+  const Version version = detectVersion(WPXInputStreamPtr_t(input, KNDummyDeleter()), source);
+
+  if ((VERSION_UNKNOWN != version) && type)
+  {
+    switch (source)
+    {
+    case SOURCE_APXL :
+    case SOURCE_APXL_GZ :
+      *type = KN_DOCUMENT_TYPE_APXL_FILE;
+      break;
+    case SOURCE_PACKAGE_APXL :
+    case SOURCE_PACKAGE_APXL_GZ :
+    case SOURCE_KEY :
+      *type = KN_DOCUMENT_TYPE_PACKAGE;
+      break;
+    default :
+      assert(!"detection is broken");
+      break;
+    }
+  }
+
   return VERSION_UNKNOWN != version;
 }
 catch (...)
