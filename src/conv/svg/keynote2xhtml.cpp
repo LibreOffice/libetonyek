@@ -25,7 +25,7 @@ namespace
 
 int printUsage()
 {
-  printf("Usage: vsd2xhtml [OPTION] <KeyNote Document> | <KeyNote Directory>\n");
+  printf("Usage: keynote2xhtml [OPTION] <KeyNote Document> | <KeyNote Directory>\n");
   printf("\n");
   printf("Options:\n");
   printf("--help                Shows this help message\n");
