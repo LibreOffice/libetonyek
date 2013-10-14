@@ -287,8 +287,31 @@ MediaObject::MediaObject(const KNMediaPtr_t &media)
 
 void MediaObject::draw(const KNOutput &output)
 {
-  // TODO: implement me
-  (void) output;
+  if (bool(m_media)
+      && bool(m_media->geometry)
+      && bool(m_media->filteredImage)
+      && bool(m_media->filteredImage->unfiltered)
+      && bool(m_media->filteredImage->unfiltered->data)
+      && bool(m_media->filteredImage->unfiltered->data->stream))
+  {
+    const KNOutput newOutput(output, makeTransformation(*m_media->geometry));
+
+    WPXInputStreamPtr_t input = m_media->filteredImage->unfiltered->data->stream;
+
+    input->seek(0, WPX_SEEK_END);
+    const unsigned long size = input->tell();
+    input->seek(0, WPX_SEEK_SET);
+
+    unsigned long readBytes = 0;
+    const unsigned char *const bytes = input->read(size, readBytes);
+    if (readBytes != size)
+      throw GenericException();
+
+    const WPXBinaryData data(bytes, size);
+    WPXPropertyList props;
+
+    newOutput.getPainter()->drawGraphicObject(props, data);
+  }
 }
 
 }
