@@ -111,7 +111,7 @@ KNMedia::KNMedia()
   , style()
   , placeholder()
   , placeholderSize()
-  , data()
+  , filteredImage()
 {
 }
 

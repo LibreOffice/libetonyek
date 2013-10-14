@@ -487,27 +487,60 @@ void KNCollectorBase::collectCalloutPath(const optional<ID_t> &, const KNSize &s
 
 void KNCollectorBase::collectData(const boost::optional<ID_t> &id, const WPXInputStreamPtr_t &stream, const boost::optional<std::string> &displayName, const boost::optional<unsigned> &type, const bool ref)
 {
-  // TODO: implement me
-  (void) id;
-  (void) stream;
-  (void) displayName;
-  (void) type;
-  (void) ref;
+  if (m_collecting)
+  {
+    KNDataPtr_t newData;
+
+    if (!ref)
+    {
+      newData.reset(new KNData());
+      newData->stream = stream;
+      newData->displayName = displayName;
+      newData->type = type;
+    }
+
+    assert(!m_currentData);
+    m_currentData = getValue(id, newData, ref, m_dict.data);
+  }
 }
 
 void KNCollectorBase::collectUnfiltered(const boost::optional<ID_t> &id, const boost::optional<KNSize> &size, const bool ref)
 {
-  // TODO: implement me
-  (void) id;
-  (void) size;
-  (void) ref;
+  if (m_collecting)
+  {
+    KNUnfilteredPtr_t newUnfiltered;
+
+    if (!ref)
+    {
+      newUnfiltered.reset(new KNUnfiltered());
+      newUnfiltered->size = size;
+      newUnfiltered->data = m_currentData;
+
+      m_currentData.reset();
+    }
+
+    assert(!m_currentUnfiltered);
+    m_currentUnfiltered = getValue(id, newUnfiltered, ref, m_dict.unfiltereds);
+  }
 }
 
 void KNCollectorBase::collectFilteredImage(const boost::optional<ID_t> &id, const bool ref)
 {
-  // TODO: implement me
-  (void) id;
-  (void) ref;
+  if (m_collecting)
+  {
+    KNFilteredImagePtr_t newFilteredImage;
+
+    if (!ref)
+    {
+      newFilteredImage.reset(new KNFilteredImage());
+      newFilteredImage->unfiltered = m_currentUnfiltered;
+
+      m_currentUnfiltered.reset();
+    }
+
+    assert(!m_currentFilteredImage);
+    m_currentFilteredImage = getValue(id, newFilteredImage, ref, m_dict.filteredImages);
+  }
 }
 
 void KNCollectorBase::collectMedia(const optional<ID_t> &)
@@ -515,11 +548,18 @@ void KNCollectorBase::collectMedia(const optional<ID_t> &)
   if (m_collecting)
   {
     assert(!m_objectsStack.empty());
+    assert(!m_levelStack.empty());
 
-    // FIXME: build media from collected parts
-    // media->geometry = m_currentGeometry;
-    // m_currentGeometry.reset();
-    // m_objectsStack.top().push_back(makeObject(media));
+    const KNMediaPtr_t media(new KNMedia());
+    media->geometry = m_levelStack.top().geometry;
+    media->style = m_levelStack.top().graphicStyle;
+    media->filteredImage = m_currentFilteredImage;
+
+    m_currentFilteredImage.reset();
+    m_levelStack.top().geometry.reset();
+    m_levelStack.top().graphicStyle.reset();
+
+    m_objectsStack.top().push_back(makeObject(media));
   }
 }
 

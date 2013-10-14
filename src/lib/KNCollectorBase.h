@@ -162,6 +162,10 @@ private:
   KNStylesheetPtr_t m_currentStylesheet;
   std::deque<KNStylePtr_t> m_newStyles;
 
+  KNDataPtr_t m_currentData;
+  KNFilteredImagePtr_t m_currentFilteredImage;
+  KNUnfilteredPtr_t m_currentUnfiltered;
+
   bool m_collecting;
   bool m_layerOpened;
   int m_groupLevel;

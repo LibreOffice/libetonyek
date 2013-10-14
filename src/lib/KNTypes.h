@@ -99,8 +99,8 @@ struct KNData
 
 struct KNUnfiltered
 {
-  KNSize size;
-  boost::optional<KNData> data;
+  boost::optional<KNSize> size;
+  KNDataPtr_t data;
 };
 
 struct KNFilteredImage
@@ -130,10 +130,10 @@ struct KNImage
 struct KNMedia
 {
   KNGeometryPtr_t geometry;
-  KNStylePtr_t style;
+  KNGraphicStylePtr_t style;
   boost::optional<bool> placeholder;
   boost::optional<KNSize> placeholderSize;
-  boost::optional<KNBinary> data;
+  KNFilteredImagePtr_t filteredImage;
 
   KNMedia();
 };
