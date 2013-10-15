@@ -19,10 +19,6 @@ struct NotADirectoryException
 {
 };
 
-struct InvalidSubPathException
-{
-};
-
 }
 
 KNDirectoryStream::KNDirectoryStream(const boost::filesystem::path &path)
@@ -47,10 +43,7 @@ WPXInputStream *KNDirectoryStream::getDocumentOLEStream(const char *const name)
 
   const path filePath = m_path / name;
 
-  if (!is_regular_file(filePath))
-    throw InvalidSubPathException();
-
-  return new WPXFileStream(filePath.c_str());
+  return is_regular_file(filePath) ? new WPXFileStream(filePath.c_str()) : 0;
 }
 
 const unsigned char *KNDirectoryStream::read(const unsigned long, unsigned long &numBytesRead)
