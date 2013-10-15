@@ -58,9 +58,9 @@ int main(int argc, char *argv[])
   fs::path path(file);
   shared_ptr<WPXInputStream> input;
   if (is_directory(path))
-   input.reset(new conv::KNDirectoryStream(path));
+    input.reset(new conv::KNDirectoryStream(path));
   else
-   input.reset(new WPXFileStream(file));
+    input.reset(new WPXFileStream(file));
 
   libkeynote::KNDocumentType type = libkeynote::KN_DOCUMENT_TYPE_UNKNOWN;
   if (!libkeynote::KNDocument::isSupported(input.get(), &type))
