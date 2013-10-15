@@ -2032,6 +2032,8 @@ void KN2Parser::parseContent(const KNXMLReader &reader)
       switch (getNameId(element))
       {
       case KN2Token::image_media :
+        parseImageMedia(element);
+        break;
       case KN2Token::movie_media :
         KN_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
