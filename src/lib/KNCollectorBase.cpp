@@ -110,6 +110,13 @@ KNCollectorBase::~KNCollectorBase()
 {
   assert(!m_collecting);
   assert(m_objectsStack.empty());
+  assert(m_levelStack.empty());
+  assert(!m_layerOpened);
+  assert(0 == m_groupLevel);
+
+  assert(!m_currentPath);
+  assert(!m_currentText);
+  assert(!m_currentPlaceholderStyle);
 }
 
 void KNCollectorBase::collectCellStyle(const boost::optional<ID_t> &id,
