@@ -2077,8 +2077,10 @@ void KN2Parser::parseData(const KNXMLReader &reader)
       case KN2Token::hfs_type :
         type = lexical_cast<unsigned>(attr.getValue());
         break;
-      case KN2Token::delay_archiving :
       case KN2Token::path :
+        stream.reset(m_package->getDocumentOLEStream(attr.getValue()));
+        break;
+      case KN2Token::delay_archiving :
       case KN2Token::resource_type :
       case KN2Token::sharable :
       case KN2Token::size :
