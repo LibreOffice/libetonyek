@@ -236,21 +236,25 @@ bool KNDocument::parse(::WPXInputStream *const input, libwpg::WPGPaintInterface 
   WPXInputStreamPtr_t package;
   switch (source)
   {
-    case SOURCE_PACKAGE_APXL :
-      package = input_;
-      input_.reset(package->getDocumentOLEStream((VERSION_KEYNOTE_1 == version) ? "presentation.apxl" : "index.apxl"));
-      break;
-    case SOURCE_PACKAGE_APXL_GZ :
-      package = input_;
-      input_.reset(package->getDocumentOLEStream((VERSION_KEYNOTE_1 == version) ? "presentation.apxl.gz" : "index.apxl.gz"));
-      break;
-    case SOURCE_KEY :
-      package = input_;
-      input_.reset(package->getDocumentOLEStream("index.apxl"));
-      break;
-    default :
-      // nothing
-      break;
+  case SOURCE_PACKAGE_APXL :
+    package = input_;
+    input_.reset(package->getDocumentOLEStream((VERSION_KEYNOTE_1 == version) ? "presentation.apxl" : "index.apxl"));
+    break;
+  case SOURCE_PACKAGE_APXL_GZ :
+  {
+    package = input_;
+    const WPXInputStreamPtr_t compressed(
+      package->getDocumentOLEStream((VERSION_KEYNOTE_1 == version) ? "presentation.apxl.gz" : "index.apxl.gz"));
+    input_.reset(new KNZlibStream(compressed));
+    break;
+  }
+  case SOURCE_KEY :
+    package = input_;
+    input_.reset(package->getDocumentOLEStream("index.apxl"));
+    break;
+  default :
+    // nothing
+    break;
   }
 
   KNDictionary dict;
