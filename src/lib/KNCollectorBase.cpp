@@ -551,6 +551,21 @@ void KNCollectorBase::collectFilteredImage(const boost::optional<ID_t> &id, cons
   }
 }
 
+void KNCollectorBase::collectMovieMedia(const boost::optional<ID_t> &)
+{
+  if (m_collecting)
+  {
+    assert(m_currentData);
+
+    const KNMediaContentPtr_t newContent(new KNMediaContent());
+    newContent->data = m_currentData;
+    m_currentData.reset();
+
+    assert(!m_currentContent);
+    m_currentContent = newContent;
+  }
+}
+
 void KNCollectorBase::collectMedia(const optional<ID_t> &)
 {
   if (m_collecting)

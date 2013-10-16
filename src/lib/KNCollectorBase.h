@@ -113,6 +113,7 @@ public:
   virtual void collectData(const boost::optional<ID_t> &id, const WPXInputStreamPtr_t &stream, const boost::optional<std::string> &displayName, const boost::optional<unsigned> &type, bool ref);
   virtual void collectUnfiltered(const boost::optional<ID_t> &id, const boost::optional<KNSize> &size, bool ref);
   virtual void collectFilteredImage(const boost::optional<ID_t> &id, bool ref);
+  virtual void collectMovieMedia(const boost::optional<ID_t> &id);
   virtual void collectMedia(const boost::optional<ID_t> &id);
 
   virtual void collectLayer(const boost::optional<ID_t> &id, bool ref);

@@ -108,6 +108,7 @@ public:
   virtual void collectData(const boost::optional<ID_t> &id, const WPXInputStreamPtr_t &stream, const boost::optional<std::string> &displayName, const boost::optional<unsigned> &type, bool ref) = 0;
   virtual void collectUnfiltered(const boost::optional<ID_t> &id, const boost::optional<KNSize> &size, bool ref) = 0;
   virtual void collectFilteredImage(const boost::optional<ID_t> &id, bool ref) = 0;
+  virtual void collectMovieMedia(const boost::optional<ID_t> &id) = 0;
   virtual void collectMedia(const boost::optional<ID_t> &id) = 0;
 
   virtual void collectPresentation(const boost::optional<KNSize> &size) = 0;

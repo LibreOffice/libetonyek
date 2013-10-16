@@ -70,6 +70,9 @@ private:
   void parseImageMedia(const KNXMLReader &reader);
   void parseLeveled(const KNXMLReader &reader);
   void parseUnfiltered(const KNXMLReader &reader);
+  void parseMovieMedia(const KNXMLReader &reader);
+  void parseSelfContainedMovie(const KNXMLReader &reader);
+  void parseOtherDatas(const KNXMLReader &reader);
 
   void parseBr(const KNXMLReader &reader);
   void parseLayout(const KNXMLReader &reader);

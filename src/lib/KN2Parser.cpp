@@ -2035,8 +2035,7 @@ void KN2Parser::parseContent(const KNXMLReader &reader)
         parseImageMedia(element);
         break;
       case KN2Token::movie_media :
-        KN_DEBUG_XML_TODO_ELEMENT(element);
-        skipElement(element);
+        parseMovieMedia(element);
         break;
       default :
         KN_DEBUG_XML_UNKNOWN_ELEMENT(element);
@@ -2301,6 +2300,69 @@ void KN2Parser::parseUnfiltered(const KNXMLReader &reader)
   }
 
   getCollector()->collectUnfiltered(id, size, false);
+}
+
+void KN2Parser::parseMovieMedia(const KNXMLReader &reader)
+{
+  assert(checkElement(reader, KN2Token::movie_media, KN2Token::NS_URI_SF));
+
+  KNXMLReader::AttributeIterator attr(reader);
+  // skip attributes
+  while (attr.next())
+    ;
+
+  KNXMLReader::ElementIterator element(reader);
+  while (element.next())
+  {
+    if ((KN2Token::NS_URI_SF | KN2Token::self_contained_movie) == getId(element))
+      parseSelfContainedMovie(element);
+    else
+      skipElement(element);
+  }
+
+  getCollector()->collectMovieMedia(optional<ID_t>());
+}
+
+void KN2Parser::parseSelfContainedMovie(const KNXMLReader &reader)
+{
+  assert(checkElement(reader, KN2Token::self_contained_movie, KN2Token::NS_URI_SF));
+
+  checkNoAttributes(reader);
+
+  KNXMLReader::ElementIterator element(reader);
+  while (element.next())
+  {
+    if ((KN2Token::NS_URI_SF | KN2Token::other_datas) == getId(element))
+      parseOtherDatas(element);
+    else
+      skipElement(element);
+  }
+}
+
+void KN2Parser::parseOtherDatas(const KNXMLReader &reader)
+{
+  assert(checkElement(reader, KN2Token::other_datas, KN2Token::NS_URI_SF));
+
+  checkNoAttributes(reader);
+
+  KNXMLReader::ElementIterator element(reader);
+  while (element.next())
+  {
+    switch (getId(element))
+    {
+    case KN2Token::NS_URI_SF | KN2Token::data :
+      parseData(element);
+      break;
+    case KN2Token::NS_URI_SF | KN2Token::data_ref :
+    {
+      const ID_t idref = readRef(element);
+      getCollector()->collectData(idref, WPXInputStreamPtr_t(), optional<string>(), optional<unsigned>(), true);
+      break;
+    }
+    default :
+      skipElement(element);
+    }
+  }
 }
 
 void KN2Parser::parseBr(const KNXMLReader &reader)
