@@ -163,8 +163,8 @@ private:
   std::deque<KNStylePtr_t> m_newStyles;
 
   KNDataPtr_t m_currentData;
-  KNFilteredImagePtr_t m_currentFilteredImage;
-  KNUnfilteredPtr_t m_currentUnfiltered;
+  KNMediaContentPtr_t m_currentUnfiltered;
+  KNMediaContentPtr_t m_currentContent;
 
   bool m_collecting;
   bool m_layerOpened;

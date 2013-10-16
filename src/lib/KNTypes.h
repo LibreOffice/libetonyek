@@ -97,15 +97,10 @@ struct KNData
   boost::optional<int> type;
 };
 
-struct KNUnfiltered
+struct KNMediaContent
 {
   boost::optional<KNSize> size;
   KNDataPtr_t data;
-};
-
-struct KNFilteredImage
-{
-  KNUnfilteredPtr_t unfiltered;
 };
 
 struct KNBinary
@@ -133,7 +128,7 @@ struct KNMedia
   KNGraphicStylePtr_t style;
   boost::optional<bool> placeholder;
   boost::optional<KNSize> placeholderSize;
-  KNFilteredImagePtr_t filteredImage;
+  KNMediaContentPtr_t content;
 
   KNMedia();
 };

@@ -35,15 +35,10 @@ struct KNData;
 typedef boost::shared_ptr<KNData> KNDataPtr_t;
 typedef boost::unordered_map<ID_t, KNDataPtr_t> KNDataMap_t;
 
-struct KNUnfiltered;
+struct KNMediaContent;
 
-typedef boost::shared_ptr<KNUnfiltered> KNUnfilteredPtr_t;
-typedef boost::unordered_map<ID_t, KNUnfilteredPtr_t> KNUnfilteredMap_t;
-
-struct KNFilteredImage;
-
-typedef boost::shared_ptr<KNFilteredImage> KNFilteredImagePtr_t;
-typedef boost::unordered_map<ID_t, KNFilteredImagePtr_t> KNFilteredImageMap_t;
+typedef boost::shared_ptr<KNMediaContent> KNMediaContentPtr_t;
+typedef boost::unordered_map<ID_t, KNMediaContentPtr_t> KNMediaContentMap_t;
 
 struct KNImage;
 

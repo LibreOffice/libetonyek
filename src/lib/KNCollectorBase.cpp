@@ -515,11 +515,11 @@ void KNCollectorBase::collectUnfiltered(const boost::optional<ID_t> &id, const b
 {
   if (m_collecting)
   {
-    KNUnfilteredPtr_t newUnfiltered;
+    KNMediaContentPtr_t newUnfiltered;
 
     if (!ref)
     {
-      newUnfiltered.reset(new KNUnfiltered());
+      newUnfiltered.reset(new KNMediaContent());
       newUnfiltered->size = size;
       newUnfiltered->data = m_currentData;
 
@@ -535,18 +535,16 @@ void KNCollectorBase::collectFilteredImage(const boost::optional<ID_t> &id, cons
 {
   if (m_collecting)
   {
-    KNFilteredImagePtr_t newFilteredImage;
+    KNMediaContentPtr_t newFilteredImage;
 
     if (!ref)
     {
-      newFilteredImage.reset(new KNFilteredImage());
-      newFilteredImage->unfiltered = m_currentUnfiltered;
-
+      newFilteredImage = m_currentUnfiltered;
       m_currentUnfiltered.reset();
     }
 
-    assert(!m_currentFilteredImage);
-    m_currentFilteredImage = getValue(id, newFilteredImage, ref, m_dict.filteredImages);
+    assert(!m_currentContent);
+    m_currentContent = getValue(id, newFilteredImage, ref, m_dict.filteredImages);
   }
 }
 
@@ -560,9 +558,9 @@ void KNCollectorBase::collectMedia(const optional<ID_t> &)
     const KNMediaPtr_t media(new KNMedia());
     media->geometry = m_levelStack.top().geometry;
     media->style = m_levelStack.top().graphicStyle;
-    media->filteredImage = m_currentFilteredImage;
+    media->content = m_currentContent;
 
-    m_currentFilteredImage.reset();
+    m_currentContent.reset();
     m_levelStack.top().geometry.reset();
     m_levelStack.top().graphicStyle.reset();
 

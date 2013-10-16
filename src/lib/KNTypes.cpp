@@ -111,7 +111,7 @@ KNMedia::KNMedia()
   , style()
   , placeholder()
   , placeholderSize()
-  , filteredImage()
+  , content()
 {
 }
 
@@ -289,14 +289,13 @@ void MediaObject::draw(const KNOutput &output)
 {
   if (bool(m_media)
       && bool(m_media->geometry)
-      && bool(m_media->filteredImage)
-      && bool(m_media->filteredImage->unfiltered)
-      && bool(m_media->filteredImage->unfiltered->data)
-      && bool(m_media->filteredImage->unfiltered->data->stream))
+      && bool(m_media->content)
+      && bool(m_media->content->data)
+      && bool(m_media->content->data->stream))
   {
     const KNOutput newOutput(output, makeTransformation(*m_media->geometry));
 
-    WPXInputStreamPtr_t input = m_media->filteredImage->unfiltered->data->stream;
+    const WPXInputStreamPtr_t input = m_media->content->data->stream;
 
     input->seek(0, WPX_SEEK_END);
     const unsigned long size = input->tell();
