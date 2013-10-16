@@ -307,10 +307,16 @@ void MediaObject::draw(const KNOutput &output)
     if (readBytes != size)
       throw GenericException();
 
-    const WPXBinaryData data(bytes, size);
     WPXPropertyList props;
 
-    newOutput.getPainter()->drawGraphicObject(props, data);
+    double x = 1;
+    double y = 1;
+    const KNTransformation &tr = newOutput.getTransformation();
+    tr(x, y);
+    props.insert("svx:x", x, WPX_POINT);
+    props.insert("svx:y", y, WPX_POINT);
+
+    newOutput.getPainter()->drawGraphicObject(props, WPXBinaryData(bytes, size));
   }
 }
 
