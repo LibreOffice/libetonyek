@@ -102,6 +102,8 @@ KNCollectorBase::KNCollectorBase(KNDictionary &dict, const KNDefaults &defaults)
   , m_newStyles()
   , m_currentData()
   , m_currentUnfiltered()
+  , m_currentFiltered()
+  , m_currentLeveled()
   , m_currentContent()
   , m_collecting(false)
   , m_layerOpened(false)
@@ -534,6 +536,36 @@ void KNCollectorBase::collectUnfiltered(const boost::optional<ID_t> &id, const b
   }
 }
 
+void KNCollectorBase::collectFiltered(const boost::optional<ID_t> &, const boost::optional<KNSize> &size)
+{
+  if (m_collecting)
+  {
+    const KNMediaContentPtr_t newFiltered(new KNMediaContent());
+    newFiltered->size = size;
+    newFiltered->data = m_currentData;
+
+    m_currentData.reset();
+
+    assert(!m_currentFiltered);
+    m_currentFiltered = newFiltered;
+  }
+}
+
+void KNCollectorBase::collectLeveled(const boost::optional<ID_t> &, const boost::optional<KNSize> &size)
+{
+  if (m_collecting)
+  {
+    const KNMediaContentPtr_t newLeveled(new KNMediaContent());
+    newLeveled->size = size;
+    newLeveled->data = m_currentData;
+
+    m_currentData.reset();
+
+    assert(!m_currentLeveled);
+    m_currentLeveled = newLeveled;
+  }
+}
+
 void KNCollectorBase::collectFilteredImage(const boost::optional<ID_t> &id, const bool ref)
 {
   if (m_collecting)
@@ -542,7 +574,20 @@ void KNCollectorBase::collectFilteredImage(const boost::optional<ID_t> &id, cons
 
     if (!ref)
     {
-      newFilteredImage = m_currentUnfiltered;
+      // If a filter is applied to an image, the new image is saved next
+      // to the original. So all we need is to pick the right one. We
+      // can happily ignore the whole filter-properties section :-)
+      // NOTE: Leveled is apparently used to save the result of using
+      // the "Enhance" button.
+      if (bool(m_currentFiltered))
+        newFilteredImage = m_currentFiltered;
+      else if (bool(m_currentLeveled))
+        newFilteredImage = m_currentLeveled;
+      else
+        newFilteredImage = m_currentUnfiltered;
+
+      m_currentFiltered.reset();
+      m_currentLeveled.reset();
       m_currentUnfiltered.reset();
     }
 
