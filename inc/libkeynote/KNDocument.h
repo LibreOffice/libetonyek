@@ -28,7 +28,7 @@ enum KNDocumentType
   /// A standalone APXL file.
   KN_DOCUMENT_TYPE_APXL_FILE,
   /// A complete package.
-  KN_DOCUMENT_TYPE_PACKAGE,
+  KN_DOCUMENT_TYPE_PACKAGE
 };
 
 class KNDocument
