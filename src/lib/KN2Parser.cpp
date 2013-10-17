@@ -1427,6 +1427,7 @@ void KN2Parser::parseFiltered(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::filtered, KN2Token::NS_URI_SF));
 
+  optional<ID_t> id;
   optional<KNSize> size;
 
   KNXMLReader::ElementIterator element(reader);
@@ -1449,6 +1450,8 @@ void KN2Parser::parseFiltered(const KNXMLReader &reader)
     else
       skipElement(element);
   }
+
+  getCollector()->collectFiltered(id, size);
 }
 
 void KN2Parser::parseFilteredImage(const KNXMLReader &reader)
@@ -1540,6 +1543,8 @@ void KN2Parser::parseLeveled(const KNXMLReader &reader)
     else
       skipElement(element);
   }
+
+  getCollector()->collectLeveled(id, optional<KNSize>());
 }
 
 void KN2Parser::parseUnfiltered(const KNXMLReader &reader)
