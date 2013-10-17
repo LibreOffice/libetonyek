@@ -2306,11 +2306,6 @@ void KN2Parser::parseMovieMedia(const KNXMLReader &reader)
 {
   assert(checkElement(reader, KN2Token::movie_media, KN2Token::NS_URI_SF));
 
-  KNXMLReader::AttributeIterator attr(reader);
-  // skip attributes
-  while (attr.next())
-    ;
-
   KNXMLReader::ElementIterator element(reader);
   while (element.next())
   {
