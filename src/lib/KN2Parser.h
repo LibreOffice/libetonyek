@@ -76,7 +76,7 @@ private:
 
   void parseBr(const KNXMLReader &reader);
   void parseLayout(const KNXMLReader &reader);
-  void parseLink(const KNXMLReader &reader, bool ref = false);
+  void parseLink(const KNXMLReader &reader);
   void parseP(const KNXMLReader &reader);
   void parseSpan(const KNXMLReader &reader);
   void parseTab(const KNXMLReader &reader);

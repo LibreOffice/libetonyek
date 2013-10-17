@@ -1668,11 +1668,9 @@ void KN2Parser::parseLayout(const KNXMLReader &reader)
   }
 }
 
-void KN2Parser::parseLink(const KNXMLReader &reader, const bool ref)
+void KN2Parser::parseLink(const KNXMLReader &reader)
 {
-  assert(ref
-         ? checkElement(reader, KN2Token::link-ref, KN2Token::NS_URI_SF)
-         : checkElement(reader, KN2Token::link, KN2Token::NS_URI_SF));
+  assert(checkElement(reader, KN2Token::link, KN2Token::NS_URI_SF));
 
   KNXMLReader::MixedIterator mixed(reader);
   while (mixed.next())
@@ -1751,9 +1749,6 @@ void KN2Parser::parseP(const KNXMLReader &reader)
           break;
         case KN2Token::link :
           parseLink(mixed);
-          break;
-        case KN2Token::link_ref :
-          parseLink(mixed, true);
           break;
         default :
           skipElement(mixed);
