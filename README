@@ -1,5 +1,25 @@
 libkeynote is a library and a set of tools for reading and converting
-Apple Keynote presentations.
+Apple Keynote presentations. The library tries to extract the most
+important parts of version 2 format of Keynote (version 1 is not
+supported yet, but it should be in the future). See FEATURES for what is
+currently supported.
+
+Keynote documentation is, sadly, scarce. There are two official Apple
+documents: The first one is "Technical Note 2073" (TN2073) [TODO: add
+link], describing basic parts of the Keynote 1 format. The second is
+"iWork Programming Guide", containing an overview of the Keynote 2
+structure. Unfortunately it mostly documents things that do not need to
+be documented: I mean, anyone can guess what elements like slide,
+master-slide, stylesheet or layer mean, right? But how exactly does
+style inheritance work? Which elements can be saved as a reference? What
+do all these 1-3 letter elements and attributes in table model mean?
+These and a lot of other questions remain unanswered. And that is just
+the first incarnation of the version 2 format; nobody knows what has
+changed since then.
+
+Based on the previous paragraph, it should be clear that most of the
+code in this library is based on guesses, sample presentations created
+in Keynote '09 and "real-life" presentations collected on the Internet.
 
 libkeynote requires boost, libwpd, libwpg, libxml2 and zlib to build.
 
