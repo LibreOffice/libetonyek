@@ -15,7 +15,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "keynote2xhtml"=.\keynote2xhtml.dsp - Package Owner=<4>
+Project: "key2xhtml"=.\key2xhtml.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -30,7 +30,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "keynote2raw"=.\keynote2raw.dsp - Package Owner=<4>
+Project: "key2raw"=.\key2raw.dsp - Package Owner=<4>
 
 Package=<5>
 {{{

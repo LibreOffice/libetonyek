@@ -11,7 +11,7 @@
 #include <boost/optional.hpp>
 
 #include "libkeynote_xml.h"
-#include "KNXMLReader.h"
+#include "KEYXMLReader.h"
 
 using boost::optional;
 
@@ -27,23 +27,23 @@ struct XMLException {};
 
 }
 
-void skipElement(const KNXMLReader &reader)
+void skipElement(const KEYXMLReader &reader)
 {
-  KNXMLReader::ElementIterator elements(reader);
+  KEYXMLReader::ElementIterator elements(reader);
   while (elements.next())
     skipElement(elements);
 }
 
-bool checkElement(const KNXMLReader &reader, const int name, const int ns)
+bool checkElement(const KEYXMLReader &reader, const int name, const int ns)
 {
   return (getNamespaceId(reader) == ns) && (getNameId(reader) == name);
 }
 
-bool checkEmptyElement(const KNXMLReader &reader)
+bool checkEmptyElement(const KEYXMLReader &reader)
 {
   bool empty = true;
 
-  KNXMLReader::ElementIterator elements(reader);
+  KEYXMLReader::ElementIterator elements(reader);
   while (elements.next())
   {
     empty = false;
@@ -53,32 +53,32 @@ bool checkEmptyElement(const KNXMLReader &reader)
   return empty;
 }
 
-bool checkNoAttributes(const KNXMLReader &reader)
+bool checkNoAttributes(const KEYXMLReader &reader)
 {
   unsigned count = 0;
 
-  KNXMLReader::AttributeIterator attr(reader);
+  KEYXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     ++count;
-    KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
+    KEY_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
   }
 
   return 0 == count;
 }
 
-string readOnlyAttribute(const KNXMLReader &reader, const int name, const int ns)
+string readOnlyAttribute(const KEYXMLReader &reader, const int name, const int ns)
 {
   optional<string> value;
 
-  KNXMLReader::AttributeIterator attr(reader);
+  KEYXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((getNamespaceId(attr) == ns) && (getNameId(attr) == name))
       value = attr.getValue();
     else
     {
-      KN_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
+      KEY_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
     }
   }
 
@@ -88,7 +88,7 @@ string readOnlyAttribute(const KNXMLReader &reader, const int name, const int ns
   return get(value);
 }
 
-string readOnlyElementAttribute(const KNXMLReader &reader, const int name, const int ns)
+string readOnlyElementAttribute(const KEYXMLReader &reader, const int name, const int ns)
 {
   const string value = readOnlyAttribute(reader, name, ns);
 

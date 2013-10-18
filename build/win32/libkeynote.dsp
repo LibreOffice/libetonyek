@@ -91,23 +91,23 @@ SOURCE=..\..\src\lib\libkeynote_utils.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\KNCollector.cpp
+SOURCE=..\..\src\lib\KEYCollector.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\KeyNoteDocument.cpp
+SOURCE=..\..\src\lib\KEYDocument.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\KNParser.cpp
+SOURCE=..\..\src\lib\KEYParser.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\KNStringVector.cpp
+SOURCE=..\..\src\lib\KEYStringVector.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\KNSVGGenerator.cpp
+SOURCE=..\..\src\lib\KEYSVGGenerator.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -119,11 +119,11 @@ SOURCE=..\..\inc\libkeynote\libkeynote.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\inc\libkeynote\KeyNoteDocument.h
+SOURCE=..\..\inc\libkeynote\KEYDocument.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\inc\libkeynote\KNStringVector.h
+SOURCE=..\..\inc\libkeynote\KEYStringVector.h
 # End Source File
 # Begin Source File
 
@@ -131,15 +131,15 @@ SOURCE=..\..\src\lib\libkeynote_utils.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\KNCollector.h
+SOURCE=..\..\src\lib\KEYCollector.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\KNParser.h
+SOURCE=..\..\src\lib\KEYParser.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\KNSVGGenerator.h
+SOURCE=..\..\src\lib\KEYSVGGenerator.h
 # End Source File
 # End Group
 # End Target

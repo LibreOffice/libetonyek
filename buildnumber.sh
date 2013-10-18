@@ -5,8 +5,8 @@
 
 { perl ./createBuildNumber.pl \
 	src/lib/libkeynote-build.stamp \
-	src/conv/raw/keynote2raw-build.stamp \
-	src/conv/svg/keynote2xhtml-build.stamp
+	src/conv/raw/key2raw-build.stamp \
+	src/conv/svg/key2xhtml-build.stamp
 #Success
 exit 0
 }

@@ -1,4 +1,4 @@
 EXTRA_DIST = \
-	KNDocument.h \
-	KNStringVector.h \
+	KEYDocument.h \
+	KEYStringVector.h \
 	libkeynote.h

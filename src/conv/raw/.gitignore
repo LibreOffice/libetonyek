@@ -4,6 +4,6 @@
 *.la
 Makefile
 Makefile.in
-keynote2raw
-keynote2raw.exe
+key2raw
+key2raw.exe
 *.rc

@@ -127,20 +127,20 @@ AS_CASE([$host],
 	[*-*-mingw*], [
 		native_win32=yes
 		LIBKEYNOTE_WIN32_RESOURCE=libkeynote-win32res.lo
-		KN2RAW_WIN32_RESOURCE=keynote2raw-win32res.lo
-		KN2XHTML_WIN32_RESOURCE=keynote2xhtml-win32res.lo
+		KEY2RAW_WIN32_RESOURCE=key2raw-win32res.lo
+		KEY2XHTML_WIN32_RESOURCE=key2xhtml-win32res.lo
 	], [
 		native_win32=no
 		LIBKEYNOTE_WIN32_RESOURCE=
-		KN2RAW_WIN32_RESOURCE=
-		KN2XHTML_WIN32_RESOURCE=
+		KEY2RAW_WIN32_RESOURCE=
+		KEY2XHTML_WIN32_RESOURCE=
 	]
 )
 AC_MSG_RESULT([$native_win32])
 AM_CONDITIONAL(OS_WIN32, [test "x$native_win32" = "xyes"])
 AC_SUBST(LIBKEYNOTE_WIN32_RESOURCE)
-AC_SUBST(KN2RAW_WIN32_RESOURCE)
-AC_SUBST(KN2XHTML_WIN32_RESOURCE)
+AC_SUBST(KEY2RAW_WIN32_RESOURCE)
+AC_SUBST(KEY2XHTML_WIN32_RESOURCE)
 
 AC_MSG_CHECKING([for Win32 platform in general])
 AS_CASE([$host],
@@ -299,9 +299,9 @@ src/Makefile
 src/conv/Makefile
 src/conv/common/Makefile
 src/conv/raw/Makefile
-src/conv/raw/keynote2raw.rc
+src/conv/raw/key2raw.rc
 src/conv/svg/Makefile
-src/conv/svg/keynote2xhtml.rc
+src/conv/svg/key2xhtml.rc
 src/lib/Makefile
 src/lib/libkeynote.rc
 src/test/Makefile

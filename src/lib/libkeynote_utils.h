@@ -54,8 +54,8 @@ typedef int64 int64_t;
 
 #endif
 
-#define KN_EPSILON 1e-9
-#define KN_ALMOST_ZERO(x) (std::fabs(x) < KN_EPSILON)
+#define KEY_EPSILON 1e-9
+#define KEY_ALMOST_ZERO(x) (std::fabs(x) < KEY_EPSILON)
 
 // debug message includes source file and line number
 //#define VERBOSE_DEBUG 1
@@ -63,21 +63,21 @@ typedef int64 int64_t;
 // do nothing with debug messages in a release compile
 #ifdef DEBUG
 #ifdef VERBOSE_DEBUG
-#define KN_DEBUG_MSG(M) printf("%15s:%5d: ", FILE, LINE); printf M
-#define KN_DEBUG(M) M
+#define KEY_DEBUG_MSG(M) printf("%15s:%5d: ", FILE, LINE); printf M
+#define KEY_DEBUG(M) M
 #else
-#define KN_DEBUG_MSG(M) printf M
-#define KN_DEBUG(M) M
+#define KEY_DEBUG_MSG(M) printf M
+#define KEY_DEBUG(M) M
 #endif
 #else
-#define KN_DEBUG_MSG(M)
-#define KN_DEBUG(M)
+#define KEY_DEBUG_MSG(M)
+#define KEY_DEBUG(M)
 #endif
 
 namespace libkeynote
 {
 
-struct KNDummyDeleter
+struct KEYDummyDeleter
 {
   void operator()(void *) {}
 };
@@ -95,7 +95,7 @@ uint64_t readU64(const WPXInputStreamPtr_t &input, bool bigEndian=false);
   * @arg[in] y second number
   * @arg[in] eps precision
   */
-bool approxEqual(double x, double y, double eps = KN_EPSILON);
+bool approxEqual(double x, double y, double eps = KEY_EPSILON);
 
 class EndOfStreamException
 {

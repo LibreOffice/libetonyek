@@ -4,8 +4,8 @@
 *.la
 Makefile
 Makefile.in
-keynote2svg
-keynote2svg.exe
-keynote2xhtml
-keynote2xhtml.exe
+key2svg
+key2svg.exe
+key2xhtml
+key2xhtml.exe
 *.rc

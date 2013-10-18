@@ -4,6 +4,6 @@
 *.la
 *.o
 *.rc
-KN?Token.inc
+KEY?Token.inc
 Makefile
 Makefile.in

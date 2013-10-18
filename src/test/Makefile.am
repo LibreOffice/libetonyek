@@ -13,24 +13,24 @@ test_LDADD = \
 	$(XML_LIBS)
 
 test_SOURCES = \
-	KN2TokenTest.cpp \
-	KN2TokenTest.h \
-	KNOutputTest.cpp \
-	KNOutputTest.h \
-	KNPathTest.cpp \
-	KNPathTest.h \
-	KNPropertyMapTest.cpp \
-	KNPropertyMapTest.h \
-	KNShapeTest.cpp \
-	KNShapeTest.h \
-	KNStyleContextTest.cpp \
-	KNStyleContextTest.h \
-	KNStylesTest.cpp \
-	KNStylesTest.h \
-	KNTransformationTest.cpp \
-	KNTransformationTest.h \
-	KNXMLReaderTest.cpp \
-	KNXMLReaderTest.h \
+	KEY2TokenTest.cpp \
+	KEY2TokenTest.h \
+	KEYOutputTest.cpp \
+	KEYOutputTest.h \
+	KEYPathTest.cpp \
+	KEYPathTest.h \
+	KEYPropertyMapTest.cpp \
+	KEYPropertyMapTest.h \
+	KEYShapeTest.cpp \
+	KEYShapeTest.h \
+	KEYStyleContextTest.cpp \
+	KEYStyleContextTest.h \
+	KEYStylesTest.cpp \
+	KEYStylesTest.h \
+	KEYTransformationTest.cpp \
+	KEYTransformationTest.h \
+	KEYXMLReaderTest.cpp \
+	KEYXMLReaderTest.h \
 	test.cpp
 
 TESTS = $(target_test)

@@ -14,28 +14,28 @@
 
 #include "libkeynote_utils.h"
 
-#define KN_DEBUG_XML_NOT_EMPTY(name, ns) KN_DEBUG_MSG(("element %s%s%s%s is not empty, skipping content...\n", ns ? "{" : "", ns, ns ? "}" : "", name))
-#define KN_DEBUG_XML_UNKNOWN(type, name, ns) KN_DEBUG_MSG(("unknown %s %s%s%s%s\n", type, ns ? "{" : "", ns, ns ? "}" : "", name))
-#define KN_DEBUG_XML_TODO(type, name, ns) KN_DEBUG_MSG(("TODO: unprocessed %s %s%s%s%s\n", type, ns ? "{" : "", ns, ns ? "}" : "", name))
+#define KEY_DEBUG_XML_NOT_EMPTY(name, ns) KEY_DEBUG_MSG(("element %s%s%s%s is not empty, skipping content...\n", ns ? "{" : "", ns, ns ? "}" : "", name))
+#define KEY_DEBUG_XML_UNKNOWN(type, name, ns) KEY_DEBUG_MSG(("unknown %s %s%s%s%s\n", type, ns ? "{" : "", ns, ns ? "}" : "", name))
+#define KEY_DEBUG_XML_TODO(type, name, ns) KEY_DEBUG_MSG(("TODO: unprocessed %s %s%s%s%s\n", type, ns ? "{" : "", ns, ns ? "}" : "", name))
 
-#define KN_DEBUG_XML_TODO_ELEMENT(element) KN_DEBUG_XML_TODO("element", (element).getName(), (element).getNamespace())
-#define KN_DEBUG_XML_TODO_ATTRIBUTE(attr) KN_DEBUG_XML_TODO("attribute", (attr).getName(), (attr).getNamespace())
-#define KN_DEBUG_XML_UNKNOWN_ELEMENT(element) KN_DEBUG_XML_UNKNOWN("element", (element).getName(), (element).getNamespace())
-#define KN_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr) KN_DEBUG_XML_UNKNOWN("attribute", (attr).getName(), (attr).getNamespace())
+#define KEY_DEBUG_XML_TODO_ELEMENT(element) KEY_DEBUG_XML_TODO("element", (element).getName(), (element).getNamespace())
+#define KEY_DEBUG_XML_TODO_ATTRIBUTE(attr) KEY_DEBUG_XML_TODO("attribute", (attr).getName(), (attr).getNamespace())
+#define KEY_DEBUG_XML_UNKNOWN_ELEMENT(element) KEY_DEBUG_XML_UNKNOWN("element", (element).getName(), (element).getNamespace())
+#define KEY_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr) KEY_DEBUG_XML_UNKNOWN("attribute", (attr).getName(), (attr).getNamespace())
 
 namespace libkeynote
 {
 
-class KNXMLReader;
+class KEYXMLReader;
 
-void skipElement(const KNXMLReader &reader);
+void skipElement(const KEYXMLReader &reader);
 
-bool checkElement(const KNXMLReader &reader, int name, int ns);
-bool checkEmptyElement(const KNXMLReader &reader);
-bool checkNoAttributes(const KNXMLReader &reader);
+bool checkElement(const KEYXMLReader &reader, int name, int ns);
+bool checkEmptyElement(const KEYXMLReader &reader);
+bool checkNoAttributes(const KEYXMLReader &reader);
 
-std::string readOnlyAttribute(const KNXMLReader &reader, int name, int ns);
-std::string readOnlyElementAttribute(const KNXMLReader &reader, int name, int ns);
+std::string readOnlyAttribute(const KEYXMLReader &reader, int name, int ns);
+std::string readOnlyElementAttribute(const KEYXMLReader &reader, int name, int ns);
 
 }
 

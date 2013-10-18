@@ -13,7 +13,7 @@
 #include <libwpd/libwpd.h>
 #include <libwpg/libwpg.h>
 
-#include "KNDocument.h"
+#include "KEYDocument.h"
 
 #endif // LIBKEYNOTE_LIBKEYNOTE_H_INCLUDED
 
