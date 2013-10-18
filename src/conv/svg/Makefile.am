@@ -1,6 +1,6 @@
 bin_PROGRAMS = key2xhtml
 
-AM_CXXFLAGS = -I../common -I$(top_srcdir)/inc -I$(top_builddir)/src/lib $(WPD_CFLAGS) $(WPG_CFLAGS) $(BOOST_CFLAGS) $(DEBUG_CXXFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/src/conv/common -I$(top_srcdir)/inc -I$(top_builddir)/src/lib $(WPD_CFLAGS) $(WPG_CFLAGS) $(BOOST_CFLAGS) $(DEBUG_CXXFLAGS)
 
 key2xhtml_DEPENDENCIES = @KEY2XHTML_WIN32_RESOURCE@
 
