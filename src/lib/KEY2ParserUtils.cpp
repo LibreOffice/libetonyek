@@ -47,10 +47,6 @@ readAttributePair(const KEYXMLReader &reader, const int name1, const int ns1, co
     {
       a2 = lexical_cast<T2>(attr.getValue());
     }
-    else
-    {
-      KEY_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
-    }
   }
 
   if (empty)
@@ -72,13 +68,7 @@ optional<ID_t> KEY2ParserUtils::readID(const KEYXMLReader &reader)
   while (attr.next())
   {
     if ((KEY2Token::NS_URI_SFA == getNamespaceId(attr)) && (KEY2Token::ID == getNameId(attr)))
-    {
       id = attr.getValue();
-    }
-    else
-    {
-      KEY_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr);
-    }
   }
 
   return id;
@@ -110,13 +100,8 @@ pair<optional<double>, optional<double> > KEY2ParserUtils::readPoint(const KEYXM
         point.second = lexical_cast<double>(attr.getValue());
         break;
       default :
-        KEY_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
         break;
       }
-    }
-    else
-    {
-      KEY_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
     }
   }
 
