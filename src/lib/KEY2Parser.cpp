@@ -994,8 +994,14 @@ void KEY2Parser::parseShape(const KEYXMLReader &reader)
     {
       switch (getNameId(element))
       {
+      case KEY2Token::geometry :
+        parseGeometry(element);
+        break;
       case KEY2Token::path :
         parsePath(element);
+        break;
+      case KEY2Token::text :
+        parseText(element);
         break;
       default :
         skipElement(element);
