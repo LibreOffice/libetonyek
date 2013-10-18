@@ -31,10 +31,8 @@ template <typename T1, typename T2>
 pair<T1, T2>
 readAttributePair(const KEYXMLReader &reader, const int name1, const int ns1, const int name2, const int ns2, const bool empty = true)
 {
-  optional<T1> a1 = T1();
-  a1.reset();
-  optional<T2> a2 = T2();
-  a2.reset();
+  optional<T1> a1;
+  optional<T2> a2;
 
   KEYXMLReader::AttributeIterator attr(reader);
   while (attr.next())

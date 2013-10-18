@@ -29,7 +29,6 @@ using boost::lexical_cast;
 using boost::numeric_cast;
 using boost::optional;
 
-using std::make_pair;
 using std::pair;
 using std::string;
 
@@ -1204,9 +1203,7 @@ void KEY2Parser::parseConnectionPath(const KEYXMLReader &reader)
   const optional<ID_t> id = readID(reader);
 
   KEYSize size;
-  pair<optional<double>, optional<double> > point = make_pair(0.0, 0.0);
-  point.first.reset();
-  point.second.reset();
+  pair<optional<double>, optional<double> > point;
 
   KEYXMLReader::ElementIterator element(reader);
   while (element.next())
@@ -1269,9 +1266,7 @@ void KEY2Parser::parsePointPath(const KEYXMLReader &reader)
   }
 
   KEYSize size;
-  pair<optional<double>, optional<double> > point = make_pair(0.0, 0.0);
-  point.first.reset();
-  point.second.reset();
+  pair<optional<double>, optional<double> > point;
 
   KEYXMLReader::ElementIterator element(reader);
   while (element.next())
