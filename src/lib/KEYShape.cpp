@@ -76,11 +76,7 @@ void ShapeObject::draw(const KEYOutput &output)
     painter->drawPath(path.toWPG());
 
     if (bool(m_shape->text))
-    {
-      painter->startTextObject(WPXPropertyList(), WPXPropertyListVector());
       makeObject(m_shape->text)->draw(newOutput);
-      painter->endTextObject();
-    }
   }
 }
 
