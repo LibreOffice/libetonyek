@@ -30,13 +30,10 @@ KEYThemeCollector::~KEYThemeCollector()
 
 void KEYThemeCollector::collectPresentation(const boost::optional<KEYSize> &size)
 {
-  if (isCollecting())
-  {
-    optional<KEYSize> size_(size);
-    getDefaults().applyPresentationSize(size_);
-    assert(size_);
-    m_size = get(size_);
-  }
+  optional<KEYSize> size_(size);
+  getDefaults().applyPresentationSize(size_);
+  assert(size_);
+  m_size = get(size_);
 }
 
 void KEYThemeCollector::collectLayer(const boost::optional<ID_t> &id, const bool ref)
