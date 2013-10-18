@@ -23,10 +23,11 @@ using boost::optional;
 namespace libkeynote
 {
 
-KEYContentCollector::KEYContentCollector(::libwpg::WPGPaintInterface *const painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const KEYSize &, const KEYDefaults &defaults)
+KEYContentCollector::KEYContentCollector(::libwpg::WPGPaintInterface *const painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const KEYSize &size, const KEYDefaults &defaults)
   : KEYCollectorBase(dict, defaults)
   , m_painter(painter)
   , m_masterPages(masterPages)
+  , m_size(size)
   , m_pageOpened(false)
   , m_layerOpened(false)
 {
@@ -103,6 +104,8 @@ void KEYContentCollector::startPage()
     assert(!m_layerOpened);
 
     WPXPropertyList props;
+    props.insert("svg:width", m_size.width, WPX_POINT);
+    props.insert("svg:height", m_size.height, WPX_POINT);
 
     m_pageOpened = true;
     m_painter->startGraphics(props);

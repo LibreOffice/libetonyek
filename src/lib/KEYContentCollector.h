@@ -11,6 +11,7 @@
 #define KEYCONTENTCOLLECTOR_H_INCLUDED
 
 #include "KEYCollectorBase.h"
+#include "KEYTypes.h"
 
 namespace libwpg
 {
@@ -62,6 +63,7 @@ private:
   libwpg::WPGPaintInterface *m_painter;
 
   const KEYLayerMap_t &m_masterPages;
+  const KEYSize m_size;
 
   bool m_pageOpened;
   bool m_layerOpened;
