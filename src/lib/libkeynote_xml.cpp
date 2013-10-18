@@ -61,7 +61,6 @@ bool checkNoAttributes(const KEYXMLReader &reader)
   while (attr.next())
   {
     ++count;
-    KEY_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
   }
 
   return 0 == count;
@@ -76,10 +75,6 @@ string readOnlyAttribute(const KEYXMLReader &reader, const int name, const int n
   {
     if ((getNamespaceId(attr) == ns) && (getNameId(attr) == name))
       value = attr.getValue();
-    else
-    {
-      KEY_DEBUG_XML_UNKNOWN("attribute", attr.getName(), attr.getNamespace());
-    }
   }
 
   if (!value)
