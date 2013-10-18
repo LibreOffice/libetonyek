@@ -10,10 +10,8 @@
 #ifndef LIBKEYNOTE_LIBKEYNOTE_H_INCLUDED
 #define LIBKEYNOTE_LIBKEYNOTE_H_INCLUDED
 
-#include <libwpd/libwpd.h>
-#include <libwpg/libwpg.h>
-
 #include "KEYDocument.h"
+#include "KEYStringVector.h"
 
 #endif // LIBKEYNOTE_LIBKEYNOTE_H_INCLUDED
 

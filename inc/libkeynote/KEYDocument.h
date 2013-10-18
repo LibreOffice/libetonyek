@@ -10,15 +10,13 @@
 #ifndef LIBKEYNOTE_KEYDOCUMENT_H_INCLUDED
 #define LIBKEYNOTE_KEYDOCUMENT_H_INCLUDED
 
-#include <libwpd/libwpd.h>
+#include <libwpd-stream/libwpd-stream.h>
 #include <libwpg/libwpg.h>
-
-#include <libkeynote/KEYStringVector.h>
-
-class WPXInputStream;
 
 namespace libkeynote
 {
+
+class KEYStringVector;
 
 /** The type of Keynote file.
   */
