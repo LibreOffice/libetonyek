@@ -147,8 +147,8 @@ WPXPropertyList pointToWPG(const double x, const double y)
 {
   WPXPropertyList props;
 
-  props.insert("svg:x", x, WPX_POINT);
-  props.insert("svg:y", y, WPX_POINT);
+  props.insert("svg:x", pt2in(x));
+  props.insert("svg:y", pt2in(y));
 
   return props;
 }
@@ -312,8 +312,8 @@ void MediaObject::draw(const KEYOutput &output)
     double y = 1;
     const KEYTransformation &tr = newOutput.getTransformation();
     tr(x, y);
-    props.insert("svx:x", x, WPX_POINT);
-    props.insert("svx:y", y, WPX_POINT);
+    props.insert("svx:x", pt2in(x));
+    props.insert("svx:y", pt2in(y));
 
     newOutput.getPainter()->drawGraphicObject(props, WPXBinaryData(bytes, size));
   }

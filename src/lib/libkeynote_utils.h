@@ -97,6 +97,13 @@ uint64_t readU64(const WPXInputStreamPtr_t &input, bool bigEndian=false);
   */
 bool approxEqual(double x, double y, double eps = KEY_EPSILON);
 
+/** Convert a length from points to inches.
+  *
+  * @arg[in] d length in points
+  * @returns length in inches
+  */
+double pt2in(double d);
+
 class EndOfStreamException
 {
 };

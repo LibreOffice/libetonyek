@@ -111,8 +111,8 @@ WPXPropertyList MoveTo::toWPG() const
   WPXPropertyList element;
 
   element.insert("libwpg:path-action", "M");
-  element.insert("svg:x", m_x, WPX_POINT);
-  element.insert("svg:y", m_y, WPX_POINT);
+  element.insert("svg:x", pt2in(m_x));
+  element.insert("svg:y", pt2in(m_y));
 
   return element;
 }
@@ -171,8 +171,8 @@ WPXPropertyList LineTo::toWPG() const
   WPXPropertyList element;
 
   element.insert("libwpg:path-action", "L");
-  element.insert("svg:x", m_x, WPX_POINT);
-  element.insert("svg:y", m_y, WPX_POINT);
+  element.insert("svg:x", pt2in(m_x));
+  element.insert("svg:y", pt2in(m_y));
 
   return element;
 }
@@ -244,12 +244,12 @@ WPXPropertyList CurveTo::toWPG() const
   WPXPropertyList element;
 
   element.insert("libwpg:path-action", "C");
-  element.insert("svg:x", m_x, WPX_POINT);
-  element.insert("svg:y", m_y, WPX_POINT);
-  element.insert("svg:x1", m_x1, WPX_POINT);
-  element.insert("svg:y1", m_y1, WPX_POINT);
-  element.insert("svg:x2", m_x2, WPX_POINT);
-  element.insert("svg:y2", m_y2, WPX_POINT);
+  element.insert("svg:x", pt2in(m_x));
+  element.insert("svg:y", pt2in(m_y));
+  element.insert("svg:x1", pt2in(m_x1));
+  element.insert("svg:y1", pt2in(m_y1));
+  element.insert("svg:x2", pt2in(m_x2));
+  element.insert("svg:y2", pt2in(m_y2));
 
   return element;
 }

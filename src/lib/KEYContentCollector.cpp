@@ -105,8 +105,8 @@ void KEYContentCollector::startPage()
     assert(!m_layerOpened);
 
     WPXPropertyList props;
-    props.insert("svg:width", m_size.width, WPX_POINT);
-    props.insert("svg:height", m_size.height, WPX_POINT);
+    props.insert("svg:width", pt2in(m_size.width));
+    props.insert("svg:height", pt2in(m_size.height));
 
     m_pageOpened = true;
     m_painter->startGraphics(props);

@@ -88,6 +88,11 @@ bool approxEqual(const double x, const double y, const double eps)
   return std::fabs(x - y) < eps;
 }
 
+double pt2in(const double d)
+{
+  return d / 72;
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
