@@ -30,6 +30,7 @@ KEYContentCollector::KEYContentCollector(::libwpg::WPGPaintInterface *const pain
   , m_size(size)
   , m_pageOpened(false)
   , m_layerOpened(false)
+  , m_layerCount(0)
 {
 }
 
@@ -132,7 +133,10 @@ void KEYContentCollector::startLayer()
 
     KEYCollectorBase::startLayer();
 
+    ++m_layerCount;
+
     WPXPropertyList props;
+    props.insert("svg:id", m_layerCount);
 
     m_layerOpened = true;
     m_painter->startLayer(props);

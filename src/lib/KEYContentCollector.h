@@ -67,6 +67,8 @@ private:
 
   bool m_pageOpened;
   bool m_layerOpened;
+
+  int m_layerCount;
 };
 
 } // namespace libkeynote
