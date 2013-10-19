@@ -118,7 +118,7 @@ KEYPosition KEY2ParserUtils::readPosition(const KEYXMLReader &reader)
 KEYSize KEY2ParserUtils::readSize(const KEYXMLReader &reader)
 {
   const pair<double, double> size = readAttributePair<double, double>(reader, KEY2Token::h, KEY2Token::NS_URI_SFA, KEY2Token::w, KEY2Token::NS_URI_SFA);
-  return KEYSize(size.first, size.second);
+  return KEYSize(size.second, size.first);
 }
 
 bool KEY2ParserUtils::bool_cast(const char *const value)
