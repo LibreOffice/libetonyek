@@ -302,6 +302,8 @@ src/conv/raw/Makefile
 src/conv/raw/key2raw.rc
 src/conv/svg/Makefile
 src/conv/svg/key2xhtml.rc
+src/conv/text/Makefile
+src/conv/text/key2text.rc
 src/lib/Makefile
 src/lib/libkeynote.rc
 src/test/Makefile
