@@ -161,6 +161,7 @@ struct KEYPlaceholder
   boost::optional<bool> title;
   boost::optional<bool> empty;
   KEYPlaceholderStylePtr_t style;
+  KEYGeometryPtr_t geometry;
   KEYTextPtr_t text;
 
   KEYPlaceholder();

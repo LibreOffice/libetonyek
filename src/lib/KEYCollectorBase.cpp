@@ -722,6 +722,8 @@ void KEYCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const bo
 
       placeholder.reset(new KEYPlaceholder());
       placeholder->title = title;
+      if (bool(m_currentPlaceholderStyle))
+        placeholder->geometry = m_currentPlaceholderStyle->getGeometry();
       if (!m_currentText->empty())
         placeholder->text = m_currentText;
       placeholder->style = m_currentPlaceholderStyle;

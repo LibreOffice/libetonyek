@@ -52,6 +52,8 @@ private:
   ParagraphList_t m_paragraphs;
   ParagraphPtr_t m_currentParagraph;
   int m_lineBreaks;
+
+  KEYGeometryPtr_t m_boundingBox;
 };
 
 KEYObjectPtr_t makeObject(const KEYTextPtr_t &text);

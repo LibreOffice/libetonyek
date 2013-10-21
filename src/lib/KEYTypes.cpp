@@ -136,6 +136,7 @@ KEYPlaceholder::KEYPlaceholder()
   : title()
   , empty()
   , style()
+  , geometry()
   , text()
 {
 }
@@ -345,10 +346,9 @@ void PlaceholderObject::draw(const KEYOutput &output)
 {
   if (bool(m_body) && bool(m_body->style) && bool(m_body->text))
   {
-    const KEYGeometryPtr_t geometry = m_body->style->getGeometry(output.getStyleContext());
-    if (bool(geometry))
+    if (bool(m_body->geometry))
     {
-      const KEYOutput newOutput(output, makeTransformation(*geometry), m_body->style);
+      const KEYOutput newOutput(output, makeTransformation(*m_body->geometry), m_body->style);
       makeObject(m_body->text)->draw(newOutput);
     }
   }
