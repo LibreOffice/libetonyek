@@ -21,6 +21,6 @@ Based on the previous paragraph, it should be clear that most of the
 code in this library is based on guesses, sample presentations created
 in Keynote '09 and "real-life" presentations collected on the Internet.
 
-libkeynote requires boost, libwpd, libwpg, libxml2 and zlib to build.
+libkeynote requires boost, libwpd, libxml2 and zlib to build.
 
 The library is available under MPL 2.0+.

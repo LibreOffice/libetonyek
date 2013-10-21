@@ -13,17 +13,11 @@
 #include "KEYCollectorBase.h"
 #include "KEYTypes.h"
 
-namespace libwpg
-{
-
-class WPGPaintInterface;
-
-} // namespace libwpg
-
 namespace libkeynote
 {
 
 struct KEYDictionary;
+class KEYPresentationInterface;
 
 class KEYContentCollector : public KEYCollectorBase
 {
@@ -32,7 +26,7 @@ class KEYContentCollector : public KEYCollectorBase
   KEYContentCollector &operator=(const KEYContentCollector &other);
 
 public:
-  KEYContentCollector(::libwpg::WPGPaintInterface *painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const KEYSize &size, const KEYDefaults &defaults);
+  KEYContentCollector(KEYPresentationInterface *painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const KEYSize &size, const KEYDefaults &defaults);
   virtual ~KEYContentCollector();
 
   // collector functions
@@ -60,7 +54,7 @@ private:
   void drawLayer(const KEYLayerPtr_t &layer);
 
 private:
-  libwpg::WPGPaintInterface *m_painter;
+  KEYPresentationInterface *m_painter;
 
   const KEYLayerMap_t &m_masterPages;
   const KEYSize m_size;

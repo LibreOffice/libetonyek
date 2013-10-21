@@ -12,38 +12,70 @@
 
 #include <libwpd-stream/libwpd-stream.h>
 #include <libwpd/libwpd.h>
-#include <libwpg/libwpg.h>
 #include <libkeynote/libkeynote.h>
 
 #include "KEYDirectoryStream.h"
 
-class RawPainter : public libwpg::WPGPaintInterface
+class RawPainter : public libkeynote::KEYPresentationInterface
 {
 public:
   RawPainter();
 
-  void startGraphics(const ::WPXPropertyList &propList);
-  void endGraphics();
-  void startLayer(const ::WPXPropertyList &propList);
-  void endLayer();
-  void startEmbeddedGraphics(const ::WPXPropertyList &propList);
-  void endEmbeddedGraphics();
+  virtual void startDocument(const ::WPXPropertyList &propList);
+  virtual void endDocument();
+  virtual void setDocumentMetaData(const ::WPXPropertyList &propList);
+  virtual void startSlide(const ::WPXPropertyList &propList);
+  virtual void endSlide();
+  virtual void startLayer(const ::WPXPropertyList &propList);
+  virtual void endLayer();
+  virtual void startEmbeddedGraphics(const ::WPXPropertyList &propList);
+  virtual void endEmbeddedGraphics();
+  virtual void startGroup(const ::WPXPropertyList &propList);
+  virtual void endGroup();
 
-  void setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &gradient);
+  virtual void setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &gradient);
 
-  void drawRectangle(const ::WPXPropertyList &propList);
-  void drawEllipse(const ::WPXPropertyList &propList);
-  void drawPolyline(const ::WPXPropertyListVector &vertices);
-  void drawPolygon(const ::WPXPropertyListVector &vertices);
-  void drawPath(const ::WPXPropertyListVector &path);
-  void drawGraphicObject(const ::WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
-  void startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &path);
-  void endTextObject();
-  void startTextLine(const ::WPXPropertyList &propList);
-  void endTextLine();
-  void startTextSpan(const ::WPXPropertyList &propList);
-  void endTextSpan();
-  void insertText(const ::WPXString &str);
+  virtual void drawRectangle(const ::WPXPropertyList &propList);
+  virtual void drawEllipse(const ::WPXPropertyList &propList);
+  virtual void drawPolyline(const ::WPXPropertyListVector &vertices);
+  virtual void drawPolygon(const ::WPXPropertyListVector &vertices);
+  virtual void drawPath(const ::WPXPropertyListVector &path);
+  virtual void drawGraphicObject(const ::WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
+  virtual void drawConnector(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &path);
+
+  virtual void startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &path);
+  virtual void endTextObject();
+  virtual void openParagraph(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &tabStops);
+  virtual void closeParagraph();
+  virtual void openSpan(const ::WPXPropertyList &propList);
+  virtual void closeSpan();
+  virtual void insertTab();
+  virtual void insertSpace();
+  virtual void insertText(const ::WPXString &str);
+  virtual void insertLineBreak();
+
+  virtual void insertField(const WPXString &type, const ::WPXPropertyList &propList);
+
+  virtual void openOrderedListLevel(const ::WPXPropertyList &propList);
+  virtual void openUnorderedListLevel(const ::WPXPropertyList &propList);
+  virtual void closeOrderedListLevel();
+  virtual void closeUnorderedListLevel();
+  virtual void openListElement(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &tabStops);
+  virtual void closeListElement();
+
+  virtual void openTable(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &columns);
+  virtual void openTableRow(const ::WPXPropertyList &propList);
+  virtual void closeTableRow();
+  virtual void openTableCell(const ::WPXPropertyList &propList);
+  virtual void closeTableCell();
+  virtual void insertCoveredTableCell(const ::WPXPropertyList &propList);
+  virtual void closeTable();
+
+  virtual void startComment(const ::WPXPropertyList &propList);
+  virtual void endComment();
+
+  virtual void startNotes(const ::WPXPropertyList &propList);
+  virtual void endNotes();
 };
 
 WPXString getPropString(const WPXPropertyList &propList)
@@ -93,18 +125,33 @@ WPXString getPropString(const WPXPropertyListVector &itemList)
   return propString;
 }
 
-RawPainter::RawPainter(): libwpg::WPGPaintInterface()
+RawPainter::RawPainter()
 {
 }
 
-void RawPainter::startGraphics(const ::WPXPropertyList &propList)
+void RawPainter::startDocument(const ::WPXPropertyList &propList)
 {
-  printf("RawPainter::startGraphics(%s)\n", getPropString(propList).cstr());
+  printf("RawPainter::startDocument(%s)\n", getPropString(propList).cstr());
 }
 
-void RawPainter::endGraphics()
+void RawPainter::endDocument()
 {
-  printf("RawPainter::endGraphics\n");
+  printf("RawPainter::endDocument\n");
+}
+
+void RawPainter::setDocumentMetaData(const ::WPXPropertyList &propList)
+{
+  printf("RawPainter::setDocumentMetaData(%s)\n", getPropString(propList).cstr());
+}
+
+void RawPainter::startSlide(const ::WPXPropertyList &propList)
+{
+  printf("RawPainter::startSlide(%s)\n", getPropString(propList).cstr());
+}
+
+void RawPainter::endSlide()
+{
+  printf("RawPainter::endSlide\n");
 }
 
 void RawPainter::startLayer(const ::WPXPropertyList &propList)
@@ -125,6 +172,16 @@ void RawPainter::startEmbeddedGraphics(const ::WPXPropertyList &propList)
 void RawPainter::endEmbeddedGraphics()
 {
   printf("RawPainter::endEmbeddedGraphics \n");
+}
+
+void RawPainter::startGroup(const ::WPXPropertyList &propList)
+{
+  printf("RawPainter::startGroup(%s)\n", getPropString(propList).cstr());
+}
+
+void RawPainter::endGroup()
+{
+  printf("RawPainter::endGroup\n");
 }
 
 void RawPainter::setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &gradient)
@@ -162,6 +219,11 @@ void RawPainter::drawGraphicObject(const ::WPXPropertyList &propList, const ::WP
   printf("RawPainter::drawGraphicObject (%s)\n", getPropString(propList).cstr());
 }
 
+void RawPainter::drawConnector(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &path)
+{
+  printf("RawPainter::drawConnector(%s, path: (%s))\n", getPropString(propList).cstr(), getPropString(path).cstr());
+}
+
 void RawPainter::startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &path)
 {
   printf("RawPainter::startTextObject (%s, path: (%s))\n", getPropString(propList).cstr(), getPropString(path).cstr());
@@ -172,24 +234,24 @@ void RawPainter::endTextObject()
   printf("RawPainter::endTextObject\n");
 }
 
-void RawPainter::startTextLine(const ::WPXPropertyList &propList)
+void RawPainter::openParagraph(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &tabStops)
 {
-  printf("RawPainter::startTextLine (%s)\n", getPropString(propList).cstr());
+  printf("RawPainter::openParagraph (%s, tabStops: (%s))\n", getPropString(propList).cstr(), getPropString(tabStops).cstr());
 }
 
-void RawPainter::endTextLine()
+void RawPainter::closeParagraph()
 {
-  printf("RawPainter::endTextLine\n");
+  printf("RawPainter::closeParagraph\n");
 }
 
-void RawPainter::startTextSpan(const ::WPXPropertyList &propList)
+void RawPainter::openSpan(const ::WPXPropertyList &propList)
 {
-  printf("RawPainter::startTextSpan (%s)\n", getPropString(propList).cstr());
+  printf("RawPainter::openSpan (%s)\n", getPropString(propList).cstr());
 }
 
-void RawPainter::endTextSpan()
+void RawPainter::closeSpan()
 {
-  printf("RawPainter::endTextSpan\n");
+  printf("RawPainter::closeSpan\n");
 }
 
 void RawPainter::insertText(const ::WPXString &str)
@@ -197,6 +259,110 @@ void RawPainter::insertText(const ::WPXString &str)
   printf("RawPainter::insertText (%s)\n", str.cstr());
 }
 
+void RawPainter::insertTab()
+{
+  printf("RawPainter::insertTab\n");
+}
+
+void RawPainter::insertSpace()
+{
+  printf("RawPainter::insertSpace\n");
+}
+
+void RawPainter::insertLineBreak()
+{
+  printf("RawPainter::insertLineBreak\n");
+}
+
+void RawPainter::insertField(const WPXString &type, const ::WPXPropertyList &propList)
+{
+  printf("RawPainter::insertField(%s, %s)\n", type.cstr(), getPropString(propList).cstr());
+}
+
+void RawPainter::openOrderedListLevel(const ::WPXPropertyList &propList)
+{
+  printf("RawPainter::openOrderedListLevel(%s)\n", getPropString(propList).cstr());
+}
+
+void RawPainter::openUnorderedListLevel(const ::WPXPropertyList &propList)
+{
+  printf("RawPainter::openUnorderedListLevel(%s)\n", getPropString(propList).cstr());
+}
+
+void RawPainter::closeOrderedListLevel()
+{
+  printf("RawPainter::closeOrderedListLevel\n");
+}
+
+void RawPainter::closeUnorderedListLevel()
+{
+  printf("RawPainter::closeUnorderedListLevel\n");
+}
+
+void RawPainter::openListElement(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &tabStops)
+{
+  printf("RawPainter::openListElement(%s, tabStops: (%s))\n", getPropString(propList).cstr(), getPropString(tabStops).cstr());
+}
+
+void RawPainter::closeListElement()
+{
+  printf("RawPainter::closeListElement\n");
+}
+
+void RawPainter::openTable(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &columns)
+{
+  printf("RawPainter::openTable(%s, columns: (%s))\n", getPropString(propList).cstr(), getPropString(columns).cstr());
+}
+
+void RawPainter::openTableRow(const ::WPXPropertyList &propList)
+{
+  printf("RawPainter::openTableRow(%s)\n", getPropString(propList).cstr());
+}
+
+void RawPainter::closeTableRow()
+{
+  printf("RawPainter::closeTableRow\n");
+}
+
+void RawPainter::openTableCell(const ::WPXPropertyList &propList)
+{
+  printf("RawPainter::openTableCell(%s)\n", getPropString(propList).cstr());
+}
+
+void RawPainter::closeTableCell()
+{
+  printf("RawPainter::closeTableCell\n");
+}
+
+void RawPainter::insertCoveredTableCell(const ::WPXPropertyList &propList)
+{
+  printf("RawPainter::insertCoveredTableCell(%s)\n", getPropString(propList).cstr());
+}
+
+void RawPainter::closeTable()
+{
+  printf("RawPainter::closeTable\n");
+}
+
+void RawPainter::startComment(const ::WPXPropertyList &propList)
+{
+  printf("RawPainter::startComment(%s)\n", getPropString(propList).cstr());
+}
+
+void RawPainter::endComment()
+{
+  printf("RawPainter::endComment\n");
+}
+
+void RawPainter::startNotes(const ::WPXPropertyList &propList)
+{
+  printf("RawPainter::startNotes(%s)\n", getPropString(propList).cstr());
+}
+
+void RawPainter::endNotes()
+{
+  printf("RawPainter::endNotes\n");
+}
 
 namespace
 {

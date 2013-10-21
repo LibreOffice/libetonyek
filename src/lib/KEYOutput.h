@@ -10,14 +10,13 @@
 #ifndef KEYOUTPUT_H_INCLUDED
 #define KEYOUTPUT_H_INCLUDED
 
-#include <libwpg/libwpg.h>
-
 #include "KEYStyle.h"
 #include "KEYTransformation.h"
 
 namespace libkeynote
 {
 
+class KEYPresentationInterface;
 class KEYStyleContext;
 
 /** A context for drawing instances of @c KEYObject.
@@ -36,7 +35,7 @@ public:
     * @arg[in] painter a painter
     * @arg[in] context a style context
     */
-  KEYOutput(libwpg::WPGPaintInterface *painter, KEYStyleContext &context);
+  KEYOutput(KEYPresentationInterface *painter, KEYStyleContext &context);
 
   /** Apply a transformation to the current output.
     *
@@ -85,7 +84,7 @@ public:
     *
     * @return the painter
     */
-  libwpg::WPGPaintInterface *getPainter() const;
+  KEYPresentationInterface *getPainter() const;
 
   /** Get the current transformation.
     *
@@ -100,7 +99,7 @@ public:
   const KEYStyleContext &getStyleContext() const;
 
 private:
-  libwpg::WPGPaintInterface *const m_painter;
+  KEYPresentationInterface *const m_painter;
   KEYStyleContext &m_styleContext;
   KEYTransformation m_transformation;
   bool m_stylePushed;

@@ -1,6 +1,6 @@
 bin_PROGRAMS = key2text
 
-AM_CXXFLAGS = -I$(top_srcdir)/src/conv/common -I$(top_srcdir)/inc -I$(top_builddir)/src/lib $(WPD_CFLAGS) $(WPG_CFLAGS) $(BOOST_CFLAGS) $(DEBUG_CXXFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/src/conv/common -I$(top_srcdir)/inc -I$(top_builddir)/src/lib $(WPD_CFLAGS) $(BOOST_CFLAGS) $(DEBUG_CXXFLAGS)
 
 key2text_DEPENDENCIES = @KEY2RAW_WIN32_RESOURCE@
 key2text_LDFLAGS = $(BOOST_LDFLAGS)

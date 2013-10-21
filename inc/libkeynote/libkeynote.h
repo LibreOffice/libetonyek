@@ -11,6 +11,7 @@
 #define LIBKEYNOTE_LIBKEYNOTE_H_INCLUDED
 
 #include "KEYDocument.h"
+#include "KEYPresentationInterface.h"
 #include "KEYStringVector.h"
 
 #endif // LIBKEYNOTE_LIBKEYNOTE_H_INCLUDED

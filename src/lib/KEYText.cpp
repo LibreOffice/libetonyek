@@ -11,7 +11,7 @@
 
 #include <libwpd/libwpd.h>
 
-#include <libwpg/libwpg.h>
+#include <libkeynote/KEYPresentationInterface.h>
 
 #include "KEYOutput.h"
 #include "KEYPath.h"
@@ -59,9 +59,9 @@ void TextSpanObject::draw(const KEYOutput &output)
   // TODO: fill properties
 
   output.getPainter()->setStyle(WPXPropertyList(), WPXPropertyListVector());
-  output.getPainter()->startTextSpan(props);
+  output.getPainter()->openSpan(props);
   output.getPainter()->insertText(WPXString(m_text.c_str()));
-  output.getPainter()->endTextSpan();
+  output.getPainter()->closeSpan();
 }
 
 }
@@ -77,9 +77,9 @@ private:
 
 void TabObject::draw(const KEYOutput &output)
 {
-  output.getPainter()->startTextSpan(WPXPropertyList());
-  output.getPainter()->insertText(WPXString("\t"));
-  output.getPainter()->endTextSpan();
+  output.getPainter()->openSpan(WPXPropertyList());
+  output.getPainter()->insertTab();
+  output.getPainter()->closeSpan();
 }
 
 }
@@ -109,8 +109,8 @@ void LineBreakObject::draw(const KEYOutput &output)
   WPXPropertyList props;
   // TODO: fill from m_paraStyle
 
-  output.getPainter()->endTextLine();
-  output.getPainter()->startTextLine(props);
+  output.getPainter()->closeParagraph();
+  output.getPainter()->openParagraph(props, WPXPropertyListVector());
 }
 
 }
@@ -172,9 +172,9 @@ void TextObject::draw(const KEYOutput &output)
 
   for(KEYText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
   {
-    output.getPainter()->startTextLine(WPXPropertyList());
+    output.getPainter()->openParagraph(WPXPropertyList(), WPXPropertyListVector());
     drawAll((*it)->objects, output);
-    output.getPainter()->endTextLine();
+    output.getPainter()->closeParagraph();
   }
 
   output.getPainter()->endTextObject();

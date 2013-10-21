@@ -14,40 +14,79 @@
 #include <iostream>
 #include <sstream>
 #include <libwpd/libwpd.h>
-#include <libwpg/libwpg.h>
 #include <libkeynote/libkeynote.h>
 
 namespace libkeynote
 {
 
-class KEYSVGGenerator : public libwpg::WPGPaintInterface
+class KEYSVGGenerator : public KEYPresentationInterface
 {
 public:
-  KEYSVGGenerator(KEYStringVector &vec);
-  ~KEYSVGGenerator();
+  explicit KEYSVGGenerator(KEYStringVector &vec);
+  virtual ~KEYSVGGenerator();
 
-  void startGraphics(const ::WPXPropertyList &propList);
-  void endGraphics();
-  void startLayer(const ::WPXPropertyList &propList);
-  void endLayer();
-  void startEmbeddedGraphics(const ::WPXPropertyList & /*propList*/) {}
-  void endEmbeddedGraphics() {}
+  virtual void startDocument(const ::WPXPropertyList &propList);
+  virtual void endDocument();
 
-  void setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &gradient);
+  virtual void setDocumentMetaData(const ::WPXPropertyList &propList);
 
-  void drawRectangle(const ::WPXPropertyList &propList);
-  void drawEllipse(const ::WPXPropertyList &propList);
-  void drawPolyline(const ::WPXPropertyListVector &vertices);
-  void drawPolygon(const ::WPXPropertyListVector &vertices);
-  void drawPath(const ::WPXPropertyListVector &path);
-  void drawGraphicObject(const ::WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
-  void startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &path);
-  void endTextObject();
-  void startTextLine(const ::WPXPropertyList & /* propList */) {}
-  void endTextLine() {}
-  void startTextSpan(const ::WPXPropertyList &propList);
-  void endTextSpan();
-  void insertText(const ::WPXString &str);
+  virtual void startSlide(const ::WPXPropertyList &propList);
+  virtual void endSlide();
+
+  virtual void setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &gradient);
+
+  virtual void startLayer(const ::WPXPropertyList &propList);
+  virtual void endLayer();
+
+  virtual void startEmbeddedGraphics(const ::WPXPropertyList & /*propList*/) {}
+  virtual void endEmbeddedGraphics() {}
+
+  virtual void startGroup(const ::WPXPropertyList &propList);
+  virtual void endGroup();
+
+  virtual void drawRectangle(const ::WPXPropertyList &propList);
+  virtual void drawEllipse(const ::WPXPropertyList &propList);
+  virtual void drawPolyline(const ::WPXPropertyListVector &vertices);
+  virtual void drawPolygon(const ::WPXPropertyListVector &vertices);
+  virtual void drawPath(const ::WPXPropertyListVector &path);
+  virtual void drawGraphicObject(const ::WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
+
+  virtual void drawConnector(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &path);
+
+  virtual void startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &path);
+  virtual void endTextObject();
+  virtual void insertTab();
+  virtual void insertSpace();
+  virtual void insertText(const WPXString &text);
+  virtual void insertLineBreak();
+
+  virtual void insertField(const WPXString &type, const ::WPXPropertyList &propList);
+
+  virtual void openOrderedListLevel(const ::WPXPropertyList &propList);
+  virtual void openUnorderedListLevel(const ::WPXPropertyList &propList);
+  virtual void closeOrderedListLevel();
+  virtual void closeUnorderedListLevel();
+  virtual void openListElement(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &tabStops);
+  virtual void closeListElement();
+
+  virtual void openParagraph(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &tabStops);
+  virtual void closeParagraph();
+  virtual void openSpan(const ::WPXPropertyList &propList);
+  virtual void closeSpan();
+
+  virtual void openTable(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &columns);
+  virtual void openTableRow(const ::WPXPropertyList &propList);
+  virtual void closeTableRow();
+  virtual void openTableCell(const ::WPXPropertyList &propList);
+  virtual void closeTableCell();
+  virtual void insertCoveredTableCell(const ::WPXPropertyList &propList);
+  virtual void closeTable();
+
+  virtual void startComment(const ::WPXPropertyList &propList);
+  virtual void endComment();
+
+  virtual void startNotes(const ::WPXPropertyList &propList);
+  virtual void endNotes();
 
 private:
   ::WPXPropertyListVector m_gradient;

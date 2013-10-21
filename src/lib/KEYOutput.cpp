@@ -13,7 +13,7 @@
 namespace libkeynote
 {
 
-KEYOutput::KEYOutput(libwpg::WPGPaintInterface *const painter, KEYStyleContext &context)
+KEYOutput::KEYOutput(KEYPresentationInterface *const painter, KEYStyleContext &context)
   : m_painter(painter)
   , m_styleContext(context)
   , m_transformation()
@@ -63,7 +63,7 @@ KEYOutput::~KEYOutput()
     m_styleContext.pop();
 }
 
-libwpg::WPGPaintInterface *KEYOutput::getPainter() const
+KEYPresentationInterface *KEYOutput::getPainter() const
 {
   return m_painter;
 }

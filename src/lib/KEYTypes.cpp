@@ -9,7 +9,7 @@
 
 #include <libwpd/libwpd.h>
 
-#include <libwpg/libwpg.h>
+#include <libkeynote/KEYPresentationInterface.h>
 
 #include "libkeynote_utils.h"
 #include "KEYOutput.h"

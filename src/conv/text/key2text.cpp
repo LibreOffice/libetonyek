@@ -12,49 +12,93 @@
 
 #include <libwpd-stream/libwpd-stream.h>
 #include <libwpd/libwpd.h>
-#include <libwpg/libwpg.h>
 #include <libkeynote/libkeynote.h>
 
 #include "KEYDirectoryStream.h"
 
-class TextPainter : public libwpg::WPGPaintInterface
+class TextPainter : public libkeynote::KEYPresentationInterface
 {
 public:
   TextPainter();
 
-  void startGraphics(const ::WPXPropertyList &propList);
-  void endGraphics();
-  void startLayer(const ::WPXPropertyList &propList);
-  void endLayer();
-  void startEmbeddedGraphics(const ::WPXPropertyList &propList);
-  void endEmbeddedGraphics();
+  virtual void startDocument(const ::WPXPropertyList &propList);
+  virtual void endDocument();
+  virtual void setDocumentMetaData(const ::WPXPropertyList &propList);
+  virtual void startSlide(const ::WPXPropertyList &propList);
+  virtual void endSlide();
+  virtual void startLayer(const ::WPXPropertyList &propList);
+  virtual void endLayer();
+  virtual void startEmbeddedGraphics(const ::WPXPropertyList &propList);
+  virtual void endEmbeddedGraphics();
+  virtual void startGroup(const ::WPXPropertyList &propList);
+  virtual void endGroup();
 
-  void setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &gradient);
+  virtual void setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &gradient);
 
-  void drawRectangle(const ::WPXPropertyList &propList);
-  void drawEllipse(const ::WPXPropertyList &propList);
-  void drawPolyline(const ::WPXPropertyListVector &vertices);
-  void drawPolygon(const ::WPXPropertyListVector &vertices);
-  void drawPath(const ::WPXPropertyListVector &path);
-  void drawGraphicObject(const ::WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
-  void startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &path);
-  void endTextObject();
-  void startTextLine(const ::WPXPropertyList &propList);
-  void endTextLine();
-  void startTextSpan(const ::WPXPropertyList &propList);
-  void endTextSpan();
-  void insertText(const ::WPXString &str);
+  virtual void drawRectangle(const ::WPXPropertyList &propList);
+  virtual void drawEllipse(const ::WPXPropertyList &propList);
+  virtual void drawPolyline(const ::WPXPropertyListVector &vertices);
+  virtual void drawPolygon(const ::WPXPropertyListVector &vertices);
+  virtual void drawPath(const ::WPXPropertyListVector &path);
+  virtual void drawGraphicObject(const ::WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
+  virtual void drawConnector(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &path);
+
+  virtual void startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &path);
+  virtual void endTextObject();
+  virtual void openParagraph(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &tabStops);
+  virtual void closeParagraph();
+  virtual void openSpan(const ::WPXPropertyList &propList);
+  virtual void closeSpan();
+  virtual void insertTab();
+  virtual void insertSpace();
+  virtual void insertText(const ::WPXString &str);
+  virtual void insertLineBreak();
+
+  virtual void insertField(const WPXString &type, const ::WPXPropertyList &propList);
+
+  virtual void openOrderedListLevel(const ::WPXPropertyList &propList);
+  virtual void openUnorderedListLevel(const ::WPXPropertyList &propList);
+  virtual void closeOrderedListLevel();
+  virtual void closeUnorderedListLevel();
+  virtual void openListElement(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &tabStops);
+  virtual void closeListElement();
+
+  virtual void openTable(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &columns);
+  virtual void openTableRow(const ::WPXPropertyList &propList);
+  virtual void closeTableRow();
+  virtual void openTableCell(const ::WPXPropertyList &propList);
+  virtual void closeTableCell();
+  virtual void insertCoveredTableCell(const ::WPXPropertyList &propList);
+  virtual void closeTable();
+
+  virtual void startComment(const ::WPXPropertyList &propList);
+  virtual void endComment();
+
+  virtual void startNotes(const ::WPXPropertyList &propList);
+  virtual void endNotes();
 };
 
 TextPainter::TextPainter()
 {
 }
 
-void TextPainter::startGraphics(const ::WPXPropertyList &)
+void TextPainter::startDocument(const ::WPXPropertyList &)
 {
 }
 
-void TextPainter::endGraphics()
+void TextPainter::endDocument()
+{
+}
+
+void TextPainter::setDocumentMetaData(const ::WPXPropertyList &)
+{
+}
+
+void TextPainter::startSlide(const ::WPXPropertyList &)
+{
+}
+
+void TextPainter::endSlide()
 {
   printf("\n");
 }
@@ -72,6 +116,14 @@ void TextPainter::startEmbeddedGraphics(const ::WPXPropertyList &)
 }
 
 void TextPainter::endEmbeddedGraphics()
+{
+}
+
+void TextPainter::startGroup(const ::WPXPropertyList &)
+{
+}
+
+void TextPainter::endGroup()
 {
 }
 
@@ -103,6 +155,10 @@ void TextPainter::drawGraphicObject(const ::WPXPropertyList &, const ::WPXBinary
 {
 }
 
+void TextPainter::drawConnector(const ::WPXPropertyList &, const ::WPXPropertyListVector &)
+{
+}
+
 void TextPainter::startTextObject(const ::WPXPropertyList &, const ::WPXPropertyListVector &)
 {
 }
@@ -112,20 +168,20 @@ void TextPainter::endTextObject()
   printf("\n");
 }
 
-void TextPainter::startTextLine(const ::WPXPropertyList &)
+void TextPainter::openParagraph(const ::WPXPropertyList &, const ::WPXPropertyListVector &)
 {
 }
 
-void TextPainter::endTextLine()
+void TextPainter::closeParagraph()
 {
   printf("\n");
 }
 
-void TextPainter::startTextSpan(const ::WPXPropertyList &)
+void TextPainter::openSpan(const ::WPXPropertyList &)
 {
 }
 
-void TextPainter::endTextSpan()
+void TextPainter::closeSpan()
 {
 }
 
@@ -134,6 +190,94 @@ void TextPainter::insertText(const ::WPXString &str)
   printf(str.cstr());
 }
 
+void TextPainter::insertTab()
+{
+  printf("\t");
+}
+
+void TextPainter::insertSpace()
+{
+  printf(" ");
+}
+
+void TextPainter::insertLineBreak()
+{
+  printf("\n");
+}
+
+void TextPainter::insertField(const WPXString &, const ::WPXPropertyList &)
+{
+}
+
+void TextPainter::openOrderedListLevel(const ::WPXPropertyList &)
+{
+}
+
+void TextPainter::openUnorderedListLevel(const ::WPXPropertyList &)
+{
+}
+
+void TextPainter::closeOrderedListLevel()
+{
+}
+
+void TextPainter::closeUnorderedListLevel()
+{
+}
+
+void TextPainter::openListElement(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &tabStops)
+{
+  openParagraph(propList, tabStops);
+}
+
+void TextPainter::closeListElement()
+{
+  closeParagraph();
+}
+
+void TextPainter::openTable(const ::WPXPropertyList &, const ::WPXPropertyListVector &)
+{
+}
+
+void TextPainter::openTableRow(const ::WPXPropertyList &)
+{
+}
+
+void TextPainter::closeTableRow()
+{
+}
+
+void TextPainter::openTableCell(const ::WPXPropertyList &)
+{
+}
+
+void TextPainter::closeTableCell()
+{
+}
+
+void TextPainter::insertCoveredTableCell(const ::WPXPropertyList &)
+{
+}
+
+void TextPainter::closeTable()
+{
+}
+
+void TextPainter::startComment(const ::WPXPropertyList &)
+{
+}
+
+void TextPainter::endComment()
+{
+}
+
+void TextPainter::startNotes(const ::WPXPropertyList &)
+{
+}
+
+void TextPainter::endNotes()
+{
+}
 
 namespace
 {

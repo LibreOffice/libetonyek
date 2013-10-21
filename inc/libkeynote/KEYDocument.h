@@ -11,11 +11,11 @@
 #define LIBKEYNOTE_KEYDOCUMENT_H_INCLUDED
 
 #include <libwpd-stream/libwpd-stream.h>
-#include <libwpg/libwpg.h>
 
 namespace libkeynote
 {
 
+class KEYPresentationInterface;
 class KEYStringVector;
 
 /** The type of Keynote file.
@@ -52,11 +52,30 @@ public:
     * @returns true if the stream contains a Keynote document, false
     * otherwise
     */
-  static bool isSupported(WPXInputStream *input, KEYDocumentType *type = 0);
+  static bool isSupported(::WPXInputStream *input, KEYDocumentType *type = 0);
 
-  static bool parse(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
+  /** Parse the input stream content.
+   *
+   * It will make callbacks to the functions provided by a
+   * KEYPresentationInterface class implementation when needed. This is
+   * often commonly called the 'main parsing routine'.
+   *
+   * @arg[in] input the input stream
+   * @arg[in] generator a KEYPresentationInterface implementation
+   * @returns a value that indicates whether the parsing was successful
+   */
+  static bool parse(::WPXInputStream *input, KEYPresentationInterface *generator);
 
-  static bool generateSVG(WPXInputStream *input, KEYStringVector &output);
+  /** Parse the input stream content and generate a sequence of SVG images.
+    *
+    * Provided as a convenience function for applications that support SVG
+    * internally.
+    *
+    * @arg[in] input the input stream
+    * @arg[in] output the output string whose content is the resulting SVG
+    * @returns a value that indicates whether the SVG generation was successful
+  */
+  static bool generateSVG(::WPXInputStream *input, KEYStringVector &output);
 };
 
 } // namespace libkeynote

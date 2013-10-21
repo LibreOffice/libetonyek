@@ -13,6 +13,8 @@
 #include <boost/bind.hpp>
 #include <boost/math/constants/constants.hpp>
 
+#include <libkeynote/KEYPresentationInterface.h>
+
 #include "KEYOutput.h"
 #include "KEYPath.h"
 #include "KEYShape.h"
@@ -70,7 +72,7 @@ void ShapeObject::draw(const KEYOutput &output)
     KEYOutput newOutput(output, tr, m_shape->style);
     const KEYPath path = *m_shape->path * newOutput.getTransformation();
 
-    libwpg::WPGPaintInterface *const painter = output.getPainter();
+    KEYPresentationInterface *const painter = output.getPainter();
 
     painter->setStyle(WPXPropertyList(), WPXPropertyListVector());
     painter->drawPath(path.toWPG());

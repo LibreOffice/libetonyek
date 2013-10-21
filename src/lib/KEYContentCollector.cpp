@@ -9,7 +9,7 @@
 
 #include <cassert>
 
-#include <libwpg/libwpg.h>
+#include <libkeynote/KEYPresentationInterface.h>
 
 #include "libkeynote_utils.h"
 #include "KEYContentCollector.h"
@@ -23,7 +23,7 @@ using boost::optional;
 namespace libkeynote
 {
 
-KEYContentCollector::KEYContentCollector(::libwpg::WPGPaintInterface *const painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const KEYSize &size, const KEYDefaults &defaults)
+KEYContentCollector::KEYContentCollector(KEYPresentationInterface *const painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const KEYSize &size, const KEYDefaults &defaults)
   : KEYCollectorBase(dict, defaults)
   , m_painter(painter)
   , m_masterPages(masterPages)
@@ -32,12 +32,16 @@ KEYContentCollector::KEYContentCollector(::libwpg::WPGPaintInterface *const pain
   , m_layerOpened(false)
   , m_layerCount(0)
 {
+  m_painter->setDocumentMetaData(WPXPropertyList());
+  m_painter->startDocument(WPXPropertyList());
 }
 
 KEYContentCollector::~KEYContentCollector()
 {
   assert(!m_pageOpened);
   assert(!m_layerOpened);
+
+  m_painter->endDocument();
 }
 
 void KEYContentCollector::collectPresentation(const boost::optional<KEYSize> &)
@@ -109,7 +113,7 @@ void KEYContentCollector::startPage()
     props.insert("svg:height", pt2in(m_size.height));
 
     m_pageOpened = true;
-    m_painter->startGraphics(props);
+    m_painter->startSlide(props);
   }
 }
 
@@ -120,7 +124,7 @@ void KEYContentCollector::endPage()
     assert(m_pageOpened);
 
     m_pageOpened = false;
-    m_painter->endGraphics();
+    m_painter->endSlide();
   }
 }
 

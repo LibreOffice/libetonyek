@@ -50,15 +50,6 @@ PKG_CHECK_MODULES([WPD],[
 AC_SUBST(WPD_CFLAGS)
 AC_SUBST(WPD_LIBS)
 
-# ===========
-# Find libwpg
-# ===========
-PKG_CHECK_MODULES([WPG],[
-	libwpg-0.2
-])
-AC_SUBST(WPG_CFLAGS)
-AC_SUBST(WPG_LIBS)
-
 # ============
 # Find libxml2
 # ============

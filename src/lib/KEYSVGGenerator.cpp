@@ -12,6 +12,12 @@
 #include <string>
 #include "KEYSVGGenerator.h"
 
+namespace libkeynote
+{
+
+namespace
+{
+
 static std::string doubleToString(const double value)
 {
   WPXProperty *prop = WPXPropertyFactory::newDoubleProp(value);
@@ -39,15 +45,29 @@ static unsigned stringToColour(const ::WPXString &s)
   return val;
 }
 
-libkeynote::KEYSVGGenerator::KEYSVGGenerator(libkeynote::KEYStringVector &vec): m_gradient(), m_style(), m_gradientIndex(1), m_patternIndex(1), m_shadowIndex(1), m_outputSink(), m_vec(vec)
+}
+
+KEYSVGGenerator::KEYSVGGenerator(KEYStringVector &vec): m_gradient(), m_style(), m_gradientIndex(1), m_patternIndex(1), m_shadowIndex(1), m_outputSink(), m_vec(vec)
 {
 }
 
-libkeynote::KEYSVGGenerator::~KEYSVGGenerator()
+KEYSVGGenerator::~KEYSVGGenerator()
 {
 }
 
-void libkeynote::KEYSVGGenerator::startGraphics(const WPXPropertyList &propList)
+void KEYSVGGenerator::startDocument(const ::WPXPropertyList &)
+{
+}
+
+void KEYSVGGenerator::endDocument()
+{
+}
+
+void KEYSVGGenerator::setDocumentMetaData(const ::WPXPropertyList &)
+{
+}
+
+void KEYSVGGenerator::startSlide(const WPXPropertyList &propList)
 {
   m_outputSink << "<svg:svg version=\"1.1\" xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" ";
   if (propList["svg:width"])
@@ -57,14 +77,14 @@ void libkeynote::KEYSVGGenerator::startGraphics(const WPXPropertyList &propList)
   m_outputSink << " >\n";
 }
 
-void libkeynote::KEYSVGGenerator::endGraphics()
+void KEYSVGGenerator::endSlide()
 {
   m_outputSink << "</svg:svg>\n";
   m_vec.append(m_outputSink.str().c_str());
   m_outputSink.str("");
 }
 
-void libkeynote::KEYSVGGenerator::setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &gradient)
+void KEYSVGGenerator::setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &gradient)
 {
   m_style.clear();
   m_style = propList;
@@ -301,7 +321,7 @@ void libkeynote::KEYSVGGenerator::setStyle(const ::WPXPropertyList &propList, co
   }
 }
 
-void libkeynote::KEYSVGGenerator::startLayer(const ::WPXPropertyList &propList)
+void KEYSVGGenerator::startLayer(const ::WPXPropertyList &propList)
 {
   m_outputSink << "<svg:g id=\"Layer" << propList["svg:id"]->getInt() << "\"";
   if (propList["svg:fill-rule"])
@@ -309,12 +329,23 @@ void libkeynote::KEYSVGGenerator::startLayer(const ::WPXPropertyList &propList)
   m_outputSink << " >\n";
 }
 
-void libkeynote::KEYSVGGenerator::endLayer()
+void KEYSVGGenerator::endLayer()
 {
   m_outputSink << "</svg:g>\n";
 }
 
-void libkeynote::KEYSVGGenerator::drawRectangle(const ::WPXPropertyList &propList)
+void KEYSVGGenerator::startGroup(const ::WPXPropertyList &/*propList*/)
+{
+  // TODO: handle svg:id
+  m_outputSink << "<svg:g>\n";
+}
+
+void KEYSVGGenerator::endGroup()
+{
+  m_outputSink << "</svg:g>\n";
+}
+
+void KEYSVGGenerator::drawRectangle(const ::WPXPropertyList &propList)
 {
   m_outputSink << "<svg:rect ";
   m_outputSink << "x=\"" << doubleToString(72*propList["svg:x"]->getDouble()) << "\" y=\"" << doubleToString(72*propList["svg:y"]->getDouble()) << "\" ";
@@ -325,7 +356,7 @@ void libkeynote::KEYSVGGenerator::drawRectangle(const ::WPXPropertyList &propLis
   m_outputSink << "/>\n";
 }
 
-void libkeynote::KEYSVGGenerator::drawEllipse(const WPXPropertyList &propList)
+void KEYSVGGenerator::drawEllipse(const WPXPropertyList &propList)
 {
   m_outputSink << "<svg:ellipse ";
   m_outputSink << "cx=\"" << doubleToString(72*propList["svg:cx"]->getDouble()) << "\" cy=\"" << doubleToString(72*propList["svg:cy"]->getDouble()) << "\" ";
@@ -340,17 +371,17 @@ void libkeynote::KEYSVGGenerator::drawEllipse(const WPXPropertyList &propList)
   m_outputSink << "/>\n";
 }
 
-void libkeynote::KEYSVGGenerator::drawPolyline(const ::WPXPropertyListVector &vertices)
+void KEYSVGGenerator::drawPolyline(const ::WPXPropertyListVector &vertices)
 {
   drawPolySomething(vertices, false);
 }
 
-void libkeynote::KEYSVGGenerator::drawPolygon(const ::WPXPropertyListVector &vertices)
+void KEYSVGGenerator::drawPolygon(const ::WPXPropertyListVector &vertices)
 {
   drawPolySomething(vertices, true);
 }
 
-void libkeynote::KEYSVGGenerator::drawPolySomething(const ::WPXPropertyListVector &vertices, bool isClosed)
+void KEYSVGGenerator::drawPolySomething(const ::WPXPropertyListVector &vertices, bool isClosed)
 {
   if(vertices.count() < 2)
     return;
@@ -383,7 +414,7 @@ void libkeynote::KEYSVGGenerator::drawPolySomething(const ::WPXPropertyListVecto
   }
 }
 
-void libkeynote::KEYSVGGenerator::drawPath(const ::WPXPropertyListVector &path)
+void KEYSVGGenerator::drawPath(const ::WPXPropertyListVector &path)
 {
   m_outputSink << "<svg:path d=\" ";
   bool isClosed = false;
@@ -435,7 +466,7 @@ void libkeynote::KEYSVGGenerator::drawPath(const ::WPXPropertyListVector &path)
   m_outputSink << "/>\n";
 }
 
-void libkeynote::KEYSVGGenerator::drawGraphicObject(const ::WPXPropertyList &propList, const ::WPXBinaryData &binaryData)
+void KEYSVGGenerator::drawGraphicObject(const ::WPXPropertyList &propList, const ::WPXBinaryData &binaryData)
 {
   if (!propList["libwpg:mime-type"] || propList["libwpg:mime-type"]->getStr().len() <= 0)
     return;
@@ -449,7 +480,12 @@ void libkeynote::KEYSVGGenerator::drawGraphicObject(const ::WPXPropertyList &pro
   m_outputSink << "\" />\n";
 }
 
-void libkeynote::KEYSVGGenerator::startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector & /* path */)
+void KEYSVGGenerator::drawConnector(const ::WPXPropertyList &/*propList*/, const ::WPXPropertyListVector &/*path*/)
+{
+  // TODO: implement me
+}
+
+void KEYSVGGenerator::startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector & /* path */)
 {
   m_outputSink << "<svg:text ";
   if (propList["svg:x"] && propList["svg:y"])
@@ -464,12 +500,12 @@ void libkeynote::KEYSVGGenerator::startTextObject(const ::WPXPropertyList &propL
 
 }
 
-void libkeynote::KEYSVGGenerator::endTextObject()
+void KEYSVGGenerator::endTextObject()
 {
   m_outputSink << "</svg:text>\n";
 }
 
-void libkeynote::KEYSVGGenerator::startTextSpan(const ::WPXPropertyList &propList)
+void KEYSVGGenerator::openSpan(const ::WPXPropertyList &propList)
 {
   m_outputSink << "<svg:tspan ";
   if (propList["style:font-name"])
@@ -493,19 +529,131 @@ void libkeynote::KEYSVGGenerator::startTextSpan(const ::WPXPropertyList &propLis
   m_outputSink << ">\n";
 }
 
-void libkeynote::KEYSVGGenerator::endTextSpan()
+void KEYSVGGenerator::closeSpan()
 {
   m_outputSink << "</svg:tspan>\n";
 }
 
-void libkeynote::KEYSVGGenerator::insertText(const ::WPXString &str)
+void KEYSVGGenerator::insertTab()
+{
+  m_outputSink << '\t';
+}
+
+void KEYSVGGenerator::insertSpace()
+{
+  m_outputSink << ' ';
+}
+
+void KEYSVGGenerator::insertText(const ::WPXString &str)
 {
   WPXString tempUTF8(str, true);
   m_outputSink << tempUTF8.cstr() << "\n";
 }
 
+void KEYSVGGenerator::insertLineBreak()
+{
+  m_outputSink << '\n';
+}
+
+void KEYSVGGenerator::insertField(const WPXString &/*type*/, const ::WPXPropertyList &/*propList*/)
+{
+  // TODO: implement me
+}
+
+void KEYSVGGenerator::openOrderedListLevel(const ::WPXPropertyList &)
+{
+}
+
+void KEYSVGGenerator::openUnorderedListLevel(const ::WPXPropertyList &)
+{
+}
+
+void KEYSVGGenerator::closeOrderedListLevel()
+{
+}
+
+void KEYSVGGenerator::closeUnorderedListLevel()
+{
+}
+
+void KEYSVGGenerator::openListElement(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &tabStops)
+{
+  openParagraph(propList, tabStops);
+}
+
+void KEYSVGGenerator::closeListElement()
+{
+  closeParagraph();
+}
+
+void KEYSVGGenerator::openParagraph(const ::WPXPropertyList &, const ::WPXPropertyListVector &)
+{
+}
+
+void KEYSVGGenerator::closeParagraph()
+{
+  m_outputSink << '\n';
+}
+
+void KEYSVGGenerator::openTable(const ::WPXPropertyList &/*propList*/, const ::WPXPropertyListVector &/*columns*/)
+{
+  // TODO: implement me
+}
+
+void KEYSVGGenerator::openTableRow(const ::WPXPropertyList &/*propList*/)
+{
+  // TODO: implement me
+}
+
+void KEYSVGGenerator::closeTableRow()
+{
+  // TODO: implement me
+}
+
+void KEYSVGGenerator::openTableCell(const ::WPXPropertyList &/*propList*/)
+{
+  // TODO: implement me
+}
+
+void KEYSVGGenerator::closeTableCell()
+{
+  // TODO: implement me
+}
+
+void KEYSVGGenerator::insertCoveredTableCell(const ::WPXPropertyList &/*propList*/)
+{
+  // TODO: implement me
+}
+
+void KEYSVGGenerator::closeTable()
+{
+  // TODO: implement me
+}
+
+
+void KEYSVGGenerator::startComment(const ::WPXPropertyList &/*propList*/)
+{
+  // TODO: implement me
+}
+
+void KEYSVGGenerator::endComment()
+{
+  // TODO: implement me
+}
+
+
+void KEYSVGGenerator::startNotes(const ::WPXPropertyList &/*propList*/)
+{
+  // TODO: implement me
+}
+
+void KEYSVGGenerator::endNotes()
+{
+  // TODO: implement me
+}
+
 // create "style" attribute based on current pen and brush
-void libkeynote::KEYSVGGenerator::writeStyle(bool /* isClosed */)
+void KEYSVGGenerator::writeStyle(bool /* isClosed */)
 {
   m_outputSink << "style=\"";
 
@@ -578,6 +726,8 @@ void libkeynote::KEYSVGGenerator::writeStyle(bool /* isClosed */)
   if(m_style["draw:opacity"] && m_style["draw:opacity"]->getDouble() < 1)
     m_outputSink << "fill-opacity: " << doubleToString(m_style["draw:opacity"]->getDouble()) << "; ";
   m_outputSink << "\""; // style
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

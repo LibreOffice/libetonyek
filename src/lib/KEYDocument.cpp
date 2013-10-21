@@ -175,12 +175,6 @@ shared_ptr<KEYParser> makeParser(const Version version, const WPXInputStreamPtr_
 
 }
 
-/**
-Analyzes the content of an input stream to see if it can be parsed
-\param input The input stream
-\return A value that indicates whether the content from the input
-stream is a KEY Document that libkeynote is able to parse
-*/
 bool KEYDocument::isSupported(WPXInputStream *const input, KEYDocumentType *type) try
 {
   if (type)
@@ -215,15 +209,7 @@ catch (...)
   return false;
 }
 
-/**
-Parses the input stream content. It will make callbacks to the functions provided by a
-WPGPaintInterface class implementation when needed. This is often commonly called the
-'main parsing routine'.
-\param input The input stream
-\param painter A WPGPaintInterface implementation
-\return A value that indicates whether the parsing was successful
-*/
-bool KEYDocument::parse(::WPXInputStream *const input, libwpg::WPGPaintInterface *const painter) try
+bool KEYDocument::parse(::WPXInputStream *const input, KEYPresentationInterface *const generator) try
 {
   WPXInputStreamPtr_t input_(input, KEYDummyDeleter());
 
@@ -271,7 +257,7 @@ bool KEYDocument::parse(::WPXInputStream *const input, libwpg::WPGPaintInterface
 
   input_->seek(0, WPX_SEEK_SET);
 
-  KEYContentCollector contentCollector(painter, dict, masterPages, presentationSize, *defaults);
+  KEYContentCollector contentCollector(generator, dict, masterPages, presentationSize, *defaults);
   parser = makeParser(version, input_, package, &contentCollector, *defaults);
   return parser->parse();
 }
@@ -280,13 +266,6 @@ catch (...)
   return false;
 }
 
-/**
-Parses the input stream content and generates a valid Scalable Vector Graphics
-Provided as a convenience function for applications that support SVG internally.
-\param input The input stream
-\param output The output string whose content is the resulting SVG
-\return A value that indicates whether the SVG generation was successful.
-*/
 bool KEYDocument::generateSVG(::WPXInputStream *const input, KEYStringVector &output) try
 {
   KEYSVGGenerator generator(output);
