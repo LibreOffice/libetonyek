@@ -24,6 +24,11 @@ namespace test
 namespace
 {
 
+double in2pt(const double in)
+{
+  return 72 * in;
+}
+
 string toSVG(const KEYPath &path)
 {
   std::ostringstream output;
@@ -45,17 +50,17 @@ string toSVG(const KEYPath &path)
       output << ' ';
     output << element["libwpg:path-action"]->getStr().cstr();
     if (element["svg:x1"])
-      output << ' ' << element["svg:x1"]->getDouble();
+      output << ' ' << in2pt(element["svg:x1"]->getDouble());
     if (element["svg:y1"])
-      output << ' ' << element["svg:y1"]->getDouble();
+      output << ' ' << in2pt(element["svg:y1"]->getDouble());
     if (element["svg:x2"])
-      output << ' ' << element["svg:x2"]->getDouble();
+      output << ' ' << in2pt(element["svg:x2"]->getDouble());
     if (element["svg:y2"])
-      output << ' ' << element["svg:y2"]->getDouble();
+      output << ' ' << in2pt(element["svg:y2"]->getDouble());
     if (element["svg:x"])
-      output << ' ' << element["svg:x"]->getDouble();
+      output << ' ' << in2pt(element["svg:x"]->getDouble());
     if (element["svg:y"])
-      output << ' ' << element["svg:y"]->getDouble();
+      output << ' ' << in2pt(element["svg:y"]->getDouble());
 
     it.next();
   }
