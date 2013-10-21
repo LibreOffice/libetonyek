@@ -16,6 +16,7 @@
 #include "KEYOutput.h"
 #include "KEYPath.h"
 #include "KEYText.h"
+#include "KEYTypes.h"
 
 using std::string;
 
@@ -120,26 +121,44 @@ namespace
 class TextObject : public KEYObject
 {
 public:
-  TextObject(const KEYLayoutStylePtr_t &layoutStyle, const KEYText::ParagraphList_t &paragraphs);
+  TextObject(const KEYLayoutStylePtr_t &layoutStyle, const KEYGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs);
 
 private:
   virtual void draw(const KEYOutput &output);
 
 private:
   const KEYLayoutStylePtr_t m_layoutStyle;
+  const KEYGeometryPtr_t m_boundingBox;
   const KEYText::ParagraphList_t m_paragraphs;
 };
 
-TextObject::TextObject(const KEYLayoutStylePtr_t &layoutStyle, const KEYText::ParagraphList_t &paragraphs)
+TextObject::TextObject(const KEYLayoutStylePtr_t &layoutStyle, const KEYGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs)
   : m_layoutStyle(layoutStyle)
+  , m_boundingBox(boundingBox)
   , m_paragraphs(paragraphs)
 {
 }
 
 void TextObject::draw(const KEYOutput &output)
 {
+  const KEYTransformation tr = output.getTransformation();
+
   WPXPropertyList props;
-  // TODO: fill properties
+
+  if (bool(m_boundingBox))
+  {
+    double x = m_boundingBox->position.x;
+    double y = m_boundingBox->position.y;
+    double w = m_boundingBox->naturalSize.width;
+    double h = m_boundingBox->naturalSize.height;
+    tr(x, y);
+    tr(w, h, true);
+
+    props.insert("svg:x", pt2in(x));
+    props.insert("svg:y", pt2in(y));
+    props.insert("svg:width", pt2in(w));
+    props.insert("svg:height", pt2in(h));
+  }
 
   KEYPath path;
   path.appendMoveTo(0, 0);
@@ -147,7 +166,7 @@ void TextObject::draw(const KEYOutput &output)
   path.appendLineTo(1, 1);
   path.appendLineTo(1, 0);
   path.appendClose();
-  path *= output.getTransformation();
+  path *= tr;
 
   output.getPainter()->startTextObject(props, path.toWPG());
 
@@ -168,6 +187,7 @@ KEYText::KEYText()
   , m_paragraphs()
   , m_currentParagraph()
   , m_lineBreaks(0)
+  , m_boundingBox()
 {
 }
 
@@ -180,6 +200,16 @@ KEYText::Paragraph::Paragraph()
 void KEYText::setLayoutStyle(const KEYLayoutStylePtr_t &style)
 {
   m_layoutStyle = style;
+}
+
+const KEYGeometryPtr_t &KEYText::getBoundingBox() const
+{
+  return m_boundingBox;
+}
+
+void KEYText::setBoundingBox(const KEYGeometryPtr_t &boundingBox)
+{
+  m_boundingBox = boundingBox;
 }
 
 void KEYText::openParagraph(const KEYParagraphStylePtr_t &style)
@@ -250,7 +280,7 @@ bool KEYText::empty() const
 
 KEYObjectPtr_t makeObject(const KEYTextPtr_t &text)
 {
-  const KEYObjectPtr_t object(new TextObject(text->getLayoutStyle(), text->getParagraphs()));
+  const KEYObjectPtr_t object(new TextObject(text->getLayoutStyle(), text->getBoundingBox(), text->getParagraphs()));
   return object;
 }
 

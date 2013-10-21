@@ -436,6 +436,7 @@ void KEYCollectorBase::collectShape(const optional<ID_t> &)
     shape->geometry = m_levelStack.top().geometry;
     m_levelStack.top().geometry.reset();
 
+    m_currentText->setBoundingBox(shape->geometry);
     shape->text = m_currentText;
     m_currentText.reset();
 
@@ -725,7 +726,10 @@ void KEYCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const bo
       if (bool(m_currentPlaceholderStyle))
         placeholder->geometry = m_currentPlaceholderStyle->getGeometry();
       if (!m_currentText->empty())
+      {
+        m_currentText->setBoundingBox(placeholder->geometry);
         placeholder->text = m_currentText;
+      }
       placeholder->style = m_currentPlaceholderStyle;
 
       m_currentText.reset();

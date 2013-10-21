@@ -32,6 +32,9 @@ public:
 
   void setLayoutStyle(const KEYLayoutStylePtr_t &style);
 
+  const KEYGeometryPtr_t &getBoundingBox() const;
+  void setBoundingBox(const KEYGeometryPtr_t &boundingBox);
+
   void openParagraph(const KEYParagraphStylePtr_t &style);
   void closeParagraph();
 
