@@ -12,6 +12,7 @@ libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_includedir = $(includ
 libkeynote_@KEYNOTE_MAJOR_VERSION@_@KEYNOTE_MINOR_VERSION@_include_HEADERS = \
 	$(top_srcdir)/inc/libkeynote/libkeynote.h \
 	$(top_srcdir)/inc/libkeynote/KEYDocument.h \
+	$(top_srcdir)/inc/libkeynote/KEYPresentationInterface.h \
 	$(top_srcdir)/inc/libkeynote/KEYStringVector.h
 
 AM_CXXFLAGS = -I$(top_srcdir)/inc $(WPD_CFLAGS) $(XML_CFLAGS) $(ZLIB_CFLAGS) $(BOOST_CFLAGS) $(DEBUG_CXXFLAGS)
