@@ -1,24 +1,24 @@
-# Microsoft Developer Studio Project File - Name="libkeynote" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="libetonyek" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Static Library" 0x0104
 
-CFG=libkeynote - Win32 Release
+CFG=libetonyek - Win32 Release
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "libkeynote.mak".
+!MESSAGE NMAKE /f "libetonyek.mak".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "libkeynote.mak" CFG="libkeynote - Win32 Release"
+!MESSAGE NMAKE /f "libetonyek.mak" CFG="libetonyek - Win32 Release"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "libkeynote - Win32 Release" (based on "Win32 (x86) Static Library")
-!MESSAGE "libkeynote - Win32 Debug" (based on "Win32 (x86) Static Library")
+!MESSAGE "libetonyek - Win32 Release" (based on "Win32 (x86) Static Library")
+!MESSAGE "libetonyek - Win32 Debug" (based on "Win32 (x86) Static Library")
 !MESSAGE 
 
 # Begin Project
@@ -28,7 +28,7 @@ CFG=libkeynote - Win32 Release
 CPP=cl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "libkeynote - Win32 Release"
+!IF  "$(CFG)" == "libetonyek - Win32 Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
@@ -50,9 +50,9 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"Release\lib\libkeynote-0.0.lib"
+# ADD LIB32 /nologo /out:"Release\lib\libetonyek-0.0.lib"
 
-!ELSEIF  "$(CFG)" == "libkeynote - Win32 Debug"
+!ELSEIF  "$(CFG)" == "libetonyek - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
@@ -74,20 +74,20 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"Debug\lib\libkeynote-0.0.lib"
+# ADD LIB32 /nologo /out:"Debug\lib\libetonyek-0.0.lib"
 
 !ENDIF 
 
 # Begin Target
 
-# Name "libkeynote - Win32 Release"
-# Name "libkeynote - Win32 Debug"
+# Name "libetonyek - Win32 Release"
+# Name "libetonyek - Win32 Debug"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\..\src\lib\libkeynote_utils.cpp
+SOURCE=..\..\src\lib\libetonyek_utils.cpp
 # End Source File
 # Begin Source File
 
@@ -115,19 +115,19 @@ SOURCE=..\..\src\lib\KEYSVGGenerator.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=..\..\inc\libkeynote\libkeynote.h
+SOURCE=..\..\inc\libetonyek\libetonyek.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\inc\libkeynote\KEYDocument.h
+SOURCE=..\..\inc\libetonyek\KEYDocument.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\inc\libkeynote\KEYStringVector.h
+SOURCE=..\..\inc\libetonyek\KEYStringVector.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\libkeynote_utils.h
+SOURCE=..\..\src\lib\libetonyek_utils.h
 # End Source File
 # Begin Source File
 

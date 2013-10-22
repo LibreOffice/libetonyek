@@ -1,6 +1,6 @@
 EXTRA_DIST = \
-	libkeynote.dsw \
-	libkeynote.dsp \
+	libetonyek.dsw \
+	libetonyek.dsp \
 	key2raw.dsp \
 	key2xhtml.dsp \
 	compile-resource \

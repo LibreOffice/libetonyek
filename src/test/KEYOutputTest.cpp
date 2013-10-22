@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * This file is part of the libkeynote project.
+ * This file is part of the libetonyek project.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,12 +19,12 @@ namespace test
 using boost::any_cast;
 using boost::optional;
 
-using libkeynote::KEYOutput;
-using libkeynote::KEYParagraphStyle;
-using libkeynote::KEYParagraphStylePtr_t;
-using libkeynote::KEYPropertyMap;
-using libkeynote::KEYStyleContext;
-using libkeynote::KEYTransformation;
+using libetonyek::KEYOutput;
+using libetonyek::KEYParagraphStyle;
+using libetonyek::KEYParagraphStylePtr_t;
+using libetonyek::KEYPropertyMap;
+using libetonyek::KEYStyleContext;
+using libetonyek::KEYTransformation;
 
 using std::string;
 
@@ -57,7 +57,7 @@ void KEYOutputTest::testTransformation()
   // default transformation
   CPPUNIT_ASSERT(KEYTransformation() == output.getTransformation());
 
-  using namespace libkeynote::transformations;
+  using namespace libetonyek::transformations;
 
   // translation
   {

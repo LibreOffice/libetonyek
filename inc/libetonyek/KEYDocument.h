@@ -1,18 +1,18 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * This file is part of the libkeynote project.
+ * This file is part of the libetonyek project.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef LIBKEYNOTE_KEYDOCUMENT_H_INCLUDED
-#define LIBKEYNOTE_KEYDOCUMENT_H_INCLUDED
+#ifndef LIBETONYEK_KEYDOCUMENT_H_INCLUDED
+#define LIBETONYEK_KEYDOCUMENT_H_INCLUDED
 
 #include <libwpd-stream/libwpd-stream.h>
 
-namespace libkeynote
+namespace libetonyek
 {
 
 class KEYPresentationInterface;
@@ -78,8 +78,8 @@ public:
   static bool generateSVG(::WPXInputStream *input, KEYStringVector &output);
 };
 
-} // namespace libkeynote
+} // namespace libetonyek
 
-#endif // LIBKEYNOTE_KEYDOCUMENT_H_INCLUDED
+#endif // LIBETONYEK_KEYDOCUMENT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * This file is part of the libkeynote project.
+ * This file is part of the libetonyek project.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,7 +12,7 @@
 #include "KEYTransformation.h"
 #include "KEYTypes.h"
 
-namespace libkeynote
+namespace libetonyek
 {
 
 KEYTransformation::KEYTransformation()
@@ -56,7 +56,7 @@ KEYTransformation &KEYTransformation::operator*=(const KEYTransformation &tr)
 
 bool KEYTransformation::approxEqual(const KEYTransformation &other, const double eps) const
 {
-  using libkeynote::approxEqual;
+  using libetonyek::approxEqual;
   return approxEqual(m_xx, other.m_xx, eps)
          && approxEqual(m_yx, other.m_yx, eps)
          && approxEqual(m_xy, other.m_xy, eps)

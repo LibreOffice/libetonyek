@@ -5,15 +5,15 @@ AC_PREREQ([2.65])
 # ====================
 # Version informations
 # ====================
-m4_define([libkeynote_version_major],[0])
-m4_define([libkeynote_version_minor],[0])
-m4_define([libkeynote_version_micro],[0])
-m4_define([libkeynote_version],[libkeynote_version_major.libkeynote_version_minor.libkeynote_version_micro])
+m4_define([libetonyek_version_major],[0])
+m4_define([libetonyek_version_minor],[0])
+m4_define([libetonyek_version_micro],[0])
+m4_define([libetonyek_version],[libetonyek_version_major.libetonyek_version_minor.libetonyek_version_micro])
 
 # =============
 # Automake init
 # =============
-AC_INIT([libkeynote],[libkeynote_version])
+AC_INIT([libetonyek],[libetonyek_version])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([1.11 foreign dist-xz dist-bzip2])
@@ -97,17 +97,17 @@ AC_SUBST([BOOST_CFLAGS])
 # =================================
 # Libtool/Version Makefile settings
 # =================================
-AC_SUBST(KEYNOTE_MAJOR_VERSION, [libkeynote_version_major])
-AC_SUBST(KEYNOTE_MINOR_VERSION, [libkeynote_version_minor])
-AC_SUBST(KEYNOTE_MICRO_VERSION, [libkeynote_version_micro])
-AC_SUBST(KN_VERSION, [libkeynote_version])
-# AC_SUBST(LT_RELEASE, [libkeynote_version_major.libkeynote_version_minor])
-LT_CURRENT=`expr 100 '*' libkeynote_version_major + libkeynote_version_minor`
+AC_SUBST(ETONYEK_MAJOR_VERSION, [libetonyek_version_major])
+AC_SUBST(ETONYEK_MINOR_VERSION, [libetonyek_version_minor])
+AC_SUBST(ETONYEK_MICRO_VERSION, [libetonyek_version_micro])
+AC_SUBST(KN_VERSION, [libetonyek_version])
+# AC_SUBST(LT_RELEASE, [libetonyek_version_major.libetonyek_version_minor])
+LT_CURRENT=`expr 100 '*' libetonyek_version_major + libetonyek_version_minor`
 # For 1.0.0 comment the first line and uncomment the second
 LT_AGE=0
-# LT_AGE=libkeynote_version_minor
+# LT_AGE=libetonyek_version_minor
 AC_SUBST(LT_CURRENT)
-AC_SUBST(LT_REVISION, [libkeynote_version_micro])
+AC_SUBST(LT_REVISION, [libetonyek_version_micro])
 AC_SUBST(LT_AGE)
 
 # ==========================
@@ -117,19 +117,19 @@ AC_MSG_CHECKING([for native Win32])
 AS_CASE([$host],
 	[*-*-mingw*], [
 		native_win32=yes
-		LIBKEYNOTE_WIN32_RESOURCE=libkeynote-win32res.lo
+		LIBETONYEK_WIN32_RESOURCE=libetonyek-win32res.lo
 		KEY2RAW_WIN32_RESOURCE=key2raw-win32res.lo
 		KEY2XHTML_WIN32_RESOURCE=key2xhtml-win32res.lo
 	], [
 		native_win32=no
-		LIBKEYNOTE_WIN32_RESOURCE=
+		LIBETONYEK_WIN32_RESOURCE=
 		KEY2RAW_WIN32_RESOURCE=
 		KEY2XHTML_WIN32_RESOURCE=
 	]
 )
 AC_MSG_RESULT([$native_win32])
 AM_CONDITIONAL(OS_WIN32, [test "x$native_win32" = "xyes"])
-AC_SUBST(LIBKEYNOTE_WIN32_RESOURCE)
+AC_SUBST(LIBETONYEK_WIN32_RESOURCE)
 AC_SUBST(KEY2RAW_WIN32_RESOURCE)
 AC_SUBST(KEY2XHTML_WIN32_RESOURCE)
 
@@ -263,7 +263,7 @@ AS_IF([test "x$with_docs" != "xno"], [
 		build_docs=no
 	], [build_docs=yes])
 ], [build_docs=no])
-AM_CONDITIONAL([WITH_LIBKEYNOTE_DOCS], [test "x$build_docs" != "xno"])
+AM_CONDITIONAL([WITH_LIBETONYEK_DOCS], [test "x$build_docs" != "xno"])
 
 # ================
 # Conversion tools
@@ -279,7 +279,7 @@ AS_IF([test "x$with_tools" != "xno"], [
 	AX_BOOST_SYSTEM
 	build_tools=yes
 ], [build_tools=no])
-AM_CONDITIONAL([WITH_LIBKEYNOTE_TOOLS], [test "x$build_tools" != "xno"])
+AM_CONDITIONAL([WITH_LIBETONYEK_TOOLS], [test "x$build_tools" != "xno"])
 
 # =====================
 # Prepare all .in files
@@ -296,15 +296,15 @@ src/conv/svg/key2xhtml.rc
 src/conv/text/Makefile
 src/conv/text/key2text.rc
 src/lib/Makefile
-src/lib/libkeynote.rc
+src/lib/libetonyek.rc
 src/test/Makefile
 inc/Makefile
-inc/libkeynote/Makefile
+inc/libetonyek/Makefile
 build/Makefile
 build/win32/Makefile
 docs/Makefile
 docs/doxygen/Makefile
-libkeynote-$KEYNOTE_MAJOR_VERSION.$KEYNOTE_MINOR_VERSION.pc:libkeynote.pc.in
+libetonyek-$ETONYEK_MAJOR_VERSION.$ETONYEK_MINOR_VERSION.pc:libetonyek.pc.in
 ])
 AC_OUTPUT
 

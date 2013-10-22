@@ -1,1 +1,1 @@
-SUBDIRS = libkeynote
+SUBDIRS = libetonyek

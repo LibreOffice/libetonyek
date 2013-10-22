@@ -13,9 +13,9 @@ configure
 depcomp
 install-sh
 libtool
-libkeynote.spec
-libkeynote-zip
-libkeynote-*.tar.*
+libetonyek.spec
+libetonyek-zip
+libetonyek-*.tar.*
 ltmain.sh
 m4
 # FIXME: this does not work; I must be doing something wrong...

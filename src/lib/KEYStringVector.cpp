@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * This file is part of the libkeynote project.
+ * This file is part of the libetonyek project.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,9 +9,9 @@
 
 #include <vector>
 
-#include <libkeynote/KEYStringVector.h>
+#include <libetonyek/KEYStringVector.h>
 
-namespace libkeynote
+namespace libetonyek
 {
 
 class KEYStringVectorImpl
@@ -71,6 +71,6 @@ void KEYStringVector::clear()
   m_pImpl->m_strings.clear();
 }
 
-} // namespace libkeynote
+} // namespace libetonyek
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

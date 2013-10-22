@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * This file is part of the libkeynote project.
+ * This file is part of the libetonyek project.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,7 +10,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/math/constants/constants.hpp>
 
-#include "libkeynote_xml.h"
+#include "libetonyek_xml.h"
 #include "KEY2ParserUtils.h"
 #include "KEY2Token.h"
 #include "KEYTypes.h"
@@ -21,7 +21,7 @@ using boost::optional;
 
 using std::pair;
 
-namespace libkeynote
+namespace libetonyek
 {
 
 namespace

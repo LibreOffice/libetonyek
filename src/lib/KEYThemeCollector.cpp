@@ -1,20 +1,20 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * This file is part of the libkeynote project.
+ * This file is part of the libetonyek project.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "libkeynote_utils.h"
+#include "libetonyek_utils.h"
 #include "KEYDefaults.h"
 #include "KEYDictionary.h"
 #include "KEYThemeCollector.h"
 
 using boost::optional;
 
-namespace libkeynote
+namespace libetonyek
 {
 
 KEYThemeCollector::KEYThemeCollector(KEYDictionary &dict, KEYLayerMap_t &masterPages, KEYSize &size, const KEYDefaults &defaults)

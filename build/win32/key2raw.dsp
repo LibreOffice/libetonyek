@@ -52,8 +52,8 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 libkeynote-0.0.lib libwpd-stream-0.9.lib libwpd-0.9.lib /nologo /subsystem:console /machine:IX86 /out:"Release\bin\key2raw.exe" /libpath:"Release\lib"
-# ADD LINK32 libkeynote-0.0.lib libwpd-stream-0.9.lib libwpd-0.9.lib /nologo /subsystem:console /machine:IX86 /out:"Release\bin\key2raw.exe" /libpath:"Release\lib"
+# ADD BASE LINK32 libetonyek-0.0.lib libwpd-stream-0.9.lib libwpd-0.9.lib /nologo /subsystem:console /machine:IX86 /out:"Release\bin\key2raw.exe" /libpath:"Release\lib"
+# ADD LINK32 libetonyek-0.0.lib libwpd-stream-0.9.lib libwpd-0.9.lib /nologo /subsystem:console /machine:IX86 /out:"Release\bin\key2raw.exe" /libpath:"Release\lib"
 # SUBTRACT LINK32 /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "key2raw - Win32 Debug"
@@ -80,8 +80,8 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 libkeynote-0.0.lib libwpd-stream-0.9.lib libwpd-0.9.lib /nologo /subsystem:console /debug /machine:IX86 /out:"Debug\bin\key2raw.exe" /libpath:"Debug\lib"
-# ADD LINK32 libkeynote-0.0.lib libwpd-stream-0.9.lib libwpd-0.9.lib kernel32.lib /nologo /subsystem:console /debug /machine:IX86 /out:"Debug\bin\key2raw.exe" /libpath:"Debug\lib"
+# ADD BASE LINK32 libetonyek-0.0.lib libwpd-stream-0.9.lib libwpd-0.9.lib /nologo /subsystem:console /debug /machine:IX86 /out:"Debug\bin\key2raw.exe" /libpath:"Debug\lib"
+# ADD LINK32 libetonyek-0.0.lib libwpd-stream-0.9.lib libwpd-0.9.lib kernel32.lib /nologo /subsystem:console /debug /machine:IX86 /out:"Debug\bin\key2raw.exe" /libpath:"Debug\lib"
 # SUBTRACT LINK32 /nodefaultlib
 
 !ENDIF 

@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * This file is part of the libkeynote project.
+ * This file is part of the libetonyek project.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,7 +11,7 @@
 #include "KEY1Token.h"
 #include "KEYXMLReader.h"
 
-namespace libkeynote
+namespace libetonyek
 {
 
 KEY1Parser::KEY1Parser(const WPXInputStreamPtr_t &input, const WPXInputStreamPtr_t &, KEYCollector *const collector, const KEYDefaults &defaults)

@@ -6,7 +6,7 @@ VS_VERSION_INFO VERSIONINFO
   FILEFLAGSMASK 0
   FILEFLAGS 0
   FILEOS VOS__WINDOWS32
-  FILETYPE VFT_APP
+  FILETYPE VFT_DLL
   FILESUBTYPE VFT2_UNKNOWN
   BEGIN
     BLOCK "StringFileInfo"
@@ -14,11 +14,11 @@ VS_VERSION_INFO VERSIONINFO
       BLOCK "040904B0"
       BEGIN
 	VALUE "CompanyName", "The libetonyek developer community"
-	VALUE "FileDescription", "key2xhtml"
+	VALUE "FileDescription", "libetonyek"
 	VALUE "FileVersion", "@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@.@ETONYEK_MICRO_VERSION@.BUILDNUMBER"
-	VALUE "InternalName", "key2xhtml"
+	VALUE "InternalName", "libetonyek-0.0"
 	VALUE "LegalCopyright", "Copyright (C) 2013 David Tardon, other contributors"
-	VALUE "OriginalFilename", "key2xhtml.exe"
+	VALUE "OriginalFilename", "libetonyek-0.0.dll"
 	VALUE "ProductName", "libetonyek"
 	VALUE "ProductVersion", "@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@.@ETONYEK_MICRO_VERSION@"
       END

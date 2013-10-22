@@ -2,7 +2,7 @@ EXTRA_DIST =	doxygen.cfg \
 		footer.html.in \
 		header.html.in
 
-if WITH_LIBKEYNOTE_DOCS
+if WITH_LIBETONYEK_DOCS
 
 install-data-am:
 	mkdir -p $(DESTDIR)$(docdir)/html

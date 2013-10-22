@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * This file is part of the libkeynote project.
+ * This file is part of the libetonyek project.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,13 +11,13 @@
 
 #include <zlib.h>
 
-#include "libkeynote_utils.h"
+#include "libetonyek_utils.h"
 #include "KEYMemoryStream.h"
 #include "KEYZlibStream.h"
 
 using std::vector;
 
-namespace libkeynote
+namespace libetonyek
 {
 
 namespace

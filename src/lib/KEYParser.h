@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * This file is part of the libkeynote project.
+ * This file is part of the libetonyek project.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,10 +10,10 @@
 #ifndef KEYPARSER_H_INCLUDED
 #define KEYPARSER_H_INCLUDED
 
-#include "libkeynote_utils.h"
+#include "libetonyek_utils.h"
 #include "KEYXMLReader.h"
 
-namespace libkeynote
+namespace libetonyek
 {
 
 class KEYCollector;
@@ -45,7 +45,7 @@ private:
   const KEYDefaults &m_defaults;
 };
 
-} // namespace libkeynote
+} // namespace libetonyek
 
 #endif //  KEYPARSER_H_INCLUDED
 

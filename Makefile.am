@@ -2,7 +2,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 pkgconfdir = $(libdir)/pkgconfig
 
-pkgconf_DATA = libkeynote-@KEYNOTE_MAJOR_VERSION@.@KEYNOTE_MINOR_VERSION@.pc
+pkgconf_DATA = libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@.pc
 
 SUBDIRS = build inc src docs
 
@@ -12,7 +12,7 @@ EXTRA_DIST = \
 	NEWS \
 	README \
 	autogen.sh \
-	libkeynote.pc.in
+	libetonyek.pc.in
 
 distclean-local:
 	rm -rf *.cache *~ *.pc

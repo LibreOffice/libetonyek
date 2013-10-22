@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * This file is part of the libkeynote project.
+ * This file is part of the libetonyek project.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,8 +14,8 @@
 
 #include "KEYXMLReaderTest.h"
 
-using libkeynote::KEYMemoryStream;
-using libkeynote::KEYXMLReader;
+using libetonyek::KEYMemoryStream;
+using libetonyek::KEYXMLReader;
 
 using std::strcmp;
 using std::strlen;

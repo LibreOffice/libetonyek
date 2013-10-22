@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * This file is part of the libkeynote project.
+ * This file is part of the libetonyek project.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,7 +16,7 @@
 #include <string.h>
 #include <libwpd-stream/libwpd-stream.h>
 #include <libwpd/libwpd.h>
-#include <libkeynote/libkeynote.h>
+#include <libetonyek/libetonyek.h>
 
 #include "KEYDirectoryStream.h"
 
@@ -62,21 +62,21 @@ int main(int argc, char *argv[])
   else
     input.reset(new WPXFileStream(file));
 
-  libkeynote::KEYDocumentType type = libkeynote::KEY_DOCUMENT_TYPE_UNKNOWN;
-  if (!libkeynote::KEYDocument::isSupported(input.get(), &type))
+  libetonyek::KEYDocumentType type = libetonyek::KEY_DOCUMENT_TYPE_UNKNOWN;
+  if (!libetonyek::KEYDocument::isSupported(input.get(), &type))
   {
     std::cerr << "ERROR: Unsupported file format!" << std::endl;
     return 1;
   }
 
-  if (libkeynote::KEY_DOCUMENT_TYPE_APXL_FILE == type)
+  if (libetonyek::KEY_DOCUMENT_TYPE_APXL_FILE == type)
   {
     path.remove_filename();
     input.reset(new conv::KEYDirectoryStream(path));
   }
 
-  libkeynote::KEYStringVector output;
-  if (!libkeynote::KEYDocument::generateSVG(input.get(), output))
+  libetonyek::KEYStringVector output;
+  if (!libetonyek::KEYDocument::generateSVG(input.get(), output))
   {
     std::cerr << "ERROR: SVG Generation failed!" << std::endl;
     return 1;

@@ -4,7 +4,7 @@
 # needs the script createBuildNumber.pl to be in the same directory.
 
 { perl ./createBuildNumber.pl \
-	src/lib/libkeynote-build.stamp \
+	src/lib/libetonyek-build.stamp \
 	src/conv/raw/key2raw-build.stamp \
 	src/conv/svg/key2xhtml-build.stamp
 #Success

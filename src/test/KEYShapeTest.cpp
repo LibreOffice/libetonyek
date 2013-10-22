@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * This file is part of the libkeynote project.
+ * This file is part of the libetonyek project.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,9 +21,9 @@ namespace test
 
 namespace m = boost::math::double_constants;
 
-using libkeynote::KEYPath;
-using libkeynote::KEYPathPtr_t;
-using libkeynote::KEYSize;
+using libetonyek::KEYPath;
+using libetonyek::KEYPathPtr_t;
+using libetonyek::KEYSize;
 
 void KEYShapeTest::setUp()
 {
@@ -35,7 +35,7 @@ void KEYShapeTest::tearDown()
 
 void KEYShapeTest::testMakePolygonPath()
 {
-  using libkeynote::makePolygonPath;
+  using libetonyek::makePolygonPath;
 
   const KEYSize size(100, 100);
 

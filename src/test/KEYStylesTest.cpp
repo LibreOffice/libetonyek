@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * This file is part of the libkeynote project.
+ * This file is part of the libetonyek project.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,12 +21,12 @@ using boost::optional;
 using boost::shared_ptr;
 using boost::unordered_map;
 
-using libkeynote::KEYPropertyMap;
-using libkeynote::KEYStyleBase;
-using libkeynote::KEYStyleContext;
-using libkeynote::KEYStylePtr_t;
-using libkeynote::KEYStylesheet;
-using libkeynote::KEYStylesheetPtr_t;
+using libetonyek::KEYPropertyMap;
+using libetonyek::KEYStyleBase;
+using libetonyek::KEYStyleContext;
+using libetonyek::KEYStylePtr_t;
+using libetonyek::KEYStylesheet;
+using libetonyek::KEYStylesheetPtr_t;
 
 using std::string;
 

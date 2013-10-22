@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * This file is part of the libkeynote project.
+ * This file is part of the libetonyek project.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,14 +19,14 @@ namespace test
 
 namespace m = boost::math::double_constants;
 
-using libkeynote::KEYTransformation;
+using libetonyek::KEYTransformation;
 
 namespace
 {
 
 KEYTransformation wrap(const double width, const double height, const KEYTransformation &tr)
 {
-  using namespace libkeynote::transformations;
+  using namespace libetonyek::transformations;
   return origin(width, height) * tr * center(width, height);
 }
 
@@ -42,7 +42,7 @@ void KEYTransformationTest::tearDown()
 
 void KEYTransformationTest::testApplication()
 {
-  using namespace libkeynote::transformations;
+  using namespace libetonyek::transformations;
 
   // identity - point
   {
@@ -110,7 +110,7 @@ void KEYTransformationTest::testConstruction()
   // identity
   CPPUNIT_ASSERT(KEYTransformation() == KEYTransformation(1, 0, 0, 1, 0, 0));
 
-  using namespace libkeynote::transformations;
+  using namespace libetonyek::transformations;
 
   // centering
   CPPUNIT_ASSERT(center(200, 100) == KEYTransformation(1, 0, 0, 1, 100, 50));
@@ -143,7 +143,7 @@ void KEYTransformationTest::testConstruction()
 
 void KEYTransformationTest::testConstructionIdentity()
 {
-  using namespace libkeynote::transformations;
+  using namespace libetonyek::transformations;
 
   CPPUNIT_ASSERT(center(0, 0) == KEYTransformation());
   CPPUNIT_ASSERT(origin(0, 0) == KEYTransformation());
@@ -157,11 +157,11 @@ void KEYTransformationTest::testConstructionIdentity()
 
 void KEYTransformationTest::testConstructionFromGeometry()
 {
-  using namespace libkeynote::transformations;
+  using namespace libetonyek::transformations;
 
-  using libkeynote::KEYGeometry;
-  using libkeynote::KEYPosition;
-  using libkeynote::KEYSize;
+  using libetonyek::KEYGeometry;
+  using libetonyek::KEYPosition;
+  using libetonyek::KEYSize;
 
   {
     KEYGeometry g;
@@ -224,7 +224,7 @@ void KEYTransformationTest::testConstructionFromGeometry()
 
 void KEYTransformationTest::testIdentities()
 {
-  using namespace libkeynote::transformations;
+  using namespace libetonyek::transformations;
 
   CPPUNIT_ASSERT(center(100, 50) == translate(50, 25));
   CPPUNIT_ASSERT(origin(100, 50) == translate(-50, -25));
@@ -238,7 +238,7 @@ void KEYTransformationTest::testIdentities()
 
 void KEYTransformationTest::testInverseOperations()
 {
-  using namespace libkeynote::transformations;
+  using namespace libetonyek::transformations;
 
   CPPUNIT_ASSERT(center(10, 20) * origin(10, 20) == KEYTransformation());
   CPPUNIT_ASSERT(origin(10, 20) * center(10, 20) == KEYTransformation());
@@ -260,7 +260,7 @@ void KEYTransformationTest::testInverseOperations()
 
 void KEYTransformationTest::testMultiplication()
 {
-  using namespace libkeynote::transformations;
+  using namespace libetonyek::transformations;
 
   CPPUNIT_ASSERT(KEYTransformation() * KEYTransformation() == KEYTransformation());
 

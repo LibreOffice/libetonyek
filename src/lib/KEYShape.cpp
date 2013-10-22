@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * This file is part of the libkeynote project.
+ * This file is part of the libetonyek project.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,7 +13,7 @@
 #include <boost/bind.hpp>
 #include <boost/math/constants/constants.hpp>
 
-#include <libkeynote/KEYPresentationInterface.h>
+#include <libetonyek/KEYPresentationInterface.h>
 
 #include "KEYOutput.h"
 #include "KEYPath.h"
@@ -26,7 +26,7 @@ namespace m = boost::math::double_constants;
 
 using std::deque;
 
-namespace libkeynote
+namespace libetonyek
 {
 
 KEYShape::KEYShape()
@@ -116,7 +116,7 @@ Point::Point(const double x_, const double y_)
 
 bool approxEqual(const Point &left, const Point &right, const double eps = KEY_EPSILON)
 {
-  using libkeynote::approxEqual;
+  using libetonyek::approxEqual;
   return approxEqual(left.x, right.x, eps) && approxEqual(left.y, right.y, eps);
 }
 

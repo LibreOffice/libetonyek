@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * This file is part of the libkeynote project.
+ * This file is part of the libetonyek project.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -55,7 +55,7 @@ struct CentralDirectoryEnd
 
 } // anonymous namespace
 
-namespace libkeynote
+namespace libetonyek
 {
 
 struct KEYZipStreamImpl
@@ -365,6 +365,6 @@ bool KEYZipStreamImpl::areHeadersConsistent(const LocalFileHeader &header, const
   return true;
 }
 
-} // namespace libkeynote
+} // namespace libetonyek
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

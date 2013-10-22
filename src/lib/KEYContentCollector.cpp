@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * This file is part of the libkeynote project.
+ * This file is part of the libetonyek project.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,9 +9,9 @@
 
 #include <cassert>
 
-#include <libkeynote/KEYPresentationInterface.h>
+#include <libetonyek/KEYPresentationInterface.h>
 
-#include "libkeynote_utils.h"
+#include "libetonyek_utils.h"
 #include "KEYContentCollector.h"
 #include "KEYDefaults.h"
 #include "KEYDictionary.h"
@@ -20,7 +20,7 @@
 
 using boost::optional;
 
-namespace libkeynote
+namespace libetonyek
 {
 
 KEYContentCollector::KEYContentCollector(KEYPresentationInterface *const painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const KEYSize &size, const KEYDefaults &defaults)
