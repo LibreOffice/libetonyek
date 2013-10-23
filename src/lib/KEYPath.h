@@ -59,6 +59,7 @@ public:
 
 private:
   std::deque<Element *> m_elements;
+  bool m_closed;
 };
 
 bool approxEqual(const KEYPath &left, const KEYPath &right, double eps = KEY_EPSILON);

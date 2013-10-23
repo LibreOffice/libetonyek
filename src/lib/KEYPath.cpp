@@ -256,63 +256,19 @@ WPXPropertyList CurveTo::toWPG() const
 
 }
 
-namespace
-{
-
-class Close : public KEYPath::Element
-{
-public:
-  Close();
-
-  virtual Close *clone() const;
-
-  virtual bool approxEqualsTo(const Element *other, double eps) const;
-
-  virtual void transform(const KEYTransformation &tr);
-
-  virtual WPXPropertyList toWPG() const;
-};
-
-Close::Close()
-{
-}
-
-Close *Close::clone() const
-{
-  return new Close();
-}
-
-bool Close::approxEqualsTo(const Element *other, double) const
-{
-  return dynamic_cast<const Close *>(other);
-}
-
-void Close::transform(const KEYTransformation &)
-{
-}
-
-WPXPropertyList Close::toWPG() const
-{
-  WPXPropertyList element;
-
-  element.insert("libwpg:path-action", "Z");
-
-  return element;
-}
-
-}
-
 KEYPath::Element::~Element()
 {
 }
 
 KEYPath::KEYPath()
   : m_elements()
+  , m_closed(false)
 {
 }
 
 KEYPath::KEYPath(const std::string &path)
   : m_elements()
+  , m_closed(false)
 {
   using namespace boost::spirit::classic;
 
@@ -344,6 +300,7 @@ KEYPath::KEYPath(const std::string &path)
 
 KEYPath::KEYPath(const KEYPath &other)
   : m_elements()
+  , m_closed(other.m_closed)
 {
   try
   {
@@ -384,7 +341,8 @@ void KEYPath::clear()
 
 void KEYPath::appendMoveTo(const double x, const double y)
 {
-  m_elements.push_back(new MoveTo(x, y));
+  if (!m_closed)
+    m_elements.push_back(new MoveTo(x, y));
 }
 
 void KEYPath::appendLineTo(const double x, const double y)
@@ -399,7 +357,7 @@ void KEYPath::appendCurveTo(const double x1, const double y1, const double x2, c
 
 void KEYPath::appendClose()
 {
-  m_elements.push_back(new Close());
+  m_closed = true;
 }
 
 void KEYPath::operator*=(const KEYTransformation &tr)
@@ -413,6 +371,13 @@ WPXPropertyListVector KEYPath::toWPG() const
 
   for(std::deque<Element *>::const_iterator it = m_elements.begin(); m_elements.end() != it; ++it)
     vec.append((*it)->toWPG());
+
+  if (m_closed)
+  {
+    WPXPropertyList element;
+    element.insert("libwpg:path-action", "Z");
+    vec.append(element);
+  }
 
   return vec;
 }
