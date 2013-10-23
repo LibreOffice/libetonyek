@@ -276,7 +276,6 @@ AC_ARG_WITH(tools,
 AS_IF([test "x$with_tools" != "xno"], [
 	AX_BOOST_BASE
 	AX_BOOST_FILESYSTEM
-	AX_BOOST_SYSTEM
 	build_tools=yes
 ], [build_tools=no])
 AM_CONDITIONAL([WITH_LIBETONYEK_TOOLS], [test "x$build_tools" != "xno"])

@@ -5,7 +5,7 @@ AM_CXXFLAGS = -I$(top_srcdir)/src/conv/common -I$(top_srcdir)/inc -I$(top_buildd
 key2xhtml_DEPENDENCIES = @KEY2XHTML_WIN32_RESOURCE@
 
 key2xhtml_LDFLAGS = $(BOOST_LDFLAGS)
-key2xhtml_LDADD = ../common/libcommon.a ../../lib/libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@.la $(WPD_LIBS) $(ZLIB_LIBS) $(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB) @KEY2XHTML_WIN32_RESOURCE@
+key2xhtml_LDADD = ../common/libcommon.a ../../lib/libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@.la $(WPD_LIBS) $(ZLIB_LIBS) $(BOOST_FILESYSTEM_LIB) @KEY2XHTML_WIN32_RESOURCE@
 
 key2xhtml_SOURCES = \
 	key2xhtml.cpp
