@@ -257,7 +257,7 @@ KEYPathPtr_t makeRoundedRectanglePath(const KEYSize &size, const double radius)
 
 KEYPathPtr_t makeArrowPath(const KEYSize &size, const double headWidth, const double stemThickness)
 {
-  deque<Point> points = drawArrowHalf(headWidth / size.width, stemThickness);
+  deque<Point> points = drawArrowHalf(headWidth / size.width, 1 - 2 * stemThickness);
 
   // mirror around the x axis
   deque<Point> mirroredPoints = points;
