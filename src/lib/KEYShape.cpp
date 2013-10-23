@@ -306,7 +306,7 @@ KEYPathPtr_t makeStarPath(const KEYSize &size, const unsigned points, const doub
 
   // create inner points
   const double angle = m::two_pi / points;
-  deque<Point> innerPoints(points);
+  deque<Point> innerPoints(outerPoints);
   transform(innerPoints, rotate(angle / 2) * scale(innerRadius, innerRadius));
 
   // merge them together
