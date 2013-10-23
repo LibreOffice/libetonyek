@@ -145,17 +145,18 @@ void TextObject::draw(const KEYOutput &output)
 
   WPXPropertyList props;
 
+  double x = 0;
+  double y = 0;
+  tr(x, y);
+  props.insert("svg:x", pt2in(x));
+  props.insert("svg:y", pt2in(y));
+
   if (bool(m_boundingBox))
   {
-    double x = m_boundingBox->position.x;
-    double y = m_boundingBox->position.y;
     double w = m_boundingBox->naturalSize.width;
     double h = m_boundingBox->naturalSize.height;
-    tr(x, y);
     tr(w, h, true);
 
-    props.insert("svg:x", pt2in(x));
-    props.insert("svg:y", pt2in(y));
     props.insert("svg:width", pt2in(w));
     props.insert("svg:height", pt2in(h));
   }
