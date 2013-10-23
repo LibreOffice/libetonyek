@@ -4,20 +4,28 @@
 
 * shapes
   + simple shapes
-    - rectangle, triangle, circle,...
+    - rectangle
+    - triangle
+    - circle
+    - generic path
   + text shapes
-  + some parametrizable shapes
-    - polygon, star, arrows
+  + parametrizable shapes
+    - polygon
+    - star
+    - arrow
+    - double-sided arrow
   + transformations
 * presentation text
 * media
   + images
   + movies and sounds
-    -just insterted into the output. No fancy stuff like autoplay etc.
+    - just insterted into the output. No fancy stuff like autoplay etc.
 
 == Planned ==
 
-* more formatting attributes
+* text attributes
+* shape attributes (background / line)
+* the rest of parametrizable shapes
 * tables
 * comments aka sticky notes
 * (slide) notes
