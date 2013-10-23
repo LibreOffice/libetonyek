@@ -274,7 +274,7 @@ KEYPathPtr_t makeArrowPath(const KEYSize &size, const double headWidth, const do
 
 KEYPathPtr_t makeDoubleArrowPath(const KEYSize &size, const double headWidth, const double stemThickness)
 {
-  deque<Point> points = drawArrowHalf(2 * headWidth / size.width, stemThickness);
+  deque<Point> points = drawArrowHalf(2 * headWidth / size.width, 1 - 2 * stemThickness);
 
   {
     // mirror around the y axis
