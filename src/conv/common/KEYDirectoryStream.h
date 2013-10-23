@@ -10,6 +10,9 @@
 #ifndef KEYDIRECTORYSTREAM_H_INCLUDED
 #define KEYDIRECTORYSTREAM_H_INCLUDED
 
+#ifndef BOOST_SYSTEM_NO_DEPRECATED
+#define BOOST_SYSTEM_NO_DEPRECATED 1
+#endif
 #include <boost/filesystem.hpp>
 
 #include <libwpd-stream/libwpd-stream.h>

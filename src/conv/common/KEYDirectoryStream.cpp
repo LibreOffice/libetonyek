@@ -43,7 +43,7 @@ WPXInputStream *KEYDirectoryStream::getDocumentOLEStream(const char *const name)
 
   const path filePath = m_path / name;
 
-  return is_regular_file(filePath) ? new WPXFileStream(filePath.c_str()) : 0;
+  return is_regular_file(filePath) ? new WPXFileStream(filePath.string().c_str()) : 0;
 }
 
 const unsigned char *KEYDirectoryStream::read(const unsigned long, unsigned long &numBytesRead)

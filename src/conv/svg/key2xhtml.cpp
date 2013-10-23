@@ -7,7 +7,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <boost/filesystem.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <iostream>
