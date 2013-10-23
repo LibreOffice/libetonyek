@@ -173,7 +173,7 @@ KEYPathPtr_t makePolyLine(const deque<Point> inputPoints, bool close = true)
 {
   KEYPathPtr_t path;
 
-// need at least 2 points to make a polyline
+  // need at least 2 points to make a polyline
   if (inputPoints.size() < 2)
     return path;
 
@@ -188,11 +188,11 @@ KEYPathPtr_t makePolyLine(const deque<Point> inputPoints, bool close = true)
     close = true;
   }
 
-// ... but there must be at least 3 points to make a closed path
+  // ... but there must be at least 3 points to make a closed path
   if (points.size() < 3)
     close = false;
 
-// need at least 2 points to make a polyline
+  // need at least 2 points to make a polyline
   if (points.size() < 2)
     return path;
 
