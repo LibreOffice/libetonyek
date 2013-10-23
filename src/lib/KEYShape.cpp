@@ -7,10 +7,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <algorithm>
 #include <cmath>
 #include <deque>
 
-#include <boost/bind.hpp>
 #include <boost/math/constants/constants.hpp>
 
 #include <libetonyek/KEYPresentationInterface.h>
@@ -179,20 +179,7 @@ KEYPathPtr_t makePolyLine(const deque<Point> inputPoints, bool close = true)
 
   // remove multiple points
   deque<Point> points;
-  {
-    deque<Point>::const_iterator first = inputPoints.begin();
-    deque<Point>::const_iterator last = first;
-    do
-    {
-      last = adjacent_find(first, inputPoints.end());
-      copy(first, last, back_inserter(points));
-      // skip the range of adjacent, equal points
-      first = adjacent_find(last, inputPoints.end(), boost::bind(operator!=, _1, _2));
-      if (inputPoints.end() != first)
-        ++first;
-    }
-    while (first != inputPoints.end());
-  }
+  std::unique_copy(inputPoints.begin(), inputPoints.end(), back_inserter(points));
 
   // close path if the first and last points are equal
   if (points.front() == points.back())
@@ -270,7 +257,7 @@ KEYPathPtr_t makeRoundedRectanglePath(const KEYSize &size, const double radius)
 
 KEYPathPtr_t makeArrowPath(const KEYSize &size, const double headWidth, const double stemThickness)
 {
-  deque<Point> points = drawArrowHalf(headWidth, stemThickness);
+  deque<Point> points = drawArrowHalf(headWidth / size.width, stemThickness);
 
   // mirror around the x axis
   deque<Point> mirroredPoints = points;
@@ -280,7 +267,7 @@ KEYPathPtr_t makeArrowPath(const KEYSize &size, const double headWidth, const do
   copy(mirroredPoints.rbegin(), mirroredPoints.rend(), back_inserter(points));
 
   // transform and create path
-  transform(points, translate(0, 1) * scale(0, 0.5) * scale(size.width, size.height));
+  transform(points, translate(0, 1) * scale(1, 0.5) * scale(size.width, size.height));
   const KEYPathPtr_t path = makePolyLine(points);
   return path;
 }
