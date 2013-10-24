@@ -125,11 +125,6 @@ bool operator==(const Point &left, const Point &right)
   return approxEqual(left, right);
 }
 
-bool operator!=(const Point &left, const Point &right)
-{
-  return !(left == right);
-}
-
 }
 
 namespace
