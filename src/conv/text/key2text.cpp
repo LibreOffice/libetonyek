@@ -187,7 +187,7 @@ void TextPainter::closeSpan()
 
 void TextPainter::insertText(const ::WPXString &str)
 {
-  printf(str.cstr());
+  printf("%s", str.cstr());
 }
 
 void TextPainter::insertTab()
