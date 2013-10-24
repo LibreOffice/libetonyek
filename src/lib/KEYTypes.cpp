@@ -410,6 +410,12 @@ void MediaObject::draw(const KEYOutput &output)
       props.insert("svx:x", pt2in(x));
       props.insert("svx:y", pt2in(y));
 
+      double width = m_media->geometry->naturalSize.width;
+      double height = m_media->geometry->naturalSize.height;
+      tr(width, height, true);
+      props.insert("svg:width", pt2in(width));
+      props.insert("svg:height", pt2in(height));
+
       newOutput.getPainter()->drawGraphicObject(props, WPXBinaryData(bytes, size));
     }
   }
