@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <boost/optional.hpp>
+
 #include <libwpd/libwpd.h>
 
 #include <libetonyek/KEYPresentationInterface.h>
@@ -19,6 +21,49 @@
 
 namespace libetonyek
 {
+
+using boost::optional;
+
+using std::string;
+
+namespace
+{
+
+optional<string> detectMimetype(const WPXInputStreamPtr_t &stream)
+{
+  optional<string> mimetype;
+
+  // TODO: implement me
+  (void) stream;
+
+  return mimetype;
+}
+
+optional<string> getMimetype(const optional<int> &type, const WPXInputStreamPtr_t &stream)
+{
+  if (type)
+  {
+    switch (get(type))
+    {
+    case 1246774599 :
+      return string("image/jpeg");
+    case 1299148630 :
+      return string("video/quicktime");
+    case 1346651680 :
+      return string("application/pdf");
+    case 1347307366 :
+      return string("image/png");
+    case 1414088262 :
+      return string("image/tiff");
+    default :
+      break;
+    }
+  }
+
+  return detectMimetype(stream);
+}
+
+}
 
 KEYSize::KEYSize()
   : width(0)
@@ -311,25 +356,32 @@ void MediaObject::draw(const KEYOutput &output)
 
     const WPXInputStreamPtr_t input = m_media->content->data->stream;
 
-    input->seek(0, WPX_SEEK_END);
-    const unsigned long size = input->tell();
-    input->seek(0, WPX_SEEK_SET);
+    const optional<string> mimetype = getMimetype(m_media->content->data->type, input);
 
-    unsigned long readBytes = 0;
-    const unsigned char *const bytes = input->read(size, readBytes);
-    if (readBytes != size)
-      throw GenericException();
+    if (mimetype)
+    {
+      input->seek(0, WPX_SEEK_END);
+      const unsigned long size = input->tell();
+      input->seek(0, WPX_SEEK_SET);
 
-    WPXPropertyList props;
+      unsigned long readBytes = 0;
+      const unsigned char *const bytes = input->read(size, readBytes);
+      if (readBytes != size)
+        throw GenericException();
 
-    double x = 1;
-    double y = 1;
-    const KEYTransformation &tr = newOutput.getTransformation();
-    tr(x, y);
-    props.insert("svx:x", pt2in(x));
-    props.insert("svx:y", pt2in(y));
+      WPXPropertyList props;
 
-    newOutput.getPainter()->drawGraphicObject(props, WPXBinaryData(bytes, size));
+      props.insert("libwpg:mime-type", get(mimetype).c_str());
+
+      double x = 1;
+      double y = 1;
+      const KEYTransformation &tr = newOutput.getTransformation();
+      tr(x, y);
+      props.insert("svx:x", pt2in(x));
+      props.insert("svx:y", pt2in(y));
+
+      newOutput.getPainter()->drawGraphicObject(props, WPXBinaryData(bytes, size));
+    }
   }
 }
 
