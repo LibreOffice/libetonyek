@@ -407,8 +407,8 @@ void MediaObject::draw(const KEYOutput &output)
       double y = 1;
       const KEYTransformation &tr = newOutput.getTransformation();
       tr(x, y);
-      props.insert("svx:x", pt2in(x));
-      props.insert("svx:y", pt2in(y));
+      props.insert("svg:x", pt2in(x));
+      props.insert("svg:y", pt2in(y));
 
       double width = m_media->geometry->naturalSize.width;
       double height = m_media->geometry->naturalSize.height;
