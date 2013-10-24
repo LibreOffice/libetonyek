@@ -57,6 +57,8 @@ typedef int64 int64_t;
 #define KEY_EPSILON 1e-9
 #define KEY_ALMOST_ZERO(x) (std::fabs(x) < KEY_EPSILON)
 
+#define KEY_NUM_ELEMENTS(array) (sizeof(array) / sizeof((array)[0]))
+
 // debug message includes source file and line number
 //#define VERBOSE_DEBUG 1
 

@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <cstring>
+
 #include <boost/optional.hpp>
 
 #include <libwpd/libwpd.h>
@@ -24,19 +26,47 @@ namespace libetonyek
 
 using boost::optional;
 
+using std::memcmp;
 using std::string;
 
 namespace
 {
 
+const unsigned char SIGNATURE_PDF[] = { '%', 'P', 'D', 'F' };
+const unsigned char SIGNATURE_PNG[] = { 0x89, 'P', 'N', 'G', 0x0d, 0x0a, 0x1a, 0x0a };
+const unsigned char SIGNATURE_JPEG[] = { 0xff, 0xd8 };
+const unsigned char SIGNATURE_QUICKTIME[] = { 'm', 'o', 'o', 'v' };
+const unsigned char SIGNATURE_TIFF_1[] = { 0x49, 0x49, 0x2a, 0x00 };
+const unsigned char SIGNATURE_TIFF_2[] = { 0x4d, 0x4d, 0x00, 0x2a };
+
 optional<string> detectMimetype(const WPXInputStreamPtr_t &stream)
 {
-  optional<string> mimetype;
+  stream->seek(0, WPX_SEEK_SET);
 
-  // TODO: implement me
-  (void) stream;
+  unsigned long numBytesRead = 0;
+  const unsigned char *const sig = stream->read(8, numBytesRead);
 
-  return mimetype;
+  if (8 != numBytesRead)
+    // looks like the binary is broken anyway: just bail out
+    return optional<string>();
+
+  if (0 == memcmp(sig, SIGNATURE_PNG, KEY_NUM_ELEMENTS(SIGNATURE_PNG)))
+    return string("image/png");
+
+  if (0 == memcmp(sig, SIGNATURE_PDF, KEY_NUM_ELEMENTS(SIGNATURE_PDF)))
+    return string("application/pdf");
+
+  if ((0 == memcmp(sig, SIGNATURE_TIFF_1, KEY_NUM_ELEMENTS(SIGNATURE_TIFF_1)))
+      || (0 == memcmp(sig, SIGNATURE_TIFF_2, KEY_NUM_ELEMENTS(SIGNATURE_TIFF_2))))
+    return string("image/tiff");
+
+  if (0 == memcmp(sig + 4, SIGNATURE_QUICKTIME, KEY_NUM_ELEMENTS(SIGNATURE_QUICKTIME)))
+    return string("video/quicktime");
+
+  if (0 == memcmp(sig, SIGNATURE_JPEG, KEY_NUM_ELEMENTS(SIGNATURE_JPEG)))
+    return string("image/jpeg");
+
+  return optional<string>();
 }
 
 optional<string> getMimetype(const optional<int> &type, const WPXInputStreamPtr_t &stream)
