@@ -95,12 +95,16 @@ struct KEYData
   WPXInputStreamPtr_t stream;
   boost::optional<std::string> displayName;
   boost::optional<int> type;
+
+  KEYData();
 };
 
 struct KEYMediaContent
 {
   boost::optional<KEYSize> size;
   KEYDataPtr_t data;
+
+  KEYMediaContent();
 };
 
 struct KEYBinary

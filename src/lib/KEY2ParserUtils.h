@@ -32,7 +32,7 @@ class KEY2ParserUtils
   KEY2ParserUtils &operator=(const KEY2ParserUtils &other);
 
 public:
-  virtual ~KN2ParserUtils();
+  virtual ~KEY2ParserUtils();
 
   /** Read sfa:ID attribute of an element.
     *

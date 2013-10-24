@@ -58,6 +58,10 @@ readAttributePair(const KEYXMLReader &reader, const int name1, const int ns1, co
 
 }
 
+KEY2ParserUtils::~KEY2ParserUtils()
+{
+}
+
 optional<ID_t> KEY2ParserUtils::readID(const KEYXMLReader &reader)
 {
   optional<ID_t> id;

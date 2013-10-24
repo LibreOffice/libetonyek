@@ -91,6 +91,19 @@ KEYLine::KEYLine()
 {
 }
 
+KEYData::KEYData()
+  : stream()
+  , displayName()
+  , type()
+{
+}
+
+KEYMediaContent::KEYMediaContent()
+  : size()
+  , data()
+{
+}
+
 KEYBinary::KEYBinary()
   : size()
   , path()
