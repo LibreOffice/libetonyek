@@ -14,11 +14,6 @@
 
 #include <boost/shared_ptr.hpp>
 
-namespace libwpg
-{
-class WPGPaintInterface;
-}
-
 namespace libetonyek
 {
 

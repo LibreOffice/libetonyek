@@ -18,13 +18,6 @@
 #include "KEYPath_fwd.h"
 #include "KEYTypes_fwd.h"
 
-namespace libwpg
-{
-
-class WPGPaintInterface;
-
-} // namespace libwpg
-
 namespace libetonyek
 {
 

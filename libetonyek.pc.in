@@ -6,6 +6,6 @@ includedir=@includedir@
 Name: libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@
 Description: Library for parsing Apple Keynote file format structure
 Version: @VERSION@
-Requires: libwpd-0.9 libwpd-stream-0.9 libwpg-0.2
+Requires: libwpd-0.9 libwpd-stream-0.9
 Libs: -L${libdir} -letonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@
 Cflags: -I${includedir}/libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@
