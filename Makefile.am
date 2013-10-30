@@ -9,6 +9,7 @@ SUBDIRS = build inc src docs
 EXTRA_DIST = \
 	AUTHORS \
 	COPYING \
+	FEATURES \
 	NEWS \
 	README \
 	autogen.sh \
