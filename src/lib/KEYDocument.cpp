@@ -235,7 +235,7 @@ bool KEYDocument::parse(::WPXInputStream *const input, KEYPresentationInterface 
     break;
   }
   case SOURCE_KEY :
-    package = input_;
+    package.reset(new KEYZipStream(input_));
     input_.reset(package->getDocumentOLEStream("index.apxl"));
     break;
   default :
