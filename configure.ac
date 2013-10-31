@@ -315,8 +315,8 @@ AC_MSG_NOTICE([
 Build configuration:
 	debug:           ${enable_debug}
 	docs:            ${build_docs}
-	static-tools:    ${enable_static_tools}
 	tests:           ${enable_tests}
+	tools:           ${build_tools}
 	werror:          ${enable_werror}
 ==============================================================================
 ])
