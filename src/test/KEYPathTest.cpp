@@ -204,7 +204,7 @@ void  KEYPathTest::testConversion()
   }
 
   {
-    const string ref = "M 0 0 L 1 0 L 1 1 L 0 1 Z L 0 0";
+    const string ref = "M 0 0 L 1 0 L 1 1 L 0 1 L 0 0 Z";
     KEYPath path;
     path.appendMoveTo(0, 0);
     path.appendLineTo(1, 0);
