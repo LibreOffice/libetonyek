@@ -335,6 +335,7 @@ KEYXMLReader::KEYXMLReader(WPXInputStream *const input)
   catch (...)
   {
     delete m_impl;
+    throw;
   }
 }
 
@@ -350,6 +351,7 @@ KEYXMLReader::KEYXMLReader(WPXInputStream *const input, const TokenizerFunction_
   catch (...)
   {
     delete m_impl;
+    throw;
   }
 }
 
