@@ -293,7 +293,7 @@ int printUsage()
 
 } // anonymous namespace
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[]) try
 {
   if (argc < 2)
     return printUsage();
@@ -338,6 +338,11 @@ int main(int argc, char *argv[])
   libetonyek::KEYDocument::parse(input.get(), &painter);
 
   return 0;
+}
+catch (...)
+{
+  fprintf(stderr, "ERROR: uncaught exception!\n");
+  return 1;
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
