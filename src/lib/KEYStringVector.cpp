@@ -36,6 +36,7 @@ KEYStringVector::KEYStringVector(const KEYStringVector &vec)
 
 KEYStringVector::~KEYStringVector()
 {
+  delete m_pImpl;
 }
 
 KEYStringVector &KEYStringVector::operator=(const KEYStringVector &vec)
