@@ -38,7 +38,10 @@ PKG_PROG_PKG_CONFIG([0.20])
 AC_PROG_EGREP
 AC_PROG_SED
 
-AM_MISSING_PROG([GPERF], [gperf])
+AC_PATH_PROG(GPERF, gperf)
+if test -z "$GPERF"; then
+    AC_MSG_ERROR([gperf not found but needed. Install it.])
+fi
 
 # ===========
 # Find libwpd
