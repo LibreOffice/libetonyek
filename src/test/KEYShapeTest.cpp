@@ -19,7 +19,7 @@
 namespace test
 {
 
-namespace m = boost::math::double_constants;
+namespace m = boost::math::constants;
 
 using libetonyek::KEYPath;
 using libetonyek::KEYPathPtr_t;
@@ -41,7 +41,7 @@ void KEYShapeTest::testMakePolygonPath()
 
   // triangle
   {
-    const double d = 25 * (2 - m::root_three);
+    const double d = 25 * (2 - m::root_three<double>());
 
     // FIXME: the shape is not scaled to whole width...
     KEYPath ref;
@@ -73,7 +73,7 @@ void KEYShapeTest::testMakePolygonPath()
 
   // octagon
   {
-    const double d = 25 * (2 - m::root_two);
+    const double d = 25 * (2 - m::root_two<double>());
 
     KEYPath ref;
     ref.appendMoveTo(50, 0);

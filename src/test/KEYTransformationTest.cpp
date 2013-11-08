@@ -17,7 +17,7 @@
 namespace test
 {
 
-namespace m = boost::math::double_constants;
+namespace m = boost::math::constants;
 
 using libetonyek::KEYTransformation;
 
@@ -122,7 +122,7 @@ void KEYTransformationTest::testConstruction()
   CPPUNIT_ASSERT(flip(true, true) == KEYTransformation(-1, 0, 0, -1, 0, 0));
 
   // rotating
-  CPPUNIT_ASSERT(rotate(m::half_pi) == KEYTransformation(0, 1, -1, 0, 0, 0));
+  CPPUNIT_ASSERT(rotate(m::half_pi<double>()) == KEYTransformation(0, 1, -1, 0, 0, 0));
 
   // scaling
   CPPUNIT_ASSERT(scale(2, 1) == KEYTransformation(2, 0, 0, 1, 0, 0));
@@ -131,9 +131,9 @@ void KEYTransformationTest::testConstruction()
 
   // shearing
   // FIXME: find the problem and enable
-  // CPPUNIT_ASSERT(shear(m::pi / 4, 0) == KEYTransformation(1, 2, 0, 1, 0, 0));
-  // CPPUNIT_ASSERT(shear(0, m::pi / 4) == KEYTransformation(1, 0, 2, 1, 0, 0));
-  // CPPUNIT_ASSERT(shear(m::pi / 4, m::pi / 4) == KEYTransformation(1, 2, 2, 1, 0, 0));
+  // CPPUNIT_ASSERT(shear(m::pi<double>() / 4, 0) == KEYTransformation(1, 2, 0, 1, 0, 0));
+  // CPPUNIT_ASSERT(shear(0, m::pi<double>() / 4) == KEYTransformation(1, 0, 2, 1, 0, 0));
+  // CPPUNIT_ASSERT(shear(m::pi<double>() / 4, m::pi<double>() / 4) == KEYTransformation(1, 2, 2, 1, 0, 0));
 
   // translating
   CPPUNIT_ASSERT(translate(100, 0) == KEYTransformation(1, 0, 0, 1, 100, 0));
@@ -149,7 +149,7 @@ void KEYTransformationTest::testConstructionIdentity()
   CPPUNIT_ASSERT(origin(0, 0) == KEYTransformation());
   CPPUNIT_ASSERT(flip(false, false) == KEYTransformation());
   CPPUNIT_ASSERT(rotate(0) == KEYTransformation());
-  CPPUNIT_ASSERT(rotate(m::two_pi) == KEYTransformation());
+  CPPUNIT_ASSERT(rotate(m::two_pi<double>()) == KEYTransformation());
   CPPUNIT_ASSERT(scale(1, 1) == KEYTransformation());
   CPPUNIT_ASSERT(shear(0, 0) == KEYTransformation());
   CPPUNIT_ASSERT(translate(0, 0) == KEYTransformation());
@@ -185,10 +185,10 @@ void KEYTransformationTest::testConstructionFromGeometry()
     KEYGeometry g;
     g.naturalSize = KEYSize(100, 100);
     g.position = KEYPosition(0, 0);
-    g.angle = m::half_pi;
+    g.angle = m::half_pi<double>();
 
     const KEYTransformation tr = makeTransformation(g);
-    CPPUNIT_ASSERT(wrap(100, 100, rotate(m::half_pi)) == tr);
+    CPPUNIT_ASSERT(wrap(100, 100, rotate(m::half_pi<double>())) == tr);
   }
 
   {
@@ -215,10 +215,10 @@ void KEYTransformationTest::testConstructionFromGeometry()
     KEYGeometry g;
     g.naturalSize = KEYSize(100, 100);
     g.position = KEYPosition(200, 150);
-    g.angle = m::half_pi;
+    g.angle = m::half_pi<double>();
 
     const KEYTransformation tr = makeTransformation(g);
-    CPPUNIT_ASSERT(wrap(100, 100, rotate(m::half_pi) * translate(200, 150)) == tr);
+    CPPUNIT_ASSERT(wrap(100, 100, rotate(m::half_pi<double>()) * translate(200, 150)) == tr);
   }
 }
 
@@ -230,7 +230,7 @@ void KEYTransformationTest::testIdentities()
   CPPUNIT_ASSERT(origin(100, 50) == translate(-50, -25));
   CPPUNIT_ASSERT((flip(true, false) * flip(false, true)) == flip(true, true));
   CPPUNIT_ASSERT((flip(false, true) * flip(true, false)) == flip(true, true));
-  CPPUNIT_ASSERT((rotate(m::half_pi) * rotate(m::third_pi)) == (rotate(m::third_pi) * rotate(m::half_pi)));
+  CPPUNIT_ASSERT((rotate(m::half_pi<double>()) * rotate(m::third_pi<double>())) == (rotate(m::third_pi<double>()) * rotate(m::half_pi<double>())));
   CPPUNIT_ASSERT(scale(-1, -1) == flip(true, true));
   CPPUNIT_ASSERT((translate(10, 20) * translate(80, 40)) == (translate(80, 40) * translate(10, 20)));
   CPPUNIT_ASSERT((translate(1, 2) * scale(2, 2)) == (scale(2, 2) * translate(2, 4)));
@@ -247,7 +247,7 @@ void KEYTransformationTest::testInverseOperations()
   CPPUNIT_ASSERT(flip(false, true) * flip(false, true) == KEYTransformation());
   CPPUNIT_ASSERT(flip(true, true) * flip(true, true) == KEYTransformation());
 
-  CPPUNIT_ASSERT(rotate(m::pi) * rotate(-m::pi) == KEYTransformation());
+  CPPUNIT_ASSERT(rotate(m::pi<double>()) * rotate(-m::pi<double>()) == KEYTransformation());
 
   CPPUNIT_ASSERT(scale(2, 1) * scale(0.5, 1) == KEYTransformation());
   CPPUNIT_ASSERT(scale(1, 2) * scale(1, 0.5) == KEYTransformation());

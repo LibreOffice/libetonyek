@@ -151,7 +151,7 @@ double KEY2ParserUtils::deg2rad(double value)
     value += 360;
 
   // convert
-  return boost::math::double_constants::pi / 180 * value;
+  return boost::math::constants::pi<double>() / 180 * value;
 }
 
 KEY2ParserUtils::KEY2ParserUtils()

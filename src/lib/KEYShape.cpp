@@ -22,7 +22,7 @@
 #include "KEYTransformation.h"
 #include "KEYTypes.h"
 
-namespace m = boost::math::double_constants;
+namespace m = boost::math::constants;
 
 using std::deque;
 
@@ -137,7 +137,7 @@ deque<Point> rotatePoint(const Point &point, const unsigned n)
   deque<Point> points;
 
 
-  const double angle = m::two_pi / n;
+  const double angle = m::two_pi<double>() / n;
 
   points.push_back(point);
   for (unsigned i = 1; i < n; ++i)
@@ -300,7 +300,7 @@ KEYPathPtr_t makeStarPath(const KEYSize &size, const unsigned points, const doub
   const deque<Point> outerPoints = rotatePoint(Point(0, -1), points);
 
   // create inner points
-  const double angle = m::two_pi / points;
+  const double angle = m::two_pi<double>() / points;
   deque<Point> innerPoints(outerPoints);
   transform(innerPoints, rotate(angle / 2) * scale(innerRadius, innerRadius));
 
