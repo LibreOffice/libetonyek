@@ -25,6 +25,8 @@ using libetonyek::KEYPath;
 using libetonyek::KEYPathPtr_t;
 using libetonyek::KEYSize;
 
+const double etonyek_root_three(1.73205080756887729352744634150587236694280525381038062805580697945193301690880003708114618675724857567562614142e+00);
+
 void KEYShapeTest::setUp()
 {
 }
@@ -41,7 +43,7 @@ void KEYShapeTest::testMakePolygonPath()
 
   // triangle
   {
-    const double d = 25 * (2 - m::root_three<double>());
+    const double d = 25 * (2 - etonyek_root_three);
 
     // FIXME: the shape is not scaled to whole width...
     KEYPath ref;
