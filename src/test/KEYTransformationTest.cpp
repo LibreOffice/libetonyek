@@ -21,6 +21,9 @@ namespace m = boost::math::constants;
 
 using libetonyek::KEYTransformation;
 
+const double etonyek_half_pi(1.57079632679489661923132169163975144209858469968755291048747229615390820314310449931401741267105853399107404326e+00);
+const double etonyek_third_pi(1.04719755119659774615421446109316762806572313312503527365831486410260546876206966620934494178070568932738269550e+00);
+
 namespace
 {
 
@@ -122,7 +125,7 @@ void KEYTransformationTest::testConstruction()
   CPPUNIT_ASSERT(flip(true, true) == KEYTransformation(-1, 0, 0, -1, 0, 0));
 
   // rotating
-  CPPUNIT_ASSERT(rotate(m::half_pi<double>()) == KEYTransformation(0, 1, -1, 0, 0, 0));
+  CPPUNIT_ASSERT(rotate(etonyek_half_pi) == KEYTransformation(0, 1, -1, 0, 0, 0));
 
   // scaling
   CPPUNIT_ASSERT(scale(2, 1) == KEYTransformation(2, 0, 0, 1, 0, 0));
@@ -185,10 +188,10 @@ void KEYTransformationTest::testConstructionFromGeometry()
     KEYGeometry g;
     g.naturalSize = KEYSize(100, 100);
     g.position = KEYPosition(0, 0);
-    g.angle = m::half_pi<double>();
+    g.angle = etonyek_half_pi;
 
     const KEYTransformation tr = makeTransformation(g);
-    CPPUNIT_ASSERT(wrap(100, 100, rotate(m::half_pi<double>())) == tr);
+    CPPUNIT_ASSERT(wrap(100, 100, rotate(etonyek_half_pi)) == tr);
   }
 
   {
@@ -215,10 +218,10 @@ void KEYTransformationTest::testConstructionFromGeometry()
     KEYGeometry g;
     g.naturalSize = KEYSize(100, 100);
     g.position = KEYPosition(200, 150);
-    g.angle = m::half_pi<double>();
+    g.angle = etonyek_half_pi;
 
     const KEYTransformation tr = makeTransformation(g);
-    CPPUNIT_ASSERT(wrap(100, 100, rotate(m::half_pi<double>()) * translate(200, 150)) == tr);
+    CPPUNIT_ASSERT(wrap(100, 100, rotate(etonyek_half_pi) * translate(200, 150)) == tr);
   }
 }
 
@@ -230,7 +233,7 @@ void KEYTransformationTest::testIdentities()
   CPPUNIT_ASSERT(origin(100, 50) == translate(-50, -25));
   CPPUNIT_ASSERT((flip(true, false) * flip(false, true)) == flip(true, true));
   CPPUNIT_ASSERT((flip(false, true) * flip(true, false)) == flip(true, true));
-  CPPUNIT_ASSERT((rotate(m::half_pi<double>()) * rotate(m::third_pi<double>())) == (rotate(m::third_pi<double>()) * rotate(m::half_pi<double>())));
+  CPPUNIT_ASSERT((rotate(etonyek_half_pi) * rotate(etonyek_third_pi)) == (rotate(etonyek_third_pi) * rotate(etonyek_half_pi)));
   CPPUNIT_ASSERT(scale(-1, -1) == flip(true, true));
   CPPUNIT_ASSERT((translate(10, 20) * translate(80, 40)) == (translate(80, 40) * translate(10, 20)));
   CPPUNIT_ASSERT((translate(1, 2) * scale(2, 2)) == (scale(2, 2) * translate(2, 4)));
