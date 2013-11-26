@@ -159,7 +159,7 @@ bool KEYZipStreamImpl::isZipStream()
 {
   if (m_cdir_offset)
   {
-    if(m_cdir.empty())
+    if (m_cdir.empty())
       return false;
     return true;
   }

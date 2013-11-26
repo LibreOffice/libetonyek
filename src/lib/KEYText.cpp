@@ -171,7 +171,7 @@ void TextObject::draw(const KEYOutput &output)
 
   output.getPainter()->startTextObject(props, path.toWPG());
 
-  for(KEYText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
+  for (KEYText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
   {
     output.getPainter()->openParagraph(WPXPropertyList(), WPXPropertyListVector());
     drawAll((*it)->objects, output);

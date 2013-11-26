@@ -369,7 +369,7 @@ WPXPropertyListVector KEYPath::toWPG() const
 {
   WPXPropertyListVector vec;
 
-  for(std::deque<Element *>::const_iterator it = m_elements.begin(); m_elements.end() != it; ++it)
+  for (std::deque<Element *>::const_iterator it = m_elements.begin(); m_elements.end() != it; ++it)
     vec.append((*it)->toWPG());
 
   if (m_closed)

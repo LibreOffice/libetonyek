@@ -155,7 +155,7 @@ bool KEY2StyleParser::parsePropertyImpl(const KEYXMLReader &reader, const char *
 
     switch (nameToken)
     {
-      // nested styles
+    // nested styles
     case KEY2Token::layoutstyle :
     case KEY2Token::liststyle :
     case KEY2Token::paragraphstyle :
