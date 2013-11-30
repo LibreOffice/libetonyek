@@ -127,6 +127,12 @@ public:
 
   virtual void collectTextPlaceholder(const boost::optional<ID_t> &id, bool title, bool ref);
 
+  virtual void collectTableSizes(const KEYTable::RowSizes_t &rowSizes, const KEYTable::ColumnSizes_t &columnSizes);
+  virtual void collectTableCell(unsigned row, unsigned column, const boost::optional<std::string> &content, unsigned rowSpan, unsigned columnSpan);
+  virtual void collectCoveredTableCell(unsigned row, unsigned column);
+  virtual void collectTableRow();
+  virtual void collectTable();
+
   virtual void startLayer();
   virtual void endLayer();
   virtual void startGroup();
@@ -134,7 +140,7 @@ public:
 
   virtual void startParagraph(const boost::optional<ID_t> &style);
   virtual void endParagraph();
-  virtual void startText();
+  virtual void startText(bool object);
   virtual void endText();
 
   virtual void startLevel();
@@ -170,6 +176,8 @@ private:
   KEYMediaContentPtr_t m_currentFiltered;
   KEYMediaContentPtr_t m_currentLeveled;
   KEYMediaContentPtr_t m_currentContent;
+
+  KEYTable m_currentTable;
 
   bool m_collecting;
   bool m_layerOpened;

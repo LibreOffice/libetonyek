@@ -35,6 +35,8 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
 	KEY2ParserUtils.h \
 	KEY2StyleParser.cpp \
 	KEY2StyleParser.h \
+	KEY2TableParser.cpp \
+	KEY2TableParser.h \
 	KEY2Token.cpp \
 	KEY2Token.h \
 	KEYCollector.cpp \
@@ -75,6 +77,8 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
 	KEYStyles_fwd.h \
 	KEYStylesheet.cpp \
 	KEYStylesheet.h \
+	KEYTable.cpp \
+	KEYTable.h \
 	KEYText.cpp \
 	KEYText.h \
 	KEYText_fwd.h \

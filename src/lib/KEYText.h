@@ -28,7 +28,7 @@ public:
   typedef std::deque<ParagraphPtr_t> ParagraphList_t;
 
 public:
-  KEYText();
+  explicit KEYText(bool object = true);
 
   void setLayoutStyle(const KEYLayoutStylePtr_t &style);
 
@@ -44,6 +44,7 @@ public:
 
   const KEYLayoutStylePtr_t &getLayoutStyle() const;
   const ParagraphList_t &getParagraphs() const;
+  bool isObject() const;
 
   bool empty() const;
 
@@ -55,6 +56,7 @@ private:
   ParagraphList_t m_paragraphs;
   ParagraphPtr_t m_currentParagraph;
   int m_lineBreaks;
+  const bool m_object;
 
   KEYGeometryPtr_t m_boundingBox;
 };

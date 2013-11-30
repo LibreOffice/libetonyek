@@ -121,7 +121,7 @@ namespace
 class TextObject : public KEYObject
 {
 public:
-  TextObject(const KEYLayoutStylePtr_t &layoutStyle, const KEYGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs);
+  TextObject(const KEYLayoutStylePtr_t &layoutStyle, const KEYGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, bool object);
 
 private:
   virtual void draw(const KEYOutput &output);
@@ -130,12 +130,14 @@ private:
   const KEYLayoutStylePtr_t m_layoutStyle;
   const KEYGeometryPtr_t m_boundingBox;
   const KEYText::ParagraphList_t m_paragraphs;
+  const bool m_object;
 };
 
-TextObject::TextObject(const KEYLayoutStylePtr_t &layoutStyle, const KEYGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs)
+TextObject::TextObject(const KEYLayoutStylePtr_t &layoutStyle, const KEYGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, const bool object)
   : m_layoutStyle(layoutStyle)
   , m_boundingBox(boundingBox)
   , m_paragraphs(paragraphs)
+  , m_object(object)
 {
 }
 
@@ -169,7 +171,8 @@ void TextObject::draw(const KEYOutput &output)
   path.appendClose();
   path *= tr;
 
-  output.getPainter()->startTextObject(props, path.toWPG());
+  if (m_object)
+    output.getPainter()->startTextObject(props, path.toWPG());
 
   for (KEYText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
   {
@@ -178,16 +181,18 @@ void TextObject::draw(const KEYOutput &output)
     output.getPainter()->closeParagraph();
   }
 
-  output.getPainter()->endTextObject();
+  if (m_object)
+    output.getPainter()->endTextObject();
 }
 
 }
 
-KEYText::KEYText()
+KEYText::KEYText(const bool object)
   : m_layoutStyle()
   , m_paragraphs()
   , m_currentParagraph()
   , m_lineBreaks(0)
+  , m_object(object)
   , m_boundingBox()
 {
 }
@@ -262,6 +267,11 @@ const KEYText::ParagraphList_t &KEYText::getParagraphs() const
   return m_paragraphs;
 }
 
+bool KEYText::isObject() const
+{
+  return m_object;
+}
+
 void KEYText::insertDeferredLineBreaks()
 {
   assert(bool(m_currentParagraph));
@@ -281,7 +291,7 @@ bool KEYText::empty() const
 
 KEYObjectPtr_t makeObject(const KEYTextPtr_t &text)
 {
-  const KEYObjectPtr_t object(new TextObject(text->getLayoutStyle(), text->getBoundingBox(), text->getParagraphs()));
+  const KEYObjectPtr_t object(new TextObject(text->getLayoutStyle(), text->getBoundingBox(), text->getParagraphs(), text->isObject()));
   return object;
 }
 

@@ -777,6 +777,7 @@ enum
   slideNumberPlaceholderVisibility,
   slide_ref,
   slide_style,
+  so,
   sort,
   sort_spec,
   soundtrack_list,

@@ -25,6 +25,9 @@ public:
   KEY2Parser(const WPXInputStreamPtr_t &input, const WPXInputStreamPtr_t &package, KEYCollector *collector, const KEYDefaults &defaults);
   virtual ~KEY2Parser();
 
+  // NOTE: KEY2TableParser uses this to avoid code duplication
+  void parseTextBody(const KEYXMLReader &reader);
+
 private:
   virtual void processXmlNode(const KEYXMLReader &reader);
   virtual KEYXMLReader::TokenizerFunction_t getTokenizer() const;
@@ -81,7 +84,6 @@ private:
   void parseSpan(const KEYXMLReader &reader);
   void parseTab(const KEYXMLReader &reader);
   void parseText(const KEYXMLReader &reader);
-  void parseTextBody(const KEYXMLReader &reader);
   void parseTextStorage(const KEYXMLReader &reader);
 
   void emitLayoutStyle(const ID_t &id);

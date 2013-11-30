@@ -16,6 +16,7 @@
 
 #include "libetonyek_utils.h"
 #include "KEYPath_fwd.h"
+#include "KEYTable.h"
 #include "KEYTypes_fwd.h"
 
 namespace libetonyek
@@ -118,6 +119,12 @@ public:
 
   virtual void collectTextPlaceholder(const boost::optional<ID_t> &id, bool title, bool ref) = 0;
 
+  virtual void collectTableSizes(const KEYTable::RowSizes_t &rowSizes, const KEYTable::ColumnSizes_t &columnSizes) = 0;
+  virtual void collectTableCell(unsigned row, unsigned column, const boost::optional<std::string> &content, unsigned rowSpan, unsigned columnSpan) = 0;
+  virtual void collectCoveredTableCell(unsigned row, unsigned column) = 0;
+  virtual void collectTableRow() = 0;
+  virtual void collectTable() = 0;
+
   virtual void startPage() = 0;
   virtual void endPage() = 0;
   virtual void startLayer() = 0;
@@ -136,7 +143,7 @@ public:
     * * a placeholder
     * * a note.
     */
-  virtual void startText() = 0;
+  virtual void startText(bool object) = 0;
 
   /** End of a text block.
     */

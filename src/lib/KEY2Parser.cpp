@@ -17,6 +17,7 @@
 #include "libetonyek_xml.h"
 #include "KEY2Parser.h"
 #include "KEY2StyleParser.h"
+#include "KEY2TableParser.h"
 #include "KEY2Token.h"
 #include "KEYCollector.h"
 #include "KEYPath.h"
@@ -175,6 +176,12 @@ void KEY2Parser::parseDrawables(const KEYXMLReader &reader)
       case KEY2Token::shape :
         parseShape(element);
         break;
+      case KEY2Token::tabular_info :
+      {
+        KEY2TableParser parser(*this);
+        parser.parse(element);
+        break;
+      }
       case KEY2Token::body_placeholder_ref :
       {
         const optional<ID_t> id = readRef(reader);
@@ -982,7 +989,7 @@ void KEY2Parser::parseShape(const KEYXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::shape, KEY2Token::NS_URI_SF));
 
-  getCollector()->startText();
+  getCollector()->startText(true);
 
   const optional<ID_t> id = readID(reader);
 
@@ -1019,7 +1026,7 @@ void KEY2Parser::parseStickyNote(const KEYXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::sticky_note, KEY2Token::NS_URI_KEY));
 
-  getCollector()->startText();
+  getCollector()->startText(true);
 
   const optional<ID_t> id = readID(reader);
 
@@ -1053,7 +1060,7 @@ void KEY2Parser::parsePlaceholder(const KEYXMLReader &reader, const bool title)
          ? checkElement(reader, KEY2Token::title_placeholder, KEY2Token::NS_URI_KEY)
          : checkElement(reader, KEY2Token::body_placeholder, KEY2Token::NS_URI_KEY));
 
-  getCollector()->startText();
+  getCollector()->startText(true);
 
   const optional<ID_t> id = readID(reader);
 

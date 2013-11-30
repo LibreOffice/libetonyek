@@ -47,16 +47,21 @@ T getValue(const optional<ID_t> &id, const T &value, const bool ref, boost::unor
 
   if (ref)
   {
-    assert(id);
-
-    const typename boost::unordered_map<ID_t, T>::const_iterator it = map.find(get(id));
-    if (map.end() != it)
+    if (bool(id))
     {
-      retval = it->second;
+      const typename boost::unordered_map<ID_t, T>::const_iterator it = map.find(get(id));
+      if (map.end() != it)
+      {
+        retval = it->second;
+      }
+      else
+      {
+        KEY_DEBUG_MSG(("item with ID %s does not exist\n", get(id).c_str()));
+      }
     }
     else
     {
-      KEY_DEBUG_MSG(("item with ID %s does not exist\n", get(id).c_str()));
+      KEY_DEBUG_MSG(("reference without ID\n"));
     }
   }
   else
@@ -105,6 +110,7 @@ KEYCollectorBase::KEYCollectorBase(KEYDictionary &dict, const KEYDefaults &defau
   , m_currentFiltered()
   , m_currentLeveled()
   , m_currentContent()
+  , m_currentTable()
   , m_collecting(false)
   , m_layerOpened(false)
   , m_groupLevel(0)
@@ -741,6 +747,61 @@ void KEYCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const bo
   }
 }
 
+void KEYCollectorBase::collectTableSizes(const KEYTable::RowSizes_t &rowSizes, const KEYTable::ColumnSizes_t &columnSizes)
+{
+  if (m_collecting)
+    m_currentTable.setSizes(columnSizes, rowSizes);
+}
+
+void KEYCollectorBase::collectTableCell(const unsigned row, const unsigned column, const boost::optional<std::string> &content, const unsigned rowSpan, const unsigned columnSpan)
+{
+  if (m_collecting)
+  {
+    KEYObjectPtr_t textObject;
+
+    if (bool(content))
+    {
+      assert(!m_currentText || m_currentText->empty());
+
+      KEYTextPtr_t text(new KEYText());
+      text->openParagraph(KEYParagraphStylePtr_t());
+      text->insertText(get(content), KEYCharacterStylePtr_t());
+      text->closeParagraph();
+
+      textObject = makeObject(text);
+    }
+    else if (bool(m_currentText))
+    {
+      textObject = makeObject(m_currentText);
+      m_currentText.reset();
+    }
+
+    m_currentTable.insertCell(column, row, textObject, columnSpan, rowSpan);
+  }
+}
+
+void KEYCollectorBase::collectCoveredTableCell(const unsigned row, const unsigned column)
+{
+  if (m_collecting)
+    m_currentTable.insertCoveredCell(column, row);
+}
+
+void KEYCollectorBase::collectTableRow()
+{
+  // nothing needed
+}
+
+void KEYCollectorBase::collectTable()
+{
+  if (m_collecting)
+  {
+    assert(!m_objectsStack.empty());
+
+    m_objectsStack.top().push_back(makeObject(m_currentTable));
+    m_currentTable = KEYTable();
+  }
+}
+
 void KEYCollectorBase::startLayer()
 {
   if (m_collecting)
@@ -820,13 +881,13 @@ void KEYCollectorBase::endParagraph()
   }
 }
 
-void KEYCollectorBase::startText()
+void KEYCollectorBase::startText(const bool object)
 {
   if (m_collecting)
   {
     assert(!m_currentText);
 
-    m_currentText.reset(new KEYText());
+    m_currentText.reset(new KEYText(object));
 
     assert(m_currentText->empty());
   }
