@@ -25,7 +25,8 @@ public:
   KEY2Parser(const WPXInputStreamPtr_t &input, const WPXInputStreamPtr_t &package, KEYCollector *collector, const KEYDefaults &defaults);
   virtual ~KEY2Parser();
 
-  // NOTE: KEY2TableParser uses this to avoid code duplication
+  // NOTE: KEY2TableParser uses these to avoid code duplication
+  void parseGeometry(const KEYXMLReader &reader);
   void parseTextBody(const KEYXMLReader &reader);
 
 private:
@@ -50,7 +51,6 @@ private:
 
   void parseBezier(const KEYXMLReader &reader);
   void parseConnectionLine(const KEYXMLReader &reader);
-  void parseGeometry(const KEYXMLReader &reader);
   void parseGroup(const KEYXMLReader &reader);
   void parseImage(const KEYXMLReader &reader);
   void parseLine(const KEYXMLReader &reader);

@@ -38,11 +38,16 @@ void KEY2TableParser::parse(const KEYXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::tabular_info, KEY2Token::NS_URI_SF));
 
+  getCollector()->startLevel();
+
   KEYXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     switch (getId(element))
     {
+    case KEY2Token::geometry | KEY2Token::NS_URI_SF :
+      m_parser.parseGeometry(element);
+      break;
     case KEY2Token::tabular_model | KEY2Token::NS_URI_SF :
       parseTabularModel(element);
       break;
@@ -52,6 +57,8 @@ void KEY2TableParser::parse(const KEYXMLReader &reader)
   }
 
   getCollector()->collectTable();
+
+  getCollector()->endLevel();
 }
 
 void KEY2TableParser::parseTabularModel(const KEYXMLReader &reader)

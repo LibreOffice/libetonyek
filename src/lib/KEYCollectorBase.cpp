@@ -795,7 +795,11 @@ void KEYCollectorBase::collectTable()
 {
   if (m_collecting)
   {
+    assert(!m_levelStack.empty());
     assert(!m_objectsStack.empty());
+
+    m_currentTable.setGeometry(m_levelStack.top().geometry);
+    m_levelStack.top().geometry.reset();
 
     m_objectsStack.top().push_back(makeObject(m_currentTable));
     m_currentTable = KEYTable();

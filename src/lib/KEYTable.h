@@ -43,12 +43,15 @@ public:
   void insertCell(unsigned column, unsigned row, const KEYObjectPtr_t &content = KEYObjectPtr_t(), unsigned columnSpan = 1, unsigned rowSpan = 1);
   void insertCoveredCell(unsigned column, unsigned row);
 
+  void setGeometry(const KEYGeometryPtr_t &geometry);
+
   void draw(const KEYOutput &output) const;
 
 private:
   Table_t m_table;
   ColumnSizes_t m_columnSizes;
   RowSizes_t m_rowSizes;
+  KEYGeometryPtr_t m_geometry;
 };
 
 KEYObjectPtr_t makeObject(const KEYTable &table);

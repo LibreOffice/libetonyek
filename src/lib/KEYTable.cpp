@@ -16,6 +16,7 @@
 #include "libetonyek_utils.h"
 #include "KEYOutput.h"
 #include "KEYTable.h"
+#include "KEYTypes.h"
 
 using boost::numeric_cast;
 
@@ -34,6 +35,7 @@ KEYTable::KEYTable()
   : m_table()
   , m_columnSizes()
   , m_rowSizes()
+  , m_geometry()
 {
 }
 
@@ -68,11 +70,34 @@ void KEYTable::insertCoveredCell(const unsigned column, const unsigned row)
   m_table[row][column] = cell;
 }
 
+void KEYTable::setGeometry(const KEYGeometryPtr_t &geometry)
+{
+  m_geometry = geometry;
+}
+
 void KEYTable::draw(const KEYOutput &output) const
 {
   KEYPresentationInterface *const painter = output.getPainter();
 
   WPXPropertyList tableProps;
+
+  if (m_geometry)
+  {
+    double x = m_geometry->position.x;
+    double y = m_geometry->position.y;
+    double w = m_geometry->naturalSize.width;
+    double h = m_geometry->naturalSize.height;
+
+    const KEYTransformation tr = output.getTransformation();
+    tr(x, y);
+    tr(w, h, true);
+
+    tableProps.insert("svg:x", pt2in(x));
+    tableProps.insert("svg:y", pt2in(y));
+    tableProps.insert("svg:width", pt2in(w));
+    tableProps.insert("svg:height", pt2in(h));
+  }
+
   WPXPropertyListVector columnSizes;
 
   for (ColumnSizes_t::const_iterator it = m_columnSizes.begin(); m_columnSizes.end() != it; ++it)
