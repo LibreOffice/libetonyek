@@ -80,6 +80,7 @@ void KEYTable::draw(const KEYOutput &output) const
   KEYPresentationInterface *const painter = output.getPainter();
 
   WPXPropertyList tableProps;
+  tableProps.insert("table:align", "center");
 
   if (m_geometry)
   {
@@ -123,6 +124,7 @@ void KEYTable::draw(const KEYOutput &output) const
       WPXPropertyList cellProps;
       cellProps.insert("libwpd:column", numeric_cast<int>(c));
       cellProps.insert("libwpd:row", numeric_cast<int>(r));
+      cellProps.insert("fo:vertical-align", "middle");
 
       if (cell.covered)
       {
