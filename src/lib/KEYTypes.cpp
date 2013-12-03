@@ -229,6 +229,18 @@ KEYPlaceholder::KEYPlaceholder()
 {
 }
 
+KEYStickyNote::KEYStickyNote()
+  : geometry()
+  , text()
+{
+}
+
+KEYStickyNote::KEYStickyNote(const KEYGeometryPtr_t &geometry_, const KEYTextPtr_t &text_)
+  : geometry(geometry_)
+  , text(text_)
+{
+}
+
 namespace
 {
 

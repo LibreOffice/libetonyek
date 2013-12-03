@@ -816,14 +816,28 @@ void KEYCollectorBase::collectNote()
   }
 }
 
+void KEYCollectorBase::collectStickyNote()
+{
+  if (m_collecting)
+  {
+    assert(!m_levelStack.empty());
+
+    m_stickyNotes.push_back(KEYStickyNote(m_levelStack.top().geometry, m_currentText));
+    m_levelStack.top().geometry.reset();
+    m_currentText.reset();
+  }
+}
+
 void KEYCollectorBase::startPage()
 {
   assert(m_notes.empty());
+  assert(m_stickyNotes.empty());
 }
 
 void KEYCollectorBase::endPage()
 {
   m_notes.clear();
+  m_stickyNotes.clear();
 }
 
 void KEYCollectorBase::startLayer()
@@ -966,6 +980,11 @@ const KEYLayerPtr_t &KEYCollectorBase::getLayer() const
 const KEYObjectList_t &KEYCollectorBase::getNotes() const
 {
   return m_notes;
+}
+
+const KEYStickyNotes_t &KEYCollectorBase::getStickyNotes() const
+{
+  return m_stickyNotes;
 }
 
 } // namespace libetonyek

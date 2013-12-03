@@ -176,6 +176,9 @@ void KEY2Parser::parseDrawables(const KEYXMLReader &reader)
       case KEY2Token::shape :
         parseShape(element);
         break;
+      case KEY2Token::sticky_note :
+        parseStickyNote(element);
+        break;
       case KEY2Token::tabular_info :
       {
         KEY2TableParser parser(*this);
@@ -1048,11 +1051,11 @@ void KEY2Parser::parseShape(const KEYXMLReader &reader)
 
 void KEY2Parser::parseStickyNote(const KEYXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::sticky_note, KEY2Token::NS_URI_KEY));
+  assert(checkElement(reader, KEY2Token::sticky_note, KEY2Token::NS_URI_KEY)
+         || checkElement(reader, KEY2Token::sticky_note, KEY2Token::NS_URI_SF));
 
-  getCollector()->startText(true);
-
-  const optional<ID_t> id = readID(reader);
+  getCollector()->startText(false);
+  getCollector()->startLevel();
 
   KEYXMLReader::ElementIterator element(reader);
   while (element.next())
@@ -1061,8 +1064,11 @@ void KEY2Parser::parseStickyNote(const KEYXMLReader &reader)
     {
       switch (getNameId(element))
       {
-      case KEY2Token::path :
-        parsePath(element);
+      case KEY2Token::geometry :
+        parseGeometry(element);
+        break;
+      case KEY2Token::text :
+        parseText(element);
         break;
       default :
         skipElement(element);
@@ -1073,8 +1079,9 @@ void KEY2Parser::parseStickyNote(const KEYXMLReader &reader)
       skipElement(element);
   }
 
-  // TODO: collect
+  getCollector()->collectStickyNote();
 
+  getCollector()->endLevel();
   getCollector()->endText();
 }
 

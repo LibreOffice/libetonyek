@@ -17,6 +17,7 @@
 #include "KEYDictionary.h"
 #include "KEYOutput.h"
 #include "KEYStyleContext.h"
+#include "KEYText.h"
 
 using boost::optional;
 
@@ -78,6 +79,7 @@ void KEYContentCollector::collectPage(const optional<ID_t> &)
     assert(m_pageOpened);
 
     drawNotes(getNotes());
+    drawStickyNotes(getStickyNotes());
   }
 }
 
@@ -196,6 +198,36 @@ void KEYContentCollector::drawNotes(const KEYObjectList_t &notes)
   for (KEYObjectList_t::const_iterator it = notes.begin(); notes.end() != it; ++it)
     (*it)->draw(output);
   m_painter->endNotes();
+}
+
+void KEYContentCollector::drawStickyNotes(const KEYStickyNotes_t &stickyNotes)
+{
+  if (stickyNotes.empty())
+    return;
+
+  KEYStyleContext styleContext;
+  const KEYOutput output(m_painter, styleContext);
+
+  for (KEYStickyNotes_t::const_iterator it = stickyNotes.begin(); stickyNotes.end() != it; ++it)
+  {
+    WPXPropertyList props;
+
+    if (bool(it->geometry))
+    {
+      props.insert("svg:x", pt2in(it->geometry->position.x));
+      props.insert("svg:y", pt2in(it->geometry->position.y));
+      props.insert("svg:width", pt2in(it->geometry->naturalSize.width));
+      props.insert("svg:height", pt2in(it->geometry->naturalSize.height));
+    }
+
+    m_painter->startComment(props);
+    if (bool(it->text))
+    {
+      const KEYTransformation tr(bool(it->geometry) ? makeTransformation(*it->geometry) : KEYTransformation());
+      makeObject(it->text)->draw(KEYOutput(output, tr));
+    }
+    m_painter->endComment();
+  }
 }
 
 }

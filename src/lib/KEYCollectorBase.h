@@ -18,6 +18,7 @@
 #include "KEYStyle.h"
 #include "KEYStylesheet.h"
 #include "KEYText_fwd.h"
+#include "KEYTypes.h"
 
 namespace libetonyek
 {
@@ -135,6 +136,8 @@ public:
 
   virtual void collectNote();
 
+  virtual void collectStickyNote();
+
   virtual void startPage();
   virtual void endPage();
   virtual void startLayer();
@@ -158,6 +161,7 @@ protected:
 
   const KEYLayerPtr_t &getLayer() const;
   const KEYObjectList_t &getNotes() const;
+  const KEYStickyNotes_t &getStickyNotes() const;
 
 private:
   KEYDictionary &m_dict;
@@ -185,6 +189,8 @@ private:
   KEYTable m_currentTable;
 
   KEYObjectList_t m_notes;
+
+  KEYStickyNotes_t m_stickyNotes;
 
   bool m_collecting;
   bool m_layerOpened;

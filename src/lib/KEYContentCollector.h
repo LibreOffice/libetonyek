@@ -53,6 +53,7 @@ private:
 
   void drawLayer(const KEYLayerPtr_t &layer);
   void drawNotes(const KEYObjectList_t &notes);
+  void drawStickyNotes(const KEYStickyNotes_t &stickyNotes);
 
 private:
   KEYPresentationInterface *m_painter;

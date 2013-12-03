@@ -171,6 +171,17 @@ struct KEYPlaceholder
   KEYPlaceholder();
 };
 
+struct KEYStickyNote
+{
+  KEYGeometryPtr_t geometry;
+  KEYTextPtr_t text;
+
+  KEYStickyNote();
+  KEYStickyNote(const KEYGeometryPtr_t &geometry, const KEYTextPtr_t &text);
+};
+
+typedef std::deque<KEYStickyNote> KEYStickyNotes_t;
+
 KEYObjectPtr_t makeObject(const KEYGroupPtr_t &group);
 KEYObjectPtr_t makeObject(const KEYImagePtr_t &image);
 KEYObjectPtr_t makeObject(const KEYLinePtr_t &line);

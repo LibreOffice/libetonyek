@@ -127,6 +127,8 @@ public:
 
   virtual void collectNote() = 0;
 
+  virtual void collectStickyNote() = 0;
+
   virtual void startPage() = 0;
   virtual void endPage() = 0;
   virtual void startLayer() = 0;
