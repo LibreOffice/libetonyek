@@ -20,20 +20,25 @@
   + images
   + movies and sounds
     - just insterted into the output. No fancy stuff like autoplay etc.
+* tables
+  + structure
+  + text cells
+  + number cells
+    - but no numeric formats
+* comments aka sticky notes
+* (slide) notes
 
 == Planned ==
 
 * text attributes
 * shape attributes (background / line)
 * the rest of parametrizable shapes
-* tables
-* comments aka sticky notes
-* (slide) notes
 * transitions
 * animations
 * auto-fitting of presentation text
 * better handling of bullet lists
 * connectors
+* more cell types (date, duration)
 
 == Unlikely to be supported ==
 
