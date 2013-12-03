@@ -1,3 +1,10 @@
+libetonyek 0.0.2
+
+- fixed build with older boost
+- implemented import of tables
+- implemented import of presentation notes
+- implemented import of sticky notes
+
 libetonyek 0.0.1
 
 - build fixes
