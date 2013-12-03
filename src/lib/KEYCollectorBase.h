@@ -133,6 +133,10 @@ public:
   virtual void collectTableRow();
   virtual void collectTable();
 
+  virtual void collectNote();
+
+  virtual void startPage();
+  virtual void endPage();
   virtual void startLayer();
   virtual void endLayer();
   virtual void startGroup();
@@ -153,6 +157,7 @@ protected:
   const KEYDefaults &getDefaults() const;
 
   const KEYLayerPtr_t &getLayer() const;
+  const KEYObjectList_t &getNotes() const;
 
 private:
   KEYDictionary &m_dict;
@@ -178,6 +183,8 @@ private:
   KEYMediaContentPtr_t m_currentContent;
 
   KEYTable m_currentTable;
+
+  KEYObjectList_t m_notes;
 
   bool m_collecting;
   bool m_layerOpened;

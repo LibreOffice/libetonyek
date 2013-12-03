@@ -125,6 +125,8 @@ public:
   virtual void collectTableRow() = 0;
   virtual void collectTable() = 0;
 
+  virtual void collectNote() = 0;
+
   virtual void startPage() = 0;
   virtual void endPage() = 0;
   virtual void startLayer() = 0;

@@ -74,7 +74,11 @@ void KEYContentCollector::collectLayer(const optional<ID_t> &id, const bool ref)
 void KEYContentCollector::collectPage(const optional<ID_t> &)
 {
   if (isCollecting())
+  {
     assert(m_pageOpened);
+
+    drawNotes(getNotes());
+  }
 }
 
 void KEYContentCollector::startSlides()
@@ -108,6 +112,8 @@ void KEYContentCollector::startPage()
     assert(!m_pageOpened);
     assert(!m_layerOpened);
 
+    KEYCollectorBase::startPage();
+
     WPXPropertyList props;
     props.insert("svg:width", pt2in(m_size.width));
     props.insert("svg:height", pt2in(m_size.height));
@@ -122,6 +128,8 @@ void KEYContentCollector::endPage()
   if (isCollecting())
   {
     assert(m_pageOpened);
+
+    KEYCollectorBase::endPage();
 
     m_pageOpened = false;
     m_painter->endSlide();
@@ -174,6 +182,20 @@ void KEYContentCollector::drawLayer(const KEYLayerPtr_t &layer)
   {
     KEY_DEBUG_MSG(("no layer\n"));
   }
+}
+
+void KEYContentCollector::drawNotes(const KEYObjectList_t &notes)
+{
+  if (notes.empty())
+    return;
+
+  KEYStyleContext styleContext;
+  const KEYOutput output(m_painter, styleContext);
+
+  m_painter->startNotes(WPXPropertyList());
+  for (KEYObjectList_t::const_iterator it = notes.begin(); notes.end() != it; ++it)
+    (*it)->draw(output);
+  m_painter->endNotes();
 }
 
 }

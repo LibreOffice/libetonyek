@@ -52,6 +52,7 @@ private:
   void resolveStyle(KEYStyle &style);
 
   void drawLayer(const KEYLayerPtr_t &layer);
+  void drawNotes(const KEYObjectList_t &notes);
 
 private:
   KEYPresentationInterface *m_painter;

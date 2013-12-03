@@ -335,6 +335,27 @@ void KEY2Parser::parseMetadata(const KEYXMLReader &reader)
   skipElement(reader);
 }
 
+void KEY2Parser::parseNotes(const KEYXMLReader &reader)
+{
+  assert(checkElement(reader, KEY2Token::notes, KEY2Token::NS_URI_KEY));
+
+  KEYXMLReader::ElementIterator element(reader);
+  while (element.next())
+  {
+    if ((KEY2Token::text_storage | KEY2Token::NS_URI_SF) == getId(element))
+    {
+      getCollector()->startText(false);
+      parseTextStorage(element);
+      getCollector()->collectNote();
+      getCollector()->endText();
+    }
+    else
+    {
+      skipElement(reader);
+    }
+  }
+}
+
 void KEY2Parser::parsePage(const KEYXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::page, KEY2Token::NS_URI_KEY));
@@ -412,6 +433,9 @@ void KEY2Parser::parseSlide(const KEYXMLReader &reader)
     {
       switch (getNameId(element))
       {
+      case KEY2Token::notes :
+        parseNotes(reader);
+        break;
       case KEY2Token::page :
         parsePage(reader);
         break;

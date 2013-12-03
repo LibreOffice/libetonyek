@@ -111,6 +111,7 @@ KEYCollectorBase::KEYCollectorBase(KEYDictionary &dict, const KEYDefaults &defau
   , m_currentLeveled()
   , m_currentContent()
   , m_currentTable()
+  , m_notes()
   , m_collecting(false)
   , m_layerOpened(false)
   , m_groupLevel(0)
@@ -806,6 +807,25 @@ void KEYCollectorBase::collectTable()
   }
 }
 
+void KEYCollectorBase::collectNote()
+{
+  if (m_collecting)
+  {
+    m_notes.push_back(makeObject(m_currentText));
+    m_currentText.reset();
+  }
+}
+
+void KEYCollectorBase::startPage()
+{
+  assert(m_notes.empty());
+}
+
+void KEYCollectorBase::endPage()
+{
+  m_notes.clear();
+}
+
 void KEYCollectorBase::startLayer()
 {
   if (m_collecting)
@@ -941,6 +961,11 @@ const KEYDefaults &KEYCollectorBase::getDefaults() const
 const KEYLayerPtr_t &KEYCollectorBase::getLayer() const
 {
   return m_currentLayer;
+}
+
+const KEYObjectList_t &KEYCollectorBase::getNotes() const
+{
+  return m_notes;
 }
 
 } // namespace libetonyek

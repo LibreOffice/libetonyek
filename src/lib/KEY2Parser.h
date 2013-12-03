@@ -39,6 +39,7 @@ private:
   void parseMasterSlide(const KEYXMLReader &reader);
   void parseMasterSlides(const KEYXMLReader &reader);
   void parseMetadata(const KEYXMLReader &reader);
+  void parseNotes(const KEYXMLReader &reader);
   void parsePage(const KEYXMLReader &reader);
   void parseProxyMasterLayer(const KEYXMLReader &reader);
   void parseSlide(const KEYXMLReader &reader);
