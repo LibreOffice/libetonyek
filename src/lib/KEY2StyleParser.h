@@ -34,7 +34,18 @@ public:
 
 private:
   void parseProperty(const KEYXMLReader &reader, const char *key = 0);
-  bool parsePropertyImpl(const KEYXMLReader &reader, const char *key);
+
+  /** Parse the value of property \c propertyId.
+    *
+    * IOW, this parses the element nested in the property element.
+    *
+    * @param[in] reader XML reader
+    * @param[in] propertyId token ID of the property that is
+    *   currently being parsed
+    * @param[in] key key for insertion into the map
+    */
+  bool parsePropertyImpl(const KEYXMLReader &reader, const int propertyId, const char *key);
+
   void parsePropertyMap(const KEYXMLReader &reader);
 
   KEYGeometryPtr_t readGeometry(const KEYXMLReader &reader);

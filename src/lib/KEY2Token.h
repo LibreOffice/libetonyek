@@ -1130,6 +1130,7 @@ enum
   _1,
   double_,
   false_,
+  i,
   star,
   true_,
 

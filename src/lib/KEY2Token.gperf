@@ -693,6 +693,7 @@ http://developer.apple.com/namespaces/sf,NS_URI_SF
 http://developer.apple.com/namespaces/sfa,NS_URI_SFA
 http://www.w3.org/2001/XMLSchema-instance,NS_URI_XSI
 hyphenate,hyphenate
+i,i
 id,id
 ident,ident
 identifier,identifier

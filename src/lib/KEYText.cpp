@@ -9,14 +9,19 @@
 
 #include <cassert>
 
+#include <boost/optional.hpp>
+
 #include <libwpd/libwpd.h>
 
 #include <libetonyek/KEYPresentationInterface.h>
 
 #include "KEYOutput.h"
 #include "KEYPath.h"
+#include "KEYStyles.h"
 #include "KEYText.h"
 #include "KEYTypes.h"
+
+using boost::optional;
 
 using std::string;
 
@@ -30,6 +35,89 @@ struct KEYText::Paragraph
 
   Paragraph();
 };
+
+namespace
+{
+
+WPXString makeColor(const KEYColor &color)
+{
+  // TODO: alpha
+
+  const unsigned r = color.red * 256 - 0.5;
+  const unsigned g = color.green * 256 - 0.5;
+  const unsigned b = color.blue * 256 - 0.5;
+
+  WPXString str;
+  str.sprintf("#%.2x%.2x%.2x", r, g, b);
+
+  return str;
+}
+
+void fillCharPropList(WPXPropertyList &props, const KEYCharacterStyle &style, const KEYStyleContext &context)
+{
+  if (style.getItalic(context))
+    props.insert("fo:font-style", "italic");
+  if (style.getBold(context))
+    props.insert("fo:font-weight", "bold");
+  if (style.getUnderline(context))
+    props.insert("style:text-underline-type", "single");
+  if (style.getStrikethru(context))
+    props.insert("style:text-line-through-type", "single");
+  if (style.getOutline(context))
+    props.insert("style:text-outline", true);
+
+  const optional<KEYCapitalization> capitalization = style.getCapitalization(context);
+  if (capitalization)
+  {
+    if (KEY_CAPITALIZATION_SMALL_CAPS == get(capitalization))
+      props.insert("for:font-variant", "small-caps");
+  }
+
+  const optional<string> fontName = style.getFontName(context);
+  if (fontName)
+    props.insert("style:font-name", WPXString(get(fontName).c_str()));
+
+  const optional<double> fontSize = style.getFontSize(context);
+  if (fontSize)
+    props.insert("fo:font-size", get(fontSize));
+
+  const optional<KEYColor> fontColor = style.getFontColor(context);
+  if (fontColor)
+    props.insert("fo:color", makeColor(get(fontColor)));
+}
+
+KEYCharacterStyle makeEmptyStyle()
+{
+  optional<string> dummy;
+  return KEYCharacterStyle(KEYPropertyMap(), dummy, dummy);
+}
+
+WPXPropertyList makePropList(const KEYCharacterStylePtr_t &style, const KEYStyleContext &context)
+{
+  WPXPropertyList props;
+
+  // Even if there is no character style for the span, there might still
+  // be attributes inherited from the paragraph style through context.
+  // We use an empty style so these can be picked up.
+  fillCharPropList(props, bool(style) ? *style : makeEmptyStyle(), context);
+
+  return props;
+}
+
+WPXPropertyList makePropList(const KEYParagraphStylePtr_t &style, const KEYStyleContext &context)
+{
+  WPXPropertyList props;
+
+  if (bool(style))
+  {
+    // TODO: paragraph properties
+    (void) context;
+  }
+
+  return props;
+}
+
+}
 
 namespace
 {
@@ -55,9 +143,7 @@ TextSpanObject::TextSpanObject(const KEYCharacterStylePtr_t &style, const string
 
 void TextSpanObject::draw(const KEYOutput &output)
 {
-  WPXPropertyList props;
-  // TODO: fill properties
-
+  const WPXPropertyList props(makePropList(m_style, output.getStyleContext()));
   output.getPainter()->openSpan(props);
   output.getPainter()->insertText(WPXString(m_text.c_str()));
   output.getPainter()->closeSpan();
@@ -105,10 +191,8 @@ LineBreakObject::LineBreakObject(const KEYParagraphStylePtr_t &paraStyle)
 
 void LineBreakObject::draw(const KEYOutput &output)
 {
-  WPXPropertyList props;
-  // TODO: fill from m_paraStyle
-
   output.getPainter()->closeParagraph();
+  const WPXPropertyList props(makePropList(m_paraStyle, output.getStyleContext()));
   output.getPainter()->openParagraph(props, WPXPropertyListVector());
 }
 
@@ -175,8 +259,10 @@ void TextObject::draw(const KEYOutput &output)
 
   for (KEYText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
   {
-    output.getPainter()->openParagraph(WPXPropertyList(), WPXPropertyListVector());
-    drawAll((*it)->objects, output);
+    const WPXPropertyList paraProps(makePropList((*it)->style, output.getStyleContext()));
+    output.getPainter()->openParagraph(paraProps, WPXPropertyListVector());
+    const KEYOutput paraOutput(output, (*it)->style);
+    drawAll((*it)->objects, paraOutput);
     output.getPainter()->closeParagraph();
   }
 

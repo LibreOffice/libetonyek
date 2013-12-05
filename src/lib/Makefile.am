@@ -50,6 +50,7 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
 	KEYDictionary.cpp \
 	KEYDictionary.h \
 	KEYDocument.cpp \
+	KEYEnum.h \
 	KEYMemoryStream.cpp \
 	KEYMemoryStream.h \
 	KEYObject.cpp \

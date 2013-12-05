@@ -106,6 +106,51 @@ KEYCharacterStyle::KEYCharacterStyle(const KEYPropertyMap &props, const boost::o
 {
 }
 
+boost::optional<bool> KEYCharacterStyle::getBold(const KEYStyleContext &context) const
+{
+  return extractOptional<bool>(lookup("bold", context));
+}
+
+boost::optional<KEYCapitalization> KEYCharacterStyle::getCapitalization(const KEYStyleContext &context) const
+{
+  return extractOptional<KEYCapitalization>(lookup("capitalization", context));
+}
+
+boost::optional<bool> KEYCharacterStyle::getItalic(const KEYStyleContext &context) const
+{
+  return extractOptional<bool>(lookup("italic", context));
+}
+
+boost::optional<KEYColor> KEYCharacterStyle::getFontColor(const KEYStyleContext &context) const
+{
+  return extractOptional<KEYColor>(lookup("fontColor", context));
+}
+
+boost::optional<double> KEYCharacterStyle::getFontSize(const KEYStyleContext &context) const
+{
+  return extractOptional<double>(lookup("fontSize", context));
+}
+
+boost::optional<std::string> KEYCharacterStyle::getFontName(const KEYStyleContext &context) const
+{
+  return extractOptional<std::string>(lookup("fontName", context));
+}
+
+boost::optional<bool> KEYCharacterStyle::getOutline(const KEYStyleContext &context) const
+{
+  return extractOptional<bool>(lookup("outline", context));
+}
+
+boost::optional<bool> KEYCharacterStyle::getStrikethru(const KEYStyleContext &context) const
+{
+  return extractOptional<bool>(lookup("strikethru", context));
+}
+
+boost::optional<bool> KEYCharacterStyle::getUnderline(const KEYStyleContext &context) const
+{
+  return extractOptional<bool>(lookup("underline", context));
+}
+
 KEYStylePtr_t KEYCharacterStyle::find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const
 {
   return stylesheet->characterStyles[ident];
@@ -152,7 +197,7 @@ KEYStylePtr_t KEYListStyle::find(const KEYStylesheetPtr_t &stylesheet, const std
 }
 
 KEYParagraphStyle::KEYParagraphStyle(const KEYPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
-  : KEYStyleBase(props, ident, parentIdent)
+  : KEYCharacterStyle(props, ident, parentIdent)
 {
 }
 

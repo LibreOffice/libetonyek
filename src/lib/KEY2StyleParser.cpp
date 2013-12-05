@@ -27,6 +27,83 @@ using std::string;
 namespace libetonyek
 {
 
+namespace
+{
+
+template<typename T, typename C>
+optional<T> readNumber(const KEYXMLReader &reader, const int type, const C converter)
+{
+  optional<T> retval;
+
+  KEYXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    switch (getId(attr))
+    {
+    case KEY2Token::NS_URI_SFA | KEY2Token::number :
+      retval = converter(attr.getValue());
+      break;
+    case KEY2Token::NS_URI_SFA | KEY2Token::type :
+      if (getValueId(attr) != type)
+      {
+        KEY_DEBUG_MSG(("invalid number type %s\n", attr.getValue()));
+      }
+      break;
+    }
+  }
+
+  return retval;
+}
+
+optional<bool> readBool(const KEYXMLReader &reader, const int type)
+{
+  return readNumber<bool>(reader, type, &KEY2ParserUtils::bool_cast);
+}
+
+optional<double> readDouble(const KEYXMLReader &reader)
+{
+  return readNumber<double>(reader, KEY2Token::f, &lexical_cast<double, const char *>);
+}
+
+optional<int> readInt(const KEYXMLReader &reader)
+{
+  return readNumber<int>(reader, KEY2Token::i, &lexical_cast<int, const char *>);
+}
+
+optional<KEYColor> readColor(const KEYXMLReader &reader)
+{
+  KEYColor color;
+
+  KEYXMLReader::AttributeIterator attr(reader);
+  while (attr.next())
+  {
+    switch (getId(attr))
+    {
+    case KEY2Token::NS_URI_SFA | KEY2Token::a :
+      color.alpha = lexical_cast<double>(attr.getValue());
+      break;
+    case KEY2Token::NS_URI_SFA | KEY2Token::b :
+      color.blue = lexical_cast<double>(attr.getValue());
+      break;
+    case KEY2Token::NS_URI_SFA | KEY2Token::g :
+      color.green = lexical_cast<double>(attr.getValue());
+      break;
+    case KEY2Token::NS_URI_SFA | KEY2Token::r :
+      color.red = lexical_cast<double>(attr.getValue());
+      break;
+    }
+  }
+
+  return color;
+}
+
+optional<string> readString(const KEYXMLReader &reader)
+{
+  return readOnlyAttribute(reader, KEY2Token::string, KEY2Token::NS_URI_SFA);
+}
+
+}
+
 KEY2StyleParser::KEY2StyleParser(const int nameId, const int nsId, KEYCollector *const collector, const KEYDefaults &defaults, const bool nested)
   : KEY2ParserUtils()
   , m_nameId(nameId)
@@ -128,6 +205,8 @@ void KEY2StyleParser::parseProperty(const KEYXMLReader &reader, const char *cons
 {
   checkNoAttributes(reader);
 
+  const int token = getId(reader);
+
   // Parse a property's value, ignoring any extra tags around (there
   // should be none, but can we on that?) Note that the property can be
   // empty.
@@ -138,11 +217,11 @@ void KEY2StyleParser::parseProperty(const KEYXMLReader &reader, const char *cons
     if (done)
       skipElement(element);
     else
-      done = parsePropertyImpl(element, key);
+      done = parsePropertyImpl(element, token, key);
   }
 }
 
-bool KEY2StyleParser::parsePropertyImpl(const KEYXMLReader &reader, const char *const key)
+bool KEY2StyleParser::parsePropertyImpl(const KEYXMLReader &reader, const int propertyId, const char *const key)
 {
   bool parsed = true;
   any prop;
@@ -199,11 +278,110 @@ bool KEY2StyleParser::parsePropertyImpl(const KEYXMLReader &reader, const char *
     }
 
     // "normal" properties
+
+    case KEY2Token::color :
+    {
+      const optional<KEYColor> color = readColor(reader);
+      if (color)
+        prop = get(color);
+      break;
+    }
     case KEY2Token::geometry :
     {
       const KEYGeometryPtr_t geometry = readGeometry(reader);
       if (geometry)
         prop = geometry;
+      break;
+    }
+
+    case KEY2Token::number :
+    {
+      switch (propertyId)
+      {
+      case KEY2Token::NS_URI_SF | KEY2Token::baselineShift :
+      case KEY2Token::NS_URI_SF | KEY2Token::fontSize :
+      {
+        const optional<double> d = readDouble(reader);
+        if (d)
+          prop = get(d);
+        break;
+      }
+
+      case KEY2Token::NS_URI_SF | KEY2Token::bold :
+      case KEY2Token::NS_URI_SF | KEY2Token::outline :
+      case KEY2Token::NS_URI_SF | KEY2Token::strikethru :
+      case KEY2Token::NS_URI_SF | KEY2Token::underline :
+      {
+        const optional<bool> b = readBool(reader, KEY2Token::i);
+        if (b)
+          prop = get(b);
+        break;
+      }
+
+      case KEY2Token::NS_URI_SF | KEY2Token::capitalization :
+      {
+        const optional<int> capitalization = readInt(reader);
+        if (capitalization)
+        {
+          switch (get(capitalization))
+          {
+          case 0 :
+            prop = KEY_CAPITALIZATION_NONE;
+            break;
+          case 1 :
+            prop = KEY_CAPITALIZATION_ALL_CAPS;
+            break;
+          case 2 :
+            prop = KEY_CAPITALIZATION_SMALL_CAPS;
+            break;
+          case 3 :
+            prop = KEY_CAPITALIZATION_TITLE;
+            break;
+          default :
+            KEY_DEBUG_MSG(("unknown capitalization %d\n", get(capitalization)));
+          }
+        }
+        break;
+      }
+
+      case KEY2Token::NS_URI_SF | KEY2Token::italic :
+      {
+        const optional<bool> b = readBool(reader, KEY2Token::c);
+        if (b)
+          prop = get(b);
+        break;
+      }
+
+      case KEY2Token::NS_URI_SF | KEY2Token::superscript :
+      {
+        const optional<int> superscript = readInt(reader);
+        if (superscript)
+        {
+          switch (get(superscript))
+          {
+          case 1 :
+            prop = KEY_BASELINE_SUPER;
+            break;
+          case 2 :
+            prop = KEY_BASELINE_SUB;
+            break;
+          default :
+            KEY_DEBUG_MSG(("unknown superscript %d\n", get(superscript)));
+          }
+        }
+        break;
+      }
+      default :
+        break;
+      }
+      break;
+    }
+
+    case KEY2Token::string :
+    {
+      const optional<string> str = readString(reader);
+      if (str)
+        prop = get(str);
       break;
     }
 
@@ -265,8 +443,42 @@ void KEY2StyleParser::parsePropertyMap(const KEYXMLReader &reader)
       case KEY2Token::tocStyle :
         parseProperty(element);
         break;
+
+      case KEY2Token::baselineShift :
+        parseProperty(element, "baselineShift");
+        break;
+      case KEY2Token::bold :
+        parseProperty(element, "bold");
+        break;
+      case KEY2Token::capitalization :
+        parseProperty(element, "capitalization");
+        break;
+      case KEY2Token::fontColor :
+        parseProperty(element, "fontColor");
+        break;
+      case KEY2Token::fontName :
+        parseProperty(element, "fontName");
+        break;
+      case KEY2Token::fontSize :
+        parseProperty(element, "fontSize");
+        break;
       case KEY2Token::geometry :
         parseProperty(element, "geometry");
+        break;
+      case KEY2Token::italic :
+        parseProperty(element, "italic");
+        break;
+      case KEY2Token::outline :
+        parseProperty(element, "outline");
+        break;
+      case KEY2Token::strikethru :
+        parseProperty(element, "strikethru");
+        break;
+      case KEY2Token::superscript :
+        parseProperty(element, "superscript");
+        break;
+      case KEY2Token::underline :
+        parseProperty(element, "underline");
         break;
 
       default :

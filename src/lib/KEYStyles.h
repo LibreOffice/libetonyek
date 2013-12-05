@@ -16,10 +16,12 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
 
+#include "KEYEnum.h"
 #include "KEYPropertyMap.h"
 #include "KEYStyle.h"
 #include "KEYStyleContext.h"
 #include "KEYStyles_fwd.h"
+#include "KEYTypes.h"
 
 namespace libetonyek
 {
@@ -76,6 +78,18 @@ class KEYCharacterStyle : public KEYStyleBase
 public:
   KEYCharacterStyle(const KEYPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
+  boost::optional<KEYBaseline> getBaseline(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<double> getBaselineShift(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<bool> getBold(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<KEYCapitalization> getCapitalization(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<bool> getItalic(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<KEYColor> getFontColor(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<double> getFontSize(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<std::string> getFontName(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<bool> getOutline(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<bool> getStrikethru(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<bool> getUnderline(const KEYStyleContext &context = KEYStyleContext()) const;
+
 private:
   virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
 };
@@ -126,7 +140,7 @@ private:
 
 /** Represents a paragraph style.
   */
-class KEYParagraphStyle : public KEYStyleBase
+class KEYParagraphStyle : public KEYCharacterStyle
 {
 public:
   KEYParagraphStyle(const KEYPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
