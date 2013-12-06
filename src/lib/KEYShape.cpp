@@ -340,24 +340,30 @@ KEYPathPtr_t makeConnectionPath(const KEYSize &size, const double middleX, const
 
 KEYPathPtr_t makeCalloutPath(const KEYSize &size, const double radius, const double tailSize, const double tailX, const double tailY)
 {
-  // TODO: implement me
-  (void) size;
+  // user space canvas: [-1:1] x [-1:1]
+
+  // TODO: draw correctly instead of just approximating
   (void) radius;
   (void) tailSize;
   (void) tailX;
   (void) tailY;
-  return KEYPathPtr_t();
+
+  deque<Point> points = rotatePoint(Point(-1, -1), 4);
+  points.push_back(Point(-1, 0.5));
+  points.push_back(Point(-2, 0));
+  points.push_back(Point(-1, -0.5));
+
+  // create the path
+  transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.width, size.height));
+  const KEYPathPtr_t path = makePolyLine(points);
+
+  return path;
 }
 
 KEYPathPtr_t makeQuoteBubblePath(const KEYSize &size, const double radius, const double tailSize, const double tailX, const double tailY)
 {
-  // TODO: implement me
-  (void) size;
-  (void) radius;
-  (void) tailSize;
-  (void) tailX;
-  (void) tailY;
-  return KEYPathPtr_t();
+  // TODO: really draw this instead of just approximating
+  return makeCalloutPath(size, radius, tailSize, tailX, tailY);
 }
 
 }
