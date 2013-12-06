@@ -79,7 +79,7 @@ void fillCharPropList(WPXPropertyList &props, const KEYCharacterStyle &style, co
 
   const optional<double> fontSize = style.getFontSize(context);
   if (fontSize)
-    props.insert("fo:font-size", get(fontSize));
+    props.insert("fo:font-size", pt2in(get(fontSize)));
 
   const optional<KEYColor> fontColor = style.getFontColor(context);
   if (fontColor)
