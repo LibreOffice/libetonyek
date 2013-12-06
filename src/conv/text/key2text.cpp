@@ -74,7 +74,12 @@ int main(int argc, char *argv[]) try
 
   librevenge::RVNGStringVector output;
   librevenge::RVNGTextPresentationGenerator painter(output);
-  libetonyek::KEYDocument::parse(input.get(), &painter);
+
+  if (!libetonyek::KEYDocument::parse(input.get(), &painter))
+  {
+    fprintf(stderr, "ERROR: Parsing failed!\n");
+    return 1;
+  }
 
   if (output.empty())
   {

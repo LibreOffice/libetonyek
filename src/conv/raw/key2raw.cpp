@@ -73,7 +73,11 @@ int main(int argc, char *argv[]) try
   }
 
   librevenge::RVNGRawPresentationGenerator painter(false);
-  libetonyek::KEYDocument::parse(input.get(), &painter);
+  if (!libetonyek::KEYDocument::parse(input.get(), &painter))
+  {
+    fprintf(stderr, "ERROR: Parsing failed!\n");
+    return 1;
+  }
 
   return 0;
 }
