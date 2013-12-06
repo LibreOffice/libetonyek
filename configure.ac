@@ -7,7 +7,7 @@ AC_PREREQ([2.65])
 # ====================
 m4_define([libetonyek_version_major],[0])
 m4_define([libetonyek_version_minor],[0])
-m4_define([libetonyek_version_micro],[2])
+m4_define([libetonyek_version_micro],[3])
 m4_define([libetonyek_version],[libetonyek_version_major.libetonyek_version_minor.libetonyek_version_micro])
 
 # =============
