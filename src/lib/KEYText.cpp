@@ -70,7 +70,7 @@ void fillCharPropList(WPXPropertyList &props, const KEYCharacterStyle &style, co
   if (capitalization)
   {
     if (KEY_CAPITALIZATION_SMALL_CAPS == get(capitalization))
-      props.insert("for:font-variant", "small-caps");
+      props.insert("fo:font-variant", "small-caps");
   }
 
   const optional<string> fontName = style.getFontName(context);
