@@ -145,6 +145,9 @@ class KEYParagraphStyle : public KEYCharacterStyle
 public:
   KEYParagraphStyle(const KEYPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
+  boost::optional<KEYAlignment> getAlignment(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<KEYTabStops_t> getTabs(const KEYStyleContext &context = KEYStyleContext()) const;
+
 private:
   virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
 };

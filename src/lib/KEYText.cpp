@@ -53,6 +53,28 @@ WPXString makeColor(const KEYColor &color)
   return str;
 }
 
+WPXPropertyListVector makeTabStops(const KEYParagraphStylePtr_t &style, const KEYStyleContext &context)
+{
+  WPXPropertyListVector tabs;
+
+  if (bool(style))
+  {
+    const optional<KEYTabStops_t> &tabStops = style->getTabs(context);
+
+    if (bool(tabStops))
+    {
+      for (KEYTabStops_t::const_iterator it = get(tabStops).begin(); get(tabStops).end() != it; ++it)
+      {
+        WPXPropertyList tab;
+        tab.insert("style:position", pt2in(it->pos));
+        tab.insert("style:type", "left");
+      }
+    }
+  }
+
+  return tabs;
+}
+
 void fillCharPropList(WPXPropertyList &props, const KEYCharacterStyle &style, const KEYStyleContext &context)
 {
   if (style.getItalic(context))
@@ -110,8 +132,25 @@ WPXPropertyList makePropList(const KEYParagraphStylePtr_t &style, const KEYStyle
 
   if (bool(style))
   {
-    // TODO: paragraph properties
-    (void) context;
+    const optional<KEYAlignment> alignment(style->getAlignment(context));
+    if (bool(alignment))
+    {
+      switch (get(alignment))
+      {
+      case KEY_ALIGNMENT_LEFT :
+        props.insert("fo:text-align", "left");
+        break;
+      case KEY_ALIGNMENT_RIGHT :
+        props.insert("fo:text-align", "right");
+        break;
+      case KEY_ALIGNMENT_CENTER :
+        props.insert("fo:text-align", "center");
+        break;
+      case KEY_ALIGNMENT_JUSTIFY :
+        props.insert("fo:text-align", "justify");
+        break;
+      }
+    }
   }
 
   return props;
@@ -260,7 +299,8 @@ void TextObject::draw(const KEYOutput &output)
   for (KEYText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
   {
     const WPXPropertyList paraProps(makePropList((*it)->style, output.getStyleContext()));
-    output.getPainter()->openParagraph(paraProps, WPXPropertyListVector());
+    const WPXPropertyListVector tabStops(makeTabStops((*it)->style, output.getStyleContext()));
+    output.getPainter()->openParagraph(paraProps, tabStops);
     const KEYOutput paraOutput(output, (*it)->style);
     drawAll((*it)->objects, paraOutput);
     output.getPainter()->closeParagraph();

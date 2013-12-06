@@ -298,6 +298,32 @@ bool KEY2StyleParser::parsePropertyImpl(const KEYXMLReader &reader, const int pr
     {
       switch (propertyId)
       {
+      case KEY2Token::NS_URI_SF | KEY2Token::alignment :
+      {
+        const optional<int> alignment = readInt(reader);
+        if (alignment)
+        {
+          switch (get(alignment))
+          {
+          case 0 :
+            prop = KEY_ALIGNMENT_LEFT;
+            break;
+          case 1 :
+            prop = KEY_ALIGNMENT_RIGHT;
+            break;
+          case 2 :
+            prop = KEY_ALIGNMENT_CENTER;
+            break;
+          case 3 :
+            prop = KEY_ALIGNMENT_JUSTIFY;
+            break;
+          default :
+            KEY_DEBUG_MSG(("unknown alignment %d\n", get(alignment)));
+          }
+        }
+        break;
+      }
+
       case KEY2Token::NS_URI_SF | KEY2Token::baselineShift :
       case KEY2Token::NS_URI_SF | KEY2Token::fontSize :
       {
@@ -385,6 +411,52 @@ bool KEY2StyleParser::parsePropertyImpl(const KEYXMLReader &reader, const int pr
       break;
     }
 
+    case KEY2Token::tabs :
+    {
+      KEYTabStops_t tabStops;
+
+      KEYXMLReader::ElementIterator element(reader);
+      while (element.next())
+      {
+        if ((KEY2Token::NS_URI_SF | KEY2Token::tabstop) == getId(element))
+        {
+          optional<double> pos;
+
+          const KEYXMLReader tabStopReader(element);
+
+          KEYXMLReader::AttributeIterator attr(tabStopReader);
+          while (attr.next())
+          {
+            switch (getId(attr))
+            {
+            case KEY2Token::NS_URI_SF | KEY2Token::align :
+              // TODO: parse
+              break;
+            case KEY2Token::NS_URI_SF | KEY2Token::pos :
+              pos = lexical_cast<double>(attr.getValue());
+              break;
+            default :
+              break;
+            }
+          }
+
+          checkEmptyElement(tabStopReader);
+
+          if (bool(pos))
+            tabStops.push_back(KEYTabStop(get(pos)));
+        }
+        else
+        {
+          skipElement(element);
+        }
+      }
+
+      if (!tabStops.empty())
+        prop = tabStops;
+
+      break;
+    }
+
     default :
       parsed = false;
       skipElement(reader);
@@ -444,6 +516,9 @@ void KEY2StyleParser::parsePropertyMap(const KEYXMLReader &reader)
         parseProperty(element);
         break;
 
+      case KEY2Token::alignment :
+        parseProperty(element, "alignment");
+        break;
       case KEY2Token::baselineShift :
         parseProperty(element, "baselineShift");
         break;
@@ -476,6 +551,9 @@ void KEY2StyleParser::parsePropertyMap(const KEYXMLReader &reader)
         break;
       case KEY2Token::superscript :
         parseProperty(element, "superscript");
+        break;
+      case KEY2Token::tabs :
+        parseProperty(element, "tabs");
         break;
       case KEY2Token::underline :
         parseProperty(element, "underline");

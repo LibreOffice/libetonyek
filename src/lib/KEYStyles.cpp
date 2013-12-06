@@ -201,6 +201,16 @@ KEYParagraphStyle::KEYParagraphStyle(const KEYPropertyMap &props, const boost::o
 {
 }
 
+boost::optional<KEYAlignment> KEYParagraphStyle::getAlignment(const KEYStyleContext &context) const
+{
+  return extractOptional<KEYAlignment>(lookup("alignment", context));
+}
+
+boost::optional<KEYTabStops_t> KEYParagraphStyle::getTabs(const KEYStyleContext &context) const
+{
+  return extractOptional<KEYTabStops_t>(lookup("tabs", context));
+}
+
 KEYStylePtr_t KEYParagraphStyle::find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const
 {
   return stylesheet->paragraphStyles[ident];

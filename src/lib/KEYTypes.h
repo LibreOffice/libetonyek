@@ -182,6 +182,15 @@ struct KEYStickyNote
 
 typedef std::deque<KEYStickyNote> KEYStickyNotes_t;
 
+struct KEYTabStop
+{
+  double pos;
+
+  explicit KEYTabStop(double pos_);
+};
+
+typedef std::deque<KEYTabStop> KEYTabStops_t;
+
 KEYObjectPtr_t makeObject(const KEYGroupPtr_t &group);
 KEYObjectPtr_t makeObject(const KEYImagePtr_t &image);
 KEYObjectPtr_t makeObject(const KEYLinePtr_t &line);

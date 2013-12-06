@@ -13,6 +13,14 @@
 namespace libetonyek
 {
 
+enum KEYAlignment
+{
+  KEY_ALIGNMENT_LEFT,
+  KEY_ALIGNMENT_RIGHT,
+  KEY_ALIGNMENT_CENTER,
+  KEY_ALIGNMENT_JUSTIFY
+};
+
 enum KEYBaseline
 {
   KEY_BASELINE_NORMAL,

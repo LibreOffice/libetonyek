@@ -241,6 +241,11 @@ KEYStickyNote::KEYStickyNote(const KEYGeometryPtr_t &geometry_, const KEYTextPtr
 {
 }
 
+KEYTabStop::KEYTabStop(double pos_)
+  : pos(pos_)
+{
+}
+
 namespace
 {
 
