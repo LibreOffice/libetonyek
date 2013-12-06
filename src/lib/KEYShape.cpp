@@ -244,10 +244,17 @@ KEYPathPtr_t makePolygonPath(const KEYSize &size, const unsigned edges)
 
 KEYPathPtr_t makeRoundedRectanglePath(const KEYSize &size, const double radius)
 {
-  // TODO: implement me
-  (void) size;
+  // user space canvas: [-1:1] x [-1:1]
+
+  // TODO: draw rounded corners
   (void) radius;
-  return KEYPathPtr_t();
+
+  deque<Point> points = rotatePoint(Point(1, 1), 4);
+
+  transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.width, size.height));
+  const KEYPathPtr_t path = makePolyLine(points);
+
+  return path;
 }
 
 KEYPathPtr_t makeArrowPath(const KEYSize &size, const double headWidth, const double stemThickness)
