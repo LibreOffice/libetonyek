@@ -33,7 +33,10 @@ boost::any KEYStyleContext::find(const std::string &property, const bool lookInP
   boost::any value;
 
   for (Stack_t::const_iterator it = m_stack.begin(); value.empty() && (m_stack.end() != it); ++it)
-    value = (*it)->getPropertyMap().get(property, lookInParent);
+  {
+    if (*it)
+      value = (*it)->getPropertyMap().get(property, lookInParent);
+  }
 
   return value;
 }
