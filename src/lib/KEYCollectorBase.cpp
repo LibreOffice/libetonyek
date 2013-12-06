@@ -443,9 +443,12 @@ void KEYCollectorBase::collectShape(const optional<ID_t> &)
     shape->geometry = m_levelStack.top().geometry;
     m_levelStack.top().geometry.reset();
 
-    m_currentText->setBoundingBox(shape->geometry);
-    shape->text = m_currentText;
-    m_currentText.reset();
+    if (bool(m_currentText))
+    {
+      m_currentText->setBoundingBox(shape->geometry);
+      shape->text = m_currentText;
+      m_currentText.reset();
+    }
 
     shape->style = m_levelStack.top().graphicStyle;
     m_levelStack.top().graphicStyle.reset();
