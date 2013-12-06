@@ -17,7 +17,6 @@ namespace libetonyek
 {
 
 struct KEYDictionary;
-class KEYPresentationInterface;
 
 class KEYContentCollector : public KEYCollectorBase
 {
@@ -26,7 +25,7 @@ class KEYContentCollector : public KEYCollectorBase
   KEYContentCollector &operator=(const KEYContentCollector &other);
 
 public:
-  KEYContentCollector(KEYPresentationInterface *painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const KEYSize &size, const KEYDefaults &defaults);
+  KEYContentCollector(librevenge::RVNGPresentationInterface *painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const KEYSize &size, const KEYDefaults &defaults);
   virtual ~KEYContentCollector();
 
   // collector functions
@@ -56,7 +55,7 @@ private:
   void drawStickyNotes(const KEYStickyNotes_t &stickyNotes);
 
 private:
-  KEYPresentationInterface *m_painter;
+  librevenge::RVNGPresentationInterface *m_painter;
 
   const KEYLayerMap_t &m_masterPages;
   const KEYSize m_size;

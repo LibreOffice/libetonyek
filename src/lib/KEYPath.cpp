@@ -56,7 +56,7 @@ public:
 
   /** Create WPG representation of this path element.
    */
-  virtual WPXPropertyList toWPG() const = 0;
+  virtual librevenge::RVNGPropertyList toWPG() const = 0;
 };
 
 namespace
@@ -73,7 +73,7 @@ public:
 
   virtual void transform(const KEYTransformation &tr);
 
-  virtual WPXPropertyList toWPG() const;
+  virtual librevenge::RVNGPropertyList toWPG() const;
 
 private:
   double m_x;
@@ -106,9 +106,9 @@ void MoveTo::transform(const KEYTransformation &tr)
   tr(m_x, m_y);
 }
 
-WPXPropertyList MoveTo::toWPG() const
+librevenge::RVNGPropertyList MoveTo::toWPG() const
 {
-  WPXPropertyList element;
+  librevenge::RVNGPropertyList element;
 
   element.insert("libwpg:path-action", "M");
   element.insert("svg:x", pt2in(m_x));
@@ -133,7 +133,7 @@ public:
 
   virtual void transform(const KEYTransformation &tr);
 
-  virtual WPXPropertyList toWPG() const;
+  virtual librevenge::RVNGPropertyList toWPG() const;
 
 private:
   double m_x;
@@ -166,9 +166,9 @@ void LineTo::transform(const KEYTransformation &tr)
   tr(m_x, m_y);
 }
 
-WPXPropertyList LineTo::toWPG() const
+librevenge::RVNGPropertyList LineTo::toWPG() const
 {
-  WPXPropertyList element;
+  librevenge::RVNGPropertyList element;
 
   element.insert("libwpg:path-action", "L");
   element.insert("svg:x", pt2in(m_x));
@@ -193,7 +193,7 @@ public:
 
   virtual void transform(const KEYTransformation &tr);
 
-  virtual WPXPropertyList toWPG() const;
+  virtual librevenge::RVNGPropertyList toWPG() const;
 
 private:
   double m_x1;
@@ -239,9 +239,9 @@ void CurveTo::transform(const KEYTransformation &tr)
   tr(m_x2, m_y2);
 }
 
-WPXPropertyList CurveTo::toWPG() const
+librevenge::RVNGPropertyList CurveTo::toWPG() const
 {
-  WPXPropertyList element;
+  librevenge::RVNGPropertyList element;
 
   element.insert("libwpg:path-action", "C");
   element.insert("svg:x", pt2in(m_x));
@@ -365,16 +365,16 @@ void KEYPath::operator*=(const KEYTransformation &tr)
   for_each(m_elements.begin(), m_elements.end(), bind(&Element::transform, _1, cref(tr)));
 }
 
-WPXPropertyListVector KEYPath::toWPG() const
+librevenge::RVNGPropertyListVector KEYPath::toWPG() const
 {
-  WPXPropertyListVector vec;
+  librevenge::RVNGPropertyListVector vec;
 
   for (std::deque<Element *>::const_iterator it = m_elements.begin(); m_elements.end() != it; ++it)
     vec.append((*it)->toWPG());
 
   if (m_closed)
   {
-    WPXPropertyList element;
+    librevenge::RVNGPropertyList element;
     element.insert("libwpg:path-action", "Z");
     vec.append(element);
   }

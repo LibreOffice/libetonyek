@@ -13,8 +13,10 @@
 #include <sstream>
 #include <stdio.h>
 #include <string.h>
-#include <libwpd-stream/libwpd-stream.h>
-#include <libwpd/libwpd.h>
+
+#include <librevenge-generators/librevenge-generators.h>
+#include <librevenge-stream/librevenge-stream.h>
+#include <librevenge/librevenge.h>
 #include <libetonyek/libetonyek.h>
 
 #include "KEYDirectoryStream.h"
@@ -55,11 +57,11 @@ int main(int argc, char *argv[]) try
   namespace fs = boost::filesystem;
 
   fs::path path(file);
-  shared_ptr<WPXInputStream> input;
+  shared_ptr<librevenge::RVNGInputStream> input;
   if (is_directory(path))
     input.reset(new conv::KEYDirectoryStream(path));
   else
-    input.reset(new WPXFileStream(file));
+    input.reset(new librevenge::RVNGFileStream(file));
 
   libetonyek::KEYDocumentType type = libetonyek::KEY_DOCUMENT_TYPE_UNKNOWN;
   if (!libetonyek::KEYDocument::isSupported(input.get(), &type))
@@ -74,8 +76,9 @@ int main(int argc, char *argv[]) try
     input.reset(new conv::KEYDirectoryStream(path));
   }
 
-  libetonyek::KEYStringVector output;
-  if (!libetonyek::KEYDocument::generateSVG(input.get(), output))
+  librevenge::RVNGStringVector output;
+  librevenge::RVNGSVGPresentationGenerator generator(output);
+  if (!libetonyek::KEYDocument::parse(input.get(), &generator))
   {
     std::cerr << "ERROR: SVG Generation failed!" << std::endl;
     return 1;

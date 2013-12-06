@@ -9,7 +9,7 @@
 
 #include <cassert>
 
-#include <libwpd-stream/libwpd-stream.h>
+#include <librevenge-stream/librevenge-stream.h>
 
 #include <libxml/xmlreader.h>
 
@@ -25,7 +25,7 @@ extern "C" int readFromStream(void *context, char *buffer, int len)
 {
   try
   {
-    WPXInputStream *const input = reinterpret_cast<WPXInputStream *>(context);
+    librevenge::RVNGInputStream *const input = reinterpret_cast<librevenge::RVNGInputStream *>(context);
 
     unsigned long bytesRead = 0;
     const unsigned char *const bytes = input->read(len, bytesRead);
@@ -324,7 +324,7 @@ const KEYXMLReader::NodeIterator &KEYXMLReader::MixedIterator::getNodeIterator()
   return m_iterator;
 }
 
-KEYXMLReader::KEYXMLReader(WPXInputStream *const input)
+KEYXMLReader::KEYXMLReader(librevenge::RVNGInputStream *const input)
   : m_impl(new Impl())
   , m_owner(true)
 {
@@ -339,7 +339,7 @@ KEYXMLReader::KEYXMLReader(WPXInputStream *const input)
   }
 }
 
-KEYXMLReader::KEYXMLReader(WPXInputStream *const input, const TokenizerFunction_t tokenizer)
+KEYXMLReader::KEYXMLReader(librevenge::RVNGInputStream *const input, const TokenizerFunction_t tokenizer)
   : m_impl(new Impl())
   , m_owner(true)
 {
@@ -389,7 +389,7 @@ int KEYXMLReader::getToken(const char *token) const
   return m_impl->tokenizer(token);
 }
 
-void KEYXMLReader::initialize(WPXInputStream *const input)
+void KEYXMLReader::initialize(librevenge::RVNGInputStream *const input)
 {
   m_impl->reader = xmlReaderForIO(readFromStream, closeStream, input, "", 0, 0);
   if (!bool(m_impl->reader))

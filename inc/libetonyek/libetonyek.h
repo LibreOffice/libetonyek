@@ -11,8 +11,6 @@
 #define LIBETONYEK_LIBETONYEK_H_INCLUDED
 
 #include "KEYDocument.h"
-#include "KEYPresentationInterface.h"
-#include "KEYStringVector.h"
 
 #endif // LIBETONYEK_LIBETONYEK_H_INCLUDED
 

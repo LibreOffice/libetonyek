@@ -27,7 +27,7 @@ class ZlibStreamException
 {
 };
 
-WPXInputStreamPtr_t getInflatedStream(const WPXInputStreamPtr_t &input)
+RVNGInputStreamPtr_t getInflatedStream(const RVNGInputStreamPtr_t &input)
 {
   unsigned long offset = 2;
 
@@ -45,10 +45,10 @@ WPXInputStreamPtr_t getInflatedStream(const WPXInputStreamPtr_t &input)
     offset = 0;
 
   unsigned long begin = input->tell();
-  input->seek(0, WPX_SEEK_END);
+  input->seek(0, librevenge::RVNG_SEEK_END);
   unsigned long end = input->tell();
   unsigned long compressedSize = end - begin + offset;
-  input->seek(begin - offset, WPX_SEEK_SET);
+  input->seek(begin - offset, librevenge::RVNG_SEEK_SET);
 
   unsigned long numBytesRead = 0;
   unsigned char *compressedData = const_cast<unsigned char *>(input->read(compressedSize, numBytesRead));
@@ -57,7 +57,7 @@ WPXInputStreamPtr_t getInflatedStream(const WPXInputStreamPtr_t &input)
   {
     if (numBytesRead != compressedSize)
       throw ZlibStreamException();
-    return WPXInputStreamPtr_t(new KEYMemoryStream(compressedData, static_cast<unsigned>(compressedSize)));
+    return RVNGInputStreamPtr_t(new KEYMemoryStream(compressedData, static_cast<unsigned>(compressedSize)));
   }
   else
   {
@@ -99,16 +99,16 @@ WPXInputStreamPtr_t getInflatedStream(const WPXInputStreamPtr_t &input)
 
     (void)inflateEnd(&strm);
 
-    return WPXInputStreamPtr_t(new KEYMemoryStream(&data[0], strm.total_out));
+    return RVNGInputStreamPtr_t(new KEYMemoryStream(&data[0], strm.total_out));
   }
 }
 
 }
 
-KEYZlibStream::KEYZlibStream(const WPXInputStreamPtr_t &stream)
+KEYZlibStream::KEYZlibStream(const RVNGInputStreamPtr_t &stream)
   : m_stream()
 {
-  if (0 != stream->seek(0, WPX_SEEK_SET))
+  if (0 != stream->seek(0, librevenge::RVNG_SEEK_SET))
     throw EndOfStreamException();
 
   m_stream = getInflatedStream(stream);
@@ -118,12 +118,27 @@ KEYZlibStream::~KEYZlibStream()
 {
 }
 
-bool KEYZlibStream::isOLEStream()
+bool KEYZlibStream::isStructured()
 {
   return false;
 }
 
-WPXInputStream *KEYZlibStream::getDocumentOLEStream(const char *)
+unsigned KEYZlibStream::subStreamCount()
+{
+  return 0;
+}
+
+const char *KEYZlibStream::subStreamName(unsigned)
+{
+  return 0;
+}
+
+librevenge::RVNGInputStream *KEYZlibStream::getSubStreamByName(const char *)
+{
+  return 0;
+}
+
+librevenge::RVNGInputStream *KEYZlibStream::getSubStreamById(unsigned)
 {
   return 0;
 }
@@ -133,7 +148,7 @@ const unsigned char *KEYZlibStream::read(const unsigned long numBytes, unsigned 
   return m_stream->read(numBytes, numBytesRead);
 }
 
-int KEYZlibStream::seek(long offset, const WPX_SEEK_TYPE seekType)
+int KEYZlibStream::seek(long offset, const librevenge::RVNG_SEEK_TYPE seekType)
 {
   return m_stream->seek(offset, seekType);
 }
@@ -143,9 +158,9 @@ long KEYZlibStream::tell()
   return m_stream->tell();
 }
 
-bool KEYZlibStream::atEOS()
+bool KEYZlibStream::isEnd()
 {
-  return m_stream->atEOS();
+  return m_stream->isEnd();
 }
 
 }

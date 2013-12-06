@@ -6,8 +6,8 @@ AC_PREREQ([2.65])
 # Version informations
 # ====================
 m4_define([libetonyek_version_major],[0])
-m4_define([libetonyek_version_minor],[0])
-m4_define([libetonyek_version_micro],[3])
+m4_define([libetonyek_version_minor],[1])
+m4_define([libetonyek_version_micro],[0])
 m4_define([libetonyek_version],[libetonyek_version_major.libetonyek_version_minor.libetonyek_version_micro])
 
 # =============
@@ -43,15 +43,14 @@ if test -z "$GPERF"; then
     AC_MSG_ERROR([gperf not found but needed. Install it.])
 fi
 
-# ===========
-# Find libwpd
-# ===========
-PKG_CHECK_MODULES([WPD],[
-	libwpd-0.9
-	libwpd-stream-0.9
+# ===============
+# Find librevenge
+# ===============
+PKG_CHECK_MODULES([REVENGE],[
+	librevenge-0.0
 ])
-AC_SUBST(WPD_CFLAGS)
-AC_SUBST(WPD_LIBS)
+AC_SUBST([REVENGE_CFLAGS])
+AC_SUBST([REVENGE_LIBS])
 
 # ============
 # Find libxml2
@@ -282,6 +281,19 @@ AS_IF([test "x$with_tools" != "xno"], [
 	build_tools=yes
 ], [build_tools=no])
 AM_CONDITIONAL([WITH_LIBETONYEK_TOOLS], [test "x$build_tools" != "xno"])
+
+AS_IF([test "x$build_tools" != "xno"], [
+    PKG_CHECK_MODULES([REVENGE_GENERATORS],[
+        librevenge-generators-0.0
+    ])
+    PKG_CHECK_MODULES([REVENGE_STREAM],[
+        librevenge-stream-0.0
+    ])
+])
+AC_SUBST([REVENGE_GENERATORS_CFLAGS])
+AC_SUBST([REVENGE_GENERATORS_LIBS])
+AC_SUBST([REVENGE_STREAM_CFLAGS])
+AC_SUBST([REVENGE_STREAM_LIBS])
 
 # =====================
 # Prepare all .in files

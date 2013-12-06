@@ -58,7 +58,7 @@ unsigned getVersion(const int token)
 
 }
 
-KEY2Parser::KEY2Parser(const WPXInputStreamPtr_t &input, const WPXInputStreamPtr_t &package, KEYCollector *const collector, const KEYDefaults &defaults)
+KEY2Parser::KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector, const KEYDefaults &defaults)
   : KEYParser(input, collector, defaults)
   , KEY2ParserUtils()
   , m_package(package)
@@ -1428,7 +1428,7 @@ void KEY2Parser::parseData(const KEYXMLReader &reader)
 
   optional<ID_t> id;
   optional<string> displayName;
-  WPXInputStreamPtr_t stream;
+  RVNGInputStreamPtr_t stream;
   optional<unsigned> type;
 
   KEYXMLReader::AttributeIterator attr(reader);
@@ -1449,7 +1449,7 @@ void KEY2Parser::parseData(const KEYXMLReader &reader)
         type = lexical_cast<unsigned>(attr.getValue());
         break;
       case KEY2Token::path :
-        stream.reset(m_package->getDocumentOLEStream(attr.getValue()));
+        stream.reset(m_package->getSubStreamByName(attr.getValue()));
         break;
       default :
         break;
@@ -1669,7 +1669,7 @@ void KEY2Parser::parseOtherDatas(const KEYXMLReader &reader)
     case KEY2Token::NS_URI_SF | KEY2Token::data_ref :
     {
       const ID_t idref = readRef(element);
-      getCollector()->collectData(idref, WPXInputStreamPtr_t(), optional<string>(), optional<unsigned>(), true);
+      getCollector()->collectData(idref, RVNGInputStreamPtr_t(), optional<string>(), optional<unsigned>(), true);
       break;
     }
     default :

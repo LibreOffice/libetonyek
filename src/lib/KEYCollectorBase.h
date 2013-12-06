@@ -111,7 +111,7 @@ public:
   virtual void collectConnectionPath(const boost::optional<ID_t> &id, const KEYSize &size, double middleX, double middleY);
   virtual void collectCalloutPath(const boost::optional<ID_t> &id, const KEYSize &size, double radius, double tailSize, double tailX, double tailY, bool quoteBubble);
 
-  virtual void collectData(const boost::optional<ID_t> &id, const WPXInputStreamPtr_t &stream, const boost::optional<std::string> &displayName, const boost::optional<unsigned> &type, bool ref);
+  virtual void collectData(const boost::optional<ID_t> &id, const RVNGInputStreamPtr_t &stream, const boost::optional<std::string> &displayName, const boost::optional<unsigned> &type, bool ref);
   virtual void collectUnfiltered(const boost::optional<ID_t> &id, const boost::optional<KEYSize> &size, bool ref);
   virtual void collectFiltered(const boost::optional<ID_t> &id, const boost::optional<KEYSize> &size);
   virtual void collectLeveled(const boost::optional<ID_t> &id, const boost::optional<KEYSize> &size);

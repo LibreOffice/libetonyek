@@ -12,7 +12,7 @@
 
 #include <boost/function.hpp>
 
-class WPXInputStream;
+#include <librevenge-stream/librevenge-stream.h>
 
 namespace libetonyek
 {
@@ -126,8 +126,8 @@ public:
   typedef boost::function<int(const char *)> TokenizerFunction_t;
 
 public:
-  explicit KEYXMLReader(WPXInputStream *input);
-  KEYXMLReader(WPXInputStream *input, TokenizerFunction_t tokenizer);
+  explicit KEYXMLReader(librevenge::RVNGInputStream *input);
+  KEYXMLReader(librevenge::RVNGInputStream *input, TokenizerFunction_t tokenizer);
   KEYXMLReader(const ElementIterator &iterator);
   KEYXMLReader(const MixedIterator &iterator);
   ~KEYXMLReader();
@@ -147,7 +147,7 @@ public:
   int getToken(const char *token) const;
 
 private:
-  void initialize(WPXInputStream *input);
+  void initialize(librevenge::RVNGInputStream *input);
 
 private:
   Impl *const m_impl;

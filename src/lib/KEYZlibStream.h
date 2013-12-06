@@ -15,22 +15,25 @@
 namespace libetonyek
 {
 
-class KEYZlibStream : public WPXInputStream
+class KEYZlibStream : public librevenge::RVNGInputStream
 {
 public:
-  KEYZlibStream(const WPXInputStreamPtr_t &stream);
+  KEYZlibStream(const RVNGInputStreamPtr_t &stream);
   virtual ~KEYZlibStream();
 
-  virtual bool isOLEStream();
-  virtual WPXInputStream *getDocumentOLEStream(const char *name);
+  virtual bool isStructured();
+  virtual unsigned subStreamCount();
+  virtual const char *subStreamName(unsigned id);
+  virtual librevenge::RVNGInputStream *getSubStreamByName(const char *name);
+  virtual librevenge::RVNGInputStream *getSubStreamById(unsigned id);
 
   virtual const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
-  virtual int seek(long offset, WPX_SEEK_TYPE seekType);
+  virtual int seek(long offset, librevenge::RVNG_SEEK_TYPE seekType);
   virtual long tell();
-  virtual bool atEOS();
+  virtual bool isEnd();
 
 private:
-  WPXInputStreamPtr_t m_stream;
+  RVNGInputStreamPtr_t m_stream;
 };
 
 }

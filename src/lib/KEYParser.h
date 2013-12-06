@@ -26,7 +26,7 @@ class KEYParser
   KEYParser &operator=(const KEYParser &);
 
 public:
-  KEYParser(const WPXInputStreamPtr_t &input, KEYCollector *collector, const KEYDefaults &defaults);
+  KEYParser(const RVNGInputStreamPtr_t &input, KEYCollector *collector, const KEYDefaults &defaults);
   virtual ~KEYParser() = 0;
   bool parse();
 
@@ -40,7 +40,7 @@ private:
   bool processXmlDocument(const KEYXMLReader &reader);
 
 private:
-  WPXInputStreamPtr_t m_input;
+  RVNGInputStreamPtr_t m_input;
   KEYCollector *m_collector;
   const KEYDefaults &m_defaults;
 };

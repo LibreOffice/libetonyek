@@ -15,7 +15,7 @@
 namespace libetonyek
 {
 
-KEYParser::KEYParser(const WPXInputStreamPtr_t &input, KEYCollector *const collector, const KEYDefaults &defaults)
+KEYParser::KEYParser(const RVNGInputStreamPtr_t &input, KEYCollector *const collector, const KEYDefaults &defaults)
   : m_input(input)
   , m_collector(collector)
   , m_defaults(defaults)

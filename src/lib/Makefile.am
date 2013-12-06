@@ -11,13 +11,11 @@ lib_LTLIBRARIES = libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@.la
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_includedir = $(includedir)/libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@/libetonyek
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_include_HEADERS = \
 	$(top_srcdir)/inc/libetonyek/libetonyek.h \
-	$(top_srcdir)/inc/libetonyek/KEYDocument.h \
-	$(top_srcdir)/inc/libetonyek/KEYPresentationInterface.h \
-	$(top_srcdir)/inc/libetonyek/KEYStringVector.h
+	$(top_srcdir)/inc/libetonyek/KEYDocument.h
 
-AM_CXXFLAGS = -I$(top_srcdir)/inc $(WPD_CFLAGS) $(XML_CFLAGS) $(ZLIB_CFLAGS) $(BOOST_CFLAGS) $(DEBUG_CXXFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/inc $(REVENGE_CFLAGS) $(XML_CFLAGS) $(ZLIB_CFLAGS) $(BOOST_CFLAGS) $(DEBUG_CXXFLAGS)
 
-libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_LIBADD  = $(WPD_LIBS) $(XML_LIBS) $(ZLIB_LIBS) @LIBETONYEK_WIN32_RESOURCE@
+libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_LIBADD  = $(REVENGE_LIBS) $(XML_LIBS) $(ZLIB_LIBS) @LIBETONYEK_WIN32_RESOURCE@
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_DEPENDENCIES = @LIBETONYEK_WIN32_RESOURCE@
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_LDFLAGS = $(version_info) -export-dynamic -no-undefined
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
@@ -64,11 +62,8 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
 	KEYPath_fwd.h \
 	KEYPropertyMap.cpp \
 	KEYPropertyMap.h \
-	KEYSVGGenerator.cpp \
-	KEYSVGGenerator.h \
 	KEYShape.cpp \
 	KEYShape.h \
-	KEYStringVector.cpp \
 	KEYStyle.cpp \
 	KEYStyle.h \
 	KEYStyleContext.cpp \
@@ -92,8 +87,6 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
 	KEYTypes_fwd.h \
 	KEYXMLReader.cpp \
 	KEYXMLReader.h \
-	KEYZipStream.cpp \
-	KEYZipStream.h \
 	KEYZlibStream.cpp \
 	KEYZlibStream.h \
 	libetonyek_utils.cpp \

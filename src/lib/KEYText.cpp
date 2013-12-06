@@ -11,9 +11,7 @@
 
 #include <boost/optional.hpp>
 
-#include <libwpd/libwpd.h>
-
-#include <libetonyek/KEYPresentationInterface.h>
+#include <librevenge/librevenge.h>
 
 #include "KEYOutput.h"
 #include "KEYPath.h"
@@ -39,7 +37,7 @@ struct KEYText::Paragraph
 namespace
 {
 
-WPXString makeColor(const KEYColor &color)
+librevenge::RVNGString makeColor(const KEYColor &color)
 {
   // TODO: alpha
 
@@ -47,35 +45,13 @@ WPXString makeColor(const KEYColor &color)
   const unsigned g = color.green * 256 - 0.5;
   const unsigned b = color.blue * 256 - 0.5;
 
-  WPXString str;
+  librevenge::RVNGString str;
   str.sprintf("#%.2x%.2x%.2x", r, g, b);
 
   return str;
 }
 
-WPXPropertyListVector makeTabStops(const KEYParagraphStylePtr_t &style, const KEYStyleContext &context)
-{
-  WPXPropertyListVector tabs;
-
-  if (bool(style))
-  {
-    const optional<KEYTabStops_t> &tabStops = style->getTabs(context);
-
-    if (bool(tabStops))
-    {
-      for (KEYTabStops_t::const_iterator it = get(tabStops).begin(); get(tabStops).end() != it; ++it)
-      {
-        WPXPropertyList tab;
-        tab.insert("style:position", pt2in(it->pos));
-        tab.insert("style:type", "left");
-      }
-    }
-  }
-
-  return tabs;
-}
-
-void fillCharPropList(WPXPropertyList &props, const KEYCharacterStyle &style, const KEYStyleContext &context)
+void fillCharPropList(librevenge::RVNGPropertyList &props, const KEYCharacterStyle &style, const KEYStyleContext &context)
 {
   if (style.getItalic(context))
     props.insert("fo:font-style", "italic");
@@ -97,7 +73,7 @@ void fillCharPropList(WPXPropertyList &props, const KEYCharacterStyle &style, co
 
   const optional<string> fontName = style.getFontName(context);
   if (fontName)
-    props.insert("style:font-name", WPXString(get(fontName).c_str()));
+    props.insert("style:font-name", librevenge::RVNGString(get(fontName).c_str()));
 
   const optional<double> fontSize = style.getFontSize(context);
   if (fontSize)
@@ -114,9 +90,9 @@ KEYCharacterStyle makeEmptyStyle()
   return KEYCharacterStyle(KEYPropertyMap(), dummy, dummy);
 }
 
-WPXPropertyList makePropList(const KEYCharacterStylePtr_t &style, const KEYStyleContext &context)
+librevenge::RVNGPropertyList makePropList(const KEYCharacterStylePtr_t &style, const KEYStyleContext &context)
 {
-  WPXPropertyList props;
+  librevenge::RVNGPropertyList props;
 
   // Even if there is no character style for the span, there might still
   // be attributes inherited from the paragraph style through context.
@@ -126,9 +102,9 @@ WPXPropertyList makePropList(const KEYCharacterStylePtr_t &style, const KEYStyle
   return props;
 }
 
-WPXPropertyList makePropList(const KEYParagraphStylePtr_t &style, const KEYStyleContext &context)
+librevenge::RVNGPropertyList makePropList(const KEYParagraphStylePtr_t &style, const KEYStyleContext &context)
 {
-  WPXPropertyList props;
+  librevenge::RVNGPropertyList props;
 
   if (bool(style))
   {
@@ -149,6 +125,17 @@ WPXPropertyList makePropList(const KEYParagraphStylePtr_t &style, const KEYStyle
       case KEY_ALIGNMENT_JUSTIFY :
         props.insert("fo:text-align", "justify");
         break;
+      }
+    }
+
+    const optional<KEYTabStops_t> &tabStops = style->getTabs(context);
+    if (bool(tabStops))
+    {
+      for (KEYTabStops_t::const_iterator it = get(tabStops).begin(); get(tabStops).end() != it; ++it)
+      {
+        librevenge::RVNGPropertyList tab;
+        tab.insert("style:position", pt2in(it->pos));
+        tab.insert("style:type", "left");
       }
     }
   }
@@ -182,9 +169,9 @@ TextSpanObject::TextSpanObject(const KEYCharacterStylePtr_t &style, const string
 
 void TextSpanObject::draw(const KEYOutput &output)
 {
-  const WPXPropertyList props(makePropList(m_style, output.getStyleContext()));
+  const librevenge::RVNGPropertyList props(makePropList(m_style, output.getStyleContext()));
   output.getPainter()->openSpan(props);
-  output.getPainter()->insertText(WPXString(m_text.c_str()));
+  output.getPainter()->insertText(librevenge::RVNGString(m_text.c_str()));
   output.getPainter()->closeSpan();
 }
 
@@ -201,7 +188,7 @@ private:
 
 void TabObject::draw(const KEYOutput &output)
 {
-  output.getPainter()->openSpan(WPXPropertyList());
+  output.getPainter()->openSpan(librevenge::RVNGPropertyList());
   output.getPainter()->insertTab();
   output.getPainter()->closeSpan();
 }
@@ -231,8 +218,8 @@ LineBreakObject::LineBreakObject(const KEYParagraphStylePtr_t &paraStyle)
 void LineBreakObject::draw(const KEYOutput &output)
 {
   output.getPainter()->closeParagraph();
-  const WPXPropertyList props(makePropList(m_paraStyle, output.getStyleContext()));
-  output.getPainter()->openParagraph(props, WPXPropertyListVector());
+  const librevenge::RVNGPropertyList props(makePropList(m_paraStyle, output.getStyleContext()));
+  output.getPainter()->openParagraph(props);
 }
 
 }
@@ -267,7 +254,7 @@ void TextObject::draw(const KEYOutput &output)
 {
   const KEYTransformation tr = output.getTransformation();
 
-  WPXPropertyList props;
+  librevenge::RVNGPropertyList props;
 
   double x = 0;
   double y = 0;
@@ -293,14 +280,15 @@ void TextObject::draw(const KEYOutput &output)
   path.appendClose();
   path *= tr;
 
+  props.insert("svg:d", path.toWPG());
+
   if (m_object)
-    output.getPainter()->startTextObject(props, path.toWPG());
+    output.getPainter()->startTextObject(props);
 
   for (KEYText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
   {
-    const WPXPropertyList paraProps(makePropList((*it)->style, output.getStyleContext()));
-    const WPXPropertyListVector tabStops(makeTabStops((*it)->style, output.getStyleContext()));
-    output.getPainter()->openParagraph(paraProps, tabStops);
+    const librevenge::RVNGPropertyList paraProps(makePropList((*it)->style, output.getStyleContext()));
+    output.getPainter()->openParagraph(paraProps);
     const KEYOutput paraOutput(output, (*it)->style);
     drawAll((*it)->objects, paraOutput);
     output.getPainter()->closeParagraph();

@@ -508,7 +508,7 @@ void KEYCollectorBase::collectCalloutPath(const optional<ID_t> &, const KEYSize 
   }
 }
 
-void KEYCollectorBase::collectData(const boost::optional<ID_t> &id, const WPXInputStreamPtr_t &stream, const boost::optional<std::string> &displayName, const boost::optional<unsigned> &type, const bool ref)
+void KEYCollectorBase::collectData(const boost::optional<ID_t> &id, const RVNGInputStreamPtr_t &stream, const boost::optional<std::string> &displayName, const boost::optional<unsigned> &type, const bool ref)
 {
   if (m_collecting)
   {

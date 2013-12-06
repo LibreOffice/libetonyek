@@ -92,7 +92,7 @@ struct KEYLine
 
 struct KEYData
 {
-  WPXInputStreamPtr_t stream;
+  RVNGInputStreamPtr_t stream;
   boost::optional<std::string> displayName;
   boost::optional<int> type;
 

@@ -17,30 +17,33 @@
 namespace libetonyek
 {
 
-class KEYMemoryStream : public WPXInputStream
+class KEYMemoryStream : public librevenge::RVNGInputStream
 {
   // -Weffc++
   KEYMemoryStream(const KEYMemoryStream &other);
   KEYMemoryStream &operator=(const KEYMemoryStream &other);
 
 public:
-  explicit KEYMemoryStream(const WPXInputStreamPtr_t &input);
-  KEYMemoryStream(const WPXInputStreamPtr_t &input, unsigned length);
+  explicit KEYMemoryStream(const RVNGInputStreamPtr_t &input);
+  KEYMemoryStream(const RVNGInputStreamPtr_t &input, unsigned length);
   explicit KEYMemoryStream(std::vector<unsigned char> &data);
   KEYMemoryStream(const unsigned char *data, unsigned length);
   virtual ~KEYMemoryStream();
 
-  virtual bool isOLEStream();
-  virtual WPXInputStream *getDocumentOLEStream(const char *name);
+  virtual bool isStructured();
+  virtual unsigned subStreamCount();
+  virtual const char *subStreamName(unsigned id);
+  virtual librevenge::RVNGInputStream *getSubStreamByName(const char *name);
+  virtual librevenge::RVNGInputStream *getSubStreamById(unsigned id);
 
   virtual const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
-  virtual int seek(long offset, WPX_SEEK_TYPE seekType);
+  virtual int seek(long offset, librevenge::RVNG_SEEK_TYPE seekType);
   virtual long tell();
-  virtual bool atEOS();
+  virtual bool isEnd();
 
 private:
   void assign(const unsigned char *data, unsigned length);
-  void read(const WPXInputStreamPtr_t &input, unsigned length);
+  void read(const RVNGInputStreamPtr_t &input, unsigned length);
 
 private:
   const unsigned char *m_data;

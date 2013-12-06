@@ -32,18 +32,37 @@ KEYDirectoryStream::~KEYDirectoryStream()
 {
 }
 
-bool KEYDirectoryStream::isOLEStream()
+bool KEYDirectoryStream::isStructured()
 {
   return true;
 }
+unsigned KEYDirectoryStream::subStreamCount()
+{
+  // TODO: implement me
+  return 1;
+}
 
-WPXInputStream *KEYDirectoryStream::getDocumentOLEStream(const char *const name)
+const char *KEYDirectoryStream::subStreamName(unsigned id)
+{
+  // TODO: implement me
+  (void) id;
+  return 0;
+}
+
+librevenge::RVNGInputStream *KEYDirectoryStream::getSubStreamByName(const char *const name)
 {
   using boost::filesystem::path;
 
   const path filePath = m_path / name;
 
-  return is_regular_file(filePath) ? new WPXFileStream(filePath.string().c_str()) : 0;
+  return is_regular_file(filePath) ? new librevenge::RVNGFileStream(filePath.string().c_str()) : 0;
+}
+
+librevenge::RVNGInputStream *KEYDirectoryStream::getSubStreamById(unsigned id)
+{
+  // TODO: implement me
+  (void) id;
+  return 0;
 }
 
 const unsigned char *KEYDirectoryStream::read(const unsigned long, unsigned long &numBytesRead)
@@ -52,7 +71,7 @@ const unsigned char *KEYDirectoryStream::read(const unsigned long, unsigned long
   return 0;
 }
 
-int KEYDirectoryStream::seek(const long, const WPX_SEEK_TYPE)
+int KEYDirectoryStream::seek(const long, const librevenge::RVNG_SEEK_TYPE)
 {
   return -1;
 }
@@ -62,7 +81,7 @@ long KEYDirectoryStream::tell()
   return 0;
 }
 
-bool KEYDirectoryStream::atEOS()
+bool KEYDirectoryStream::isEnd()
 {
   return true;
 }

@@ -13,7 +13,7 @@
 #include <deque>
 #include <string>
 
-#include <libwpd/libwpd.h>
+#include <librevenge/librevenge.h>
 
 #include "libetonyek_utils.h"
 #include "KEYObject.h"
@@ -55,7 +55,7 @@ public:
 
   /** Create WPG representation of this path.
     */
-  WPXPropertyListVector toWPG() const;
+  librevenge::RVNGPropertyListVector toWPG() const;
 
 private:
   std::deque<Element *> m_elements;

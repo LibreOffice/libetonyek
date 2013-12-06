@@ -15,24 +15,27 @@
 #endif
 #include <boost/filesystem.hpp>
 
-#include <libwpd-stream/libwpd-stream.h>
+#include <librevenge-stream/librevenge-stream.h>
 
 namespace conv
 {
 
-class KEYDirectoryStream : public WPXInputStream
+class KEYDirectoryStream : public librevenge::RVNGInputStream
 {
 public:
   explicit KEYDirectoryStream(const boost::filesystem::path &path);
   virtual ~KEYDirectoryStream();
 
-  virtual bool isOLEStream();
-  virtual WPXInputStream *getDocumentOLEStream(const char *name);
+  virtual bool isStructured();
+  virtual unsigned subStreamCount();
+  virtual const char *subStreamName(unsigned id);
+  virtual librevenge::RVNGInputStream *getSubStreamByName(const char *name);
+  virtual librevenge::RVNGInputStream *getSubStreamById(unsigned id);
 
   virtual const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
-  virtual int seek(long offset, WPX_SEEK_TYPE seekType);
+  virtual int seek(long offset, librevenge::RVNG_SEEK_TYPE seekType);
   virtual long tell();
-  virtual bool atEOS();
+  virtual bool isEnd();
 
 private:
   boost::filesystem::path m_path;

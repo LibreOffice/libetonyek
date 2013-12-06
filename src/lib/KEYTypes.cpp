@@ -11,9 +11,7 @@
 
 #include <boost/optional.hpp>
 
-#include <libwpd/libwpd.h>
-
-#include <libetonyek/KEYPresentationInterface.h>
+#include <librevenge/librevenge.h>
 
 #include "libetonyek_utils.h"
 #include "KEYOutput.h"
@@ -39,9 +37,9 @@ const unsigned char SIGNATURE_QUICKTIME[] = { 'm', 'o', 'o', 'v' };
 const unsigned char SIGNATURE_TIFF_1[] = { 0x49, 0x49, 0x2a, 0x00 };
 const unsigned char SIGNATURE_TIFF_2[] = { 0x4d, 0x4d, 0x00, 0x2a };
 
-optional<string> detectMimetype(const WPXInputStreamPtr_t &stream)
+optional<string> detectMimetype(const RVNGInputStreamPtr_t &stream)
 {
-  stream->seek(0, WPX_SEEK_SET);
+  stream->seek(0, librevenge::RVNG_SEEK_SET);
 
   unsigned long numBytesRead = 0;
   const unsigned char *const sig = stream->read(8, numBytesRead);
@@ -69,7 +67,7 @@ optional<string> detectMimetype(const WPXInputStreamPtr_t &stream)
   return optional<string>();
 }
 
-optional<string> getMimetype(const optional<int> &type, const WPXInputStreamPtr_t &stream)
+optional<string> getMimetype(const optional<int> &type, const RVNGInputStreamPtr_t &stream)
 {
   if (type)
   {
@@ -249,9 +247,9 @@ KEYTabStop::KEYTabStop(double pos_)
 namespace
 {
 
-WPXPropertyList pointToWPG(const double x, const double y)
+librevenge::RVNGPropertyList pointToWPG(const double x, const double y)
 {
-  WPXPropertyList props;
+  librevenge::RVNGPropertyList props;
 
   props.insert("svg:x", pt2in(x));
   props.insert("svg:y", pt2in(y));
@@ -342,7 +340,7 @@ void LineObject::draw(const KEYOutput &output)
 
   if (m_line->x1 && m_line->y1 && m_line->x2 && m_line->y2)
   {
-    WPXPropertyList props;
+    librevenge::RVNGPropertyList props;
 #if 0
     if (line->style)
     {
@@ -356,12 +354,16 @@ void LineObject::draw(const KEYOutput &output)
       }
     }
 #endif
-    output.getPainter()->setStyle(props, WPXPropertyListVector());
+    output.getPainter()->setStyle(props);
 
-    WPXPropertyListVector vertices;
+    librevenge::RVNGPropertyListVector vertices;
     vertices.append(pointToWPG(get(m_line->x1), get(m_line->y1)));
     vertices.append(pointToWPG(get(m_line->x2), get(m_line->y2)));
-    output.getPainter()->drawPolyline(vertices);
+
+    librevenge::RVNGPropertyList points;
+    points.insert("svg:points", vertices);
+
+    output.getPainter()->drawPolyline(points);
   }
   else
   {
@@ -401,24 +403,25 @@ void MediaObject::draw(const KEYOutput &output)
   {
     const KEYOutput newOutput(output, makeTransformation(*m_media->geometry));
 
-    const WPXInputStreamPtr_t input = m_media->content->data->stream;
+    const RVNGInputStreamPtr_t input = m_media->content->data->stream;
 
     const optional<string> mimetype = getMimetype(m_media->content->data->type, input);
 
     if (mimetype)
     {
-      input->seek(0, WPX_SEEK_END);
+      input->seek(0, librevenge::RVNG_SEEK_END);
       const unsigned long size = input->tell();
-      input->seek(0, WPX_SEEK_SET);
+      input->seek(0, librevenge::RVNG_SEEK_SET);
 
       unsigned long readBytes = 0;
       const unsigned char *const bytes = input->read(size, readBytes);
       if (readBytes != size)
         throw GenericException();
 
-      WPXPropertyList props;
+      librevenge::RVNGPropertyList props;
 
       props.insert("libwpg:mime-type", get(mimetype).c_str());
+      props.insert("office:binary-data", librevenge::RVNGBinaryData(bytes, size));
 
       double x = 1;
       double y = 1;
@@ -433,7 +436,7 @@ void MediaObject::draw(const KEYOutput &output)
       props.insert("svg:width", pt2in(width));
       props.insert("svg:height", pt2in(height));
 
-      newOutput.getPainter()->drawGraphicObject(props, WPXBinaryData(bytes, size));
+      newOutput.getPainter()->drawGraphicObject(props);
     }
   }
 }

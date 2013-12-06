@@ -9,8 +9,6 @@
 
 #include <cassert>
 
-#include <libetonyek/KEYPresentationInterface.h>
-
 #include "libetonyek_utils.h"
 #include "KEYContentCollector.h"
 #include "KEYDefaults.h"
@@ -24,7 +22,7 @@ using boost::optional;
 namespace libetonyek
 {
 
-KEYContentCollector::KEYContentCollector(KEYPresentationInterface *const painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const KEYSize &size, const KEYDefaults &defaults)
+KEYContentCollector::KEYContentCollector(librevenge::RVNGPresentationInterface *const painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const KEYSize &size, const KEYDefaults &defaults)
   : KEYCollectorBase(dict, defaults)
   , m_painter(painter)
   , m_masterPages(masterPages)
@@ -33,8 +31,8 @@ KEYContentCollector::KEYContentCollector(KEYPresentationInterface *const painter
   , m_layerOpened(false)
   , m_layerCount(0)
 {
-  m_painter->setDocumentMetaData(WPXPropertyList());
-  m_painter->startDocument(WPXPropertyList());
+  m_painter->setDocumentMetaData(librevenge::RVNGPropertyList());
+  m_painter->startDocument(librevenge::RVNGPropertyList());
 }
 
 KEYContentCollector::~KEYContentCollector()
@@ -116,7 +114,7 @@ void KEYContentCollector::startPage()
 
     KEYCollectorBase::startPage();
 
-    WPXPropertyList props;
+    librevenge::RVNGPropertyList props;
     props.insert("svg:width", pt2in(m_size.width));
     props.insert("svg:height", pt2in(m_size.height));
 
@@ -149,7 +147,7 @@ void KEYContentCollector::startLayer()
 
     ++m_layerCount;
 
-    WPXPropertyList props;
+    librevenge::RVNGPropertyList props;
     props.insert("svg:id", m_layerCount);
 
     m_layerOpened = true;
@@ -194,7 +192,7 @@ void KEYContentCollector::drawNotes(const KEYObjectList_t &notes)
   KEYStyleContext styleContext;
   const KEYOutput output(m_painter, styleContext);
 
-  m_painter->startNotes(WPXPropertyList());
+  m_painter->startNotes(librevenge::RVNGPropertyList());
   for (KEYObjectList_t::const_iterator it = notes.begin(); notes.end() != it; ++it)
     (*it)->draw(output);
   m_painter->endNotes();
@@ -210,7 +208,7 @@ void KEYContentCollector::drawStickyNotes(const KEYStickyNotes_t &stickyNotes)
 
   for (KEYStickyNotes_t::const_iterator it = stickyNotes.begin(); stickyNotes.end() != it; ++it)
   {
-    WPXPropertyList props;
+    librevenge::RVNGPropertyList props;
 
     if (bool(it->geometry))
     {

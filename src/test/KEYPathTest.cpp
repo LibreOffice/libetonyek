@@ -33,14 +33,14 @@ string toSVG(const KEYPath &path)
 {
   std::ostringstream output;
 
-  const WPXPropertyListVector vec = path.toWPG();
+  const librevenge::RVNGPropertyListVector vec = path.toWPG();
 
   bool first = true;
 
-  WPXPropertyListVector::Iter it(vec);
+  librevenge::RVNGPropertyListVector::Iter it(vec);
   while (!it.last())
   {
-    const WPXPropertyList &element = it();
+    const librevenge::RVNGPropertyList &element = it();
 
     CPPUNIT_ASSERT(0 != element["libwpg:path-action"]);
 

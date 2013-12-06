@@ -9,9 +9,7 @@
 
 #include <boost/numeric/conversion/cast.hpp>
 
-#include <libetonyek/KEYPresentationInterface.h>
-
-#include <libwpd/libwpd.h>
+#include <librevenge/librevenge.h>
 
 #include "libetonyek_utils.h"
 #include "KEYOutput.h"
@@ -77,9 +75,9 @@ void KEYTable::setGeometry(const KEYGeometryPtr_t &geometry)
 
 void KEYTable::draw(const KEYOutput &output) const
 {
-  KEYPresentationInterface *const painter = output.getPainter();
+  librevenge::RVNGPresentationInterface *const painter = output.getPainter();
 
-  WPXPropertyList tableProps;
+  librevenge::RVNGPropertyList tableProps;
   tableProps.insert("table:align", "center");
 
   if (m_geometry)
@@ -99,21 +97,22 @@ void KEYTable::draw(const KEYOutput &output) const
     tableProps.insert("svg:height", pt2in(h));
   }
 
-  WPXPropertyListVector columnSizes;
+  librevenge::RVNGPropertyListVector columnSizes;
 
   for (ColumnSizes_t::const_iterator it = m_columnSizes.begin(); m_columnSizes.end() != it; ++it)
   {
-    WPXPropertyList column;
+    librevenge::RVNGPropertyList column;
     column.insert("style:column-width", pt2in(*it));
     columnSizes.append(column);
   }
+  tableProps.insert("librevenge:table-columns", columnSizes);
 
-  painter->openTable(tableProps, columnSizes);
+  painter->openTable(tableProps);
   for (std::size_t r = 0; m_table.size() != r; ++r)
   {
     const Row_t &row = m_table[r];
 
-    WPXPropertyList rowProps;
+    librevenge::RVNGPropertyList rowProps;
     rowProps.insert("style:row-height", pt2in(m_rowSizes[r]));
 
     painter->openTableRow(rowProps);
@@ -121,9 +120,9 @@ void KEYTable::draw(const KEYOutput &output) const
     {
       const Cell &cell = row[c];
 
-      WPXPropertyList cellProps;
-      cellProps.insert("libwpd:column", numeric_cast<int>(c));
-      cellProps.insert("libwpd:row", numeric_cast<int>(r));
+      librevenge::RVNGPropertyList cellProps;
+      cellProps.insert("librevenge:column", numeric_cast<int>(c));
+      cellProps.insert("librevenge:row", numeric_cast<int>(r));
       cellProps.insert("fo:vertical-align", "middle");
 
       if (cell.covered)

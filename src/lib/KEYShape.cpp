@@ -13,8 +13,6 @@
 
 #include <boost/math/constants/constants.hpp>
 
-#include <libetonyek/KEYPresentationInterface.h>
-
 #include "KEYOutput.h"
 #include "KEYPath.h"
 #include "KEYShape.h"
@@ -72,10 +70,13 @@ void ShapeObject::draw(const KEYOutput &output)
     KEYOutput newOutput(output, tr, m_shape->style);
     const KEYPath path = *m_shape->path * newOutput.getTransformation();
 
-    KEYPresentationInterface *const painter = output.getPainter();
+    librevenge::RVNGPresentationInterface *const painter = output.getPainter();
 
-    painter->setStyle(WPXPropertyList(), WPXPropertyListVector());
-    painter->drawPath(path.toWPG());
+    librevenge::RVNGPropertyList props;
+    props.insert("svg:d", path.toWPG());
+
+    painter->setStyle(librevenge::RVNGPropertyList());
+    painter->drawPath(props);
 
     if (bool(m_shape->text))
       makeObject(m_shape->text)->draw(newOutput);

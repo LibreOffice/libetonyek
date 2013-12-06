@@ -22,7 +22,7 @@ class KEYStyle;
 class KEY2Parser : public KEYParser, private KEY2ParserUtils
 {
 public:
-  KEY2Parser(const WPXInputStreamPtr_t &input, const WPXInputStreamPtr_t &package, KEYCollector *collector, const KEYDefaults &defaults);
+  KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *collector, const KEYDefaults &defaults);
   virtual ~KEY2Parser();
 
   // NOTE: KEY2TableParser uses these to avoid code duplication
@@ -90,7 +90,7 @@ private:
   void emitLayoutStyle(const ID_t &id);
 
 private:
-  WPXInputStreamPtr_t m_package;
+  RVNGInputStreamPtr_t m_package;
   unsigned m_version;
 };
 

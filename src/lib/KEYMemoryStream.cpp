@@ -15,24 +15,24 @@
 namespace libetonyek
 {
 
-KEYMemoryStream::KEYMemoryStream(const WPXInputStreamPtr_t &input)
+KEYMemoryStream::KEYMemoryStream(const RVNGInputStreamPtr_t &input)
   : m_data(0)
   , m_length(0)
   , m_pos(0)
 {
   const unsigned long begin = input->tell();
-  if (input->seek(0, WPX_SEEK_END))
+  if (input->seek(0, librevenge::RVNG_SEEK_END))
   {
-    while (!input->atEOS())
+    while (!input->isEnd())
       readU8(input);
   }
   const unsigned long end = input->tell();
-  input->seek(begin, WPX_SEEK_SET);
+  input->seek(begin, librevenge::RVNG_SEEK_SET);
 
   read(input, static_cast<unsigned>(end - begin));
 }
 
-KEYMemoryStream::KEYMemoryStream(const WPXInputStreamPtr_t &input, const unsigned length)
+KEYMemoryStream::KEYMemoryStream(const RVNGInputStreamPtr_t &input, const unsigned length)
   : m_data(0)
   , m_length(0)
   , m_pos(0)
@@ -64,12 +64,27 @@ KEYMemoryStream::~KEYMemoryStream()
   delete[] m_data;
 }
 
-bool KEYMemoryStream::isOLEStream()
+bool KEYMemoryStream::isStructured()
 {
   return false;
 }
 
-WPXInputStream *KEYMemoryStream::getDocumentOLEStream(const char *)
+unsigned KEYMemoryStream::subStreamCount()
+{
+  return 0;
+}
+
+const char *KEYMemoryStream::subStreamName(unsigned)
+{
+  return 0;
+}
+
+librevenge::RVNGInputStream *KEYMemoryStream::getSubStreamByName(const char *)
+{
+  return 0;
+}
+
+librevenge::RVNGInputStream *KEYMemoryStream::getSubStreamById(unsigned)
 {
   return 0;
 }
@@ -95,18 +110,18 @@ catch (...)
   return 0;
 }
 
-int KEYMemoryStream::seek(const long offset, WPX_SEEK_TYPE seekType) try
+int KEYMemoryStream::seek(const long offset, librevenge::RVNG_SEEK_TYPE seekType) try
 {
   long pos = 0;
   switch (seekType)
   {
-  case WPX_SEEK_SET :
+  case librevenge::RVNG_SEEK_SET :
     pos = offset;
     break;
-  case WPX_SEEK_CUR :
+  case librevenge::RVNG_SEEK_CUR :
     pos = offset + m_pos;
     break;
-  case WPX_SEEK_END :
+  case librevenge::RVNG_SEEK_END :
     pos = offset + m_length;
     break;
   default :
@@ -129,7 +144,7 @@ long KEYMemoryStream::tell()
   return m_pos;
 }
 
-bool KEYMemoryStream::atEOS()
+bool KEYMemoryStream::isEnd()
 {
   return m_length == m_pos;
 }
@@ -141,7 +156,7 @@ void KEYMemoryStream::assign(const unsigned char *const data, const unsigned len
   m_data = buffer;
 }
 
-void KEYMemoryStream::read(const WPXInputStreamPtr_t &input, const unsigned length)
+void KEYMemoryStream::read(const RVNGInputStreamPtr_t &input, const unsigned length)
 {
   unsigned long readBytes = 0;
   const unsigned char *const data = bool(input) ? input->read(length, readBytes) : 0;

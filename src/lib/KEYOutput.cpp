@@ -13,7 +13,7 @@
 namespace libetonyek
 {
 
-KEYOutput::KEYOutput(KEYPresentationInterface *const painter, KEYStyleContext &context)
+KEYOutput::KEYOutput(librevenge::RVNGPresentationInterface *const painter, KEYStyleContext &context)
   : m_painter(painter)
   , m_styleContext(context)
   , m_transformation()
@@ -63,7 +63,7 @@ KEYOutput::~KEYOutput()
     m_styleContext.pop();
 }
 
-KEYPresentationInterface *KEYOutput::getPainter() const
+librevenge::RVNGPresentationInterface *KEYOutput::getPainter() const
 {
   return m_painter;
 }

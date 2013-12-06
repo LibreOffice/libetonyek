@@ -23,8 +23,6 @@
 #include "KEYDefaults.h"
 #include "KEYDictionary.h"
 #include "KEYThemeCollector.h"
-#include "KEYSVGGenerator.h"
-#include "KEYZipStream.h"
 #include "KEYZlibStream.h"
 
 using boost::scoped_ptr;
@@ -60,9 +58,9 @@ enum Source
   SOURCE_KEY
 };
 
-Version detectVersionFromInput(const WPXInputStreamPtr_t &input)
+Version detectVersionFromInput(const RVNGInputStreamPtr_t &input)
 {
-  if (input->atEOS())
+  if (input->isEnd())
     return VERSION_UNKNOWN;
 
   const KEY2Tokenizer tokenizer = KEY2Tokenizer();
@@ -90,53 +88,41 @@ Version detectVersionFromInput(const WPXInputStreamPtr_t &input)
   return VERSION_UNKNOWN;
 }
 
-Version detectVersion(const WPXInputStreamPtr_t &input, Source &source)
+Version detectVersion(const RVNGInputStreamPtr_t &input, Source &source)
 {
   source = SOURCE_UNKNOWN;
 
   // check if this is a package
-  if (input->isOLEStream())
+  if (input->isStructured())
   {
-    scoped_ptr<WPXInputStream> apxl;
+    scoped_ptr<librevenge::RVNGInputStream> apxl;
 
-    apxl.reset(input->getDocumentOLEStream("index.apxl.gz"));
+    apxl.reset(input->getSubStreamByName("index.apxl.gz"));
     if (bool(apxl))
     {
       source = SOURCE_PACKAGE_APXL_GZ;
       return VERSION_KEYNOTE_5;
     }
 
-    apxl.reset(input->getDocumentOLEStream("presentation.apxl.gz"));
+    apxl.reset(input->getSubStreamByName("presentation.apxl.gz"));
     if (bool(apxl))
     {
       source = SOURCE_PACKAGE_APXL_GZ;
       return VERSION_KEYNOTE_1;
     }
 
-    apxl.reset(input->getDocumentOLEStream("index.apxl"));
+    apxl.reset(input->getSubStreamByName("index.apxl"));
     if (bool(apxl))
     {
       source = SOURCE_PACKAGE_APXL;
       return VERSION_KEYNOTE_5;
     }
 
-    apxl.reset(input->getDocumentOLEStream("presentation.apxl"));
+    apxl.reset(input->getSubStreamByName("presentation.apxl"));
     if (bool(apxl))
     {
       source = SOURCE_PACKAGE_APXL;
       return VERSION_KEYNOTE_1;
-    }
-  }
-
-  // check if this is a zip file (Keynote 09)
-  KEYZipStream zipInput(input);
-  if (zipInput.isOLEStream())
-  {
-    scoped_ptr<WPXInputStream> apxl(zipInput.getDocumentOLEStream("index.apxl"));
-    if (bool(apxl))
-    {
-      source = SOURCE_KEY;
-      return VERSION_KEYNOTE_5;
     }
   }
 
@@ -144,7 +130,7 @@ Version detectVersion(const WPXInputStreamPtr_t &input, Source &source)
   {
     KEYZlibStream compressedInput(input);
     source = SOURCE_APXL_GZ;
-    return detectVersionFromInput(WPXInputStreamPtr_t(&compressedInput, KEYDummyDeleter()));
+    return detectVersionFromInput(RVNGInputStreamPtr_t(&compressedInput, KEYDummyDeleter()));
   }
   catch (...)
   {
@@ -175,7 +161,7 @@ KEYDefaults *makeDefaults(const Version version)
   return 0;
 }
 
-shared_ptr<KEYParser> makeParser(const Version version, const WPXInputStreamPtr_t &input, const WPXInputStreamPtr_t &package, KEYCollector *const collector, const KEYDefaults &defaults)
+shared_ptr<KEYParser> makeParser(const Version version, const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector, const KEYDefaults &defaults)
 {
   shared_ptr<KEYParser> parser;
 
@@ -200,13 +186,13 @@ shared_ptr<KEYParser> makeParser(const Version version, const WPXInputStreamPtr_
 
 }
 
-bool KEYDocument::isSupported(WPXInputStream *const input, KEYDocumentType *type) try
+bool KEYDocument::isSupported(librevenge::RVNGInputStream *const input, KEYDocumentType *type) try
 {
   if (type)
     *type = KEY_DOCUMENT_TYPE_UNKNOWN;
 
   Source source = SOURCE_UNKNOWN;
-  const Version version = detectVersion(WPXInputStreamPtr_t(input, KEYDummyDeleter()), source);
+  const Version version = detectVersion(RVNGInputStreamPtr_t(input, KEYDummyDeleter()), source);
 
   if ((VERSION_UNKNOWN != version) && type)
   {
@@ -234,9 +220,9 @@ catch (...)
   return false;
 }
 
-bool KEYDocument::parse(::WPXInputStream *const input, KEYPresentationInterface *const generator) try
+bool KEYDocument::parse(librevenge::RVNGInputStream *const input, librevenge::RVNGPresentationInterface *const generator) try
 {
-  WPXInputStreamPtr_t input_(input, KEYDummyDeleter());
+  RVNGInputStreamPtr_t input_(input, KEYDummyDeleter());
 
   Source source = SOURCE_UNKNOWN;
   const Version version = detectVersion(input_, source);
@@ -244,24 +230,24 @@ bool KEYDocument::parse(::WPXInputStream *const input, KEYPresentationInterface 
   if (VERSION_UNKNOWN == version)
     return false;
 
-  WPXInputStreamPtr_t package;
+  RVNGInputStreamPtr_t package;
   switch (source)
   {
   case SOURCE_PACKAGE_APXL :
     package = input_;
-    input_.reset(package->getDocumentOLEStream((VERSION_KEYNOTE_1 == version) ? "presentation.apxl" : "index.apxl"));
+    input_.reset(package->getSubStreamByName((VERSION_KEYNOTE_1 == version) ? "presentation.apxl" : "index.apxl"));
     break;
   case SOURCE_PACKAGE_APXL_GZ :
   {
     package = input_;
-    const WPXInputStreamPtr_t compressed(
-      package->getDocumentOLEStream((VERSION_KEYNOTE_1 == version) ? "presentation.apxl.gz" : "index.apxl.gz"));
+    const RVNGInputStreamPtr_t compressed(
+      package->getSubStreamByName((VERSION_KEYNOTE_1 == version) ? "presentation.apxl.gz" : "index.apxl.gz"));
     input_.reset(new KEYZlibStream(compressed));
     break;
   }
   case SOURCE_KEY :
-    package.reset(new KEYZipStream(input_));
-    input_.reset(package->getDocumentOLEStream("index.apxl"));
+    package = input_;
+    input_.reset(package->getSubStreamByName("index.apxl"));
     break;
   default :
     // nothing
@@ -273,29 +259,18 @@ bool KEYDocument::parse(::WPXInputStream *const input, KEYPresentationInterface 
   KEYSize presentationSize;
   const scoped_ptr<KEYDefaults> defaults(makeDefaults(version));
 
-  input_->seek(0, WPX_SEEK_SET);
+  input_->seek(0, librevenge::RVNG_SEEK_SET);
 
   KEYThemeCollector themeCollector(dict, masterPages, presentationSize, *defaults);
   shared_ptr<KEYParser> parser = makeParser(version, input_, package, &themeCollector, *defaults);
   if (!parser->parse())
     return false;
 
-  input_->seek(0, WPX_SEEK_SET);
+  input_->seek(0, librevenge::RVNG_SEEK_SET);
 
   KEYContentCollector contentCollector(generator, dict, masterPages, presentationSize, *defaults);
   parser = makeParser(version, input_, package, &contentCollector, *defaults);
   return parser->parse();
-}
-catch (...)
-{
-  return false;
-}
-
-bool KEYDocument::generateSVG(::WPXInputStream *const input, KEYStringVector &output) try
-{
-  KEYSVGGenerator generator(output);
-  bool result = KEYDocument::parse(input, &generator);
-  return result;
 }
 catch (...)
 {

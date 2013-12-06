@@ -16,7 +16,6 @@
 namespace libetonyek
 {
 
-class KEYPresentationInterface;
 class KEYStyleContext;
 
 /** A context for drawing instances of @c KEYObject.
@@ -35,7 +34,7 @@ public:
     * @arg[in] painter a painter
     * @arg[in] context a style context
     */
-  KEYOutput(KEYPresentationInterface *painter, KEYStyleContext &context);
+  KEYOutput(librevenge::RVNGPresentationInterface *painter, KEYStyleContext &context);
 
   /** Apply a transformation to the current output.
     *
@@ -84,7 +83,7 @@ public:
     *
     * @return the painter
     */
-  KEYPresentationInterface *getPainter() const;
+  librevenge::RVNGPresentationInterface *getPainter() const;
 
   /** Get the current transformation.
     *
@@ -99,7 +98,7 @@ public:
   const KEYStyleContext &getStyleContext() const;
 
 private:
-  KEYPresentationInterface *const m_painter;
+  librevenge::RVNGPresentationInterface *const m_painter;
   KEYStyleContext &m_styleContext;
   KEYTransformation m_transformation;
   bool m_stylePushed;
