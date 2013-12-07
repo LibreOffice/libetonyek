@@ -37,10 +37,13 @@ int main(int argc, char *argv[]) try
     return printUsage();
 
   char *file = 0;
+  bool printCallgraph = false;
 
   for (int i = 1; i < argc; i++)
   {
-    if (!file && strncmp(argv[i], "--", 2))
+    if (0 == strcmp(argv[i], "--callgraph"))
+      printCallgraph = true;
+    else if (!file && strncmp(argv[i], "--", 2))
       file = argv[i];
     else
       return printUsage();
@@ -72,7 +75,7 @@ int main(int argc, char *argv[]) try
     input.reset(new conv::KEYDirectoryStream(path));
   }
 
-  librevenge::RVNGRawPresentationGenerator painter(false);
+  librevenge::RVNGRawPresentationGenerator painter(printCallgraph);
   if (!libetonyek::KEYDocument::parse(input.get(), &painter))
   {
     fprintf(stderr, "ERROR: Parsing failed!\n");
