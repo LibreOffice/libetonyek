@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
   fs::path path(file);
   shared_ptr<librevenge::RVNGInputStream> input;
   if (is_directory(path))
-    input.reset(new conv::PAGESDirectoryStream(path));
+    input.reset(new conv::KEYDirectoryStream(path));
   else
     input.reset(new librevenge::RVNGFileStream(file));
 
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
   if (libetonyek::PAGES_DOCUMENT_TYPE_MAIN_FILE == type)
   {
     path.remove_filename();
-    input.reset(new conv::PAGESDirectoryStream(path));
+    input.reset(new conv::KEYDirectoryStream(path));
   }
 
   librevenge::RVNGString output;
