@@ -2,9 +2,8 @@
 .libs
 *.lo
 *.la
-*.o
-*.rc
-KEY?Token.inc
-PAGESToken.inc
 Makefile
 Makefile.in
+pages2html
+pages2html.exe
+pages2html.rc

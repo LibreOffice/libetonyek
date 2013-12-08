@@ -11,6 +11,7 @@
 #define LIBETONYEK_LIBETONYEK_H_INCLUDED
 
 #include "KEYDocument.h"
+#include "PAGESDocument.h"
 
 #endif // LIBETONYEK_LIBETONYEK_H_INCLUDED
 

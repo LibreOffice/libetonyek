@@ -6,4 +6,6 @@ Makefile
 Makefile.in
 key2text
 key2text.exe
+pages2text
+pages2text.exe
 *.rc
