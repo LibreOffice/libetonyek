@@ -1,4 +1,4 @@
-BUILT_SOURCES = KEY1Token.inc KEY2Token.inc PAGESToken.inc
+BUILT_SOURCES = KEY1Token.inc KEY2Token.inc NUMBERSToken.inc PAGESToken.inc
 GPERFFLAGS = --compare-strncmp --enum --null-strings --readonly-tables
 
 if PLATFORM_WIN32
@@ -12,6 +12,7 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_includedir = $(includ
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_include_HEADERS = \
 	$(top_srcdir)/inc/libetonyek/libetonyek.h \
 	$(top_srcdir)/inc/libetonyek/KEYDocument.h \
+	$(top_srcdir)/inc/libetonyek/NUMBERSDocument.h \
 	$(top_srcdir)/inc/libetonyek/PAGESDocument.h
 
 AM_CXXFLAGS = -I$(top_srcdir)/inc $(REVENGE_CFLAGS) $(XML_CFLAGS) $(ZLIB_CFLAGS) $(BOOST_CFLAGS) $(DEBUG_CXXFLAGS)
@@ -90,6 +91,13 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
 	KEYXMLReader.h \
 	KEYZlibStream.cpp \
 	KEYZlibStream.h \
+	NUMBERSCollector.cpp \
+	NUMBERSCollector.h \
+	NUMBERSDocument.cpp \
+	NUMBERSParser.cpp \
+	NUMBERSParser.h \
+	NUMBERSToken.cpp \
+	NUMBERSToken.h \
 	PAGESCollector.cpp \
 	PAGESCollector.h \
 	PAGESDocument.cpp \
@@ -116,6 +124,7 @@ distclean-local :
 EXTRA_DIST = \
 	KEY1Token.gperf \
 	KEY2Token.gperf \
+	NUMBERSToken.gperf \
 	PAGESToken.gperf \
 	libetonyek.rc.in
 
@@ -125,6 +134,7 @@ BUILD_EXTRA_DIST = \
 
 KEY1Token.cpp : KEY1Token.inc
 KEY2Token.cpp : KEY2Token.inc
+NUMBERSToken.cpp : NUMBERSToken.inc
 PAGESToken.cpp : PAGESToken.inc
 
 %.inc : %.gperf

@@ -6,6 +6,8 @@ Makefile
 Makefile.in
 key2raw
 key2raw.exe
+numbers2raw
+numbers2raw.exe
 pages2raw
 pages2raw.exe
 *.rc

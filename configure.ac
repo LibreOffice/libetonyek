@@ -123,6 +123,9 @@ AS_CASE([$host],
 		KEY2RAW_WIN32_RESOURCE=key2raw-win32res.lo
 		KEY2TEXT_WIN32_RESOURCE=key2text-win32res.lo
 		KEY2XHTML_WIN32_RESOURCE=key2xhtml-win32res.lo
+		NUMBERS2CSV_WIN32_RESOURCE=numbers2csv-win32res.lo
+		NUMBERS2RAW_WIN32_RESOURCE=numbers2raw-win32res.lo
+		NUMBERS2TEXT_WIN32_RESOURCE=numbers2text-win32res.lo
 		PAGES2HTML_WIN32_RESOURCE=pages2html-win32res.lo
 		PAGES2RAW_WIN32_RESOURCE=pages2raw-win32res.lo
 		PAGES2TEXT_WIN32_RESOURCE=pages2text-win32res.lo
@@ -132,6 +135,9 @@ AS_CASE([$host],
 		KEY2RAW_WIN32_RESOURCE=
 		KEY2TEXT_WIN32_RESOURCE=
 		KEY2XHTML_WIN32_RESOURCE=
+		NUMBERS2CSV_WIN32_RESOURCE=
+		NUMBERS2RAW_WIN32_RESOURCE=
+		NUMBERS2TEXT_WIN32_RESOURCE=
 		PAGES2HTML_WIN32_RESOURCE=
 		PAGES2RAW_WIN32_RESOURCE=
 		PAGES2TEXT_WIN32_RESOURCE=
@@ -143,6 +149,9 @@ AC_SUBST(LIBETONYEK_WIN32_RESOURCE)
 AC_SUBST(KEY2RAW_WIN32_RESOURCE)
 AC_SUBST(KEY2TEXT_WIN32_RESOURCE)
 AC_SUBST(KEY2XHTML_WIN32_RESOURCE)
+AC_SUBST(NUMBERS2CSV_WIN32_RESOURCE)
+AC_SUBST(NUMBERS2RAW_WIN32_RESOURCE)
+AC_SUBST(NUMBERS2TEXT_WIN32_RESOURCE)
 AC_SUBST(PAGES2HTML_WIN32_RESOURCE)
 AC_SUBST(PAGES2RAW_WIN32_RESOURCE)
 AC_SUBST(PAGES2TEXT_WIN32_RESOURCE)
@@ -315,15 +324,19 @@ Makefile
 src/Makefile
 src/conv/Makefile
 src/conv/common/Makefile
+src/conv/csv/numbers2csv.rc
+src/conv/csv/Makefile
 src/conv/html/Makefile
 src/conv/html/pages2html.rc
 src/conv/raw/Makefile
 src/conv/raw/key2raw.rc
+src/conv/raw/numbers2raw.rc
 src/conv/raw/pages2raw.rc
 src/conv/svg/Makefile
 src/conv/svg/key2xhtml.rc
 src/conv/text/Makefile
 src/conv/text/key2text.rc
+src/conv/text/numbers2text.rc
 src/conv/text/pages2text.rc
 src/lib/Makefile
 src/lib/libetonyek.rc

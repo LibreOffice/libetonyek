@@ -6,5 +6,6 @@
 *.rc
 KEY?Token.inc
 PAGESToken.inc
+NUMBERSToken.inc
 Makefile
 Makefile.in

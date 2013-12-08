@@ -1,0 +1,31 @@
+#include <winver.h>
+
+VS_VERSION_INFO VERSIONINFO
+  FILEVERSION @ETONYEK_MAJOR_VERSION@,@ETONYEK_MINOR_VERSION@,@ETONYEK_MICRO_VERSION@,BUILDNUMBER
+  PRODUCTVERSION @ETONYEK_MAJOR_VERSION@,@ETONYEK_MINOR_VERSION@,@ETONYEK_MICRO_VERSION@,0
+  FILEFLAGSMASK 0
+  FILEFLAGS 0
+  FILEOS VOS__WINDOWS32
+  FILETYPE VFT_APP
+  FILESUBTYPE VFT2_UNKNOWN
+  BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+      BLOCK "040904B0"
+      BEGIN
+	VALUE "CompanyName", "The libetonyek developer community"
+	VALUE "FileDescription", "numbers2raw"
+	VALUE "FileVersion", "@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@.@ETONYEK_MICRO_VERSION@.BUILDNUMBER"
+	VALUE "InternalName", "numbers2raw"
+	VALUE "LegalCopyright", "Copyright (C) 2013 David Tardon, other contributors"
+	VALUE "OriginalFilename", "numbers2raw.exe"
+	VALUE "ProductName", "libetonyek"
+	VALUE "ProductVersion", "@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@.@ETONYEK_MICRO_VERSION@"
+      END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+      VALUE "Translation", 0x409, 1200
+    END
+  END
+
