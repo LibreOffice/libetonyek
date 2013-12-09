@@ -432,7 +432,7 @@ void KEYXMLReaderTest::testTokenizer()
   CPPUNIT_ASSERT_EQUAL(1 + 8, getId(reader));
 
   KEYXMLReader::AttributeIterator attrs(reader);
-  attrs.next();
+  CPPUNIT_ASSERT(attrs.next());
 
   CPPUNIT_ASSERT_EQUAL(2, getNameId(attrs));
   CPPUNIT_ASSERT_EQUAL(16, getNamespaceId(attrs));
@@ -440,7 +440,7 @@ void KEYXMLReaderTest::testTokenizer()
   CPPUNIT_ASSERT_EQUAL(3, getValueId(attrs));
 
   KEYXMLReader::ElementIterator elements(reader);
-  elements.next();
+  CPPUNIT_ASSERT(elements.next());
 
   CPPUNIT_ASSERT_EQUAL(4, getNameId(elements));
   CPPUNIT_ASSERT_EQUAL(32, getNamespaceId(elements));
@@ -451,7 +451,7 @@ void KEYXMLReaderTest::testTokenizer()
   CPPUNIT_ASSERT_EQUAL(32, getNamespaceId(nested));
   CPPUNIT_ASSERT_EQUAL(4 + 32, getId(nested));
 
-  elements.next();
+  CPPUNIT_ASSERT(elements.next());
   CPPUNIT_ASSERT_EQUAL(4, getNameId(elements));
   CPPUNIT_ASSERT_EQUAL(0, getNamespaceId(elements));
   CPPUNIT_ASSERT_EQUAL(4, getId(elements));
