@@ -166,9 +166,11 @@ void KEYMemoryStream::read(const RVNGInputStreamPtr_t &input, const unsigned len
 {
   if (0 == length)
     return;
+  if (!bool(input))
+    throw EndOfStreamException();
 
   unsigned long readBytes = 0;
-  const unsigned char *const data = bool(input) ? input->read(length, readBytes) : 0;
+  const unsigned char *const data = input->read(length, readBytes);
   if (length != readBytes)
     throw EndOfStreamException();
 
