@@ -8,6 +8,7 @@
  */
 
 #include <algorithm>
+#include <cassert>
 
 #include "libetonyek_utils.h"
 #include "KEYMemoryStream.h"
@@ -56,6 +57,9 @@ KEYMemoryStream::KEYMemoryStream(const unsigned char *const data, const unsigned
   , m_length(length)
   , m_pos(0)
 {
+  if (0 == length)
+    throw GenericException();
+
   assign(data, length);
 }
 
@@ -151,6 +155,8 @@ bool KEYMemoryStream::isEnd()
 
 void KEYMemoryStream::assign(const unsigned char *const data, const unsigned length)
 {
+  assert(0 != length);
+
   unsigned char *buffer = new unsigned char[length];
   std::copy(data, data + length, buffer);
   m_data = buffer;
@@ -158,6 +164,9 @@ void KEYMemoryStream::assign(const unsigned char *const data, const unsigned len
 
 void KEYMemoryStream::read(const RVNGInputStreamPtr_t &input, const unsigned length)
 {
+  if (0 == length)
+    return;
+
   unsigned long readBytes = 0;
   const unsigned char *const data = bool(input) ? input->read(length, readBytes) : 0;
   if (length != readBytes)
