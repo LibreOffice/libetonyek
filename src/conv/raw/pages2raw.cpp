@@ -10,13 +10,13 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <boost/shared_ptr.hpp>
+
 #include <librevenge/librevenge.h>
 #include <librevenge-generators/librevenge-generators.h>
 #include <librevenge-stream/librevenge-stream.h>
 
 #include <libetonyek/libetonyek.h>
-
-#include "KEYDirectoryStream.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -74,12 +74,10 @@ int main(int argc, char *argv[])
     return printUsage();
 
   using boost::shared_ptr;
-  namespace fs = boost::filesystem;
 
-  fs::path path(file);
   shared_ptr<librevenge::RVNGInputStream> input;
-  if (is_directory(path))
-    input.reset(new conv::KEYDirectoryStream(path));
+  if (librevenge::RVNGDirectoryStream::isDirectory(file))
+    input.reset(new librevenge::RVNGDirectoryStream(file));
   else
     input.reset(new librevenge::RVNGFileStream(file));
 
@@ -91,10 +89,7 @@ int main(int argc, char *argv[])
   }
 
   if (libetonyek::PAGES_DOCUMENT_TYPE_MAIN_FILE == type)
-  {
-    path.remove_filename();
-    input.reset(new conv::KEYDirectoryStream(path));
-  }
+    input.reset(librevenge::RVNGDirectoryStream::createForParent(file));
 
   librevenge::RVNGRawTextGenerator documentGenerator(printIndentLevel);
 
