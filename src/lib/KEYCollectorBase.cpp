@@ -146,9 +146,9 @@ void KEYCollectorBase::collectCellStyle(const boost::optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectCharacterStyle(const optional<ID_t> &id,
-    const boost::optional<KEYPropertyMap> &props,
-    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-    const bool ref, const bool anonymous)
+                                             const boost::optional<KEYPropertyMap> &props,
+                                             const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                             const bool ref, const bool anonymous)
 {
   if (m_collecting)
   {
@@ -171,9 +171,9 @@ void KEYCollectorBase::collectCharacterStyle(const optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectConnectionStyle(const boost::optional<ID_t> &id,
-    const boost::optional<KEYPropertyMap> &props,
-    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-    const bool ref, const bool anonymous)
+                                              const boost::optional<KEYPropertyMap> &props,
+                                              const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                              const bool ref, const bool anonymous)
 {
   // TODO: implement me
   (void) id;
@@ -185,9 +185,9 @@ void KEYCollectorBase::collectConnectionStyle(const boost::optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectGraphicStyle(const optional<ID_t> &id,
-    const boost::optional<KEYPropertyMap> &props,
-    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-    const bool ref, const bool anonymous)
+                                           const boost::optional<KEYPropertyMap> &props,
+                                           const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                           const bool ref, const bool anonymous)
 {
   if (m_collecting)
   {
@@ -216,9 +216,9 @@ void KEYCollectorBase::collectGraphicStyle(const optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectLayoutStyle(const optional<ID_t> &id,
-    const boost::optional<KEYPropertyMap> &props,
-    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-    const bool ref, const bool anonymous)
+                                          const boost::optional<KEYPropertyMap> &props,
+                                          const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                          const bool ref, const bool anonymous)
 {
   if (m_collecting)
   {
@@ -257,9 +257,9 @@ void KEYCollectorBase::collectListStyle(const boost::optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectParagraphStyle(const optional<ID_t> &id,
-    const boost::optional<KEYPropertyMap> &props,
-    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-    const bool ref, const bool anonymous)
+                                             const boost::optional<KEYPropertyMap> &props,
+                                             const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                             const bool ref, const bool anonymous)
 {
   if (m_collecting)
   {
@@ -281,9 +281,9 @@ void KEYCollectorBase::collectParagraphStyle(const optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectPlaceholderStyle(const boost::optional<ID_t> &id,
-    const boost::optional<KEYPropertyMap> &props,
-    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-    const bool ref, const bool anonymous)
+                                               const boost::optional<KEYPropertyMap> &props,
+                                               const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                               const bool ref, const bool anonymous)
 {
   if (m_collecting)
   {
@@ -307,9 +307,9 @@ void KEYCollectorBase::collectPlaceholderStyle(const boost::optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectSlideStyle(const boost::optional<ID_t> &id,
-    const boost::optional<KEYPropertyMap> &props,
-    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-    const bool ref, const bool anonymous)
+                                         const boost::optional<KEYPropertyMap> &props,
+                                         const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                         const bool ref, const bool anonymous)
 {
   // TODO: implement me
   (void) id;
@@ -321,9 +321,9 @@ void KEYCollectorBase::collectSlideStyle(const boost::optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectTabularStyle(const boost::optional<ID_t> &id,
-    const boost::optional<KEYPropertyMap> &props,
-    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-    const bool ref, const bool anonymous)
+                                           const boost::optional<KEYPropertyMap> &props,
+                                           const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                           const bool ref, const bool anonymous)
 {
   // TODO: implement me
   (void) id;
@@ -335,9 +335,9 @@ void KEYCollectorBase::collectTabularStyle(const boost::optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectVectorStyle(const boost::optional<ID_t> &id,
-    const boost::optional<KEYPropertyMap> &props,
-    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-    const bool ref, const bool anonymous)
+                                          const boost::optional<KEYPropertyMap> &props,
+                                          const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
+                                          const bool ref, const bool anonymous)
 {
   // TODO: implement me
   (void) id;
