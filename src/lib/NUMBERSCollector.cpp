@@ -21,8 +21,7 @@ NUMBERSCollector::NUMBERSCollector(librevenge::RVNGSpreadsheetInterface *const d
 
 void NUMBERSCollector::startDocument()
 {
-  m_document->startDocument();
-  m_document->setDocumentMetaData(librevenge::RVNGPropertyList());
+  m_document->startDocument(librevenge::RVNGPropertyList());
 }
 
 void NUMBERSCollector::endDocument()

@@ -107,7 +107,7 @@ void KEYTable::draw(const KEYOutput &output) const
   }
   tableProps.insert("librevenge:table-columns", columnSizes);
 
-  painter->openTable(tableProps);
+  painter->startTableObject(tableProps);
   for (std::size_t r = 0; m_table.size() != r; ++r)
   {
     const Row_t &row = m_table[r];
@@ -144,7 +144,7 @@ void KEYTable::draw(const KEYOutput &output) const
     }
     painter->closeTableRow();
   }
-  painter->closeTable();
+  painter->endTableObject();
 }
 
 namespace

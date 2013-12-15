@@ -40,8 +40,7 @@ void PAGESCollector::collectTab()
 
 void PAGESCollector::startDocument()
 {
-  m_document->startDocument();
-  m_document->setDocumentMetaData(librevenge::RVNGPropertyList());
+  m_document->startDocument(librevenge::RVNGPropertyList());
 }
 
 void PAGESCollector::endDocument()
