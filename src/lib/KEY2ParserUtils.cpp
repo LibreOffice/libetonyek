@@ -125,7 +125,7 @@ KEYSize KEY2ParserUtils::readSize(const KEYXMLReader &reader)
   return KEYSize(size.second, size.first);
 }
 
-bool KEY2ParserUtils::bool_cast(const char *const value)
+bool KEY2ParserUtils::bool_cast(const char *value)
 {
   KEY2Tokenizer tok;
   switch (tok(value))
@@ -140,6 +140,16 @@ bool KEY2ParserUtils::bool_cast(const char *const value)
   }
 
   return false;
+}
+
+double KEY2ParserUtils::double_cast(const char *value)
+{
+  return lexical_cast<double, const char *>(value);
+}
+
+int KEY2ParserUtils::int_cast(const char *value)
+{
+  return lexical_cast<int, const char *>(value);
 }
 
 double KEY2ParserUtils::deg2rad(double value)

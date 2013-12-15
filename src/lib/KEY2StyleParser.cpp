@@ -62,12 +62,12 @@ optional<bool> readBool(const KEYXMLReader &reader, const int type)
 
 optional<double> readDouble(const KEYXMLReader &reader)
 {
-  return readNumber<double>(reader, KEY2Token::f, &lexical_cast<double, const char *>);
+  return readNumber<double>(reader, KEY2Token::f, &KEY2ParserUtils::double_cast);
 }
 
 optional<int> readInt(const KEYXMLReader &reader)
 {
-  return readNumber<int>(reader, KEY2Token::i, &lexical_cast<int, const char *>);
+  return readNumber<int>(reader, KEY2Token::i, &KEY2ParserUtils::double_cast);
 }
 
 optional<KEYColor> readColor(const KEYXMLReader &reader)
