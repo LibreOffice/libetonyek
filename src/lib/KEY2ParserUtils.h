@@ -81,6 +81,8 @@ public:
     * @returns the boolean value of the string
     */
   static bool bool_cast(const char *value);
+  static double double_cast(const char *value);
+  static int int_cast(const char *value);
 
   static double deg2rad(double value);
 
