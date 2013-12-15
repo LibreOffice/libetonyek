@@ -319,7 +319,6 @@ AC_CONFIG_FILES([
 Makefile
 src/Makefile
 src/conv/Makefile
-src/conv/common/Makefile
 src/conv/csv/numbers2csv.rc
 src/conv/csv/Makefile
 src/conv/html/Makefile
