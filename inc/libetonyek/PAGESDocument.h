@@ -12,6 +12,7 @@
 
 #include <librevenge/librevenge.h>
 #include <librevenge-stream/librevenge-stream.h>
+#include "libetonyek_api.h"
 
 namespace libetonyek
 {
@@ -28,8 +29,8 @@ enum PAGESDocumentType
 class PAGESDocument
 {
 public:
-  static bool isSupported(librevenge::RVNGInputStream *input, PAGESDocumentType *type = 0);
-  static bool parse(librevenge::RVNGInputStream *input, librevenge::RVNGTextInterface *document);
+  static KEYAPI bool isSupported(librevenge::RVNGInputStream *input, PAGESDocumentType *type = 0);
+  static KEYAPI bool parse(librevenge::RVNGInputStream *input, librevenge::RVNGTextInterface *document);
 };
 
 } // namespace libetonyek

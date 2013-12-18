@@ -12,6 +12,7 @@
 
 #include <librevenge/librevenge.h>
 #include <librevenge-stream/librevenge-stream.h>
+#include "libetonyek_api.h"
 
 namespace libetonyek
 {
@@ -50,7 +51,7 @@ public:
     * @returns true if the stream contains a Keynote document, false
     * otherwise
     */
-  static bool isSupported(librevenge::RVNGInputStream *input, KEYDocumentType *type = 0);
+  static KEYAPI bool isSupported(librevenge::RVNGInputStream *input, KEYDocumentType *type = 0);
 
   /** Parse the input stream content.
    *
@@ -62,7 +63,7 @@ public:
    * @arg[in] generator a librevenge::RVNGPresentationInterface implementation
    * @returns a value that indicates whether the parsing was successful
    */
-  static bool parse(librevenge::RVNGInputStream *input, librevenge::RVNGPresentationInterface *generator);
+  static KEYAPI bool parse(librevenge::RVNGInputStream *input, librevenge::RVNGPresentationInterface *generator);
 };
 
 } // namespace libetonyek

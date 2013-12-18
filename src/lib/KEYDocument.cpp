@@ -186,7 +186,7 @@ shared_ptr<KEYParser> makeParser(const Version version, const RVNGInputStreamPtr
 
 }
 
-bool KEYDocument::isSupported(librevenge::RVNGInputStream *const input, KEYDocumentType *type) try
+KEYAPI bool KEYDocument::isSupported(librevenge::RVNGInputStream *const input, KEYDocumentType *type) try
 {
   if (type)
     *type = KEY_DOCUMENT_TYPE_UNKNOWN;
@@ -220,7 +220,7 @@ catch (...)
   return false;
 }
 
-bool KEYDocument::parse(librevenge::RVNGInputStream *const input, librevenge::RVNGPresentationInterface *const generator) try
+KEYAPI bool KEYDocument::parse(librevenge::RVNGInputStream *const input, librevenge::RVNGPresentationInterface *const generator) try
 {
   RVNGInputStreamPtr_t input_(input, KEYDummyDeleter());
 

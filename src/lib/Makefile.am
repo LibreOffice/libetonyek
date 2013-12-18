@@ -11,11 +11,12 @@ lib_LTLIBRARIES = libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@.la
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_includedir = $(includedir)/libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@/libetonyek
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_include_HEADERS = \
 	$(top_srcdir)/inc/libetonyek/libetonyek.h \
+	$(top_srcdir)/inc/libetonyek/libetonyek_api.h \
 	$(top_srcdir)/inc/libetonyek/KEYDocument.h \
 	$(top_srcdir)/inc/libetonyek/NUMBERSDocument.h \
 	$(top_srcdir)/inc/libetonyek/PAGESDocument.h
 
-AM_CXXFLAGS = -I$(top_srcdir)/inc $(REVENGE_CFLAGS) $(XML_CFLAGS) $(ZLIB_CFLAGS) $(BOOST_CFLAGS) $(DEBUG_CXXFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/inc $(REVENGE_CFLAGS) $(XML_CFLAGS) $(ZLIB_CFLAGS) $(BOOST_CFLAGS) $(DEBUG_CXXFLAGS) -DLIBETONYEK_BUILD
 
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_LIBADD  = $(REVENGE_LIBS) $(XML_LIBS) $(ZLIB_LIBS) @LIBETONYEK_WIN32_RESOURCE@
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_DEPENDENCIES = @LIBETONYEK_WIN32_RESOURCE@

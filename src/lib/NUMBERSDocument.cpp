@@ -90,7 +90,7 @@ Version detectVersion(const RVNGInputStreamPtr_t &input, Source &source)
 
 }
 
-bool NUMBERSDocument::isSupported(librevenge::RVNGInputStream *const input, NUMBERSDocumentType *const type) try
+KEYAPI bool NUMBERSDocument::isSupported(librevenge::RVNGInputStream *const input, NUMBERSDocumentType *const type) try
 {
   if (type)
     *type = NUMBERS_DOCUMENT_TYPE_UNKNOWN;
@@ -124,7 +124,7 @@ catch (...)
   return false;
 }
 
-bool NUMBERSDocument::parse(librevenge::RVNGInputStream *const input, librevenge::RVNGSpreadsheetInterface *const document) try
+KEYAPI bool NUMBERSDocument::parse(librevenge::RVNGInputStream *const input, librevenge::RVNGSpreadsheetInterface *const document) try
 {
   RVNGInputStreamPtr_t input_(input, KEYDummyDeleter());
 

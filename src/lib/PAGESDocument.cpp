@@ -90,7 +90,7 @@ Version detectVersion(const RVNGInputStreamPtr_t &input, Source &source)
 
 }
 
-bool PAGESDocument::isSupported(librevenge::RVNGInputStream *const input, PAGESDocumentType *const type) try
+KEYAPI bool PAGESDocument::isSupported(librevenge::RVNGInputStream *const input, PAGESDocumentType *const type) try
 {
   if (type)
     *type = PAGES_DOCUMENT_TYPE_UNKNOWN;
@@ -124,7 +124,7 @@ catch (...)
   return false;
 }
 
-bool PAGESDocument::parse(librevenge::RVNGInputStream *const input, librevenge::RVNGTextInterface *const document) try
+KEYAPI bool PAGESDocument::parse(librevenge::RVNGInputStream *const input, librevenge::RVNGTextInterface *const document) try
 {
   RVNGInputStreamPtr_t input_(input, KEYDummyDeleter());
 
