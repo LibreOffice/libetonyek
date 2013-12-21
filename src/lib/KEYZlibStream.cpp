@@ -101,6 +101,7 @@ RVNGInputStreamPtr_t getInflatedStream(const RVNGInputStreamPtr_t &input)
 
     return RVNGInputStreamPtr_t(new KEYMemoryStream(&data[0], strm.total_out));
   }
+  return RVNGInputStreamPtr_t();
 }
 
 }
