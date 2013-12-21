@@ -28,18 +28,22 @@ public:
   KEYMemoryStream(const RVNGInputStreamPtr_t &input, unsigned length);
   explicit KEYMemoryStream(std::vector<unsigned char> &data);
   KEYMemoryStream(const unsigned char *data, unsigned length);
-  virtual ~KEYMemoryStream();
+  ~KEYMemoryStream();
 
-  virtual bool isStructured();
-  virtual unsigned subStreamCount();
-  virtual const char *subStreamName(unsigned id);
-  virtual librevenge::RVNGInputStream *getSubStreamByName(const char *name);
-  virtual librevenge::RVNGInputStream *getSubStreamById(unsigned id);
+  bool isStructured();
+  unsigned subStreamCount();
+  const char *subStreamName(unsigned id);
+  bool existsSubStream(const char *)
+  {
+    return false;
+  }
+  librevenge::RVNGInputStream *getSubStreamByName(const char *name);
+  librevenge::RVNGInputStream *getSubStreamById(unsigned id);
 
-  virtual const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
-  virtual int seek(long offset, librevenge::RVNG_SEEK_TYPE seekType);
-  virtual long tell();
-  virtual bool isEnd();
+  const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
+  int seek(long offset, librevenge::RVNG_SEEK_TYPE seekType);
+  long tell();
+  bool isEnd();
 
 private:
   void assign(const unsigned char *data, unsigned length);

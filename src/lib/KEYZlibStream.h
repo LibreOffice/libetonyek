@@ -19,18 +19,22 @@ class KEYZlibStream : public librevenge::RVNGInputStream
 {
 public:
   KEYZlibStream(const RVNGInputStreamPtr_t &stream);
-  virtual ~KEYZlibStream();
+  ~KEYZlibStream();
 
-  virtual bool isStructured();
-  virtual unsigned subStreamCount();
-  virtual const char *subStreamName(unsigned id);
-  virtual librevenge::RVNGInputStream *getSubStreamByName(const char *name);
-  virtual librevenge::RVNGInputStream *getSubStreamById(unsigned id);
+  bool isStructured();
+  unsigned subStreamCount();
+  const char *subStreamName(unsigned id);
+  bool existsSubStream(const char *)
+  {
+    return false;
+  }
+  librevenge::RVNGInputStream *getSubStreamByName(const char *name);
+  librevenge::RVNGInputStream *getSubStreamById(unsigned id);
 
-  virtual const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
-  virtual int seek(long offset, librevenge::RVNG_SEEK_TYPE seekType);
-  virtual long tell();
-  virtual bool isEnd();
+  const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
+  int seek(long offset, librevenge::RVNG_SEEK_TYPE seekType);
+  long tell();
+  bool isEnd();
 
 private:
   RVNGInputStreamPtr_t m_stream;
