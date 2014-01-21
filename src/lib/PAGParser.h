@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef PAGESPARSER_H_INCLUDED
-#define PAGESPARSER_H_INCLUDED
+#ifndef PAGPARSER_H_INCLUDED
+#define PAGPARSER_H_INCLUDED
 
 #include <libxml/xmlreader.h>
 
@@ -17,14 +17,14 @@
 namespace libetonyek
 {
 
-class PAGESCollector;
+class PAGCollector;
 class KEYXMLReader;
 
-class PAGESParser
+class PAGParser
 {
   // -Weffc++
-  PAGESParser(const PAGESParser &);
-  PAGESParser &operator=(const PAGESParser &);
+  PAGParser(const PAGParser &);
+  PAGParser &operator=(const PAGParser &);
 
   enum TextStorageKind
   {
@@ -38,7 +38,7 @@ class PAGESParser
   };
 
 public:
-  PAGESParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGESCollector *collector);
+  PAGParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGCollector *collector);
 
   bool parse();
 
@@ -62,11 +62,11 @@ private:
 private:
   RVNGInputStreamPtr_t m_input;
   RVNGInputStreamPtr_t m_package;
-  PAGESCollector *m_collector;
+  PAGCollector *m_collector;
 };
 
 } // namespace libetonyek
 
-#endif //  PAGESPARSER_H_INCLUDED
+#endif //  PAGPARSER_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

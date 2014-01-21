@@ -7,25 +7,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef NUMBERSPARSER_H_INCLUDED
-#define NUMBERSPARSER_H_INCLUDED
+#ifndef NUMPARSER_H_INCLUDED
+#define NUMPARSER_H_INCLUDED
 
 #include "libetonyek_utils.h"
 
 namespace libetonyek
 {
 
-class NUMBERSCollector;
+class NUMCollector;
 class KEYXMLReader;
 
-class NUMBERSParser
+class NUMParser
 {
   // disable copying
-  NUMBERSParser(const NUMBERSParser &);
-  NUMBERSParser &operator=(const NUMBERSParser &);
+  NUMParser(const NUMParser &);
+  NUMParser &operator=(const NUMParser &);
 
 public:
-  NUMBERSParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMBERSCollector *collector);
+  NUMParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector *collector);
 
   bool parse();
 
@@ -35,11 +35,11 @@ private:
 private:
   RVNGInputStreamPtr_t m_input;
   RVNGInputStreamPtr_t m_package;
-  NUMBERSCollector *m_collector;
+  NUMCollector *m_collector;
 };
 
 } // namespace libetonyek
 
-#endif //  NUMBERSPARSER_H_INCLUDED
+#endif //  NUMPARSER_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

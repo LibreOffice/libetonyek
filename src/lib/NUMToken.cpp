@@ -7,26 +7,37 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <librevenge/librevenge.h>
+#include <cstring>
 
-#include "NUMBERSCollector.h"
+#include "NUMToken.h"
+
+using std::strlen;
+
+namespace libetonyek
+{
+namespace
+{
+
+#include "NUMToken.inc"
+
+}
+}
 
 namespace libetonyek
 {
 
-NUMBERSCollector::NUMBERSCollector(librevenge::RVNGSpreadsheetInterface *const document)
-  : m_document(document)
+int NUMTokenizer::operator()(const char *const str) const
 {
-}
+  if (!str)
+    return INVALID_TOKEN;
 
-void NUMBERSCollector::startDocument()
-{
-  m_document->startDocument(librevenge::RVNGPropertyList());
-}
+  const size_t length = strlen(str);
 
-void NUMBERSCollector::endDocument()
-{
-  m_document->endDocument();
+  if (0 == length)
+    return NS_NONE;
+
+  const Token *const token = Perfect_Hash::in_word_set(str, length);
+  return token ? token->id : INVALID_TOKEN;
 }
 
 }

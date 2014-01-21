@@ -7,13 +7,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef NUMBERSTOKEN_H_INCLUDED
-#define NUMBERSTOKEN_H_INCLUDED
+#ifndef NUMTOKEN_H_INCLUDED
+#define NUMTOKEN_H_INCLUDED
 
 namespace libetonyek
 {
 
-namespace NUMBERSToken
+namespace NUMToken
 {
 
 namespace detail
@@ -70,13 +70,13 @@ enum
 
 }
 
-struct NUMBERSTokenizer
+struct NUMTokenizer
 {
   int operator()(const char *str) const;
 };
 
 }
 
-#endif // NUMBERSTOKEN_H_INCLUDED
+#endif // NUMTOKEN_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

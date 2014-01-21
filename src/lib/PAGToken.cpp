@@ -9,7 +9,7 @@
 
 #include <cstring>
 
-#include "PAGESToken.h"
+#include "PAGToken.h"
 
 using std::strlen;
 
@@ -18,7 +18,7 @@ namespace libetonyek
 namespace
 {
 
-#include "PAGESToken.inc"
+#include "PAGToken.inc"
 
 }
 }
@@ -26,7 +26,7 @@ namespace
 namespace libetonyek
 {
 
-int PAGESTokenizer::operator()(const char *const str) const
+int PAGTokenizer::operator()(const char *const str) const
 {
   if (!str)
     return INVALID_TOKEN;

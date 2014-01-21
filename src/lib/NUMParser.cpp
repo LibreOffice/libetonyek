@@ -13,23 +13,23 @@
 
 #include "libetonyek_xml.h"
 #include "KEYXMLReader.h"
-#include "NUMBERSParser.h"
-#include "NUMBERSCollector.h"
-#include "NUMBERSToken.h"
+#include "NUMParser.h"
+#include "NUMCollector.h"
+#include "NUMToken.h"
 
 namespace libetonyek
 {
 
-NUMBERSParser::NUMBERSParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMBERSCollector *const collector)
+NUMParser::NUMParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector *const collector)
   : m_input(input)
   , m_package(package)
   , m_collector(collector)
 {
 }
 
-bool NUMBERSParser::parse() try
+bool NUMParser::parse() try
 {
-  const KEYXMLReader reader(m_input.get(), NUMBERSTokenizer());
+  const KEYXMLReader reader(m_input.get(), NUMTokenizer());
   parseDocument(reader);
   return true;
 }
@@ -38,9 +38,9 @@ catch (...)
   return false;
 }
 
-void NUMBERSParser::parseDocument(const KEYXMLReader &reader)
+void NUMParser::parseDocument(const KEYXMLReader &reader)
 {
-  // assert((NUMBERSToken::NS_URI_LS | NUMBERSToken::document) == getId(reader));
+  // assert((NUMToken::NS_URI_LS | NUMToken::document) == getId(reader));
 
   m_collector->startDocument();
 

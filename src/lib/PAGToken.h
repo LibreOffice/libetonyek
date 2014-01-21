@@ -7,13 +7,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef PAGESTOKEN_H_INCLUDED
-#define PAGESTOKEN_H_INCLUDED
+#ifndef PAGTOKEN_H_INCLUDED
+#define PAGTOKEN_H_INCLUDED
 
 namespace libetonyek
 {
 
-namespace PAGESToken
+namespace PAGToken
 {
 
 namespace detail
@@ -1001,13 +1001,13 @@ enum
 
 }
 
-struct PAGESTokenizer
+struct PAGTokenizer
 {
   int operator()(const char *str) const;
 };
 
 }
 
-#endif // PAGESTOKEN_H_INCLUDED
+#endif // PAGTOKEN_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

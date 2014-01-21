@@ -7,39 +7,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <cstring>
+#ifndef NUMCOLLECTOR_H_INCLUDED
+#define NUMCOLLECTOR_H_INCLUDED
 
-#include "NUMBERSToken.h"
-
-using std::strlen;
-
-namespace libetonyek
-{
-namespace
-{
-
-#include "NUMBERSToken.inc"
-
-}
-}
+#include <librevenge/librevenge.h>
 
 namespace libetonyek
 {
 
-int NUMBERSTokenizer::operator()(const char *const str) const
+class NUMCollector
 {
-  if (!str)
-    return INVALID_TOKEN;
+public:
+  explicit NUMCollector(librevenge::RVNGSpreadsheetInterface *document);
 
-  const size_t length = strlen(str);
+  // collector functions
 
-  if (0 == length)
-    return NS_NONE;
+  // helper functions
+  void startDocument();
+  void endDocument();
 
-  const Token *const token = Perfect_Hash::in_word_set(str, length);
-  return token ? token->id : INVALID_TOKEN;
-}
+private:
+  librevenge::RVNGSpreadsheetInterface *m_document;
+};
 
-}
+} // namespace libetonyek
+
+#endif //  NUMCOLLECTOR_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

@@ -1,4 +1,4 @@
-BUILT_SOURCES = KEY1Token.inc KEY2Token.inc NUMBERSToken.inc PAGESToken.inc
+BUILT_SOURCES = KEY1Token.inc KEY2Token.inc NUMToken.inc PAGToken.inc
 GPERFFLAGS = --compare-strncmp --enum --null-strings --readonly-tables
 
 if PLATFORM_WIN32
@@ -89,18 +89,18 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
 	KEYXMLReader.h \
 	KEYZlibStream.cpp \
 	KEYZlibStream.h \
-	NUMBERSCollector.cpp \
-	NUMBERSCollector.h \
-	NUMBERSParser.cpp \
-	NUMBERSParser.h \
-	NUMBERSToken.cpp \
-	NUMBERSToken.h \
-	PAGESCollector.cpp \
-	PAGESCollector.h \
-	PAGESParser.cpp \
-	PAGESParser.h \
-	PAGESToken.cpp \
-	PAGESToken.h \
+	NUMCollector.cpp \
+	NUMCollector.h \
+	NUMParser.cpp \
+	NUMParser.h \
+	NUMToken.cpp \
+	NUMToken.h \
+	PAGCollector.cpp \
+	PAGCollector.h \
+	PAGParser.cpp \
+	PAGParser.h \
+	PAGToken.cpp \
+	PAGToken.h \
 	libetonyek_utils.cpp \
 	libetonyek_utils.h \
 	libetonyek_xml.cpp \
@@ -120,8 +120,8 @@ distclean-local :
 EXTRA_DIST = \
 	KEY1Token.gperf \
 	KEY2Token.gperf \
-	NUMBERSToken.gperf \
-	PAGESToken.gperf \
+	NUMToken.gperf \
+	PAGToken.gperf \
 	libetonyek.rc.in
 
 # These may be in the builddir too
@@ -130,8 +130,8 @@ BUILD_EXTRA_DIST = \
 
 KEY1Token.cpp : KEY1Token.inc
 KEY2Token.cpp : KEY2Token.inc
-NUMBERSToken.cpp : NUMBERSToken.inc
-PAGESToken.cpp : PAGESToken.inc
+NUMToken.cpp : NUMToken.inc
+PAGToken.cpp : PAGToken.inc
 
 %.inc : %.gperf
 	if $(GPERF) $(GPERFFLAGS) --language C++ $< > $@.tmp; then \

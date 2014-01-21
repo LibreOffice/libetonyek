@@ -25,10 +25,10 @@
 #include "KEYDictionary.h"
 #include "KEYThemeCollector.h"
 #include "KEYZlibStream.h"
-#include "NUMBERSCollector.h"
-#include "NUMBERSParser.h"
-#include "PAGESCollector.h"
-#include "PAGESParser.h"
+#include "NUMCollector.h"
+#include "NUMParser.h"
+#include "PAGCollector.h"
+#include "PAGParser.h"
 
 using boost::logic::indeterminate;
 using boost::logic::tribool;
@@ -423,8 +423,8 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   info.input->seek(0, librevenge::RVNG_SEEK_SET);
 
-  NUMBERSCollector collector(document);
-  NUMBERSParser parser(info.input, info.package, &collector);
+  NUMCollector collector(document);
+  NUMParser parser(info.input, info.package, &collector);
   return parser.parse();
 }
 catch (...)
@@ -446,8 +446,8 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   info.input->seek(0, librevenge::RVNG_SEEK_SET);
 
-  PAGESCollector collector(document);
-  PAGESParser parser(info.input, info.package, &collector);
+  PAGCollector collector(document);
+  PAGParser parser(info.input, info.package, &collector);
   return parser.parse();
 }
 catch (...)

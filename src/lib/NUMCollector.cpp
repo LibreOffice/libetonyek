@@ -7,31 +7,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef NUMBERSCOLLECTOR_H_INCLUDED
-#define NUMBERSCOLLECTOR_H_INCLUDED
-
 #include <librevenge/librevenge.h>
+
+#include "NUMCollector.h"
 
 namespace libetonyek
 {
 
-class NUMBERSCollector
+NUMCollector::NUMCollector(librevenge::RVNGSpreadsheetInterface *const document)
+  : m_document(document)
 {
-public:
-  explicit NUMBERSCollector(librevenge::RVNGSpreadsheetInterface *document);
+}
 
-  // collector functions
+void NUMCollector::startDocument()
+{
+  m_document->startDocument(librevenge::RVNGPropertyList());
+}
 
-  // helper functions
-  void startDocument();
-  void endDocument();
+void NUMCollector::endDocument()
+{
+  m_document->endDocument();
+}
 
-private:
-  librevenge::RVNGSpreadsheetInterface *m_document;
-};
-
-} // namespace libetonyek
-
-#endif //  NUMBERSCOLLECTOR_H_INCLUDED
+}
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

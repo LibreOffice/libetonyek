@@ -9,51 +9,51 @@
 
 #include <librevenge/librevenge.h>
 
-#include "PAGESCollector.h"
+#include "PAGCollector.h"
 
 namespace libetonyek
 {
 
-PAGESCollector::PAGESCollector(librevenge::RVNGTextInterface *const document)
+PAGCollector::PAGCollector(librevenge::RVNGTextInterface *const document)
   : m_document(document)
   , m_spanOpened(false)
 {
 }
 
-void PAGESCollector::collectText(const char *text)
+void PAGCollector::collectText(const char *text)
 {
   ensureSpan();
   m_document->insertText(librevenge::RVNGString(text));
 }
 
-void PAGESCollector::collectLineBreak()
+void PAGCollector::collectLineBreak()
 {
   ensureSpan();
   m_document->insertLineBreak();
 }
 
-void PAGESCollector::collectTab()
+void PAGCollector::collectTab()
 {
   ensureSpan();
   m_document->insertTab();
 }
 
-void PAGESCollector::startDocument()
+void PAGCollector::startDocument()
 {
   m_document->startDocument(librevenge::RVNGPropertyList());
 }
 
-void PAGESCollector::endDocument()
+void PAGCollector::endDocument()
 {
   m_document->endDocument();
 }
 
-void PAGESCollector::startParagraph()
+void PAGCollector::startParagraph()
 {
   m_document->openParagraph(librevenge::RVNGPropertyList());
 }
 
-void PAGESCollector::endParagraph()
+void PAGCollector::endParagraph()
 {
   if (m_spanOpened)
     endSpan();
@@ -61,7 +61,7 @@ void PAGESCollector::endParagraph()
   m_document->closeParagraph();
 }
 
-void PAGESCollector::startSpan()
+void PAGCollector::startSpan()
 {
   if (m_spanOpened) // automatic span
     endSpan();
@@ -70,13 +70,13 @@ void PAGESCollector::startSpan()
   m_document->openSpan(librevenge::RVNGPropertyList());
 }
 
-void PAGESCollector::endSpan()
+void PAGCollector::endSpan()
 {
   m_spanOpened = false;
   m_document->closeSpan();
 }
 
-void PAGESCollector::ensureSpan()
+void PAGCollector::ensureSpan()
 {
   if (!m_spanOpened)
     startSpan();

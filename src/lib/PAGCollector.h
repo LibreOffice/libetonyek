@@ -7,18 +7,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef PAGESCOLLECTOR_H_INCLUDED
-#define PAGESCOLLECTOR_H_INCLUDED
+#ifndef PAGCOLLECTOR_H_INCLUDED
+#define PAGCOLLECTOR_H_INCLUDED
 
 #include <librevenge/librevenge.h>
 
 namespace libetonyek
 {
 
-class PAGESCollector
+class PAGCollector
 {
 public:
-  explicit PAGESCollector(librevenge::RVNGTextInterface *document);
+  explicit PAGCollector(librevenge::RVNGTextInterface *document);
 
   // collector functions
   void collectText(const char *text);
@@ -45,6 +45,6 @@ private:
 
 } // namespace libetonyek
 
-#endif //  PAGESCOLLECTOR_H_INCLUDED
+#endif //  PAGCOLLECTOR_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
