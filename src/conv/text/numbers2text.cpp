@@ -50,6 +50,7 @@ int main(int argc, char *argv[]) try
     return printUsage();
 
   using boost::shared_ptr;
+  using libetonyek::EtonyekDocument;
 
   shared_ptr<librevenge::RVNGInputStream> input;
   if (librevenge::RVNGDirectoryStream::isDirectory(file))
@@ -57,20 +58,21 @@ int main(int argc, char *argv[]) try
   else
     input.reset(new librevenge::RVNGFileStream(file));
 
-  libetonyek::NUMBERSDocumentType type = libetonyek::NUMBERS_DOCUMENT_TYPE_UNKNOWN;
-  if (!libetonyek::NUMBERSDocument::isSupported(input.get(), &type))
+  EtonyekDocument::Type type = EtonyekDocument::TYPE_UNKNOWN;
+  const EtonyekDocument::Confidence confidence = EtonyekDocument::isSupported(input.get(), &type);
+  if ((EtonyekDocument::CONFIDENCE_NONE == confidence) || (EtonyekDocument::TYPE_NUMBERS != type))
   {
     fprintf(stderr, "ERROR: Unsupported file format!\n");
     return 1;
   }
 
-  if (libetonyek::NUMBERS_DOCUMENT_TYPE_MAIN_FILE == type)
+  if (EtonyekDocument::CONFIDENCE_SUPPORTED_PART == confidence)
     input.reset(librevenge::RVNGDirectoryStream::createForParent(file));
 
   librevenge::RVNGStringVector output;
   librevenge::RVNGTextSpreadsheetGenerator painter(output);
 
-  if (!libetonyek::NUMBERSDocument::parse(input.get(), &painter))
+  if (!EtonyekDocument::parse(input.get(), &painter))
   {
     fprintf(stderr, "ERROR: Parsing failed!\n");
     return 1;

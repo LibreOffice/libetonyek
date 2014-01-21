@@ -11,10 +11,7 @@ lib_LTLIBRARIES = libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@.la
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_includedir = $(includedir)/libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@/libetonyek
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_include_HEADERS = \
 	$(top_srcdir)/inc/libetonyek/libetonyek.h \
-	$(top_srcdir)/inc/libetonyek/libetonyek_api.h \
-	$(top_srcdir)/inc/libetonyek/KEYDocument.h \
-	$(top_srcdir)/inc/libetonyek/NUMBERSDocument.h \
-	$(top_srcdir)/inc/libetonyek/PAGESDocument.h
+	$(top_srcdir)/inc/libetonyek/EtonyekDocument.h
 
 AM_CXXFLAGS = -I$(top_srcdir)/inc $(REVENGE_CFLAGS) $(XML_CFLAGS) $(ZLIB_CFLAGS) $(BOOST_CFLAGS) $(DEBUG_CXXFLAGS) -DLIBETONYEK_BUILD
 
@@ -22,6 +19,7 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_LIBADD  = $(REVENG
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_DEPENDENCIES = @LIBETONYEK_WIN32_RESOURCE@
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_LDFLAGS = $(version_info) -export-dynamic -no-undefined
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
+	EtonyekDocument.cpp \
 	KEY1Defaults.cpp \
 	KEY1Defaults.h \
 	KEY1Parser.cpp \
@@ -50,7 +48,6 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
 	KEYDefaults.h \
 	KEYDictionary.cpp \
 	KEYDictionary.h \
-	KEYDocument.cpp \
 	KEYEnum.h \
 	KEYMemoryStream.cpp \
 	KEYMemoryStream.h \
@@ -94,14 +91,12 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
 	KEYZlibStream.h \
 	NUMBERSCollector.cpp \
 	NUMBERSCollector.h \
-	NUMBERSDocument.cpp \
 	NUMBERSParser.cpp \
 	NUMBERSParser.h \
 	NUMBERSToken.cpp \
 	NUMBERSToken.h \
 	PAGESCollector.cpp \
 	PAGESCollector.h \
-	PAGESDocument.cpp \
 	PAGESParser.cpp \
 	PAGESParser.h \
 	PAGESToken.cpp \

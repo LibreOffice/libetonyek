@@ -10,9 +10,7 @@
 #ifndef LIBETONYEK_LIBETONYEK_H_INCLUDED
 #define LIBETONYEK_LIBETONYEK_H_INCLUDED
 
-#include "KEYDocument.h"
-#include "NUMBERSDocument.h"
-#include "PAGESDocument.h"
+#include "EtonyekDocument.h"
 
 #endif // LIBETONYEK_LIBETONYEK_H_INCLUDED
 

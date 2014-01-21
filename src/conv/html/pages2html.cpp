@@ -47,7 +47,7 @@ int printVersion()
 
 } // anonymous namespace
 
-using libetonyek::PAGESDocument;
+using libetonyek::EtonyekDocument;
 
 int main(int argc, char *argv[])
 {
@@ -77,20 +77,21 @@ int main(int argc, char *argv[])
   else
     input.reset(new librevenge::RVNGFileStream(file));
 
-  libetonyek::PAGESDocumentType type = libetonyek::PAGES_DOCUMENT_TYPE_UNKNOWN;
-  if (!libetonyek::PAGESDocument::isSupported(input.get(), &type))
+  EtonyekDocument::Type type = EtonyekDocument::TYPE_UNKNOWN;
+  const EtonyekDocument::Confidence confidence = EtonyekDocument::isSupported(input.get(), &type);
+  if ((EtonyekDocument::CONFIDENCE_NONE == confidence) || (EtonyekDocument::TYPE_PAGES != type))
   {
     fprintf(stderr, "ERROR: Unsupported file format!\n");
     return 1;
   }
 
-  if (libetonyek::PAGES_DOCUMENT_TYPE_MAIN_FILE == type)
+  if (EtonyekDocument::CONFIDENCE_SUPPORTED_PART == confidence)
     input.reset(librevenge::RVNGDirectoryStream::createForParent(file));
 
   librevenge::RVNGString output;
   librevenge::RVNGHTMLTextGenerator documentGenerator(output);
 
-  if (!PAGESDocument::parse(input.get(), &documentGenerator))
+  if (!EtonyekDocument::parse(input.get(), &documentGenerator))
   {
     fprintf(stderr, "ERROR: Parsing failed!\n");
     return 1;
