@@ -1,3 +1,9 @@
+libetonyek 0.0.4
+
+- fix some build problems
+- avoid data loss in some cases
+- scale images properly
+
 libetonyek 0.0.3
 
 - import text formatting attributes
