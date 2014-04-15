@@ -121,6 +121,7 @@ KEYPosition::KEYPosition(const double x_, const double y_)
 
 KEYGeometry::KEYGeometry()
   : naturalSize()
+  , size()
   , position()
   , angle()
   , shearXAngle()
@@ -427,8 +428,8 @@ void MediaObject::draw(const KEYOutput &output)
       props.insert("svg:x", pt2in(x));
       props.insert("svg:y", pt2in(y));
 
-      double width = m_media->geometry->naturalSize.width;
-      double height = m_media->geometry->naturalSize.height;
+      double width = m_media->geometry->size.width;
+      double height = m_media->geometry->size.height;
       tr(width, height, true);
       props.insert("svg:width", pt2in(width));
       props.insert("svg:height", pt2in(height));

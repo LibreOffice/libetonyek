@@ -45,6 +45,7 @@ struct KEYPosition
 struct KEYGeometry
 {
   KEYSize naturalSize;
+  KEYSize size;
   KEYPosition position;
   boost::optional<double> angle;
   boost::optional<double> shearXAngle;
