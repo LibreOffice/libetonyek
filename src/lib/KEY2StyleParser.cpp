@@ -94,6 +94,9 @@ optional<KEYColor> readColor(const KEYXMLReader &reader)
     }
   }
 
+  // Ignore sfa:custom-space-color, if present. The color profile is not part of the document anyway.
+  skipElement(reader);
+
   return color;
 }
 
