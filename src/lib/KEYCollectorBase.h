@@ -91,8 +91,8 @@ public:
                                   bool ref, bool anonymous);
 
   virtual void collectGeometry(boost::optional<ID_t> &id,
-                               boost::optional<KEYSize> &naturalSize, boost::optional<KEYPosition> &position,
-                               boost::optional<double> &angle,
+                               boost::optional<KEYSize> &naturalSize, boost::optional<KEYSize> &size,
+                               boost::optional<KEYPosition> &position, boost::optional<double> &angle,
                                boost::optional<double> &shearXAngle, boost::optional<double> &shearYAngle,
                                boost::optional<bool> &horizontalFlip, boost::optional<bool> &verticalFlip,
                                boost::optional<bool> &aspectRatioLocked, boost::optional<bool> &sizesLocked);

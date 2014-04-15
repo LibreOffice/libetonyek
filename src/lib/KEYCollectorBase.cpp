@@ -349,8 +349,8 @@ void KEYCollectorBase::collectVectorStyle(const boost::optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectGeometry(boost::optional<ID_t> &,
-                                       boost::optional<KEYSize> &naturalSize, boost::optional<KEYPosition> &position,
-                                       boost::optional<double> &angle,
+                                       boost::optional<KEYSize> &naturalSize, boost::optional<KEYSize> &size,
+                                       boost::optional<KEYPosition> &position, boost::optional<double> &angle,
                                        boost::optional<double> &shearXAngle, boost::optional<double> &shearYAngle,
                                        boost::optional<bool> &horizontalFlip, boost::optional<bool> &verticalFlip,
                                        boost::optional<bool> &aspectRatioLocked, boost::optional<bool> &sizesLocked)
@@ -364,6 +364,7 @@ void KEYCollectorBase::collectGeometry(boost::optional<ID_t> &,
 
     const KEYGeometryPtr_t geometry(new KEYGeometry);
     geometry->naturalSize = get(naturalSize);
+    geometry->size = bool(size) ? get(size) : get(naturalSize);
     geometry->position = get(position);
     geometry->angle = angle;
     geometry->shearXAngle = shearXAngle;

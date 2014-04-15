@@ -735,6 +735,7 @@ void KEY2Parser::parseGeometry(const KEYXMLReader &reader)
   assert(checkElement(reader, KEY2Token::geometry, KEY2Token::NS_URI_SF));
 
   optional<ID_t> id;
+  optional<KEYSize> naturalSize;
   optional<KEYSize> size;
   optional<KEYPosition> pos;
   optional<double> angle;
@@ -791,10 +792,13 @@ void KEY2Parser::parseGeometry(const KEYXMLReader &reader)
       switch (getNameId(element))
       {
       case KEY2Token::naturalSize :
-        size = readSize(reader);
+        naturalSize = readSize(reader);
         break;
       case KEY2Token::position :
         pos = readPosition(reader);
+        break;
+      case KEY2Token::size :
+        size = readSize(reader);
         break;
       default :
         skipElement(element);
@@ -805,7 +809,7 @@ void KEY2Parser::parseGeometry(const KEYXMLReader &reader)
       skipElement(element);
   }
 
-  getCollector()->collectGeometry(id, size, pos, angle, shearXAngle, shearYAngle, horizontalFlip, verticalFlip, aspectRatioLocked, sizesLocked);
+  getCollector()->collectGeometry(id, naturalSize, size, pos, angle, shearXAngle, shearYAngle, horizontalFlip, verticalFlip, aspectRatioLocked, sizesLocked);
 }
 
 void KEY2Parser::parseGroup(const KEYXMLReader &reader)
