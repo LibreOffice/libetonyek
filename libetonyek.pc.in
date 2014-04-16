@@ -6,8 +6,8 @@ includedir=@includedir@
 Name: libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@
 Description: Library for parsing Apple Keynote file format structure
 Version: @VERSION@
-Requires: librevenge-0.0
+Requires: librevenge-0.0 librevenge-stream-0.0
 Libs: -L${libdir} -letonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@
 Cflags: -I${includedir}/libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@
 
-Requires.private: librevenge-stream-0.0 libxml-2.0 zlib
+Requires.private: libxml-2.0 zlib
