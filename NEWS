@@ -1,3 +1,9 @@
+libetonyek 0.1.0
+
+- switch to librevenge
+- add BIPU support for import of Pages documents
+- add skeleton for (future) import of Numbers spreadsheets
+
 libetonyek 0.0.3
 
 - import text formatting attributes
