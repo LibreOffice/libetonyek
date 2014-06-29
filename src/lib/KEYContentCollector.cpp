@@ -31,8 +31,8 @@ KEYContentCollector::KEYContentCollector(librevenge::RVNGPresentationInterface *
   , m_layerOpened(false)
   , m_layerCount(0)
 {
-  m_painter->setDocumentMetaData(librevenge::RVNGPropertyList());
   m_painter->startDocument(librevenge::RVNGPropertyList());
+  m_painter->setDocumentMetaData(librevenge::RVNGPropertyList());
 }
 
 KEYContentCollector::~KEYContentCollector()
