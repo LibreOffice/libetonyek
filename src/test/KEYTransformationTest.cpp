@@ -7,22 +7,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <boost/math/constants/constants.hpp>
-
 #include "KEYTransformation.h"
 #include "KEYTypes.h"
 
 #include "KEYTransformationTest.h"
 
+#include "libetonyek_utils.h"
+
 namespace test
 {
 
-namespace m = boost::math::constants;
-
 using libetonyek::KEYTransformation;
-
-const double etonyek_half_pi(1.57079632679489661923132169163975144209858469968755291048747229615390820314310449931401741267105853399107404326e+00);
-const double etonyek_third_pi(1.04719755119659774615421446109316762806572313312503527365831486410260546876206966620934494178070568932738269550e+00);
+using libetonyek::etonyek_third_pi;
+using libetonyek::etonyek_half_pi;
+using libetonyek::etonyek_two_pi;
+using libetonyek::etonyek_pi;
 
 namespace
 {
@@ -134,9 +133,9 @@ void KEYTransformationTest::testConstruction()
 
   // shearing
   // FIXME: find the problem and enable
-  // CPPUNIT_ASSERT(shear(m::pi<double>() / 4, 0) == KEYTransformation(1, 2, 0, 1, 0, 0));
-  // CPPUNIT_ASSERT(shear(0, m::pi<double>() / 4) == KEYTransformation(1, 0, 2, 1, 0, 0));
-  // CPPUNIT_ASSERT(shear(m::pi<double>() / 4, m::pi<double>() / 4) == KEYTransformation(1, 2, 2, 1, 0, 0));
+  // CPPUNIT_ASSERT(shear(etonyek_pi / 4, 0) == KEYTransformation(1, 2, 0, 1, 0, 0));
+  // CPPUNIT_ASSERT(shear(0, etonyek_pi / 4) == KEYTransformation(1, 0, 2, 1, 0, 0));
+  // CPPUNIT_ASSERT(shear(etonyek_pi / 4, etonyek_pi / 4) == KEYTransformation(1, 2, 2, 1, 0, 0));
 
   // translating
   CPPUNIT_ASSERT(translate(100, 0) == KEYTransformation(1, 0, 0, 1, 100, 0));
@@ -152,7 +151,7 @@ void KEYTransformationTest::testConstructionIdentity()
   CPPUNIT_ASSERT(origin(0, 0) == KEYTransformation());
   CPPUNIT_ASSERT(flip(false, false) == KEYTransformation());
   CPPUNIT_ASSERT(rotate(0) == KEYTransformation());
-  CPPUNIT_ASSERT(rotate(m::two_pi<double>()) == KEYTransformation());
+  CPPUNIT_ASSERT(rotate(etonyek_two_pi) == KEYTransformation());
   CPPUNIT_ASSERT(scale(1, 1) == KEYTransformation());
   CPPUNIT_ASSERT(shear(0, 0) == KEYTransformation());
   CPPUNIT_ASSERT(translate(0, 0) == KEYTransformation());
@@ -250,7 +249,7 @@ void KEYTransformationTest::testInverseOperations()
   CPPUNIT_ASSERT(flip(false, true) * flip(false, true) == KEYTransformation());
   CPPUNIT_ASSERT(flip(true, true) * flip(true, true) == KEYTransformation());
 
-  CPPUNIT_ASSERT(rotate(m::pi<double>()) * rotate(-m::pi<double>()) == KEYTransformation());
+  CPPUNIT_ASSERT(rotate(etonyek_pi) * rotate(-etonyek_pi) == KEYTransformation());
 
   CPPUNIT_ASSERT(scale(2, 1) * scale(0.5, 1) == KEYTransformation());
   CPPUNIT_ASSERT(scale(1, 2) * scale(1, 0.5) == KEYTransformation());

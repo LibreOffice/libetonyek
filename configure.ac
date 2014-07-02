@@ -82,7 +82,6 @@ AC_CHECK_HEADERS(
         boost/function.hpp \
         boost/lexical_cast.hpp \
         boost/logic/tribool.hpp \
-        boost/math/constants/constants.hpp \
         boost/numeric/conversion/cast.hpp \
         boost/optional.hpp \
         boost/ref.hpp \
