@@ -351,6 +351,9 @@ shared_ptr<KEYParser> makeKeynoteParser(const unsigned version, const RVNGInputS
 
 ETONYEKAPI EtonyekDocument::Confidence EtonyekDocument::isSupported(librevenge::RVNGInputStream *const input, EtonyekDocument::Type *type) try
 {
+  if (!input)
+    return CONFIDENCE_NONE;
+
   if (type)
     *type = TYPE_UNKNOWN;
 
@@ -376,6 +379,9 @@ catch (...)
 
 ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input, librevenge::RVNGPresentationInterface *const generator) try
 {
+  if (!input || !generator)
+    return false;
+
   DetectionInfo info;
 
   if (!detect(RVNGInputStreamPtr_t(input, KEYDummyDeleter()), CHECK_TYPE_KEYNOTE, info))
@@ -411,6 +417,9 @@ catch (...)
 
 ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input, librevenge::RVNGSpreadsheetInterface *const document) try
 {
+  if (!input || !document)
+    return false;
+
   DetectionInfo info;
 
   if (!detect(RVNGInputStreamPtr_t(input, KEYDummyDeleter()), CHECK_TYPE_NUMBERS, info))
@@ -434,6 +443,9 @@ catch (...)
 
 ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input, librevenge::RVNGTextInterface *const document) try
 {
+  if (!input || !document)
+    return false;
+
   DetectionInfo info;
 
   if (!detect(RVNGInputStreamPtr_t(input, KEYDummyDeleter()), CHECK_TYPE_PAGES, info))
