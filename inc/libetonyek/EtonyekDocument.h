@@ -19,8 +19,12 @@
 #else
 #define ETONYEKAPI __declspec(dllimport)
 #endif
+#else // !DLL_EXPORT
+#ifdef LIBETONYEK_VISIBILITY
+#define ETONYEKAPI __attribute__((visibility("default")))
 #else
 #define ETONYEKAPI
+#endif
 #endif
 
 namespace libetonyek

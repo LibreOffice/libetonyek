@@ -6,7 +6,7 @@ AM_CXXFLAGS = -I$(top_srcdir)/inc -I$(top_srcdir)/src/lib $(REVENGE_CFLAGS) $(WP
 
 test_LDFLAGS = -L$(top_builddir)/src/lib
 test_LDADD = \
-	$(top_builddir)/src/lib/libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@.la \
+	$(top_builddir)/src/lib/libetonyek_internal.la \
 	$(REVENGE_LIBS) \
 	$(WPG_LIBS) \
 	$(CPPUNIT_LIBS) \
