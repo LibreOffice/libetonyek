@@ -15,9 +15,9 @@
 #include <boost/spirit/include/classic_core.hpp>
 
 #include "libetonyek_utils.h"
-#include "KEYPath.h"
-#include "KEYTransformation.h"
-#include "KEYTypes.h"
+#include "IWORKPath.h"
+#include "IWORKTransformation.h"
+#include "IWORKTypes.h"
 
 using boost::bind;
 using boost::cref;
@@ -29,7 +29,7 @@ namespace libetonyek
 
 /** An element of path.
   */
-class KEYPath::Element
+class IWORKPath::Element
 {
 public:
   virtual ~Element() = 0;
@@ -52,7 +52,7 @@ public:
     *
     * @arg[in] tr the transformation
     */
-  virtual void transform(const KEYTransformation &tr) = 0;
+  virtual void transform(const IWORKTransformation &tr) = 0;
 
   /** Create WPG representation of this path element.
    */
@@ -62,7 +62,7 @@ public:
 namespace
 {
 
-class MoveTo : public KEYPath::Element
+class MoveTo : public IWORKPath::Element
 {
 public:
   MoveTo(double x, double y);
@@ -71,7 +71,7 @@ public:
 
   virtual bool approxEqualsTo(const Element *other, double eps) const;
 
-  virtual void transform(const KEYTransformation &tr);
+  virtual void transform(const IWORKTransformation &tr);
 
   virtual librevenge::RVNGPropertyList toWPG() const;
 
@@ -101,7 +101,7 @@ bool MoveTo::approxEqualsTo(const Element *other, const double eps) const
   return false;
 }
 
-void MoveTo::transform(const KEYTransformation &tr)
+void MoveTo::transform(const IWORKTransformation &tr)
 {
   tr(m_x, m_y);
 }
@@ -122,7 +122,7 @@ librevenge::RVNGPropertyList MoveTo::toWPG() const
 namespace
 {
 
-class LineTo : public KEYPath::Element
+class LineTo : public IWORKPath::Element
 {
 public:
   LineTo(double x, double y);
@@ -131,7 +131,7 @@ public:
 
   virtual bool approxEqualsTo(const Element *other, double eps) const;
 
-  virtual void transform(const KEYTransformation &tr);
+  virtual void transform(const IWORKTransformation &tr);
 
   virtual librevenge::RVNGPropertyList toWPG() const;
 
@@ -161,7 +161,7 @@ bool LineTo::approxEqualsTo(const Element *other, const double eps) const
   return false;
 }
 
-void LineTo::transform(const KEYTransformation &tr)
+void LineTo::transform(const IWORKTransformation &tr)
 {
   tr(m_x, m_y);
 }
@@ -182,7 +182,7 @@ librevenge::RVNGPropertyList LineTo::toWPG() const
 namespace
 {
 
-class CurveTo : public KEYPath::Element
+class CurveTo : public IWORKPath::Element
 {
 public:
   CurveTo(double x1, double y1, double x2, double y2, double x, double y);
@@ -191,7 +191,7 @@ public:
 
   virtual bool approxEqualsTo(const Element *other, double eps) const;
 
-  virtual void transform(const KEYTransformation &tr);
+  virtual void transform(const IWORKTransformation &tr);
 
   virtual librevenge::RVNGPropertyList toWPG() const;
 
@@ -232,7 +232,7 @@ bool CurveTo::approxEqualsTo(const Element *other, const double eps) const
   return false;
 }
 
-void CurveTo::transform(const KEYTransformation &tr)
+void CurveTo::transform(const IWORKTransformation &tr)
 {
   tr(m_x, m_y);
   tr(m_x1, m_y1);
@@ -256,17 +256,17 @@ librevenge::RVNGPropertyList CurveTo::toWPG() const
 
 }
 
-KEYPath::Element::~Element()
+IWORKPath::Element::~Element()
 {
 }
 
-KEYPath::KEYPath()
+IWORKPath::IWORKPath()
   : m_elements()
   , m_closed(false)
 {
 }
 
-KEYPath::KEYPath(const std::string &path)
+IWORKPath::IWORKPath(const std::string &path)
   : m_elements()
   , m_closed(false)
 {
@@ -282,10 +282,10 @@ KEYPath::KEYPath(const std::string &path)
   const rule<> r =
     +(
       (
-        ('C' && space_p && real_p[assign_a(x)] && space_p && real_p[assign_a(y)] && space_p && real_p[assign_a(x1)] && space_p && real_p[assign_a(y1)] && space_p && real_p[assign_a(x2)] && space_p && real_p[assign_a(y2)])[bind(&KEYPath::appendCurveTo, this, cref(x), cref(y), cref(x1), cref(y1), cref(x2), cref(y2))]
-        | ('L' && space_p && real_p[assign_a(x)] && space_p && real_p[assign_a(y)])[bind(&KEYPath::appendLineTo, this, cref(x), cref(y))]
-        | ('M' && space_p && real_p[assign_a(x)] && space_p && real_p[assign_a(y)])[bind(&KEYPath::appendMoveTo, this, cref(x), cref(y))]
-        | ch_p('Z')[bind(&KEYPath::appendClose, this)]
+        ('C' && space_p && real_p[assign_a(x)] && space_p && real_p[assign_a(y)] && space_p && real_p[assign_a(x1)] && space_p && real_p[assign_a(y1)] && space_p && real_p[assign_a(x2)] && space_p && real_p[assign_a(y2)])[bind(&IWORKPath::appendCurveTo, this, cref(x), cref(y), cref(x1), cref(y1), cref(x2), cref(y2))]
+        | ('L' && space_p && real_p[assign_a(x)] && space_p && real_p[assign_a(y)])[bind(&IWORKPath::appendLineTo, this, cref(x), cref(y))]
+        | ('M' && space_p && real_p[assign_a(x)] && space_p && real_p[assign_a(y)])[bind(&IWORKPath::appendMoveTo, this, cref(x), cref(y))]
+        | ch_p('Z')[bind(&IWORKPath::appendClose, this)]
       )
       && *space_p
     )
@@ -293,12 +293,12 @@ KEYPath::KEYPath(const std::string &path)
 
   if (!parse(path.c_str(), r).full)
   {
-    KEY_DEBUG_MSG(("parsing of path '%s' failed\n", path.c_str()));
+    ETONYEK_DEBUG_MSG(("parsing of path '%s' failed\n", path.c_str()));
     throw GenericException();
   }
 }
 
-KEYPath::KEYPath(const KEYPath &other)
+IWORKPath::IWORKPath(const IWORKPath &other)
   : m_elements()
   , m_closed(other.m_closed)
 {
@@ -314,58 +314,58 @@ KEYPath::KEYPath(const KEYPath &other)
   }
 }
 
-KEYPath::~KEYPath()
+IWORKPath::~IWORKPath()
 {
   clear();
 }
 
-KEYPath &KEYPath::operator=(const KEYPath &other)
+IWORKPath &IWORKPath::operator=(const IWORKPath &other)
 {
-  KEYPath copy(other);
+  IWORKPath copy(other);
   swap(copy);
   return *this;
 }
 
-void KEYPath::swap(KEYPath &other)
+void IWORKPath::swap(IWORKPath &other)
 {
   using std::swap;
   swap(m_elements, other.m_elements);
 }
 
-void KEYPath::clear()
+void IWORKPath::clear()
 {
   for (std::deque<Element *>::const_iterator it = m_elements.begin(); it != m_elements.end(); ++it)
     delete *it;
   m_elements.clear();
 }
 
-void KEYPath::appendMoveTo(const double x, const double y)
+void IWORKPath::appendMoveTo(const double x, const double y)
 {
   if (!m_closed)
     m_elements.push_back(new MoveTo(x, y));
 }
 
-void KEYPath::appendLineTo(const double x, const double y)
+void IWORKPath::appendLineTo(const double x, const double y)
 {
   m_elements.push_back(new LineTo(x, y));
 }
 
-void KEYPath::appendCurveTo(const double x1, const double y1, const double x2, const double y2, const double x, const double y)
+void IWORKPath::appendCurveTo(const double x1, const double y1, const double x2, const double y2, const double x, const double y)
 {
   m_elements.push_back(new CurveTo(x1, y1, x2, y2, x, y));
 }
 
-void KEYPath::appendClose()
+void IWORKPath::appendClose()
 {
   m_closed = true;
 }
 
-void KEYPath::operator*=(const KEYTransformation &tr)
+void IWORKPath::operator*=(const IWORKTransformation &tr)
 {
   for_each(m_elements.begin(), m_elements.end(), bind(&Element::transform, _1, cref(tr)));
 }
 
-librevenge::RVNGPropertyListVector KEYPath::toWPG() const
+librevenge::RVNGPropertyListVector IWORKPath::toWPG() const
 {
   librevenge::RVNGPropertyListVector vec;
 
@@ -382,27 +382,27 @@ librevenge::RVNGPropertyListVector KEYPath::toWPG() const
   return vec;
 }
 
-bool approxEqual(const KEYPath &left, const KEYPath &right, const double eps)
+bool approxEqual(const IWORKPath &left, const IWORKPath &right, const double eps)
 {
   return left.m_elements.size() == right.m_elements.size()
          && std::equal(left.m_elements.begin(), left.m_elements.end(), right.m_elements.begin(),
-                       boost::bind(&KEYPath::Element::approxEqualsTo, _1, _2, eps))
+                       boost::bind(&IWORKPath::Element::approxEqualsTo, _1, _2, eps))
          ;
 }
 
-bool operator==(const KEYPath &left, const KEYPath &right)
+bool operator==(const IWORKPath &left, const IWORKPath &right)
 {
   return approxEqual(left, right);
 }
 
-bool operator!=(const KEYPath &left, const KEYPath &right)
+bool operator!=(const IWORKPath &left, const IWORKPath &right)
 {
   return !(left == right);
 }
 
-KEYPath operator*(const KEYPath &path, const KEYTransformation &tr)
+IWORKPath operator*(const IWORKPath &path, const IWORKTransformation &tr)
 {
-  KEYPath newPath(path);
+  IWORKPath newPath(path);
   newPath *= tr;
   return newPath;
 }

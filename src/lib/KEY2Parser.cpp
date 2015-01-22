@@ -15,15 +15,16 @@
 
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"
+#include "IWORKPath.h"
+#include "IWORKTypes.h"
+#include "IWORKXMLReader.h"
 #include "KEY2Parser.h"
 #include "KEY2StyleParser.h"
 #include "KEY2TableParser.h"
 #include "KEY2Token.h"
 #include "KEYCollector.h"
-#include "KEYPath.h"
 #include "KEYStyle.h"
 #include "KEYTypes.h"
-#include "KEYXMLReader.h"
 
 using boost::get_optional_value_or;
 using boost::lexical_cast;
@@ -70,11 +71,11 @@ KEY2Parser::~KEY2Parser()
 {
 }
 
-void KEY2Parser::processXmlNode(const KEYXMLReader &reader)
+void KEY2Parser::processXmlNode(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::presentation, KEY2Token::NS_URI_KEY));
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if (attr.getNamespace())
@@ -88,7 +89,7 @@ void KEY2Parser::processXmlNode(const KEYXMLReader &reader)
           m_version = getVersion(getValueId(attr));
           if (0 == m_version)
           {
-            KEY_DEBUG_MSG(("unknown version %s\n", attr.getValue()));
+            ETONYEK_DEBUG_MSG(("unknown version %s\n", attr.getValue()));
           }
           break;
         default :
@@ -101,9 +102,9 @@ void KEY2Parser::processXmlNode(const KEYXMLReader &reader)
     }
   }
 
-  optional<KEYSize> size;
+  optional<IWORKSize> size;
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_KEY == getNamespaceId(element))
@@ -140,18 +141,18 @@ void KEY2Parser::processXmlNode(const KEYXMLReader &reader)
   getCollector()->collectPresentation(size);
 }
 
-KEYXMLReader::TokenizerFunction_t KEY2Parser::getTokenizer() const
+IWORKXMLReader::TokenizerFunction_t KEY2Parser::getTokenizer() const
 {
   return KEY2Tokenizer();
 }
 
-void KEY2Parser::parseDrawables(const KEYXMLReader &reader)
+void KEY2Parser::parseDrawables(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::drawables, KEY2Token::NS_URI_SF));
 
   getCollector()->startLevel();
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -209,7 +210,7 @@ void KEY2Parser::parseDrawables(const KEYXMLReader &reader)
   getCollector()->endLevel();
 }
 
-void KEY2Parser::parseLayer(const KEYXMLReader &reader)
+void KEY2Parser::parseLayer(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::layer, KEY2Token::NS_URI_SF));
 
@@ -217,7 +218,7 @@ void KEY2Parser::parseLayer(const KEYXMLReader &reader)
 
   getCollector()->startLayer();
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -240,11 +241,11 @@ void KEY2Parser::parseLayer(const KEYXMLReader &reader)
   getCollector()->endLayer();
 }
 
-void KEY2Parser::parseLayers(const KEYXMLReader &reader)
+void KEY2Parser::parseLayers(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::layers, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -267,13 +268,13 @@ void KEY2Parser::parseLayers(const KEYXMLReader &reader)
   }
 }
 
-void KEY2Parser::parseMasterSlide(const KEYXMLReader &reader)
+void KEY2Parser::parseMasterSlide(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::master_slide, KEY2Token::NS_URI_KEY));
 
   optional<ID_t> id;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((KEY2Token::ID | KEY2Token::NS_URI_SFA) == getId(attr))
@@ -282,7 +283,7 @@ void KEY2Parser::parseMasterSlide(const KEYXMLReader &reader)
 
   getCollector()->startPage();
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_KEY == getNamespaceId(element))
@@ -317,11 +318,11 @@ void KEY2Parser::parseMasterSlide(const KEYXMLReader &reader)
   getCollector()->endPage();
 }
 
-void KEY2Parser::parseMasterSlides(const KEYXMLReader &reader)
+void KEY2Parser::parseMasterSlides(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::master_slides, KEY2Token::NS_URI_KEY));
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if ((KEY2Token::NS_URI_KEY == getNamespaceId(element)) && (KEY2Token::master_slide == getNameId(element)))
@@ -331,18 +332,18 @@ void KEY2Parser::parseMasterSlides(const KEYXMLReader &reader)
   }
 }
 
-void KEY2Parser::parseMetadata(const KEYXMLReader &reader)
+void KEY2Parser::parseMetadata(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::metadata, KEY2Token::NS_URI_KEY));
 
   skipElement(reader);
 }
 
-void KEY2Parser::parseNotes(const KEYXMLReader &reader)
+void KEY2Parser::parseNotes(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::notes, KEY2Token::NS_URI_KEY));
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if ((KEY2Token::text_storage | KEY2Token::NS_URI_SF) == getId(element))
@@ -359,11 +360,11 @@ void KEY2Parser::parseNotes(const KEYXMLReader &reader)
   }
 }
 
-void KEY2Parser::parsePage(const KEYXMLReader &reader)
+void KEY2Parser::parsePage(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::page, KEY2Token::NS_URI_KEY));
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -372,7 +373,7 @@ void KEY2Parser::parsePage(const KEYXMLReader &reader)
       {
       case KEY2Token::size :
       {
-        const KEYSize size = readSize(reader);
+        const IWORKSize size = readSize(reader);
         // TODO: use size
         (void) size;
         break;
@@ -390,7 +391,7 @@ void KEY2Parser::parsePage(const KEYXMLReader &reader)
   }
 }
 
-void KEY2Parser::parseProxyMasterLayer(const KEYXMLReader &reader)
+void KEY2Parser::parseProxyMasterLayer(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::proxy_master_layer, KEY2Token::NS_URI_SF));
 
@@ -398,7 +399,7 @@ void KEY2Parser::parseProxyMasterLayer(const KEYXMLReader &reader)
 
   getCollector()->startLayer();
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -421,7 +422,7 @@ void KEY2Parser::parseProxyMasterLayer(const KEYXMLReader &reader)
   getCollector()->endLayer();
 }
 
-void KEY2Parser::parseSlide(const KEYXMLReader &reader)
+void KEY2Parser::parseSlide(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::slide, KEY2Token::NS_URI_KEY));
 
@@ -429,7 +430,7 @@ void KEY2Parser::parseSlide(const KEYXMLReader &reader)
 
   getCollector()->startPage();
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_KEY == getNamespaceId(element))
@@ -467,13 +468,13 @@ void KEY2Parser::parseSlide(const KEYXMLReader &reader)
   getCollector()->endPage();
 }
 
-void KEY2Parser::parseSlideList(const KEYXMLReader &reader)
+void KEY2Parser::parseSlideList(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::slide_list, KEY2Token::NS_URI_KEY));
 
   getCollector()->startSlides();
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if ((KEY2Token::NS_URI_KEY == getNamespaceId(element)) && (KEY2Token::slide == getNameId(element)))
@@ -485,11 +486,11 @@ void KEY2Parser::parseSlideList(const KEYXMLReader &reader)
   getCollector()->endSlides();
 }
 
-void KEY2Parser::parseStickyNotes(const KEYXMLReader &reader)
+void KEY2Parser::parseStickyNotes(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::sticky_notes, KEY2Token::NS_URI_KEY));
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if ((KEY2Token::NS_URI_KEY == getNamespaceId(element)) && (KEY2Token::sticky_note == getNameId(element)))
@@ -499,13 +500,13 @@ void KEY2Parser::parseStickyNotes(const KEYXMLReader &reader)
   }
 }
 
-void KEY2Parser::parseStyles(const KEYXMLReader &reader, const bool anonymous)
+void KEY2Parser::parseStyles(const IWORKXMLReader &reader, const bool anonymous)
 {
   assert(checkElement(reader, anonymous ? KEY2Token::anon_styles : KEY2Token::styles, KEY2Token::NS_URI_SF));
 
   checkNoAttributes(reader);
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -540,7 +541,7 @@ void KEY2Parser::parseStyles(const KEYXMLReader &reader, const bool anonymous)
       case KEY2Token::vector_style_ref :
       {
         const optional<ID_t> id = readRef(element);
-        const optional<KEYPropertyMap> dummyProps;
+        const optional<IWORKPropertyMap> dummyProps;
         const optional<string> dummyIdent;
 
         switch (elementToken)
@@ -580,7 +581,7 @@ void KEY2Parser::parseStyles(const KEYXMLReader &reader, const bool anonymous)
   }
 }
 
-void KEY2Parser::parseStylesheet(const KEYXMLReader &reader)
+void KEY2Parser::parseStylesheet(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::stylesheet, KEY2Token::NS_URI_KEY));
 
@@ -588,7 +589,7 @@ void KEY2Parser::parseStylesheet(const KEYXMLReader &reader)
 
   optional<ID_t> parent;
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -616,11 +617,11 @@ void KEY2Parser::parseStylesheet(const KEYXMLReader &reader)
   getCollector()->collectStylesheet(id, parent);
 }
 
-void KEY2Parser::parseTheme(const KEYXMLReader &reader)
+void KEY2Parser::parseTheme(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::theme, KEY2Token::NS_URI_KEY));
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_KEY == getNamespaceId(element))
@@ -629,7 +630,7 @@ void KEY2Parser::parseTheme(const KEYXMLReader &reader)
       {
       case KEY2Token::size :
       {
-        const KEYSize size = readSize(reader);
+        const IWORKSize size = readSize(reader);
         // TODO: use size
         (void) size;
         break;
@@ -650,13 +651,13 @@ void KEY2Parser::parseTheme(const KEYXMLReader &reader)
   }
 }
 
-void KEY2Parser::parseThemeList(const KEYXMLReader &reader)
+void KEY2Parser::parseThemeList(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::theme_list, KEY2Token::NS_URI_KEY));
 
   getCollector()->startThemes();
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if ((KEY2Token::NS_URI_KEY == getNamespaceId(element)) && (KEY2Token::theme == getNameId(element)))
@@ -668,14 +669,14 @@ void KEY2Parser::parseThemeList(const KEYXMLReader &reader)
   getCollector()->endThemes();
 }
 
-void KEY2Parser::parseBezier(const KEYXMLReader &reader)
+void KEY2Parser::parseBezier(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::bezier, KEY2Token::NS_URI_SF));
 
   optional<ID_t> id;
-  KEYPathPtr_t path;
+  IWORKPathPtr_t path;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((KEY2Token::NS_URI_SFA == getNamespaceId(attr)))
@@ -686,7 +687,7 @@ void KEY2Parser::parseBezier(const KEYXMLReader &reader)
         id = attr.getValue();
         break;
       case KEY2Token::path :
-        path.reset(new KEYPath(attr.getValue()));
+        path.reset(new IWORKPath(attr.getValue()));
         break;
       default :
         break;
@@ -699,13 +700,13 @@ void KEY2Parser::parseBezier(const KEYXMLReader &reader)
   getCollector()->collectBezier(id, path, false);
 }
 
-void KEY2Parser::parseConnectionLine(const KEYXMLReader &reader)
+void KEY2Parser::parseConnectionLine(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::connection_line, KEY2Token::NS_URI_SF));
 
   const optional<ID_t> id = readID(reader);
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -730,14 +731,14 @@ void KEY2Parser::parseConnectionLine(const KEYXMLReader &reader)
   getCollector()->collectShape(id);
 }
 
-void KEY2Parser::parseGeometry(const KEYXMLReader &reader)
+void KEY2Parser::parseGeometry(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::geometry, KEY2Token::NS_URI_SF));
 
   optional<ID_t> id;
-  optional<KEYSize> naturalSize;
-  optional<KEYSize> size;
-  optional<KEYPosition> pos;
+  optional<IWORKSize> naturalSize;
+  optional<IWORKSize> size;
+  optional<IWORKPosition> pos;
   optional<double> angle;
   optional<double> shearXAngle;
   optional<double> shearYAngle;
@@ -746,7 +747,7 @@ void KEY2Parser::parseGeometry(const KEYXMLReader &reader)
   optional<bool> horizontalFlip;
   optional<bool> verticalFlip;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(attr))
@@ -784,7 +785,7 @@ void KEY2Parser::parseGeometry(const KEYXMLReader &reader)
     }
   }
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -812,7 +813,7 @@ void KEY2Parser::parseGeometry(const KEYXMLReader &reader)
   getCollector()->collectGeometry(id, naturalSize, size, pos, angle, shearXAngle, shearYAngle, horizontalFlip, verticalFlip, aspectRatioLocked, sizesLocked);
 }
 
-void KEY2Parser::parseGroup(const KEYXMLReader &reader)
+void KEY2Parser::parseGroup(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::group, KEY2Token::NS_URI_SF));
 
@@ -824,7 +825,7 @@ void KEY2Parser::parseGroup(const KEYXMLReader &reader)
 
   getCollector()->startGroup();
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -863,14 +864,14 @@ void KEY2Parser::parseGroup(const KEYXMLReader &reader)
   getCollector()->endLevel();
 }
 
-void KEY2Parser::parseImage(const KEYXMLReader &reader)
+void KEY2Parser::parseImage(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::image, KEY2Token::NS_URI_SF));
 
   optional<ID_t> id;
   KEYImagePtr_t image(new KEYImage());
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((KEY2Token::NS_URI_SF == getNamespaceId(attr)) && (KEY2Token::locked == getNameId(attr)))
@@ -879,7 +880,7 @@ void KEY2Parser::parseImage(const KEYXMLReader &reader)
       id = attr.getValue();
   }
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -901,7 +902,7 @@ void KEY2Parser::parseImage(const KEYXMLReader &reader)
   getCollector()->collectImage(id, image);
 }
 
-void KEY2Parser::parseLine(const KEYXMLReader &reader)
+void KEY2Parser::parseLine(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::line, KEY2Token::NS_URI_SF));
 
@@ -909,7 +910,7 @@ void KEY2Parser::parseLine(const KEYXMLReader &reader)
 
   KEYLinePtr_t line(new KEYLine());
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -921,14 +922,14 @@ void KEY2Parser::parseLine(const KEYXMLReader &reader)
         break;
       case KEY2Token::head :
       {
-        const KEYPosition head = readPosition(reader);
+        const IWORKPosition head = readPosition(reader);
         line->x1 = head.x;
         line->y1 = head.y;
         break;
       }
       case KEY2Token::tail :
       {
-        const KEYPosition tail = readPosition(reader);
+        const IWORKPosition tail = readPosition(reader);
         line->x2 = tail.x;
         line->y2 = tail.y;
         break;
@@ -945,7 +946,7 @@ void KEY2Parser::parseLine(const KEYXMLReader &reader)
   getCollector()->collectLine(id, line);
 }
 
-void KEY2Parser::parseMedia(const KEYXMLReader &reader)
+void KEY2Parser::parseMedia(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::media, KEY2Token::NS_URI_SF));
 
@@ -953,7 +954,7 @@ void KEY2Parser::parseMedia(const KEYXMLReader &reader)
 
   const optional<ID_t> id = readID(reader);
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -979,11 +980,11 @@ void KEY2Parser::parseMedia(const KEYXMLReader &reader)
   getCollector()->endLevel();
 }
 
-void KEY2Parser::parsePath(const KEYXMLReader &reader)
+void KEY2Parser::parsePath(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::path, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -1016,7 +1017,7 @@ void KEY2Parser::parsePath(const KEYXMLReader &reader)
   }
 }
 
-void KEY2Parser::parseShape(const KEYXMLReader &reader)
+void KEY2Parser::parseShape(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::shape, KEY2Token::NS_URI_SF));
 
@@ -1024,7 +1025,7 @@ void KEY2Parser::parseShape(const KEYXMLReader &reader)
 
   const optional<ID_t> id = readID(reader);
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -1053,7 +1054,7 @@ void KEY2Parser::parseShape(const KEYXMLReader &reader)
   getCollector()->endText();
 }
 
-void KEY2Parser::parseStickyNote(const KEYXMLReader &reader)
+void KEY2Parser::parseStickyNote(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::sticky_note, KEY2Token::NS_URI_KEY)
          || checkElement(reader, KEY2Token::sticky_note, KEY2Token::NS_URI_SF));
@@ -1061,7 +1062,7 @@ void KEY2Parser::parseStickyNote(const KEYXMLReader &reader)
   getCollector()->startText(false);
   getCollector()->startLevel();
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -1089,7 +1090,7 @@ void KEY2Parser::parseStickyNote(const KEYXMLReader &reader)
   getCollector()->endText();
 }
 
-void KEY2Parser::parsePlaceholder(const KEYXMLReader &reader, const bool title)
+void KEY2Parser::parsePlaceholder(const IWORKXMLReader &reader, const bool title)
 {
   assert(title
          ? checkElement(reader, KEY2Token::title_placeholder, KEY2Token::NS_URI_KEY)
@@ -1099,7 +1100,7 @@ void KEY2Parser::parsePlaceholder(const KEYXMLReader &reader, const bool title)
 
   const optional<ID_t> id = readID(reader);
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if ((KEY2Token::NS_URI_KEY == getNamespaceId(element)) && (KEY2Token::text == getNameId(element)))
@@ -1114,18 +1115,18 @@ void KEY2Parser::parsePlaceholder(const KEYXMLReader &reader, const bool title)
         break;
       case KEY2Token::style :
       {
-        KEYXMLReader readerStyle(element);
+        IWORKXMLReader readerStyle(element);
 
         checkNoAttributes(readerStyle);
 
-        KEYXMLReader::ElementIterator elementStyle(readerStyle);
+        IWORKXMLReader::ElementIterator elementStyle(readerStyle);
         while (elementStyle.next())
         {
           if ((KEY2Token::NS_URI_SF == getNamespaceId(elementStyle)) && (KEY2Token::placeholder_style_ref == getNameId(elementStyle)))
           {
             const ID_t styleId = readRef(elementStyle);
             const optional<string> none;
-            getCollector()->collectPlaceholderStyle(styleId, optional<KEYPropertyMap>(), none, none, true, false);
+            getCollector()->collectPlaceholderStyle(styleId, optional<IWORKPropertyMap>(), none, none, true, false);
           }
           else
           {
@@ -1146,14 +1147,14 @@ void KEY2Parser::parsePlaceholder(const KEYXMLReader &reader, const bool title)
   getCollector()->endText();
 }
 
-void KEY2Parser::parseBezierPath(const KEYXMLReader &reader)
+void KEY2Parser::parseBezierPath(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::bezier_path, KEY2Token::NS_URI_SF)
          || checkElement(reader, KEY2Token::editable_bezier_path, KEY2Token::NS_URI_SF));
 
   const optional<ID_t> id = readID(reader);
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -1166,7 +1167,7 @@ void KEY2Parser::parseBezierPath(const KEYXMLReader &reader)
       case KEY2Token::bezier_ref :
       {
         const ID_t idref = readRef(element);
-        getCollector()->collectBezier(idref, KEYPathPtr_t(), true);
+        getCollector()->collectBezier(idref, IWORKPathPtr_t(), true);
         break;
       }
       default :
@@ -1181,7 +1182,7 @@ void KEY2Parser::parseBezierPath(const KEYXMLReader &reader)
   getCollector()->collectBezierPath(id);
 }
 
-void KEY2Parser::parseCallout2Path(const KEYXMLReader &reader)
+void KEY2Parser::parseCallout2Path(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::callout2_path, KEY2Token::NS_URI_SF));
 
@@ -1192,7 +1193,7 @@ void KEY2Parser::parseCallout2Path(const KEYXMLReader &reader)
   double tailPosY(0);
   double tailSize(0);
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((KEY2Token::NS_URI_SFA == getNamespaceId(attr)) && (KEY2Token::ID == getNameId(attr)))
@@ -1224,9 +1225,9 @@ void KEY2Parser::parseCallout2Path(const KEYXMLReader &reader)
     }
   }
 
-  KEYSize size;
+  IWORKSize size;
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if ((KEY2Token::NS_URI_SF == getNamespaceId(element)) && (KEY2Token::size == getNameId(element)))
@@ -1238,16 +1239,16 @@ void KEY2Parser::parseCallout2Path(const KEYXMLReader &reader)
   getCollector()->collectCalloutPath(id, size, cornerRadius, tailSize, tailPosX, tailPosY, tailAtCenter);
 }
 
-void KEY2Parser::parseConnectionPath(const KEYXMLReader &reader)
+void KEY2Parser::parseConnectionPath(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::connection_path, KEY2Token::NS_URI_SF));
 
   const optional<ID_t> id = readID(reader);
 
-  KEYSize size;
+  IWORKSize size;
   pair<optional<double>, optional<double> > point;
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -1272,7 +1273,7 @@ void KEY2Parser::parseConnectionPath(const KEYXMLReader &reader)
   getCollector()->collectConnectionPath(id, size, get_optional_value_or(point.first, 0), get_optional_value_or(point.second, 0));
 }
 
-void KEY2Parser::parsePointPath(const KEYXMLReader &reader)
+void KEY2Parser::parsePointPath(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::point_path, KEY2Token::NS_URI_SF));
 
@@ -1281,7 +1282,7 @@ void KEY2Parser::parsePointPath(const KEYXMLReader &reader)
   // right arrow is the default (by my decree .-)
   bool doubleArrow = false;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((KEY2Token::NS_URI_SF == getNamespaceId(attr)) && (KEY2Token::type == getNameId(attr)))
@@ -1297,7 +1298,7 @@ void KEY2Parser::parsePointPath(const KEYXMLReader &reader)
         star = true;
         break;
       default :
-        KEY_DEBUG_MSG(("unknown point path type: %s\n", attr.getValue()));
+        ETONYEK_DEBUG_MSG(("unknown point path type: %s\n", attr.getValue()));
         break;
       }
     }
@@ -1307,10 +1308,10 @@ void KEY2Parser::parsePointPath(const KEYXMLReader &reader)
     }
   }
 
-  KEYSize size;
+  IWORKSize size;
   pair<optional<double>, optional<double> > point;
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -1338,7 +1339,7 @@ void KEY2Parser::parsePointPath(const KEYXMLReader &reader)
     getCollector()->collectArrowPath(id, size, get_optional_value_or(point.first, 0), get_optional_value_or(point.second, 0), doubleArrow);
 }
 
-void KEY2Parser::parseScalarPath(const KEYXMLReader &reader)
+void KEY2Parser::parseScalarPath(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::scalar_path, KEY2Token::NS_URI_SF));
 
@@ -1346,7 +1347,7 @@ void KEY2Parser::parseScalarPath(const KEYXMLReader &reader)
   bool polygon = false;
   double value = 0;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(attr))
@@ -1366,7 +1367,7 @@ void KEY2Parser::parseScalarPath(const KEYXMLReader &reader)
           polygon = true;
           break;
         default :
-          KEY_DEBUG_MSG(("unknown scalar path type: %s\n", attr.getValue()));
+          ETONYEK_DEBUG_MSG(("unknown scalar path type: %s\n", attr.getValue()));
           break;
         }
         break;
@@ -1381,9 +1382,9 @@ void KEY2Parser::parseScalarPath(const KEYXMLReader &reader)
     }
   }
 
-  KEYSize size;
+  IWORKSize size;
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if ((KEY2Token::NS_URI_SF == getNamespaceId(element)) && (KEY2Token::size == getNameId(element)))
@@ -1398,13 +1399,13 @@ void KEY2Parser::parseScalarPath(const KEYXMLReader &reader)
     getCollector()->collectRoundedRectanglePath(id, size, value);
 }
 
-void KEY2Parser::parseContent(const KEYXMLReader &reader)
+void KEY2Parser::parseContent(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::content, KEY2Token::NS_URI_SF));
 
   checkNoAttributes(reader);
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -1426,7 +1427,7 @@ void KEY2Parser::parseContent(const KEYXMLReader &reader)
   }
 }
 
-void KEY2Parser::parseData(const KEYXMLReader &reader)
+void KEY2Parser::parseData(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::data, KEY2Token::NS_URI_SF));
 
@@ -1435,12 +1436,12 @@ void KEY2Parser::parseData(const KEYXMLReader &reader)
   RVNGInputStreamPtr_t stream;
   optional<unsigned> type;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((KEY2Token::NS_URI_SFA == getNamespaceId(attr)) && (KEY2Token::ID == getNameId(attr)))
     {
-      KEY_DEBUG_XML_TODO_ATTRIBUTE(attr);
+      ETONYEK_DEBUG_XML_TODO_ATTRIBUTE(attr);
     }
     else if (KEY2Token::NS_URI_SF == getNamespaceId(attr))
     {
@@ -1466,14 +1467,14 @@ void KEY2Parser::parseData(const KEYXMLReader &reader)
   getCollector()->collectData(id, stream, displayName, type, false);
 }
 
-void KEY2Parser::parseFiltered(const KEYXMLReader &reader)
+void KEY2Parser::parseFiltered(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::filtered, KEY2Token::NS_URI_SF));
 
   optional<ID_t> id;
-  optional<KEYSize> size;
+  optional<IWORKSize> size;
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -1497,13 +1498,13 @@ void KEY2Parser::parseFiltered(const KEYXMLReader &reader)
   getCollector()->collectFiltered(id, size);
 }
 
-void KEY2Parser::parseFilteredImage(const KEYXMLReader &reader)
+void KEY2Parser::parseFilteredImage(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::filtered_image, KEY2Token::NS_URI_SF));
 
   const optional<ID_t> id = readID(reader);
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -1513,7 +1514,7 @@ void KEY2Parser::parseFilteredImage(const KEYXMLReader &reader)
       case KEY2Token::unfiltered_ref :
       {
         optional<ID_t> idref = readRef(element);
-        getCollector()->collectUnfiltered(idref, optional<KEYSize>(), true);
+        getCollector()->collectUnfiltered(idref, optional<IWORKSize>(), true);
         break;
       }
       case KEY2Token::unfiltered :
@@ -1536,11 +1537,11 @@ void KEY2Parser::parseFilteredImage(const KEYXMLReader &reader)
   getCollector()->collectFilteredImage(id, false);
 }
 
-void KEY2Parser::parseImageMedia(const KEYXMLReader &reader)
+void KEY2Parser::parseImageMedia(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::image_media, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -1559,13 +1560,13 @@ void KEY2Parser::parseImageMedia(const KEYXMLReader &reader)
   }
 }
 
-void KEY2Parser::parseLeveled(const KEYXMLReader &reader)
+void KEY2Parser::parseLeveled(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::leveled, KEY2Token::NS_URI_SF));
 
   const optional<ID_t> id = readID(reader);
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -1576,7 +1577,7 @@ void KEY2Parser::parseLeveled(const KEYXMLReader &reader)
         parseData(element);
         break;
       case KEY2Token::size :
-        KEY_DEBUG_XML_TODO_ELEMENT(element);
+        ETONYEK_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
       default :
@@ -1587,18 +1588,18 @@ void KEY2Parser::parseLeveled(const KEYXMLReader &reader)
       skipElement(element);
   }
 
-  getCollector()->collectLeveled(id, optional<KEYSize>());
+  getCollector()->collectLeveled(id, optional<IWORKSize>());
 }
 
-void KEY2Parser::parseUnfiltered(const KEYXMLReader &reader)
+void KEY2Parser::parseUnfiltered(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::unfiltered, KEY2Token::NS_URI_SF));
 
   const optional<ID_t> id = readID(reader);
 
-  optional<KEYSize> size;
+  optional<IWORKSize> size;
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -1624,11 +1625,11 @@ void KEY2Parser::parseUnfiltered(const KEYXMLReader &reader)
   getCollector()->collectUnfiltered(id, size, false);
 }
 
-void KEY2Parser::parseMovieMedia(const KEYXMLReader &reader)
+void KEY2Parser::parseMovieMedia(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::movie_media, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if ((KEY2Token::NS_URI_SF | KEY2Token::self_contained_movie) == getId(element))
@@ -1640,13 +1641,13 @@ void KEY2Parser::parseMovieMedia(const KEYXMLReader &reader)
   getCollector()->collectMovieMedia(optional<ID_t>());
 }
 
-void KEY2Parser::parseSelfContainedMovie(const KEYXMLReader &reader)
+void KEY2Parser::parseSelfContainedMovie(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::self_contained_movie, KEY2Token::NS_URI_SF));
 
   checkNoAttributes(reader);
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if ((KEY2Token::NS_URI_SF | KEY2Token::other_datas) == getId(element))
@@ -1656,13 +1657,13 @@ void KEY2Parser::parseSelfContainedMovie(const KEYXMLReader &reader)
   }
 }
 
-void KEY2Parser::parseOtherDatas(const KEYXMLReader &reader)
+void KEY2Parser::parseOtherDatas(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::other_datas, KEY2Token::NS_URI_SF));
 
   checkNoAttributes(reader);
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     switch (getId(element))
@@ -1682,7 +1683,7 @@ void KEY2Parser::parseOtherDatas(const KEYXMLReader &reader)
   }
 }
 
-void KEY2Parser::parseBr(const KEYXMLReader &reader)
+void KEY2Parser::parseBr(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::br, KEY2Token::NS_URI_SF)
          || checkElement(reader, KEY2Token::crbr, KEY2Token::NS_URI_SF)
@@ -1695,18 +1696,18 @@ void KEY2Parser::parseBr(const KEYXMLReader &reader)
   getCollector()->collectLineBreak();
 }
 
-void KEY2Parser::parseLayout(const KEYXMLReader &reader)
+void KEY2Parser::parseLayout(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::layout, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((KEY2Token::NS_URI_SF == getNamespaceId(attr)) && (KEY2Token::style == getNameId(attr)))
       emitLayoutStyle(attr.getValue());
   }
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if ((KEY2Token::NS_URI_SF == getNamespaceId(element)) && (KEY2Token::p == getNameId(element)))
@@ -1716,11 +1717,11 @@ void KEY2Parser::parseLayout(const KEYXMLReader &reader)
   }
 }
 
-void KEY2Parser::parseLink(const KEYXMLReader &reader)
+void KEY2Parser::parseLink(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::link, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::MixedIterator mixed(reader);
+  IWORKXMLReader::MixedIterator mixed(reader);
   while (mixed.next())
   {
     if (mixed.isElement())
@@ -1750,13 +1751,13 @@ void KEY2Parser::parseLink(const KEYXMLReader &reader)
   }
 }
 
-void KEY2Parser::parseP(const KEYXMLReader &reader)
+void KEY2Parser::parseP(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::p, KEY2Token::NS_URI_SF));
 
   optional<ID_t> style;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(attr))
@@ -1774,7 +1775,7 @@ void KEY2Parser::parseP(const KEYXMLReader &reader)
 
   getCollector()->startParagraph(style);
 
-  KEYXMLReader::MixedIterator mixed(reader);
+  IWORKXMLReader::MixedIterator mixed(reader);
   while (mixed.next())
   {
     if (mixed.isElement())
@@ -1817,20 +1818,20 @@ void KEY2Parser::parseP(const KEYXMLReader &reader)
   getCollector()->endParagraph();
 }
 
-void KEY2Parser::parseSpan(const KEYXMLReader &reader)
+void KEY2Parser::parseSpan(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::span, KEY2Token::NS_URI_SF));
 
   optional<ID_t> style;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((KEY2Token::NS_URI_SF == getNamespaceId(attr)) && (KEY2Token::style == getNameId(attr)))
       style = attr.getValue();
   }
 
-  KEYXMLReader::MixedIterator mixed(reader);
+  IWORKXMLReader::MixedIterator mixed(reader);
   while (mixed.next())
   {
     if (mixed.isElement())
@@ -1863,7 +1864,7 @@ void KEY2Parser::parseSpan(const KEYXMLReader &reader)
   }
 }
 
-void KEY2Parser::parseTab(const KEYXMLReader &reader)
+void KEY2Parser::parseTab(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::tab, KEY2Token::NS_URI_SF));
 
@@ -1873,7 +1874,7 @@ void KEY2Parser::parseTab(const KEYXMLReader &reader)
   getCollector()->collectTab();
 }
 
-void KEY2Parser::parseText(const KEYXMLReader &reader)
+void KEY2Parser::parseText(const IWORKXMLReader &reader)
 {
   // NOTE: isn't it wonderful that there are two text elements in two
   // different namespaces, but with the same schema?
@@ -1882,7 +1883,7 @@ void KEY2Parser::parseText(const KEYXMLReader &reader)
 
   optional<ID_t> layoutStyle;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(attr))
@@ -1898,7 +1899,7 @@ void KEY2Parser::parseText(const KEYXMLReader &reader)
     }
   }
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if ((KEY2Token::NS_URI_SF == getNamespaceId(element)) && (KEY2Token::text_storage == getNameId(element)))
@@ -1908,7 +1909,7 @@ void KEY2Parser::parseText(const KEYXMLReader &reader)
   }
 }
 
-void KEY2Parser::parseTextBody(const KEYXMLReader &reader)
+void KEY2Parser::parseTextBody(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::text_body, KEY2Token::NS_URI_SF));
 
@@ -1916,7 +1917,7 @@ void KEY2Parser::parseTextBody(const KEYXMLReader &reader)
 
   bool layout = false;
   bool para = false;
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -1926,7 +1927,7 @@ void KEY2Parser::parseTextBody(const KEYXMLReader &reader)
       case KEY2Token::layout :
         if (layout || para)
         {
-          KEY_DEBUG_MSG(("layout following another element, not allowed, skipping\n"));
+          ETONYEK_DEBUG_MSG(("layout following another element, not allowed, skipping\n"));
           skipElement(element);
         }
         else
@@ -1938,7 +1939,7 @@ void KEY2Parser::parseTextBody(const KEYXMLReader &reader)
       case KEY2Token::p :
         if (layout)
         {
-          KEY_DEBUG_MSG(("paragraph following layout, not allowed, skipping\n"));
+          ETONYEK_DEBUG_MSG(("paragraph following layout, not allowed, skipping\n"));
           skipElement(element);
         }
         else if (para)
@@ -1963,11 +1964,11 @@ void KEY2Parser::parseTextBody(const KEYXMLReader &reader)
   }
 }
 
-void KEY2Parser::parseTextStorage(const KEYXMLReader &reader)
+void KEY2Parser::parseTextStorage(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::text_storage, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -1991,7 +1992,7 @@ void KEY2Parser::parseTextStorage(const KEYXMLReader &reader)
 
 void KEY2Parser::emitLayoutStyle(const ID_t &id)
 {
-  optional<KEYPropertyMap> dummyProps;
+  optional<IWORKPropertyMap> dummyProps;
   optional<string> dummyIdent;
   getCollector()->collectLayoutStyle(id, dummyProps, dummyIdent, dummyIdent, true, false);
 }

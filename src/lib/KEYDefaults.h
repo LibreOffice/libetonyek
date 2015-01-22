@@ -12,7 +12,7 @@
 
 #include <boost/optional.hpp>
 
-#include "KEYTypes.h"
+#include "IWORKTypes.h"
 
 namespace libetonyek
 {
@@ -32,9 +32,9 @@ class KEYDefaults
 public:
   virtual ~KEYDefaults() = 0;
 
-  virtual void applyPresentationSize(boost::optional<KEYSize> &size) const = 0;
+  virtual void applyPresentationSize(boost::optional<IWORKSize> &size) const = 0;
 
-  virtual void applyGeometry(boost::optional<KEYSize> &naturalSize, boost::optional<KEYPosition> &position) const = 0;
+  virtual void applyGeometry(boost::optional<IWORKSize> &naturalSize, boost::optional<IWORKPosition> &position) const = 0;
 };
 
 }

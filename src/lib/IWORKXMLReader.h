@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYXMLREADER_H_INCLUDED
-#define KEYXMLREADER_H_INCLUDED
+#ifndef IWORKXMLREADER_H_INCLUDED
+#define IWORKXMLREADER_H_INCLUDED
 
 #include <boost/function.hpp>
 
@@ -17,11 +17,11 @@
 namespace libetonyek
 {
 
-class KEYXMLReader
+class IWORKXMLReader
 {
   // -Weffc++
-  KEYXMLReader(const KEYXMLReader &other);
-  KEYXMLReader &operator=(const KEYXMLReader &other);
+  IWORKXMLReader(const IWORKXMLReader &other);
+  IWORKXMLReader &operator=(const IWORKXMLReader &other);
 
   struct Impl;
 
@@ -33,10 +33,10 @@ class KEYXMLReader
 
   class NodeIterator
   {
-    friend class KEYXMLReader;
+    friend class IWORKXMLReader;
 
   public:
-    NodeIterator(const KEYXMLReader &reader, int types);
+    NodeIterator(const IWORKXMLReader &reader, int types);
 
     bool next();
 
@@ -56,10 +56,10 @@ public:
 
   class AttributeIterator
   {
-    friend class KEYXMLReader;
+    friend class IWORKXMLReader;
 
   public:
-    explicit AttributeIterator(const KEYXMLReader &reader);
+    explicit AttributeIterator(const IWORKXMLReader &reader);
 
     bool next();
 
@@ -83,7 +83,7 @@ public:
   class ElementIterator
   {
   public:
-    explicit ElementIterator(const KEYXMLReader &reader);
+    explicit ElementIterator(const IWORKXMLReader &reader);
 
     bool next();
 
@@ -103,7 +103,7 @@ public:
   class MixedIterator
   {
   public:
-    explicit MixedIterator(const KEYXMLReader &reader);
+    explicit MixedIterator(const IWORKXMLReader &reader);
 
     bool next();
 
@@ -126,11 +126,11 @@ public:
   typedef boost::function<int(const char *)> TokenizerFunction_t;
 
 public:
-  explicit KEYXMLReader(librevenge::RVNGInputStream *input);
-  KEYXMLReader(librevenge::RVNGInputStream *input, TokenizerFunction_t tokenizer);
-  KEYXMLReader(const ElementIterator &iterator);
-  KEYXMLReader(const MixedIterator &iterator);
-  ~KEYXMLReader();
+  explicit IWORKXMLReader(librevenge::RVNGInputStream *input);
+  IWORKXMLReader(librevenge::RVNGInputStream *input, TokenizerFunction_t tokenizer);
+  IWORKXMLReader(const ElementIterator &iterator);
+  IWORKXMLReader(const MixedIterator &iterator);
+  ~IWORKXMLReader();
 
   /** Get the local name of the current element.
     *
@@ -154,22 +154,22 @@ private:
   bool m_owner;
 };
 
-int getNameId(const KEYXMLReader::AttributeIterator &attribute);
-int getNamespaceId(const KEYXMLReader::AttributeIterator &attribute);
-int getId(const KEYXMLReader::AttributeIterator &attribute);
-int getValueId(const KEYXMLReader::AttributeIterator &attribute);
+int getNameId(const IWORKXMLReader::AttributeIterator &attribute);
+int getNamespaceId(const IWORKXMLReader::AttributeIterator &attribute);
+int getId(const IWORKXMLReader::AttributeIterator &attribute);
+int getValueId(const IWORKXMLReader::AttributeIterator &attribute);
 
-int getNameId(const KEYXMLReader::ElementIterator &element);
-int getNamespaceId(const KEYXMLReader::ElementIterator &element);
-int getId(const KEYXMLReader::ElementIterator &element);
-int getTextId(const KEYXMLReader::ElementIterator &element);
+int getNameId(const IWORKXMLReader::ElementIterator &element);
+int getNamespaceId(const IWORKXMLReader::ElementIterator &element);
+int getId(const IWORKXMLReader::ElementIterator &element);
+int getTextId(const IWORKXMLReader::ElementIterator &element);
 
-int getNameId(const KEYXMLReader &reader);
-int getNamespaceId(const KEYXMLReader &reader);
-int getId(const KEYXMLReader &reader);
+int getNameId(const IWORKXMLReader &reader);
+int getNamespaceId(const IWORKXMLReader &reader);
+int getId(const IWORKXMLReader &reader);
 
 }
 
-#endif // KEYXMLREADER_H_INCLUDED
+#endif // IWORKXMLREADER_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

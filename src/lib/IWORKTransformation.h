@@ -7,15 +7,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYTRANSFORMATION_H_INCLUDED
-#define KEYTRANSFORMATION_H_INCLUDED
+#ifndef IWORKTRANSFORMATION_H_INCLUDED
+#define IWORKTRANSFORMATION_H_INCLUDED
 
 #include "libetonyek_utils.h"
 
 namespace libetonyek
 {
 
-struct KEYGeometry;
+struct IWORKGeometry;
 
 /** Represents an affine transformation.
   *
@@ -26,16 +26,16 @@ struct KEYGeometry;
   * x0 y0 1
   * </pre>
   */
-class KEYTransformation
+class IWORKTransformation
 {
 public:
   /** Construct a unit transformation.
     */
-  KEYTransformation();
+  IWORKTransformation();
 
   /** Construct a transformation from matrix components.
     */
-  KEYTransformation(double xx, double yx, double xy, double yy, double x0, double y0);
+  IWORKTransformation(double xx, double yx, double xy, double yy, double x0, double y0);
 
   /** Apply a transformation on top of this one.
     *
@@ -44,7 +44,7 @@ public:
     * @arg[in] tr the transformation to apply after this one
     * @result this transformation
     */
-  KEYTransformation &operator*=(const KEYTransformation &tr);
+  IWORKTransformation &operator*=(const IWORKTransformation &tr);
 
   /** Apply transformation to a point or distance.
     *
@@ -62,7 +62,7 @@ public:
     * @returns @c true if this transformation and @c other are equal, @c
     * false otherwise
     */
-  bool approxEqual(const KEYTransformation &other, double eps = KEY_EPSILON) const;
+  bool approxEqual(const IWORKTransformation &other, double eps = ETONYEK_EPSILON) const;
 
 private:
   // transformation matrix
@@ -81,7 +81,7 @@ private:
   *
   * @return the new transformation
   */
-KEYTransformation operator*(const KEYTransformation &left, const KEYTransformation &right);
+IWORKTransformation operator*(const IWORKTransformation &left, const IWORKTransformation &right);
 
 /** Tests for equality of transformations.
   *
@@ -89,7 +89,7 @@ KEYTransformation operator*(const KEYTransformation &left, const KEYTransformati
   * @arg[in] right the second transformation
   * @returns @c true if the transformations are equal, @c false if they are not
   */
-bool operator==(const KEYTransformation &left, const KEYTransformation &right);
+bool operator==(const IWORKTransformation &left, const IWORKTransformation &right);
 
 /** Tests for inequality of transformations.
   *
@@ -97,14 +97,14 @@ bool operator==(const KEYTransformation &left, const KEYTransformation &right);
   * @arg[in] right the second transformation
   * @returns @c true if the transformations are not equal, @c false if they are
   */
-bool operator!=(const KEYTransformation &left, const KEYTransformation &right);
+bool operator!=(const IWORKTransformation &left, const IWORKTransformation &right);
 
 /** Create a transformation from a geometry.
   *
   * @arg[in] a geometry
   * @return the created transformation
   */
-KEYTransformation makeTransformation(const KEYGeometry &geometry);
+IWORKTransformation makeTransformation(const IWORKGeometry &geometry);
 
 /// Special transformation constructors.
 namespace transformations
@@ -116,7 +116,7 @@ namespace transformations
   * @arg[in] height height of the viewport.
   * @return the transformation
   */
-KEYTransformation center(double width, double height);
+IWORKTransformation center(double width, double height);
 
 /** Translate from the center of viewport to the origin.
   *
@@ -126,7 +126,7 @@ KEYTransformation center(double width, double height);
   * @arg[in] height height of the viewport.
   * @return the transformation
   */
-KEYTransformation origin(double width, double height);
+IWORKTransformation origin(double width, double height);
 
 /** Flip horizontally and/or vertically.
   *
@@ -134,7 +134,7 @@ KEYTransformation origin(double width, double height);
   * @arg[in] vertical flip vertically.
   * @return the transformation
   */
-KEYTransformation flip(bool horizontal, bool vertical);
+IWORKTransformation flip(bool horizontal, bool vertical);
 
 /** Rotate counterclockwise around origin.
   *
@@ -142,7 +142,7 @@ KEYTransformation flip(bool horizontal, bool vertical);
   *   the right side.
   * @return the transformation
   */
-KEYTransformation rotate(double angle);
+IWORKTransformation rotate(double angle);
 
 /** Scale along @c x and/or @c y axis.
   *
@@ -150,7 +150,7 @@ KEYTransformation rotate(double angle);
   * @arg[in] ratioY scale ratio along @c y axis.
   * @return the transformation
   */
-KEYTransformation scale(double ratioX, double ratioY);
+IWORKTransformation scale(double ratioX, double ratioY);
 
 /** Shear along @c x and/or @c y axis.
   *
@@ -158,7 +158,7 @@ KEYTransformation scale(double ratioX, double ratioY);
   * @arg[in] angleY shear angle along @c y axis.
   * @return the transformation
   */
-KEYTransformation shear(double angleX, double angleY);
+IWORKTransformation shear(double angleX, double angleY);
 
 /** Translate along @c x and/or @c y axis.
   *
@@ -166,12 +166,12 @@ KEYTransformation shear(double angleX, double angleY);
   * @arg[in] offsetY translation offset along @c y axis.
   * @return the transformation
   */
-KEYTransformation translate(double offsetX, double offsetY);
+IWORKTransformation translate(double offsetX, double offsetY);
 
 }
 
 }
 
-#endif // KEYTRANSFORMATION_H_INCLUDED
+#endif // IWORKTRANSFORMATION_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

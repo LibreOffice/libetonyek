@@ -21,7 +21,7 @@ using boost::optional;
 using boost::shared_ptr;
 using boost::unordered_map;
 
-using libetonyek::KEYPropertyMap;
+using libetonyek::IWORKPropertyMap;
 using libetonyek::KEYStyleBase;
 using libetonyek::KEYStyleContext;
 using libetonyek::KEYStylePtr_t;
@@ -48,7 +48,7 @@ namespace
 class Style : public KEYStyleBase
 {
 public:
-  explicit Style(const KEYPropertyMap &props,
+  explicit Style(const IWORKPropertyMap &props,
                  const optional<string> &ident = optional<string>(),
                  const optional<string> &parentIdent = optional<string>());
 
@@ -60,7 +60,7 @@ private:
   virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
 };
 
-Style::Style(const KEYPropertyMap &props, const optional<string> &ident, const optional<string> &parentIdent)
+Style::Style(const IWORKPropertyMap &props, const optional<string> &ident, const optional<string> &parentIdent)
   : KEYStyleBase(props, ident, parentIdent)
 {
 }
@@ -99,7 +99,7 @@ KEYStylePtr_t Style::find(const KEYStylesheetPtr_t &stylesheet, const std::strin
 namespace
 {
 
-shared_ptr<Style> makeStyle(const KEYPropertyMap &props,
+shared_ptr<Style> makeStyle(const IWORKPropertyMap &props,
                             const optional<string> &ident = optional<string>(),
                             const optional<string> &parentIdent = optional<string>())
 {
@@ -123,14 +123,14 @@ void KEYStylesTest::testLink()
   KEYStylePtr_t parent;
 
   {
-    KEYPropertyMap props;
+    IWORKPropertyMap props;
     props.set("answer", 2);
 
     stylesheet->testStyles["wrong"] = makeStyle(props, string("wrong"));
   }
 
   {
-    KEYPropertyMap props;
+    IWORKPropertyMap props;
     props.set("answer", 42);
 
     parent = stylesheet->testStyles["parent"] = makeStyle(props, string("parent"), string("grandparent"));
@@ -138,7 +138,7 @@ void KEYStylesTest::testLink()
   }
 
   {
-    KEYPropertyMap props;
+    IWORKPropertyMap props;
     props.set("antwort", 42);
 
     stylesheet->testStyles["grandparent"] = makeStyle(props, string("grandparent"));
@@ -146,7 +146,7 @@ void KEYStylesTest::testLink()
 
   // without parent
   {
-    Style style = Style(KEYPropertyMap());
+    Style style = Style(IWORKPropertyMap());
     CPPUNIT_ASSERT(style.get("answer", false).empty());
     CPPUNIT_ASSERT(style.get("answer", true).empty());
 
@@ -157,7 +157,7 @@ void KEYStylesTest::testLink()
 
   // the style's props remain unchanged
   {
-    KEYPropertyMap props;
+    IWORKPropertyMap props;
     props.set("answer", 8);
 
     Style style(props);
@@ -170,7 +170,7 @@ void KEYStylesTest::testLink()
 
   // with parent in the same stylesheet
   {
-    Style style(KEYPropertyMap(), string("test"), string("parent"));
+    Style style(IWORKPropertyMap(), string("test"), string("parent"));
     CPPUNIT_ASSERT(style.get("answer", false).empty());
     CPPUNIT_ASSERT(style.get("answer", true).empty());
 
@@ -182,7 +182,7 @@ void KEYStylesTest::testLink()
 
   // linking through more styles
   {
-    Style style(KEYPropertyMap(), string("test"), string("parent"));
+    Style style(IWORKPropertyMap(), string("test"), string("parent"));
     CPPUNIT_ASSERT(style.get("antwort", false).empty());
     CPPUNIT_ASSERT(style.get("antwort", true).empty());
 
@@ -203,7 +203,7 @@ void KEYStylesTest::testLookup()
 {
   // without context
   {
-    KEYPropertyMap props;
+    IWORKPropertyMap props;
     props.set("answer", 42);
 
     Style style(props);
@@ -215,19 +215,19 @@ void KEYStylesTest::testLookup()
   {
     KEYStyleContext context;
 
-    KEYPropertyMap ctxtProps;
+    IWORKPropertyMap ctxtProps;
     ctxtProps.set("answer", 2);
 
     context.push(makeStyle(ctxtProps));
 
     // lookup through context only
     {
-      const Style style = Style(KEYPropertyMap());
+      const Style style = Style(IWORKPropertyMap());
       CPPUNIT_ASSERT(style.getAnswer(context));
       CPPUNIT_ASSERT_EQUAL(2, get(style.getAnswer(context)));
     }
 
-    KEYPropertyMap props;
+    IWORKPropertyMap props;
     props.set("answer", 42);
 
     // lookup in own prop. set

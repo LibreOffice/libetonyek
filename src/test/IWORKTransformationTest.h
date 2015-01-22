@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYTRANSFORMATIONTEST_H_INCLUDED
-#define KEYTRANSFORMATIONTEST_H_INCLUDED
+#ifndef IWORKTRANSFORMATIONTEST_H_INCLUDED
+#define IWORKTRANSFORMATIONTEST_H_INCLUDED
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -16,14 +16,14 @@
 namespace test
 {
 
-class KEYTransformationTest : public CPPUNIT_NS::TestFixture
+class IWORKTransformationTest : public CPPUNIT_NS::TestFixture
 {
 public:
   virtual void setUp();
   virtual void tearDown();
 
 private:
-  CPPUNIT_TEST_SUITE(KEYTransformationTest);
+  CPPUNIT_TEST_SUITE(IWORKTransformationTest);
   CPPUNIT_TEST(testApplication);
   CPPUNIT_TEST(testConstruction);
   CPPUNIT_TEST(testConstructionIdentity);
@@ -45,6 +45,6 @@ private:
 
 }
 
-#endif //  KEYTRANSFORMATIONTEST_H_INCLUDED
+#endif //  IWORKTRANSFORMATIONTEST_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

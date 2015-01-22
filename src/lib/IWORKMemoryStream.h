@@ -7,19 +7,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYZLIBSTREAM_H_INCLUDED
-#define KEYZLIBSTREAM_H_INCLUDED
+#ifndef IWORKMEMORYSTREAM_H_INCLUDED
+#define IWORKMEMORYSTREAM_H_INCLUDED
+
+#include <vector>
 
 #include "libetonyek_utils.h"
 
 namespace libetonyek
 {
 
-class KEYZlibStream : public librevenge::RVNGInputStream
+class IWORKMemoryStream : public librevenge::RVNGInputStream
 {
+  // -Weffc++
+  IWORKMemoryStream(const IWORKMemoryStream &other);
+  IWORKMemoryStream &operator=(const IWORKMemoryStream &other);
+
 public:
-  KEYZlibStream(const RVNGInputStreamPtr_t &stream);
-  ~KEYZlibStream();
+  explicit IWORKMemoryStream(const RVNGInputStreamPtr_t &input);
+  IWORKMemoryStream(const RVNGInputStreamPtr_t &input, unsigned length);
+  explicit IWORKMemoryStream(std::vector<unsigned char> &data);
+  IWORKMemoryStream(const unsigned char *data, unsigned length);
+  ~IWORKMemoryStream();
 
   bool isStructured();
   unsigned subStreamCount();
@@ -37,11 +46,17 @@ public:
   bool isEnd();
 
 private:
-  RVNGInputStreamPtr_t m_stream;
+  void assign(const unsigned char *data, unsigned length);
+  void read(const RVNGInputStreamPtr_t &input, unsigned length);
+
+private:
+  const unsigned char *m_data;
+  long m_length;
+  long m_pos;
 };
 
 }
 
-#endif // KEYZLIBSTREAM_H_INCLUDED
+#endif // IWORKMEMORYSTREAM_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

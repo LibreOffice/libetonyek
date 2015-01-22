@@ -54,10 +54,10 @@ typedef __int64 int64_t;
 
 #endif
 
-#define KEY_EPSILON 1e-9
-#define KEY_ALMOST_ZERO(x) (std::fabs(x) < KEY_EPSILON)
+#define ETONYEK_EPSILON 1e-9
+#define ETONYEK_ALMOST_ZERO(x) (std::fabs(x) < ETONYEK_EPSILON)
 
-#define KEY_NUM_ELEMENTS(array) (sizeof(array) / sizeof((array)[0]))
+#define ETONYEK_NUM_ELEMENTS(array) (sizeof(array) / sizeof((array)[0]))
 
 // debug message includes source file and line number
 //#define VERBOSE_DEBUG 1
@@ -66,15 +66,15 @@ typedef __int64 int64_t;
 // do nothing with debug messages in a release compile
 #ifdef DEBUG
 #ifdef VERBOSE_DEBUG
-#define KEY_DEBUG_MSG(M) printf("%15s:%5d: ", FILE, LINE); printf M
-#define KEY_DEBUG(M) M
+#define ETONYEK_DEBUG_MSG(M) printf("%15s:%5d: ", FILE, LINE); printf M
+#define ETONYEK_DEBUG(M) M
 #else
-#define KEY_DEBUG_MSG(M) printf M
-#define KEY_DEBUG(M) M
+#define ETONYEK_DEBUG_MSG(M) printf M
+#define ETONYEK_DEBUG(M) M
 #endif
 #else
-#define KEY_DEBUG_MSG(M)
-#define KEY_DEBUG(M)
+#define ETONYEK_DEBUG_MSG(M)
+#define ETONYEK_DEBUG(M)
 #endif
 
 namespace libetonyek
@@ -89,7 +89,7 @@ const double etonyek_two_pi(6.28318530717958647692528676655900576839433879875021
 const double etonyek_root_three(1.73205080756887729352744634150587236694280525381038062805580697945193301690880003708114618675724857567562614142e+00);
 const double etonyek_root_two(1.41421356237309504880168872420969807856967187537694807317667973799073247846210703885038753432764157273501384623e+00);
 
-struct KEYDummyDeleter
+struct EtonyekDummyDeleter
 {
   void operator()(void *) {}
 };
@@ -107,7 +107,7 @@ uint64_t readU64(const RVNGInputStreamPtr_t &input, bool bigEndian=false);
   * @arg[in] y second number
   * @arg[in] eps precision
   */
-bool approxEqual(double x, double y, double eps = KEY_EPSILON);
+bool approxEqual(double x, double y, double eps = ETONYEK_EPSILON);
 
 /** Convert a length from points to inches.
   *

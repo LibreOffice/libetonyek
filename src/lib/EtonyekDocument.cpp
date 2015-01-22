@@ -15,6 +15,7 @@
 
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"
+#include "IWORKZlibStream.h"
 #include "KEY1Defaults.h"
 #include "KEY1Parser.h"
 #include "KEY2Defaults.h"
@@ -24,7 +25,6 @@
 #include "KEYDefaults.h"
 #include "KEYDictionary.h"
 #include "KEYThemeCollector.h"
-#include "KEYZlibStream.h"
 #include "NUMCollector.h"
 #include "NUMParser.h"
 #include "PAGCollector.h"
@@ -88,7 +88,7 @@ bool probeKeynote2XML(const RVNGInputStreamPtr_t &input, unsigned &version)
     return false;
 
   const KEY2Tokenizer tokenizer = KEY2Tokenizer();
-  KEYXMLReader reader(input.get(), tokenizer);
+  IWORKXMLReader reader(input.get(), tokenizer);
 
   if ((KEY2Token::NS_URI_KEY | KEY2Token::presentation) == getId(reader))
   {
@@ -157,7 +157,7 @@ bool probeXML(const ProbeXMLFun_t probe, const EtonyekDocument::Type type, tribo
   {
     try
     {
-      const RVNGInputStreamPtr_t uncompressed(new KEYZlibStream(info.input));
+      const RVNGInputStreamPtr_t uncompressed(new IWORKZlibStream(info.input));
       isGzipped = true;
 
       if (probeXMLImpl(uncompressed, probe, type, info))
@@ -359,7 +359,7 @@ ETONYEKAPI EtonyekDocument::Confidence EtonyekDocument::isSupported(librevenge::
 
   DetectionInfo info;
 
-  if (detect(RVNGInputStreamPtr_t(input, KEYDummyDeleter()), CHECK_TYPE_ANY, info))
+  if (detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), CHECK_TYPE_ANY, info))
   {
     assert(TYPE_UNKNOWN != info.type);
     assert(CONFIDENCE_NONE != info.confidence);
@@ -384,7 +384,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   DetectionInfo info;
 
-  if (!detect(RVNGInputStreamPtr_t(input, KEYDummyDeleter()), CHECK_TYPE_KEYNOTE, info))
+  if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), CHECK_TYPE_KEYNOTE, info))
     return false;
 
   assert(TYPE_UNKNOWN != info.type);
@@ -394,7 +394,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   KEYDictionary dict;
   KEYLayerMap_t masterPages;
-  KEYSize presentationSize;
+  IWORKSize presentationSize;
   const scoped_ptr<KEYDefaults> defaults(makeKeynoteDefaults(info.version));
 
   info.input->seek(0, librevenge::RVNG_SEEK_SET);
@@ -422,7 +422,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   DetectionInfo info;
 
-  if (!detect(RVNGInputStreamPtr_t(input, KEYDummyDeleter()), CHECK_TYPE_NUMBERS, info))
+  if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), CHECK_TYPE_NUMBERS, info))
     return false;
 
   assert(TYPE_UNKNOWN != info.type);
@@ -448,7 +448,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   DetectionInfo info;
 
-  if (!detect(RVNGInputStreamPtr_t(input, KEYDummyDeleter()), CHECK_TYPE_PAGES, info))
+  if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), CHECK_TYPE_PAGES, info))
     return false;
 
   assert(TYPE_UNKNOWN != info.type);

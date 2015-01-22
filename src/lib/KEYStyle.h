@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYSTYLE_H_INCLUDED
-#define KEYSTYLE_H_INCLUDED
+#ifndef IWORKSTYLE_H_INCLUDED
+#define IWORKSTYLE_H_INCLUDED
 
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
@@ -19,7 +19,7 @@
 namespace libetonyek
 {
 
-class KEYPropertyMap;
+class IWORKPropertyMap;
 
 /** Represents a hierarchical style.
   */
@@ -43,7 +43,7 @@ public:
 
   /** Get the style's property map.
     */
-  virtual const KEYPropertyMap &getPropertyMap() const = 0;
+  virtual const IWORKPropertyMap &getPropertyMap() const = 0;
 };
 
 typedef boost::shared_ptr<KEYStyle> KEYStylePtr_t;
@@ -51,6 +51,6 @@ typedef boost::unordered_map<ID_t, KEYStylePtr_t> KEYStyleMap_t;
 
 }
 
-#endif // KEYSTYLE_H_INCLUDED
+#endif // IWORKSTYLE_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

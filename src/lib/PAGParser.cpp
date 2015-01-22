@@ -12,7 +12,7 @@
 #include <librevenge-stream/librevenge-stream.h>
 
 #include "libetonyek_xml.h"
-#include "KEYXMLReader.h"
+#include "IWORKXMLReader.h"
 #include "PAGParser.h"
 #include "PAGCollector.h"
 #include "PAGToken.h"
@@ -29,7 +29,7 @@ PAGParser::PAGParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr
 
 bool PAGParser::parse() try
 {
-  const KEYXMLReader reader(m_input.get(), PAGTokenizer());
+  const IWORKXMLReader reader(m_input.get(), PAGTokenizer());
   parseDocument(reader);
   return true;
 }
@@ -38,13 +38,13 @@ catch (...)
   return false;
 }
 
-void PAGParser::parseDocument(const KEYXMLReader &reader)
+void PAGParser::parseDocument(const IWORKXMLReader &reader)
 {
   assert((PAGToken::NS_URI_SL | PAGToken::document) == getId(reader));
 
   m_collector->startDocument();
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     switch (getId(element))
@@ -76,48 +76,48 @@ void PAGParser::parseDocument(const KEYXMLReader &reader)
   m_collector->endDocument();
 }
 
-void PAGParser::parseMetadata(const KEYXMLReader &reader)
+void PAGParser::parseMetadata(const IWORKXMLReader &reader)
 {
   assert((PAGToken::NS_URI_SF | PAGToken::metadata) == getId(reader));
   // TODO: implement me
   skipElement(reader);
 }
 
-void PAGParser::parseSectionPrototypes(const KEYXMLReader &reader)
+void PAGParser::parseSectionPrototypes(const IWORKXMLReader &reader)
 {
   assert((PAGToken::NS_URI_SL | PAGToken::section_prototypes) == getId(reader));
   // TODO: implement me
   skipElement(reader);
 }
 
-void PAGParser::parseStylesheet(const KEYXMLReader &reader)
+void PAGParser::parseStylesheet(const IWORKXMLReader &reader)
 {
   assert((PAGToken::NS_URI_SL | PAGToken::stylesheet) == getId(reader));
   // TODO: implement me
   skipElement(reader);
 }
 
-void PAGParser::parseHeaders(const KEYXMLReader &reader)
+void PAGParser::parseHeaders(const IWORKXMLReader &reader)
 {
   assert((PAGToken::NS_URI_SF | PAGToken::headers) == getId(reader));
   // TODO: implement me
   skipElement(reader);
 }
 
-void PAGParser::parseFooters(const KEYXMLReader &reader)
+void PAGParser::parseFooters(const IWORKXMLReader &reader)
 {
   assert((PAGToken::NS_URI_SF | PAGToken::footers) == getId(reader));
   // TODO: implement me
   skipElement(reader);
 }
 
-void PAGParser::parseTextStorage(const KEYXMLReader &reader)
+void PAGParser::parseTextStorage(const IWORKXMLReader &reader)
 {
   assert((PAGToken::NS_URI_SF | PAGToken::text_storage) == getId(reader));
 
   TextStorageKind kind = TEXT_STORAGE_KIND_UNKNOWN;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((PAGToken::NS_URI_SF | PAGToken::kind) == getId(attr))
@@ -149,7 +149,7 @@ void PAGParser::parseTextStorage(const KEYXMLReader &reader)
     }
   }
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     switch (getId(element))
@@ -164,11 +164,11 @@ void PAGParser::parseTextStorage(const KEYXMLReader &reader)
   }
 }
 
-void PAGParser::parseTextBody(const KEYXMLReader &reader, const TextStorageKind kind)
+void PAGParser::parseTextBody(const IWORKXMLReader &reader, const TextStorageKind kind)
 {
   assert((PAGToken::NS_URI_SF | PAGToken::text_body) == getId(reader));
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     switch (kind)
@@ -186,11 +186,11 @@ void PAGParser::parseTextBody(const KEYXMLReader &reader, const TextStorageKind 
   }
 }
 
-void PAGParser::parseSection(const KEYXMLReader &reader)
+void PAGParser::parseSection(const IWORKXMLReader &reader)
 {
   assert((PAGToken::NS_URI_SF | PAGToken::section) == getId(reader));
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if ((PAGToken::NS_URI_SF | PAGToken::layout) == getId(element))
@@ -200,11 +200,11 @@ void PAGParser::parseSection(const KEYXMLReader &reader)
   }
 }
 
-void PAGParser::parseLayout(const KEYXMLReader &reader)
+void PAGParser::parseLayout(const IWORKXMLReader &reader)
 {
   assert((PAGToken::NS_URI_SF | PAGToken::layout) == getId(reader));
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if ((PAGToken::NS_URI_SF | PAGToken::p) == getId(element))
@@ -214,13 +214,13 @@ void PAGParser::parseLayout(const KEYXMLReader &reader)
   }
 }
 
-void PAGParser::parseP(const KEYXMLReader &reader)
+void PAGParser::parseP(const IWORKXMLReader &reader)
 {
   assert((PAGToken::NS_URI_SF | PAGToken::p) == getId(reader));
 
   m_collector->startParagraph();
 
-  KEYXMLReader::MixedIterator mixed(reader);
+  IWORKXMLReader::MixedIterator mixed(reader);
   while (mixed.next())
   {
     if (mixed.isElement())
@@ -250,13 +250,13 @@ void PAGParser::parseP(const KEYXMLReader &reader)
   m_collector->endParagraph();
 }
 
-void PAGParser::parseSpan(const KEYXMLReader &reader)
+void PAGParser::parseSpan(const IWORKXMLReader &reader)
 {
   assert((PAGToken::NS_URI_SF | PAGToken::span) == getId(reader));
 
   m_collector->startSpan();
 
-  KEYXMLReader::MixedIterator mixed(reader);
+  IWORKXMLReader::MixedIterator mixed(reader);
   while (mixed.next())
   {
     if (mixed.isElement())
@@ -283,7 +283,7 @@ void PAGParser::parseSpan(const KEYXMLReader &reader)
   m_collector->endSpan();
 }
 
-void PAGParser::parseTab(const KEYXMLReader &reader)
+void PAGParser::parseTab(const IWORKXMLReader &reader)
 {
   assert((PAGToken::NS_URI_SF | PAGToken::tab) == getId(reader));
 
@@ -292,7 +292,7 @@ void PAGParser::parseTab(const KEYXMLReader &reader)
   m_collector->collectTab();
 }
 
-void PAGParser::parseBr(const KEYXMLReader &reader)
+void PAGParser::parseBr(const IWORKXMLReader &reader)
 {
   assert(((PAGToken::NS_URI_SF | PAGToken::br) == getId(reader))
          || ((PAGToken::NS_URI_SF | PAGToken::lnbr) == getId(reader)));

@@ -7,9 +7,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "KEYPropertyMap.h"
+#include "IWORKPropertyMap.h"
 
-#include "KEYPropertyMapTest.h"
+#include "IWORKPropertyMapTest.h"
 
 namespace test
 {
@@ -17,19 +17,19 @@ namespace test
 using boost::any;
 using boost::any_cast;
 
-using libetonyek::KEYPropertyMap;
+using libetonyek::IWORKPropertyMap;
 
-void KEYPropertyMapTest::setUp()
+void IWORKPropertyMapTest::setUp()
 {
 }
 
-void KEYPropertyMapTest::tearDown()
+void IWORKPropertyMapTest::tearDown()
 {
 }
 
-void KEYPropertyMapTest::testLookup()
+void IWORKPropertyMapTest::testLookup()
 {
-  KEYPropertyMap props;
+  IWORKPropertyMap props;
 
   // empty map
   CPPUNIT_ASSERT(props.get("answer").empty());
@@ -43,14 +43,14 @@ void KEYPropertyMapTest::testLookup()
   CPPUNIT_ASSERT(props.get("antwort").empty());
 }
 
-void KEYPropertyMapTest::testLookupWithParent()
+void IWORKPropertyMapTest::testLookupWithParent()
 {
   // simple recursive lookup test
   {
-    KEYPropertyMap parent;
+    IWORKPropertyMap parent;
     parent.set("answer", 42);
 
-    KEYPropertyMap props;
+    IWORKPropertyMap props;
     props.setParent(&parent);
 
     CPPUNIT_ASSERT(!props.get("answer", true).empty());
@@ -64,7 +64,7 @@ void KEYPropertyMapTest::testLookupWithParent()
     // unknown key
     CPPUNIT_ASSERT(props.get("antwort", true).empty());
 
-    KEYPropertyMap grandparent;
+    IWORKPropertyMap grandparent;
     grandparent.set("antwort", 17);
 
     // recursive lookup through more parents
@@ -75,13 +75,13 @@ void KEYPropertyMapTest::testLookupWithParent()
 
   // switching of parents
   {
-    KEYPropertyMap parent1;
+    IWORKPropertyMap parent1;
     parent1.set("answer", 42);
 
-    KEYPropertyMap parent2;
+    IWORKPropertyMap parent2;
     parent2.set("antwort", 13);
 
-    KEYPropertyMap props;
+    IWORKPropertyMap props;
 
     props.setParent(&parent1);
     CPPUNIT_ASSERT(!props.get("answer", true).empty());
@@ -100,7 +100,7 @@ void KEYPropertyMapTest::testLookupWithParent()
   }
 }
 
-CPPUNIT_TEST_SUITE_REGISTRATION(KEYPropertyMapTest);
+CPPUNIT_TEST_SUITE_REGISTRATION(IWORKPropertyMapTest);
 
 }
 

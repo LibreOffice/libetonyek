@@ -14,17 +14,10 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
 
+#include "IWORKTypes_fwd.h"
+
 namespace libetonyek
 {
-
-typedef std::string ID_t;
-
-struct KEYSize;
-struct KEYPosition;
-
-struct KEYGeometry;
-
-typedef boost::shared_ptr<KEYGeometry> KEYGeometryPtr_t;
 
 struct KEYLine;
 

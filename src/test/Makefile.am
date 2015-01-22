@@ -13,24 +13,24 @@ test_LDADD = \
 	$(XML_LIBS)
 
 test_SOURCES = \
+	IWORKPathTest.cpp \
+	IWORKPathTest.h \
+	IWORKPropertyMapTest.cpp \
+	IWORKPropertyMapTest.h \
+	IWORKTransformationTest.cpp \
+	IWORKTransformationTest.h \
+	IWORKXMLReaderTest.cpp \
+	IWORKXMLReaderTest.h \
 	KEY2TokenTest.cpp \
 	KEY2TokenTest.h \
 	KEYOutputTest.cpp \
 	KEYOutputTest.h \
-	KEYPathTest.cpp \
-	KEYPathTest.h \
-	KEYPropertyMapTest.cpp \
-	KEYPropertyMapTest.h \
 	KEYShapeTest.cpp \
 	KEYShapeTest.h \
 	KEYStyleContextTest.cpp \
 	KEYStyleContextTest.h \
 	KEYStylesTest.cpp \
 	KEYStylesTest.h \
-	KEYTransformationTest.cpp \
-	KEYTransformationTest.h \
-	KEYXMLReaderTest.cpp \
-	KEYXMLReaderTest.h \
 	test.cpp
 
 TESTS = $(target_test)

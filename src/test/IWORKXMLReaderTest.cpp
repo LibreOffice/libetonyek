@@ -9,13 +9,13 @@
 
 #include <cstring>
 
-#include "KEYMemoryStream.h"
-#include "KEYXMLReader.h"
+#include "IWORKMemoryStream.h"
+#include "IWORKXMLReader.h"
 
-#include "KEYXMLReaderTest.h"
+#include "IWORKXMLReaderTest.h"
 
-using libetonyek::KEYMemoryStream;
-using libetonyek::KEYXMLReader;
+using libetonyek::IWORKMemoryStream;
+using libetonyek::IWORKXMLReader;
 
 using std::strcmp;
 using std::strlen;
@@ -59,43 +59,43 @@ int Tokenizer::operator()(const char *const token) const
 
 }
 
-void KEYXMLReaderTest::setUp()
+void IWORKXMLReaderTest::setUp()
 {
 }
 
-void KEYXMLReaderTest::tearDown()
+void IWORKXMLReaderTest::tearDown()
 {
 }
 
-void KEYXMLReaderTest::testEmptyAttributeList()
+void IWORKXMLReaderTest::testEmptyAttributeList()
 {
   const unsigned char xml[] = "<?xml version='1.0'?><element/>";
-  KEYMemoryStream input(xml, sizeof(xml) - 1);
+  IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-  KEYXMLReader reader(&input);
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader reader(&input);
+  IWORKXMLReader::AttributeIterator attr(reader);
 
   CPPUNIT_ASSERT(!attr.next());
 }
 
-void KEYXMLReaderTest::testOnlyXmlnsAttributes()
+void IWORKXMLReaderTest::testOnlyXmlnsAttributes()
 {
   const unsigned char xml[] = "<?xml version='1.0'?><element xmlns='urn:foo' xmlns:bar='urn:bar'/>";
-  KEYMemoryStream input(xml, sizeof(xml) - 1);
+  IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-  KEYXMLReader reader(&input);
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader reader(&input);
+  IWORKXMLReader::AttributeIterator attr(reader);
 
   CPPUNIT_ASSERT(!attr.next());
 }
 
-void KEYXMLReaderTest::testIterateAttributes()
+void IWORKXMLReaderTest::testIterateAttributes()
 {
   const unsigned char xml[] = "<?xml version='1.0'?><element a='1' xmlns:foo='urn:foo' b='2' foo:c='3'/>";
-  KEYMemoryStream input(xml, sizeof(xml) - 1);
+  IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-  KEYXMLReader reader(&input);
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader reader(&input);
+  IWORKXMLReader::AttributeIterator attr(reader);
 
   CPPUNIT_ASSERT(attr.next());
   CPPUNIT_ASSERT(0 == attr.getNamespace());
@@ -115,47 +115,47 @@ void KEYXMLReaderTest::testIterateAttributes()
   CPPUNIT_ASSERT(!attr.next());
 }
 
-void KEYXMLReaderTest::testEmptyElement()
+void IWORKXMLReaderTest::testEmptyElement()
 {
   {
     const unsigned char xml[] = "<?xml version='1.0'?><element/>";
-    KEYMemoryStream input(xml, sizeof(xml) - 1);
+    IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-    KEYXMLReader reader(&input);
-    KEYXMLReader::ElementIterator element(reader);
+    IWORKXMLReader reader(&input);
+    IWORKXMLReader::ElementIterator element(reader);
 
     CPPUNIT_ASSERT(!element.next());
   }
 
   {
     const unsigned char xml[] = "<?xml version='1.0'?><element xmlns='urn:foo' xmlns:bar='urn:bar'/>";
-    KEYMemoryStream input(xml, sizeof(xml) - 1);
+    IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-    KEYXMLReader reader(&input);
-    KEYXMLReader::ElementIterator element(reader);
+    IWORKXMLReader reader(&input);
+    IWORKXMLReader::ElementIterator element(reader);
 
     CPPUNIT_ASSERT(!element.next());
   }
 
   {
     const unsigned char xml[] = "<?xml version='1.0'?><element></element>";
-    KEYMemoryStream input(xml, sizeof(xml) - 1);
+    IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-    KEYXMLReader reader(&input);
-    KEYXMLReader::ElementIterator element(reader);
+    IWORKXMLReader reader(&input);
+    IWORKXMLReader::ElementIterator element(reader);
 
     CPPUNIT_ASSERT(!element.next());
   }
 }
 
-void KEYXMLReaderTest::testIterateElements()
+void IWORKXMLReaderTest::testIterateElements()
 {
   {
     const unsigned char xml[] = "<?xml version='1.0'?><element><sub/></element>";
-    KEYMemoryStream input(xml, sizeof(xml) - 1);
+    IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-    KEYXMLReader reader(&input);
-    KEYXMLReader::ElementIterator element(reader);
+    IWORKXMLReader reader(&input);
+    IWORKXMLReader::ElementIterator element(reader);
 
     CPPUNIT_ASSERT(element.next());
     CPPUNIT_ASSERT(0 == strcmp(element.getName(), "sub"));
@@ -166,10 +166,10 @@ void KEYXMLReaderTest::testIterateElements()
 
   {
     const unsigned char xml[] = "<?xml version='1.0'?><element><sub1/><sub2/></element>";
-    KEYMemoryStream input(xml, sizeof(xml) - 1);
+    IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-    KEYXMLReader reader(&input);
-    KEYXMLReader::ElementIterator element(reader);
+    IWORKXMLReader reader(&input);
+    IWORKXMLReader::ElementIterator element(reader);
 
     CPPUNIT_ASSERT(element.next());
     CPPUNIT_ASSERT(0 == strcmp(element.getName(), "sub1"));
@@ -183,14 +183,14 @@ void KEYXMLReaderTest::testIterateElements()
   }
 }
 
-void KEYXMLReaderTest::testIterateNestedElements()
+void IWORKXMLReaderTest::testIterateNestedElements()
 {
   {
     const unsigned char xml[] = "<?xml version='1.0'?><element><sub1><sub2/></sub1></element>";
-    KEYMemoryStream input(xml, sizeof(xml) - 1);
+    IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-    KEYXMLReader reader(&input);
-    KEYXMLReader::ElementIterator element(reader);
+    IWORKXMLReader reader(&input);
+    IWORKXMLReader::ElementIterator element(reader);
 
     CPPUNIT_ASSERT(element.next());
     CPPUNIT_ASSERT(0 == strcmp(element.getName(), "sub1"));
@@ -198,7 +198,7 @@ void KEYXMLReaderTest::testIterateNestedElements()
     CPPUNIT_ASSERT(!element.isEmpty());
 
     {
-      KEYXMLReader::ElementIterator sub1(reader);
+      IWORKXMLReader::ElementIterator sub1(reader);
 
       CPPUNIT_ASSERT(sub1.next());
       CPPUNIT_ASSERT(0 == strcmp(sub1.getName(), "sub2"));
@@ -212,10 +212,10 @@ void KEYXMLReaderTest::testIterateNestedElements()
 
   {
     const unsigned char xml[] = "<?xml version='1.0'?><element><sub1><sub2/><sub3/></sub1><sub4/></element>";
-    KEYMemoryStream input(xml, sizeof(xml) - 1);
+    IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-    KEYXMLReader reader(&input);
-    KEYXMLReader::ElementIterator element(reader);
+    IWORKXMLReader reader(&input);
+    IWORKXMLReader::ElementIterator element(reader);
 
     CPPUNIT_ASSERT(element.next());
     CPPUNIT_ASSERT(0 == strcmp(element.getName(), "sub1"));
@@ -223,7 +223,7 @@ void KEYXMLReaderTest::testIterateNestedElements()
     CPPUNIT_ASSERT(!element.isEmpty());
 
     {
-      KEYXMLReader::ElementIterator sub1(reader);
+      IWORKXMLReader::ElementIterator sub1(reader);
 
       CPPUNIT_ASSERT(sub1.next());
       CPPUNIT_ASSERT(0 == strcmp(sub1.getName(), "sub2"));
@@ -244,14 +244,14 @@ void KEYXMLReaderTest::testIterateNestedElements()
   }
 }
 
-void KEYXMLReaderTest::testIterateElementsWithAttributes()
+void IWORKXMLReaderTest::testIterateElementsWithAttributes()
 {
   {
     const unsigned char xml[] = "<?xml version='1.0'?><element attr1='value1' attr2='value2'><sub attr3='value3'/></element>";
-    KEYMemoryStream input(xml, sizeof(xml) - 1);
+    IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-    KEYXMLReader reader(&input);
-    KEYXMLReader::ElementIterator element(reader);
+    IWORKXMLReader reader(&input);
+    IWORKXMLReader::ElementIterator element(reader);
 
     CPPUNIT_ASSERT(element.next());
     CPPUNIT_ASSERT(0 == strcmp(element.getName(), "sub"));
@@ -261,47 +261,47 @@ void KEYXMLReaderTest::testIterateElementsWithAttributes()
   }
 }
 
-void KEYXMLReaderTest::testEmptyMixed()
+void IWORKXMLReaderTest::testEmptyMixed()
 {
   {
     const unsigned char xml[] = "<?xml version='1.0'?><element/>";
-    KEYMemoryStream input(xml, sizeof(xml) - 1);
+    IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-    KEYXMLReader reader(&input);
-    KEYXMLReader::MixedIterator element(reader);
+    IWORKXMLReader reader(&input);
+    IWORKXMLReader::MixedIterator element(reader);
 
     CPPUNIT_ASSERT(!element.next());
   }
 
   {
     const unsigned char xml[] = "<?xml version='1.0'?><element xmlns='urn:foo' xmlns:bar='urn:bar'/>";
-    KEYMemoryStream input(xml, sizeof(xml) - 1);
+    IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-    KEYXMLReader reader(&input);
-    KEYXMLReader::MixedIterator element(reader);
+    IWORKXMLReader reader(&input);
+    IWORKXMLReader::MixedIterator element(reader);
 
     CPPUNIT_ASSERT(!element.next());
   }
 
   {
     const unsigned char xml[] = "<?xml version='1.0'?><element></element>";
-    KEYMemoryStream input(xml, sizeof(xml) - 1);
+    IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-    KEYXMLReader reader(&input);
-    KEYXMLReader::MixedIterator element(reader);
+    IWORKXMLReader reader(&input);
+    IWORKXMLReader::MixedIterator element(reader);
 
     CPPUNIT_ASSERT(!element.next());
   }
 }
 
-void KEYXMLReaderTest::testIterateMixed()
+void IWORKXMLReaderTest::testIterateMixed()
 {
   {
     const unsigned char xml[] = "<?xml version='1.0'?><element><sub/></element>";
-    KEYMemoryStream input(xml, sizeof(xml) - 1);
+    IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-    KEYXMLReader reader(&input);
-    KEYXMLReader::MixedIterator element(reader);
+    IWORKXMLReader reader(&input);
+    IWORKXMLReader::MixedIterator element(reader);
 
     CPPUNIT_ASSERT(element.next());
     CPPUNIT_ASSERT(element.isElement());
@@ -314,10 +314,10 @@ void KEYXMLReaderTest::testIterateMixed()
 
   {
     const unsigned char xml[] = "<?xml version='1.0'?><element>hello</element>";
-    KEYMemoryStream input(xml, sizeof(xml) - 1);
+    IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-    KEYXMLReader reader(&input);
-    KEYXMLReader::MixedIterator element(reader);
+    IWORKXMLReader reader(&input);
+    IWORKXMLReader::MixedIterator element(reader);
 
     CPPUNIT_ASSERT(element.next());
     CPPUNIT_ASSERT(!element.isElement());
@@ -328,10 +328,10 @@ void KEYXMLReaderTest::testIterateMixed()
 
   {
     const unsigned char xml[] = "<?xml version='1.0'?><element><sub1/>hello</element>";
-    KEYMemoryStream input(xml, sizeof(xml) - 1);
+    IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-    KEYXMLReader reader(&input);
-    KEYXMLReader::MixedIterator element(reader);
+    IWORKXMLReader reader(&input);
+    IWORKXMLReader::MixedIterator element(reader);
 
     CPPUNIT_ASSERT(element.next());
     CPPUNIT_ASSERT(element.isElement());
@@ -348,10 +348,10 @@ void KEYXMLReaderTest::testIterateMixed()
 
   {
     const unsigned char xml[] = "<?xml version='1.0'?><element><sub1/>hello <sub2/>world</element>";
-    KEYMemoryStream input(xml, sizeof(xml) - 1);
+    IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-    KEYXMLReader reader(&input);
-    KEYXMLReader::MixedIterator element(reader);
+    IWORKXMLReader reader(&input);
+    IWORKXMLReader::MixedIterator element(reader);
 
     CPPUNIT_ASSERT(element.next());
     CPPUNIT_ASSERT(element.isElement());
@@ -377,13 +377,13 @@ void KEYXMLReaderTest::testIterateMixed()
   }
 }
 
-void KEYXMLReaderTest::testElementName()
+void IWORKXMLReaderTest::testElementName()
 {
   {
     const unsigned char xml[] = "<?xml version='1.0'?><element/>";
-    KEYMemoryStream input(xml, sizeof(xml) - 1);
+    IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-    KEYXMLReader reader(&input);
+    IWORKXMLReader reader(&input);
 
     CPPUNIT_ASSERT(0 == strcmp(reader.getName(), "element"));
     CPPUNIT_ASSERT(0 == reader.getNamespace());
@@ -391,27 +391,27 @@ void KEYXMLReaderTest::testElementName()
 
   {
     const unsigned char xml[] = "<?xml version='1.0'?><element><sub1><sub2/></sub1></element>";
-    KEYMemoryStream input(xml, sizeof(xml) - 1);
+    IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-    KEYXMLReader reader(&input);
+    IWORKXMLReader reader(&input);
 
     CPPUNIT_ASSERT(0 == strcmp(reader.getName(), "element"));
     CPPUNIT_ASSERT(0 == reader.getNamespace());
 
-    KEYXMLReader::ElementIterator element(reader);
+    IWORKXMLReader::ElementIterator element(reader);
     CPPUNIT_ASSERT(element.next());
 
     {
-      KEYXMLReader nested(element);
+      IWORKXMLReader nested(element);
 
       CPPUNIT_ASSERT(0 == strcmp(nested.getName(), "sub1"));
       CPPUNIT_ASSERT(0 == nested.getNamespace());
 
-      KEYXMLReader::ElementIterator sub1(nested);
+      IWORKXMLReader::ElementIterator sub1(nested);
       CPPUNIT_ASSERT(sub1.next());
 
       {
-        KEYXMLReader nested2(element);
+        IWORKXMLReader nested2(element);
 
         CPPUNIT_ASSERT(0 == strcmp(nested2.getName(), "sub2"));
         CPPUNIT_ASSERT(0 == nested2.getNamespace());
@@ -420,18 +420,18 @@ void KEYXMLReaderTest::testElementName()
   }
 }
 
-void KEYXMLReaderTest::testTokenizer()
+void IWORKXMLReaderTest::testTokenizer()
 {
   const unsigned char xml[] = "<?xml version='1.0'?><m:a n:b='c' xmlns:m='m' xmlns:n='n'><d/><u:d xmlns:u='u'/></m:a>";
-  KEYMemoryStream input(xml, sizeof(xml) - 1);
+  IWORKMemoryStream input(xml, sizeof(xml) - 1);
 
-  KEYXMLReader reader(&input, Tokenizer());
+  IWORKXMLReader reader(&input, Tokenizer());
 
   CPPUNIT_ASSERT_EQUAL(1, getNameId(reader));
   CPPUNIT_ASSERT_EQUAL(8, getNamespaceId(reader));
   CPPUNIT_ASSERT_EQUAL(1 + 8, getId(reader));
 
-  KEYXMLReader::AttributeIterator attrs(reader);
+  IWORKXMLReader::AttributeIterator attrs(reader);
   CPPUNIT_ASSERT(attrs.next());
 
   CPPUNIT_ASSERT_EQUAL(2, getNameId(attrs));
@@ -439,14 +439,14 @@ void KEYXMLReaderTest::testTokenizer()
   CPPUNIT_ASSERT_EQUAL(2 + 16, getId(attrs));
   CPPUNIT_ASSERT_EQUAL(3, getValueId(attrs));
 
-  KEYXMLReader::ElementIterator elements(reader);
+  IWORKXMLReader::ElementIterator elements(reader);
   CPPUNIT_ASSERT(elements.next());
 
   CPPUNIT_ASSERT_EQUAL(4, getNameId(elements));
   CPPUNIT_ASSERT_EQUAL(32, getNamespaceId(elements));
   CPPUNIT_ASSERT_EQUAL(4 + 32, getId(elements));
 
-  KEYXMLReader nested(elements);
+  IWORKXMLReader nested(elements);
   CPPUNIT_ASSERT_EQUAL(4, getNameId(nested));
   CPPUNIT_ASSERT_EQUAL(32, getNamespaceId(nested));
   CPPUNIT_ASSERT_EQUAL(4 + 32, getId(nested));
@@ -457,7 +457,7 @@ void KEYXMLReaderTest::testTokenizer()
   CPPUNIT_ASSERT_EQUAL(4, getId(elements));
 }
 
-CPPUNIT_TEST_SUITE_REGISTRATION(KEYXMLReaderTest);
+CPPUNIT_TEST_SUITE_REGISTRATION(IWORKXMLReaderTest);
 
 }
 

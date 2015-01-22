@@ -11,7 +11,7 @@
 #define KEY2STYLEPARSER_H_INCLUDED
 
 #include "KEY2ParserUtils.h"
-#include "KEYPropertyMap.h"
+#include "IWORKPropertyMap.h"
 #include "KEYTypes_fwd.h"
 
 namespace libetonyek
@@ -19,7 +19,7 @@ namespace libetonyek
 
 class KEYCollector;
 class KEYDefaults;
-class KEYXMLReader;
+class IWORKXMLReader;
 
 class KEY2StyleParser : private KEY2ParserUtils
 {
@@ -30,10 +30,10 @@ class KEY2StyleParser : private KEY2ParserUtils
 public:
   KEY2StyleParser(int nameId, int nsId, KEYCollector *collector, const KEYDefaults &defaults, bool nested = false);
 
-  void parse(const KEYXMLReader &reader);
+  void parse(const IWORKXMLReader &reader);
 
 private:
-  void parseProperty(const KEYXMLReader &reader, const char *key = 0);
+  void parseProperty(const IWORKXMLReader &reader, const char *key = 0);
 
   /** Parse the value of property \c propertyId.
     *
@@ -44,11 +44,11 @@ private:
     *   currently being parsed
     * @param[in] key key for insertion into the map
     */
-  bool parsePropertyImpl(const KEYXMLReader &reader, const int propertyId, const char *key);
+  bool parsePropertyImpl(const IWORKXMLReader &reader, const int propertyId, const char *key);
 
-  void parsePropertyMap(const KEYXMLReader &reader);
+  void parsePropertyMap(const IWORKXMLReader &reader);
 
-  KEYGeometryPtr_t readGeometry(const KEYXMLReader &reader);
+  IWORKGeometryPtr_t readGeometry(const IWORKXMLReader &reader);
 
 private:
   const int m_nameId;
@@ -56,7 +56,7 @@ private:
   const bool m_nested;
   KEYCollector *const m_collector;
   const KEYDefaults &m_defaults;
-  KEYPropertyMap m_props;
+  IWORKPropertyMap m_props;
 };
 
 }

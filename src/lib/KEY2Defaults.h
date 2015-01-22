@@ -22,9 +22,9 @@ class KEY2Defaults : public KEYDefaults
 public:
   virtual ~KEY2Defaults();
 
-  virtual void applyPresentationSize(boost::optional<KEYSize> &size) const;
+  virtual void applyPresentationSize(boost::optional<IWORKSize> &size) const;
 
-  virtual void applyGeometry(boost::optional<KEYSize> &naturalSize, boost::optional<KEYPosition> &position) const;
+  virtual void applyGeometry(boost::optional<IWORKSize> &naturalSize, boost::optional<IWORKPosition> &position) const;
 };
 
 }

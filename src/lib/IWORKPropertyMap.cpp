@@ -7,49 +7,49 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "KEYPropertyMap.h"
+#include "IWORKPropertyMap.h"
 
 namespace libetonyek
 {
 
-KEYPropertyMap::KEYPropertyMap()
+IWORKPropertyMap::IWORKPropertyMap()
   : m_map()
   , m_parent(0)
 {
 }
 
-KEYPropertyMap::KEYPropertyMap(const KEYPropertyMap *const parent)
+IWORKPropertyMap::IWORKPropertyMap(const IWORKPropertyMap *const parent)
   : m_map()
   , m_parent(parent)
 {
 }
 
-KEYPropertyMap::KEYPropertyMap(const KEYPropertyMap &other)
+IWORKPropertyMap::IWORKPropertyMap(const IWORKPropertyMap &other)
   : m_map(other.m_map)
   , m_parent(other.m_parent)
 {
 }
 
-KEYPropertyMap &KEYPropertyMap::operator=(const KEYPropertyMap &other)
+IWORKPropertyMap &IWORKPropertyMap::operator=(const IWORKPropertyMap &other)
 {
-  KEYPropertyMap copy(other);
+  IWORKPropertyMap copy(other);
   swap(copy);
   return *this;
 }
 
-void KEYPropertyMap::swap(KEYPropertyMap &other)
+void IWORKPropertyMap::swap(IWORKPropertyMap &other)
 {
   using std::swap;
   swap(m_map, other.m_map);
   swap(m_parent, other.m_parent);
 }
 
-void KEYPropertyMap::setParent(const KEYPropertyMap *const parent)
+void IWORKPropertyMap::setParent(const IWORKPropertyMap *const parent)
 {
   m_parent = parent;
 }
 
-boost::any KEYPropertyMap::get(const std::string &key, const bool lookInParent) const
+boost::any IWORKPropertyMap::get(const std::string &key, const bool lookInParent) const
 {
   const Map_t::const_iterator it = m_map.find(key);
   if (m_map.end() != it)
@@ -61,7 +61,7 @@ boost::any KEYPropertyMap::get(const std::string &key, const bool lookInParent) 
   return boost::any();
 }
 
-void KEYPropertyMap::set(const std::string &key, const boost::any &value)
+void IWORKPropertyMap::set(const std::string &key, const boost::any &value)
 {
   m_map[key] = value;
 }

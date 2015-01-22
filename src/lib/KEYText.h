@@ -32,8 +32,8 @@ public:
 
   void setLayoutStyle(const KEYLayoutStylePtr_t &style);
 
-  const KEYGeometryPtr_t &getBoundingBox() const;
-  void setBoundingBox(const KEYGeometryPtr_t &boundingBox);
+  const IWORKGeometryPtr_t &getBoundingBox() const;
+  void setBoundingBox(const IWORKGeometryPtr_t &boundingBox);
 
   void openParagraph(const KEYParagraphStylePtr_t &style);
   void closeParagraph();
@@ -58,7 +58,7 @@ private:
   int m_lineBreaks;
   const bool m_object;
 
-  KEYGeometryPtr_t m_boundingBox;
+  IWORKGeometryPtr_t m_boundingBox;
 };
 
 KEYObjectPtr_t makeObject(const KEYTextPtr_t &text);

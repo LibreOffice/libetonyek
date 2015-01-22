@@ -17,8 +17,8 @@
 namespace libetonyek
 {
 
+class IWORKXMLReader;
 class PAGCollector;
-class KEYXMLReader;
 
 class PAGParser
 {
@@ -43,21 +43,21 @@ public:
   bool parse();
 
 private:
-  void parseDocument(const KEYXMLReader &reader);
-  void parseMetadata(const KEYXMLReader &reader);
-  void parseSectionPrototypes(const KEYXMLReader &reader);
-  void parseStylesheet(const KEYXMLReader &reader);
-  void parseHeaders(const KEYXMLReader &reader);
-  void parseFooters(const KEYXMLReader &reader);
-  void parseTextStorage(const KEYXMLReader &reader);
+  void parseDocument(const IWORKXMLReader &reader);
+  void parseMetadata(const IWORKXMLReader &reader);
+  void parseSectionPrototypes(const IWORKXMLReader &reader);
+  void parseStylesheet(const IWORKXMLReader &reader);
+  void parseHeaders(const IWORKXMLReader &reader);
+  void parseFooters(const IWORKXMLReader &reader);
+  void parseTextStorage(const IWORKXMLReader &reader);
 
-  void parseTextBody(const KEYXMLReader &reader, TextStorageKind kind);
-  void parseSection(const KEYXMLReader &reader);
-  void parseLayout(const KEYXMLReader &reader);
-  void parseP(const KEYXMLReader &reader);
-  void parseSpan(const KEYXMLReader &reader);
-  void parseTab(const KEYXMLReader &reader);
-  void parseBr(const KEYXMLReader &reader);
+  void parseTextBody(const IWORKXMLReader &reader, TextStorageKind kind);
+  void parseSection(const IWORKXMLReader &reader);
+  void parseLayout(const IWORKXMLReader &reader);
+  void parseP(const IWORKXMLReader &reader);
+  void parseSpan(const IWORKXMLReader &reader);
+  void parseTab(const IWORKXMLReader &reader);
+  void parseBr(const IWORKXMLReader &reader);
 
 private:
   RVNGInputStreamPtr_t m_input;

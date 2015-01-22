@@ -7,10 +7,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKXMLReader.h"
 #include "KEYParser.h"
 #include "KEYCollector.h"
 #include "KEYDefaults.h"
-#include "KEYXMLReader.h"
 
 namespace libetonyek
 {
@@ -28,7 +28,7 @@ KEYParser::~KEYParser()
 
 bool KEYParser::parse()
 {
-  KEYXMLReader reader(m_input.get(), getTokenizer());
+  IWORKXMLReader reader(m_input.get(), getTokenizer());
   return processXmlDocument(reader);
 }
 
@@ -42,7 +42,7 @@ const KEYDefaults &KEYParser::getDefaults() const
   return m_defaults;
 }
 
-bool KEYParser::processXmlDocument(const KEYXMLReader &reader) try
+bool KEYParser::processXmlDocument(const IWORKXMLReader &reader) try
 {
   processXmlNode(reader);
   return true;

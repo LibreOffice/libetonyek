@@ -19,7 +19,7 @@
 namespace libetonyek
 {
 
-class KEYXMLReader;
+class IWORKXMLReader;
 
 /** A "mixin" containing a set of helper functions used in parser classes.
   *
@@ -41,7 +41,7 @@ public:
     * @arg[in] reader the reader
     * @returns the ID
     */
-  static boost::optional<ID_t> readID(const KEYXMLReader &reader);
+  static boost::optional<ID_t> readID(const IWORKXMLReader &reader);
 
   /** Read a reference element.
     *
@@ -52,28 +52,28 @@ public:
     * @returns the value of the sfa:IDREF attribute
     * @throws a GenericException if sfa:IDREF attribute is not present
     */
-  static ID_t readRef(const KEYXMLReader &reader);
+  static ID_t readRef(const IWORKXMLReader &reader);
 
   /** Read sf:point element.
     *
     * @arg[in] reader the reader
     * @returns a pair of "coordinates"
     */
-  static std::pair<boost::optional<double>, boost::optional<double> > readPoint(const KEYXMLReader &reader);
+  static std::pair<boost::optional<double>, boost::optional<double> > readPoint(const IWORKXMLReader &reader);
 
   /** Read sf:position element.
     *
     * @arg[in] reader the reader
     * @returns the position
     */
-  static KEYPosition readPosition(const KEYXMLReader &reader);
+  static IWORKPosition readPosition(const IWORKXMLReader &reader);
 
   /** Read sf:size element.
     *
     * @arg[in] reader the reader
     * @returns the size
     */
-  static KEYSize readSize(const KEYXMLReader &reader);
+  static IWORKSize readSize(const IWORKXMLReader &reader);
 
   /** Convert string value to bool.
     *

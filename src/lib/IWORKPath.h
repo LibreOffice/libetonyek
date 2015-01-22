@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYPATH_H_INCLUDED
-#define KEYPATH_H_INCLUDED
+#ifndef IWORKPATH_H_INCLUDED
+#define IWORKPATH_H_INCLUDED
 
 #include <deque>
 #include <string>
@@ -16,29 +16,28 @@
 #include <librevenge/librevenge.h>
 
 #include "libetonyek_utils.h"
-#include "KEYObject.h"
-#include "KEYPath_fwd.h"
+#include "IWORKPath_fwd.h"
 
 namespace libetonyek
 {
 
-class KEYTransformation;
+class IWORKTransformation;
 
-class KEYPath
+class IWORKPath
 {
-  friend bool approxEqual(const KEYPath &left, const KEYPath &right, const double eps);
+  friend bool approxEqual(const IWORKPath &left, const IWORKPath &right, const double eps);
 
 public:
   class Element;
 
 public:
-  KEYPath();
-  explicit KEYPath(const std::string &path);
-  KEYPath(const KEYPath &other);
-  ~KEYPath();
-  KEYPath &operator=(const KEYPath &other);
+  IWORKPath();
+  explicit IWORKPath(const std::string &path);
+  IWORKPath(const IWORKPath &other);
+  ~IWORKPath();
+  IWORKPath &operator=(const IWORKPath &other);
 
-  void swap(KEYPath &other);
+  void swap(IWORKPath &other);
 
   void clear();
 
@@ -51,7 +50,7 @@ public:
     *
     * @arg[in] tr the transformation
     */
-  void operator*=(const KEYTransformation &tr);
+  void operator*=(const IWORKTransformation &tr);
 
   /** Create WPG representation of this path.
     */
@@ -62,9 +61,9 @@ private:
   bool m_closed;
 };
 
-bool approxEqual(const KEYPath &left, const KEYPath &right, double eps = KEY_EPSILON);
-bool operator==(const KEYPath &left, const KEYPath &right);
-bool operator!=(const KEYPath &left, const KEYPath &right);
+bool approxEqual(const IWORKPath &left, const IWORKPath &right, double eps = ETONYEK_EPSILON);
+bool operator==(const IWORKPath &left, const IWORKPath &right);
+bool operator!=(const IWORKPath &left, const IWORKPath &right);
 
 /** Create a transformed path.
   *
@@ -72,10 +71,10 @@ bool operator!=(const KEYPath &left, const KEYPath &right);
   * @arg[in] tr the transformation
   * @returns the transformed path
   */
-KEYPath operator*(const KEYPath &path, const KEYTransformation &tr);
+IWORKPath operator*(const IWORKPath &path, const IWORKTransformation &tr);
 
 }
 
-#endif //  KEYPATH_H_INCLUDED
+#endif //  IWORKPATH_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

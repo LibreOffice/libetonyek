@@ -12,8 +12,8 @@
 #include <zlib.h>
 
 #include "libetonyek_utils.h"
-#include "KEYMemoryStream.h"
-#include "KEYZlibStream.h"
+#include "IWORKMemoryStream.h"
+#include "IWORKZlibStream.h"
 
 using std::vector;
 
@@ -57,7 +57,7 @@ RVNGInputStreamPtr_t getInflatedStream(const RVNGInputStreamPtr_t &input)
   {
     if (numBytesRead != compressedSize)
       throw ZlibStreamException();
-    return RVNGInputStreamPtr_t(new KEYMemoryStream(compressedData, static_cast<unsigned>(compressedSize)));
+    return RVNGInputStreamPtr_t(new IWORKMemoryStream(compressedData, static_cast<unsigned>(compressedSize)));
   }
   else
   {
@@ -99,13 +99,13 @@ RVNGInputStreamPtr_t getInflatedStream(const RVNGInputStreamPtr_t &input)
 
     (void)inflateEnd(&strm);
 
-    return RVNGInputStreamPtr_t(new KEYMemoryStream(&data[0], strm.total_out));
+    return RVNGInputStreamPtr_t(new IWORKMemoryStream(&data[0], strm.total_out));
   }
 }
 
 }
 
-KEYZlibStream::KEYZlibStream(const RVNGInputStreamPtr_t &stream)
+IWORKZlibStream::IWORKZlibStream(const RVNGInputStreamPtr_t &stream)
   : m_stream()
 {
   if (0 != stream->seek(0, librevenge::RVNG_SEEK_SET))
@@ -114,51 +114,51 @@ KEYZlibStream::KEYZlibStream(const RVNGInputStreamPtr_t &stream)
   m_stream = getInflatedStream(stream);
 }
 
-KEYZlibStream::~KEYZlibStream()
+IWORKZlibStream::~IWORKZlibStream()
 {
 }
 
-bool KEYZlibStream::isStructured()
+bool IWORKZlibStream::isStructured()
 {
   return false;
 }
 
-unsigned KEYZlibStream::subStreamCount()
+unsigned IWORKZlibStream::subStreamCount()
 {
   return 0;
 }
 
-const char *KEYZlibStream::subStreamName(unsigned)
+const char *IWORKZlibStream::subStreamName(unsigned)
 {
   return 0;
 }
 
-librevenge::RVNGInputStream *KEYZlibStream::getSubStreamByName(const char *)
+librevenge::RVNGInputStream *IWORKZlibStream::getSubStreamByName(const char *)
 {
   return 0;
 }
 
-librevenge::RVNGInputStream *KEYZlibStream::getSubStreamById(unsigned)
+librevenge::RVNGInputStream *IWORKZlibStream::getSubStreamById(unsigned)
 {
   return 0;
 }
 
-const unsigned char *KEYZlibStream::read(const unsigned long numBytes, unsigned long &numBytesRead)
+const unsigned char *IWORKZlibStream::read(const unsigned long numBytes, unsigned long &numBytesRead)
 {
   return m_stream->read(numBytes, numBytesRead);
 }
 
-int KEYZlibStream::seek(long offset, const librevenge::RVNG_SEEK_TYPE seekType)
+int IWORKZlibStream::seek(long offset, const librevenge::RVNG_SEEK_TYPE seekType)
 {
   return m_stream->seek(offset, seekType);
 }
 
-long KEYZlibStream::tell()
+long IWORKZlibStream::tell()
 {
   return m_stream->tell();
 }
 
-bool KEYZlibStream::isEnd()
+bool IWORKZlibStream::isEnd()
 {
   return m_stream->isEnd();
 }

@@ -22,8 +22,8 @@ public:
   virtual ~KEY1Parser();
 
 private:
-  virtual void processXmlNode(const KEYXMLReader &reader);
-  virtual KEYXMLReader::TokenizerFunction_t getTokenizer() const;
+  virtual void processXmlNode(const IWORKXMLReader &reader);
+  virtual IWORKXMLReader::TokenizerFunction_t getTokenizer() const;
 };
 
 }

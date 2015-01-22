@@ -11,7 +11,7 @@
 #define KEYOUTPUT_H_INCLUDED
 
 #include "KEYStyle.h"
-#include "KEYTransformation.h"
+#include "IWORKTransformation.h"
 
 namespace libetonyek
 {
@@ -41,7 +41,7 @@ public:
     * @arg[in] output the current output
     * @arg[in] tr a transformation
     */
-  KEYOutput(const KEYOutput &output, const KEYTransformation &tr);
+  KEYOutput(const KEYOutput &output, const IWORKTransformation &tr);
 
   /** Apply a style to the current output.
     *
@@ -64,7 +64,7 @@ public:
     *
     * @seealso KEYStyleContext
     */
-  KEYOutput(const KEYOutput &output, const KEYTransformation &tr, const KEYStylePtr_t &style);
+  KEYOutput(const KEYOutput &output, const IWORKTransformation &tr, const KEYStylePtr_t &style);
 
   /** Create a @c KEYOutput as a copy of an existing one.
     *
@@ -89,7 +89,7 @@ public:
     *
     * @return the currently active transformation
     */
-  const KEYTransformation &getTransformation() const;
+  const IWORKTransformation &getTransformation() const;
 
   /** Get the style context.
     *
@@ -100,7 +100,7 @@ public:
 private:
   librevenge::RVNGPresentationInterface *const m_painter;
   KEYStyleContext &m_styleContext;
-  KEYTransformation m_transformation;
+  IWORKTransformation m_transformation;
   bool m_stylePushed;
 };
 

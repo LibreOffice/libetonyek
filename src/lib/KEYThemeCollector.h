@@ -20,12 +20,12 @@ struct KEYDictionary;
 class KEYThemeCollector : public KEYCollectorBase
 {
 public:
-  KEYThemeCollector(KEYDictionary &dict, KEYLayerMap_t &masterPages, KEYSize &size, const KEYDefaults &defaults);
+  KEYThemeCollector(KEYDictionary &dict, KEYLayerMap_t &masterPages, IWORKSize &size, const KEYDefaults &defaults);
   virtual ~KEYThemeCollector();
 
   // collector functions
 
-  virtual void collectPresentation(const boost::optional<KEYSize> &size);
+  virtual void collectPresentation(const boost::optional<IWORKSize> &size);
 
   virtual void collectLayer(const boost::optional<ID_t> &id, bool ref);
   virtual void collectPage(const boost::optional<ID_t> &id);
@@ -42,7 +42,7 @@ public:
 
 private:
   KEYLayerMap_t &m_masterPages;
-  KEYSize &m_size;
+  IWORKSize &m_size;
 };
 
 } // namespace libetonyek

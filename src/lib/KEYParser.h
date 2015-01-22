@@ -11,7 +11,7 @@
 #define KEYPARSER_H_INCLUDED
 
 #include "libetonyek_utils.h"
-#include "KEYXMLReader.h"
+#include "IWORKXMLReader.h"
 
 namespace libetonyek
 {
@@ -34,10 +34,10 @@ public:
   const KEYDefaults &getDefaults() const;
 
 private:
-  virtual void processXmlNode(const KEYXMLReader &reader) = 0;
-  virtual KEYXMLReader::TokenizerFunction_t getTokenizer() const = 0;
+  virtual void processXmlNode(const IWORKXMLReader &reader) = 0;
+  virtual IWORKXMLReader::TokenizerFunction_t getTokenizer() const = 0;
 
-  bool processXmlDocument(const KEYXMLReader &reader);
+  bool processXmlDocument(const IWORKXMLReader &reader);
 
 private:
   RVNGInputStreamPtr_t m_input;

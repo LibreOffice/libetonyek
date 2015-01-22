@@ -10,7 +10,8 @@
 #ifndef KEYDICTIONARY_H_INCLUDED
 #define KEYDICTIONARY_H_INCLUDED
 
-#include "KEYPath.h"
+#include "IWORKPath.h"
+#include "IWORKTypes.h"
 #include "KEYStyles_fwd.h"
 #include "KEYStylesheet.h"
 #include "KEYTypes.h"
@@ -42,7 +43,7 @@ struct KEYDictionary
 
   KEYStylesheetMap_t stylesheets;
 
-  KEYPathMap_t beziers;
+  IWORKPathMap_t beziers;
 
   KEYDataMap_t data;
   KEYMediaContentMap_t unfiltereds;

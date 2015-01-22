@@ -11,7 +11,7 @@
 #include <boost/optional.hpp>
 
 #include "libetonyek_xml.h"
-#include "KEYXMLReader.h"
+#include "IWORKXMLReader.h"
 
 using boost::optional;
 
@@ -27,23 +27,23 @@ struct XMLException {};
 
 }
 
-void skipElement(const KEYXMLReader &reader)
+void skipElement(const IWORKXMLReader &reader)
 {
-  KEYXMLReader::ElementIterator elements(reader);
+  IWORKXMLReader::ElementIterator elements(reader);
   while (elements.next())
     skipElement(elements);
 }
 
-bool checkElement(const KEYXMLReader &reader, const int name, const int ns)
+bool checkElement(const IWORKXMLReader &reader, const int name, const int ns)
 {
   return (getNamespaceId(reader) == ns) && (getNameId(reader) == name);
 }
 
-bool checkEmptyElement(const KEYXMLReader &reader)
+bool checkEmptyElement(const IWORKXMLReader &reader)
 {
   bool empty = true;
 
-  KEYXMLReader::ElementIterator elements(reader);
+  IWORKXMLReader::ElementIterator elements(reader);
   while (elements.next())
   {
     empty = false;
@@ -53,11 +53,11 @@ bool checkEmptyElement(const KEYXMLReader &reader)
   return empty;
 }
 
-bool checkNoAttributes(const KEYXMLReader &reader)
+bool checkNoAttributes(const IWORKXMLReader &reader)
 {
   unsigned count = 0;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     ++count;
@@ -66,11 +66,11 @@ bool checkNoAttributes(const KEYXMLReader &reader)
   return 0 == count;
 }
 
-string readOnlyAttribute(const KEYXMLReader &reader, const int name, const int ns)
+string readOnlyAttribute(const IWORKXMLReader &reader, const int name, const int ns)
 {
   optional<string> value;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((getNamespaceId(attr) == ns) && (getNameId(attr) == name))
@@ -83,7 +83,7 @@ string readOnlyAttribute(const KEYXMLReader &reader, const int name, const int n
   return get(value);
 }
 
-string readOnlyElementAttribute(const KEYXMLReader &reader, const int name, const int ns)
+string readOnlyElementAttribute(const IWORKXMLReader &reader, const int name, const int ns)
 {
   const string value = readOnlyAttribute(reader, name, ns);
 

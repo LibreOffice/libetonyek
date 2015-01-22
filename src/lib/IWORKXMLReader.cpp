@@ -13,7 +13,7 @@
 
 #include <libxml/xmlreader.h>
 
-#include "KEYXMLReader.h"
+#include "IWORKXMLReader.h"
 
 namespace libetonyek
 {
@@ -69,7 +69,7 @@ int implGetId(const T &token)
 
 }
 
-struct KEYXMLReader::Impl
+struct IWORKXMLReader::Impl
 {
   xmlTextReaderPtr reader;
   TokenizerFunction_t tokenizer;
@@ -82,13 +82,13 @@ struct KEYXMLReader::Impl
   Impl &operator=(const Impl &other);
 };
 
-KEYXMLReader::Impl::Impl()
+IWORKXMLReader::Impl::Impl()
   : reader(0)
   , tokenizer()
 {
 }
 
-KEYXMLReader::Impl::~Impl()
+IWORKXMLReader::Impl::~Impl()
 {
   if (0 != reader)
   {
@@ -97,7 +97,7 @@ KEYXMLReader::Impl::~Impl()
   }
 }
 
-KEYXMLReader::NodeIterator::NodeIterator(const KEYXMLReader &reader, const int types)
+IWORKXMLReader::NodeIterator::NodeIterator(const IWORKXMLReader &reader, const int types)
   : m_impl(reader.m_impl)
   , m_types(types)
   , m_level(0)
@@ -114,7 +114,7 @@ KEYXMLReader::NodeIterator::NodeIterator(const KEYXMLReader &reader, const int t
   m_last = xmlTextReaderIsEmptyElement(m_impl->reader);
 }
 
-bool KEYXMLReader::NodeIterator::next()
+bool IWORKXMLReader::NodeIterator::next()
 {
   if (m_last)
     return false;
@@ -138,12 +138,12 @@ bool KEYXMLReader::NodeIterator::next()
   return !m_last;
 }
 
-KEYXMLReader::Impl *KEYXMLReader::NodeIterator::getImpl() const
+IWORKXMLReader::Impl *IWORKXMLReader::NodeIterator::getImpl() const
 {
   return m_impl;
 }
 
-bool KEYXMLReader::NodeIterator::test() const
+bool IWORKXMLReader::NodeIterator::test() const
 {
   const int type = xmlTextReaderNodeType(m_impl->reader);
 
@@ -155,7 +155,7 @@ bool KEYXMLReader::NodeIterator::test() const
   return false;
 }
 
-KEYXMLReader::AttributeIterator::AttributeIterator(const KEYXMLReader &reader)
+IWORKXMLReader::AttributeIterator::AttributeIterator(const IWORKXMLReader &reader)
   : m_impl(reader.m_impl)
   , m_first(true)
   , m_last(false)
@@ -169,7 +169,7 @@ KEYXMLReader::AttributeIterator::AttributeIterator(const KEYXMLReader &reader)
     throw XMLException();
 }
 
-bool KEYXMLReader::AttributeIterator::next()
+bool IWORKXMLReader::AttributeIterator::next()
 {
   if (m_last)
     return false;
@@ -180,7 +180,7 @@ bool KEYXMLReader::AttributeIterator::next()
   return !m_last;
 }
 
-bool KEYXMLReader::AttributeIterator::move()
+bool IWORKXMLReader::AttributeIterator::move()
 {
   int ret = 0;
   if (m_first)
@@ -199,7 +199,7 @@ bool KEYXMLReader::AttributeIterator::move()
   return !m_last;
 }
 
-bool KEYXMLReader::AttributeIterator::test()
+bool IWORKXMLReader::AttributeIterator::test()
 {
   const xmlChar *const prefix = xmlTextReaderConstPrefix(m_impl->reader);
   if (prefix)
@@ -209,122 +209,122 @@ bool KEYXMLReader::AttributeIterator::test()
   return strcmp("xmlns", reinterpret_cast<const char *>(name));
 }
 
-const char *KEYXMLReader::AttributeIterator::getName() const
+const char *IWORKXMLReader::AttributeIterator::getName() const
 {
   return reinterpret_cast<const char *>(xmlTextReaderConstLocalName(m_impl->reader));
 }
 
-const char *KEYXMLReader::AttributeIterator::getNamespace() const
+const char *IWORKXMLReader::AttributeIterator::getNamespace() const
 {
   return reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(m_impl->reader));
 }
 
-const char *KEYXMLReader::AttributeIterator::getValue() const
+const char *IWORKXMLReader::AttributeIterator::getValue() const
 {
   return reinterpret_cast<const char *>(xmlTextReaderConstValue(m_impl->reader));
 }
 
-int KEYXMLReader::AttributeIterator::getToken(const char *const token) const
+int IWORKXMLReader::AttributeIterator::getToken(const char *const token) const
 {
   return m_impl->tokenizer(token);
 }
 
 
-KEYXMLReader::ElementIterator::ElementIterator(const KEYXMLReader &reader)
+IWORKXMLReader::ElementIterator::ElementIterator(const IWORKXMLReader &reader)
   : m_iterator(reader, TYPE_ELEMENT)
 {
 }
 
-bool KEYXMLReader::ElementIterator::next()
+bool IWORKXMLReader::ElementIterator::next()
 {
   return m_iterator.next();
 }
 
-const char *KEYXMLReader::ElementIterator::getName() const
+const char *IWORKXMLReader::ElementIterator::getName() const
 {
   return reinterpret_cast<const char *>(xmlTextReaderConstLocalName(m_iterator.getImpl()->reader));
 }
 
-const char *KEYXMLReader::ElementIterator::getNamespace() const
+const char *IWORKXMLReader::ElementIterator::getNamespace() const
 {
   return reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(m_iterator.getImpl()->reader));
 }
 
-const char *KEYXMLReader::ElementIterator::getText() const
+const char *IWORKXMLReader::ElementIterator::getText() const
 {
   return reinterpret_cast<const char *>(xmlTextReaderConstValue(m_iterator.getImpl()->reader));
 }
 
-bool KEYXMLReader::ElementIterator::isEmpty() const
+bool IWORKXMLReader::ElementIterator::isEmpty() const
 {
   return xmlTextReaderIsEmptyElement(m_iterator.getImpl()->reader);
 }
 
-const KEYXMLReader::NodeIterator &KEYXMLReader::ElementIterator::getNodeIterator() const
+const IWORKXMLReader::NodeIterator &IWORKXMLReader::ElementIterator::getNodeIterator() const
 {
   return m_iterator;
 }
 
-int KEYXMLReader::ElementIterator::getToken(const char *token) const
+int IWORKXMLReader::ElementIterator::getToken(const char *token) const
 {
   return m_iterator.getImpl()->tokenizer(token);
 }
 
-KEYXMLReader::MixedIterator::MixedIterator(const KEYXMLReader &reader)
+IWORKXMLReader::MixedIterator::MixedIterator(const IWORKXMLReader &reader)
   : m_iterator(reader, TYPE_ELEMENT | TYPE_TEXT)
 {
 }
 
-bool KEYXMLReader::MixedIterator::next()
+bool IWORKXMLReader::MixedIterator::next()
 {
   return m_iterator.next();
 }
 
-bool KEYXMLReader::MixedIterator::isElement() const
+bool IWORKXMLReader::MixedIterator::isElement() const
 {
   return XML_READER_TYPE_ELEMENT == xmlTextReaderNodeType(m_iterator.getImpl()->reader);
 }
 
-bool KEYXMLReader::MixedIterator::isText() const
+bool IWORKXMLReader::MixedIterator::isText() const
 {
   return XML_READER_TYPE_TEXT == xmlTextReaderNodeType(m_iterator.getImpl()->reader);
 }
 
-const char *KEYXMLReader::MixedIterator::getName() const
+const char *IWORKXMLReader::MixedIterator::getName() const
 {
   assert(isElement());
   return reinterpret_cast<const char *>(xmlTextReaderConstLocalName(m_iterator.getImpl()->reader));
 }
 
-const char *KEYXMLReader::MixedIterator::getNamespace() const
+const char *IWORKXMLReader::MixedIterator::getNamespace() const
 {
   assert(isElement());
   return reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(m_iterator.getImpl()->reader));
 }
 
-const char *KEYXMLReader::MixedIterator::getText() const
+const char *IWORKXMLReader::MixedIterator::getText() const
 {
   assert(isText());
   return reinterpret_cast<const char *>(xmlTextReaderConstValue(m_iterator.getImpl()->reader));
 }
 
-bool KEYXMLReader::MixedIterator::isEmpty() const
+bool IWORKXMLReader::MixedIterator::isEmpty() const
 {
   assert(isElement());
   return xmlTextReaderIsEmptyElement(m_iterator.getImpl()->reader);
 }
 
-int KEYXMLReader::MixedIterator::getToken(const char *token) const
+int IWORKXMLReader::MixedIterator::getToken(const char *token) const
 {
   return m_iterator.getImpl()->tokenizer(token);
 }
 
-const KEYXMLReader::NodeIterator &KEYXMLReader::MixedIterator::getNodeIterator() const
+const IWORKXMLReader::NodeIterator &IWORKXMLReader::MixedIterator::getNodeIterator() const
 {
   return m_iterator;
 }
 
-KEYXMLReader::KEYXMLReader(librevenge::RVNGInputStream *const input)
+IWORKXMLReader::IWORKXMLReader(librevenge::RVNGInputStream *const input)
   : m_impl(new Impl())
   , m_owner(true)
 {
@@ -339,7 +339,7 @@ KEYXMLReader::KEYXMLReader(librevenge::RVNGInputStream *const input)
   }
 }
 
-KEYXMLReader::KEYXMLReader(librevenge::RVNGInputStream *const input, const TokenizerFunction_t tokenizer)
+IWORKXMLReader::IWORKXMLReader(librevenge::RVNGInputStream *const input, const TokenizerFunction_t tokenizer)
   : m_impl(new Impl())
   , m_owner(true)
 {
@@ -355,41 +355,41 @@ KEYXMLReader::KEYXMLReader(librevenge::RVNGInputStream *const input, const Token
   }
 }
 
-KEYXMLReader::KEYXMLReader(const ElementIterator &iterator)
+IWORKXMLReader::IWORKXMLReader(const ElementIterator &iterator)
   : m_impl(iterator.getNodeIterator().getImpl())
   , m_owner(false)
 {
 }
 
-KEYXMLReader::KEYXMLReader(const MixedIterator &iterator)
+IWORKXMLReader::IWORKXMLReader(const MixedIterator &iterator)
   : m_impl(iterator.getNodeIterator().getImpl())
   , m_owner(false)
 {
   assert(iterator.isElement());
 }
 
-KEYXMLReader::~KEYXMLReader()
+IWORKXMLReader::~IWORKXMLReader()
 {
   if (m_owner)
     delete m_impl;
 }
 
-const char *KEYXMLReader::getName() const
+const char *IWORKXMLReader::getName() const
 {
   return reinterpret_cast<const char *>(xmlTextReaderConstLocalName(m_impl->reader));
 }
 
-const char *KEYXMLReader::getNamespace() const
+const char *IWORKXMLReader::getNamespace() const
 {
   return reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(m_impl->reader));
 }
 
-int KEYXMLReader::getToken(const char *token) const
+int IWORKXMLReader::getToken(const char *token) const
 {
   return m_impl->tokenizer(token);
 }
 
-void KEYXMLReader::initialize(librevenge::RVNGInputStream *const input)
+void IWORKXMLReader::initialize(librevenge::RVNGInputStream *const input)
 {
   m_impl->reader = xmlReaderForIO(readFromStream, closeStream, input, "", 0, 0);
   if (!bool(m_impl->reader))
@@ -407,57 +407,57 @@ void KEYXMLReader::initialize(librevenge::RVNGInputStream *const input)
     throw XMLException();
 }
 
-int getNameId(const KEYXMLReader::AttributeIterator &attribute)
+int getNameId(const IWORKXMLReader::AttributeIterator &attribute)
 {
   return attribute.getToken(attribute.getName());
 }
 
-int getNamespaceId(const KEYXMLReader::AttributeIterator &attribute)
+int getNamespaceId(const IWORKXMLReader::AttributeIterator &attribute)
 {
   return attribute.getToken(attribute.getNamespace() ? attribute.getNamespace() : "");
 }
 
-int getId(const KEYXMLReader::AttributeIterator &attribute)
+int getId(const IWORKXMLReader::AttributeIterator &attribute)
 {
   return implGetId(attribute);
 }
 
-int getValueId(const KEYXMLReader::AttributeIterator &attribute)
+int getValueId(const IWORKXMLReader::AttributeIterator &attribute)
 {
   return attribute.getToken(attribute.getValue());
 }
 
-int getNameId(const KEYXMLReader::ElementIterator &element)
+int getNameId(const IWORKXMLReader::ElementIterator &element)
 {
   return element.getToken(element.getName());
 }
 
-int getNamespaceId(const KEYXMLReader::ElementIterator &element)
+int getNamespaceId(const IWORKXMLReader::ElementIterator &element)
 {
   return element.getToken(element.getNamespace() ? element.getNamespace() : "");
 }
 
-int getId(const KEYXMLReader::ElementIterator &element)
+int getId(const IWORKXMLReader::ElementIterator &element)
 {
   return implGetId(element);
 }
 
-int getTextId(const KEYXMLReader::ElementIterator &element)
+int getTextId(const IWORKXMLReader::ElementIterator &element)
 {
   return element.getToken(element.getText());
 }
 
-int getNameId(const KEYXMLReader &reader)
+int getNameId(const IWORKXMLReader &reader)
 {
   return reader.getToken(reader.getName());
 }
 
-int getNamespaceId(const KEYXMLReader &reader)
+int getNamespaceId(const IWORKXMLReader &reader)
 {
   return reader.getToken(reader.getNamespace() ? reader.getNamespace() : "");
 }
 
-int getId(const KEYXMLReader &reader)
+int getId(const IWORKXMLReader &reader)
 {
   return implGetId(reader);
 }

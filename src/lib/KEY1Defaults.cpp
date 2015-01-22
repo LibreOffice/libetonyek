@@ -16,13 +16,13 @@ KEY1Defaults::~KEY1Defaults()
 {
 }
 
-void KEY1Defaults::applyPresentationSize(boost::optional<KEYSize> &size) const
+void KEY1Defaults::applyPresentationSize(boost::optional<IWORKSize> &size) const
 {
   // TODO: implement me
   (void) size;
 }
 
-void KEY1Defaults::applyGeometry(boost::optional<KEYSize> &naturalSize, boost::optional<KEYPosition> &position) const
+void KEY1Defaults::applyGeometry(boost::optional<IWORKSize> &naturalSize, boost::optional<IWORKPosition> &position) const
 {
   // TODO: implement me
   (void) naturalSize;

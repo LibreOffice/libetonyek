@@ -9,13 +9,13 @@
 
 #include <cmath>
 
-#include "KEYTransformation.h"
-#include "KEYTypes.h"
+#include "IWORKTransformation.h"
+#include "IWORKTypes.h"
 
 namespace libetonyek
 {
 
-KEYTransformation::KEYTransformation()
+IWORKTransformation::IWORKTransformation()
   : m_xx(1)
   , m_yx(0)
   , m_xy(0)
@@ -25,7 +25,7 @@ KEYTransformation::KEYTransformation()
 {
 }
 
-KEYTransformation::KEYTransformation(const double xx, const double yx, const double xy, const double yy, const double x0, const double y0)
+IWORKTransformation::IWORKTransformation(const double xx, const double yx, const double xy, const double yy, const double x0, const double y0)
   : m_xx(xx)
   , m_yx(yx)
   , m_xy(xy)
@@ -35,7 +35,7 @@ KEYTransformation::KEYTransformation(const double xx, const double yx, const dou
 {
 }
 
-KEYTransformation &KEYTransformation::operator*=(const KEYTransformation &tr)
+IWORKTransformation &IWORKTransformation::operator*=(const IWORKTransformation &tr)
 {
   const double xx = m_xx * tr.m_xx + m_yx * tr.m_xy;
   const double yx = m_xx * tr.m_yx + m_yx * tr.m_yy;
@@ -54,7 +54,7 @@ KEYTransformation &KEYTransformation::operator*=(const KEYTransformation &tr)
   return *this;
 }
 
-bool KEYTransformation::approxEqual(const KEYTransformation &other, const double eps) const
+bool IWORKTransformation::approxEqual(const IWORKTransformation &other, const double eps) const
 {
   using libetonyek::approxEqual;
   return approxEqual(m_xx, other.m_xx, eps)
@@ -66,13 +66,13 @@ bool KEYTransformation::approxEqual(const KEYTransformation &other, const double
          ;
 }
 
-KEYTransformation operator*(const KEYTransformation &left, const KEYTransformation &right)
+IWORKTransformation operator*(const IWORKTransformation &left, const IWORKTransformation &right)
 {
-  KEYTransformation result(left);
+  IWORKTransformation result(left);
   return result *= right;
 }
 
-void KEYTransformation::operator()(double &x, double &y, const bool distance) const
+void IWORKTransformation::operator()(double &x, double &y, const bool distance) const
 {
   double x_new = m_xx * x + m_xy * y;
   double y_new = m_yx * x + m_yy * y;
@@ -86,21 +86,21 @@ void KEYTransformation::operator()(double &x, double &y, const bool distance) co
   y = y_new;
 }
 
-bool operator==(const KEYTransformation &left, const KEYTransformation &right)
+bool operator==(const IWORKTransformation &left, const IWORKTransformation &right)
 {
   return left.approxEqual(right);
 }
 
-bool operator!=(const KEYTransformation &left, const KEYTransformation &right)
+bool operator!=(const IWORKTransformation &left, const IWORKTransformation &right)
 {
   return !(left == right);
 }
 
-KEYTransformation makeTransformation(const KEYGeometry &geometry)
+IWORKTransformation makeTransformation(const IWORKGeometry &geometry)
 {
   using namespace transformations;
 
-  KEYTransformation tr;
+  IWORKTransformation tr;
 
   const double w = geometry.naturalSize.width;
   const double h = geometry.naturalSize.height;
@@ -128,42 +128,42 @@ KEYTransformation makeTransformation(const KEYGeometry &geometry)
 namespace transformations
 {
 
-KEYTransformation center(const double width, const double height)
+IWORKTransformation center(const double width, const double height)
 {
   return translate(width / 2, height / 2);
 }
 
-KEYTransformation origin(const double width, const double height)
+IWORKTransformation origin(const double width, const double height)
 {
   return translate(-width / 2, -height / 2);
 }
 
-KEYTransformation flip(const bool horizontal, const bool vertical)
+IWORKTransformation flip(const bool horizontal, const bool vertical)
 {
   return scale(horizontal ? -1 : 1, vertical ? -1 : 1);
 }
 
-KEYTransformation rotate(const double angle)
+IWORKTransformation rotate(const double angle)
 {
   const double c = std::cos(angle);
   const double s = std::sin(angle);
-  return KEYTransformation(c, s, -s, c, 0, 0);
+  return IWORKTransformation(c, s, -s, c, 0, 0);
 }
 
-KEYTransformation scale(const double ratioX, const double ratioY)
+IWORKTransformation scale(const double ratioX, const double ratioY)
 {
-  return KEYTransformation(ratioX, 0, 0, ratioY, 0, 0);
+  return IWORKTransformation(ratioX, 0, 0, ratioY, 0, 0);
 }
 
-KEYTransformation shear(const double angleX, const double angleY)
+IWORKTransformation shear(const double angleX, const double angleY)
 {
   // TODO: check this
-  return KEYTransformation(1, std::tan(angleY), std::tan(angleX), 1, 0, 0);
+  return IWORKTransformation(1, std::tan(angleY), std::tan(angleX), 1, 0, 0);
 }
 
-KEYTransformation translate(const double offsetX, const double offsetY)
+IWORKTransformation translate(const double offsetX, const double offsetY)
 {
-  return KEYTransformation(1, 0, 0, 1, offsetX, offsetY);
+  return IWORKTransformation(1, 0, 0, 1, offsetX, offsetY);
 }
 
 }

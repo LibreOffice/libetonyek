@@ -48,20 +48,20 @@ optional<string> detectMimetype(const RVNGInputStreamPtr_t &stream)
     // looks like the binary is broken anyway: just bail out
     return optional<string>();
 
-  if (0 == memcmp(sig, SIGNATURE_PNG, KEY_NUM_ELEMENTS(SIGNATURE_PNG)))
+  if (0 == memcmp(sig, SIGNATURE_PNG, ETONYEK_NUM_ELEMENTS(SIGNATURE_PNG)))
     return string("image/png");
 
-  if (0 == memcmp(sig, SIGNATURE_PDF, KEY_NUM_ELEMENTS(SIGNATURE_PDF)))
+  if (0 == memcmp(sig, SIGNATURE_PDF, ETONYEK_NUM_ELEMENTS(SIGNATURE_PDF)))
     return string("application/pdf");
 
-  if ((0 == memcmp(sig, SIGNATURE_TIFF_1, KEY_NUM_ELEMENTS(SIGNATURE_TIFF_1)))
-      || (0 == memcmp(sig, SIGNATURE_TIFF_2, KEY_NUM_ELEMENTS(SIGNATURE_TIFF_2))))
+  if ((0 == memcmp(sig, SIGNATURE_TIFF_1, ETONYEK_NUM_ELEMENTS(SIGNATURE_TIFF_1)))
+      || (0 == memcmp(sig, SIGNATURE_TIFF_2, ETONYEK_NUM_ELEMENTS(SIGNATURE_TIFF_2))))
     return string("image/tiff");
 
-  if (0 == memcmp(sig + 4, SIGNATURE_QUICKTIME, KEY_NUM_ELEMENTS(SIGNATURE_QUICKTIME)))
+  if (0 == memcmp(sig + 4, SIGNATURE_QUICKTIME, ETONYEK_NUM_ELEMENTS(SIGNATURE_QUICKTIME)))
     return string("video/quicktime");
 
-  if (0 == memcmp(sig, SIGNATURE_JPEG, KEY_NUM_ELEMENTS(SIGNATURE_JPEG)))
+  if (0 == memcmp(sig, SIGNATURE_JPEG, ETONYEK_NUM_ELEMENTS(SIGNATURE_JPEG)))
     return string("image/jpeg");
 
   return optional<string>();
@@ -91,68 +91,6 @@ optional<string> getMimetype(const optional<int> &type, const RVNGInputStreamPtr
   return detectMimetype(stream);
 }
 
-}
-
-KEYSize::KEYSize()
-  : width(0)
-  , height(0)
-{
-}
-
-KEYSize::KEYSize(const double w, const double h)
-  : width(w)
-  , height(h)
-{
-}
-
-KEYPosition::KEYPosition()
-  : x(0)
-  , y(0)
-{
-}
-
-KEYPosition::KEYPosition(const double x_, const double y_)
-  : x(x_)
-  , y(y_)
-{
-}
-
-KEYGeometry::KEYGeometry()
-  : naturalSize()
-  , size()
-  , position()
-  , angle()
-  , shearXAngle()
-  , shearYAngle()
-  , horizontalFlip()
-  , verticalFlip()
-  , aspectRatioLocked()
-  , sizesLocked()
-{
-}
-
-KEYColor::KEYColor()
-  : red()
-  , green()
-  , blue()
-  , alpha()
-{
-}
-
-KEYColor::KEYColor(const double r, const double g, const double b, const double a)
-  : red(r)
-  , green(g)
-  , blue(b)
-  , alpha(a)
-{
-}
-
-KEYPadding::KEYPadding()
-  : top()
-  , right()
-  , bottom()
-  , left()
-{
 }
 
 KEYLine::KEYLine()
@@ -234,14 +172,9 @@ KEYStickyNote::KEYStickyNote()
 {
 }
 
-KEYStickyNote::KEYStickyNote(const KEYGeometryPtr_t &geometry_, const KEYTextPtr_t &text_)
+KEYStickyNote::KEYStickyNote(const IWORKGeometryPtr_t &geometry_, const KEYTextPtr_t &text_)
   : geometry(geometry_)
   , text(text_)
-{
-}
-
-KEYTabStop::KEYTabStop(double pos_)
-  : pos(pos_)
 {
 }
 
@@ -368,7 +301,7 @@ void LineObject::draw(const KEYOutput &output)
   }
   else
   {
-    KEY_DEBUG_MSG(("line is missing head or tail point\n"));
+    ETONYEK_DEBUG_MSG(("line is missing head or tail point\n"));
   }
 }
 
@@ -426,7 +359,7 @@ void MediaObject::draw(const KEYOutput &output)
 
       double x = 1;
       double y = 1;
-      const KEYTransformation &tr = newOutput.getTransformation();
+      const IWORKTransformation &tr = newOutput.getTransformation();
       tr(x, y);
       props.insert("svg:x", pt2in(x));
       props.insert("svg:y", pt2in(y));

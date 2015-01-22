@@ -15,8 +15,8 @@
 namespace libetonyek
 {
 
+class IWORKXMLReader;
 class NUMCollector;
-class KEYXMLReader;
 
 class NUMParser
 {
@@ -30,7 +30,7 @@ public:
   bool parse();
 
 private:
-  void parseDocument(const KEYXMLReader &reader);
+  void parseDocument(const IWORKXMLReader &reader);
 
 private:
   RVNGInputStreamPtr_t m_input;

@@ -7,7 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "KEYPropertyMap.h"
+#include "IWORKPropertyMap.h"
 #include "KEYStyleContext.h"
 
 namespace libetonyek

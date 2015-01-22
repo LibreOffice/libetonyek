@@ -17,7 +17,7 @@ using boost::optional;
 namespace libetonyek
 {
 
-KEYThemeCollector::KEYThemeCollector(KEYDictionary &dict, KEYLayerMap_t &masterPages, KEYSize &size, const KEYDefaults &defaults)
+KEYThemeCollector::KEYThemeCollector(KEYDictionary &dict, KEYLayerMap_t &masterPages, IWORKSize &size, const KEYDefaults &defaults)
   : KEYCollectorBase(dict, defaults)
   , m_masterPages(masterPages)
   , m_size(size)
@@ -28,9 +28,9 @@ KEYThemeCollector::~KEYThemeCollector()
 {
 }
 
-void KEYThemeCollector::collectPresentation(const boost::optional<KEYSize> &size)
+void KEYThemeCollector::collectPresentation(const boost::optional<IWORKSize> &size)
 {
-  optional<KEYSize> size_(size);
+  optional<IWORKSize> size_(size);
   getDefaults().applyPresentationSize(size_);
   assert(size_);
   m_size = get(size_);
@@ -44,7 +44,7 @@ void KEYThemeCollector::collectLayer(const boost::optional<ID_t> &id, const bool
 
     if (ref)
     {
-      KEY_DEBUG_MSG(("cannot use master page reference %s in a master page\n", id ? get(id).c_str() : ""));
+      ETONYEK_DEBUG_MSG(("cannot use master page reference %s in a master page\n", id ? get(id).c_str() : ""));
     }
     else
     {
@@ -53,7 +53,7 @@ void KEYThemeCollector::collectLayer(const boost::optional<ID_t> &id, const bool
         m_masterPages.insert(KEYLayerMap_t::value_type(get(id), layer));
       else
       {
-        KEY_DEBUG_MSG(("master style layer is empty\n"));
+        ETONYEK_DEBUG_MSG(("master style layer is empty\n"));
       }
     }
   }

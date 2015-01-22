@@ -12,6 +12,7 @@
 #include <librevenge/librevenge.h>
 
 #include "libetonyek_utils.h"
+#include "IWORKTypes.h"
 #include "KEYOutput.h"
 #include "KEYTable.h"
 #include "KEYTypes.h"
@@ -68,7 +69,7 @@ void KEYTable::insertCoveredCell(const unsigned column, const unsigned row)
   m_table[row][column] = cell;
 }
 
-void KEYTable::setGeometry(const KEYGeometryPtr_t &geometry)
+void KEYTable::setGeometry(const IWORKGeometryPtr_t &geometry)
 {
   m_geometry = geometry;
 }
@@ -87,7 +88,7 @@ void KEYTable::draw(const KEYOutput &output) const
     double w = m_geometry->naturalSize.width;
     double h = m_geometry->naturalSize.height;
 
-    const KEYTransformation tr = output.getTransformation();
+    const IWORKTransformation tr = output.getTransformation();
     tr(x, y);
     tr(w, h, true);
 

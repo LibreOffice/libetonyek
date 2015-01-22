@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYPROPERTYMAPTEST_H_INCLUDED
-#define KEYPROPERTYMAPTEST_H_INCLUDED
+#ifndef IWORKPROPERTYMAPTEST_H_INCLUDED
+#define IWORKPROPERTYMAPTEST_H_INCLUDED
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -16,14 +16,14 @@
 namespace test
 {
 
-class KEYPropertyMapTest : public CPPUNIT_NS::TestFixture
+class IWORKPropertyMapTest : public CPPUNIT_NS::TestFixture
 {
 public:
   virtual void setUp();
   virtual void tearDown();
 
 private:
-  CPPUNIT_TEST_SUITE(KEYPropertyMapTest);
+  CPPUNIT_TEST_SUITE(IWORKPropertyMapTest);
   CPPUNIT_TEST(testLookup);
   CPPUNIT_TEST(testLookupWithParent);
   CPPUNIT_TEST_SUITE_END();
@@ -35,6 +35,6 @@ private:
 
 }
 
-#endif //  KEYPROPERTYMAPTEST_H_INCLUDED
+#endif //  IWORKPROPERTYMAPTEST_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

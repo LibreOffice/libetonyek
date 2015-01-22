@@ -56,12 +56,12 @@ T getValue(const optional<ID_t> &id, const T &value, const bool ref, boost::unor
       }
       else
       {
-        KEY_DEBUG_MSG(("item with ID %s does not exist\n", get(id).c_str()));
+        ETONYEK_DEBUG_MSG(("item with ID %s does not exist\n", get(id).c_str()));
       }
     }
     else
     {
-      KEY_DEBUG_MSG(("reference without ID\n"));
+      ETONYEK_DEBUG_MSG(("reference without ID\n"));
     }
   }
   else
@@ -132,7 +132,7 @@ KEYCollectorBase::~KEYCollectorBase()
 }
 
 void KEYCollectorBase::collectCellStyle(const boost::optional<ID_t> &id,
-                                        const boost::optional<KEYPropertyMap> &props,
+                                        const boost::optional<IWORKPropertyMap> &props,
                                         const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                         const bool ref, const bool anonymous)
 {
@@ -146,7 +146,7 @@ void KEYCollectorBase::collectCellStyle(const boost::optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectCharacterStyle(const optional<ID_t> &id,
-                                             const boost::optional<KEYPropertyMap> &props,
+                                             const boost::optional<IWORKPropertyMap> &props,
                                              const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                              const bool ref, const bool anonymous)
 {
@@ -171,7 +171,7 @@ void KEYCollectorBase::collectCharacterStyle(const optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectConnectionStyle(const boost::optional<ID_t> &id,
-                                              const boost::optional<KEYPropertyMap> &props,
+                                              const boost::optional<IWORKPropertyMap> &props,
                                               const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                               const bool ref, const bool anonymous)
 {
@@ -185,7 +185,7 @@ void KEYCollectorBase::collectConnectionStyle(const boost::optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectGraphicStyle(const optional<ID_t> &id,
-                                           const boost::optional<KEYPropertyMap> &props,
+                                           const boost::optional<IWORKPropertyMap> &props,
                                            const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                            const bool ref, const bool anonymous)
 {
@@ -216,7 +216,7 @@ void KEYCollectorBase::collectGraphicStyle(const optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectLayoutStyle(const optional<ID_t> &id,
-                                          const boost::optional<KEYPropertyMap> &props,
+                                          const boost::optional<IWORKPropertyMap> &props,
                                           const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                           const bool ref, const bool anonymous)
 {
@@ -243,7 +243,7 @@ void KEYCollectorBase::collectLayoutStyle(const optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectListStyle(const boost::optional<ID_t> &id,
-                                        const boost::optional<KEYPropertyMap> &props,
+                                        const boost::optional<IWORKPropertyMap> &props,
                                         const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                         const bool ref, const bool anonymous)
 {
@@ -257,7 +257,7 @@ void KEYCollectorBase::collectListStyle(const boost::optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectParagraphStyle(const optional<ID_t> &id,
-                                             const boost::optional<KEYPropertyMap> &props,
+                                             const boost::optional<IWORKPropertyMap> &props,
                                              const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                              const bool ref, const bool anonymous)
 {
@@ -281,7 +281,7 @@ void KEYCollectorBase::collectParagraphStyle(const optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectPlaceholderStyle(const boost::optional<ID_t> &id,
-                                               const boost::optional<KEYPropertyMap> &props,
+                                               const boost::optional<IWORKPropertyMap> &props,
                                                const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                                const bool ref, const bool anonymous)
 {
@@ -307,7 +307,7 @@ void KEYCollectorBase::collectPlaceholderStyle(const boost::optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectSlideStyle(const boost::optional<ID_t> &id,
-                                         const boost::optional<KEYPropertyMap> &props,
+                                         const boost::optional<IWORKPropertyMap> &props,
                                          const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                          const bool ref, const bool anonymous)
 {
@@ -321,7 +321,7 @@ void KEYCollectorBase::collectSlideStyle(const boost::optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectTabularStyle(const boost::optional<ID_t> &id,
-                                           const boost::optional<KEYPropertyMap> &props,
+                                           const boost::optional<IWORKPropertyMap> &props,
                                            const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                            const bool ref, const bool anonymous)
 {
@@ -335,7 +335,7 @@ void KEYCollectorBase::collectTabularStyle(const boost::optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectVectorStyle(const boost::optional<ID_t> &id,
-                                          const boost::optional<KEYPropertyMap> &props,
+                                          const boost::optional<IWORKPropertyMap> &props,
                                           const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                           const bool ref, const bool anonymous)
 {
@@ -349,8 +349,8 @@ void KEYCollectorBase::collectVectorStyle(const boost::optional<ID_t> &id,
 }
 
 void KEYCollectorBase::collectGeometry(boost::optional<ID_t> &,
-                                       boost::optional<KEYSize> &naturalSize, boost::optional<KEYSize> &size,
-                                       boost::optional<KEYPosition> &position, boost::optional<double> &angle,
+                                       boost::optional<IWORKSize> &naturalSize, boost::optional<IWORKSize> &size,
+                                       boost::optional<IWORKPosition> &position, boost::optional<double> &angle,
                                        boost::optional<double> &shearXAngle, boost::optional<double> &shearYAngle,
                                        boost::optional<bool> &horizontalFlip, boost::optional<bool> &verticalFlip,
                                        boost::optional<bool> &aspectRatioLocked, boost::optional<bool> &sizesLocked)
@@ -362,7 +362,7 @@ void KEYCollectorBase::collectGeometry(boost::optional<ID_t> &,
     m_defaults.applyGeometry(naturalSize, position);
     assert(naturalSize && position);
 
-    const KEYGeometryPtr_t geometry(new KEYGeometry);
+    const IWORKGeometryPtr_t geometry(new IWORKGeometry);
     geometry->naturalSize = get(naturalSize);
     geometry->size = bool(size) ? get(size) : get(naturalSize);
     geometry->position = get(position);
@@ -378,7 +378,7 @@ void KEYCollectorBase::collectGeometry(boost::optional<ID_t> &,
   }
 }
 
-void KEYCollectorBase::collectBezier(const optional<ID_t> &id, const KEYPathPtr_t &path, const bool ref)
+void KEYCollectorBase::collectBezier(const optional<ID_t> &id, const IWORKPathPtr_t &path, const bool ref)
 {
   if (m_collecting)
     m_currentPath = getValue(id, path, ref, m_dict.beziers);
@@ -436,7 +436,7 @@ void KEYCollectorBase::collectShape(const optional<ID_t> &)
 
     if (!m_currentPath)
     {
-      KEY_DEBUG_MSG(("the path is empty\n"));
+      ETONYEK_DEBUG_MSG(("the path is empty\n"));
     }
     shape->path = m_currentPath;
     m_currentPath.reset();
@@ -463,19 +463,19 @@ void KEYCollectorBase::collectBezierPath(const optional<ID_t> &)
   // nothing needed
 }
 
-void KEYCollectorBase::collectPolygonPath(const optional<ID_t> &, const KEYSize &size, const unsigned edges)
+void KEYCollectorBase::collectPolygonPath(const optional<ID_t> &, const IWORKSize &size, const unsigned edges)
 {
   if (m_collecting)
     m_currentPath = makePolygonPath(size, edges);
 }
 
-void KEYCollectorBase::collectRoundedRectanglePath(const optional<ID_t> &, const KEYSize &size, const double radius)
+void KEYCollectorBase::collectRoundedRectanglePath(const optional<ID_t> &, const IWORKSize &size, const double radius)
 {
   if (m_collecting)
     m_currentPath = makeRoundedRectanglePath(size, radius);
 }
 
-void KEYCollectorBase::collectArrowPath(const optional<ID_t> &, const KEYSize &size, const double headWidth, const double stemRelYPos, bool const doubleSided)
+void KEYCollectorBase::collectArrowPath(const optional<ID_t> &, const IWORKSize &size, const double headWidth, const double stemRelYPos, bool const doubleSided)
 {
   if (m_collecting)
   {
@@ -486,19 +486,19 @@ void KEYCollectorBase::collectArrowPath(const optional<ID_t> &, const KEYSize &s
   }
 }
 
-void KEYCollectorBase::collectStarPath(const optional<ID_t> &, const KEYSize &size, const unsigned points, const double innerRadius)
+void KEYCollectorBase::collectStarPath(const optional<ID_t> &, const IWORKSize &size, const unsigned points, const double innerRadius)
 {
   if (m_collecting)
     m_currentPath = makeStarPath(size, points, innerRadius);
 }
 
-void KEYCollectorBase::collectConnectionPath(const optional<ID_t> &, const KEYSize &size, const double middleX, const double middleY)
+void KEYCollectorBase::collectConnectionPath(const optional<ID_t> &, const IWORKSize &size, const double middleX, const double middleY)
 {
   if (m_collecting)
     m_currentPath = makeConnectionPath(size, middleX, middleY);
 }
 
-void KEYCollectorBase::collectCalloutPath(const optional<ID_t> &, const KEYSize &size, const double radius, const double tailSize, const double tailX, const double tailY, bool quoteBubble)
+void KEYCollectorBase::collectCalloutPath(const optional<ID_t> &, const IWORKSize &size, const double radius, const double tailSize, const double tailX, const double tailY, bool quoteBubble)
 {
   if (m_collecting)
   {
@@ -528,7 +528,7 @@ void KEYCollectorBase::collectData(const boost::optional<ID_t> &id, const RVNGIn
   }
 }
 
-void KEYCollectorBase::collectUnfiltered(const boost::optional<ID_t> &id, const boost::optional<KEYSize> &size, const bool ref)
+void KEYCollectorBase::collectUnfiltered(const boost::optional<ID_t> &id, const boost::optional<IWORKSize> &size, const bool ref)
 {
   if (m_collecting)
   {
@@ -548,7 +548,7 @@ void KEYCollectorBase::collectUnfiltered(const boost::optional<ID_t> &id, const 
   }
 }
 
-void KEYCollectorBase::collectFiltered(const boost::optional<ID_t> &, const boost::optional<KEYSize> &size)
+void KEYCollectorBase::collectFiltered(const boost::optional<ID_t> &, const boost::optional<IWORKSize> &size)
 {
   if (m_collecting)
   {
@@ -563,7 +563,7 @@ void KEYCollectorBase::collectFiltered(const boost::optional<ID_t> &, const boos
   }
 }
 
-void KEYCollectorBase::collectLeveled(const boost::optional<ID_t> &, const boost::optional<KEYSize> &size)
+void KEYCollectorBase::collectLeveled(const boost::optional<ID_t> &, const boost::optional<IWORKSize> &size)
 {
   if (m_collecting)
   {
@@ -725,7 +725,7 @@ void KEYCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const bo
       }
       else
       {
-        KEY_DEBUG_MSG(("no text placeholder found\n"));
+        ETONYEK_DEBUG_MSG(("no text placeholder found\n"));
       }
     }
     else

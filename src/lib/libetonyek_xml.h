@@ -14,28 +14,28 @@
 
 #include "libetonyek_utils.h"
 
-#define KEY_DEBUG_XML_NOT_EMPTY(name, ns) KEY_DEBUG_MSG(("element %s%s%s%s is not empty, skipping content...\n", ns ? "{" : "", ns, ns ? "}" : "", name))
-#define KEY_DEBUG_XML_UNKNOWN(type, name, ns) KEY_DEBUG_MSG(("unknown %s %s%s%s%s\n", type, ns ? "{" : "", ns, ns ? "}" : "", name))
-#define KEY_DEBUG_XML_TODO(type, name, ns) KEY_DEBUG_MSG(("TODO: unprocessed %s %s%s%s%s\n", type, ns ? "{" : "", ns, ns ? "}" : "", name))
+#define ETONYEK_DEBUG_XML_NOT_EMPTY(name, ns) ETONYEK_DEBUG_MSG(("element %s%s%s%s is not empty, skipping content...\n", ns ? "{" : "", ns, ns ? "}" : "", name))
+#define ETONYEK_DEBUG_XML_UNKNOWN(type, name, ns) ETONYEK_DEBUG_MSG(("unknown %s %s%s%s%s\n", type, ns ? "{" : "", ns, ns ? "}" : "", name))
+#define ETONYEK_DEBUG_XML_TODO(type, name, ns) ETONYEK_DEBUG_MSG(("TODO: unprocessed %s %s%s%s%s\n", type, ns ? "{" : "", ns, ns ? "}" : "", name))
 
-#define KEY_DEBUG_XML_TODO_ELEMENT(element) KEY_DEBUG_XML_TODO("element", (element).getName(), (element).getNamespace())
-#define KEY_DEBUG_XML_TODO_ATTRIBUTE(attr) KEY_DEBUG_XML_TODO("attribute", (attr).getName(), (attr).getNamespace())
-#define KEY_DEBUG_XML_UNKNOWN_ELEMENT(element) KEY_DEBUG_XML_UNKNOWN("element", (element).getName(), (element).getNamespace())
-#define KEY_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr) KEY_DEBUG_XML_UNKNOWN("attribute", (attr).getName(), (attr).getNamespace())
+#define ETONYEK_DEBUG_XML_TODO_ELEMENT(element) ETONYEK_DEBUG_XML_TODO("element", (element).getName(), (element).getNamespace())
+#define ETONYEK_DEBUG_XML_TODO_ATTRIBUTE(attr) ETONYEK_DEBUG_XML_TODO("attribute", (attr).getName(), (attr).getNamespace())
+#define ETONYEK_DEBUG_XML_UNKNOWN_ELEMENT(element) ETONYEK_DEBUG_XML_UNKNOWN("element", (element).getName(), (element).getNamespace())
+#define ETONYEK_DEBUG_XML_UNKNOWN_ATTRIBUTE(attr) ETONYEK_DEBUG_XML_UNKNOWN("attribute", (attr).getName(), (attr).getNamespace())
 
 namespace libetonyek
 {
 
-class KEYXMLReader;
+class IWORKXMLReader;
 
-void skipElement(const KEYXMLReader &reader);
+void skipElement(const IWORKXMLReader &reader);
 
-bool checkElement(const KEYXMLReader &reader, int name, int ns);
-bool checkEmptyElement(const KEYXMLReader &reader);
-bool checkNoAttributes(const KEYXMLReader &reader);
+bool checkElement(const IWORKXMLReader &reader, int name, int ns);
+bool checkEmptyElement(const IWORKXMLReader &reader);
+bool checkNoAttributes(const IWORKXMLReader &reader);
 
-std::string readOnlyAttribute(const KEYXMLReader &reader, int name, int ns);
-std::string readOnlyElementAttribute(const KEYXMLReader &reader, int name, int ns);
+std::string readOnlyAttribute(const IWORKXMLReader &reader, int name, int ns);
+std::string readOnlyElementAttribute(const IWORKXMLReader &reader, int name, int ns);
 
 }
 

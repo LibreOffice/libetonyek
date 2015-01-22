@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYPROPERTYMAP_H_INCLUDED
-#define KEYPROPERTYMAP_H_INCLUDED
+#ifndef IWORKPROPERTYMAP_H_INCLUDED
+#define IWORKPROPERTYMAP_H_INCLUDED
 
 #include <boost/any.hpp>
 #include <boost/unordered_map.hpp>
@@ -18,45 +18,45 @@ namespace libetonyek
 
 /** Represents a (hierarchical) property map.
   */
-class KEYPropertyMap
+class IWORKPropertyMap
 {
   typedef boost::unordered_map<std::string, boost::any> Map_t;
 
 public:
   /** Construct an empty map.
     */
-  KEYPropertyMap();
+  IWORKPropertyMap();
 
   /** Construct an empty map with parent @c parent.
     *
     * @arg[in] parent the parent of this map
     */
-  explicit KEYPropertyMap(const KEYPropertyMap *parent);
+  explicit IWORKPropertyMap(const IWORKPropertyMap *parent);
 
   /** Construct a map as a copy of existing one.
     *
     * @arg[in] other the original
     */
-  KEYPropertyMap(const KEYPropertyMap &other);
+  IWORKPropertyMap(const IWORKPropertyMap &other);
 
   /** Assign the content from another map.
     *
     * @arg[in] other the source map
     * @returns this map
     */
-  KEYPropertyMap &operator=(const KEYPropertyMap &other);
+  IWORKPropertyMap &operator=(const IWORKPropertyMap &other);
 
   /** Swap the content with another map.
     *
     * @arg[inout] the other map
     */
-  void swap(KEYPropertyMap &other);
+  void swap(IWORKPropertyMap &other);
 
   /** Set a new parent for this map.
     *
     * @arg[in] parent the new parent
     */
-  void setParent(const KEYPropertyMap *parent);
+  void setParent(const IWORKPropertyMap *parent);
 
   /** Retrieve value associated with @c key.
     *
@@ -79,11 +79,11 @@ public:
 
 private:
   Map_t m_map;
-  const KEYPropertyMap *m_parent;
+  const IWORKPropertyMap *m_parent;
 };
 
 }
 
-#endif // KEYPROPERTYMAP_H_INCLUDED
+#endif // IWORKPROPERTYMAP_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

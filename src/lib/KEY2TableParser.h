@@ -10,9 +10,9 @@
 #ifndef KEY2TABLEPARSER_H_INCLUDED
 #define KEY2TABLEPARSER_H_INCLUDED
 
+#include "IWORKXMLReader.h"
 #include "KEY2ParserUtils.h"
 #include "KEYTable.h"
-#include "KEYXMLReader.h"
 
 namespace libetonyek
 {
@@ -25,28 +25,28 @@ class KEY2TableParser : public KEY2ParserUtils
 public:
   explicit KEY2TableParser(KEY2Parser &parser);
 
-  void parse(const KEYXMLReader &reader);
+  void parse(const IWORKXMLReader &reader);
 
 private:
-  void parseTabularModel(const KEYXMLReader &reader);
-  void parseGrid(const KEYXMLReader &reader);
-  void parseColumns(const KEYXMLReader &reader);
-  void parseGridColumn(const KEYXMLReader &reader);
-  void parseRows(const KEYXMLReader &reader);
-  void parseGridRow(const KEYXMLReader &reader);
+  void parseTabularModel(const IWORKXMLReader &reader);
+  void parseGrid(const IWORKXMLReader &reader);
+  void parseColumns(const IWORKXMLReader &reader);
+  void parseGridColumn(const IWORKXMLReader &reader);
+  void parseRows(const IWORKXMLReader &reader);
+  void parseGridRow(const IWORKXMLReader &reader);
 
-  void parseDatasource(const KEYXMLReader &reader);
-  void parseD(const KEYXMLReader &reader);
-  void parseDu(const KEYXMLReader &reader);
-  void parseF(const KEYXMLReader &reader);
-  void parseG(const KEYXMLReader &reader);
-  void parseN(const KEYXMLReader &reader);
-  void parseS(const KEYXMLReader &reader);
-  void parseT(const KEYXMLReader &reader);
-  void parseCt(const KEYXMLReader &reader);
-  void parseSo(const KEYXMLReader &reader);
+  void parseDatasource(const IWORKXMLReader &reader);
+  void parseD(const IWORKXMLReader &reader);
+  void parseDu(const IWORKXMLReader &reader);
+  void parseF(const IWORKXMLReader &reader);
+  void parseG(const IWORKXMLReader &reader);
+  void parseN(const IWORKXMLReader &reader);
+  void parseS(const IWORKXMLReader &reader);
+  void parseT(const IWORKXMLReader &reader);
+  void parseCt(const IWORKXMLReader &reader);
+  void parseSo(const IWORKXMLReader &reader);
 
-  void parseCommonCellAttribute(const KEYXMLReader::AttributeIterator &attr);
+  void parseCommonCellAttribute(const IWORKXMLReader::AttributeIterator &attr);
 
   void emitCell(bool covered = false);
 

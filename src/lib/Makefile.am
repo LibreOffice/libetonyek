@@ -23,6 +23,23 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
 	EtonyekDocument.cpp
 
 libetonyek_internal_la_SOURCES = \
+	IWORKEnum.h \
+	IWORKMemoryStream.cpp \
+	IWORKMemoryStream.h \
+	IWORKPath.cpp \
+	IWORKPath.h \
+	IWORKPath_fwd.h \
+	IWORKPropertyMap.cpp \
+	IWORKPropertyMap.h \
+	IWORKTransformation.cpp \
+	IWORKTransformation.h \
+	IWORKTypes.cpp \
+	IWORKTypes.h \
+	IWORKTypes_fwd.h \
+	IWORKXMLReader.cpp \
+	IWORKXMLReader.h \
+	IWORKZlibStream.cpp \
+	IWORKZlibStream.h \
 	KEY1Defaults.cpp \
 	KEY1Defaults.h \
 	KEY1Parser.cpp \
@@ -51,20 +68,12 @@ libetonyek_internal_la_SOURCES = \
 	KEYDefaults.h \
 	KEYDictionary.cpp \
 	KEYDictionary.h \
-	KEYEnum.h \
-	KEYMemoryStream.cpp \
-	KEYMemoryStream.h \
 	KEYObject.cpp \
 	KEYObject.h \
 	KEYOutput.cpp \
 	KEYOutput.h \
 	KEYParser.cpp \
 	KEYParser.h \
-	KEYPath.cpp \
-	KEYPath.h \
-	KEYPath_fwd.h \
-	KEYPropertyMap.cpp \
-	KEYPropertyMap.h \
 	KEYShape.cpp \
 	KEYShape.h \
 	KEYStyle.cpp \
@@ -83,15 +92,9 @@ libetonyek_internal_la_SOURCES = \
 	KEYText_fwd.h \
 	KEYThemeCollector.cpp \
 	KEYThemeCollector.h \
-	KEYTransformation.cpp \
-	KEYTransformation.h \
 	KEYTypes.cpp \
 	KEYTypes.h \
 	KEYTypes_fwd.h \
-	KEYXMLReader.cpp \
-	KEYXMLReader.h \
-	KEYZlibStream.cpp \
-	KEYZlibStream.h \
 	NUMCollector.cpp \
 	NUMCollector.h \
 	NUMParser.cpp \

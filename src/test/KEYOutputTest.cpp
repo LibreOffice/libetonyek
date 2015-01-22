@@ -19,19 +19,19 @@ namespace test
 using boost::any_cast;
 using boost::optional;
 
+using libetonyek::IWORKPropertyMap;
+using libetonyek::IWORKTransformation;
 using libetonyek::KEYOutput;
 using libetonyek::KEYParagraphStyle;
 using libetonyek::KEYParagraphStylePtr_t;
-using libetonyek::KEYPropertyMap;
 using libetonyek::KEYStyleContext;
-using libetonyek::KEYTransformation;
 
 using std::string;
 
 namespace
 {
 
-KEYParagraphStylePtr_t makeStyle(const KEYPropertyMap &props)
+KEYParagraphStylePtr_t makeStyle(const IWORKPropertyMap &props)
 {
   const optional<string> dummyIdent;
   const KEYParagraphStylePtr_t style(new KEYParagraphStyle(props, dummyIdent, dummyIdent));
@@ -55,13 +55,13 @@ void KEYOutputTest::testTransformation()
   const KEYOutput output(0, context);
 
   // default transformation
-  CPPUNIT_ASSERT(KEYTransformation() == output.getTransformation());
+  CPPUNIT_ASSERT(IWORKTransformation() == output.getTransformation());
 
   using namespace libetonyek::transformations;
 
   // translation
   {
-    const KEYTransformation test = translate(3, 4);
+    const IWORKTransformation test = translate(3, 4);
     const KEYOutput output2(output, test);
     CPPUNIT_ASSERT(output.getTransformation() != output2.getTransformation());
     CPPUNIT_ASSERT(test == output2.getTransformation());
@@ -69,7 +69,7 @@ void KEYOutputTest::testTransformation()
     // nested transformations are applied in the right order: the
     // innermost one first
     {
-      const KEYTransformation test2 = scale(2, 1);
+      const IWORKTransformation test2 = scale(2, 1);
       KEYOutput output3(output2, test2);
       CPPUNIT_ASSERT(test2 * test == output3.getTransformation());
     }
@@ -77,7 +77,7 @@ void KEYOutputTest::testTransformation()
     CPPUNIT_ASSERT(test == output2.getTransformation());
   }
 
-  CPPUNIT_ASSERT(KEYTransformation() == output.getTransformation());
+  CPPUNIT_ASSERT(IWORKTransformation() == output.getTransformation());
 }
 
 void KEYOutputTest::testStyle()
@@ -90,7 +90,7 @@ void KEYOutputTest::testStyle()
 
   // push a style
   {
-    KEYPropertyMap props;
+    IWORKPropertyMap props;
     props.set("answer", 42);
 
     const KEYOutput output2(output, makeStyle(props));
@@ -99,7 +99,7 @@ void KEYOutputTest::testStyle()
 
     // nested styles are applied correctly
     {
-      KEYPropertyMap props2;
+      IWORKPropertyMap props2;
       props2.set("answer", 2);
       const KEYOutput output3(output2, makeStyle(props2));
       CPPUNIT_ASSERT(!output3.getStyleContext().find("answer", true).empty());

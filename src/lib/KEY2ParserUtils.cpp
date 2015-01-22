@@ -10,10 +10,11 @@
 #include <boost/lexical_cast.hpp>
 
 #include "libetonyek_xml.h"
+#include "IWORKTypes.h"
+#include "IWORKXMLReader.h"
 #include "KEY2ParserUtils.h"
 #include "KEY2Token.h"
 #include "KEYTypes.h"
-#include "KEYXMLReader.h"
 
 using boost::lexical_cast;
 using boost::optional;
@@ -28,12 +29,12 @@ namespace
 
 template <typename T1, typename T2>
 pair<T1, T2>
-readAttributePair(const KEYXMLReader &reader, const int name1, const int ns1, const int name2, const int ns2, const bool empty = true)
+readAttributePair(const IWORKXMLReader &reader, const int name1, const int ns1, const int name2, const int ns2, const bool empty = true)
 {
   optional<T1> a1;
   optional<T2> a2;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((ns1 == getNamespaceId(attr)) && (name1 == getNameId(attr)))
@@ -61,11 +62,11 @@ KEY2ParserUtils::~KEY2ParserUtils()
 {
 }
 
-optional<ID_t> KEY2ParserUtils::readID(const KEYXMLReader &reader)
+optional<ID_t> KEY2ParserUtils::readID(const IWORKXMLReader &reader)
 {
   optional<ID_t> id;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((KEY2Token::NS_URI_SFA == getNamespaceId(attr)) && (KEY2Token::ID == getNameId(attr)))
@@ -75,7 +76,7 @@ optional<ID_t> KEY2ParserUtils::readID(const KEYXMLReader &reader)
   return id;
 }
 
-ID_t KEY2ParserUtils::readRef(const KEYXMLReader &reader)
+ID_t KEY2ParserUtils::readRef(const IWORKXMLReader &reader)
 {
   optional<ID_t> id = readOnlyElementAttribute(reader, KEY2Token::IDREF, KEY2Token::NS_URI_SFA);
   if (!id)
@@ -83,11 +84,11 @@ ID_t KEY2ParserUtils::readRef(const KEYXMLReader &reader)
   return get(id);
 }
 
-pair<optional<double>, optional<double> > KEY2ParserUtils::readPoint(const KEYXMLReader &reader)
+pair<optional<double>, optional<double> > KEY2ParserUtils::readPoint(const IWORKXMLReader &reader)
 {
   pair<optional<double>, optional<double> > point;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if (KEY2Token::NS_URI_SFA == getNamespaceId(attr))
@@ -111,17 +112,17 @@ pair<optional<double>, optional<double> > KEY2ParserUtils::readPoint(const KEYXM
   return point;
 }
 
-KEYPosition KEY2ParserUtils::readPosition(const KEYXMLReader &reader)
+IWORKPosition KEY2ParserUtils::readPosition(const IWORKXMLReader &reader)
 {
   pair<double, double> point = readAttributePair<double, double>(reader, KEY2Token::x, KEY2Token::NS_URI_SFA, KEY2Token::y, KEY2Token::NS_URI_SFA);
 
-  return KEYPosition(point.first, point.second);
+  return IWORKPosition(point.first, point.second);
 }
 
-KEYSize KEY2ParserUtils::readSize(const KEYXMLReader &reader)
+IWORKSize KEY2ParserUtils::readSize(const IWORKXMLReader &reader)
 {
   const pair<double, double> size = readAttributePair<double, double>(reader, KEY2Token::h, KEY2Token::NS_URI_SFA, KEY2Token::w, KEY2Token::NS_URI_SFA);
-  return KEYSize(size.second, size.first);
+  return IWORKSize(size.second, size.first);
 }
 
 bool KEY2ParserUtils::bool_cast(const char *value)

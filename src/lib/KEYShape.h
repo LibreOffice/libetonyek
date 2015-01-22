@@ -12,22 +12,23 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include "KEYPath_fwd.h"
+#include "IWORKPath_fwd.h"
+#include "KEYObject.h"
 #include "KEYStyle.h"
 #include "KEYText_fwd.h"
 
 namespace libetonyek
 {
 
-struct KEYSize;
+struct IWORKSize;
 
 /** Representation of a shape.
  */
 struct KEYShape
 {
-  KEYGeometryPtr_t geometry;
+  IWORKGeometryPtr_t geometry;
   KEYStylePtr_t style;
-  KEYPathPtr_t path;
+  IWORKPathPtr_t path;
   KEYTextPtr_t text;
 
   KEYShape();
@@ -41,16 +42,16 @@ KEYObjectPtr_t makeObject(const KEYShapePtr_t &shape);
 
 /** Path creator functions for stock shapes.
  */
-KEYPathPtr_t makePolygonPath(const KEYSize &size, unsigned edges);
-KEYPathPtr_t makeRoundedRectanglePath(const KEYSize &size, double radius);
+IWORKPathPtr_t makePolygonPath(const IWORKSize &size, unsigned edges);
+IWORKPathPtr_t makeRoundedRectanglePath(const IWORKSize &size, double radius);
 
-KEYPathPtr_t makeArrowPath(const KEYSize &size, double headWidth, double stemThickness);
-KEYPathPtr_t makeDoubleArrowPath(const KEYSize &size, double headWidth, double stemThickness);
-KEYPathPtr_t makeStarPath(const KEYSize &size, unsigned points, double innerRadius);
-KEYPathPtr_t makeConnectionPath(const KEYSize &size, double middleX, double middleY);
+IWORKPathPtr_t makeArrowPath(const IWORKSize &size, double headWidth, double stemThickness);
+IWORKPathPtr_t makeDoubleArrowPath(const IWORKSize &size, double headWidth, double stemThickness);
+IWORKPathPtr_t makeStarPath(const IWORKSize &size, unsigned points, double innerRadius);
+IWORKPathPtr_t makeConnectionPath(const IWORKSize &size, double middleX, double middleY);
 
-KEYPathPtr_t makeCalloutPath(const KEYSize &size, double radius, double tailSize, double tailX, double tailY);
-KEYPathPtr_t makeQuoteBubblePath(const KEYSize &size, double radius, double tailSize, double tailX, double tailY);
+IWORKPathPtr_t makeCalloutPath(const IWORKSize &size, double radius, double tailSize, double tailX, double tailY);
+IWORKPathPtr_t makeQuoteBubblePath(const IWORKSize &size, double radius, double tailSize, double tailX, double tailY);
 
 }
 

@@ -11,12 +11,12 @@
 #include <cassert>
 
 #include "libetonyek_utils.h"
-#include "KEYMemoryStream.h"
+#include "IWORKMemoryStream.h"
 
 namespace libetonyek
 {
 
-KEYMemoryStream::KEYMemoryStream(const RVNGInputStreamPtr_t &input)
+IWORKMemoryStream::IWORKMemoryStream(const RVNGInputStreamPtr_t &input)
   : m_data(0)
   , m_length(0)
   , m_pos(0)
@@ -33,7 +33,7 @@ KEYMemoryStream::KEYMemoryStream(const RVNGInputStreamPtr_t &input)
   read(input, static_cast<unsigned>(end - begin));
 }
 
-KEYMemoryStream::KEYMemoryStream(const RVNGInputStreamPtr_t &input, const unsigned length)
+IWORKMemoryStream::IWORKMemoryStream(const RVNGInputStreamPtr_t &input, const unsigned length)
   : m_data(0)
   , m_length(0)
   , m_pos(0)
@@ -41,7 +41,7 @@ KEYMemoryStream::KEYMemoryStream(const RVNGInputStreamPtr_t &input, const unsign
   read(input, length);
 }
 
-KEYMemoryStream::KEYMemoryStream(std::vector<unsigned char> &data)
+IWORKMemoryStream::IWORKMemoryStream(std::vector<unsigned char> &data)
   : m_data(0)
   , m_length(data.size())
   , m_pos(0)
@@ -52,7 +52,7 @@ KEYMemoryStream::KEYMemoryStream(std::vector<unsigned char> &data)
   assign(&data[0], data.size());
 }
 
-KEYMemoryStream::KEYMemoryStream(const unsigned char *const data, const unsigned length)
+IWORKMemoryStream::IWORKMemoryStream(const unsigned char *const data, const unsigned length)
   : m_data(0)
   , m_length(length)
   , m_pos(0)
@@ -63,37 +63,37 @@ KEYMemoryStream::KEYMemoryStream(const unsigned char *const data, const unsigned
   assign(data, length);
 }
 
-KEYMemoryStream::~KEYMemoryStream()
+IWORKMemoryStream::~IWORKMemoryStream()
 {
   delete[] m_data;
 }
 
-bool KEYMemoryStream::isStructured()
+bool IWORKMemoryStream::isStructured()
 {
   return false;
 }
 
-unsigned KEYMemoryStream::subStreamCount()
+unsigned IWORKMemoryStream::subStreamCount()
 {
   return 0;
 }
 
-const char *KEYMemoryStream::subStreamName(unsigned)
+const char *IWORKMemoryStream::subStreamName(unsigned)
 {
   return 0;
 }
 
-librevenge::RVNGInputStream *KEYMemoryStream::getSubStreamByName(const char *)
+librevenge::RVNGInputStream *IWORKMemoryStream::getSubStreamByName(const char *)
 {
   return 0;
 }
 
-librevenge::RVNGInputStream *KEYMemoryStream::getSubStreamById(unsigned)
+librevenge::RVNGInputStream *IWORKMemoryStream::getSubStreamById(unsigned)
 {
   return 0;
 }
 
-const unsigned char *KEYMemoryStream::read(unsigned long numBytes, unsigned long &numBytesRead) try
+const unsigned char *IWORKMemoryStream::read(unsigned long numBytes, unsigned long &numBytesRead) try
 {
   numBytesRead = 0;
 
@@ -114,7 +114,7 @@ catch (...)
   return 0;
 }
 
-int KEYMemoryStream::seek(const long offset, librevenge::RVNG_SEEK_TYPE seekType) try
+int IWORKMemoryStream::seek(const long offset, librevenge::RVNG_SEEK_TYPE seekType) try
 {
   long pos = 0;
   switch (seekType)
@@ -143,17 +143,17 @@ catch (...)
   return -1;
 }
 
-long KEYMemoryStream::tell()
+long IWORKMemoryStream::tell()
 {
   return m_pos;
 }
 
-bool KEYMemoryStream::isEnd()
+bool IWORKMemoryStream::isEnd()
 {
   return m_length == m_pos;
 }
 
-void KEYMemoryStream::assign(const unsigned char *const data, const unsigned length)
+void IWORKMemoryStream::assign(const unsigned char *const data, const unsigned length)
 {
   assert(0 != length);
 
@@ -162,7 +162,7 @@ void KEYMemoryStream::assign(const unsigned char *const data, const unsigned len
   m_data = buffer;
 }
 
-void KEYMemoryStream::read(const RVNGInputStreamPtr_t &input, const unsigned length)
+void IWORKMemoryStream::read(const RVNGInputStreamPtr_t &input, const unsigned length)
 {
   if (0 == length)
     return;

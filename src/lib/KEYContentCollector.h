@@ -25,12 +25,12 @@ class KEYContentCollector : public KEYCollectorBase
   KEYContentCollector &operator=(const KEYContentCollector &other);
 
 public:
-  KEYContentCollector(librevenge::RVNGPresentationInterface *painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const KEYSize &size, const KEYDefaults &defaults);
+  KEYContentCollector(librevenge::RVNGPresentationInterface *painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const IWORKSize &size, const KEYDefaults &defaults);
   virtual ~KEYContentCollector();
 
   // collector functions
 
-  virtual void collectPresentation(const boost::optional<KEYSize> &size);
+  virtual void collectPresentation(const boost::optional<IWORKSize> &size);
 
   virtual void collectLayer(const boost::optional<ID_t> &id, bool ref);
   virtual void collectPage(const boost::optional<ID_t> &id);
@@ -58,7 +58,7 @@ private:
   librevenge::RVNGPresentationInterface *m_painter;
 
   const KEYLayerMap_t &m_masterPages;
-  const KEYSize m_size;
+  const IWORKSize m_size;
 
   bool m_pageOpened;
   bool m_layerOpened;

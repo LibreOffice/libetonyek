@@ -26,66 +26,66 @@ public:
   virtual ~KEY2Parser();
 
   // NOTE: KEY2TableParser uses these to avoid code duplication
-  void parseGeometry(const KEYXMLReader &reader);
-  void parseTextBody(const KEYXMLReader &reader);
+  void parseGeometry(const IWORKXMLReader &reader);
+  void parseTextBody(const IWORKXMLReader &reader);
 
 private:
-  virtual void processXmlNode(const KEYXMLReader &reader);
-  virtual KEYXMLReader::TokenizerFunction_t getTokenizer() const;
+  virtual void processXmlNode(const IWORKXMLReader &reader);
+  virtual IWORKXMLReader::TokenizerFunction_t getTokenizer() const;
 
-  void parseDrawables(const KEYXMLReader &reader);
-  void parseLayer(const KEYXMLReader &reader);
-  void parseLayers(const KEYXMLReader &reader);
-  void parseMasterSlide(const KEYXMLReader &reader);
-  void parseMasterSlides(const KEYXMLReader &reader);
-  void parseMetadata(const KEYXMLReader &reader);
-  void parseNotes(const KEYXMLReader &reader);
-  void parsePage(const KEYXMLReader &reader);
-  void parseProxyMasterLayer(const KEYXMLReader &reader);
-  void parseSlide(const KEYXMLReader &reader);
-  void parseSlideList(const KEYXMLReader &reader);
-  void parseStickyNotes(const KEYXMLReader &reader);
-  void parseStyles(const KEYXMLReader &reader, bool anonymous);
-  void parseStylesheet(const KEYXMLReader &reader);
-  void parseTheme(const KEYXMLReader &reader);
-  void parseThemeList(const KEYXMLReader &reader);
+  void parseDrawables(const IWORKXMLReader &reader);
+  void parseLayer(const IWORKXMLReader &reader);
+  void parseLayers(const IWORKXMLReader &reader);
+  void parseMasterSlide(const IWORKXMLReader &reader);
+  void parseMasterSlides(const IWORKXMLReader &reader);
+  void parseMetadata(const IWORKXMLReader &reader);
+  void parseNotes(const IWORKXMLReader &reader);
+  void parsePage(const IWORKXMLReader &reader);
+  void parseProxyMasterLayer(const IWORKXMLReader &reader);
+  void parseSlide(const IWORKXMLReader &reader);
+  void parseSlideList(const IWORKXMLReader &reader);
+  void parseStickyNotes(const IWORKXMLReader &reader);
+  void parseStyles(const IWORKXMLReader &reader, bool anonymous);
+  void parseStylesheet(const IWORKXMLReader &reader);
+  void parseTheme(const IWORKXMLReader &reader);
+  void parseThemeList(const IWORKXMLReader &reader);
 
-  void parseBezier(const KEYXMLReader &reader);
-  void parseConnectionLine(const KEYXMLReader &reader);
-  void parseGroup(const KEYXMLReader &reader);
-  void parseImage(const KEYXMLReader &reader);
-  void parseLine(const KEYXMLReader &reader);
-  void parseMedia(const KEYXMLReader &reader);
-  void parsePath(const KEYXMLReader &reader);
-  void parseShape(const KEYXMLReader &reader);
-  void parseStickyNote(const KEYXMLReader &reader);
-  void parsePlaceholder(const KEYXMLReader &reader, bool title = false);
+  void parseBezier(const IWORKXMLReader &reader);
+  void parseConnectionLine(const IWORKXMLReader &reader);
+  void parseGroup(const IWORKXMLReader &reader);
+  void parseImage(const IWORKXMLReader &reader);
+  void parseLine(const IWORKXMLReader &reader);
+  void parseMedia(const IWORKXMLReader &reader);
+  void parsePath(const IWORKXMLReader &reader);
+  void parseShape(const IWORKXMLReader &reader);
+  void parseStickyNote(const IWORKXMLReader &reader);
+  void parsePlaceholder(const IWORKXMLReader &reader, bool title = false);
 
-  void parseBezierPath(const KEYXMLReader &reader);
-  void parseCallout2Path(const KEYXMLReader &reader);
-  void parseConnectionPath(const KEYXMLReader &reader);
-  void parsePointPath(const KEYXMLReader &reader);
-  void parseScalarPath(const KEYXMLReader &reader);
+  void parseBezierPath(const IWORKXMLReader &reader);
+  void parseCallout2Path(const IWORKXMLReader &reader);
+  void parseConnectionPath(const IWORKXMLReader &reader);
+  void parsePointPath(const IWORKXMLReader &reader);
+  void parseScalarPath(const IWORKXMLReader &reader);
 
-  void parseContent(const KEYXMLReader &reader);
-  void parseData(const KEYXMLReader &reader);
-  void parseFiltered(const KEYXMLReader &reader);
-  void parseFilteredImage(const KEYXMLReader &reader);
-  void parseImageMedia(const KEYXMLReader &reader);
-  void parseLeveled(const KEYXMLReader &reader);
-  void parseUnfiltered(const KEYXMLReader &reader);
-  void parseMovieMedia(const KEYXMLReader &reader);
-  void parseSelfContainedMovie(const KEYXMLReader &reader);
-  void parseOtherDatas(const KEYXMLReader &reader);
+  void parseContent(const IWORKXMLReader &reader);
+  void parseData(const IWORKXMLReader &reader);
+  void parseFiltered(const IWORKXMLReader &reader);
+  void parseFilteredImage(const IWORKXMLReader &reader);
+  void parseImageMedia(const IWORKXMLReader &reader);
+  void parseLeveled(const IWORKXMLReader &reader);
+  void parseUnfiltered(const IWORKXMLReader &reader);
+  void parseMovieMedia(const IWORKXMLReader &reader);
+  void parseSelfContainedMovie(const IWORKXMLReader &reader);
+  void parseOtherDatas(const IWORKXMLReader &reader);
 
-  void parseBr(const KEYXMLReader &reader);
-  void parseLayout(const KEYXMLReader &reader);
-  void parseLink(const KEYXMLReader &reader);
-  void parseP(const KEYXMLReader &reader);
-  void parseSpan(const KEYXMLReader &reader);
-  void parseTab(const KEYXMLReader &reader);
-  void parseText(const KEYXMLReader &reader);
-  void parseTextStorage(const KEYXMLReader &reader);
+  void parseBr(const IWORKXMLReader &reader);
+  void parseLayout(const IWORKXMLReader &reader);
+  void parseLink(const IWORKXMLReader &reader);
+  void parseP(const IWORKXMLReader &reader);
+  void parseSpan(const IWORKXMLReader &reader);
+  void parseTab(const IWORKXMLReader &reader);
+  void parseText(const IWORKXMLReader &reader);
+  void parseTextStorage(const IWORKXMLReader &reader);
 
   void emitLayoutStyle(const ID_t &id);
 

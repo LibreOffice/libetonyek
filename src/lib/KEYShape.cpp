@@ -11,11 +11,12 @@
 #include <cmath>
 #include <deque>
 
-#include "KEYOutput.h"
-#include "KEYPath.h"
+#include "IWORKPath.h"
+#include "IWORKTypes.h"
 #include "KEYShape.h"
+#include "IWORKTransformation.h"
+#include "KEYOutput.h"
 #include "KEYText.h"
-#include "KEYTransformation.h"
 #include "KEYTypes.h"
 
 using std::deque;
@@ -62,9 +63,9 @@ void ShapeObject::draw(const KEYOutput &output)
   {
     // TODO: make style
 
-    const KEYTransformation tr = bool(m_shape->geometry) ? makeTransformation(*m_shape->geometry) : KEYTransformation();
+    const IWORKTransformation tr = bool(m_shape->geometry) ? makeTransformation(*m_shape->geometry) : IWORKTransformation();
     KEYOutput newOutput(output, tr, m_shape->style);
-    const KEYPath path = *m_shape->path * newOutput.getTransformation();
+    const IWORKPath path = *m_shape->path * newOutput.getTransformation();
 
     librevenge::RVNGPresentationInterface *const painter = output.getPainter();
 
@@ -111,7 +112,7 @@ Point::Point(const double x_, const double y_)
 {
 }
 
-bool approxEqual(const Point &left, const Point &right, const double eps = KEY_EPSILON)
+bool approxEqual(const Point &left, const Point &right, const double eps = ETONYEK_EPSILON)
 {
   using libetonyek::approxEqual;
   return approxEqual(left.x, right.x, eps) && approxEqual(left.y, right.y, eps);
@@ -140,7 +141,7 @@ deque<Point> rotatePoint(const Point &point, const unsigned n)
   for (unsigned i = 1; i < n; ++i)
   {
     Point pt(point);
-    const KEYTransformation rot(rotate(i * angle));
+    const IWORKTransformation rot(rotate(i * angle));
     rot(pt.x, pt.y);
     points.push_back(pt);
   }
@@ -161,9 +162,9 @@ deque<Point> drawArrowHalf(const double headWidth, const double stemThickness)
   return points;
 }
 
-KEYPathPtr_t makePolyLine(const deque<Point> inputPoints, bool close = true)
+IWORKPathPtr_t makePolyLine(const deque<Point> inputPoints, bool close = true)
 {
-  KEYPathPtr_t path;
+  IWORKPathPtr_t path;
 
   // need at least 2 points to make a polyline
   if (inputPoints.size() < 2)
@@ -188,7 +189,7 @@ KEYPathPtr_t makePolyLine(const deque<Point> inputPoints, bool close = true)
   if (points.size() < 2)
     return path;
 
-  path.reset(new KEYPath());
+  path.reset(new IWORKPath());
 
   deque<Point>::const_iterator it = points.begin();
   path->appendMoveTo(it->x, it->y);
@@ -204,7 +205,7 @@ KEYPathPtr_t makePolyLine(const deque<Point> inputPoints, bool close = true)
 
 struct TransformPoint
 {
-  TransformPoint(const KEYTransformation &tr)
+  TransformPoint(const IWORKTransformation &tr)
     : m_tr(tr)
   {
   }
@@ -215,17 +216,17 @@ struct TransformPoint
   }
 
 private:
-  const KEYTransformation &m_tr;
+  const IWORKTransformation &m_tr;
 };
 
-void transform(deque<Point> &points, const KEYTransformation &tr)
+void transform(deque<Point> &points, const IWORKTransformation &tr)
 {
   for_each(points.begin(), points.end(), TransformPoint(tr));
 }
 
 }
 
-KEYPathPtr_t makePolygonPath(const KEYSize &size, const unsigned edges)
+IWORKPathPtr_t makePolygonPath(const IWORKSize &size, const unsigned edges)
 {
   // user space canvas: [-1:1] x [-1:1]
 
@@ -234,12 +235,12 @@ KEYPathPtr_t makePolygonPath(const KEYSize &size, const unsigned edges)
   // FIXME: the shape should probably be scaled to whole width/height.
   // Check.
   transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.width, size.height));
-  const KEYPathPtr_t path = makePolyLine(points);
+  const IWORKPathPtr_t path = makePolyLine(points);
 
   return path;
 }
 
-KEYPathPtr_t makeRoundedRectanglePath(const KEYSize &size, const double radius)
+IWORKPathPtr_t makeRoundedRectanglePath(const IWORKSize &size, const double radius)
 {
   // user space canvas: [-1:1] x [-1:1]
 
@@ -249,12 +250,12 @@ KEYPathPtr_t makeRoundedRectanglePath(const KEYSize &size, const double radius)
   deque<Point> points = rotatePoint(Point(1, 1), 4);
 
   transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.width, size.height));
-  const KEYPathPtr_t path = makePolyLine(points);
+  const IWORKPathPtr_t path = makePolyLine(points);
 
   return path;
 }
 
-KEYPathPtr_t makeArrowPath(const KEYSize &size, const double headWidth, const double stemThickness)
+IWORKPathPtr_t makeArrowPath(const IWORKSize &size, const double headWidth, const double stemThickness)
 {
   deque<Point> points = drawArrowHalf(headWidth / size.width, 1 - 2 * stemThickness);
 
@@ -267,11 +268,11 @@ KEYPathPtr_t makeArrowPath(const KEYSize &size, const double headWidth, const do
 
   // transform and create path
   transform(points, translate(0, 1) * scale(1, 0.5) * scale(size.width, size.height));
-  const KEYPathPtr_t path = makePolyLine(points);
+  const IWORKPathPtr_t path = makePolyLine(points);
   return path;
 }
 
-KEYPathPtr_t makeDoubleArrowPath(const KEYSize &size, const double headWidth, const double stemThickness)
+IWORKPathPtr_t makeDoubleArrowPath(const IWORKSize &size, const double headWidth, const double stemThickness)
 {
   deque<Point> points = drawArrowHalf(2 * headWidth / size.width, 1 - 2 * stemThickness);
 
@@ -292,11 +293,11 @@ KEYPathPtr_t makeDoubleArrowPath(const KEYSize &size, const double headWidth, co
   }
 
   transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.width, size.height));
-  const KEYPathPtr_t path = makePolyLine(points);
+  const IWORKPathPtr_t path = makePolyLine(points);
   return path;
 }
 
-KEYPathPtr_t makeStarPath(const KEYSize &size, const unsigned points, const double innerRadius)
+IWORKPathPtr_t makeStarPath(const IWORKSize &size, const unsigned points, const double innerRadius)
 {
   // user space canvas: [-1:1] x [-1:1]
 
@@ -321,21 +322,21 @@ KEYPathPtr_t makeStarPath(const KEYSize &size, const unsigned points, const doub
 
   // create the path
   transform(pathPoints, translate(1, 1) * scale(0.5, 0.5) * scale(size.width, size.height));
-  const KEYPathPtr_t path = makePolyLine(pathPoints);
+  const IWORKPathPtr_t path = makePolyLine(pathPoints);
 
   return path;
 }
 
-KEYPathPtr_t makeConnectionPath(const KEYSize &size, const double middleX, const double middleY)
+IWORKPathPtr_t makeConnectionPath(const IWORKSize &size, const double middleX, const double middleY)
 {
   // TODO: implement me
   (void) size;
   (void) middleX;
   (void) middleY;
-  return KEYPathPtr_t();
+  return IWORKPathPtr_t();
 }
 
-KEYPathPtr_t makeCalloutPath(const KEYSize &size, const double radius, const double tailSize, const double tailX, const double tailY)
+IWORKPathPtr_t makeCalloutPath(const IWORKSize &size, const double radius, const double tailSize, const double tailX, const double tailY)
 {
   // user space canvas: [-1:1] x [-1:1]
 
@@ -352,12 +353,12 @@ KEYPathPtr_t makeCalloutPath(const KEYSize &size, const double radius, const dou
 
   // create the path
   transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.width, size.height));
-  const KEYPathPtr_t path = makePolyLine(points);
+  const IWORKPathPtr_t path = makePolyLine(points);
 
   return path;
 }
 
-KEYPathPtr_t makeQuoteBubblePath(const KEYSize &size, const double radius, const double tailSize, const double tailX, const double tailY)
+IWORKPathPtr_t makeQuoteBubblePath(const IWORKSize &size, const double radius, const double tailSize, const double tailX, const double tailY)
 {
   // TODO: really draw this instead of just approximating
   return makeCalloutPath(size, radius, tailSize, tailX, tailY);

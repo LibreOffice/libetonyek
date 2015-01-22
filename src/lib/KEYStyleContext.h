@@ -68,7 +68,7 @@ public:
     *   styles be included in the search too?
     * @returns the found value or empty value
     *
-    * @seealso KEYPropertyMap::get
+    * @seealso IWORKPropertyMap::get
     */
   boost::any find(const std::string &property, bool lookInParent = false) const;
 

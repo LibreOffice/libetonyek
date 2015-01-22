@@ -10,11 +10,11 @@
 #include <boost/lexical_cast.hpp>
 
 #include "libetonyek_xml.h"
+#include "IWORKXMLReader.h"
 #include "KEYCollector.h"
 #include "KEY2Parser.h"
 #include "KEY2TableParser.h"
 #include "KEY2Token.h"
-#include "KEYXMLReader.h"
 
 using boost::lexical_cast;
 
@@ -34,13 +34,13 @@ KEY2TableParser::KEY2TableParser(KEY2Parser &parser)
 {
 }
 
-void KEY2TableParser::parse(const KEYXMLReader &reader)
+void KEY2TableParser::parse(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::tabular_info, KEY2Token::NS_URI_SF));
 
   getCollector()->startLevel();
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     switch (getId(element))
@@ -61,11 +61,11 @@ void KEY2TableParser::parse(const KEYXMLReader &reader)
   getCollector()->endLevel();
 }
 
-void KEY2TableParser::parseTabularModel(const KEYXMLReader &reader)
+void KEY2TableParser::parseTabularModel(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::tabular_model, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     switch (getId(element))
@@ -79,11 +79,11 @@ void KEY2TableParser::parseTabularModel(const KEYXMLReader &reader)
   }
 }
 
-void KEY2TableParser::parseGrid(const KEYXMLReader &reader)
+void KEY2TableParser::parseGrid(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::grid, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     switch (getId(element))
@@ -103,12 +103,12 @@ void KEY2TableParser::parseGrid(const KEYXMLReader &reader)
   }
 }
 
-void KEY2TableParser::parseColumns(const KEYXMLReader &reader)
+void KEY2TableParser::parseColumns(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::columns, KEY2Token::NS_URI_SF));
   assert(m_columnSizes.empty());
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     switch (getId(element))
@@ -122,11 +122,11 @@ void KEY2TableParser::parseColumns(const KEYXMLReader &reader)
   }
 }
 
-void KEY2TableParser::parseGridColumn(const KEYXMLReader &reader)
+void KEY2TableParser::parseGridColumn(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::grid_column, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     switch (getId(attr))
@@ -142,12 +142,12 @@ void KEY2TableParser::parseGridColumn(const KEYXMLReader &reader)
   checkEmptyElement(reader);
 }
 
-void KEY2TableParser::parseRows(const KEYXMLReader &reader)
+void KEY2TableParser::parseRows(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::rows, KEY2Token::NS_URI_SF));
   assert(m_rowSizes.empty());
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     switch (getId(element))
@@ -161,11 +161,11 @@ void KEY2TableParser::parseRows(const KEYXMLReader &reader)
   }
 }
 
-void KEY2TableParser::parseGridRow(const KEYXMLReader &reader)
+void KEY2TableParser::parseGridRow(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::grid_row, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     switch (getId(attr))
@@ -182,7 +182,7 @@ void KEY2TableParser::parseGridRow(const KEYXMLReader &reader)
 }
 
 
-void KEY2TableParser::parseDatasource(const KEYXMLReader &reader)
+void KEY2TableParser::parseDatasource(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::datasource, KEY2Token::NS_URI_SF));
 
@@ -192,7 +192,7 @@ void KEY2TableParser::parseDatasource(const KEYXMLReader &reader)
 
   getCollector()->collectTableSizes(m_rowSizes, m_columnSizes);
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     switch (getId(element))
@@ -224,11 +224,11 @@ void KEY2TableParser::parseDatasource(const KEYXMLReader &reader)
   }
 }
 
-void KEY2TableParser::parseD(const KEYXMLReader &reader)
+void KEY2TableParser::parseD(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::d, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
     parseCommonCellAttribute(attr);
 
@@ -237,11 +237,11 @@ void KEY2TableParser::parseD(const KEYXMLReader &reader)
   emitCell();
 }
 
-void KEY2TableParser::parseDu(const KEYXMLReader &reader)
+void KEY2TableParser::parseDu(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::du, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
     parseCommonCellAttribute(attr);
 
@@ -250,26 +250,26 @@ void KEY2TableParser::parseDu(const KEYXMLReader &reader)
   emitCell();
 }
 
-void KEY2TableParser::parseF(const KEYXMLReader &reader)
+void KEY2TableParser::parseF(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::f, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
     parseCommonCellAttribute(attr);
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
     skipElement(element);
 
   emitCell();
 }
 
-void KEY2TableParser::parseG(const KEYXMLReader &reader)
+void KEY2TableParser::parseG(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::g, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
     parseCommonCellAttribute(attr);
 
@@ -278,11 +278,11 @@ void KEY2TableParser::parseG(const KEYXMLReader &reader)
   emitCell();
 }
 
-void KEY2TableParser::parseN(const KEYXMLReader &reader)
+void KEY2TableParser::parseN(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::n, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     switch (getId(attr))
@@ -300,11 +300,11 @@ void KEY2TableParser::parseN(const KEYXMLReader &reader)
   emitCell();
 }
 
-void KEY2TableParser::parseS(const KEYXMLReader &reader)
+void KEY2TableParser::parseS(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::s, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     switch (getId(attr))
@@ -322,17 +322,17 @@ void KEY2TableParser::parseS(const KEYXMLReader &reader)
   emitCell(true);
 }
 
-void KEY2TableParser::parseT(const KEYXMLReader &reader)
+void KEY2TableParser::parseT(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::t, KEY2Token::NS_URI_SF));
 
   getCollector()->startText(false);
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
     parseCommonCellAttribute(attr);
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     switch (getId(element))
@@ -350,11 +350,11 @@ void KEY2TableParser::parseT(const KEYXMLReader &reader)
   getCollector()->endText();
 }
 
-void KEY2TableParser::parseCt(const KEYXMLReader &reader)
+void KEY2TableParser::parseCt(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::ct, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     switch (getId(attr))
@@ -367,7 +367,7 @@ void KEY2TableParser::parseCt(const KEYXMLReader &reader)
     }
   }
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     switch (getId(element))
@@ -375,7 +375,7 @@ void KEY2TableParser::parseCt(const KEYXMLReader &reader)
     case KEY2Token::so | KEY2Token::NS_URI_SF :
       if (m_content)
       {
-        KEY_DEBUG_MSG(("found a text cell with both simple and formatted content\n"));
+        ETONYEK_DEBUG_MSG(("found a text cell with both simple and formatted content\n"));
       }
       parseSo(element);
       break;
@@ -385,11 +385,11 @@ void KEY2TableParser::parseCt(const KEYXMLReader &reader)
   }
 }
 
-void KEY2TableParser::parseSo(const KEYXMLReader &reader)
+void KEY2TableParser::parseSo(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::so, KEY2Token::NS_URI_SF));
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     switch (getId(element))
@@ -403,7 +403,7 @@ void KEY2TableParser::parseSo(const KEYXMLReader &reader)
   }
 }
 
-void KEY2TableParser::parseCommonCellAttribute(const KEYXMLReader::AttributeIterator &attr)
+void KEY2TableParser::parseCommonCellAttribute(const IWORKXMLReader::AttributeIterator &attr)
 {
   switch (getId(attr))
   {

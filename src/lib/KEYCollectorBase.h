@@ -33,7 +33,7 @@ class KEYCollectorBase : public KEYCollector
 {
   struct Level
   {
-    KEYGeometryPtr_t geometry;
+    IWORKGeometryPtr_t geometry;
     KEYGraphicStylePtr_t graphicStyle;
 
     Level();
@@ -46,75 +46,75 @@ public:
   // collector functions
 
   virtual void collectCellStyle(const boost::optional<ID_t> &id,
-                                const boost::optional<KEYPropertyMap> &props,
+                                const boost::optional<IWORKPropertyMap> &props,
                                 const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                 bool ref, bool anonymous);
   virtual void collectCharacterStyle(const boost::optional<ID_t> &id,
-                                     const boost::optional<KEYPropertyMap> &props,
+                                     const boost::optional<IWORKPropertyMap> &props,
                                      const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                      bool ref, bool anonymous);
   virtual void collectConnectionStyle(const boost::optional<ID_t> &id,
-                                      const boost::optional<KEYPropertyMap> &props,
+                                      const boost::optional<IWORKPropertyMap> &props,
                                       const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                       bool ref, bool anonymous);
   virtual void collectGraphicStyle(const boost::optional<ID_t> &id,
-                                   const boost::optional<KEYPropertyMap> &props,
+                                   const boost::optional<IWORKPropertyMap> &props,
                                    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                    bool ref, bool anonymous);
   virtual void collectLayoutStyle(const boost::optional<ID_t> &id,
-                                  const boost::optional<KEYPropertyMap> &props,
+                                  const boost::optional<IWORKPropertyMap> &props,
                                   const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                   bool ref, bool anonymous);
   virtual void collectListStyle(const boost::optional<ID_t> &id,
-                                const boost::optional<KEYPropertyMap> &props,
+                                const boost::optional<IWORKPropertyMap> &props,
                                 const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                 bool ref, bool anonymous);
   virtual void collectParagraphStyle(const boost::optional<ID_t> &id,
-                                     const boost::optional<KEYPropertyMap> &props,
+                                     const boost::optional<IWORKPropertyMap> &props,
                                      const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                      bool ref, bool anonymous);
   virtual void collectPlaceholderStyle(const boost::optional<ID_t> &id,
-                                       const boost::optional<KEYPropertyMap> &props,
+                                       const boost::optional<IWORKPropertyMap> &props,
                                        const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                        bool ref, bool anonymous);
   virtual void collectSlideStyle(const boost::optional<ID_t> &id,
-                                 const boost::optional<KEYPropertyMap> &props,
+                                 const boost::optional<IWORKPropertyMap> &props,
                                  const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                  bool ref, bool anonymous);
   virtual void collectTabularStyle(const boost::optional<ID_t> &id,
-                                   const boost::optional<KEYPropertyMap> &props,
+                                   const boost::optional<IWORKPropertyMap> &props,
                                    const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                    bool ref, bool anonymous);
   virtual void collectVectorStyle(const boost::optional<ID_t> &id,
-                                  const boost::optional<KEYPropertyMap> &props,
+                                  const boost::optional<IWORKPropertyMap> &props,
                                   const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                   bool ref, bool anonymous);
 
   virtual void collectGeometry(boost::optional<ID_t> &id,
-                               boost::optional<KEYSize> &naturalSize, boost::optional<KEYSize> &size,
-                               boost::optional<KEYPosition> &position, boost::optional<double> &angle,
+                               boost::optional<IWORKSize> &naturalSize, boost::optional<IWORKSize> &size,
+                               boost::optional<IWORKPosition> &position, boost::optional<double> &angle,
                                boost::optional<double> &shearXAngle, boost::optional<double> &shearYAngle,
                                boost::optional<bool> &horizontalFlip, boost::optional<bool> &verticalFlip,
                                boost::optional<bool> &aspectRatioLocked, boost::optional<bool> &sizesLocked);
 
-  virtual void collectBezier(const boost::optional<ID_t> &id, const KEYPathPtr_t &path, bool ref);
+  virtual void collectBezier(const boost::optional<ID_t> &id, const IWORKPathPtr_t &path, bool ref);
   virtual void collectGroup(const boost::optional<ID_t> &id, const KEYGroupPtr_t &group);
   virtual void collectImage(const boost::optional<ID_t> &id, const KEYImagePtr_t &image);
   virtual void collectLine(const boost::optional<ID_t> &id, const KEYLinePtr_t &line);
   virtual void collectShape(const boost::optional<ID_t> &id);
 
   virtual void collectBezierPath(const boost::optional<ID_t> &id);
-  virtual void collectPolygonPath(const boost::optional<ID_t> &id, const KEYSize &size, unsigned edges);
-  virtual void collectRoundedRectanglePath(const boost::optional<ID_t> &id, const KEYSize &size, double radius);
-  virtual void collectArrowPath(const boost::optional<ID_t> &id, const KEYSize &size, double headWidth, double stemRelYPos, bool doubleSided);
-  virtual void collectStarPath(const boost::optional<ID_t> &id, const KEYSize &size, unsigned points, double innerRadius);
-  virtual void collectConnectionPath(const boost::optional<ID_t> &id, const KEYSize &size, double middleX, double middleY);
-  virtual void collectCalloutPath(const boost::optional<ID_t> &id, const KEYSize &size, double radius, double tailSize, double tailX, double tailY, bool quoteBubble);
+  virtual void collectPolygonPath(const boost::optional<ID_t> &id, const IWORKSize &size, unsigned edges);
+  virtual void collectRoundedRectanglePath(const boost::optional<ID_t> &id, const IWORKSize &size, double radius);
+  virtual void collectArrowPath(const boost::optional<ID_t> &id, const IWORKSize &size, double headWidth, double stemRelYPos, bool doubleSided);
+  virtual void collectStarPath(const boost::optional<ID_t> &id, const IWORKSize &size, unsigned points, double innerRadius);
+  virtual void collectConnectionPath(const boost::optional<ID_t> &id, const IWORKSize &size, double middleX, double middleY);
+  virtual void collectCalloutPath(const boost::optional<ID_t> &id, const IWORKSize &size, double radius, double tailSize, double tailX, double tailY, bool quoteBubble);
 
   virtual void collectData(const boost::optional<ID_t> &id, const RVNGInputStreamPtr_t &stream, const boost::optional<std::string> &displayName, const boost::optional<unsigned> &type, bool ref);
-  virtual void collectUnfiltered(const boost::optional<ID_t> &id, const boost::optional<KEYSize> &size, bool ref);
-  virtual void collectFiltered(const boost::optional<ID_t> &id, const boost::optional<KEYSize> &size);
-  virtual void collectLeveled(const boost::optional<ID_t> &id, const boost::optional<KEYSize> &size);
+  virtual void collectUnfiltered(const boost::optional<ID_t> &id, const boost::optional<IWORKSize> &size, bool ref);
+  virtual void collectFiltered(const boost::optional<ID_t> &id, const boost::optional<IWORKSize> &size);
+  virtual void collectLeveled(const boost::optional<ID_t> &id, const boost::optional<IWORKSize> &size);
   virtual void collectFilteredImage(const boost::optional<ID_t> &id, bool ref);
   virtual void collectMovieMedia(const boost::optional<ID_t> &id);
   virtual void collectMedia(const boost::optional<ID_t> &id);
@@ -171,7 +171,7 @@ private:
 
   std::stack<Level> m_levelStack;
   std::stack<KEYObjectList_t> m_objectsStack;
-  KEYPathPtr_t m_currentPath;
+  IWORKPathPtr_t m_currentPath;
 
   KEYTextPtr_t m_currentText;
 

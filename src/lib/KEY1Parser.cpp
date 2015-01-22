@@ -7,9 +7,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKXMLReader.h"
 #include "KEY1Parser.h"
 #include "KEY1Token.h"
-#include "KEYXMLReader.h"
 
 namespace libetonyek
 {
@@ -23,13 +23,13 @@ KEY1Parser::~KEY1Parser()
 {
 }
 
-void KEY1Parser::processXmlNode(const KEYXMLReader &reader)
+void KEY1Parser::processXmlNode(const IWORKXMLReader &reader)
 {
   // TODO: implement me
   (void) reader;
 }
 
-KEYXMLReader::TokenizerFunction_t KEY1Parser::getTokenizer() const
+IWORKXMLReader::TokenizerFunction_t KEY1Parser::getTokenizer() const
 {
   return KEY1Tokenizer();
 }

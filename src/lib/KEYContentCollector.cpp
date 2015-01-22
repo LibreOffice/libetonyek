@@ -22,7 +22,7 @@ using boost::optional;
 namespace libetonyek
 {
 
-KEYContentCollector::KEYContentCollector(librevenge::RVNGPresentationInterface *const painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const KEYSize &size, const KEYDefaults &defaults)
+KEYContentCollector::KEYContentCollector(librevenge::RVNGPresentationInterface *const painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const IWORKSize &size, const KEYDefaults &defaults)
   : KEYCollectorBase(dict, defaults)
   , m_painter(painter)
   , m_masterPages(masterPages)
@@ -43,7 +43,7 @@ KEYContentCollector::~KEYContentCollector()
   m_painter->endDocument();
 }
 
-void KEYContentCollector::collectPresentation(const boost::optional<KEYSize> &)
+void KEYContentCollector::collectPresentation(const boost::optional<IWORKSize> &)
 {
 }
 
@@ -62,7 +62,7 @@ void KEYContentCollector::collectLayer(const optional<ID_t> &id, const bool ref)
         drawLayer(it->second);
       else
       {
-        KEY_DEBUG_MSG(("master page layer %s not found\n", get(id).c_str()));
+        ETONYEK_DEBUG_MSG(("master page layer %s not found\n", get(id).c_str()));
       }
     }
     else
@@ -180,7 +180,7 @@ void KEYContentCollector::drawLayer(const KEYLayerPtr_t &layer)
   }
   else
   {
-    KEY_DEBUG_MSG(("no layer\n"));
+    ETONYEK_DEBUG_MSG(("no layer\n"));
   }
 }
 
@@ -221,7 +221,7 @@ void KEYContentCollector::drawStickyNotes(const KEYStickyNotes_t &stickyNotes)
     m_painter->startComment(props);
     if (bool(it->text))
     {
-      const KEYTransformation tr(bool(it->geometry) ? makeTransformation(*it->geometry) : KEYTransformation());
+      const IWORKTransformation tr(bool(it->geometry) ? makeTransformation(*it->geometry) : IWORKTransformation());
       makeObject(it->text)->draw(KEYOutput(output, tr));
     }
     m_painter->endComment();

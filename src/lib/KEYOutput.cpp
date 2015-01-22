@@ -21,7 +21,7 @@ KEYOutput::KEYOutput(librevenge::RVNGPresentationInterface *const painter, KEYSt
 {
 }
 
-KEYOutput::KEYOutput(const KEYOutput &output, const KEYTransformation &tr)
+KEYOutput::KEYOutput(const KEYOutput &output, const IWORKTransformation &tr)
   : m_painter(output.m_painter)
   , m_styleContext(output.m_styleContext)
   , m_transformation(tr *output.m_transformation)
@@ -39,7 +39,7 @@ KEYOutput::KEYOutput(const KEYOutput &output, const KEYStylePtr_t &style)
   m_stylePushed = true;
 }
 
-KEYOutput::KEYOutput(const KEYOutput &output, const KEYTransformation &tr, const KEYStylePtr_t &style)
+KEYOutput::KEYOutput(const KEYOutput &output, const IWORKTransformation &tr, const KEYStylePtr_t &style)
   : m_painter(output.m_painter)
   , m_styleContext(output.m_styleContext)
   , m_transformation(tr *output.m_transformation)
@@ -68,7 +68,7 @@ librevenge::RVNGPresentationInterface *KEYOutput::getPainter() const
   return m_painter;
 }
 
-const KEYTransformation &KEYOutput::getTransformation() const
+const IWORKTransformation &KEYOutput::getTransformation() const
 {
   return m_transformation;
 }

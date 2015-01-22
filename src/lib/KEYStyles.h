@@ -16,8 +16,9 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
 
-#include "KEYEnum.h"
-#include "KEYPropertyMap.h"
+#include "IWORKEnum.h"
+#include "IWORKPropertyMap.h"
+#include "IWORKTypes.h"
 #include "KEYStyle.h"
 #include "KEYStyleContext.h"
 #include "KEYStyles_fwd.h"
@@ -37,10 +38,10 @@ public:
 
 // ensure that this class cannot be instantiated
 protected:
-  KEYStyleBase(const KEYPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
+  KEYStyleBase(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
   virtual ~KEYStyleBase();
 
-  virtual const KEYPropertyMap &getPropertyMap() const;
+  virtual const IWORKPropertyMap &getPropertyMap() const;
 
   virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const = 0;
 
@@ -53,7 +54,7 @@ protected:
   boost::any lookup(const char *property, const KEYStyleContext &context = KEYStyleContext()) const;
 
 private:
-  KEYPropertyMap m_props;
+  IWORKPropertyMap m_props;
 
   const boost::optional<std::string> m_ident;
   const boost::optional<std::string> m_parentIdent;
@@ -65,7 +66,7 @@ private:
 class KEYCellStyle : public KEYStyleBase
 {
 public:
-  KEYCellStyle(const KEYPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
+  KEYCellStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
 private:
   virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
@@ -76,14 +77,14 @@ private:
 class KEYCharacterStyle : public KEYStyleBase
 {
 public:
-  KEYCharacterStyle(const KEYPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
+  KEYCharacterStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
-  boost::optional<KEYBaseline> getBaseline(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<IWORKBaseline> getBaseline(const KEYStyleContext &context = KEYStyleContext()) const;
   boost::optional<double> getBaselineShift(const KEYStyleContext &context = KEYStyleContext()) const;
   boost::optional<bool> getBold(const KEYStyleContext &context = KEYStyleContext()) const;
-  boost::optional<KEYCapitalization> getCapitalization(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<IWORKCapitalization> getCapitalization(const KEYStyleContext &context = KEYStyleContext()) const;
   boost::optional<bool> getItalic(const KEYStyleContext &context = KEYStyleContext()) const;
-  boost::optional<KEYColor> getFontColor(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<IWORKColor> getFontColor(const KEYStyleContext &context = KEYStyleContext()) const;
   boost::optional<double> getFontSize(const KEYStyleContext &context = KEYStyleContext()) const;
   boost::optional<std::string> getFontName(const KEYStyleContext &context = KEYStyleContext()) const;
   boost::optional<bool> getOutline(const KEYStyleContext &context = KEYStyleContext()) const;
@@ -99,7 +100,7 @@ private:
 class KEYConnectionStyle : public KEYStyleBase
 {
 public:
-  KEYConnectionStyle(const KEYPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
+  KEYConnectionStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
 private:
   virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
@@ -110,7 +111,7 @@ private:
 class KEYGraphicStyle : public KEYStyleBase
 {
 public:
-  KEYGraphicStyle(const KEYPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
+  KEYGraphicStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
 private:
   virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
@@ -121,7 +122,7 @@ private:
 class KEYLayoutStyle : public KEYStyleBase
 {
 public:
-  KEYLayoutStyle(const KEYPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
+  KEYLayoutStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
 private:
   virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
@@ -132,7 +133,7 @@ private:
 class KEYListStyle : public KEYStyleBase
 {
 public:
-  KEYListStyle(const KEYPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
+  KEYListStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
 private:
   virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
@@ -143,10 +144,10 @@ private:
 class KEYParagraphStyle : public KEYCharacterStyle
 {
 public:
-  KEYParagraphStyle(const KEYPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
+  KEYParagraphStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
-  boost::optional<KEYAlignment> getAlignment(const KEYStyleContext &context = KEYStyleContext()) const;
-  boost::optional<KEYTabStops_t> getTabs(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<IWORKAlignment> getAlignment(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<IWORKTabStops_t> getTabs(const KEYStyleContext &context = KEYStyleContext()) const;
 
 private:
   virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
@@ -157,9 +158,9 @@ private:
 class KEYPlaceholderStyle : public KEYStyleBase
 {
 public:
-  KEYPlaceholderStyle(const KEYPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
+  KEYPlaceholderStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
-  KEYGeometryPtr_t getGeometry(const KEYStyleContext &context = KEYStyleContext()) const;
+  IWORKGeometryPtr_t getGeometry(const KEYStyleContext &context = KEYStyleContext()) const;
 
 private:
   virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
@@ -170,7 +171,7 @@ private:
 class KEYSlideStyle : public KEYStyleBase
 {
 public:
-  KEYSlideStyle(const KEYPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
+  KEYSlideStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
 private:
   virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
@@ -181,7 +182,7 @@ private:
 class KEYTabularStyle : public KEYStyleBase
 {
 public:
-  KEYTabularStyle(const KEYPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
+  KEYTabularStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
 private:
   virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
@@ -192,7 +193,7 @@ private:
 class KEYVectorStyle : public KEYStyleBase
 {
 public:
-  KEYVectorStyle(const KEYPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
+  KEYVectorStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
 private:
   virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;

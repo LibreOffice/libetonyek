@@ -10,13 +10,13 @@
 #include <boost/lexical_cast.hpp>
 
 #include "libetonyek_xml.h"
+#include "IWORKXMLReader.h"
 #include "KEY2StyleParser.h"
 #include "KEY2Token.h"
 #include "KEYCollector.h"
 #include "KEYDefaults.h"
 #include "KEYStyles.h"
 #include "KEYTypes.h"
-#include "KEYXMLReader.h"
 
 using boost::any;
 using boost::lexical_cast;
@@ -31,11 +31,11 @@ namespace
 {
 
 template<typename T, typename C>
-optional<T> readNumber(const KEYXMLReader &reader, const int type, const C converter)
+optional<T> readNumber(const IWORKXMLReader &reader, const int type, const C converter)
 {
   optional<T> retval;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     switch (getId(attr))
@@ -46,7 +46,7 @@ optional<T> readNumber(const KEYXMLReader &reader, const int type, const C conve
     case KEY2Token::NS_URI_SFA | KEY2Token::type :
       if (getValueId(attr) != type)
       {
-        KEY_DEBUG_MSG(("invalid number type %s\n", attr.getValue()));
+        ETONYEK_DEBUG_MSG(("invalid number type %s\n", attr.getValue()));
       }
       break;
     }
@@ -55,26 +55,26 @@ optional<T> readNumber(const KEYXMLReader &reader, const int type, const C conve
   return retval;
 }
 
-optional<bool> readBool(const KEYXMLReader &reader, const int type)
+optional<bool> readBool(const IWORKXMLReader &reader, const int type)
 {
   return readNumber<bool>(reader, type, &KEY2ParserUtils::bool_cast);
 }
 
-optional<double> readDouble(const KEYXMLReader &reader)
+optional<double> readDouble(const IWORKXMLReader &reader)
 {
   return readNumber<double>(reader, KEY2Token::f, &KEY2ParserUtils::double_cast);
 }
 
-optional<int> readInt(const KEYXMLReader &reader)
+optional<int> readInt(const IWORKXMLReader &reader)
 {
   return readNumber<int>(reader, KEY2Token::i, &KEY2ParserUtils::double_cast);
 }
 
-optional<KEYColor> readColor(const KEYXMLReader &reader)
+optional<IWORKColor> readColor(const IWORKXMLReader &reader)
 {
-  KEYColor color;
+  IWORKColor color;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     switch (getId(attr))
@@ -100,7 +100,7 @@ optional<KEYColor> readColor(const KEYXMLReader &reader)
   return color;
 }
 
-optional<string> readString(const KEYXMLReader &reader)
+optional<string> readString(const IWORKXMLReader &reader)
 {
   return readOnlyAttribute(reader, KEY2Token::string, KEY2Token::NS_URI_SFA);
 }
@@ -118,13 +118,13 @@ KEY2StyleParser::KEY2StyleParser(const int nameId, const int nsId, KEYCollector 
 {
 }
 
-void KEY2StyleParser::parse(const KEYXMLReader &reader)
+void KEY2StyleParser::parse(const IWORKXMLReader &reader)
 {
   optional<ID_t> id;
   optional<string> ident;
   optional<string> parentIdent;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if ((KEY2Token::NS_URI_SFA == getNamespaceId(attr)) && (KEY2Token::ID == getNameId(attr)))
@@ -147,7 +147,7 @@ void KEY2StyleParser::parse(const KEYXMLReader &reader)
     }
   }
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if ((KEY2Token::NS_URI_SF == getNamespaceId(element)) && (KEY2Token::property_map == getNameId(element)))
@@ -192,7 +192,7 @@ void KEY2StyleParser::parse(const KEYXMLReader &reader)
           m_collector->collectVectorStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
         default :
-          KEY_DEBUG_MSG(("unhandled style %d:%d\n", m_nsId, m_nameId));
+          ETONYEK_DEBUG_MSG(("unhandled style %d:%d\n", m_nsId, m_nameId));
           break;
         }
       }
@@ -204,7 +204,7 @@ void KEY2StyleParser::parse(const KEYXMLReader &reader)
   }
 }
 
-void KEY2StyleParser::parseProperty(const KEYXMLReader &reader, const char *const key)
+void KEY2StyleParser::parseProperty(const IWORKXMLReader &reader, const char *const key)
 {
   checkNoAttributes(reader);
 
@@ -213,7 +213,7 @@ void KEY2StyleParser::parseProperty(const KEYXMLReader &reader, const char *cons
   // Parse a property's value, ignoring any extra tags around (there
   // should be none, but can we on that?) Note that the property can be
   // empty.
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   bool done = false;
   while (element.next())
   {
@@ -224,7 +224,7 @@ void KEY2StyleParser::parseProperty(const KEYXMLReader &reader, const char *cons
   }
 }
 
-bool KEY2StyleParser::parsePropertyImpl(const KEYXMLReader &reader, const int propertyId, const char *const key)
+bool KEY2StyleParser::parsePropertyImpl(const IWORKXMLReader &reader, const int propertyId, const char *const key)
 {
   bool parsed = true;
   any prop;
@@ -254,7 +254,7 @@ bool KEY2StyleParser::parsePropertyImpl(const KEYXMLReader &reader, const int pr
     case KEY2Token::vector_style_ref :
     {
       const optional<string> dummyIdent;
-      const optional<KEYPropertyMap> dummyProps;
+      const optional<IWORKPropertyMap> dummyProps;
       const optional<ID_t> id = readRef(reader);
 
       // TODO: need to get the style
@@ -284,14 +284,14 @@ bool KEY2StyleParser::parsePropertyImpl(const KEYXMLReader &reader, const int pr
 
     case KEY2Token::color :
     {
-      const optional<KEYColor> color = readColor(reader);
+      const optional<IWORKColor> color = readColor(reader);
       if (color)
         prop = get(color);
       break;
     }
     case KEY2Token::geometry :
     {
-      const KEYGeometryPtr_t geometry = readGeometry(reader);
+      const IWORKGeometryPtr_t geometry = readGeometry(reader);
       if (geometry)
         prop = geometry;
       break;
@@ -309,19 +309,19 @@ bool KEY2StyleParser::parsePropertyImpl(const KEYXMLReader &reader, const int pr
           switch (get(alignment))
           {
           case 0 :
-            prop = KEY_ALIGNMENT_LEFT;
+            prop = IWORK_ALIGNMENT_LEFT;
             break;
           case 1 :
-            prop = KEY_ALIGNMENT_RIGHT;
+            prop = IWORK_ALIGNMENT_RIGHT;
             break;
           case 2 :
-            prop = KEY_ALIGNMENT_CENTER;
+            prop = IWORK_ALIGNMENT_CENTER;
             break;
           case 3 :
-            prop = KEY_ALIGNMENT_JUSTIFY;
+            prop = IWORK_ALIGNMENT_JUSTIFY;
             break;
           default :
-            KEY_DEBUG_MSG(("unknown alignment %d\n", get(alignment)));
+            ETONYEK_DEBUG_MSG(("unknown alignment %d\n", get(alignment)));
           }
         }
         break;
@@ -355,19 +355,19 @@ bool KEY2StyleParser::parsePropertyImpl(const KEYXMLReader &reader, const int pr
           switch (get(capitalization))
           {
           case 0 :
-            prop = KEY_CAPITALIZATION_NONE;
+            prop = IWORK_CAPITALIZATION_NONE;
             break;
           case 1 :
-            prop = KEY_CAPITALIZATION_ALL_CAPS;
+            prop = IWORK_CAPITALIZATION_ALL_CAPS;
             break;
           case 2 :
-            prop = KEY_CAPITALIZATION_SMALL_CAPS;
+            prop = IWORK_CAPITALIZATION_SMALL_CAPS;
             break;
           case 3 :
-            prop = KEY_CAPITALIZATION_TITLE;
+            prop = IWORK_CAPITALIZATION_TITLE;
             break;
           default :
-            KEY_DEBUG_MSG(("unknown capitalization %d\n", get(capitalization)));
+            ETONYEK_DEBUG_MSG(("unknown capitalization %d\n", get(capitalization)));
           }
         }
         break;
@@ -389,13 +389,13 @@ bool KEY2StyleParser::parsePropertyImpl(const KEYXMLReader &reader, const int pr
           switch (get(superscript))
           {
           case 1 :
-            prop = KEY_BASELINE_SUPER;
+            prop = IWORK_BASELINE_SUPER;
             break;
           case 2 :
-            prop = KEY_BASELINE_SUB;
+            prop = IWORK_BASELINE_SUB;
             break;
           default :
-            KEY_DEBUG_MSG(("unknown superscript %d\n", get(superscript)));
+            ETONYEK_DEBUG_MSG(("unknown superscript %d\n", get(superscript)));
           }
         }
         break;
@@ -416,18 +416,18 @@ bool KEY2StyleParser::parsePropertyImpl(const KEYXMLReader &reader, const int pr
 
     case KEY2Token::tabs :
     {
-      KEYTabStops_t tabStops;
+      IWORKTabStops_t tabStops;
 
-      KEYXMLReader::ElementIterator element(reader);
+      IWORKXMLReader::ElementIterator element(reader);
       while (element.next())
       {
         if ((KEY2Token::NS_URI_SF | KEY2Token::tabstop) == getId(element))
         {
           optional<double> pos;
 
-          const KEYXMLReader tabStopReader(element);
+          const IWORKXMLReader tabStopReader(element);
 
-          KEYXMLReader::AttributeIterator attr(tabStopReader);
+          IWORKXMLReader::AttributeIterator attr(tabStopReader);
           while (attr.next())
           {
             switch (getId(attr))
@@ -446,7 +446,7 @@ bool KEY2StyleParser::parsePropertyImpl(const KEYXMLReader &reader, const int pr
           checkEmptyElement(tabStopReader);
 
           if (bool(pos))
-            tabStops.push_back(KEYTabStop(get(pos)));
+            tabStops.push_back(IWORKTabStop(get(pos)));
         }
         else
         {
@@ -478,13 +478,13 @@ bool KEY2StyleParser::parsePropertyImpl(const KEYXMLReader &reader, const int pr
   return parsed;
 }
 
-void KEY2StyleParser::parsePropertyMap(const KEYXMLReader &reader)
+void KEY2StyleParser::parsePropertyMap(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::property_map, KEY2Token::NS_URI_SF));
 
   checkNoAttributes(reader);
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -574,10 +574,10 @@ void KEY2StyleParser::parsePropertyMap(const KEYXMLReader &reader)
   }
 }
 
-KEYGeometryPtr_t KEY2StyleParser::readGeometry(const KEYXMLReader &reader)
+IWORKGeometryPtr_t KEY2StyleParser::readGeometry(const IWORKXMLReader &reader)
 {
-  optional<KEYSize> naturalSize;
-  optional<KEYPosition> pos;
+  optional<IWORKSize> naturalSize;
+  optional<IWORKPosition> pos;
   optional<double> angle;
   optional<double> shearXAngle;
   optional<double> shearYAngle;
@@ -586,7 +586,7 @@ KEYGeometryPtr_t KEY2StyleParser::readGeometry(const KEYXMLReader &reader)
   optional<bool> horizontalFlip;
   optional<bool> verticalFlip;
 
-  KEYXMLReader::AttributeIterator attr(reader);
+  IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(attr))
@@ -620,7 +620,7 @@ KEYGeometryPtr_t KEY2StyleParser::readGeometry(const KEYXMLReader &reader)
     }
   }
 
-  KEYXMLReader::ElementIterator element(reader);
+  IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     if (KEY2Token::NS_URI_SF == getNamespaceId(element))
@@ -647,7 +647,7 @@ KEYGeometryPtr_t KEY2StyleParser::readGeometry(const KEYXMLReader &reader)
   m_defaults.applyGeometry(naturalSize, pos);
   assert(naturalSize && pos);
 
-  const KEYGeometryPtr_t geometry(new KEYGeometry());
+  const IWORKGeometryPtr_t geometry(new IWORKGeometry());
   geometry->naturalSize = get(naturalSize);
   geometry->position = get(pos);
   geometry->angle = angle;

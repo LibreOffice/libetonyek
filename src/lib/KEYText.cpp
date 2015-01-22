@@ -13,8 +13,9 @@
 
 #include <librevenge/librevenge.h>
 
+#include "IWORKPath.h"
+#include "IWORKTypes.h"
 #include "KEYOutput.h"
-#include "KEYPath.h"
 #include "KEYStyles.h"
 #include "KEYText.h"
 #include "KEYTypes.h"
@@ -37,7 +38,7 @@ struct KEYText::Paragraph
 namespace
 {
 
-librevenge::RVNGString makeColor(const KEYColor &color)
+librevenge::RVNGString makeColor(const IWORKColor &color)
 {
   // TODO: alpha
 
@@ -64,10 +65,10 @@ void fillCharPropList(librevenge::RVNGPropertyList &props, const KEYCharacterSty
   if (style.getOutline(context))
     props.insert("style:text-outline", true);
 
-  const optional<KEYCapitalization> capitalization = style.getCapitalization(context);
+  const optional<IWORKCapitalization> capitalization = style.getCapitalization(context);
   if (capitalization)
   {
-    if (KEY_CAPITALIZATION_SMALL_CAPS == get(capitalization))
+    if (IWORK_CAPITALIZATION_SMALL_CAPS == get(capitalization))
       props.insert("fo:font-variant", "small-caps");
   }
 
@@ -79,7 +80,7 @@ void fillCharPropList(librevenge::RVNGPropertyList &props, const KEYCharacterSty
   if (fontSize)
     props.insert("fo:font-size", pt2in(get(fontSize)));
 
-  const optional<KEYColor> fontColor = style.getFontColor(context);
+  const optional<IWORKColor> fontColor = style.getFontColor(context);
   if (fontColor)
     props.insert("fo:color", makeColor(get(fontColor)));
 }
@@ -87,7 +88,7 @@ void fillCharPropList(librevenge::RVNGPropertyList &props, const KEYCharacterSty
 KEYCharacterStyle makeEmptyStyle()
 {
   optional<string> dummy;
-  return KEYCharacterStyle(KEYPropertyMap(), dummy, dummy);
+  return KEYCharacterStyle(IWORKPropertyMap(), dummy, dummy);
 }
 
 librevenge::RVNGPropertyList makePropList(const KEYCharacterStylePtr_t &style, const KEYStyleContext &context)
@@ -108,30 +109,30 @@ librevenge::RVNGPropertyList makePropList(const KEYParagraphStylePtr_t &style, c
 
   if (bool(style))
   {
-    const optional<KEYAlignment> alignment(style->getAlignment(context));
+    const optional<IWORKAlignment> alignment(style->getAlignment(context));
     if (bool(alignment))
     {
       switch (get(alignment))
       {
-      case KEY_ALIGNMENT_LEFT :
+      case IWORK_ALIGNMENT_LEFT :
         props.insert("fo:text-align", "left");
         break;
-      case KEY_ALIGNMENT_RIGHT :
+      case IWORK_ALIGNMENT_RIGHT :
         props.insert("fo:text-align", "right");
         break;
-      case KEY_ALIGNMENT_CENTER :
+      case IWORK_ALIGNMENT_CENTER :
         props.insert("fo:text-align", "center");
         break;
-      case KEY_ALIGNMENT_JUSTIFY :
+      case IWORK_ALIGNMENT_JUSTIFY :
         props.insert("fo:text-align", "justify");
         break;
       }
     }
 
-    const optional<KEYTabStops_t> &tabStops = style->getTabs(context);
+    const optional<IWORKTabStops_t> &tabStops = style->getTabs(context);
     if (bool(tabStops))
     {
-      for (KEYTabStops_t::const_iterator it = get(tabStops).begin(); get(tabStops).end() != it; ++it)
+      for (IWORKTabStops_t::const_iterator it = get(tabStops).begin(); get(tabStops).end() != it; ++it)
       {
         librevenge::RVNGPropertyList tab;
         tab.insert("style:position", pt2in(it->pos));
@@ -230,19 +231,19 @@ namespace
 class TextObject : public KEYObject
 {
 public:
-  TextObject(const KEYLayoutStylePtr_t &layoutStyle, const KEYGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, bool object);
+  TextObject(const KEYLayoutStylePtr_t &layoutStyle, const IWORKGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, bool object);
 
 private:
   virtual void draw(const KEYOutput &output);
 
 private:
   const KEYLayoutStylePtr_t m_layoutStyle;
-  const KEYGeometryPtr_t m_boundingBox;
+  const IWORKGeometryPtr_t m_boundingBox;
   const KEYText::ParagraphList_t m_paragraphs;
   const bool m_object;
 };
 
-TextObject::TextObject(const KEYLayoutStylePtr_t &layoutStyle, const KEYGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, const bool object)
+TextObject::TextObject(const KEYLayoutStylePtr_t &layoutStyle, const IWORKGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, const bool object)
   : m_layoutStyle(layoutStyle)
   , m_boundingBox(boundingBox)
   , m_paragraphs(paragraphs)
@@ -252,7 +253,7 @@ TextObject::TextObject(const KEYLayoutStylePtr_t &layoutStyle, const KEYGeometry
 
 void TextObject::draw(const KEYOutput &output)
 {
-  const KEYTransformation tr = output.getTransformation();
+  const IWORKTransformation tr = output.getTransformation();
 
   librevenge::RVNGPropertyList props;
 
@@ -272,7 +273,7 @@ void TextObject::draw(const KEYOutput &output)
     props.insert("svg:height", pt2in(h));
   }
 
-  KEYPath path;
+  IWORKPath path;
   path.appendMoveTo(0, 0);
   path.appendLineTo(0, 1);
   path.appendLineTo(1, 1);
@@ -321,12 +322,12 @@ void KEYText::setLayoutStyle(const KEYLayoutStylePtr_t &style)
   m_layoutStyle = style;
 }
 
-const KEYGeometryPtr_t &KEYText::getBoundingBox() const
+const IWORKGeometryPtr_t &KEYText::getBoundingBox() const
 {
   return m_boundingBox;
 }
 
-void KEYText::setBoundingBox(const KEYGeometryPtr_t &boundingBox)
+void KEYText::setBoundingBox(const IWORKGeometryPtr_t &boundingBox)
 {
   m_boundingBox = boundingBox;
 }

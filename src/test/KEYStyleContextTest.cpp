@@ -21,14 +21,14 @@ using boost::optional;
 using libetonyek::KEYStyleContext;
 using libetonyek::KEYParagraphStyle;
 using libetonyek::KEYParagraphStylePtr_t;
-using libetonyek::KEYPropertyMap;
+using libetonyek::IWORKPropertyMap;
 
 using std::string;
 
 namespace
 {
 
-KEYParagraphStylePtr_t makeStyle(const KEYPropertyMap &props)
+KEYParagraphStylePtr_t makeStyle(const IWORKPropertyMap &props)
 {
   const optional<string> dummyIdent;
   const KEYParagraphStylePtr_t style(new KEYParagraphStyle(props, dummyIdent, dummyIdent));
@@ -53,7 +53,7 @@ void KEYStyleContextTest::testLookup()
   // lookup in empty context finds nothing
   CPPUNIT_ASSERT(context.find("answer").empty());
 
-  KEYPropertyMap props;
+  IWORKPropertyMap props;
   props.set("answer", 42);
 
   // lookup works after we push a style
@@ -67,7 +67,7 @@ void KEYStyleContextTest::testLookup()
 
   // the styles are arranged in a stack -- a property is found in
   // the last pushed one
-  KEYPropertyMap props2;
+  IWORKPropertyMap props2;
   props2.set("answer", 1);
   context.push(makeStyle(props2));
   context.push(makeStyle(props));
@@ -80,12 +80,12 @@ void KEYStyleContextTest::testLookup()
 
   // lookup works recursively through more levels
   context.push(makeStyle(props));
-  context.push(makeStyle(KEYPropertyMap()));
+  context.push(makeStyle(IWORKPropertyMap()));
   CPPUNIT_ASSERT(!context.find("answer").empty());
   CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(context.find("answer")));
 
   // yet another one...
-  context.push(makeStyle(KEYPropertyMap()));
+  context.push(makeStyle(IWORKPropertyMap()));
   CPPUNIT_ASSERT(!context.find("answer").empty());
   CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(context.find("answer")));
 }

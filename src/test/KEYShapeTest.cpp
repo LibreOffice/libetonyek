@@ -7,8 +7,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKPath.h"
+#include "IWORKTypes.h"
 #include "KEYObject.h"
-#include "KEYPath.h"
 #include "KEYShape.h"
 #include "KEYTypes.h"
 
@@ -17,9 +18,9 @@
 namespace test
 {
 
-using libetonyek::KEYPath;
-using libetonyek::KEYPathPtr_t;
-using libetonyek::KEYSize;
+using libetonyek::IWORKPath;
+using libetonyek::IWORKPathPtr_t;
+using libetonyek::IWORKSize;
 using libetonyek::etonyek_root_three;
 using libetonyek::etonyek_root_two;
 
@@ -35,20 +36,20 @@ void KEYShapeTest::testMakePolygonPath()
 {
   using libetonyek::makePolygonPath;
 
-  const KEYSize size(100, 100);
+  const IWORKSize size(100, 100);
 
   // triangle
   {
     const double d = 25 * (2 - etonyek_root_three);
 
     // FIXME: the shape is not scaled to whole width...
-    KEYPath ref;
+    IWORKPath ref;
     ref.appendMoveTo(50, 0);
     ref.appendLineTo(100 - d, 75);
     ref.appendLineTo(d, 75);
     ref.appendClose();
 
-    const KEYPathPtr_t test = makePolygonPath(size, 3);
+    const IWORKPathPtr_t test = makePolygonPath(size, 3);
 
     CPPUNIT_ASSERT(bool(test));
     CPPUNIT_ASSERT(*test == ref);
@@ -56,14 +57,14 @@ void KEYShapeTest::testMakePolygonPath()
 
   // diamond
   {
-    KEYPath ref;
+    IWORKPath ref;
     ref.appendMoveTo(50, 0);
     ref.appendLineTo(100, 50);
     ref.appendLineTo(50, 100);
     ref.appendLineTo(0, 50);
     ref.appendClose();
 
-    const KEYPathPtr_t test = makePolygonPath(size, 4);
+    const IWORKPathPtr_t test = makePolygonPath(size, 4);
 
     CPPUNIT_ASSERT(bool(test));
     CPPUNIT_ASSERT(*test == ref);
@@ -73,7 +74,7 @@ void KEYShapeTest::testMakePolygonPath()
   {
     const double d = 25 * (2 - etonyek_root_two);
 
-    KEYPath ref;
+    IWORKPath ref;
     ref.appendMoveTo(50, 0);
     ref.appendLineTo(100 - d, d);
     ref.appendLineTo(100, 50);
@@ -84,7 +85,7 @@ void KEYShapeTest::testMakePolygonPath()
     ref.appendLineTo(d, d);
     ref.appendClose();
 
-    const KEYPathPtr_t test = makePolygonPath(size, 8);
+    const IWORKPathPtr_t test = makePolygonPath(size, 8);
 
     CPPUNIT_ASSERT(bool(test));
     CPPUNIT_ASSERT(*test == ref);

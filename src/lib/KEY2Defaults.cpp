@@ -15,8 +15,8 @@ namespace libetonyek
 namespace
 {
 
-static const KEYSize PRESENTATION_SIZE = KEYSize(1024, 768);
-static const KEYSize SHAPE_SIZE = KEYSize(100, 100);
+static const IWORKSize PRESENTATION_SIZE = IWORKSize(1024, 768);
+static const IWORKSize SHAPE_SIZE = IWORKSize(100, 100);
 
 }
 
@@ -24,18 +24,18 @@ KEY2Defaults::~KEY2Defaults()
 {
 }
 
-void KEY2Defaults::applyPresentationSize(boost::optional<KEYSize> &size) const
+void KEY2Defaults::applyPresentationSize(boost::optional<IWORKSize> &size) const
 {
   if (!size)
     size = PRESENTATION_SIZE;
 }
 
-void KEY2Defaults::applyGeometry(boost::optional<KEYSize> &naturalSize, boost::optional<KEYPosition> &position) const
+void KEY2Defaults::applyGeometry(boost::optional<IWORKSize> &naturalSize, boost::optional<IWORKPosition> &position) const
 {
   if (!naturalSize)
     naturalSize = SHAPE_SIZE;
   if (!position)
-    position = KEYPosition(PRESENTATION_SIZE.width - SHAPE_SIZE.width, PRESENTATION_SIZE.height - SHAPE_SIZE.width);
+    position = IWORKPosition(PRESENTATION_SIZE.width - SHAPE_SIZE.width, PRESENTATION_SIZE.height - SHAPE_SIZE.width);
 }
 
 }

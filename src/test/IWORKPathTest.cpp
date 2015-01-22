@@ -10,11 +10,11 @@
 #include <string>
 #include <sstream>
 
-#include "KEYPath.h"
+#include "IWORKPath.h"
 
-#include "KEYPathTest.h"
+#include "IWORKPathTest.h"
 
-using libetonyek::KEYPath;
+using libetonyek::IWORKPath;
 
 using std::string;
 
@@ -29,7 +29,7 @@ double in2pt(const double in)
   return 72 * in;
 }
 
-string toSVG(const KEYPath &path)
+string toSVG(const IWORKPath &path)
 {
   std::ostringstream output;
 
@@ -70,70 +70,70 @@ string toSVG(const KEYPath &path)
 
 }
 
-void KEYPathTest::setUp()
+void IWORKPathTest::setUp()
 {
 }
 
-void KEYPathTest::tearDown()
+void IWORKPathTest::tearDown()
 {
 }
 
-void  KEYPathTest::testConstruction()
+void  IWORKPathTest::testConstruction()
 {
   {
     const string src = "M 0.0 0.0";
-    KEYPath refPath;
+    IWORKPath refPath;
     refPath.appendMoveTo(0, 0);
 
-    KEYPath testPath(src);
+    IWORKPath testPath(src);
 
     CPPUNIT_ASSERT(refPath == testPath);
   }
 
   {
     const string src = "L 0.0 0.0";
-    KEYPath refPath;
+    IWORKPath refPath;
     refPath.appendLineTo(0, 0);
 
-    KEYPath testPath(src);
+    IWORKPath testPath(src);
 
     CPPUNIT_ASSERT(refPath == testPath);
   }
 
   {
     const string src = "C 0.5 0.5 0 0 1 1";
-    KEYPath refPath;
+    IWORKPath refPath;
     refPath.appendCurveTo(0.5, 0.5, 0, 0, 1, 1);
 
-    KEYPath testPath(src);
+    IWORKPath testPath(src);
 
     CPPUNIT_ASSERT(refPath == testPath);
   }
 
   {
     const string src = "Z";
-    KEYPath refPath;
+    IWORKPath refPath;
     refPath.appendClose();
 
-    KEYPath testPath(src);
+    IWORKPath testPath(src);
 
     CPPUNIT_ASSERT(refPath == testPath);
   }
 
   {
     const string src = "M 0 0 L 1 1";
-    KEYPath refPath;
+    IWORKPath refPath;
     refPath.appendMoveTo(0, 0);
     refPath.appendLineTo(1, 1);
 
-    KEYPath testPath(src);
+    IWORKPath testPath(src);
 
     CPPUNIT_ASSERT(refPath == testPath);
   }
 
   {
     const string src = "M 0 0 L 1 0 L 1 1 L 0 1 Z L 0 0";
-    KEYPath refPath;
+    IWORKPath refPath;
     refPath.appendMoveTo(0, 0);
     refPath.appendLineTo(1, 0);
     refPath.appendLineTo(1, 1);
@@ -141,30 +141,30 @@ void  KEYPathTest::testConstruction()
     refPath.appendClose();
     refPath.appendLineTo(0, 0);
 
-    KEYPath testPath(src);
+    IWORKPath testPath(src);
 
     CPPUNIT_ASSERT(refPath == testPath);
   }
 
   {
     const string src = "M 0.0 0.0 L 0 1 C 1 1 0.5 0.5 0 0 Z";
-    KEYPath refPath;
+    IWORKPath refPath;
     refPath.appendMoveTo(0, 0);
     refPath.appendLineTo(0, 1);
     refPath.appendCurveTo(1, 1, 0.5, 0.5, 0, 0);
     refPath.appendClose();
 
-    KEYPath testPath(src);
+    IWORKPath testPath(src);
 
     CPPUNIT_ASSERT(refPath == testPath);
   }
 }
 
-void  KEYPathTest::testConversion()
+void  IWORKPathTest::testConversion()
 {
   {
     const string ref = "M 0 0";
-    KEYPath path;
+    IWORKPath path;
     path.appendMoveTo(0, 0);
 
     CPPUNIT_ASSERT_EQUAL(ref, toSVG(path));
@@ -172,7 +172,7 @@ void  KEYPathTest::testConversion()
 
   {
     const string ref = "L 0 0";
-    KEYPath path;
+    IWORKPath path;
     path.appendLineTo(0, 0);
 
     CPPUNIT_ASSERT_EQUAL(ref, toSVG(path));
@@ -180,7 +180,7 @@ void  KEYPathTest::testConversion()
 
   {
     const string ref = "C 1 1 0 0 0.5 0.5";
-    KEYPath path;
+    IWORKPath path;
     path.appendCurveTo(1, 1, 0, 0, 0.5, 0.5);
 
     CPPUNIT_ASSERT_EQUAL(ref, toSVG(path));
@@ -188,7 +188,7 @@ void  KEYPathTest::testConversion()
 
   {
     const string ref = "Z";
-    KEYPath path;
+    IWORKPath path;
     path.appendClose();
 
     CPPUNIT_ASSERT_EQUAL(ref, toSVG(path));
@@ -196,7 +196,7 @@ void  KEYPathTest::testConversion()
 
   {
     const string ref = "M 0 0 L 1 1";
-    KEYPath path;
+    IWORKPath path;
     path.appendMoveTo(0, 0);
     path.appendLineTo(1, 1);
 
@@ -205,7 +205,7 @@ void  KEYPathTest::testConversion()
 
   {
     const string ref = "M 0 0 L 1 0 L 1 1 L 0 1 L 0 0 Z";
-    KEYPath path;
+    IWORKPath path;
     path.appendMoveTo(0, 0);
     path.appendLineTo(1, 0);
     path.appendLineTo(1, 1);
@@ -218,7 +218,7 @@ void  KEYPathTest::testConversion()
 
   {
     const string ref = "M 0 0 L 0 1 C 1 1 0.5 0.5 0 0 Z";
-    KEYPath path;
+    IWORKPath path;
     path.appendMoveTo(0, 0);
     path.appendLineTo(0, 1);
     path.appendCurveTo(1, 1, 0.5, 0.5, 0, 0);
@@ -228,7 +228,7 @@ void  KEYPathTest::testConversion()
   }
 }
 
-CPPUNIT_TEST_SUITE_REGISTRATION(KEYPathTest);
+CPPUNIT_TEST_SUITE_REGISTRATION(IWORKPathTest);
 
 }
 

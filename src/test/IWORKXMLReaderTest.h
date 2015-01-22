@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYXMLREADERTEST_H_INCLUDED
-#define KEYXMLREADERTEST_H_INCLUDED
+#ifndef IWORKXMLREADERTEST_H_INCLUDED
+#define IWORKXMLREADERTEST_H_INCLUDED
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -16,14 +16,14 @@
 namespace test
 {
 
-class KEYXMLReaderTest : public CPPUNIT_NS::TestFixture
+class IWORKXMLReaderTest : public CPPUNIT_NS::TestFixture
 {
 public:
   virtual void setUp();
   virtual void tearDown();
 
 private:
-  CPPUNIT_TEST_SUITE(KEYXMLReaderTest);
+  CPPUNIT_TEST_SUITE(IWORKXMLReaderTest);
 
   CPPUNIT_TEST(testEmptyAttributeList);
   CPPUNIT_TEST(testOnlyXmlnsAttributes);
@@ -63,6 +63,6 @@ private:
 
 }
 
-#endif // KEYXMLREADERTEST_H_INCLUDED
+#endif // IWORKXMLREADERTEST_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

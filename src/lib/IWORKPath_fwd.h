@@ -6,22 +6,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYPATH_FWD_H_INCLUDED
-#define KEYPATH_FWD_H_INCLUDED
+#ifndef IWORKPATH_FWD_H_INCLUDED
+#define IWORKPATH_FWD_H_INCLUDED
 
-#include "KEYTypes_fwd.h"
+#include <boost/unordered_map.hpp>
+
+#include "IWORKTypes_fwd.h"
 
 namespace libetonyek
 {
 
-class KEYPath;
+class IWORKPath;
 
-typedef boost::shared_ptr<KEYPath> KEYPathPtr_t;
-typedef boost::unordered_map<ID_t, KEYPathPtr_t> KEYPathMap_t;
+typedef boost::shared_ptr<IWORKPath> IWORKPathPtr_t;
+typedef boost::unordered_map<ID_t, IWORKPathPtr_t> IWORKPathMap_t;
 
 }
 
-#endif //  KEYPATH_FWD_H_INCLUDED
+#endif //  IWORKPATH_FWD_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
 
