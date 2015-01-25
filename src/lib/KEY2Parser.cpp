@@ -155,7 +155,28 @@ void KEY2Parser::parseDrawables(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (KEY2Token::NS_URI_KEY == getNamespaceId(element))
+    {
+      switch (getNameId(element))
+      {
+      case KEY2Token::body_placeholder_ref :
+      {
+        const optional<ID_t> id = readRef(reader);
+        getCollector()->collectTextPlaceholder(id, false, true);
+        break;
+      }
+      case KEY2Token::title_placeholder_ref :
+      {
+        const optional<ID_t> id = readRef(reader);
+        getCollector()->collectTextPlaceholder(id, true, true);
+        break;
+      }
+      default :
+        skipElement(element);
+        break;
+      }
+    }
+    else if (KEY2Token::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
@@ -184,18 +205,6 @@ void KEY2Parser::parseDrawables(const IWORKXMLReader &reader)
       {
         KEY2TableParser parser(*this);
         parser.parse(element);
-        break;
-      }
-      case KEY2Token::body_placeholder_ref :
-      {
-        const optional<ID_t> id = readRef(reader);
-        getCollector()->collectTextPlaceholder(id, false, true);
-        break;
-      }
-      case KEY2Token::title_placeholder_ref :
-      {
-        const optional<ID_t> id = readRef(reader);
-        getCollector()->collectTextPlaceholder(id, true, true);
         break;
       }
       default :
