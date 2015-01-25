@@ -1845,7 +1845,7 @@ void KEY2Parser::parseSpan(const IWORKXMLReader &reader)
   {
     if (mixed.isElement())
     {
-      if (KEY2Token::NS_URI_KEY == getNamespaceId(mixed))
+      if (KEY2Token::NS_URI_SF == getNamespaceId(mixed))
       {
         switch (getNameId(mixed))
         {
