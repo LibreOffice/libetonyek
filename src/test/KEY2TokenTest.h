@@ -24,11 +24,13 @@ public:
 
 private:
   CPPUNIT_TEST_SUITE(KEY2TokenTest);
-  CPPUNIT_TEST(testTokenizer);
+  CPPUNIT_TEST(testSimpleTokenizer);
+  CPPUNIT_TEST(testChainedTokenizer);
   CPPUNIT_TEST_SUITE_END();
 
 private:
-  void testTokenizer();
+  void testSimpleTokenizer();
+  void testChainedTokenizer();
 };
 
 }

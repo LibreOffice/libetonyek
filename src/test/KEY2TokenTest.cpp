@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKToken.h"
+#include "IWORKXMLReader.h"
 #include "KEY2Token.h"
 
 #include "KEY2TokenTest.h"
@@ -16,18 +18,11 @@ using namespace libetonyek;
 namespace test
 {
 
-void KEY2TokenTest::setUp()
+namespace
 {
-}
 
-void KEY2TokenTest::tearDown()
+void testTokenizer(const IWORKXMLReader::TokenizerFunction_t &tok)
 {
-}
-
-void KEY2TokenTest::testTokenizer()
-{
-  KEY2Tokenizer tok;
-
   // known tokens
   CPPUNIT_ASSERT(KEY2Token::presentation == tok("presentation"));
   CPPUNIT_ASSERT(KEY2Token::version == tok("version"));
@@ -39,6 +34,34 @@ void KEY2TokenTest::testTokenizer()
 
   // empty token - maps to empty namespace
   CPPUNIT_ASSERT(0 == tok(""));
+}
+
+}
+
+void KEY2TokenTest::setUp()
+{
+}
+
+void KEY2TokenTest::tearDown()
+{
+}
+
+void KEY2TokenTest::testSimpleTokenizer()
+{
+  const KEY2Tokenizer tok;
+
+  testTokenizer(tok);
+
+  CPPUNIT_ASSERT(KEY2Token::INVALID_TOKEN == tok("style"));
+}
+
+void KEY2TokenTest::testChainedTokenizer()
+{
+  const IWORKXMLReader::ChainedTokenizer tok((KEY2Tokenizer()), IWORKTokenizer());
+
+  testTokenizer(tok);
+
+  CPPUNIT_ASSERT(IWORKToken::style == tok("style"));
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(KEY2TokenTest);
