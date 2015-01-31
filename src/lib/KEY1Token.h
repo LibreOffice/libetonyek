@@ -10,6 +10,10 @@
 #ifndef KEY1TOKEN_H_INCLUDED
 #define KEY1TOKEN_H_INCLUDED
 
+#include <boost/static_assert.hpp>
+
+#include "IWORKTokenInfo.h"
+
 namespace libetonyek
 {
 
@@ -19,8 +23,9 @@ namespace KEY1Token
 enum
 {
   INVALID_TOKEN = 0,
+  FIRST_TOKEN = IWORKTokenInfo<KEY1Parser>::first,
 
-  // namespaces
+  // namespace prefixes
 
   // elements
   application_name,
@@ -179,6 +184,8 @@ enum
 
   LAST_TOKEN
 };
+
+BOOST_STATIC_ASSERT(IWORKTokenInfo<KEY1Parser>::last >= LAST_TOKEN);
 
 }
 

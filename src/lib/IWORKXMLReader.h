@@ -125,6 +125,17 @@ public:
 
   typedef boost::function<int(const char *)> TokenizerFunction_t;
 
+  struct ChainedTokenizer
+  {
+    ChainedTokenizer(const TokenizerFunction_t &tokenizer, const TokenizerFunction_t &next);
+
+    int operator()(const char *str) const;
+
+  private:
+    const TokenizerFunction_t m_tokenizer;
+    const TokenizerFunction_t m_next;
+  };
+
 public:
   explicit IWORKXMLReader(librevenge::RVNGInputStream *input);
   IWORKXMLReader(librevenge::RVNGInputStream *input, TokenizerFunction_t tokenizer);

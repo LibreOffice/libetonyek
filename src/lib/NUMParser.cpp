@@ -12,6 +12,7 @@
 #include <librevenge-stream/librevenge-stream.h>
 
 #include "libetonyek_xml.h"
+#include "IWORKToken.h"
 #include "IWORKXMLReader.h"
 #include "NUMParser.h"
 #include "NUMCollector.h"
@@ -29,7 +30,7 @@ NUMParser::NUMParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr
 
 bool NUMParser::parse() try
 {
-  const IWORKXMLReader reader(m_input.get(), NUMTokenizer());
+  const IWORKXMLReader reader(m_input.get(), IWORKXMLReader::ChainedTokenizer(NUMTokenizer(), IWORKTokenizer()));
   parseDocument(reader);
   return true;
 }

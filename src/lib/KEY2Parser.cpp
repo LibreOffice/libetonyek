@@ -16,6 +16,7 @@
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"
 #include "IWORKPath.h"
+#include "IWORKToken.h"
 #include "IWORKTypes.h"
 #include "IWORKXMLReader.h"
 #include "KEY2Parser.h"
@@ -111,7 +112,7 @@ void KEY2Parser::processXmlNode(const IWORKXMLReader &reader)
     {
       switch (getNameId(element))
       {
-      case KEY2Token::size :
+      case IWORKToken::size :
         size = readSize(reader);
         break;
       case KEY2Token::theme_list :
@@ -128,7 +129,7 @@ void KEY2Parser::processXmlNode(const IWORKXMLReader &reader)
         break;
       }
     }
-    else if ((KEY2Token::NS_URI_SF == getNamespaceId(element)) && (KEY2Token::calc_engine == getNameId(element)))
+    else if ((IWORKToken::NS_URI_SF == getNamespaceId(element)) && (IWORKToken::calc_engine == getNameId(element)))
     {
       skipElement(element);
     }
@@ -143,12 +144,12 @@ void KEY2Parser::processXmlNode(const IWORKXMLReader &reader)
 
 IWORKXMLReader::TokenizerFunction_t KEY2Parser::getTokenizer() const
 {
-  return KEY2Tokenizer();
+  return IWORKXMLReader::ChainedTokenizer(KEY2Tokenizer(), IWORKTokenizer());
 }
 
 void KEY2Parser::parseDrawables(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::drawables, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::drawables, IWORKToken::NS_URI_SF));
 
   getCollector()->startLevel();
 
@@ -165,6 +166,9 @@ void KEY2Parser::parseDrawables(const IWORKXMLReader &reader)
         getCollector()->collectTextPlaceholder(id, false, true);
         break;
       }
+      case KEY2Token::sticky_note :
+        parseStickyNote(element);
+        break;
       case KEY2Token::title_placeholder_ref :
       {
         const optional<ID_t> id = readRef(reader);
@@ -176,32 +180,29 @@ void KEY2Parser::parseDrawables(const IWORKXMLReader &reader)
         break;
       }
     }
-    else if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    else if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::connection_line :
+      case IWORKToken::connection_line :
         parseConnectionLine(element);
         break;
-      case KEY2Token::group :
+      case IWORKToken::group :
         parseGroup(element);
         break;
-      case KEY2Token::image :
+      case IWORKToken::image :
         parseImage(element);
         break;
-      case KEY2Token::line :
+      case IWORKToken::line :
         parseLine(element);
         break;
-      case KEY2Token::media :
+      case IWORKToken::media :
         parseMedia(element);
         break;
-      case KEY2Token::shape :
+      case IWORKToken::shape :
         parseShape(element);
         break;
-      case KEY2Token::sticky_note :
-        parseStickyNote(element);
-        break;
-      case KEY2Token::tabular_info :
+      case IWORKToken::tabular_info :
       {
         KEY2TableParser parser(*this);
         parser.parse(element);
@@ -221,7 +222,7 @@ void KEY2Parser::parseDrawables(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseLayer(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::layer, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::layer, IWORKToken::NS_URI_SF));
 
   const optional<ID_t> id = readID(reader);
 
@@ -230,11 +231,11 @@ void KEY2Parser::parseLayer(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::drawables :
+      case IWORKToken::drawables :
         parseDrawables(reader);
         break;
       default :
@@ -252,19 +253,19 @@ void KEY2Parser::parseLayer(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseLayers(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::layers, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::layers, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::layer :
+      case IWORKToken::layer :
         parseLayer(reader);
         break;
-      case KEY2Token::proxy_master_layer :
+      case IWORKToken::proxy_master_layer :
         parseProxyMasterLayer(reader);
         break;
       default :
@@ -286,7 +287,7 @@ void KEY2Parser::parseMasterSlide(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((KEY2Token::ID | KEY2Token::NS_URI_SFA) == getId(attr))
+    if ((IWORKToken::ID | IWORKToken::NS_URI_SFA) == getId(attr))
       id = attr.getValue();
   }
 
@@ -355,7 +356,7 @@ void KEY2Parser::parseNotes(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if ((KEY2Token::text_storage | KEY2Token::NS_URI_SF) == getId(element))
+    if ((IWORKToken::text_storage | IWORKToken::NS_URI_SF) == getId(element))
     {
       getCollector()->startText(false);
       parseTextStorage(element);
@@ -376,18 +377,18 @@ void KEY2Parser::parsePage(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::size :
+      case IWORKToken::size :
       {
         const IWORKSize size = readSize(reader);
         // TODO: use size
         (void) size;
         break;
       }
-      case KEY2Token::layers :
+      case IWORKToken::layers :
         parseLayers(reader);
         break;
       default :
@@ -402,7 +403,7 @@ void KEY2Parser::parsePage(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseProxyMasterLayer(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::proxy_master_layer, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::proxy_master_layer, IWORKToken::NS_URI_SF));
 
   optional<ID_t> ref;
 
@@ -411,12 +412,12 @@ void KEY2Parser::parseProxyMasterLayer(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::layer_ref :
-        ref = readOnlyElementAttribute(reader, KEY2Token::IDREF, KEY2Token::NS_URI_SFA);
+      case IWORKToken::layer_ref :
+        ref = readOnlyElementAttribute(reader, IWORKToken::IDREF, IWORKToken::NS_URI_SFA);
         break;
       default :
         skipElement(element);
@@ -511,43 +512,43 @@ void KEY2Parser::parseStickyNotes(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseStyles(const IWORKXMLReader &reader, const bool anonymous)
 {
-  assert(checkElement(reader, anonymous ? KEY2Token::anon_styles : KEY2Token::styles, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, anonymous ? IWORKToken::anon_styles : IWORKToken::styles, IWORKToken::NS_URI_SF));
 
   checkNoAttributes(reader);
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       const int elementToken = getNameId(element);
 
       switch (elementToken)
       {
-      case KEY2Token::cell_style :
-      case KEY2Token::characterstyle :
-      case KEY2Token::connection_style :
-      case KEY2Token::graphic_style :
-      case KEY2Token::headline_style :
-      case KEY2Token::layoutstyle :
-      case KEY2Token::liststyle :
-      case KEY2Token::placeholder_style :
-      case KEY2Token::paragraphstyle :
-      case KEY2Token::slide_style :
-      case KEY2Token::tabular_style :
-      case KEY2Token::vector_style :
+      case IWORKToken::cell_style :
+      case IWORKToken::characterstyle :
+      case IWORKToken::connection_style :
+      case IWORKToken::graphic_style :
+      case IWORKToken::headline_style :
+      case IWORKToken::layoutstyle :
+      case IWORKToken::liststyle :
+      case IWORKToken::placeholder_style :
+      case IWORKToken::paragraphstyle :
+      case IWORKToken::slide_style :
+      case IWORKToken::tabular_style :
+      case IWORKToken::vector_style :
       {
         KEY2StyleParser parser(getNameId(element), getNamespaceId(element), getCollector(), getDefaults());
         parser.parse(element);
         break;
       }
 
-      case KEY2Token::cell_style_ref :
-      case KEY2Token::characterstyle_ref :
-      case KEY2Token::layoutstyle_ref :
-      case KEY2Token::liststyle_ref :
-      case KEY2Token::paragraphstyle_ref :
-      case KEY2Token::vector_style_ref :
+      case IWORKToken::cell_style_ref :
+      case IWORKToken::characterstyle_ref :
+      case IWORKToken::layoutstyle_ref :
+      case IWORKToken::liststyle_ref :
+      case IWORKToken::paragraphstyle_ref :
+      case IWORKToken::vector_style_ref :
       {
         const optional<ID_t> id = readRef(element);
         const optional<IWORKPropertyMap> dummyProps;
@@ -555,22 +556,22 @@ void KEY2Parser::parseStyles(const IWORKXMLReader &reader, const bool anonymous)
 
         switch (elementToken)
         {
-        case KEY2Token::cell_style_ref :
+        case IWORKToken::cell_style_ref :
           getCollector()->collectCellStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
           break;
-        case KEY2Token::characterstyle_ref :
+        case IWORKToken::characterstyle_ref :
           getCollector()->collectCharacterStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
           break;
-        case KEY2Token::layoutstyle_ref :
+        case IWORKToken::layoutstyle_ref :
           getCollector()->collectLayoutStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
           break;
-        case KEY2Token::liststyle_ref :
+        case IWORKToken::liststyle_ref :
           getCollector()->collectListStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
           break;
-        case KEY2Token::paragraphstyle_ref :
+        case IWORKToken::paragraphstyle_ref :
           getCollector()->collectParagraphStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
           break;
-        case KEY2Token::vector_style_ref :
+        case IWORKToken::vector_style_ref :
           getCollector()->collectVectorStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
           break;
         default :
@@ -601,17 +602,17 @@ void KEY2Parser::parseStylesheet(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::styles :
+      case IWORKToken::styles :
         parseStyles(reader, false);
         break;
-      case KEY2Token::anon_styles :
+      case IWORKToken::anon_styles :
         parseStyles(reader, true);
         break;
-      case KEY2Token::parent_ref :
+      case IWORKToken::parent_ref :
         parent = readRef(element);
         break;
       default :
@@ -637,7 +638,7 @@ void KEY2Parser::parseTheme(const IWORKXMLReader &reader)
     {
       switch (getNameId(element))
       {
-      case KEY2Token::size :
+      case IWORKToken::size :
       {
         const IWORKSize size = readSize(reader);
         // TODO: use size
@@ -680,7 +681,7 @@ void KEY2Parser::parseThemeList(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseBezier(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::bezier, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::bezier, IWORKToken::NS_URI_SF));
 
   optional<ID_t> id;
   IWORKPathPtr_t path;
@@ -688,14 +689,14 @@ void KEY2Parser::parseBezier(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((KEY2Token::NS_URI_SFA == getNamespaceId(attr)))
+    if ((IWORKToken::NS_URI_SFA == getNamespaceId(attr)))
     {
       switch (getNameId(attr))
       {
-      case KEY2Token::ID :
+      case IWORKToken::ID :
         id = attr.getValue();
         break;
-      case KEY2Token::path :
+      case IWORKToken::path :
         path.reset(new IWORKPath(attr.getValue()));
         break;
       default :
@@ -711,21 +712,21 @@ void KEY2Parser::parseBezier(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseConnectionLine(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::connection_line, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::connection_line, IWORKToken::NS_URI_SF));
 
   const optional<ID_t> id = readID(reader);
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::geometry :
+      case IWORKToken::geometry :
         parseGeometry(element);
         break;
-      case KEY2Token::path :
+      case IWORKToken::path :
         parsePath(element);
         break;
       default :
@@ -742,7 +743,7 @@ void KEY2Parser::parseConnectionLine(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseGeometry(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::geometry, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::geometry, IWORKToken::NS_URI_SF));
 
   optional<ID_t> id;
   optional<IWORKSize> naturalSize;
@@ -759,36 +760,36 @@ void KEY2Parser::parseGeometry(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(attr))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(attr))
     {
       switch (getNameId(attr))
       {
-      case KEY2Token::angle :
+      case IWORKToken::angle :
         angle = deg2rad(lexical_cast<double>(attr.getValue()));
         break;
-      case KEY2Token::aspectRatioLocked :
+      case IWORKToken::aspectRatioLocked :
         aspectRatioLocked = bool_cast(attr.getValue());
         break;
-      case KEY2Token::horizontalFlip :
+      case IWORKToken::horizontalFlip :
         horizontalFlip = bool_cast(attr.getValue());
         break;
-      case KEY2Token::shearXAngle :
+      case IWORKToken::shearXAngle :
         shearXAngle = deg2rad(lexical_cast<double>(attr.getValue()));
         break;
-      case KEY2Token::shearYAngle :
+      case IWORKToken::shearYAngle :
         shearYAngle = deg2rad(lexical_cast<double>(attr.getValue()));
         break;
-      case KEY2Token::sizesLocked :
+      case IWORKToken::sizesLocked :
         sizesLocked = bool_cast(attr.getValue());
         break;
-      case KEY2Token::verticalFlip :
+      case IWORKToken::verticalFlip :
         verticalFlip = bool_cast(attr.getValue());
         break;
       default :
         break;
       }
     }
-    else if (KEY2Token::NS_URI_SFA == getNamespaceId(attr) && (KEY2Token::ID == getNameId(attr)))
+    else if (IWORKToken::NS_URI_SFA == getNamespaceId(attr) && (IWORKToken::ID == getNameId(attr)))
     {
       id = attr.getValue();
     }
@@ -797,17 +798,17 @@ void KEY2Parser::parseGeometry(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::naturalSize :
+      case IWORKToken::naturalSize :
         naturalSize = readSize(reader);
         break;
-      case KEY2Token::position :
+      case IWORKToken::position :
         pos = readPosition(reader);
         break;
-      case KEY2Token::size :
+      case IWORKToken::size :
         size = readSize(reader);
         break;
       default :
@@ -824,7 +825,7 @@ void KEY2Parser::parseGeometry(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseGroup(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::group, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::group, IWORKToken::NS_URI_SF));
 
   getCollector()->startLevel();
 
@@ -837,26 +838,26 @@ void KEY2Parser::parseGroup(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::geometry :
+      case IWORKToken::geometry :
         parseGeometry(reader);
         break;
-      case KEY2Token::group :
+      case IWORKToken::group :
         parseGroup(reader);
         break;
-      case KEY2Token::image :
+      case IWORKToken::image :
         parseImage(reader);
         break;
-      case KEY2Token::line :
+      case IWORKToken::line :
         parseLine(reader);
         break;
-      case KEY2Token::media :
+      case IWORKToken::media :
         parseMedia(reader);
         break;
-      case KEY2Token::shape :
+      case IWORKToken::shape :
         parseShape(reader);
         break;
       default :
@@ -875,7 +876,7 @@ void KEY2Parser::parseGroup(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseImage(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::image, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::image, IWORKToken::NS_URI_SF));
 
   optional<ID_t> id;
   KEYImagePtr_t image(new KEYImage());
@@ -883,20 +884,20 @@ void KEY2Parser::parseImage(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((KEY2Token::NS_URI_SF == getNamespaceId(attr)) && (KEY2Token::locked == getNameId(attr)))
+    if ((IWORKToken::NS_URI_SF == getNamespaceId(attr)) && (IWORKToken::locked == getNameId(attr)))
       image->locked = bool_cast(attr.getValue());
-    else if ((KEY2Token::ID | KEY2Token::NS_URI_SFA) == getId(attr))
+    else if ((IWORKToken::ID | IWORKToken::NS_URI_SFA) == getId(attr))
       id = attr.getValue();
   }
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::geometry :
+      case IWORKToken::geometry :
         parseGeometry(reader);
         break;
       default :
@@ -913,7 +914,7 @@ void KEY2Parser::parseImage(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseLine(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::line, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::line, IWORKToken::NS_URI_SF));
 
   const optional<ID_t> id = readID(reader);
 
@@ -922,21 +923,21 @@ void KEY2Parser::parseLine(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::geometry :
+      case IWORKToken::geometry :
         parseGeometry(reader);
         break;
-      case KEY2Token::head :
+      case IWORKToken::head :
       {
         const IWORKPosition head = readPosition(reader);
         line->x1 = head.x;
         line->y1 = head.y;
         break;
       }
-      case KEY2Token::tail :
+      case IWORKToken::tail :
       {
         const IWORKPosition tail = readPosition(reader);
         line->x2 = tail.x;
@@ -957,7 +958,7 @@ void KEY2Parser::parseLine(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseMedia(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::media, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::media, IWORKToken::NS_URI_SF));
 
   getCollector()->startLevel();
 
@@ -966,14 +967,14 @@ void KEY2Parser::parseMedia(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::geometry :
+      case IWORKToken::geometry :
         parseGeometry(reader);
         break;
-      case KEY2Token::content :
+      case IWORKToken::content :
         parseContent(element);
         break;
       default :
@@ -991,29 +992,29 @@ void KEY2Parser::parseMedia(const IWORKXMLReader &reader)
 
 void KEY2Parser::parsePath(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::path, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::path, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::bezier_path :
-      case KEY2Token::editable_bezier_path :
+      case IWORKToken::bezier_path :
+      case IWORKToken::editable_bezier_path :
         parseBezierPath(element);
         break;
-      case KEY2Token::callout2_path :
+      case IWORKToken::callout2_path :
         parseCallout2Path(element);
         break;
-      case KEY2Token::connection_path :
+      case IWORKToken::connection_path :
         parseConnectionPath(element);
         break;
-      case KEY2Token::point_path :
+      case IWORKToken::point_path :
         parsePointPath(element);
         break;
-      case KEY2Token::scalar_path :
+      case IWORKToken::scalar_path :
         parseScalarPath(element);
         break;
       default :
@@ -1028,7 +1029,7 @@ void KEY2Parser::parsePath(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseShape(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::shape, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::shape, IWORKToken::NS_URI_SF));
 
   getCollector()->startText(true);
 
@@ -1037,17 +1038,17 @@ void KEY2Parser::parseShape(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::geometry :
+      case IWORKToken::geometry :
         parseGeometry(element);
         break;
-      case KEY2Token::path :
+      case IWORKToken::path :
         parsePath(element);
         break;
-      case KEY2Token::text :
+      case IWORKToken::text :
         parseText(element);
         break;
       default :
@@ -1066,7 +1067,7 @@ void KEY2Parser::parseShape(const IWORKXMLReader &reader)
 void KEY2Parser::parseStickyNote(const IWORKXMLReader &reader)
 {
   assert(checkElement(reader, KEY2Token::sticky_note, KEY2Token::NS_URI_KEY)
-         || checkElement(reader, KEY2Token::sticky_note, KEY2Token::NS_URI_SF));
+         || checkElement(reader, IWORKToken::sticky_note, IWORKToken::NS_URI_SF));
 
   getCollector()->startText(false);
   getCollector()->startLevel();
@@ -1074,14 +1075,14 @@ void KEY2Parser::parseStickyNote(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::geometry :
+      case IWORKToken::geometry :
         parseGeometry(element);
         break;
-      case KEY2Token::text :
+      case IWORKToken::text :
         parseText(element);
         break;
       default :
@@ -1114,15 +1115,15 @@ void KEY2Parser::parsePlaceholder(const IWORKXMLReader &reader, const bool title
   {
     if ((KEY2Token::NS_URI_KEY == getNamespaceId(element)) && (KEY2Token::text == getNameId(element)))
       parseText(element);
-    else if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    else if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::geometry :
+      case IWORKToken::geometry :
         // ignore; the real geometry comes from style
         skipElement(element);
         break;
-      case KEY2Token::style :
+      case IWORKToken::style :
       {
         IWORKXMLReader readerStyle(element);
 
@@ -1131,7 +1132,7 @@ void KEY2Parser::parsePlaceholder(const IWORKXMLReader &reader, const bool title
         IWORKXMLReader::ElementIterator elementStyle(readerStyle);
         while (elementStyle.next())
         {
-          if ((KEY2Token::NS_URI_SF == getNamespaceId(elementStyle)) && (KEY2Token::placeholder_style_ref == getNameId(elementStyle)))
+          if ((IWORKToken::NS_URI_SF == getNamespaceId(elementStyle)) && (IWORKToken::placeholder_style_ref == getNameId(elementStyle)))
           {
             const ID_t styleId = readRef(elementStyle);
             const optional<string> none;
@@ -1158,22 +1159,22 @@ void KEY2Parser::parsePlaceholder(const IWORKXMLReader &reader, const bool title
 
 void KEY2Parser::parseBezierPath(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::bezier_path, KEY2Token::NS_URI_SF)
-         || checkElement(reader, KEY2Token::editable_bezier_path, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::bezier_path, IWORKToken::NS_URI_SF)
+         || checkElement(reader, IWORKToken::editable_bezier_path, IWORKToken::NS_URI_SF));
 
   const optional<ID_t> id = readID(reader);
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::bezier :
+      case IWORKToken::bezier :
         parseBezier(element);
         break;
-      case KEY2Token::bezier_ref :
+      case IWORKToken::bezier_ref :
       {
         const ID_t idref = readRef(element);
         getCollector()->collectBezier(idref, IWORKPathPtr_t(), true);
@@ -1193,7 +1194,7 @@ void KEY2Parser::parseBezierPath(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseCallout2Path(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::callout2_path, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::callout2_path, IWORKToken::NS_URI_SF));
 
   optional<ID_t> id;
   double cornerRadius(0);
@@ -1205,27 +1206,27 @@ void KEY2Parser::parseCallout2Path(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((KEY2Token::NS_URI_SFA == getNamespaceId(attr)) && (KEY2Token::ID == getNameId(attr)))
+    if ((IWORKToken::NS_URI_SFA == getNamespaceId(attr)) && (IWORKToken::ID == getNameId(attr)))
     {
       id = attr.getValue();
     }
-    else if (KEY2Token::NS_URI_SF == getNamespaceId(attr))
+    else if (IWORKToken::NS_URI_SF == getNamespaceId(attr))
     {
       switch (getNameId(attr))
       {
-      case KEY2Token::cornerRadius :
+      case IWORKToken::cornerRadius :
         cornerRadius = lexical_cast<double>(attr.getValue());
         break;
-      case KEY2Token::tailAtCenter :
+      case IWORKToken::tailAtCenter :
         tailAtCenter = bool_cast(attr.getValue());
         break;
-      case KEY2Token::tailPositionX :
+      case IWORKToken::tailPositionX :
         tailPosX = lexical_cast<double>(attr.getValue());
         break;
-      case KEY2Token::tailPositionY :
+      case IWORKToken::tailPositionY :
         tailPosY = lexical_cast<double>(attr.getValue());
         break;
-      case KEY2Token::tailSize :
+      case IWORKToken::tailSize :
         tailSize = lexical_cast<double>(attr.getValue());
         break;
       default :
@@ -1239,7 +1240,7 @@ void KEY2Parser::parseCallout2Path(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if ((KEY2Token::NS_URI_SF == getNamespaceId(element)) && (KEY2Token::size == getNameId(element)))
+    if ((IWORKToken::NS_URI_SF == getNamespaceId(element)) && (IWORKToken::size == getNameId(element)))
       size = readSize(reader);
     else
       skipElement(element);
@@ -1250,7 +1251,7 @@ void KEY2Parser::parseCallout2Path(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseConnectionPath(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::connection_path, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::connection_path, IWORKToken::NS_URI_SF));
 
   const optional<ID_t> id = readID(reader);
 
@@ -1260,14 +1261,14 @@ void KEY2Parser::parseConnectionPath(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::point :
+      case IWORKToken::point :
         point = readPoint(element);
         break;
-      case KEY2Token::size :
+      case IWORKToken::size :
         size = readSize(element);
         break;
       default :
@@ -1284,7 +1285,7 @@ void KEY2Parser::parseConnectionPath(const IWORKXMLReader &reader)
 
 void KEY2Parser::parsePointPath(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::point_path, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::point_path, IWORKToken::NS_URI_SF));
 
   optional<ID_t> id;
   bool star = false;
@@ -1294,7 +1295,7 @@ void KEY2Parser::parsePointPath(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((KEY2Token::NS_URI_SF == getNamespaceId(attr)) && (KEY2Token::type == getNameId(attr)))
+    if ((IWORKToken::NS_URI_SF == getNamespaceId(attr)) && (IWORKToken::type == getNameId(attr)))
     {
       switch (getValueId(attr))
       {
@@ -1311,7 +1312,7 @@ void KEY2Parser::parsePointPath(const IWORKXMLReader &reader)
         break;
       }
     }
-    else if ((KEY2Token::NS_URI_SFA == getNamespaceId(attr)) && (KEY2Token::ID == getNameId(attr)))
+    else if ((IWORKToken::NS_URI_SFA == getNamespaceId(attr)) && (IWORKToken::ID == getNameId(attr)))
     {
       id = attr.getValue();
     }
@@ -1323,14 +1324,14 @@ void KEY2Parser::parsePointPath(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::point :
+      case IWORKToken::point :
         point = readPoint(element);
         break;
-      case KEY2Token::size :
+      case IWORKToken::size :
         size = readSize(element);
         break;
       default :
@@ -1350,7 +1351,7 @@ void KEY2Parser::parsePointPath(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseScalarPath(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::scalar_path, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::scalar_path, IWORKToken::NS_URI_SF));
 
   optional<ID_t> id;
   bool polygon = false;
@@ -1359,20 +1360,20 @@ void KEY2Parser::parseScalarPath(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(attr))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(attr))
     {
       switch (getNameId(attr))
       {
-      case KEY2Token::scalar :
+      case IWORKToken::scalar :
         value = lexical_cast<double>(attr.getValue());
         break;
-      case KEY2Token::type :
+      case IWORKToken::type :
       {
         switch (getValueId(attr))
         {
-        case KEY2Token::_0 :
+        case IWORKToken::_0 :
           break;
-        case KEY2Token::_1 :
+        case IWORKToken::_1 :
           polygon = true;
           break;
         default :
@@ -1385,7 +1386,7 @@ void KEY2Parser::parseScalarPath(const IWORKXMLReader &reader)
         break;
       }
     }
-    else if ((KEY2Token::NS_URI_SFA == getNamespaceId(attr)) && (KEY2Token::ID == getNameId(attr)))
+    else if ((IWORKToken::NS_URI_SFA == getNamespaceId(attr)) && (IWORKToken::ID == getNameId(attr)))
     {
       id = attr.getValue();
     }
@@ -1396,7 +1397,7 @@ void KEY2Parser::parseScalarPath(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if ((KEY2Token::NS_URI_SF == getNamespaceId(element)) && (KEY2Token::size == getNameId(element)))
+    if ((IWORKToken::NS_URI_SF == getNamespaceId(element)) && (IWORKToken::size == getNameId(element)))
       size = readSize(element);
     else
       skipElement(element);
@@ -1410,21 +1411,21 @@ void KEY2Parser::parseScalarPath(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseContent(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::content, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::content, IWORKToken::NS_URI_SF));
 
   checkNoAttributes(reader);
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::image_media :
+      case IWORKToken::image_media :
         parseImageMedia(element);
         break;
-      case KEY2Token::movie_media :
+      case IWORKToken::movie_media :
         parseMovieMedia(element);
         break;
       default :
@@ -1438,7 +1439,7 @@ void KEY2Parser::parseContent(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseData(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::data, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::data, IWORKToken::NS_URI_SF));
 
   optional<ID_t> id;
   optional<string> displayName;
@@ -1448,21 +1449,21 @@ void KEY2Parser::parseData(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((KEY2Token::NS_URI_SFA == getNamespaceId(attr)) && (KEY2Token::ID == getNameId(attr)))
+    if ((IWORKToken::NS_URI_SFA == getNamespaceId(attr)) && (IWORKToken::ID == getNameId(attr)))
     {
       ETONYEK_DEBUG_XML_TODO_ATTRIBUTE(attr);
     }
-    else if (KEY2Token::NS_URI_SF == getNamespaceId(attr))
+    else if (IWORKToken::NS_URI_SF == getNamespaceId(attr))
     {
       switch (getNameId(attr))
       {
-      case KEY2Token::displayname :
+      case IWORKToken::displayname :
         displayName = attr.getValue();
         break;
-      case KEY2Token::hfs_type :
+      case IWORKToken::hfs_type :
         type = lexical_cast<unsigned>(attr.getValue());
         break;
-      case KEY2Token::path :
+      case IWORKToken::path :
         stream.reset(m_package->getSubStreamByName(attr.getValue()));
         break;
       default :
@@ -1478,7 +1479,7 @@ void KEY2Parser::parseData(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseFiltered(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::filtered, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::filtered, IWORKToken::NS_URI_SF));
 
   optional<ID_t> id;
   optional<IWORKSize> size;
@@ -1486,14 +1487,14 @@ void KEY2Parser::parseFiltered(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::size :
+      case IWORKToken::size :
         size = readSize(element);
         break;
-      case KEY2Token::data :
+      case IWORKToken::data :
         parseData(element);
         break;
       default :
@@ -1509,30 +1510,30 @@ void KEY2Parser::parseFiltered(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseFilteredImage(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::filtered_image, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::filtered_image, IWORKToken::NS_URI_SF));
 
   const optional<ID_t> id = readID(reader);
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::unfiltered_ref :
+      case IWORKToken::unfiltered_ref :
       {
         optional<ID_t> idref = readRef(element);
         getCollector()->collectUnfiltered(idref, optional<IWORKSize>(), true);
         break;
       }
-      case KEY2Token::unfiltered :
+      case IWORKToken::unfiltered :
         parseUnfiltered(element);
         break;
-      case KEY2Token::filtered :
+      case IWORKToken::filtered :
         parseFiltered(element);
         break;
-      case KEY2Token::leveled :
+      case IWORKToken::leveled :
         parseLeveled(element);
         break;
       default :
@@ -1548,16 +1549,16 @@ void KEY2Parser::parseFilteredImage(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseImageMedia(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::image_media, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::image_media, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::filtered_image :
+      case IWORKToken::filtered_image :
         parseFilteredImage(element);
         break;
       default :
@@ -1571,21 +1572,21 @@ void KEY2Parser::parseImageMedia(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseLeveled(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::leveled, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::leveled, IWORKToken::NS_URI_SF));
 
   const optional<ID_t> id = readID(reader);
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::data :
+      case IWORKToken::data :
         parseData(element);
         break;
-      case KEY2Token::size :
+      case IWORKToken::size :
         ETONYEK_DEBUG_XML_TODO_ELEMENT(element);
         skipElement(element);
         break;
@@ -1602,7 +1603,7 @@ void KEY2Parser::parseLeveled(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseUnfiltered(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::unfiltered, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::unfiltered, IWORKToken::NS_URI_SF));
 
   const optional<ID_t> id = readID(reader);
 
@@ -1611,14 +1612,14 @@ void KEY2Parser::parseUnfiltered(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::size :
+      case IWORKToken::size :
         size = readSize(element);
         break;
-      case KEY2Token::data :
+      case IWORKToken::data :
         parseData(element);
         break;
       default :
@@ -1636,12 +1637,12 @@ void KEY2Parser::parseUnfiltered(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseMovieMedia(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::movie_media, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::movie_media, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if ((KEY2Token::NS_URI_SF | KEY2Token::self_contained_movie) == getId(element))
+    if ((IWORKToken::NS_URI_SF | IWORKToken::self_contained_movie) == getId(element))
       parseSelfContainedMovie(element);
     else
       skipElement(element);
@@ -1652,14 +1653,14 @@ void KEY2Parser::parseMovieMedia(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseSelfContainedMovie(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::self_contained_movie, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::self_contained_movie, IWORKToken::NS_URI_SF));
 
   checkNoAttributes(reader);
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if ((KEY2Token::NS_URI_SF | KEY2Token::other_datas) == getId(element))
+    if ((IWORKToken::NS_URI_SF | IWORKToken::other_datas) == getId(element))
       parseOtherDatas(element);
     else
       skipElement(element);
@@ -1668,7 +1669,7 @@ void KEY2Parser::parseSelfContainedMovie(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseOtherDatas(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::other_datas, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::other_datas, IWORKToken::NS_URI_SF));
 
   checkNoAttributes(reader);
 
@@ -1677,10 +1678,10 @@ void KEY2Parser::parseOtherDatas(const IWORKXMLReader &reader)
   {
     switch (getId(element))
     {
-    case KEY2Token::NS_URI_SF | KEY2Token::data :
+    case IWORKToken::NS_URI_SF | IWORKToken::data :
       parseData(element);
       break;
-    case KEY2Token::NS_URI_SF | KEY2Token::data_ref :
+    case IWORKToken::NS_URI_SF | IWORKToken::data_ref :
     {
       const ID_t idref = readRef(element);
       getCollector()->collectData(idref, RVNGInputStreamPtr_t(), optional<string>(), optional<unsigned>(), true);
@@ -1694,10 +1695,10 @@ void KEY2Parser::parseOtherDatas(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseBr(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::br, KEY2Token::NS_URI_SF)
-         || checkElement(reader, KEY2Token::crbr, KEY2Token::NS_URI_SF)
-         || checkElement(reader, KEY2Token::intratopicbr, KEY2Token::NS_URI_SF)
-         || checkElement(reader, KEY2Token::lnbr, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::br, IWORKToken::NS_URI_SF)
+         || checkElement(reader, IWORKToken::crbr, IWORKToken::NS_URI_SF)
+         || checkElement(reader, IWORKToken::intratopicbr, IWORKToken::NS_URI_SF)
+         || checkElement(reader, IWORKToken::lnbr, IWORKToken::NS_URI_SF));
 
   checkNoAttributes(reader);
   checkEmptyElement(reader);
@@ -1707,19 +1708,19 @@ void KEY2Parser::parseBr(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseLayout(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::layout, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::layout, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((KEY2Token::NS_URI_SF == getNamespaceId(attr)) && (KEY2Token::style == getNameId(attr)))
+    if ((IWORKToken::NS_URI_SF == getNamespaceId(attr)) && (IWORKToken::style == getNameId(attr)))
       emitLayoutStyle(attr.getValue());
   }
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if ((KEY2Token::NS_URI_SF == getNamespaceId(element)) && (KEY2Token::p == getNameId(element)))
+    if ((IWORKToken::NS_URI_SF == getNamespaceId(element)) && (IWORKToken::p == getNameId(element)))
       parseP(element);
     else
       skipElement(element);
@@ -1728,21 +1729,21 @@ void KEY2Parser::parseLayout(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseLink(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::link, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::link, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::MixedIterator mixed(reader);
   while (mixed.next())
   {
     if (mixed.isElement())
     {
-      if (KEY2Token::NS_URI_SF == getNamespaceId(mixed))
+      if (IWORKToken::NS_URI_SF == getNamespaceId(mixed))
       {
         switch (getNameId(mixed))
         {
-        case KEY2Token::br :
+        case IWORKToken::br :
           parseBr(mixed);
           break;
-        case KEY2Token::span :
+        case IWORKToken::span :
           parseSpan(mixed);
           break;
         default :
@@ -1762,18 +1763,18 @@ void KEY2Parser::parseLink(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseP(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::p, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::p, IWORKToken::NS_URI_SF));
 
   optional<ID_t> style;
 
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(attr))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(attr))
     {
       switch (getNameId(attr))
       {
-      case KEY2Token::style :
+      case IWORKToken::style :
         style = attr.getValue();
         break;
       default :
@@ -1789,23 +1790,23 @@ void KEY2Parser::parseP(const IWORKXMLReader &reader)
   {
     if (mixed.isElement())
     {
-      if (KEY2Token::NS_URI_SF == getNamespaceId(mixed))
+      if (IWORKToken::NS_URI_SF == getNamespaceId(mixed))
       {
         switch (getNameId(mixed))
         {
-        case KEY2Token::br :
-        case KEY2Token::crbr :
-        case KEY2Token::intratopicbr :
-        case KEY2Token::lnbr :
+        case IWORKToken::br :
+        case IWORKToken::crbr :
+        case IWORKToken::intratopicbr :
+        case IWORKToken::lnbr :
           parseBr(mixed);
           break;
-        case KEY2Token::span :
+        case IWORKToken::span :
           parseSpan(mixed);
           break;
-        case KEY2Token::tab :
+        case IWORKToken::tab :
           parseTab(mixed);
           break;
-        case KEY2Token::link :
+        case IWORKToken::link :
           parseLink(mixed);
           break;
         default :
@@ -1829,14 +1830,14 @@ void KEY2Parser::parseP(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseSpan(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::span, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::span, IWORKToken::NS_URI_SF));
 
   optional<ID_t> style;
 
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((KEY2Token::NS_URI_SF == getNamespaceId(attr)) && (KEY2Token::style == getNameId(attr)))
+    if ((IWORKToken::NS_URI_SF == getNamespaceId(attr)) && (IWORKToken::style == getNameId(attr)))
       style = attr.getValue();
   }
 
@@ -1845,17 +1846,17 @@ void KEY2Parser::parseSpan(const IWORKXMLReader &reader)
   {
     if (mixed.isElement())
     {
-      if (KEY2Token::NS_URI_SF == getNamespaceId(mixed))
+      if (IWORKToken::NS_URI_SF == getNamespaceId(mixed))
       {
         switch (getNameId(mixed))
         {
-        case KEY2Token::br :
-        case KEY2Token::crbr :
-        case KEY2Token::intratopicbr :
-        case KEY2Token::lnbr :
+        case IWORKToken::br :
+        case IWORKToken::crbr :
+        case IWORKToken::intratopicbr :
+        case IWORKToken::lnbr :
           parseBr(mixed);
           break;
-        case KEY2Token::tab :
+        case IWORKToken::tab :
           parseTab(mixed);
           break;
         default :
@@ -1875,7 +1876,7 @@ void KEY2Parser::parseSpan(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseTab(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::tab, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::tab, IWORKToken::NS_URI_SF));
 
   checkNoAttributes(reader);
   checkEmptyElement(reader);
@@ -1888,18 +1889,18 @@ void KEY2Parser::parseText(const IWORKXMLReader &reader)
   // NOTE: isn't it wonderful that there are two text elements in two
   // different namespaces, but with the same schema?
   assert(checkElement(reader, KEY2Token::text, KEY2Token::NS_URI_KEY)
-         || checkElement(reader, KEY2Token::text, KEY2Token::NS_URI_SF));
+         || checkElement(reader, IWORKToken::text, IWORKToken::NS_URI_SF));
 
   optional<ID_t> layoutStyle;
 
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(attr))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(attr))
     {
       switch (getNameId(attr))
       {
-      case KEY2Token::layoutstyle :
+      case IWORKToken::layoutstyle :
         emitLayoutStyle(attr.getValue());
         break;
       default :
@@ -1911,7 +1912,7 @@ void KEY2Parser::parseText(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if ((KEY2Token::NS_URI_SF == getNamespaceId(element)) && (KEY2Token::text_storage == getNameId(element)))
+    if ((IWORKToken::NS_URI_SF == getNamespaceId(element)) && (IWORKToken::text_storage == getNameId(element)))
       parseTextStorage(element);
     else
       skipElement(element);
@@ -1920,7 +1921,7 @@ void KEY2Parser::parseText(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseTextBody(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::text_body, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::text_body, IWORKToken::NS_URI_SF));
 
   checkNoAttributes(reader);
 
@@ -1929,11 +1930,11 @@ void KEY2Parser::parseTextBody(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::layout :
+      case IWORKToken::layout :
         if (layout || para)
         {
           ETONYEK_DEBUG_MSG(("layout following another element, not allowed, skipping\n"));
@@ -1945,7 +1946,7 @@ void KEY2Parser::parseTextBody(const IWORKXMLReader &reader)
           layout = true;
         }
         break;
-      case KEY2Token::p :
+      case IWORKToken::p :
         if (layout)
         {
           ETONYEK_DEBUG_MSG(("paragraph following layout, not allowed, skipping\n"));
@@ -1975,16 +1976,16 @@ void KEY2Parser::parseTextBody(const IWORKXMLReader &reader)
 
 void KEY2Parser::parseTextStorage(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::text_storage, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::text_storage, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::text_body :
+      case IWORKToken::text_body :
         parseTextBody(element);
         break;
       default :

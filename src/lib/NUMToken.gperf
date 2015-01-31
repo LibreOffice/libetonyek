@@ -22,7 +22,8 @@ struct Token
 };
 %%
 http://developer.apple.com/namespaces/ls,NS_URI_LS
-http://developer.apple.com/namespaces/sf,NS_URI_SF
-http://developer.apple.com/namespaces/sfa,NS_URI_SFA
-http://www.w3.org/2001/XMLSchema-instance,NS_URI_XSI
+page-info,page_info
+stylesheet,stylesheet
+workspace,workspace
+workspace-array,workspace_array
 %%

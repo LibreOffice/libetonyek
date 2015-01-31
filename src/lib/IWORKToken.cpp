@@ -9,7 +9,7 @@
 
 #include <cstring>
 
-#include "KEY2Token.h"
+#include "IWORKToken.h"
 
 using std::strlen;
 
@@ -18,7 +18,7 @@ namespace libetonyek
 namespace
 {
 
-#include "KEY2Token.inc"
+#include "IWORKToken.inc"
 
 }
 }
@@ -26,7 +26,7 @@ namespace
 namespace libetonyek
 {
 
-int KEY2Tokenizer::operator()(const char *const str) const
+int IWORKTokenizer::operator()(const char *const str) const
 {
   if (!str)
     return INVALID_TOKEN;

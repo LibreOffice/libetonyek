@@ -10,45 +10,29 @@
 #ifndef NUMTOKEN_H_INCLUDED
 #define NUMTOKEN_H_INCLUDED
 
+#include <boost/static_assert.hpp>
+
+#include "IWORKTokenInfo.h"
+
 namespace libetonyek
 {
 
 namespace NUMToken
 {
 
-namespace detail
-{
-
-template<unsigned N, unsigned P>
-struct log_impl
-{
-  static const unsigned value = log_impl<(N >> 1), P + 1>::value;
-};
-
-template<unsigned P>
-struct log_impl<1, P>
-{
-  static const unsigned value = P;
-};
-
-template<unsigned P>
-struct log_impl<0, P>
-{
-};
-
-template<unsigned N>
-struct log
-{
-  static const unsigned value = log_impl<N, 0>::value;
-};
-
-}
-
 enum
 {
   INVALID_TOKEN = 0,
+  FIRST_TOKEN = IWORKTokenInfo<NUMParser>::first,
+
+  // namespace prefixes
+  ls,
 
   // elements
+  page_info,
+  stylesheet,
+  workspace,
+  workspace_array,
 
   // attributes
 
@@ -57,15 +41,11 @@ enum
   LAST_TOKEN
 };
 
-// namespaces
-enum
+BOOST_STATIC_ASSERT(IWORKTokenInfo<NUMParser>::last >= LAST_TOKEN);
+
+enum Namespace
 {
-  TOKEN_RANGE = 2 << (detail::log<LAST_TOKEN + 1>::value + 1),
-  NS_NONE = TOKEN_RANGE,
-  NS_URI_LS = NS_NONE + TOKEN_RANGE,
-  NS_URI_SF = NS_URI_LS + TOKEN_RANGE,
-  NS_URI_SFA = NS_URI_SF + TOKEN_RANGE,
-  NS_URI_XSI = NS_URI_SFA + TOKEN_RANGE
+  NS_URI_LS = ls << 16
 };
 
 }

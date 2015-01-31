@@ -324,6 +324,20 @@ const IWORKXMLReader::NodeIterator &IWORKXMLReader::MixedIterator::getNodeIterat
   return m_iterator;
 }
 
+IWORKXMLReader::ChainedTokenizer::ChainedTokenizer(const TokenizerFunction_t &tokenizer, const TokenizerFunction_t &next)
+  : m_tokenizer(tokenizer)
+  , m_next(next)
+{
+  assert(m_tokenizer);
+  assert(m_next);
+}
+
+int IWORKXMLReader::ChainedTokenizer::operator()(const char *const str) const
+{
+  const int token = m_tokenizer(str);
+  return token ? token : m_next(str);
+}
+
 IWORKXMLReader::IWORKXMLReader(librevenge::RVNGInputStream *const input)
   : m_impl(new Impl())
   , m_owner(true)

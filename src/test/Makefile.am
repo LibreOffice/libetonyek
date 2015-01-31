@@ -16,6 +16,8 @@ test_SOURCES = \
 	IWORKPathTest.h \
 	IWORKPropertyMapTest.cpp \
 	IWORKPropertyMapTest.h \
+	IWORKToken.h \
+	IWORKTokenInfo.h \
 	IWORKTransformationTest.cpp \
 	IWORKTransformationTest.h \
 	IWORKXMLReaderTest.cpp \

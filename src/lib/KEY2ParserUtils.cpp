@@ -10,6 +10,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "libetonyek_xml.h"
+#include "IWORKToken.h"
 #include "IWORKTypes.h"
 #include "IWORKXMLReader.h"
 #include "KEY2ParserUtils.h"
@@ -69,7 +70,7 @@ optional<ID_t> KEY2ParserUtils::readID(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((KEY2Token::NS_URI_SFA == getNamespaceId(attr)) && (KEY2Token::ID == getNameId(attr)))
+    if ((IWORKToken::NS_URI_SFA == getNamespaceId(attr)) && (IWORKToken::ID == getNameId(attr)))
       id = attr.getValue();
   }
 
@@ -78,7 +79,7 @@ optional<ID_t> KEY2ParserUtils::readID(const IWORKXMLReader &reader)
 
 ID_t KEY2ParserUtils::readRef(const IWORKXMLReader &reader)
 {
-  optional<ID_t> id = readOnlyElementAttribute(reader, KEY2Token::IDREF, KEY2Token::NS_URI_SFA);
+  optional<ID_t> id = readOnlyElementAttribute(reader, IWORKToken::IDREF, IWORKToken::NS_URI_SFA);
   if (!id)
     throw GenericException();
   return get(id);
@@ -91,14 +92,14 @@ pair<optional<double>, optional<double> > KEY2ParserUtils::readPoint(const IWORK
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if (KEY2Token::NS_URI_SFA == getNamespaceId(attr))
+    if (IWORKToken::NS_URI_SFA == getNamespaceId(attr))
     {
       switch (getNameId(attr))
       {
-      case KEY2Token::x :
+      case IWORKToken::x :
         point.first = lexical_cast<double>(attr.getValue());
         break;
-      case KEY2Token::y :
+      case IWORKToken::y :
         point.second = lexical_cast<double>(attr.getValue());
         break;
       default :
@@ -114,27 +115,27 @@ pair<optional<double>, optional<double> > KEY2ParserUtils::readPoint(const IWORK
 
 IWORKPosition KEY2ParserUtils::readPosition(const IWORKXMLReader &reader)
 {
-  pair<double, double> point = readAttributePair<double, double>(reader, KEY2Token::x, KEY2Token::NS_URI_SFA, KEY2Token::y, KEY2Token::NS_URI_SFA);
+  pair<double, double> point = readAttributePair<double, double>(reader, IWORKToken::x, IWORKToken::NS_URI_SFA, IWORKToken::y, IWORKToken::NS_URI_SFA);
 
   return IWORKPosition(point.first, point.second);
 }
 
 IWORKSize KEY2ParserUtils::readSize(const IWORKXMLReader &reader)
 {
-  const pair<double, double> size = readAttributePair<double, double>(reader, KEY2Token::h, KEY2Token::NS_URI_SFA, KEY2Token::w, KEY2Token::NS_URI_SFA);
+  const pair<double, double> size = readAttributePair<double, double>(reader, IWORKToken::h, IWORKToken::NS_URI_SFA, IWORKToken::w, IWORKToken::NS_URI_SFA);
   return IWORKSize(size.second, size.first);
 }
 
 bool KEY2ParserUtils::bool_cast(const char *value)
 {
-  KEY2Tokenizer tok;
+  IWORKTokenizer tok;
   switch (tok(value))
   {
-  case KEY2Token::_1 :
-  case KEY2Token::true_ :
+  case IWORKToken::_1 :
+  case IWORKToken::true_ :
     return true;
-  case KEY2Token::_0 :
-  case KEY2Token::false_ :
+  case IWORKToken::_0 :
+  case IWORKToken::false_ :
   default :
     return false;
   }

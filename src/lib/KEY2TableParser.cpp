@@ -10,6 +10,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "libetonyek_xml.h"
+#include "IWORKToken.h"
 #include "IWORKXMLReader.h"
 #include "KEYCollector.h"
 #include "KEY2Parser.h"
@@ -36,7 +37,7 @@ KEY2TableParser::KEY2TableParser(KEY2Parser &parser)
 
 void KEY2TableParser::parse(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::tabular_info, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::tabular_info, IWORKToken::NS_URI_SF));
 
   getCollector()->startLevel();
 
@@ -45,10 +46,10 @@ void KEY2TableParser::parse(const IWORKXMLReader &reader)
   {
     switch (getId(element))
     {
-    case KEY2Token::geometry | KEY2Token::NS_URI_SF :
+    case IWORKToken::geometry | IWORKToken::NS_URI_SF :
       m_parser.parseGeometry(element);
       break;
-    case KEY2Token::tabular_model | KEY2Token::NS_URI_SF :
+    case IWORKToken::tabular_model | IWORKToken::NS_URI_SF :
       parseTabularModel(element);
       break;
     default :
@@ -63,14 +64,14 @@ void KEY2TableParser::parse(const IWORKXMLReader &reader)
 
 void KEY2TableParser::parseTabularModel(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::tabular_model, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::tabular_model, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     switch (getId(element))
     {
-    case KEY2Token::grid | KEY2Token::NS_URI_SF :
+    case IWORKToken::grid | IWORKToken::NS_URI_SF :
       parseGrid(element);
       break;
     default :
@@ -81,20 +82,20 @@ void KEY2TableParser::parseTabularModel(const IWORKXMLReader &reader)
 
 void KEY2TableParser::parseGrid(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::grid, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::grid, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     switch (getId(element))
     {
-    case KEY2Token::columns | KEY2Token::NS_URI_SF :
+    case IWORKToken::columns | IWORKToken::NS_URI_SF :
       parseColumns(element);
       break;
-    case KEY2Token::datasource | KEY2Token::NS_URI_SF :
+    case IWORKToken::datasource | IWORKToken::NS_URI_SF :
       parseDatasource(element);
       break;
-    case KEY2Token::rows | KEY2Token::NS_URI_SF :
+    case IWORKToken::rows | IWORKToken::NS_URI_SF :
       parseRows(element);
       break;
     default :
@@ -105,7 +106,7 @@ void KEY2TableParser::parseGrid(const IWORKXMLReader &reader)
 
 void KEY2TableParser::parseColumns(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::columns, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::columns, IWORKToken::NS_URI_SF));
   assert(m_columnSizes.empty());
 
   IWORKXMLReader::ElementIterator element(reader);
@@ -113,7 +114,7 @@ void KEY2TableParser::parseColumns(const IWORKXMLReader &reader)
   {
     switch (getId(element))
     {
-    case KEY2Token::grid_column | KEY2Token::NS_URI_SF :
+    case IWORKToken::grid_column | IWORKToken::NS_URI_SF :
       parseGridColumn(element);
       break;
     default :
@@ -124,14 +125,14 @@ void KEY2TableParser::parseColumns(const IWORKXMLReader &reader)
 
 void KEY2TableParser::parseGridColumn(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::grid_column, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::grid_column, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     switch (getId(attr))
     {
-    case KEY2Token::width | KEY2Token::NS_URI_SF :
+    case IWORKToken::width | IWORKToken::NS_URI_SF :
       m_columnSizes.push_back(lexical_cast<double>(attr.getValue()));
       break;
     default :
@@ -144,7 +145,7 @@ void KEY2TableParser::parseGridColumn(const IWORKXMLReader &reader)
 
 void KEY2TableParser::parseRows(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::rows, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::rows, IWORKToken::NS_URI_SF));
   assert(m_rowSizes.empty());
 
   IWORKXMLReader::ElementIterator element(reader);
@@ -152,7 +153,7 @@ void KEY2TableParser::parseRows(const IWORKXMLReader &reader)
   {
     switch (getId(element))
     {
-    case KEY2Token::grid_row | KEY2Token::NS_URI_SF :
+    case IWORKToken::grid_row | IWORKToken::NS_URI_SF :
       parseGridRow(element);
       break;
     default :
@@ -163,14 +164,14 @@ void KEY2TableParser::parseRows(const IWORKXMLReader &reader)
 
 void KEY2TableParser::parseGridRow(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::grid_row, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::grid_row, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     switch (getId(attr))
     {
-    case KEY2Token::height | KEY2Token::NS_URI_SF :
+    case IWORKToken::height | IWORKToken::NS_URI_SF :
       m_rowSizes.push_back(lexical_cast<double>(attr.getValue()));
       break;
     default :
@@ -184,7 +185,7 @@ void KEY2TableParser::parseGridRow(const IWORKXMLReader &reader)
 
 void KEY2TableParser::parseDatasource(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::datasource, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::datasource, IWORKToken::NS_URI_SF));
 
   // these must be defined before datasource, otherwise we have a problem
   assert(!m_columnSizes.empty());
@@ -197,25 +198,25 @@ void KEY2TableParser::parseDatasource(const IWORKXMLReader &reader)
   {
     switch (getId(element))
     {
-    case KEY2Token::d | KEY2Token::NS_URI_SF :
+    case IWORKToken::d | IWORKToken::NS_URI_SF :
       parseD(element);
       break;
-    case KEY2Token::du | KEY2Token::NS_URI_SF :
+    case IWORKToken::du | IWORKToken::NS_URI_SF :
       parseDu(element);
       break;
-    case KEY2Token::f | KEY2Token::NS_URI_SF :
+    case IWORKToken::f | IWORKToken::NS_URI_SF :
       parseF(element);
       break;
-    case KEY2Token::g | KEY2Token::NS_URI_SF :
+    case IWORKToken::g | IWORKToken::NS_URI_SF :
       parseG(element);
       break;
-    case KEY2Token::n | KEY2Token::NS_URI_SF :
+    case IWORKToken::n | IWORKToken::NS_URI_SF :
       parseN(element);
       break;
-    case KEY2Token::s | KEY2Token::NS_URI_SF :
+    case IWORKToken::s | IWORKToken::NS_URI_SF :
       parseS(element);
       break;
-    case KEY2Token::t | KEY2Token::NS_URI_SF :
+    case IWORKToken::t | IWORKToken::NS_URI_SF :
       parseT(element);
       break;
     default :
@@ -226,7 +227,7 @@ void KEY2TableParser::parseDatasource(const IWORKXMLReader &reader)
 
 void KEY2TableParser::parseD(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::d, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::d, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -239,7 +240,7 @@ void KEY2TableParser::parseD(const IWORKXMLReader &reader)
 
 void KEY2TableParser::parseDu(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::du, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::du, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -252,7 +253,7 @@ void KEY2TableParser::parseDu(const IWORKXMLReader &reader)
 
 void KEY2TableParser::parseF(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::f, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::f, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -267,7 +268,7 @@ void KEY2TableParser::parseF(const IWORKXMLReader &reader)
 
 void KEY2TableParser::parseG(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::g, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::g, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
@@ -280,14 +281,14 @@ void KEY2TableParser::parseG(const IWORKXMLReader &reader)
 
 void KEY2TableParser::parseN(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::n, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::n, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     switch (getId(attr))
     {
-    case KEY2Token::v | KEY2Token::NS_URI_SF :
+    case IWORKToken::v | IWORKToken::NS_URI_SF :
       m_content = attr.getValue();
       break;
     default :
@@ -302,14 +303,14 @@ void KEY2TableParser::parseN(const IWORKXMLReader &reader)
 
 void KEY2TableParser::parseS(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::s, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::s, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     switch (getId(attr))
     {
-    case KEY2Token::ct | KEY2Token::NS_URI_SF :
+    case IWORKToken::ct | IWORKToken::NS_URI_SF :
       m_cellMove = lexical_cast<unsigned>(attr.getValue());
       break;
     default :
@@ -324,7 +325,7 @@ void KEY2TableParser::parseS(const IWORKXMLReader &reader)
 
 void KEY2TableParser::parseT(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::t, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::t, IWORKToken::NS_URI_SF));
 
   getCollector()->startText(false);
 
@@ -337,7 +338,7 @@ void KEY2TableParser::parseT(const IWORKXMLReader &reader)
   {
     switch (getId(element))
     {
-    case KEY2Token::ct | KEY2Token::NS_URI_SF :
+    case IWORKToken::ct | IWORKToken::NS_URI_SF :
       parseCt(element);
       break;
     default :
@@ -352,14 +353,14 @@ void KEY2TableParser::parseT(const IWORKXMLReader &reader)
 
 void KEY2TableParser::parseCt(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::ct, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::ct, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
     switch (getId(attr))
     {
-    case KEY2Token::s | KEY2Token::NS_URI_SF :
+    case IWORKToken::s | IWORKToken::NS_URI_SF :
       m_content = attr.getValue();
       break;
     default :
@@ -372,7 +373,7 @@ void KEY2TableParser::parseCt(const IWORKXMLReader &reader)
   {
     switch (getId(element))
     {
-    case KEY2Token::so | KEY2Token::NS_URI_SF :
+    case IWORKToken::so | IWORKToken::NS_URI_SF :
       if (m_content)
       {
         ETONYEK_DEBUG_MSG(("found a text cell with both simple and formatted content\n"));
@@ -387,14 +388,14 @@ void KEY2TableParser::parseCt(const IWORKXMLReader &reader)
 
 void KEY2TableParser::parseSo(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::so, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::so, IWORKToken::NS_URI_SF));
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
     switch (getId(element))
     {
-    case KEY2Token::text_body | KEY2Token::NS_URI_SF :
+    case IWORKToken::text_body | IWORKToken::NS_URI_SF :
       m_parser.parseTextBody(element);
       break;
     default :
@@ -407,13 +408,13 @@ void KEY2TableParser::parseCommonCellAttribute(const IWORKXMLReader::AttributeIt
 {
   switch (getId(attr))
   {
-  case KEY2Token::col_span | KEY2Token::NS_URI_SF :
+  case IWORKToken::col_span | IWORKToken::NS_URI_SF :
     m_columnSpan = lexical_cast<unsigned>(attr.getValue());
     break;
-  case KEY2Token::ct | KEY2Token::NS_URI_SF :
+  case IWORKToken::ct | IWORKToken::NS_URI_SF :
     m_cellMove = lexical_cast<unsigned>(attr.getValue());
     break;
-  case KEY2Token::row_span | KEY2Token::NS_URI_SF :
+  case IWORKToken::row_span | IWORKToken::NS_URI_SF :
     m_rowSpan = lexical_cast<unsigned>(attr.getValue());
     break;
   }

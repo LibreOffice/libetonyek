@@ -34,7 +34,7 @@ int PAGTokenizer::operator()(const char *const str) const
   const size_t length = strlen(str);
 
   if (0 == length)
-    return NS_NONE;
+    return 0;
 
   const Token *const token = Perfect_Hash::in_word_set(str, length);
   return token ? token->id : INVALID_TOKEN;

@@ -30,15 +30,15 @@ void KEY2TokenTest::testTokenizer()
 
   // known tokens
   CPPUNIT_ASSERT(KEY2Token::presentation == tok("presentation"));
-  CPPUNIT_ASSERT(KEY2Token::a == tok("a"));
-  CPPUNIT_ASSERT(KEY2Token::_0 == tok("0"));
+  CPPUNIT_ASSERT(KEY2Token::version == tok("version"));
+  CPPUNIT_ASSERT(KEY2Token::double_ == tok("double"));
 
   // unknown tokens
   CPPUNIT_ASSERT(KEY2Token::INVALID_TOKEN == tok("bflmpsvz"));
   CPPUNIT_ASSERT(KEY2Token::INVALID_TOKEN == tok("abcdefghijklmnopqrstuvwxyz"));
 
   // empty token - maps to empty namespace
-  CPPUNIT_ASSERT(KEY2Token::NS_NONE == tok(""));
+  CPPUNIT_ASSERT(0 == tok(""));
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(KEY2TokenTest);

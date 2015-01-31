@@ -10,6 +10,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "libetonyek_xml.h"
+#include "IWORKToken.h"
 #include "IWORKXMLReader.h"
 #include "KEY2StyleParser.h"
 #include "KEY2Token.h"
@@ -40,10 +41,10 @@ optional<T> readNumber(const IWORKXMLReader &reader, const int type, const C con
   {
     switch (getId(attr))
     {
-    case KEY2Token::NS_URI_SFA | KEY2Token::number :
+    case IWORKToken::NS_URI_SFA | IWORKToken::number :
       retval = converter(attr.getValue());
       break;
-    case KEY2Token::NS_URI_SFA | KEY2Token::type :
+    case IWORKToken::NS_URI_SFA | IWORKToken::type :
       if (getValueId(attr) != type)
       {
         ETONYEK_DEBUG_MSG(("invalid number type %s\n", attr.getValue()));
@@ -62,7 +63,7 @@ optional<bool> readBool(const IWORKXMLReader &reader, const int type)
 
 optional<double> readDouble(const IWORKXMLReader &reader)
 {
-  return readNumber<double>(reader, KEY2Token::f, &KEY2ParserUtils::double_cast);
+  return readNumber<double>(reader, IWORKToken::f, &KEY2ParserUtils::double_cast);
 }
 
 optional<int> readInt(const IWORKXMLReader &reader)
@@ -79,16 +80,16 @@ optional<IWORKColor> readColor(const IWORKXMLReader &reader)
   {
     switch (getId(attr))
     {
-    case KEY2Token::NS_URI_SFA | KEY2Token::a :
+    case IWORKToken::NS_URI_SFA | IWORKToken::a :
       color.alpha = lexical_cast<double>(attr.getValue());
       break;
-    case KEY2Token::NS_URI_SFA | KEY2Token::b :
+    case IWORKToken::NS_URI_SFA | IWORKToken::b :
       color.blue = lexical_cast<double>(attr.getValue());
       break;
-    case KEY2Token::NS_URI_SFA | KEY2Token::g :
+    case IWORKToken::NS_URI_SFA | IWORKToken::g :
       color.green = lexical_cast<double>(attr.getValue());
       break;
-    case KEY2Token::NS_URI_SFA | KEY2Token::r :
+    case IWORKToken::NS_URI_SFA | IWORKToken::r :
       color.red = lexical_cast<double>(attr.getValue());
       break;
     }
@@ -102,7 +103,7 @@ optional<IWORKColor> readColor(const IWORKXMLReader &reader)
 
 optional<string> readString(const IWORKXMLReader &reader)
 {
-  return readOnlyAttribute(reader, KEY2Token::string, KEY2Token::NS_URI_SFA);
+  return readOnlyAttribute(reader, IWORKToken::string, IWORKToken::NS_URI_SFA);
 }
 
 }
@@ -127,18 +128,18 @@ void KEY2StyleParser::parse(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((KEY2Token::NS_URI_SFA == getNamespaceId(attr)) && (KEY2Token::ID == getNameId(attr)))
+    if ((IWORKToken::NS_URI_SFA == getNamespaceId(attr)) && (IWORKToken::ID == getNameId(attr)))
     {
       id = attr.getValue();
     }
-    else if (KEY2Token::NS_URI_SF == getNamespaceId(attr))
+    else if (IWORKToken::NS_URI_SF == getNamespaceId(attr))
     {
       switch (getNameId(attr))
       {
-      case KEY2Token::ident :
+      case IWORKToken::ident :
         ident = attr.getValue();
         break;
-      case KEY2Token::parent_ident :
+      case IWORKToken::parent_ident :
         parentIdent = attr.getValue();
         break;
       default :
@@ -150,45 +151,45 @@ void KEY2StyleParser::parse(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if ((KEY2Token::NS_URI_SF == getNamespaceId(element)) && (KEY2Token::property_map == getNameId(element)))
+    if ((IWORKToken::NS_URI_SF == getNamespaceId(element)) && (IWORKToken::property_map == getNameId(element)))
     {
       parsePropertyMap(reader);
 
-      if (KEY2Token::NS_URI_SF == m_nsId)
+      if (IWORKToken::NS_URI_SF == m_nsId)
       {
         switch (m_nameId)
         {
-        case KEY2Token::cell_style :
+        case IWORKToken::cell_style :
           m_collector->collectCellStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
-        case KEY2Token::characterstyle :
+        case IWORKToken::characterstyle :
           m_collector->collectCharacterStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
-        case KEY2Token::connection_style :
+        case IWORKToken::connection_style :
           m_collector->collectConnectionStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
-        case KEY2Token::graphic_style :
+        case IWORKToken::graphic_style :
           m_collector->collectGraphicStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
-        case KEY2Token::layoutstyle :
+        case IWORKToken::layoutstyle :
           m_collector->collectLayoutStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
-        case KEY2Token::liststyle :
+        case IWORKToken::liststyle :
           m_collector->collectListStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
-        case KEY2Token::paragraphstyle :
+        case IWORKToken::paragraphstyle :
           m_collector->collectParagraphStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
-        case KEY2Token::placeholder_style :
+        case IWORKToken::placeholder_style :
           m_collector->collectPlaceholderStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
-        case KEY2Token::slide_style :
+        case IWORKToken::slide_style :
           m_collector->collectSlideStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
-        case KEY2Token::tabular_style :
+        case IWORKToken::tabular_style :
           m_collector->collectTabularStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
-        case KEY2Token::vector_style :
+        case IWORKToken::vector_style :
           m_collector->collectVectorStyle(id, m_props, ident, parentIdent, false, m_nested);
           break;
         default :
@@ -231,27 +232,27 @@ bool KEY2StyleParser::parsePropertyImpl(const IWORKXMLReader &reader, const int 
 
   const int nsToken = getNamespaceId(reader);
 
-  if (KEY2Token::NS_URI_SF == nsToken)
+  if (IWORKToken::NS_URI_SF == nsToken)
   {
     const int nameToken = getNameId(reader);
 
     switch (nameToken)
     {
     // nested styles
-    case KEY2Token::layoutstyle :
-    case KEY2Token::liststyle :
-    case KEY2Token::paragraphstyle :
-    case KEY2Token::vector_style :
+    case IWORKToken::layoutstyle :
+    case IWORKToken::liststyle :
+    case IWORKToken::paragraphstyle :
+    case IWORKToken::vector_style :
     {
       KEY2StyleParser parser(nameToken, nsToken, m_collector, m_defaults, true);
       parser.parse(reader);
       // TODO: need to get the style
       break;
     }
-    case KEY2Token::layoutstyle_ref :
-    case KEY2Token::liststyle_ref :
-    case KEY2Token::paragraphstyle_ref :
-    case KEY2Token::vector_style_ref :
+    case IWORKToken::layoutstyle_ref :
+    case IWORKToken::liststyle_ref :
+    case IWORKToken::paragraphstyle_ref :
+    case IWORKToken::vector_style_ref :
     {
       const optional<string> dummyIdent;
       const optional<IWORKPropertyMap> dummyProps;
@@ -260,16 +261,16 @@ bool KEY2StyleParser::parsePropertyImpl(const IWORKXMLReader &reader, const int 
       // TODO: need to get the style
       switch (nameToken)
       {
-      case KEY2Token::layoutstyle_ref :
+      case IWORKToken::layoutstyle_ref :
         m_collector->collectLayoutStyle(id, dummyProps, dummyIdent, dummyIdent, true, true);
         break;
-      case KEY2Token::liststyle_ref :
+      case IWORKToken::liststyle_ref :
         m_collector->collectListStyle(id, dummyProps, dummyIdent, dummyIdent, true, true);
         break;
-      case KEY2Token::paragraphstyle_ref :
+      case IWORKToken::paragraphstyle_ref :
         m_collector->collectParagraphStyle(id, dummyProps, dummyIdent, dummyIdent, true, true);
         break;
-      case KEY2Token::vector_style_ref :
+      case IWORKToken::vector_style_ref :
         m_collector->collectVectorStyle(id, dummyProps, dummyIdent, dummyIdent, true, true);
         break;
       default :
@@ -282,14 +283,14 @@ bool KEY2StyleParser::parsePropertyImpl(const IWORKXMLReader &reader, const int 
 
     // "normal" properties
 
-    case KEY2Token::color :
+    case IWORKToken::color :
     {
       const optional<IWORKColor> color = readColor(reader);
       if (color)
         prop = get(color);
       break;
     }
-    case KEY2Token::geometry :
+    case IWORKToken::geometry :
     {
       const IWORKGeometryPtr_t geometry = readGeometry(reader);
       if (geometry)
@@ -297,11 +298,11 @@ bool KEY2StyleParser::parsePropertyImpl(const IWORKXMLReader &reader, const int 
       break;
     }
 
-    case KEY2Token::number :
+    case IWORKToken::number :
     {
       switch (propertyId)
       {
-      case KEY2Token::NS_URI_SF | KEY2Token::alignment :
+      case IWORKToken::NS_URI_SF | IWORKToken::alignment :
       {
         const optional<int> alignment = readInt(reader);
         if (alignment)
@@ -327,8 +328,8 @@ bool KEY2StyleParser::parsePropertyImpl(const IWORKXMLReader &reader, const int 
         break;
       }
 
-      case KEY2Token::NS_URI_SF | KEY2Token::baselineShift :
-      case KEY2Token::NS_URI_SF | KEY2Token::fontSize :
+      case IWORKToken::NS_URI_SF | IWORKToken::baselineShift :
+      case IWORKToken::NS_URI_SF | IWORKToken::fontSize :
       {
         const optional<double> d = readDouble(reader);
         if (d)
@@ -336,10 +337,10 @@ bool KEY2StyleParser::parsePropertyImpl(const IWORKXMLReader &reader, const int 
         break;
       }
 
-      case KEY2Token::NS_URI_SF | KEY2Token::bold :
-      case KEY2Token::NS_URI_SF | KEY2Token::outline :
-      case KEY2Token::NS_URI_SF | KEY2Token::strikethru :
-      case KEY2Token::NS_URI_SF | KEY2Token::underline :
+      case IWORKToken::NS_URI_SF | IWORKToken::bold :
+      case IWORKToken::NS_URI_SF | IWORKToken::outline :
+      case IWORKToken::NS_URI_SF | IWORKToken::strikethru :
+      case IWORKToken::NS_URI_SF | IWORKToken::underline :
       {
         const optional<bool> b = readBool(reader, KEY2Token::i);
         if (b)
@@ -347,7 +348,7 @@ bool KEY2StyleParser::parsePropertyImpl(const IWORKXMLReader &reader, const int 
         break;
       }
 
-      case KEY2Token::NS_URI_SF | KEY2Token::capitalization :
+      case IWORKToken::NS_URI_SF | IWORKToken::capitalization :
       {
         const optional<int> capitalization = readInt(reader);
         if (capitalization)
@@ -373,7 +374,7 @@ bool KEY2StyleParser::parsePropertyImpl(const IWORKXMLReader &reader, const int 
         break;
       }
 
-      case KEY2Token::NS_URI_SF | KEY2Token::italic :
+      case IWORKToken::NS_URI_SF | IWORKToken::italic :
       {
         const optional<bool> b = readBool(reader, KEY2Token::c);
         if (b)
@@ -381,7 +382,7 @@ bool KEY2StyleParser::parsePropertyImpl(const IWORKXMLReader &reader, const int 
         break;
       }
 
-      case KEY2Token::NS_URI_SF | KEY2Token::superscript :
+      case IWORKToken::NS_URI_SF | IWORKToken::superscript :
       {
         const optional<int> superscript = readInt(reader);
         if (superscript)
@@ -406,7 +407,7 @@ bool KEY2StyleParser::parsePropertyImpl(const IWORKXMLReader &reader, const int 
       break;
     }
 
-    case KEY2Token::string :
+    case IWORKToken::string :
     {
       const optional<string> str = readString(reader);
       if (str)
@@ -414,14 +415,14 @@ bool KEY2StyleParser::parsePropertyImpl(const IWORKXMLReader &reader, const int 
       break;
     }
 
-    case KEY2Token::tabs :
+    case IWORKToken::tabs :
     {
       IWORKTabStops_t tabStops;
 
       IWORKXMLReader::ElementIterator element(reader);
       while (element.next())
       {
-        if ((KEY2Token::NS_URI_SF | KEY2Token::tabstop) == getId(element))
+        if ((IWORKToken::NS_URI_SF | IWORKToken::tabstop) == getId(element))
         {
           optional<double> pos;
 
@@ -432,10 +433,10 @@ bool KEY2StyleParser::parsePropertyImpl(const IWORKXMLReader &reader, const int 
           {
             switch (getId(attr))
             {
-            case KEY2Token::NS_URI_SF | KEY2Token::align :
+            case IWORKToken::NS_URI_SF | IWORKToken::align :
               // TODO: parse
               break;
-            case KEY2Token::NS_URI_SF | KEY2Token::pos :
+            case IWORKToken::NS_URI_SF | IWORKToken::pos :
               pos = lexical_cast<double>(attr.getValue());
               break;
             default :
@@ -480,86 +481,98 @@ bool KEY2StyleParser::parsePropertyImpl(const IWORKXMLReader &reader, const int 
 
 void KEY2StyleParser::parsePropertyMap(const IWORKXMLReader &reader)
 {
-  assert(checkElement(reader, KEY2Token::property_map, KEY2Token::NS_URI_SF));
+  assert(checkElement(reader, IWORKToken::property_map, IWORKToken::NS_URI_SF));
 
   checkNoAttributes(reader);
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::SFTCellStylePropertyLayoutStyle :
-      case KEY2Token::SFTCellStylePropertyParagraphStyle :
-      case KEY2Token::SFTableStylePropertyBorderVectorStyle :
-      case KEY2Token::SFTableStylePropertyCellLayoutStyle :
-      case KEY2Token::SFTableStylePropertyCellParagraphStyle :
-      case KEY2Token::SFTableStylePropertyCellStyle :
-      case KEY2Token::SFTableStylePropertyHeaderBorderVectorStyle :
-      case KEY2Token::SFTableStylePropertyHeaderColumnCellLayoutStyle :
-      case KEY2Token::SFTableStylePropertyHeaderColumnCellParagraphStyle :
-      case KEY2Token::SFTableStylePropertyHeaderColumnCellStyle :
-      case KEY2Token::SFTableStylePropertyHeaderRowCellLayoutStyle :
-      case KEY2Token::SFTableStylePropertyHeaderRowCellParagraphStyle :
-      case KEY2Token::SFTableStylePropertyHeaderRowCellStyle :
-      case KEY2Token::SFTableStylePropertyHeaderSeperatorVectorStyle :
-      case KEY2Token::SFTableStylePropertyHeaderVectorStyle :
-      case KEY2Token::SFTableStylePropertyVectorStyle :
-      case KEY2Token::TableCellStylePropertyFormatNegativeStyle :
-      case KEY2Token::bulletListStyle :
-      case KEY2Token::followingLayoutStyle :
-      case KEY2Token::followingParagraphStyle :
-      case KEY2Token::headlineParagraphStyle :
-      case KEY2Token::layoutParagraphStyle :
-      case KEY2Token::layoutStyle :
-      case KEY2Token::listStyle :
-      case KEY2Token::tocStyle :
+      case IWORKToken::SFTCellStylePropertyLayoutStyle :
+      case IWORKToken::SFTCellStylePropertyParagraphStyle :
+      case IWORKToken::SFTableStylePropertyBorderVectorStyle :
+      case IWORKToken::SFTableStylePropertyCellLayoutStyle :
+      case IWORKToken::SFTableStylePropertyCellParagraphStyle :
+      case IWORKToken::SFTableStylePropertyCellStyle :
+      case IWORKToken::SFTableStylePropertyHeaderBorderVectorStyle :
+      case IWORKToken::SFTableStylePropertyHeaderColumnCellLayoutStyle :
+      case IWORKToken::SFTableStylePropertyHeaderColumnCellParagraphStyle :
+      case IWORKToken::SFTableStylePropertyHeaderColumnCellStyle :
+      case IWORKToken::SFTableStylePropertyHeaderRowCellLayoutStyle :
+      case IWORKToken::SFTableStylePropertyHeaderRowCellParagraphStyle :
+      case IWORKToken::SFTableStylePropertyHeaderRowCellStyle :
+      case IWORKToken::SFTableStylePropertyHeaderSeperatorVectorStyle :
+      case IWORKToken::SFTableStylePropertyHeaderVectorStyle :
+      case IWORKToken::SFTableStylePropertyVectorStyle :
+      case IWORKToken::TableCellStylePropertyFormatNegativeStyle :
+      case IWORKToken::bulletListStyle :
+      case IWORKToken::followingLayoutStyle :
+      case IWORKToken::followingParagraphStyle :
+      case IWORKToken::layoutParagraphStyle :
+      case IWORKToken::layoutStyle :
+      case IWORKToken::listStyle :
+      case IWORKToken::tocStyle :
         parseProperty(element);
         break;
 
-      case KEY2Token::alignment :
+      case IWORKToken::alignment :
         parseProperty(element, "alignment");
         break;
-      case KEY2Token::baselineShift :
+      case IWORKToken::baselineShift :
         parseProperty(element, "baselineShift");
         break;
-      case KEY2Token::bold :
+      case IWORKToken::bold :
         parseProperty(element, "bold");
         break;
-      case KEY2Token::capitalization :
+      case IWORKToken::capitalization :
         parseProperty(element, "capitalization");
         break;
-      case KEY2Token::fontColor :
+      case IWORKToken::fontColor :
         parseProperty(element, "fontColor");
         break;
-      case KEY2Token::fontName :
+      case IWORKToken::fontName :
         parseProperty(element, "fontName");
         break;
-      case KEY2Token::fontSize :
+      case IWORKToken::fontSize :
         parseProperty(element, "fontSize");
         break;
-      case KEY2Token::geometry :
+      case IWORKToken::geometry :
         parseProperty(element, "geometry");
         break;
-      case KEY2Token::italic :
+      case IWORKToken::italic :
         parseProperty(element, "italic");
         break;
-      case KEY2Token::outline :
+      case IWORKToken::outline :
         parseProperty(element, "outline");
         break;
-      case KEY2Token::strikethru :
+      case IWORKToken::strikethru :
         parseProperty(element, "strikethru");
         break;
-      case KEY2Token::superscript :
+      case IWORKToken::superscript :
         parseProperty(element, "superscript");
         break;
-      case KEY2Token::tabs :
+      case IWORKToken::tabs :
         parseProperty(element, "tabs");
         break;
-      case KEY2Token::underline :
+      case IWORKToken::underline :
         parseProperty(element, "underline");
+        break;
+
+      default :
+        skipElement(element);
+        break;
+      }
+    }
+    else if (KEY2Token::NS_URI_KEY == getNamespaceId(element))
+    {
+      switch (getNameId(element))
+      {
+      case KEY2Token::headlineParagraphStyle :
+        parseProperty(element);
         break;
 
       default :
@@ -589,29 +602,29 @@ IWORKGeometryPtr_t KEY2StyleParser::readGeometry(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(attr))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(attr))
     {
       switch (getNameId(attr))
       {
-      case KEY2Token::angle :
+      case IWORKToken::angle :
         angle = lexical_cast<double>(attr.getValue());
         break;
-      case KEY2Token::aspectRatioLocked :
+      case IWORKToken::aspectRatioLocked :
         aspectRatioLocked = bool_cast(attr.getValue());
         break;
-      case KEY2Token::horizontalFlip :
+      case IWORKToken::horizontalFlip :
         horizontalFlip = bool_cast(attr.getValue());
         break;
-      case KEY2Token::shearXAngle :
+      case IWORKToken::shearXAngle :
         shearXAngle = lexical_cast<double>(attr.getValue());
         break;
-      case KEY2Token::shearYAngle :
+      case IWORKToken::shearYAngle :
         shearYAngle = lexical_cast<double>(attr.getValue());
         break;
-      case KEY2Token::sizesLocked :
+      case IWORKToken::sizesLocked :
         sizesLocked = bool_cast(attr.getValue());
         break;
-      case KEY2Token::verticalFlip :
+      case IWORKToken::verticalFlip :
         verticalFlip = bool_cast(attr.getValue());
         break;
       default :
@@ -623,14 +636,14 @@ IWORKGeometryPtr_t KEY2StyleParser::readGeometry(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_SF == getNamespaceId(element))
+    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
     {
       switch (getNameId(element))
       {
-      case KEY2Token::naturalSize :
+      case IWORKToken::naturalSize :
         naturalSize = readSize(reader);
         break;
-      case KEY2Token::position :
+      case IWORKToken::position :
         pos = readPosition(reader);
         break;
       default :

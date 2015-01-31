@@ -1,4 +1,4 @@
-BUILT_SOURCES = KEY1Token.inc KEY2Token.inc NUMToken.inc PAGToken.inc
+BUILT_SOURCES = IWORKToken.inc KEY1Token.inc KEY2Token.inc NUMToken.inc PAGToken.inc
 GPERFFLAGS = --compare-strncmp --enum --null-strings --readonly-tables
 
 if PLATFORM_WIN32
@@ -33,6 +33,8 @@ libetonyek_internal_la_SOURCES = \
 	IWORKPropertyMap.h \
 	IWORKTransformation.cpp \
 	IWORKTransformation.h \
+	IWORKToken.cpp \
+	IWORKToken.h \
 	IWORKTypes.cpp \
 	IWORKTypes.h \
 	IWORKTypes_fwd.h \
@@ -124,6 +126,7 @@ distclean-local :
 	rm -f $(BUILT_SOURCES)
 
 EXTRA_DIST = \
+	IWORKToken.gperf \
 	KEY1Token.gperf \
 	KEY2Token.gperf \
 	NUMToken.gperf \
@@ -134,6 +137,7 @@ EXTRA_DIST = \
 BUILD_EXTRA_DIST = \
 	libetonyek.rc
 
+IWORKToken.cpp : IWORKToken.inc
 KEY1Token.cpp : KEY1Token.inc
 KEY2Token.cpp : KEY2Token.inc
 NUMToken.cpp : NUMToken.inc
