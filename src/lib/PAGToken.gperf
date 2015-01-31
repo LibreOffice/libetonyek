@@ -29,7 +29,7 @@ header,header
 http://developer.apple.com/namespaces/sl,NS_URI_SL
 layout,layout
 note,note
-section_prototypes,section_prototypes
+section-prototypes,section_prototypes
 stylesheet,stylesheet
 textbox,textbox
 %%
