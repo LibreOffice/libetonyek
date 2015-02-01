@@ -147,6 +147,7 @@ enum
   slide_style,
   so,
   span,
+  sticky_note,
   strikethru,
   string,
   style,

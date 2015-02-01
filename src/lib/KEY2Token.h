@@ -24,7 +24,9 @@ namespace KEY2Token
 enum
 {
   INVALID_TOKEN = 0,
-  text = IWORKToken::text, // redefine for convenience
+  // redefine for convenience
+  sticky_note = IWORKToken::sticky_note,
+  text = IWORKToken::text,
   FIRST_TOKEN = IWORKTokenInfo<KEY2Parser>::first,
 
   // namespace prefixes
@@ -43,7 +45,6 @@ enum
   presentation,
   slide,
   slide_list,
-  sticky_note,
   sticky_notes,
   stylesheet,
   theme,
