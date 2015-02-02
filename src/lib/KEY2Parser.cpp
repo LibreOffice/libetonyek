@@ -196,6 +196,9 @@ void KEY2Parser::parseDrawables(const IWORKXMLReader &reader)
       case IWORKToken::shape :
         parseShape(element);
         break;
+      case IWORKToken::sticky_note :
+        parseStickyNote(element);
+        break;
       case IWORKToken::tabular_info :
       {
         KEY2TableParser parser(*this);
