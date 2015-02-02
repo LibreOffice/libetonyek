@@ -53,6 +53,7 @@ baselineShift,baselineShift
 bezier,bezier
 bezier-path,bezier_path
 bezier-ref,bezier_ref
+body-placeholder-ref,body_placeholder_ref
 bold,bold
 br,br
 bulletListStyle,bulletListStyle
@@ -190,6 +191,7 @@ tailSize,tailSize
 text,text
 text-body,text_body
 text-storage,text_storage
+title-placeholder-ref,title_placeholder_ref
 tocStyle,tocStyle
 true,true_
 type,type

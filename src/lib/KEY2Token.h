@@ -34,7 +34,6 @@ enum
 
   // elements
   body_placeholder,
-  body_placeholder_ref,
   c,
   headlineParagraphStyle,
   master_slide,
@@ -50,7 +49,6 @@ enum
   theme,
   theme_list,
   title_placeholder,
-  title_placeholder_ref,
 
   // attributes
   right,

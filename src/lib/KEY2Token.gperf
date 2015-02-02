@@ -27,7 +27,6 @@ struct Token
 72007061400,VERSION_STR_4
 92008102400,VERSION_STR_5
 body-placeholder,body_placeholder
-body-placeholder-ref,body_placeholder_ref
 c,c
 double,double_
 headlineParagraphStyle,headlineParagraphStyle
@@ -51,6 +50,5 @@ text,text
 theme,theme
 theme-list,theme_list
 title-placeholder,title_placeholder
-title-placeholder-ref,title_placeholder_ref
 version,version
 %%

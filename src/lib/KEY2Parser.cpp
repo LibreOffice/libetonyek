@@ -160,21 +160,9 @@ void KEY2Parser::parseDrawables(const IWORKXMLReader &reader)
     {
       switch (getNameId(element))
       {
-      case KEY2Token::body_placeholder_ref :
-      {
-        const optional<ID_t> id = readRef(reader);
-        getCollector()->collectTextPlaceholder(id, false, true);
-        break;
-      }
       case KEY2Token::sticky_note :
         parseStickyNote(element);
         break;
-      case KEY2Token::title_placeholder_ref :
-      {
-        const optional<ID_t> id = readRef(reader);
-        getCollector()->collectTextPlaceholder(id, true, true);
-        break;
-      }
       default :
         skipElement(element);
         break;
@@ -184,6 +172,12 @@ void KEY2Parser::parseDrawables(const IWORKXMLReader &reader)
     {
       switch (getNameId(element))
       {
+      case IWORKToken::body_placeholder_ref :
+      {
+        const optional<ID_t> id = readRef(reader);
+        getCollector()->collectTextPlaceholder(id, false, true);
+        break;
+      }
       case IWORKToken::connection_line :
         parseConnectionLine(element);
         break;
@@ -206,6 +200,12 @@ void KEY2Parser::parseDrawables(const IWORKXMLReader &reader)
       {
         KEY2TableParser parser(*this);
         parser.parse(element);
+        break;
+      }
+      case IWORKToken::title_placeholder_ref :
+      {
+        const optional<ID_t> id = readRef(reader);
+        getCollector()->collectTextPlaceholder(id, true, true);
         break;
       }
       default :
