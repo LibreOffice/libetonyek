@@ -164,7 +164,7 @@ AS_CASE([$host],
 AC_MSG_RESULT([$platform_win32])
 AM_CONDITIONAL([PLATFORM_WIN32], [test "x$platform_win32" = "xyes"])
 
-AS_IF([test "x$platform_win32" == "xyes"],
+AS_IF([test "x$platform_win32" = "xyes"],
     [],
     [
         AC_MSG_CHECKING([for -fvisibility=hidden compiler flag])
