@@ -79,27 +79,17 @@ void KEY2Parser::processXmlNode(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if (attr.getNamespace())
+    switch (getId(attr))
     {
-      switch (getNamespaceId(attr))
+    case KEY2Token::NS_URI_KEY | KEY2Token::version :
+      m_version = getVersion(getValueId(attr));
+      if (0 == m_version)
       {
-      case KEY2Token::NS_URI_KEY :
-        switch (getNameId(attr))
-        {
-        case KEY2Token::version :
-          m_version = getVersion(getValueId(attr));
-          if (0 == m_version)
-          {
-            ETONYEK_DEBUG_MSG(("unknown version %s\n", attr.getValue()));
-          }
-          break;
-        default :
-          break;
-        }
-        break;
-      default :
-        break;
+        ETONYEK_DEBUG_MSG(("unknown version %s\n", attr.getValue()));
       }
+      break;
+    default :
+      break;
     }
   }
 
@@ -108,34 +98,23 @@ void KEY2Parser::processXmlNode(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_KEY == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case KEY2Token::size :
-        size = readSize(reader);
-        break;
-      case KEY2Token::theme_list :
-        parseThemeList(reader);
-        break;
-      case KEY2Token::slide_list :
-        parseSlideList(reader);
-        break;
-      case KEY2Token::metadata :
-        parseMetadata(reader);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else if ((IWORKToken::NS_URI_SF == getNamespaceId(element)) && (IWORKToken::calc_engine == getNameId(element)))
-    {
+    case KEY2Token::NS_URI_KEY | KEY2Token::size :
+      size = readSize(reader);
+      break;
+    case KEY2Token::NS_URI_KEY | KEY2Token::theme_list :
+      parseThemeList(reader);
+      break;
+    case KEY2Token::NS_URI_KEY | KEY2Token::slide_list :
+      parseSlideList(reader);
+      break;
+    case KEY2Token::NS_URI_KEY | KEY2Token::metadata :
+      parseMetadata(reader);
+      break;
+    default :
       skipElement(element);
-    }
-    else
-    {
-      skipElement(element);
+      break;
     }
   }
 
@@ -156,68 +135,54 @@ void KEY2Parser::parseDrawables(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_KEY == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case KEY2Token::sticky_note :
-        parseStickyNote(element);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    case IWORKToken::NS_URI_SF | IWORKToken::body_placeholder_ref :
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::body_placeholder_ref :
-      {
-        const optional<ID_t> id = readRef(reader);
-        getCollector()->collectTextPlaceholder(id, false, true);
-        break;
-      }
-      case IWORKToken::connection_line :
-        parseConnectionLine(element);
-        break;
-      case IWORKToken::group :
-        parseGroup(element);
-        break;
-      case IWORKToken::image :
-        parseImage(element);
-        break;
-      case IWORKToken::line :
-        parseLine(element);
-        break;
-      case IWORKToken::media :
-        parseMedia(element);
-        break;
-      case IWORKToken::shape :
-        parseShape(element);
-        break;
-      case IWORKToken::sticky_note :
-        parseStickyNote(element);
-        break;
-      case IWORKToken::tabular_info :
-      {
-        KEY2TableParser parser(*this);
-        parser.parse(element);
-        break;
-      }
-      case IWORKToken::title_placeholder_ref :
-      {
-        const optional<ID_t> id = readRef(reader);
-        getCollector()->collectTextPlaceholder(id, true, true);
-        break;
-      }
-      default :
-        skipElement(element);
-        break;
-      }
+      const optional<ID_t> id = readRef(reader);
+      getCollector()->collectTextPlaceholder(id, false, true);
+      break;
     }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::connection_line :
+      parseConnectionLine(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::group :
+      parseGroup(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::image :
+      parseImage(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::line :
+      parseLine(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::media :
+      parseMedia(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::shape :
+      parseShape(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::sticky_note :
+      parseStickyNote(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
+    {
+      KEY2TableParser parser(*this);
+      parser.parse(element);
+      break;
+    }
+    case IWORKToken::NS_URI_SF | IWORKToken::title_placeholder_ref :
+    {
+      const optional<ID_t> id = readRef(reader);
+      getCollector()->collectTextPlaceholder(id, true, true);
+      break;
+    }
+    case KEY2Token::NS_URI_KEY | KEY2Token::sticky_note :
+      parseStickyNote(element);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 
   getCollector()->endLevel();
@@ -234,20 +199,15 @@ void KEY2Parser::parseLayer(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::drawables :
-        parseDrawables(reader);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::drawables :
+      parseDrawables(reader);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 
   getCollector()->collectLayer(id, false);
@@ -261,23 +221,18 @@ void KEY2Parser::parseLayers(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::layer :
-        parseLayer(reader);
-        break;
-      case IWORKToken::proxy_master_layer :
-        parseProxyMasterLayer(reader);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::layer :
+      parseLayer(reader);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::proxy_master_layer :
+      parseProxyMasterLayer(reader);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 }
 
@@ -299,32 +254,27 @@ void KEY2Parser::parseMasterSlide(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_KEY == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case KEY2Token::page :
-        parsePage(reader);
-        break;
-      case KEY2Token::stylesheet :
-        parseStylesheet(reader);
-        break;
-      case KEY2Token::title_placeholder :
-        parsePlaceholder(element, true);
-        break;
-      case KEY2Token::body_placeholder :
-        parsePlaceholder(element);
-        break;
-      case KEY2Token::sticky_notes :
-        parseStickyNotes(element);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else
+    case KEY2Token::NS_URI_KEY | KEY2Token::page :
+      parsePage(reader);
+      break;
+    case KEY2Token::NS_URI_KEY | KEY2Token::stylesheet :
+      parseStylesheet(reader);
+      break;
+    case KEY2Token::NS_URI_KEY | KEY2Token::title_placeholder :
+      parsePlaceholder(element, true);
+      break;
+    case KEY2Token::NS_URI_KEY | KEY2Token::body_placeholder :
+      parsePlaceholder(element);
+      break;
+    case KEY2Token::NS_URI_KEY | KEY2Token::sticky_notes :
+      parseStickyNotes(element);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 
   getCollector()->collectPage(id);
@@ -338,7 +288,7 @@ void KEY2Parser::parseMasterSlides(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if ((KEY2Token::NS_URI_KEY == getNamespaceId(element)) && (KEY2Token::master_slide == getNameId(element)))
+    if ((KEY2Token::NS_URI_KEY | KEY2Token::master_slide) == getId(element))
       parseMasterSlide(reader);
     else
       skipElement(element);
@@ -380,27 +330,22 @@ void KEY2Parser::parsePage(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::size :
-      {
-        const IWORKSize size = readSize(reader);
-        // TODO: use size
-        (void) size;
-        break;
-      }
-      case IWORKToken::layers :
-        parseLayers(reader);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
+    case IWORKToken::NS_URI_SF | IWORKToken::size :
+    {
+      const IWORKSize size = readSize(reader);
+      // TODO: use size
+      (void) size;
+      break;
     }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::layers :
+      parseLayers(reader);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 }
 
@@ -415,20 +360,15 @@ void KEY2Parser::parseProxyMasterLayer(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::layer_ref :
-        ref = readOnlyElementAttribute(reader, IWORKToken::IDREF, IWORKToken::NS_URI_SFA);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::layer_ref :
+      ref = readOnlyElementAttribute(reader, IWORKToken::IDREF, IWORKToken::NS_URI_SFA);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 
   getCollector()->collectLayer(ref, true);
@@ -446,35 +386,30 @@ void KEY2Parser::parseSlide(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_KEY == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case KEY2Token::notes :
-        parseNotes(reader);
-        break;
-      case KEY2Token::page :
-        parsePage(reader);
-        break;
-      case KEY2Token::stylesheet :
-        parseStylesheet(reader);
-        break;
-      case KEY2Token::title_placeholder :
-        parsePlaceholder(element, true);
-        break;
-      case KEY2Token::body_placeholder :
-        parsePlaceholder(element);
-        break;
-      case KEY2Token::sticky_notes :
-        parseStickyNotes(element);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else
+    case KEY2Token::NS_URI_KEY | KEY2Token::notes :
+      parseNotes(reader);
+      break;
+    case KEY2Token::NS_URI_KEY | KEY2Token::page :
+      parsePage(reader);
+      break;
+    case KEY2Token::NS_URI_KEY | KEY2Token::stylesheet :
+      parseStylesheet(reader);
+      break;
+    case KEY2Token::NS_URI_KEY | KEY2Token::title_placeholder :
+      parsePlaceholder(element, true);
+      break;
+    case KEY2Token::NS_URI_KEY | KEY2Token::body_placeholder :
+      parsePlaceholder(element);
+      break;
+    case KEY2Token::NS_URI_KEY | KEY2Token::sticky_notes :
+      parseStickyNotes(element);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 
   getCollector()->collectPage(id);
@@ -490,7 +425,7 @@ void KEY2Parser::parseSlideList(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if ((KEY2Token::NS_URI_KEY == getNamespaceId(element)) && (KEY2Token::slide == getNameId(element)))
+    if ((KEY2Token::NS_URI_KEY | KEY2Token::slide) == getId(element))
       parseSlide(reader);
     else
       skipElement(element);
@@ -506,7 +441,7 @@ void KEY2Parser::parseStickyNotes(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if ((KEY2Token::NS_URI_KEY == getNamespaceId(element)) && (KEY2Token::sticky_note == getNameId(element)))
+    if ((KEY2Token::NS_URI_KEY | KEY2Token::sticky_note) == getId(element))
       parseStickyNote(element);
     else
       skipElement(element);
@@ -522,75 +457,70 @@ void KEY2Parser::parseStyles(const IWORKXMLReader &reader, const bool anonymous)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    const int elementToken = getId(element);
+
+    switch (elementToken)
     {
-      const int elementToken = getNameId(element);
+    case IWORKToken::NS_URI_SF | IWORKToken::cell_style :
+    case IWORKToken::NS_URI_SF | IWORKToken::characterstyle :
+    case IWORKToken::NS_URI_SF | IWORKToken::connection_style :
+    case IWORKToken::NS_URI_SF | IWORKToken::graphic_style :
+    case IWORKToken::NS_URI_SF | IWORKToken::headline_style :
+    case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
+    case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
+    case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style :
+    case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
+    case IWORKToken::NS_URI_SF | IWORKToken::slide_style :
+    case IWORKToken::NS_URI_SF | IWORKToken::tabular_style :
+    case IWORKToken::NS_URI_SF | IWORKToken::vector_style :
+    {
+      KEY2StyleParser parser(getNameId(element), getNamespaceId(element), getCollector(), getDefaults());
+      parser.parse(element);
+      break;
+    }
+
+    case IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref :
+    case IWORKToken::NS_URI_SF | IWORKToken::characterstyle_ref :
+    case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
+    case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
+    case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref :
+    case IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref :
+    {
+      const optional<ID_t> id = readRef(element);
+      const optional<IWORKPropertyMap> dummyProps;
+      const optional<string> dummyIdent;
 
       switch (elementToken)
       {
-      case IWORKToken::cell_style :
-      case IWORKToken::characterstyle :
-      case IWORKToken::connection_style :
-      case IWORKToken::graphic_style :
-      case IWORKToken::headline_style :
-      case IWORKToken::layoutstyle :
-      case IWORKToken::liststyle :
-      case IWORKToken::placeholder_style :
-      case IWORKToken::paragraphstyle :
-      case IWORKToken::slide_style :
-      case IWORKToken::tabular_style :
-      case IWORKToken::vector_style :
-      {
-        KEY2StyleParser parser(getNameId(element), getNamespaceId(element), getCollector(), getDefaults());
-        parser.parse(element);
+      case IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref :
+        getCollector()->collectCellStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
         break;
-      }
-
-      case IWORKToken::cell_style_ref :
-      case IWORKToken::characterstyle_ref :
-      case IWORKToken::layoutstyle_ref :
-      case IWORKToken::liststyle_ref :
-      case IWORKToken::paragraphstyle_ref :
-      case IWORKToken::vector_style_ref :
-      {
-        const optional<ID_t> id = readRef(element);
-        const optional<IWORKPropertyMap> dummyProps;
-        const optional<string> dummyIdent;
-
-        switch (elementToken)
-        {
-        case IWORKToken::cell_style_ref :
-          getCollector()->collectCellStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
-          break;
-        case IWORKToken::characterstyle_ref :
-          getCollector()->collectCharacterStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
-          break;
-        case IWORKToken::layoutstyle_ref :
-          getCollector()->collectLayoutStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
-          break;
-        case IWORKToken::liststyle_ref :
-          getCollector()->collectListStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
-          break;
-        case IWORKToken::paragraphstyle_ref :
-          getCollector()->collectParagraphStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
-          break;
-        case IWORKToken::vector_style_ref :
-          getCollector()->collectVectorStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
-          break;
-        default :
-          assert(0);
-          break;
-        }
+      case IWORKToken::NS_URI_SF | IWORKToken::characterstyle_ref :
+        getCollector()->collectCharacterStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
         break;
-      }
-
+      case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
+        getCollector()->collectLayoutStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
+        break;
+      case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
+        getCollector()->collectListStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
+        break;
+      case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref :
+        getCollector()->collectParagraphStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
+        break;
+      case IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref :
+        getCollector()->collectVectorStyle(id, dummyProps, dummyIdent, dummyIdent, true, anonymous);
+        break;
       default :
-        skipElement(element);
+        assert(0);
         break;
       }
+      break;
     }
-    else
+
+    default :
       skipElement(element);
+      break;
+    }
   }
 }
 
@@ -605,26 +535,21 @@ void KEY2Parser::parseStylesheet(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::styles :
-        parseStyles(reader, false);
-        break;
-      case IWORKToken::anon_styles :
-        parseStyles(reader, true);
-        break;
-      case IWORKToken::parent_ref :
-        parent = readRef(element);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::styles :
+      parseStyles(reader, false);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::anon_styles :
+      parseStyles(reader, true);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::parent_ref :
+      parent = readRef(element);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 
   getCollector()->collectStylesheet(id, parent);
@@ -637,30 +562,25 @@ void KEY2Parser::parseTheme(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (KEY2Token::NS_URI_KEY == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::size :
-      {
-        const IWORKSize size = readSize(reader);
-        // TODO: use size
-        (void) size;
-        break;
-      }
-      case KEY2Token::stylesheet :
-        parseStylesheet(reader);
-        break;
-      case KEY2Token::master_slides :
-        parseMasterSlides(reader);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
+    case KEY2Token::NS_URI_KEY | IWORKToken::size :
+    {
+      const IWORKSize size = readSize(reader);
+      // TODO: use size
+      (void) size;
+      break;
     }
-    else
+    case KEY2Token::NS_URI_KEY | KEY2Token::stylesheet :
+      parseStylesheet(reader);
+      break;
+    case KEY2Token::NS_URI_KEY | KEY2Token::master_slides :
+      parseMasterSlides(reader);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 }
 
@@ -673,7 +593,7 @@ void KEY2Parser::parseThemeList(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if ((KEY2Token::NS_URI_KEY == getNamespaceId(element)) && (KEY2Token::theme == getNameId(element)))
+    if ((KEY2Token::NS_URI_KEY | KEY2Token::theme) == getId(element))
       parseTheme(reader);
     else
       skipElement(element);
@@ -692,19 +612,16 @@ void KEY2Parser::parseBezier(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((IWORKToken::NS_URI_SFA == getNamespaceId(attr)))
+    switch (getId(attr))
     {
-      switch (getNameId(attr))
-      {
-      case IWORKToken::ID :
-        id = attr.getValue();
-        break;
-      case IWORKToken::path :
-        path.reset(new IWORKPath(attr.getValue()));
-        break;
-      default :
-        break;
-      }
+    case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+      id = attr.getValue();
+      break;
+    case IWORKToken::NS_URI_SFA | IWORKToken::path :
+      path.reset(new IWORKPath(attr.getValue()));
+      break;
+    default :
+      break;
     }
   }
 
@@ -722,23 +639,18 @@ void KEY2Parser::parseConnectionLine(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::geometry :
-        parseGeometry(element);
-        break;
-      case IWORKToken::path :
-        parsePath(element);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::geometry :
+      parseGeometry(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::path :
+      parsePath(element);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 
   getCollector()->collectShape(id);
@@ -763,64 +675,54 @@ void KEY2Parser::parseGeometry(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(attr))
+    switch (getId(attr))
     {
-      switch (getNameId(attr))
-      {
-      case IWORKToken::angle :
-        angle = deg2rad(lexical_cast<double>(attr.getValue()));
-        break;
-      case IWORKToken::aspectRatioLocked :
-        aspectRatioLocked = bool_cast(attr.getValue());
-        break;
-      case IWORKToken::horizontalFlip :
-        horizontalFlip = bool_cast(attr.getValue());
-        break;
-      case IWORKToken::shearXAngle :
-        shearXAngle = deg2rad(lexical_cast<double>(attr.getValue()));
-        break;
-      case IWORKToken::shearYAngle :
-        shearYAngle = deg2rad(lexical_cast<double>(attr.getValue()));
-        break;
-      case IWORKToken::sizesLocked :
-        sizesLocked = bool_cast(attr.getValue());
-        break;
-      case IWORKToken::verticalFlip :
-        verticalFlip = bool_cast(attr.getValue());
-        break;
-      default :
-        break;
-      }
-    }
-    else if (IWORKToken::NS_URI_SFA == getNamespaceId(attr) && (IWORKToken::ID == getNameId(attr)))
-    {
+    case IWORKToken::NS_URI_SF | IWORKToken::angle :
+      angle = deg2rad(lexical_cast<double>(attr.getValue()));
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::aspectRatioLocked :
+      aspectRatioLocked = bool_cast(attr.getValue());
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::horizontalFlip :
+      horizontalFlip = bool_cast(attr.getValue());
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::shearXAngle :
+      shearXAngle = deg2rad(lexical_cast<double>(attr.getValue()));
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::shearYAngle :
+      shearYAngle = deg2rad(lexical_cast<double>(attr.getValue()));
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::sizesLocked :
+      sizesLocked = bool_cast(attr.getValue());
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::verticalFlip :
+      verticalFlip = bool_cast(attr.getValue());
+      break;
+    case IWORKToken::NS_URI_SFA | IWORKToken::ID :
       id = attr.getValue();
+    default :
+      break;
     }
   }
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::naturalSize :
-        naturalSize = readSize(reader);
-        break;
-      case IWORKToken::position :
-        pos = readPosition(reader);
-        break;
-      case IWORKToken::size :
-        size = readSize(reader);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::naturalSize :
+      naturalSize = readSize(reader);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::position :
+      pos = readPosition(reader);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::size :
+      size = readSize(reader);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 
   getCollector()->collectGeometry(id, naturalSize, size, pos, angle, shearXAngle, shearYAngle, horizontalFlip, verticalFlip, aspectRatioLocked, sizesLocked);
@@ -841,35 +743,30 @@ void KEY2Parser::parseGroup(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::geometry :
-        parseGeometry(reader);
-        break;
-      case IWORKToken::group :
-        parseGroup(reader);
-        break;
-      case IWORKToken::image :
-        parseImage(reader);
-        break;
-      case IWORKToken::line :
-        parseLine(reader);
-        break;
-      case IWORKToken::media :
-        parseMedia(reader);
-        break;
-      case IWORKToken::shape :
-        parseShape(reader);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::geometry :
+      parseGeometry(reader);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::group :
+      parseGroup(reader);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::image :
+      parseImage(reader);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::line :
+      parseLine(reader);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::media :
+      parseMedia(reader);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::shape :
+      parseShape(reader);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 
   getCollector()->collectGroup(id, group);
@@ -887,7 +784,7 @@ void KEY2Parser::parseImage(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((IWORKToken::NS_URI_SF == getNamespaceId(attr)) && (IWORKToken::locked == getNameId(attr)))
+    if ((IWORKToken::NS_URI_SF | IWORKToken::locked) == getId(attr))
       image->locked = bool_cast(attr.getValue());
     else if ((IWORKToken::ID | IWORKToken::NS_URI_SFA) == getId(attr))
       id = attr.getValue();
@@ -896,20 +793,15 @@ void KEY2Parser::parseImage(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::geometry :
-        parseGeometry(reader);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::geometry :
+      parseGeometry(reader);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 
   getCollector()->collectImage(id, image);
@@ -926,34 +818,29 @@ void KEY2Parser::parseLine(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::geometry :
-        parseGeometry(reader);
-        break;
-      case IWORKToken::head :
-      {
-        const IWORKPosition head = readPosition(reader);
-        line->x1 = head.x;
-        line->y1 = head.y;
-        break;
-      }
-      case IWORKToken::tail :
-      {
-        const IWORKPosition tail = readPosition(reader);
-        line->x2 = tail.x;
-        line->y2 = tail.y;
-        break;
-      }
-      default :
-        skipElement(element);
-        break;
-      }
+    case IWORKToken::NS_URI_SF | IWORKToken::geometry :
+      parseGeometry(reader);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::head :
+    {
+      const IWORKPosition head = readPosition(reader);
+      line->x1 = head.x;
+      line->y1 = head.y;
+      break;
     }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::tail :
+    {
+      const IWORKPosition tail = readPosition(reader);
+      line->x2 = tail.x;
+      line->y2 = tail.y;
+      break;
+    }
+    default :
       skipElement(element);
+      break;
+    }
   }
 
   getCollector()->collectLine(id, line);
@@ -970,23 +857,18 @@ void KEY2Parser::parseMedia(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::geometry :
-        parseGeometry(reader);
-        break;
-      case IWORKToken::content :
-        parseContent(element);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::geometry :
+      parseGeometry(reader);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::content :
+      parseContent(element);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 
   getCollector()->collectMedia(id);
@@ -1000,33 +882,28 @@ void KEY2Parser::parsePath(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::bezier_path :
-      case IWORKToken::editable_bezier_path :
-        parseBezierPath(element);
-        break;
-      case IWORKToken::callout2_path :
-        parseCallout2Path(element);
-        break;
-      case IWORKToken::connection_path :
-        parseConnectionPath(element);
-        break;
-      case IWORKToken::point_path :
-        parsePointPath(element);
-        break;
-      case IWORKToken::scalar_path :
-        parseScalarPath(element);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::bezier_path :
+    case IWORKToken::NS_URI_SF | IWORKToken::editable_bezier_path :
+      parseBezierPath(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::callout2_path :
+      parseCallout2Path(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::connection_path :
+      parseConnectionPath(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::point_path :
+      parsePointPath(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::scalar_path :
+      parseScalarPath(element);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 }
 
@@ -1041,26 +918,21 @@ void KEY2Parser::parseShape(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::geometry :
-        parseGeometry(element);
-        break;
-      case IWORKToken::path :
-        parsePath(element);
-        break;
-      case IWORKToken::text :
-        parseText(element);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::geometry :
+      parseGeometry(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::path :
+      parsePath(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::text :
+      parseText(element);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 
   getCollector()->collectShape(id);
@@ -1078,23 +950,18 @@ void KEY2Parser::parseStickyNote(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::geometry :
-        parseGeometry(element);
-        break;
-      case IWORKToken::text :
-        parseText(element);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::geometry :
+      parseGeometry(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::text :
+      parseText(element);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 
   getCollector()->collectStickyNote();
@@ -1116,44 +983,40 @@ void KEY2Parser::parsePlaceholder(const IWORKXMLReader &reader, const bool title
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if ((KEY2Token::NS_URI_KEY == getNamespaceId(element)) && (KEY2Token::text == getNameId(element)))
-      parseText(element);
-    else if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::geometry :
-        // ignore; the real geometry comes from style
-        skipElement(element);
-        break;
-      case IWORKToken::style :
-      {
-        IWORKXMLReader readerStyle(element);
-
-        checkNoAttributes(readerStyle);
-
-        IWORKXMLReader::ElementIterator elementStyle(readerStyle);
-        while (elementStyle.next())
-        {
-          if ((IWORKToken::NS_URI_SF == getNamespaceId(elementStyle)) && (IWORKToken::placeholder_style_ref == getNameId(elementStyle)))
-          {
-            const ID_t styleId = readRef(elementStyle);
-            const optional<string> none;
-            getCollector()->collectPlaceholderStyle(styleId, optional<IWORKPropertyMap>(), none, none, true, false);
-          }
-          else
-          {
-            skipElement(elementStyle);
-          }
-        }
-        break;
-      }
-      default :
-        skipElement(element);
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::geometry :
+      // ignore; the real geometry comes from style
       skipElement(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::style :
+    {
+      IWORKXMLReader readerStyle(element);
+
+      checkNoAttributes(readerStyle);
+
+      IWORKXMLReader::ElementIterator elementStyle(readerStyle);
+      while (elementStyle.next())
+      {
+        if ((IWORKToken::NS_URI_SF | IWORKToken::placeholder_style_ref) == getId(elementStyle))
+        {
+          const ID_t styleId = readRef(elementStyle);
+          const optional<string> none;
+          getCollector()->collectPlaceholderStyle(styleId, optional<IWORKPropertyMap>(), none, none, true, false);
+        }
+        else
+        {
+          skipElement(elementStyle);
+        }
+      }
+      break;
+    }
+    case KEY2Token::NS_URI_KEY | KEY2Token::text :
+      parseText(element);
+      break;
+    default :
+      skipElement(element);
+    }
   }
 
   getCollector()->collectTextPlaceholder(id, title, false);
@@ -1170,26 +1033,21 @@ void KEY2Parser::parseBezierPath(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::bezier :
-        parseBezier(element);
-        break;
-      case IWORKToken::bezier_ref :
-      {
-        const ID_t idref = readRef(element);
-        getCollector()->collectBezier(idref, IWORKPathPtr_t(), true);
-        break;
-      }
-      default :
-        skipElement(element);
-        break;
-      }
+    case IWORKToken::NS_URI_SF | IWORKToken::bezier :
+      parseBezier(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::bezier_ref :
+    {
+      const ID_t idref = readRef(element);
+      getCollector()->collectBezier(idref, IWORKPathPtr_t(), true);
+      break;
     }
-    else
+    default :
       skipElement(element);
+      break;
+    }
   }
 
   getCollector()->collectBezierPath(id);
@@ -1209,32 +1067,28 @@ void KEY2Parser::parseCallout2Path(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((IWORKToken::NS_URI_SFA == getNamespaceId(attr)) && (IWORKToken::ID == getNameId(attr)))
+    switch (getId(attr))
     {
+    case IWORKToken::NS_URI_SF | IWORKToken::cornerRadius :
+      cornerRadius = lexical_cast<double>(attr.getValue());
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::tailAtCenter :
+      tailAtCenter = bool_cast(attr.getValue());
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::tailPositionX :
+      tailPosX = lexical_cast<double>(attr.getValue());
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::tailPositionY :
+      tailPosY = lexical_cast<double>(attr.getValue());
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::tailSize :
+      tailSize = lexical_cast<double>(attr.getValue());
+      break;
+    case IWORKToken::NS_URI_SFA | IWORKToken::ID :
       id = attr.getValue();
-    }
-    else if (IWORKToken::NS_URI_SF == getNamespaceId(attr))
-    {
-      switch (getNameId(attr))
-      {
-      case IWORKToken::cornerRadius :
-        cornerRadius = lexical_cast<double>(attr.getValue());
-        break;
-      case IWORKToken::tailAtCenter :
-        tailAtCenter = bool_cast(attr.getValue());
-        break;
-      case IWORKToken::tailPositionX :
-        tailPosX = lexical_cast<double>(attr.getValue());
-        break;
-      case IWORKToken::tailPositionY :
-        tailPosY = lexical_cast<double>(attr.getValue());
-        break;
-      case IWORKToken::tailSize :
-        tailSize = lexical_cast<double>(attr.getValue());
-        break;
-      default :
-        break;
-      }
+      break;
+    default :
+      break;
     }
   }
 
@@ -1243,7 +1097,7 @@ void KEY2Parser::parseCallout2Path(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if ((IWORKToken::NS_URI_SF == getNamespaceId(element)) && (IWORKToken::size == getNameId(element)))
+    if ((IWORKToken::NS_URI_SF | IWORKToken::size) == getId(element))
       size = readSize(reader);
     else
       skipElement(element);
@@ -1264,23 +1118,18 @@ void KEY2Parser::parseConnectionPath(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::point :
-        point = readPoint(element);
-        break;
-      case IWORKToken::size :
-        size = readSize(element);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::point :
+      point = readPoint(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::size :
+      size = readSize(element);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 
   getCollector()->collectConnectionPath(id, size, get_optional_value_or(point.first, 0), get_optional_value_or(point.second, 0));
@@ -1298,7 +1147,7 @@ void KEY2Parser::parsePointPath(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((IWORKToken::NS_URI_SF == getNamespaceId(attr)) && (IWORKToken::type == getNameId(attr)))
+    if ((IWORKToken::NS_URI_SF | IWORKToken::type) == getId(attr))
     {
       switch (getValueId(attr))
       {
@@ -1315,7 +1164,7 @@ void KEY2Parser::parsePointPath(const IWORKXMLReader &reader)
         break;
       }
     }
-    else if ((IWORKToken::NS_URI_SFA == getNamespaceId(attr)) && (IWORKToken::ID == getNameId(attr)))
+    else if ((IWORKToken::NS_URI_SFA | IWORKToken::ID) == getId(attr))
     {
       id = attr.getValue();
     }
@@ -1327,23 +1176,18 @@ void KEY2Parser::parsePointPath(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::point :
-        point = readPoint(element);
-        break;
-      case IWORKToken::size :
-        size = readSize(element);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::point :
+      point = readPoint(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::size :
+      size = readSize(element);
+      break;
+    default :
       skipElement(element);
+      break;
+    }
   }
 
   if (star)
@@ -1363,35 +1207,31 @@ void KEY2Parser::parseScalarPath(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(attr))
+    switch (getId(attr))
     {
-      switch (getNameId(attr))
+    case IWORKToken::NS_URI_SF | IWORKToken::scalar :
+      value = lexical_cast<double>(attr.getValue());
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::type :
+    {
+      switch (getValueId(attr))
       {
-      case IWORKToken::scalar :
-        value = lexical_cast<double>(attr.getValue());
+      case IWORKToken::_0 :
         break;
-      case IWORKToken::type :
-      {
-        switch (getValueId(attr))
-        {
-        case IWORKToken::_0 :
-          break;
-        case IWORKToken::_1 :
-          polygon = true;
-          break;
-        default :
-          ETONYEK_DEBUG_MSG(("unknown scalar path type: %s\n", attr.getValue()));
-          break;
-        }
+      case IWORKToken::_1 :
+        polygon = true;
         break;
-      }
       default :
+        ETONYEK_DEBUG_MSG(("unknown scalar path type: %s\n", attr.getValue()));
         break;
       }
+      break;
     }
-    else if ((IWORKToken::NS_URI_SFA == getNamespaceId(attr)) && (IWORKToken::ID == getNameId(attr)))
-    {
+    case IWORKToken::NS_URI_SFA | IWORKToken::ID :
       id = attr.getValue();
+      break;
+    default :
+      break;
     }
   }
 
@@ -1400,7 +1240,7 @@ void KEY2Parser::parseScalarPath(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if ((IWORKToken::NS_URI_SF == getNamespaceId(element)) && (IWORKToken::size == getNameId(element)))
+    if ((IWORKToken::NS_URI_SF | IWORKToken::size) == getId(element))
       size = readSize(element);
     else
       skipElement(element);
@@ -1421,22 +1261,17 @@ void KEY2Parser::parseContent(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::image_media :
-        parseImageMedia(element);
-        break;
-      case IWORKToken::movie_media :
-        parseMovieMedia(element);
-        break;
-      default :
-        skipElement(element);
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::image_media :
+      parseImageMedia(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::movie_media :
+      parseMovieMedia(element);
+      break;
+    default :
       skipElement(element);
+    }
   }
 }
 
@@ -1452,26 +1287,24 @@ void KEY2Parser::parseData(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((IWORKToken::NS_URI_SFA == getNamespaceId(attr)) && (IWORKToken::ID == getNameId(attr)))
+    switch (getId(attr))
+    {
+    case IWORKToken::NS_URI_SF | IWORKToken::displayname :
+      displayName = attr.getValue();
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::hfs_type :
+      type = lexical_cast<unsigned>(attr.getValue());
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::path :
+      stream.reset(m_package->getSubStreamByName(attr.getValue()));
+      break;
+    case IWORKToken::NS_URI_SFA | IWORKToken::ID :
     {
       ETONYEK_DEBUG_XML_TODO_ATTRIBUTE(attr);
+      break;
     }
-    else if (IWORKToken::NS_URI_SF == getNamespaceId(attr))
-    {
-      switch (getNameId(attr))
-      {
-      case IWORKToken::displayname :
-        displayName = attr.getValue();
-        break;
-      case IWORKToken::hfs_type :
-        type = lexical_cast<unsigned>(attr.getValue());
-        break;
-      case IWORKToken::path :
-        stream.reset(m_package->getSubStreamByName(attr.getValue()));
-        break;
-      default :
-        break;
-      }
+    default :
+      break;
     }
   }
 
@@ -1490,22 +1323,17 @@ void KEY2Parser::parseFiltered(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::size :
-        size = readSize(element);
-        break;
-      case IWORKToken::data :
-        parseData(element);
-        break;
-      default :
-        skipElement(element);
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::size :
+      size = readSize(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::data :
+      parseData(element);
+      break;
+    default :
       skipElement(element);
+    }
   }
 
   getCollector()->collectFiltered(id, size);
@@ -1520,31 +1348,26 @@ void KEY2Parser::parseFilteredImage(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::unfiltered_ref :
-      {
-        optional<ID_t> idref = readRef(element);
-        getCollector()->collectUnfiltered(idref, optional<IWORKSize>(), true);
-        break;
-      }
-      case IWORKToken::unfiltered :
-        parseUnfiltered(element);
-        break;
-      case IWORKToken::filtered :
-        parseFiltered(element);
-        break;
-      case IWORKToken::leveled :
-        parseLeveled(element);
-        break;
-      default :
-        skipElement(element);
-      }
+    case IWORKToken::NS_URI_SF | IWORKToken::unfiltered_ref :
+    {
+      optional<ID_t> idref = readRef(element);
+      getCollector()->collectUnfiltered(idref, optional<IWORKSize>(), true);
+      break;
     }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::unfiltered :
+      parseUnfiltered(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::filtered :
+      parseFiltered(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::leveled :
+      parseLeveled(element);
+      break;
+    default :
       skipElement(element);
+    }
   }
 
   getCollector()->collectFilteredImage(id, false);
@@ -1557,19 +1380,14 @@ void KEY2Parser::parseImageMedia(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::filtered_image :
-        parseFilteredImage(element);
-        break;
-      default :
-        skipElement(element);
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::filtered_image :
+      parseFilteredImage(element);
+      break;
+    default :
       skipElement(element);
+    }
   }
 }
 
@@ -1582,23 +1400,18 @@ void KEY2Parser::parseLeveled(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::data :
-        parseData(element);
-        break;
-      case IWORKToken::size :
-        ETONYEK_DEBUG_XML_TODO_ELEMENT(element);
-        skipElement(element);
-        break;
-      default :
-        skipElement(element);
-      }
-    }
-    else
+    case IWORKToken::NS_URI_SF | IWORKToken::data :
+      parseData(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::size :
+      ETONYEK_DEBUG_XML_TODO_ELEMENT(element);
       skipElement(element);
+      break;
+    default :
+      skipElement(element);
+    }
   }
 
   getCollector()->collectLeveled(id, optional<IWORKSize>());
@@ -1615,22 +1428,15 @@ void KEY2Parser::parseUnfiltered(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::size :
-        size = readSize(element);
-        break;
-      case IWORKToken::data :
-        parseData(element);
-        break;
-      default :
-        skipElement(element);
-      }
-    }
-    else
-    {
+    case IWORKToken::NS_URI_SF | IWORKToken::size :
+      size = readSize(element);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::data :
+      parseData(element);
+      break;
+    default :
       skipElement(element);
     }
   }
@@ -1716,14 +1522,14 @@ void KEY2Parser::parseLayout(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((IWORKToken::NS_URI_SF == getNamespaceId(attr)) && (IWORKToken::style == getNameId(attr)))
+    if ((IWORKToken::NS_URI_SF | IWORKToken::style) == getId(attr))
       emitLayoutStyle(attr.getValue());
   }
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if ((IWORKToken::NS_URI_SF == getNamespaceId(element)) && (IWORKToken::p == getNameId(element)))
+    if ((IWORKToken::NS_URI_SF | IWORKToken::p) == getId(element))
       parseP(element);
     else
       skipElement(element);
@@ -1739,24 +1545,17 @@ void KEY2Parser::parseLink(const IWORKXMLReader &reader)
   {
     if (mixed.isElement())
     {
-      if (IWORKToken::NS_URI_SF == getNamespaceId(mixed))
+      switch (getId(mixed))
       {
-        switch (getNameId(mixed))
-        {
-        case IWORKToken::br :
-          parseBr(mixed);
-          break;
-        case IWORKToken::span :
-          parseSpan(mixed);
-          break;
-        default :
-          skipElement(mixed);
-          break;
-        }
-      }
-      else
-      {
+      case IWORKToken::NS_URI_SF | IWORKToken::br :
+        parseBr(mixed);
+        break;
+      case IWORKToken::NS_URI_SF | IWORKToken::span :
+        parseSpan(mixed);
+        break;
+      default :
         skipElement(mixed);
+        break;
       }
     }
     else
@@ -1773,16 +1572,13 @@ void KEY2Parser::parseP(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(attr))
+    switch (getId(attr))
     {
-      switch (getNameId(attr))
-      {
-      case IWORKToken::style :
-        style = attr.getValue();
-        break;
-      default :
-        break;
-      }
+    case IWORKToken::NS_URI_SF | IWORKToken::style :
+      style = attr.getValue();
+      break;
+    default :
+      break;
     }
   }
 
@@ -1793,33 +1589,26 @@ void KEY2Parser::parseP(const IWORKXMLReader &reader)
   {
     if (mixed.isElement())
     {
-      if (IWORKToken::NS_URI_SF == getNamespaceId(mixed))
+      switch (getId(mixed))
       {
-        switch (getNameId(mixed))
-        {
-        case IWORKToken::br :
-        case IWORKToken::crbr :
-        case IWORKToken::intratopicbr :
-        case IWORKToken::lnbr :
-          parseBr(mixed);
-          break;
-        case IWORKToken::span :
-          parseSpan(mixed);
-          break;
-        case IWORKToken::tab :
-          parseTab(mixed);
-          break;
-        case IWORKToken::link :
-          parseLink(mixed);
-          break;
-        default :
-          skipElement(mixed);
-          break;
-        }
-      }
-      else
-      {
+      case IWORKToken::NS_URI_SF | IWORKToken::br :
+      case IWORKToken::NS_URI_SF | IWORKToken::crbr :
+      case IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
+      case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
+        parseBr(mixed);
+        break;
+      case IWORKToken::NS_URI_SF | IWORKToken::span :
+        parseSpan(mixed);
+        break;
+      case IWORKToken::NS_URI_SF | IWORKToken::tab :
+        parseTab(mixed);
+        break;
+      case IWORKToken::NS_URI_SF | IWORKToken::link :
+        parseLink(mixed);
+        break;
+      default :
         skipElement(mixed);
+        break;
       }
     }
     else
@@ -1840,7 +1629,7 @@ void KEY2Parser::parseSpan(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((IWORKToken::NS_URI_SF == getNamespaceId(attr)) && (IWORKToken::style == getNameId(attr)))
+    if ((IWORKToken::NS_URI_SF | IWORKToken::style) == getId(attr))
       style = attr.getValue();
   }
 
@@ -1849,27 +1638,20 @@ void KEY2Parser::parseSpan(const IWORKXMLReader &reader)
   {
     if (mixed.isElement())
     {
-      if (IWORKToken::NS_URI_SF == getNamespaceId(mixed))
+      switch (getId(mixed))
       {
-        switch (getNameId(mixed))
-        {
-        case IWORKToken::br :
-        case IWORKToken::crbr :
-        case IWORKToken::intratopicbr :
-        case IWORKToken::lnbr :
-          parseBr(mixed);
-          break;
-        case IWORKToken::tab :
-          parseTab(mixed);
-          break;
-        default :
-          skipElement(mixed);
-          break;
-        }
-      }
-      else
-      {
+      case IWORKToken::NS_URI_SF | IWORKToken::br :
+      case IWORKToken::NS_URI_SF | IWORKToken::crbr :
+      case IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
+      case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
+        parseBr(mixed);
+        break;
+      case IWORKToken::NS_URI_SF | IWORKToken::tab :
+        parseTab(mixed);
+        break;
+      default :
         skipElement(mixed);
+        break;
       }
     }
     else
@@ -1899,23 +1681,20 @@ void KEY2Parser::parseText(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(attr))
+    switch (getId(attr))
     {
-      switch (getNameId(attr))
-      {
-      case IWORKToken::layoutstyle :
-        emitLayoutStyle(attr.getValue());
-        break;
-      default :
-        break;
-      }
+    case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
+      emitLayoutStyle(attr.getValue());
+      break;
+    default :
+      break;
     }
   }
 
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if ((IWORKToken::NS_URI_SF == getNamespaceId(element)) && (IWORKToken::text_storage == getNameId(element)))
+    if ((IWORKToken::NS_URI_SF | IWORKToken::text_storage) == getId(element))
       parseTextStorage(element);
     else
       skipElement(element);
@@ -1933,46 +1712,39 @@ void KEY2Parser::parseTextBody(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
+    case IWORKToken::NS_URI_SF | IWORKToken::layout :
+      if (layout || para)
       {
-      case IWORKToken::layout :
-        if (layout || para)
-        {
-          ETONYEK_DEBUG_MSG(("layout following another element, not allowed, skipping\n"));
-          skipElement(element);
-        }
-        else
-        {
-          parseLayout(element);
-          layout = true;
-        }
-        break;
-      case IWORKToken::p :
-        if (layout)
-        {
-          ETONYEK_DEBUG_MSG(("paragraph following layout, not allowed, skipping\n"));
-          skipElement(element);
-        }
-        else if (para)
-        {
-          parseP(element);
-        }
-        else
-        {
-          para = true;
-          parseP(element);
-        }
-        break;
-      default :
+        ETONYEK_DEBUG_MSG(("layout following another element, not allowed, skipping\n"));
         skipElement(element);
-        break;
       }
-    }
-    else
-    {
+      else
+      {
+        parseLayout(element);
+        layout = true;
+      }
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::p :
+      if (layout)
+      {
+        ETONYEK_DEBUG_MSG(("paragraph following layout, not allowed, skipping\n"));
+        skipElement(element);
+      }
+      else if (para)
+      {
+        parseP(element);
+      }
+      else
+      {
+        para = true;
+        parseP(element);
+      }
+      break;
+    default :
       skipElement(element);
+      break;
     }
   }
 }
@@ -1984,21 +1756,14 @@ void KEY2Parser::parseTextStorage(const IWORKXMLReader &reader)
   IWORKXMLReader::ElementIterator element(reader);
   while (element.next())
   {
-    if (IWORKToken::NS_URI_SF == getNamespaceId(element))
+    switch (getId(element))
     {
-      switch (getNameId(element))
-      {
-      case IWORKToken::text_body :
-        parseTextBody(element);
-        break;
-      default :
-        skipElement(element);
-        break;
-      }
-    }
-    else
-    {
+    case IWORKToken::NS_URI_SF | IWORKToken::text_body :
+      parseTextBody(element);
+      break;
+    default :
       skipElement(element);
+      break;
     }
   }
 }

@@ -70,7 +70,7 @@ optional<ID_t> KEY2ParserUtils::readID(const IWORKXMLReader &reader)
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if ((IWORKToken::NS_URI_SFA == getNamespaceId(attr)) && (IWORKToken::ID == getNameId(attr)))
+    if ((IWORKToken::NS_URI_SFA | IWORKToken::ID) == getId(attr))
       id = attr.getValue();
   }
 
@@ -92,19 +92,16 @@ pair<optional<double>, optional<double> > KEY2ParserUtils::readPoint(const IWORK
   IWORKXMLReader::AttributeIterator attr(reader);
   while (attr.next())
   {
-    if (IWORKToken::NS_URI_SFA == getNamespaceId(attr))
+    switch (getId(attr))
     {
-      switch (getNameId(attr))
-      {
-      case IWORKToken::x :
-        point.first = lexical_cast<double>(attr.getValue());
-        break;
-      case IWORKToken::y :
-        point.second = lexical_cast<double>(attr.getValue());
-        break;
-      default :
-        break;
-      }
+    case IWORKToken::NS_URI_SFA | IWORKToken::x :
+      point.first = lexical_cast<double>(attr.getValue());
+      break;
+    case IWORKToken::NS_URI_SFA | IWORKToken::y :
+      point.second = lexical_cast<double>(attr.getValue());
+      break;
+    default :
+      break;
     }
   }
 
