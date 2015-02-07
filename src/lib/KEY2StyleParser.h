@@ -28,7 +28,7 @@ class KEY2StyleParser : private KEY2ParserUtils
   KEY2StyleParser &operator=(const KEY2StyleParser &other);
 
 public:
-  KEY2StyleParser(int nameId, int nsId, KEYCollector *collector, const KEYDefaults &defaults, bool nested = false);
+  KEY2StyleParser(int id, KEYCollector *collector, const KEYDefaults &defaults, bool nested = false);
 
   void parse(const IWORKXMLReader &reader);
 
@@ -51,8 +51,7 @@ private:
   IWORKGeometryPtr_t readGeometry(const IWORKXMLReader &reader);
 
 private:
-  const int m_nameId;
-  const int m_nsId;
+  const int m_id;
   const bool m_nested;
   KEYCollector *const m_collector;
   const KEYDefaults &m_defaults;

@@ -108,10 +108,9 @@ optional<string> readString(const IWORKXMLReader &reader)
 
 }
 
-KEY2StyleParser::KEY2StyleParser(const int nameId, const int nsId, KEYCollector *const collector, const KEYDefaults &defaults, const bool nested)
+KEY2StyleParser::KEY2StyleParser(const int id, KEYCollector *const collector, const KEYDefaults &defaults, const bool nested)
   : KEY2ParserUtils()
-  , m_nameId(nameId)
-  , m_nsId(nsId)
+  , m_id(id)
   , m_nested(nested)
   , m_collector(collector)
   , m_defaults(defaults)
@@ -151,43 +150,43 @@ void KEY2StyleParser::parse(const IWORKXMLReader &reader)
     {
       parsePropertyMap(reader);
 
-      switch (m_nameId)
+      switch (m_id)
       {
-      case IWORKToken::cell_style :
+      case IWORKToken::NS_URI_SF | IWORKToken::cell_style :
         m_collector->collectCellStyle(id, m_props, ident, parentIdent, false, m_nested);
         break;
-      case IWORKToken::characterstyle :
+      case IWORKToken::NS_URI_SF | IWORKToken::characterstyle :
         m_collector->collectCharacterStyle(id, m_props, ident, parentIdent, false, m_nested);
         break;
-      case IWORKToken::connection_style :
+      case IWORKToken::NS_URI_SF | IWORKToken::connection_style :
         m_collector->collectConnectionStyle(id, m_props, ident, parentIdent, false, m_nested);
         break;
-      case IWORKToken::graphic_style :
+      case IWORKToken::NS_URI_SF | IWORKToken::graphic_style :
         m_collector->collectGraphicStyle(id, m_props, ident, parentIdent, false, m_nested);
         break;
-      case IWORKToken::layoutstyle :
+      case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
         m_collector->collectLayoutStyle(id, m_props, ident, parentIdent, false, m_nested);
         break;
-      case IWORKToken::liststyle :
+      case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
         m_collector->collectListStyle(id, m_props, ident, parentIdent, false, m_nested);
         break;
-      case IWORKToken::paragraphstyle :
+      case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
         m_collector->collectParagraphStyle(id, m_props, ident, parentIdent, false, m_nested);
         break;
-      case IWORKToken::placeholder_style :
+      case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style :
         m_collector->collectPlaceholderStyle(id, m_props, ident, parentIdent, false, m_nested);
         break;
-      case IWORKToken::slide_style :
+      case IWORKToken::NS_URI_SF | IWORKToken::slide_style :
         m_collector->collectSlideStyle(id, m_props, ident, parentIdent, false, m_nested);
         break;
-      case IWORKToken::tabular_style :
+      case IWORKToken::NS_URI_SF | IWORKToken::tabular_style :
         m_collector->collectTabularStyle(id, m_props, ident, parentIdent, false, m_nested);
         break;
-      case IWORKToken::vector_style :
+      case IWORKToken::NS_URI_SF | IWORKToken::vector_style :
         m_collector->collectVectorStyle(id, m_props, ident, parentIdent, false, m_nested);
         break;
       default :
-        ETONYEK_DEBUG_MSG(("unhandled style %d:%d\n", m_nsId, m_nameId));
+        ETONYEK_DEBUG_MSG(("unhandled style %d\n", m_id));
         break;
       }
     }
@@ -223,8 +222,6 @@ bool KEY2StyleParser::parsePropertyImpl(const IWORKXMLReader &reader, const int 
   bool parsed = true;
   any prop;
 
-  const int nsToken = getNamespaceId(reader);
-  const int nameToken = getNameId(reader);
   const int token = getId(reader);
 
   switch (token)
@@ -235,7 +232,7 @@ bool KEY2StyleParser::parsePropertyImpl(const IWORKXMLReader &reader, const int 
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
   case IWORKToken::NS_URI_SF | IWORKToken::vector_style :
   {
-    KEY2StyleParser parser(nameToken, nsToken, m_collector, m_defaults, true);
+    KEY2StyleParser parser(token, m_collector, m_defaults, true);
     parser.parse(reader);
     // TODO: need to get the style
     break;

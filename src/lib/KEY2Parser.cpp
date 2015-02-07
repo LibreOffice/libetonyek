@@ -474,7 +474,7 @@ void KEY2Parser::parseStyles(const IWORKXMLReader &reader, const bool anonymous)
     case IWORKToken::NS_URI_SF | IWORKToken::tabular_style :
     case IWORKToken::NS_URI_SF | IWORKToken::vector_style :
     {
-      KEY2StyleParser parser(getNameId(element), getNamespaceId(element), getCollector(), getDefaults());
+      KEY2StyleParser parser(getId(element), getCollector(), getDefaults());
       parser.parse(element);
       break;
     }
