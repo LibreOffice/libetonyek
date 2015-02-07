@@ -112,7 +112,7 @@ void KEY2Parser::processXmlNode(const IWORKXMLReader &reader)
     {
       switch (getNameId(element))
       {
-      case IWORKToken::size :
+      case KEY2Token::size :
         size = readSize(reader);
         break;
       case KEY2Token::theme_list :

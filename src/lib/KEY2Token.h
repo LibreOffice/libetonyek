@@ -26,6 +26,7 @@ enum
   INVALID_TOKEN = 0,
   // redefine for convenience
   sticky_note = IWORKToken::sticky_note,
+  size = IWORKToken::size,
   text = IWORKToken::text,
   FIRST_TOKEN = IWORKTokenInfo<KEY2Parser>::first,
 
