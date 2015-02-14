@@ -79,7 +79,7 @@ public:
                                   const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
                                   bool ref, bool anonymous) = 0;
 
-  virtual void collectGeometry(boost::optional<ID_t> &id,
+  virtual void collectGeometry(const boost::optional<ID_t> &id,
                                boost::optional<IWORKSize> &naturalSize, boost::optional<IWORKSize> &size,
                                boost::optional<IWORKPosition> &position, boost::optional<double> &angle,
                                boost::optional<double> &shearXAngle, boost::optional<double> &shearYAngle,

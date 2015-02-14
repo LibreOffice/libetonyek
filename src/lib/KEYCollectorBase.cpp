@@ -348,7 +348,7 @@ void KEYCollectorBase::collectVectorStyle(const boost::optional<ID_t> &id,
   (void) anonymous;
 }
 
-void KEYCollectorBase::collectGeometry(boost::optional<ID_t> &,
+void KEYCollectorBase::collectGeometry(const boost::optional<ID_t> &,
                                        boost::optional<IWORKSize> &naturalSize, boost::optional<IWORKSize> &size,
                                        boost::optional<IWORKPosition> &position, boost::optional<double> &angle,
                                        boost::optional<double> &shearXAngle, boost::optional<double> &shearYAngle,
