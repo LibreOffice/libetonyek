@@ -31,6 +31,8 @@ libetonyek_internal_la_SOURCES = \
 	IWORKPath_fwd.h \
 	IWORKPropertyMap.cpp \
 	IWORKPropertyMap.h \
+	IWORKTabularInfoContext.cpp \
+	IWORKTabularInfoContext.h \
 	IWORKTransformation.cpp \
 	IWORKTransformation.h \
 	IWORKToken.cpp \
@@ -38,6 +40,14 @@ libetonyek_internal_la_SOURCES = \
 	IWORKTypes.cpp \
 	IWORKTypes.h \
 	IWORKTypes_fwd.h \
+	IWORKXMLContext.cpp \
+	IWORKXMLContext.h \
+	IWORKXMLContexts.cpp \
+	IWORKXMLContexts.h \
+	IWORKXMLContextBase.cpp \
+	IWORKXMLContextBase.h \
+	IWORKXMLParserState.cpp \
+	IWORKXMLParserState.h \
 	IWORKXMLReader.cpp \
 	IWORKXMLReader.h \
 	IWORKZlibStream.cpp \
@@ -54,10 +64,8 @@ libetonyek_internal_la_SOURCES = \
 	KEY2Parser.h \
 	KEY2ParserUtils.cpp \
 	KEY2ParserUtils.h \
-	KEY2StyleParser.cpp \
-	KEY2StyleParser.h \
-	KEY2TableParser.cpp \
-	KEY2TableParser.h \
+	KEY2StyleContext.cpp \
+	KEY2StyleContext.h \
 	KEY2Token.cpp \
 	KEY2Token.h \
 	KEYCollector.cpp \

@@ -11,6 +11,8 @@
 #define KEYPARSER_H_INCLUDED
 
 #include "libetonyek_utils.h"
+#include "IWORKXMLContext.h"
+#include "IWORKXMLParserState.h"
 #include "IWORKXMLReader.h"
 
 namespace libetonyek
@@ -26,21 +28,25 @@ class KEYParser
   KEYParser &operator=(const KEYParser &);
 
 public:
-  KEYParser(const RVNGInputStreamPtr_t &input, KEYCollector *collector, const KEYDefaults &defaults);
+  KEYParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *collector, const KEYDefaults &defaults);
   virtual ~KEYParser() = 0;
   bool parse();
+
+  RVNGInputStreamPtr_t &getInput();
+  RVNGInputStreamPtr_t getInput() const;
+  RVNGInputStreamPtr_t &getPackage();
+  RVNGInputStreamPtr_t getPackage() const;
 
   KEYCollector *getCollector() const;
   const KEYDefaults &getDefaults() const;
 
 private:
-  virtual void processXmlNode(const IWORKXMLReader &reader) = 0;
+  virtual IWORKXMLContextPtr_t makeDocumentContext(IWORKXMLParserState &state) const = 0;
   virtual IWORKXMLReader::TokenizerFunction_t getTokenizer() const = 0;
-
-  bool processXmlDocument(const IWORKXMLReader &reader);
 
 private:
   RVNGInputStreamPtr_t m_input;
+  RVNGInputStreamPtr_t m_package;
   KEYCollector *m_collector;
   const KEYDefaults &m_defaults;
 };

@@ -14,8 +14,8 @@
 namespace libetonyek
 {
 
-KEY1Parser::KEY1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &, KEYCollector *const collector, const KEYDefaults &defaults)
-  : KEYParser(input, collector, defaults)
+KEY1Parser::KEY1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector, const KEYDefaults &defaults)
+  : KEYParser(input, package, collector, defaults)
 {
 }
 
@@ -23,10 +23,11 @@ KEY1Parser::~KEY1Parser()
 {
 }
 
-void KEY1Parser::processXmlNode(const IWORKXMLReader &reader)
+IWORKXMLContextPtr_t KEY1Parser::makeDocumentContext(IWORKXMLParserState &state) const
 {
   // TODO: implement me
-  (void) reader;
+  (void) state;
+  return IWORKXMLContextPtr_t();
 }
 
 IWORKXMLReader::TokenizerFunction_t KEY1Parser::getTokenizer() const
