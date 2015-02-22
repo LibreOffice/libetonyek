@@ -28,6 +28,8 @@ libetonyek_internal_la_SOURCES = \
 	IWORKEnum.h \
 	IWORKMemoryStream.cpp \
 	IWORKMemoryStream.h \
+	IWORKOutputElements.cpp \
+	IWORKOutputElements.h \
 	IWORKPath.cpp \
 	IWORKPath.h \
 	IWORKPath_fwd.h \
