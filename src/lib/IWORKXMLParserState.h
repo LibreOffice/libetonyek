@@ -24,7 +24,7 @@ class IWORKXMLParserState
 {
   // not copyable
   IWORKXMLParserState(const IWORKXMLParserState &);
-  IWORKXMLParserState& operator=(const IWORKXMLParserState &);
+  IWORKXMLParserState &operator=(const IWORKXMLParserState &);
 
 public:
   IWORKXMLParserState(KEYParser &parser, const IWORKXMLReader::TokenizerFunction_t &tokenizer);

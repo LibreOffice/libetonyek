@@ -288,10 +288,10 @@ IWORKXMLContextPtr_t LayoutContext::element(const int name)
 IWORKColorContext::IWORKColorContext(IWORKXMLParserState &state, boost::optional<IWORKColor> &color)
   : IWORKXMLEmptyContextBase(state)
   , m_color(color)
-    , m_r(0)
-    , m_g(0)
-    , m_b(0)
-    , m_a(0)
+  , m_r(0)
+  , m_g(0)
+  , m_b(0)
+  , m_a(0)
 {
 }
 
