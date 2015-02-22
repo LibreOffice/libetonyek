@@ -33,10 +33,16 @@ libetonyek_internal_la_SOURCES = \
 	IWORKPath.cpp \
 	IWORKPath.h \
 	IWORKPath_fwd.h \
+	IWORKPresentationInterfaceRedirector.cpp \
+	IWORKPresentationInterfaceRedirector.h \
 	IWORKPropertyMap.cpp \
 	IWORKPropertyMap.h \
+	IWORKSpreadsheetInterfaceRedirector.cpp \
+	IWORKSpreadsheetInterfaceRedirector.h \
 	IWORKTabularInfoContext.cpp \
 	IWORKTabularInfoContext.h \
+	IWORKTextInterfaceRedirector.cpp \
+	IWORKTextInterfaceRedirector.h \
 	IWORKTransformation.cpp \
 	IWORKTransformation.h \
 	IWORKToken.cpp \
