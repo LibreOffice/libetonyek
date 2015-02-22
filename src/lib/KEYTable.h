@@ -17,6 +17,8 @@
 namespace libetonyek
 {
 
+class IWORKTransformation;
+
 class KEYTable
 {
   struct Cell
@@ -45,7 +47,7 @@ public:
 
   void setGeometry(const IWORKGeometryPtr_t &geometry);
 
-  void draw(const KEYOutput &output) const;
+  void draw(const KEYOutput &output, const IWORKTransformation &trafo) const;
 
 private:
   Table_t m_table;
@@ -54,7 +56,7 @@ private:
   IWORKGeometryPtr_t m_geometry;
 };
 
-KEYObjectPtr_t makeObject(const KEYTable &table);
+KEYObjectPtr_t makeObject(const KEYTable &table, const IWORKTransformation &trafo);
 
 }
 

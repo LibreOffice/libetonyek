@@ -21,6 +21,7 @@ namespace libetonyek
 {
 
 struct IWORKSize;
+class IWORKTransformation;
 
 /** Representation of a shape.
  */
@@ -38,7 +39,7 @@ typedef boost::shared_ptr<KEYShape> KEYShapePtr_t;
 
 /** Object creator function for shape.
  */
-KEYObjectPtr_t makeObject(const KEYShapePtr_t &shape);
+KEYObjectPtr_t makeObject(const KEYShapePtr_t &shape, const IWORKTransformation &trafo);
 
 /** Path creator functions for stock shapes.
  */

@@ -12,6 +12,7 @@
 #include <librevenge/librevenge.h>
 
 #include "libetonyek_utils.h"
+#include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 #include "KEYOutput.h"
 #include "KEYTable.h"
@@ -74,26 +75,26 @@ void KEYTable::setGeometry(const IWORKGeometryPtr_t &geometry)
   m_geometry = geometry;
 }
 
-void KEYTable::draw(const KEYOutput &output) const
+void KEYTable::draw(const KEYOutput &output, const IWORKTransformation &trafo) const
 {
   librevenge::RVNGPresentationInterface *const painter = output.getPainter();
 
   librevenge::RVNGPropertyList tableProps;
   tableProps.insert("table:align", "center");
 
+  double x = 0;
+  double y = 0;
+  trafo(x, y);
+  tableProps.insert("svg:x", pt2in(x));
+  tableProps.insert("svg:y", pt2in(y));
+
   if (m_geometry)
   {
-    double x = m_geometry->position.x;
-    double y = m_geometry->position.y;
     double w = m_geometry->naturalSize.width;
     double h = m_geometry->naturalSize.height;
 
-    const IWORKTransformation tr = output.getTransformation();
-    tr(x, y);
-    tr(w, h, true);
+    trafo(w, h, true);
 
-    tableProps.insert("svg:x", pt2in(x));
-    tableProps.insert("svg:y", pt2in(y));
     tableProps.insert("svg:width", pt2in(w));
     tableProps.insert("svg:height", pt2in(h));
   }
@@ -154,29 +155,31 @@ namespace
 class TableObject : public KEYObject
 {
 public:
-  explicit TableObject(const KEYTable &table);
+  TableObject(const KEYTable &table, const IWORKTransformation &trafo);
 
   virtual void draw(const KEYOutput &output);
 
 private:
   const KEYTable m_table;
+  const IWORKTransformation m_trafo;
 };
 
-TableObject::TableObject(const KEYTable &table)
+TableObject::TableObject(const KEYTable &table, const IWORKTransformation &trafo)
   : m_table(table)
+  , m_trafo(trafo)
 {
 }
 
 void TableObject::draw(const KEYOutput &output)
 {
-  m_table.draw(output);
+  m_table.draw(output, m_trafo);
 }
 
 }
 
-KEYObjectPtr_t makeObject(const KEYTable &table)
+KEYObjectPtr_t makeObject(const KEYTable &table, const IWORKTransformation &trafo)
 {
-  const KEYObjectPtr_t object(new TableObject(table));
+  const KEYObjectPtr_t object(new TableObject(table, trafo));
   return object;
 }
 

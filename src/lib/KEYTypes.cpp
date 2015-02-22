@@ -14,6 +14,7 @@
 #include <librevenge/librevenge.h>
 
 #include "libetonyek_utils.h"
+#include "IWORKTransformation.h"
 #include "KEYOutput.h"
 #include "KEYStyles.h"
 #include "KEYText.h"
@@ -206,6 +207,7 @@ private:
 
 private:
   const KEYGroupPtr_t m_group;
+  const IWORKTransformation m_trafo;
 };
 
 GroupObject::GroupObject(const KEYGroupPtr_t &group)
@@ -226,17 +228,19 @@ namespace
 class ImageObject : public KEYObject
 {
 public:
-  explicit ImageObject(const KEYImagePtr_t &image);
+  ImageObject(const KEYImagePtr_t &image, const IWORKTransformation &trafo);
 
 private:
   virtual void draw(const KEYOutput &output);
 
 private:
   const KEYImagePtr_t m_image;
+  const IWORKTransformation m_trafo;
 };
 
-ImageObject::ImageObject(const KEYImagePtr_t &image)
+ImageObject::ImageObject(const KEYImagePtr_t &image, const IWORKTransformation &trafo)
   : m_image(image)
+  , m_trafo(trafo)
 {
 }
 
@@ -254,17 +258,19 @@ namespace
 class LineObject : public KEYObject
 {
 public:
-  explicit LineObject(const KEYLinePtr_t &line);
+  LineObject(const KEYLinePtr_t &line, const IWORKTransformation &trafo);
 
 private:
   virtual void draw(const KEYOutput &output);
 
 private:
   const KEYLinePtr_t m_line;
+  const IWORKTransformation m_trafo;
 };
 
-LineObject::LineObject(const KEYLinePtr_t &line)
+LineObject::LineObject(const KEYLinePtr_t &line, const IWORKTransformation &trafo)
   : m_line(line)
+  , m_trafo(trafo)
 {
 }
 
@@ -313,17 +319,19 @@ namespace
 class MediaObject : public KEYObject
 {
 public:
-  explicit MediaObject(const KEYMediaPtr_t &media);
+  MediaObject(const KEYMediaPtr_t &media, const IWORKTransformation &trafo);
 
 private:
   virtual void draw(const KEYOutput &output);
 
 private:
   const KEYMediaPtr_t m_media;
+  const IWORKTransformation m_trafo;
 };
 
-MediaObject::MediaObject(const KEYMediaPtr_t &media)
+MediaObject::MediaObject(const KEYMediaPtr_t &media, const IWORKTransformation &trafo)
   : m_media(media)
+  , m_trafo(trafo)
 {
 }
 
@@ -335,8 +343,6 @@ void MediaObject::draw(const KEYOutput &output)
       && bool(m_media->content->data)
       && bool(m_media->content->data->stream))
   {
-    const KEYOutput newOutput(output, makeTransformation(*m_media->geometry));
-
     const RVNGInputStreamPtr_t input = m_media->content->data->stream;
 
     const optional<string> mimetype = getMimetype(m_media->content->data->type, input);
@@ -359,18 +365,17 @@ void MediaObject::draw(const KEYOutput &output)
 
       double x = 1;
       double y = 1;
-      const IWORKTransformation &tr = newOutput.getTransformation();
-      tr(x, y);
+      m_trafo(x, y);
       props.insert("svg:x", pt2in(x));
       props.insert("svg:y", pt2in(y));
 
       double width = m_media->geometry->size.width;
       double height = m_media->geometry->size.height;
-      tr(width, height, true);
+      m_trafo(width, height, true);
       props.insert("svg:width", pt2in(width));
       props.insert("svg:height", pt2in(height));
 
-      newOutput.getPainter()->drawGraphicObject(props);
+      output.getPainter()->drawGraphicObject(props);
     }
   }
 }
@@ -383,17 +388,19 @@ namespace
 class PlaceholderObject : public KEYObject
 {
 public:
-  explicit PlaceholderObject(const KEYPlaceholderPtr_t &body);
+  PlaceholderObject(const KEYPlaceholderPtr_t &body, const IWORKTransformation &trafo);
 
 private:
   virtual void draw(const KEYOutput &output);
 
 private:
   const KEYPlaceholderPtr_t m_body;
+  const IWORKTransformation m_trafo;
 };
 
-PlaceholderObject::PlaceholderObject(const KEYPlaceholderPtr_t &body)
+PlaceholderObject::PlaceholderObject(const KEYPlaceholderPtr_t &body, const IWORKTransformation &trafo)
   : m_body(body)
+  , m_trafo(trafo)
 {
 }
 
@@ -401,11 +408,8 @@ void PlaceholderObject::draw(const KEYOutput &output)
 {
   if (bool(m_body) && bool(m_body->style) && bool(m_body->text))
   {
-    if (bool(m_body->geometry))
-    {
-      const KEYOutput newOutput(output, makeTransformation(*m_body->geometry), m_body->style);
-      makeObject(m_body->text)->draw(newOutput);
-    }
+    const KEYOutput newOutput(output, m_body->style);
+    makeObject(m_body->text, m_trafo)->draw(newOutput);
   }
 }
 
@@ -417,27 +421,27 @@ KEYObjectPtr_t makeObject(const KEYGroupPtr_t &group)
   return object;
 }
 
-KEYObjectPtr_t makeObject(const KEYImagePtr_t &image)
+KEYObjectPtr_t makeObject(const KEYImagePtr_t &image, const IWORKTransformation &trafo)
 {
-  const KEYObjectPtr_t object(new ImageObject(image));
+  const KEYObjectPtr_t object(new ImageObject(image, trafo));
   return object;
 }
 
-KEYObjectPtr_t makeObject(const KEYLinePtr_t &line)
+KEYObjectPtr_t makeObject(const KEYLinePtr_t &line, const IWORKTransformation &trafo)
 {
-  const KEYObjectPtr_t object(new LineObject(line));
+  const KEYObjectPtr_t object(new LineObject(line, trafo));
   return object;
 }
 
-KEYObjectPtr_t makeObject(const KEYMediaPtr_t &media)
+KEYObjectPtr_t makeObject(const KEYMediaPtr_t &media, const IWORKTransformation &trafo)
 {
-  const KEYObjectPtr_t object(new MediaObject(media));
+  const KEYObjectPtr_t object(new MediaObject(media, trafo));
   return object;
 }
 
-KEYObjectPtr_t makeObject(const KEYPlaceholderPtr_t &body)
+KEYObjectPtr_t makeObject(const KEYPlaceholderPtr_t &body, const IWORKTransformation &trafo)
 {
-  const KEYObjectPtr_t object(new PlaceholderObject(body));
+  const KEYObjectPtr_t object(new PlaceholderObject(body, trafo));
   return object;
 }
 

@@ -24,12 +24,10 @@ public:
 
 private:
   CPPUNIT_TEST_SUITE(KEYOutputTest);
-  CPPUNIT_TEST(testTransformation);
   CPPUNIT_TEST(testStyle);
   CPPUNIT_TEST_SUITE_END();
 
 private:
-  void testTransformation();
   void testStyle();
 };
 

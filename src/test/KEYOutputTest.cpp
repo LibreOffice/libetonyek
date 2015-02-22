@@ -49,37 +49,6 @@ void KEYOutputTest::tearDown()
 {
 }
 
-void KEYOutputTest::testTransformation()
-{
-  KEYStyleContext context;
-  const KEYOutput output(0, context);
-
-  // default transformation
-  CPPUNIT_ASSERT(IWORKTransformation() == output.getTransformation());
-
-  using namespace libetonyek::transformations;
-
-  // translation
-  {
-    const IWORKTransformation test = translate(3, 4);
-    const KEYOutput output2(output, test);
-    CPPUNIT_ASSERT(output.getTransformation() != output2.getTransformation());
-    CPPUNIT_ASSERT(test == output2.getTransformation());
-
-    // nested transformations are applied in the right order: the
-    // innermost one first
-    {
-      const IWORKTransformation test2 = scale(2, 1);
-      KEYOutput output3(output2, test2);
-      CPPUNIT_ASSERT(test2 * test == output3.getTransformation());
-    }
-
-    CPPUNIT_ASSERT(test == output2.getTransformation());
-  }
-
-  CPPUNIT_ASSERT(IWORKTransformation() == output.getTransformation());
-}
-
 void KEYOutputTest::testStyle()
 {
   KEYStyleContext context;

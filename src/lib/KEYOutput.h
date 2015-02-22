@@ -10,8 +10,9 @@
 #ifndef KEYOUTPUT_H_INCLUDED
 #define KEYOUTPUT_H_INCLUDED
 
+#include <librevenge/librevenge.h>
+
 #include "KEYStyle.h"
-#include "IWORKTransformation.h"
 
 namespace libetonyek
 {
@@ -36,13 +37,6 @@ public:
     */
   KEYOutput(librevenge::RVNGPresentationInterface *painter, KEYStyleContext &context);
 
-  /** Apply a transformation to the current output.
-    *
-    * @arg[in] output the current output
-    * @arg[in] tr a transformation
-    */
-  KEYOutput(const KEYOutput &output, const IWORKTransformation &tr);
-
   /** Apply a style to the current output.
     *
     * The style is pushed to the style context.
@@ -53,18 +47,6 @@ public:
     * @seealso KEYStyleContext
     */
   KEYOutput(const KEYOutput &output, const KEYStylePtr_t &style);
-
-  /** Apply a transformation and a style to the current output.
-    *
-    * The style is pushed to the style context.
-    *
-    * @arg[in] output the current output
-    * @arg[in] tr a transformation
-    * @arg[in] style a style
-    *
-    * @seealso KEYStyleContext
-    */
-  KEYOutput(const KEYOutput &output, const IWORKTransformation &tr, const KEYStylePtr_t &style);
 
   /** Create a @c KEYOutput as a copy of an existing one.
     *
@@ -85,12 +67,6 @@ public:
     */
   librevenge::RVNGPresentationInterface *getPainter() const;
 
-  /** Get the current transformation.
-    *
-    * @return the currently active transformation
-    */
-  const IWORKTransformation &getTransformation() const;
-
   /** Get the style context.
     *
     * @return the style context.
@@ -100,7 +76,6 @@ public:
 private:
   librevenge::RVNGPresentationInterface *const m_painter;
   KEYStyleContext &m_styleContext;
-  IWORKTransformation m_transformation;
   bool m_stylePushed;
 };
 

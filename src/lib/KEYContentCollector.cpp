@@ -113,6 +113,7 @@ void KEYContentCollector::startPage()
     assert(!m_layerOpened);
 
     KEYCollectorBase::startPage();
+    startLevel();
 
     librevenge::RVNGPropertyList props;
     props.insert("svg:width", pt2in(m_size.width));
@@ -129,6 +130,7 @@ void KEYContentCollector::endPage()
   {
     assert(m_pageOpened);
 
+    endLevel();
     KEYCollectorBase::endPage();
 
     m_pageOpened = false;
@@ -220,10 +222,7 @@ void KEYContentCollector::drawStickyNotes(const KEYStickyNotes_t &stickyNotes)
 
     m_painter->startComment(props);
     if (bool(it->text))
-    {
-      const IWORKTransformation tr(bool(it->geometry) ? makeTransformation(*it->geometry) : IWORKTransformation());
-      makeObject(it->text)->draw(KEYOutput(output, tr));
-    }
+      makeObject(it->text, getTransformation())->draw(output);
     m_painter->endComment();
   }
 }

@@ -25,6 +25,8 @@
 namespace libetonyek
 {
 
+class IWORKTransformation;
+
 struct KEYLine
 {
   IWORKGeometryPtr_t geometry;
@@ -130,10 +132,10 @@ struct KEYStickyNote
 typedef std::deque<KEYStickyNote> KEYStickyNotes_t;
 
 KEYObjectPtr_t makeObject(const KEYGroupPtr_t &group);
-KEYObjectPtr_t makeObject(const KEYImagePtr_t &image);
-KEYObjectPtr_t makeObject(const KEYLinePtr_t &line);
-KEYObjectPtr_t makeObject(const KEYMediaPtr_t &media);
-KEYObjectPtr_t makeObject(const KEYPlaceholderPtr_t &placeholder);
+KEYObjectPtr_t makeObject(const KEYImagePtr_t &image, const IWORKTransformation &trafo);
+KEYObjectPtr_t makeObject(const KEYLinePtr_t &line, const IWORKTransformation &trafo);
+KEYObjectPtr_t makeObject(const KEYMediaPtr_t &media, const IWORKTransformation &trafo);
+KEYObjectPtr_t makeObject(const KEYPlaceholderPtr_t &placeholder, const IWORKTransformation &trafo);
 
 }
 

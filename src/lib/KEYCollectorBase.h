@@ -13,6 +13,7 @@
 #include <deque>
 #include <stack>
 
+#include "IWORKTransformation.h"
 #include "KEYCollector.h"
 #include "KEYObject.h"
 #include "KEYStyle.h"
@@ -35,6 +36,7 @@ class KEYCollectorBase : public KEYCollector
   {
     IWORKGeometryPtr_t geometry;
     KEYGraphicStylePtr_t graphicStyle;
+    IWORKTransformation m_trafo;
 
     Level();
   };
@@ -162,6 +164,8 @@ protected:
   const KEYLayerPtr_t &getLayer() const;
   const KEYObjectList_t &getNotes() const;
   const KEYStickyNotes_t &getStickyNotes() const;
+
+  const IWORKTransformation &getTransformation() const;
 
 private:
   KEYDictionary &m_dict;

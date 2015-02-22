@@ -12,6 +12,7 @@
 #include <deque>
 
 #include "IWORKPath.h"
+#include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 #include "KEYShape.h"
 #include "IWORKTransformation.h"
@@ -38,7 +39,7 @@ namespace
 class ShapeObject : public KEYObject
 {
 public:
-  ShapeObject(const KEYShapePtr_t &shape);
+  ShapeObject(const KEYShapePtr_t &shape, const IWORKTransformation &trafo);
   virtual ~ShapeObject();
 
 private:
@@ -46,10 +47,12 @@ private:
 
 private:
   const KEYShapePtr_t m_shape;
+  const IWORKTransformation m_trafo;
 };
 
-ShapeObject::ShapeObject(const KEYShapePtr_t &shape)
+ShapeObject::ShapeObject(const KEYShapePtr_t &shape, const IWORKTransformation &trafo)
   : m_shape(shape)
+  , m_trafo(trafo)
 {
 }
 
@@ -63,9 +66,7 @@ void ShapeObject::draw(const KEYOutput &output)
   {
     // TODO: make style
 
-    const IWORKTransformation tr = bool(m_shape->geometry) ? makeTransformation(*m_shape->geometry) : IWORKTransformation();
-    KEYOutput newOutput(output, tr, m_shape->style);
-    const IWORKPath path = *m_shape->path * newOutput.getTransformation();
+    const IWORKPath path = *m_shape->path * m_trafo;
 
     librevenge::RVNGPresentationInterface *const painter = output.getPainter();
 
@@ -76,15 +77,15 @@ void ShapeObject::draw(const KEYOutput &output)
     painter->drawPath(props);
 
     if (bool(m_shape->text))
-      makeObject(m_shape->text)->draw(newOutput);
+      makeObject(m_shape->text, m_trafo)->draw(output);
   }
 }
 
 }
 
-KEYObjectPtr_t makeObject(const KEYShapePtr_t &shape)
+KEYObjectPtr_t makeObject(const KEYShapePtr_t &shape, const IWORKTransformation &trafo)
 {
-  const KEYObjectPtr_t object(new ShapeObject(shape));
+  const KEYObjectPtr_t object(new ShapeObject(shape, trafo));
   return object;
 }
 

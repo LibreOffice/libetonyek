@@ -1259,6 +1259,7 @@ ShapeContext::ShapeContext(IWORKXMLParserState &state)
 
 void ShapeContext::startOfElement()
 {
+  getCollector()->startLevel();
   getCollector()->startText(true);
 }
 
@@ -1281,6 +1282,7 @@ void ShapeContext::endOfElement()
 {
   getCollector()->collectShape(getId());
   getCollector()->endText();
+  getCollector()->endLevel();
 }
 
 }

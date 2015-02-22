@@ -19,6 +19,8 @@
 namespace libetonyek
 {
 
+class IWORKTransformation;
+
 class KEYText
 {
   struct Paragraph;
@@ -61,7 +63,7 @@ private:
   IWORKGeometryPtr_t m_boundingBox;
 };
 
-KEYObjectPtr_t makeObject(const KEYTextPtr_t &text);
+KEYObjectPtr_t makeObject(const KEYTextPtr_t &text, const IWORKTransformation &trafo);
 
 }
 

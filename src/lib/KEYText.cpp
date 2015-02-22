@@ -14,6 +14,7 @@
 #include <librevenge/librevenge.h>
 
 #include "IWORKPath.h"
+#include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 #include "KEYOutput.h"
 #include "KEYStyles.h"
@@ -231,7 +232,7 @@ namespace
 class TextObject : public KEYObject
 {
 public:
-  TextObject(const KEYLayoutStylePtr_t &layoutStyle, const IWORKGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, bool object);
+  TextObject(const KEYLayoutStylePtr_t &layoutStyle, const IWORKGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, bool object, const IWORKTransformation &trafo);
 
 private:
   virtual void draw(const KEYOutput &output);
@@ -241,25 +242,25 @@ private:
   const IWORKGeometryPtr_t m_boundingBox;
   const KEYText::ParagraphList_t m_paragraphs;
   const bool m_object;
+  const IWORKTransformation m_trafo;
 };
 
-TextObject::TextObject(const KEYLayoutStylePtr_t &layoutStyle, const IWORKGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, const bool object)
+TextObject::TextObject(const KEYLayoutStylePtr_t &layoutStyle, const IWORKGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, const bool object, const IWORKTransformation &trafo)
   : m_layoutStyle(layoutStyle)
   , m_boundingBox(boundingBox)
   , m_paragraphs(paragraphs)
   , m_object(object)
+  , m_trafo(trafo)
 {
 }
 
 void TextObject::draw(const KEYOutput &output)
 {
-  const IWORKTransformation tr = output.getTransformation();
-
   librevenge::RVNGPropertyList props;
 
   double x = 0;
   double y = 0;
-  tr(x, y);
+  m_trafo(x, y);
   props.insert("svg:x", pt2in(x));
   props.insert("svg:y", pt2in(y));
 
@@ -267,7 +268,7 @@ void TextObject::draw(const KEYOutput &output)
   {
     double w = m_boundingBox->naturalSize.width;
     double h = m_boundingBox->naturalSize.height;
-    tr(w, h, true);
+    m_trafo(w, h, true);
 
     props.insert("svg:width", pt2in(w));
     props.insert("svg:height", pt2in(h));
@@ -279,7 +280,7 @@ void TextObject::draw(const KEYOutput &output)
   path.appendLineTo(1, 1);
   path.appendLineTo(1, 0);
   path.appendClose();
-  path *= tr;
+  path *= m_trafo;
 
   props.insert("svg:d", path.toWPG());
 
@@ -403,9 +404,9 @@ bool KEYText::empty() const
   return m_paragraphs.empty();
 }
 
-KEYObjectPtr_t makeObject(const KEYTextPtr_t &text)
+KEYObjectPtr_t makeObject(const KEYTextPtr_t &text, const IWORKTransformation &trafo)
 {
-  const KEYObjectPtr_t object(new TextObject(text->getLayoutStyle(), text->getBoundingBox(), text->getParagraphs(), text->isObject()));
+  const KEYObjectPtr_t object(new TextObject(text->getLayoutStyle(), text->getBoundingBox(), text->getParagraphs(), text->isObject(), trafo));
   return object;
 }
 

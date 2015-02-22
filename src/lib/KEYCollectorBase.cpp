@@ -13,6 +13,7 @@
 #include <boost/bind.hpp>
 
 #include "libetonyek_utils.h"
+#include "IWORKTransformation.h"
 #include "KEYCollectorBase.h"
 #include "KEYDefaults.h"
 #include "KEYDictionary.h"
@@ -91,6 +92,7 @@ T getValue(const optional<ID_t> &id, boost::unordered_map<ID_t, T> &map)
 KEYCollectorBase::Level::Level()
   : geometry()
   , graphicStyle()
+  , m_trafo()
 {
 }
 
@@ -375,6 +377,7 @@ void KEYCollectorBase::collectGeometry(const boost::optional<ID_t> &,
     geometry->sizesLocked = sizesLocked;
 
     m_levelStack.top().geometry = geometry;
+    m_levelStack.top().m_trafo = makeTransformation(*geometry) * m_levelStack.top().m_trafo;
   }
 }
 
@@ -408,7 +411,7 @@ void KEYCollectorBase::collectImage(const optional<ID_t> &id, const KEYImagePtr_
     m_levelStack.top().geometry.reset();
     if (id)
       m_dict.images[get(id)] = image;
-    m_objectsStack.top().push_back(makeObject(image));
+    m_objectsStack.top().push_back(makeObject(image, m_levelStack.top().m_trafo));
   }
 }
 
@@ -421,7 +424,7 @@ void KEYCollectorBase::collectLine(const optional<ID_t> &, const KEYLinePtr_t &l
 
     line->geometry = m_levelStack.top().geometry;
     m_levelStack.top().geometry.reset();
-    m_objectsStack.top().push_back(makeObject(line));
+    m_objectsStack.top().push_back(makeObject(line, m_levelStack.top().m_trafo));
   }
 }
 
@@ -454,7 +457,7 @@ void KEYCollectorBase::collectShape(const optional<ID_t> &)
     shape->style = m_levelStack.top().graphicStyle;
     m_levelStack.top().graphicStyle.reset();
 
-    m_objectsStack.top().push_back(makeObject(shape));
+    m_objectsStack.top().push_back(makeObject(shape, m_levelStack.top().m_trafo));
   }
 }
 
@@ -639,7 +642,7 @@ void KEYCollectorBase::collectMedia(const optional<ID_t> &)
     m_levelStack.top().geometry.reset();
     m_levelStack.top().graphicStyle.reset();
 
-    m_objectsStack.top().push_back(makeObject(media));
+    m_objectsStack.top().push_back(makeObject(media, m_levelStack.top().m_trafo));
   }
 }
 
@@ -721,7 +724,10 @@ void KEYCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const bo
 
       if (bool(placeholder))
       {
-        m_objectsStack.top().push_back(makeObject(placeholder));
+        IWORKTransformation trafo;
+        if (bool(placeholder->geometry))
+          trafo = makeTransformation(*placeholder->geometry);
+        m_objectsStack.top().push_back(makeObject(placeholder, trafo * m_levelStack.top().m_trafo));
       }
       else
       {
@@ -773,11 +779,11 @@ void KEYCollectorBase::collectTableCell(const unsigned row, const unsigned colum
       text->insertText(get(content), KEYCharacterStylePtr_t());
       text->closeParagraph();
 
-      textObject = makeObject(text);
+      textObject = makeObject(text, m_levelStack.top().m_trafo);
     }
     else if (bool(m_currentText))
     {
-      textObject = makeObject(m_currentText);
+      textObject = makeObject(m_currentText, m_levelStack.top().m_trafo);
       m_currentText.reset();
     }
 
@@ -806,7 +812,7 @@ void KEYCollectorBase::collectTable()
     m_currentTable.setGeometry(m_levelStack.top().geometry);
     m_levelStack.top().geometry.reset();
 
-    m_objectsStack.top().push_back(makeObject(m_currentTable));
+    m_objectsStack.top().push_back(makeObject(m_currentTable, m_levelStack.top().m_trafo));
     m_currentTable = KEYTable();
   }
 }
@@ -815,7 +821,7 @@ void KEYCollectorBase::collectNote()
 {
   if (m_collecting)
   {
-    m_notes.push_back(makeObject(m_currentText));
+    m_notes.push_back(makeObject(m_currentText, m_levelStack.top().m_trafo));
     m_currentText.reset();
   }
 }
@@ -949,7 +955,13 @@ void KEYCollectorBase::endText()
 void KEYCollectorBase::startLevel()
 {
   if (m_collecting)
+  {
+    IWORKTransformation currentTrafo;
+    if (!m_levelStack.empty())
+      currentTrafo = m_levelStack.top().m_trafo;
     m_levelStack.push(Level());
+    m_levelStack.top().m_trafo = currentTrafo;
+  }
 }
 
 void KEYCollectorBase::endLevel()
@@ -989,6 +1001,13 @@ const KEYObjectList_t &KEYCollectorBase::getNotes() const
 const KEYStickyNotes_t &KEYCollectorBase::getStickyNotes() const
 {
   return m_stickyNotes;
+}
+
+const IWORKTransformation &KEYCollectorBase::getTransformation() const
+{
+  assert(!m_levelStack.empty());
+
+  return m_levelStack.top().m_trafo;
 }
 
 } // namespace libetonyek
