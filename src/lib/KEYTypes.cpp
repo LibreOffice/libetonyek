@@ -363,8 +363,8 @@ void MediaObject::draw(const KEYOutput &output)
       props.insert("libwpg:mime-type", get(mimetype).c_str());
       props.insert("office:binary-data", librevenge::RVNGBinaryData(bytes, size));
 
-      double x = 1;
-      double y = 1;
+      double x = 0;
+      double y = 0;
       m_trafo(x, y);
       props.insert("svg:x", pt2in(x));
       props.insert("svg:y", pt2in(y));
