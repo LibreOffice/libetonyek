@@ -1296,6 +1296,7 @@ public:
   explicit ImageContext(IWORKXMLParserState &state);
 
 private:
+  virtual void startOfElement();
   virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
@@ -1308,6 +1309,11 @@ ImageContext::ImageContext(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_image(new KEYImage())
 {
+}
+
+void ImageContext::startOfElement()
+{
+  getCollector()->startLevel();
 }
 
 void ImageContext::attribute(const int name, const char *const value)
@@ -1337,6 +1343,7 @@ IWORKXMLContextPtr_t ImageContext::element(const int name)
 void ImageContext::endOfElement()
 {
   getCollector()->collectImage(getId(), m_image);
+  getCollector()->endLevel();
 }
 
 }
@@ -1350,6 +1357,7 @@ public:
   explicit LineContext(IWORKXMLParserState &state);
 
 private:
+  virtual void startOfElement();
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
@@ -1361,6 +1369,11 @@ private:
 LineContext::LineContext(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
 {
+}
+
+void LineContext::startOfElement()
+{
+  getCollector()->startLevel();
 }
 
 IWORKXMLContextPtr_t LineContext::element(const int name)
@@ -1392,6 +1405,7 @@ void LineContext::endOfElement()
     line->y2 = get(m_tail).y;
   }
   getCollector()->collectLine(getId(), line);
+  getCollector()->endLevel();
 }
 
 }
