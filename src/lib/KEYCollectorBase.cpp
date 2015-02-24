@@ -768,7 +768,7 @@ void KEYCollectorBase::collectTableCell(const unsigned row, const unsigned colum
     {
       assert(!m_currentText || m_currentText->empty());
 
-      KEYTextPtr_t text(new KEYText());
+      KEYTextPtr_t text(new KEYText(false));
       text->openParagraph(KEYParagraphStylePtr_t());
       text->insertText(get(content), KEYCharacterStylePtr_t());
       text->closeParagraph();
