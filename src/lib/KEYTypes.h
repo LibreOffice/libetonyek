@@ -18,8 +18,8 @@
 #include "IWORKObject.h"
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle_fwd.h"
+#include "IWORKText_fwd.h"
 #include "IWORKTypes_fwd.h"
-#include "KEYText_fwd.h"
 #include "KEYTypes_fwd.h"
 
 namespace libetonyek
@@ -115,7 +115,7 @@ struct KEYPlaceholder
   boost::optional<bool> empty;
   IWORKStylePtr_t style;
   IWORKGeometryPtr_t geometry;
-  KEYTextPtr_t text;
+  IWORKTextPtr_t text;
 
   KEYPlaceholder();
 };
@@ -123,10 +123,10 @@ struct KEYPlaceholder
 struct KEYStickyNote
 {
   IWORKGeometryPtr_t geometry;
-  KEYTextPtr_t text;
+  IWORKTextPtr_t text;
 
   KEYStickyNote();
-  KEYStickyNote(const IWORKGeometryPtr_t &geometry, const KEYTextPtr_t &text);
+  KEYStickyNote(const IWORKGeometryPtr_t &geometry, const IWORKTextPtr_t &text);
 };
 
 typedef std::deque<KEYStickyNote> KEYStickyNotes_t;

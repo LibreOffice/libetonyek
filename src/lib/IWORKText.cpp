@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKText.h"
+
 #include <cassert>
 
 #include <boost/make_shared.hpp>
@@ -18,8 +20,6 @@
 #include "IWORKStyles.h"
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
-#include "KEYText.h"
-#include "KEYTypes.h"
 
 using boost::optional;
 
@@ -28,7 +28,7 @@ using std::string;
 namespace libetonyek
 {
 
-struct KEYText::Paragraph
+struct IWORKText::Paragraph
 {
   IWORKStyleContext m_styleContext;
   IWORKStylePtr_t style;
@@ -237,19 +237,19 @@ namespace
 class TextObject : public IWORKObject
 {
 public:
-  TextObject(const IWORKGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, bool object, const IWORKTransformation &trafo);
+  TextObject(const IWORKGeometryPtr_t &boundingBox, const IWORKText::ParagraphList_t &paragraphs, bool object, const IWORKTransformation &trafo);
 
 private:
   virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
   const IWORKGeometryPtr_t m_boundingBox;
-  const KEYText::ParagraphList_t m_paragraphs;
+  const IWORKText::ParagraphList_t m_paragraphs;
   const bool m_object;
   const IWORKTransformation m_trafo;
 };
 
-TextObject::TextObject(const IWORKGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, const bool object, const IWORKTransformation &trafo)
+TextObject::TextObject(const IWORKGeometryPtr_t &boundingBox, const IWORKText::ParagraphList_t &paragraphs, const bool object, const IWORKTransformation &trafo)
   : m_boundingBox(boundingBox)
   , m_paragraphs(paragraphs)
   , m_object(object)
@@ -290,7 +290,7 @@ void TextObject::draw(librevenge::RVNGPresentationInterface *const painter)
   if (m_object)
     painter->startTextObject(props);
 
-  for (KEYText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
+  for (IWORKText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
   {
     const librevenge::RVNGPropertyList paraProps(makeParaPropList((*it)->style, (*it)->m_styleContext));
     painter->openParagraph(paraProps);
@@ -304,7 +304,7 @@ void TextObject::draw(librevenge::RVNGPresentationInterface *const painter)
 
 }
 
-KEYText::KEYText(const bool object)
+IWORKText::IWORKText(const bool object)
   : m_styleContext()
   , m_layoutStyle()
   , m_paragraphs()
@@ -315,14 +315,14 @@ KEYText::KEYText(const bool object)
 {
 }
 
-KEYText::Paragraph::Paragraph(const IWORKStyleContext &styleContext)
+IWORKText::Paragraph::Paragraph(const IWORKStyleContext &styleContext)
   : m_styleContext(styleContext)
   , style()
   , objects()
 {
 }
 
-void KEYText::setLayoutStyle(const IWORKStylePtr_t &style)
+void IWORKText::setLayoutStyle(const IWORKStylePtr_t &style)
 {
   assert(!m_layoutStyle);
 
@@ -331,17 +331,17 @@ void KEYText::setLayoutStyle(const IWORKStylePtr_t &style)
   m_styleContext.set(style);
 }
 
-const IWORKGeometryPtr_t &KEYText::getBoundingBox() const
+const IWORKGeometryPtr_t &IWORKText::getBoundingBox() const
 {
   return m_boundingBox;
 }
 
-void KEYText::setBoundingBox(const IWORKGeometryPtr_t &boundingBox)
+void IWORKText::setBoundingBox(const IWORKGeometryPtr_t &boundingBox)
 {
   m_boundingBox = boundingBox;
 }
 
-void KEYText::openParagraph(const IWORKStylePtr_t &style)
+void IWORKText::openParagraph(const IWORKStylePtr_t &style)
 {
   assert(!m_currentParagraph);
 
@@ -351,7 +351,7 @@ void KEYText::openParagraph(const IWORKStylePtr_t &style)
   m_styleContext.set(style);
 }
 
-void KEYText::closeParagraph()
+void IWORKText::closeParagraph()
 {
   assert(bool(m_currentParagraph));
 
@@ -360,7 +360,7 @@ void KEYText::closeParagraph()
   m_styleContext.pop();
 }
 
-void KEYText::insertText(const std::string &text, const IWORKStylePtr_t &style)
+void IWORKText::insertText(const std::string &text, const IWORKStylePtr_t &style)
 {
   assert(bool(m_currentParagraph));
 
@@ -368,7 +368,7 @@ void KEYText::insertText(const std::string &text, const IWORKStylePtr_t &style)
   m_currentParagraph->objects.push_back(object);
 }
 
-void KEYText::insertTab()
+void IWORKText::insertTab()
 {
   assert(bool(m_currentParagraph));
 
@@ -376,29 +376,29 @@ void KEYText::insertTab()
   m_currentParagraph->objects.push_back(object);
 }
 
-void KEYText::insertLineBreak()
+void IWORKText::insertLineBreak()
 {
   assert(bool(m_currentParagraph));
 
   ++m_lineBreaks;
 }
 
-const IWORKStylePtr_t &KEYText::getLayoutStyle() const
+const IWORKStylePtr_t &IWORKText::getLayoutStyle() const
 {
   return m_layoutStyle;
 }
 
-const KEYText::ParagraphList_t &KEYText::getParagraphs() const
+const IWORKText::ParagraphList_t &IWORKText::getParagraphs() const
 {
   return m_paragraphs;
 }
 
-bool KEYText::isObject() const
+bool IWORKText::isObject() const
 {
   return m_object;
 }
 
-void KEYText::insertDeferredLineBreaks()
+void IWORKText::insertDeferredLineBreaks()
 {
   assert(bool(m_currentParagraph));
 
@@ -410,12 +410,12 @@ void KEYText::insertDeferredLineBreaks()
   }
 }
 
-bool KEYText::empty() const
+bool IWORKText::empty() const
 {
   return m_paragraphs.empty();
 }
 
-IWORKObjectPtr_t makeObject(const KEYTextPtr_t &text, const IWORKTransformation &trafo)
+IWORKObjectPtr_t makeObject(const IWORKTextPtr_t &text, const IWORKTransformation &trafo)
 {
   const IWORKObjectPtr_t object(new TextObject(text->getBoundingBox(), text->getParagraphs(), text->isObject(), trafo));
   return object;

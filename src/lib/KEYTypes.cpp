@@ -14,9 +14,9 @@
 #include <librevenge/librevenge.h>
 
 #include "libetonyek_utils.h"
+#include "IWORKText.h"
 #include "IWORKTransformation.h"
 #include "KEYStyles.h"
-#include "KEYText.h"
 #include "KEYTypes.h"
 
 namespace libetonyek
@@ -172,7 +172,7 @@ KEYStickyNote::KEYStickyNote()
 {
 }
 
-KEYStickyNote::KEYStickyNote(const IWORKGeometryPtr_t &geometry_, const KEYTextPtr_t &text_)
+KEYStickyNote::KEYStickyNote(const IWORKGeometryPtr_t &geometry_, const IWORKTextPtr_t &text_)
   : geometry(geometry_)
   , text(text_)
 {

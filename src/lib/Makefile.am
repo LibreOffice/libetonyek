@@ -51,6 +51,9 @@ libetonyek_internal_la_SOURCES = \
 	IWORKStylesheet.h \
 	IWORKTabularInfoContext.cpp \
 	IWORKTabularInfoContext.h \
+	IWORKText.cpp \
+	IWORKText.h \
+	IWORKText_fwd.h \
 	IWORKTextInterfaceRedirector.cpp \
 	IWORKTextInterfaceRedirector.h \
 	IWORKTransformation.cpp \
@@ -106,9 +109,6 @@ libetonyek_internal_la_SOURCES = \
 	KEYStyles.h \
 	KEYTable.cpp \
 	KEYTable.h \
-	KEYText.cpp \
-	KEYText.h \
-	KEYText_fwd.h \
 	KEYThemeCollector.cpp \
 	KEYThemeCollector.h \
 	KEYTypes.cpp \

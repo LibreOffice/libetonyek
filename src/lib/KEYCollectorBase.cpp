@@ -13,13 +13,13 @@
 #include <boost/bind.hpp>
 
 #include "libetonyek_utils.h"
+#include "IWORKText.h"
 #include "IWORKTransformation.h"
 #include "KEYCollectorBase.h"
 #include "KEYDefaults.h"
 #include "KEYDictionary.h"
 #include "KEYShape.h"
 #include "KEYStyles.h"
-#include "KEYText.h"
 
 using boost::optional;
 
@@ -772,7 +772,7 @@ void KEYCollectorBase::collectTableCell(const unsigned row, const unsigned colum
     {
       assert(!m_currentText || m_currentText->empty());
 
-      KEYTextPtr_t text(new KEYText(false));
+      IWORKTextPtr_t text(new IWORKText(false));
       text->openParagraph(IWORKStylePtr_t());
       text->insertText(get(content), IWORKStylePtr_t());
       text->closeParagraph();
@@ -933,7 +933,7 @@ void KEYCollectorBase::startText(const bool object)
   {
     assert(!m_currentText);
 
-    m_currentText.reset(new KEYText(object));
+    m_currentText.reset(new IWORKText(object));
 
     assert(m_currentText->empty());
   }

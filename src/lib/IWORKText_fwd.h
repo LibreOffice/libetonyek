@@ -7,18 +7,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYTEXT_FWD_H_INCLUDED
-#define KEYTEXT_FWD_H_INCLUDED
+#ifndef IWORKTEXT_FWD_H_INCLUDED
+#define IWORKTEXT_FWD_H_INCLUDED
+
+#include <boost/shared_ptr.hpp>
 
 namespace libetonyek
 {
 
-class KEYText;
+class IWORKText;
 
-typedef boost::shared_ptr<KEYText> KEYTextPtr_t;
+typedef boost::shared_ptr<IWORKText> IWORKTextPtr_t;
 
 }
 
-#endif // KEYTEXT_FWD_H_INCLUDED
+#endif // IWORKTEXT_FWD_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

@@ -17,9 +17,9 @@
 #include "IWORKStyle.h"
 #include "IWORKStyleContext.h"
 #include "IWORKStylesheet.h"
+#include "IWORKText_fwd.h"
 #include "IWORKTransformation.h"
 #include "KEYCollector.h"
-#include "KEYText_fwd.h"
 #include "KEYTypes.h"
 
 namespace libetonyek
@@ -185,7 +185,7 @@ private:
   std::stack<IWORKObjectList_t> m_objectsStack;
   IWORKPathPtr_t m_currentPath;
 
-  KEYTextPtr_t m_currentText;
+  IWORKTextPtr_t m_currentText;
 
   IWORKStylesheetPtr_t m_currentStylesheet;
   std::deque<IWORKStylePtr_t> m_newStyles;

@@ -7,22 +7,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYTEXT_H_INCLUDED
-#define KEYTEXT_H_INCLUDED
+#ifndef IWORKTEXT_H_INCLUDED
+#define IWORKTEXT_H_INCLUDED
+
+#include "IWORKText_fwd.h"
 
 #include <deque>
 
 #include "IWORKObject.h"
 #include "IWORKStyle_fwd.h"
 #include "IWORKStyleContext.h"
-#include "KEYText_fwd.h"
 
 namespace libetonyek
 {
 
 class IWORKTransformation;
 
-class KEYText
+class IWORKText
 {
   struct Paragraph;
   typedef boost::shared_ptr<Paragraph> ParagraphPtr_t;
@@ -31,7 +32,7 @@ public:
   typedef std::deque<ParagraphPtr_t> ParagraphList_t;
 
 public:
-  explicit KEYText(bool object = true);
+  explicit IWORKText(bool object = true);
 
   void setLayoutStyle(const IWORKStylePtr_t &style);
 
@@ -65,10 +66,10 @@ private:
   IWORKGeometryPtr_t m_boundingBox;
 };
 
-IWORKObjectPtr_t makeObject(const KEYTextPtr_t &text, const IWORKTransformation &trafo);
+IWORKObjectPtr_t makeObject(const IWORKTextPtr_t &text, const IWORKTransformation &trafo);
 
 }
 
-#endif // KEYTEXT_H_INCLUDED
+#endif // IWORKTEXT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

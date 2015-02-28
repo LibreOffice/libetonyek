@@ -12,11 +12,10 @@
 #include <deque>
 
 #include "IWORKPath.h"
+#include "IWORKText.h"
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 #include "KEYShape.h"
-#include "IWORKTransformation.h"
-#include "KEYText.h"
 #include "KEYTypes.h"
 
 using std::deque;

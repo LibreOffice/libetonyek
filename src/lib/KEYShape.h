@@ -15,7 +15,7 @@
 #include "IWORKObject.h"
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle.h"
-#include "KEYText_fwd.h"
+#include "IWORKText_fwd.h"
 
 namespace libetonyek
 {
@@ -30,7 +30,7 @@ struct KEYShape
   IWORKGeometryPtr_t geometry;
   IWORKStylePtr_t style;
   IWORKPathPtr_t path;
-  KEYTextPtr_t text;
+  IWORKTextPtr_t text;
 
   KEYShape();
 };
