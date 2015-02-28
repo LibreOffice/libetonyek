@@ -9,11 +9,59 @@
 
 #include "IWORKStyle.h"
 
+#include "IWORKStyleContext.h"
+
 namespace libetonyek
 {
 
-IWORKStyle::~IWORKStyle()
+IWORKStyle::IWORKStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent)
+  : m_props(props)
+  , m_ident(ident)
+  , m_parentIdent(parentIdent)
+  , m_parent()
 {
+}
+
+bool IWORKStyle::link(const IWORKStylesheetPtr_t &stylesheet)
+{
+  if (m_parent || !m_parentIdent)
+    return true;
+
+  IWORKStylesheetPtr_t currentStylesheet = stylesheet;
+
+  if (currentStylesheet && (m_ident == m_parentIdent))
+    currentStylesheet = currentStylesheet->parent;
+
+  if (!currentStylesheet)
+    return false;
+
+  const IWORKStyleMap_t::const_iterator it = currentStylesheet->m_styles.find(get(m_parentIdent));
+  if (currentStylesheet->m_styles.end() != it)
+    m_parent = it->second;
+
+  if (m_parent)
+    m_props.setParent(&m_parent->getPropertyMap());
+
+  return bool(m_parent);
+}
+
+void IWORKStyle::flatten()
+{
+  // TODO: implement me
+}
+
+const IWORKPropertyMap &IWORKStyle::getPropertyMap() const
+{
+  return m_props;
+}
+
+boost::any IWORKStyle::lookup(const char *property, const IWORKStyleContext &context) const
+{
+  boost::any value = getPropertyMap().get(property, true);
+  if (value.empty())
+    value = context.find(property, true);
+
+  return value;
 }
 
 }

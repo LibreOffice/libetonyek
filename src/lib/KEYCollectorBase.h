@@ -36,7 +36,7 @@ class KEYCollectorBase : public KEYCollector
   struct Level
   {
     IWORKGeometryPtr_t geometry;
-    KEYGraphicStylePtr_t graphicStyle;
+    IWORKStylePtr_t graphicStyle;
     IWORKTransformation m_trafo;
 
     Level();
@@ -187,7 +187,7 @@ private:
 
   KEYTextPtr_t m_currentText;
 
-  KEYPlaceholderStylePtr_t m_currentPlaceholderStyle;
+  IWORKStylePtr_t m_currentPlaceholderStyle;
 
   IWORKStylesheetPtr_t m_currentStylesheet;
   std::deque<IWORKStylePtr_t> m_newStyles;

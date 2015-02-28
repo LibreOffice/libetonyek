@@ -102,7 +102,6 @@ libetonyek_internal_la_SOURCES = \
 	KEYShape.h \
 	KEYStyles.cpp \
 	KEYStyles.h \
-	KEYStyles_fwd.h \
 	KEYTable.cpp \
 	KEYTable.h \
 	KEYText.cpp \

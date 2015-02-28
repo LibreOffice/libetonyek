@@ -12,9 +12,9 @@
 
 #include <deque>
 
-#include "IWORKStyleContext.h"
 #include "IWORKObject.h"
-#include "KEYStyles_fwd.h"
+#include "IWORKStyle_fwd.h"
+#include "IWORKStyleContext.h"
 #include "KEYText_fwd.h"
 
 namespace libetonyek
@@ -33,19 +33,19 @@ public:
 public:
   explicit KEYText(bool object = true);
 
-  void setLayoutStyle(const KEYLayoutStylePtr_t &style);
+  void setLayoutStyle(const IWORKStylePtr_t &style);
 
   const IWORKGeometryPtr_t &getBoundingBox() const;
   void setBoundingBox(const IWORKGeometryPtr_t &boundingBox);
 
-  void openParagraph(const KEYParagraphStylePtr_t &style);
+  void openParagraph(const IWORKStylePtr_t &style);
   void closeParagraph();
 
-  void insertText(const std::string &text, const KEYCharacterStylePtr_t &style);
+  void insertText(const std::string &text, const IWORKStylePtr_t &style);
   void insertTab();
   void insertLineBreak();
 
-  const KEYLayoutStylePtr_t &getLayoutStyle() const;
+  const IWORKStylePtr_t &getLayoutStyle() const;
   const ParagraphList_t &getParagraphs() const;
   bool isObject() const;
 
@@ -56,7 +56,7 @@ private:
 
 private:
   IWORKStyleContext m_styleContext;
-  KEYLayoutStylePtr_t m_layoutStyle;
+  IWORKStylePtr_t m_layoutStyle;
   ParagraphList_t m_paragraphs;
   ParagraphPtr_t m_currentParagraph;
   int m_lineBreaks;

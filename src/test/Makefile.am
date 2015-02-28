@@ -16,6 +16,7 @@ test_SOURCES = \
 	IWORKPathTest.h \
 	IWORKPropertyMapTest.cpp \
 	IWORKPropertyMapTest.h \
+	IWORKStyleTest.cpp \
 	IWORKStyleContextTest.cpp \
 	IWORKStyleContextTest.h \
 	IWORKToken.h \
@@ -28,8 +29,6 @@ test_SOURCES = \
 	KEY2TokenTest.h \
 	KEYShapeTest.cpp \
 	KEYShapeTest.h \
-	KEYStylesTest.cpp \
-	KEYStylesTest.h \
 	test.cpp
 
 TESTS = $(target_test)

@@ -11,9 +11,9 @@
 #define KEYDICTIONARY_H_INCLUDED
 
 #include "IWORKPath.h"
+#include "IWORKStyle.h"
 #include "IWORKStylesheet.h"
 #include "IWORKTypes.h"
-#include "KEYStyles_fwd.h"
 #include "KEYTypes.h"
 
 namespace libetonyek
@@ -35,11 +35,11 @@ namespace libetonyek
   */
 struct KEYDictionary
 {
-  KEYCharacterStyleMap_t characterStyles;
-  KEYGraphicStyleMap_t graphicStyles;
-  KEYLayoutStyleMap_t layoutStyles;
-  KEYParagraphStyleMap_t paragraphStyles;
-  KEYPlaceholderStyleMap_t placeholderStyles;
+  IWORKStyleMap_t characterStyles;
+  IWORKStyleMap_t graphicStyles;
+  IWORKStyleMap_t layoutStyles;
+  IWORKStyleMap_t paragraphStyles;
+  IWORKStyleMap_t placeholderStyles;
 
   IWORKStylesheetMap_t stylesheets;
 

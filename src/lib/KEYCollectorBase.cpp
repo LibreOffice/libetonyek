@@ -156,16 +156,16 @@ void KEYCollectorBase::collectCharacterStyle(const optional<ID_t> &id,
   {
     assert(m_currentStylesheet);
 
-    KEYCharacterStylePtr_t newStyle;
+    IWORKStylePtr_t newStyle;
     // TODO: handle default style properties
     if (!ref && props)
-      newStyle.reset(new KEYCharacterStyle(get(props), ident, parentIdent));
+      newStyle.reset(new IWORKStyle(get(props), ident, parentIdent));
 
-    const KEYCharacterStylePtr_t style = getValue(id, newStyle, ref, m_dict.characterStyles);
+    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.characterStyles);
     if (bool(style))
     {
       if (ident && !anonymous)
-        m_currentStylesheet->characterStyles[get(ident)] = style;
+        m_currentStylesheet->m_styles[get(ident)] = style;
       if (!ref)
         m_newStyles.push_back(style);
     }
@@ -195,15 +195,15 @@ void KEYCollectorBase::collectGraphicStyle(const optional<ID_t> &id,
   {
     assert(m_currentStylesheet);
 
-    KEYGraphicStylePtr_t newStyle;
+    IWORKStylePtr_t newStyle;
     if (!ref && props)
-      newStyle.reset(new KEYGraphicStyle(get(props), ident, parentIdent));
+      newStyle.reset(new IWORKStyle(get(props), ident, parentIdent));
 
-    const KEYGraphicStylePtr_t style = getValue(id, newStyle, ref, m_dict.graphicStyles);
+    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.graphicStyles);
     if (bool(style))
     {
       if (ident && !anonymous)
-        m_currentStylesheet->graphicStyles[get(ident)] = style;
+        m_currentStylesheet->m_styles[get(ident)] = style;
       if (!ref)
         m_newStyles.push_back(style);
     }
@@ -227,15 +227,15 @@ void KEYCollectorBase::collectLayoutStyle(const optional<ID_t> &id,
   {
     assert(m_currentStylesheet);
 
-    KEYLayoutStylePtr_t newStyle;
+    IWORKStylePtr_t newStyle;
     if (!ref && props)
-      newStyle.reset(new KEYLayoutStyle(get(props), ident, parentIdent));
+      newStyle.reset(new IWORKStyle(get(props), ident, parentIdent));
 
-    const KEYLayoutStylePtr_t style = getValue(id, newStyle, ref, m_dict.layoutStyles);
+    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.layoutStyles);
     if (bool(style))
     {
       if (ident && !anonymous)
-        m_currentStylesheet->layoutStyles[get(ident)] = style;
+        m_currentStylesheet->m_styles[get(ident)] = style;
       if (!ref)
         m_newStyles.push_back(style);
 
@@ -268,15 +268,15 @@ void KEYCollectorBase::collectParagraphStyle(const optional<ID_t> &id,
   {
     assert(m_currentStylesheet);
 
-    KEYParagraphStylePtr_t newStyle;
+    IWORKStylePtr_t newStyle;
     if (!ref && props)
-      newStyle.reset(new KEYParagraphStyle(get(props), ident, parentIdent));
+      newStyle.reset(new IWORKStyle(get(props), ident, parentIdent));
 
-    const KEYParagraphStylePtr_t style = getValue(id, newStyle, ref, m_dict.paragraphStyles);
+    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.paragraphStyles);
     if (bool(style))
     {
       if (ident && !anonymous)
-        m_currentStylesheet->paragraphStyles[get(ident)] = style;
+        m_currentStylesheet->m_styles[get(ident)] = style;
       if (!ref)
         m_newStyles.push_back(style);
     }
@@ -292,15 +292,15 @@ void KEYCollectorBase::collectPlaceholderStyle(const boost::optional<ID_t> &id,
   {
     assert(m_currentStylesheet);
 
-    KEYPlaceholderStylePtr_t newStyle;
+    IWORKStylePtr_t newStyle;
     if (!ref && props)
-      newStyle.reset(new KEYPlaceholderStyle(get(props), ident, parentIdent));
+      newStyle.reset(new IWORKStyle(get(props), ident, parentIdent));
 
-    const KEYPlaceholderStylePtr_t style = getValue(id, newStyle, ref, m_dict.placeholderStyles);
+    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.placeholderStyles);
     if (bool(style))
     {
       if (ident && !anonymous)
-        m_currentStylesheet->placeholderStyles[get(ident)] = style;
+        m_currentStylesheet->m_styles[get(ident)] = style;
       if (!ref)
         m_newStyles.push_back(style);
     }
@@ -742,7 +742,10 @@ void KEYCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const bo
       placeholder.reset(new KEYPlaceholder());
       placeholder->title = title;
       if (bool(m_currentPlaceholderStyle))
-        placeholder->geometry = m_currentPlaceholderStyle->getGeometry();
+      {
+        const KEYPlaceholderStyle placeholderStyle(m_currentPlaceholderStyle, m_styleContext);
+        placeholder->geometry = placeholderStyle.getGeometry();
+      }
       if (!m_currentText->empty())
       {
         m_currentText->setBoundingBox(placeholder->geometry);
@@ -776,8 +779,8 @@ void KEYCollectorBase::collectTableCell(const unsigned row, const unsigned colum
       assert(!m_currentText || m_currentText->empty());
 
       KEYTextPtr_t text(new KEYText(false));
-      text->openParagraph(KEYParagraphStylePtr_t());
-      text->insertText(get(content), KEYCharacterStylePtr_t());
+      text->openParagraph(IWORKStylePtr_t());
+      text->insertText(get(content), IWORKStylePtr_t());
       text->closeParagraph();
 
       textObject = makeObject(text, m_levelStack.top().m_trafo);

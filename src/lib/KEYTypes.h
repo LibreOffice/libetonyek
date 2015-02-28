@@ -17,7 +17,7 @@
 #include "libetonyek_utils.h"
 #include "IWORKObject.h"
 #include "IWORKPath_fwd.h"
-#include "IWORKStyle.h"
+#include "IWORKStyle_fwd.h"
 #include "IWORKTypes_fwd.h"
 #include "KEYText_fwd.h"
 #include "KEYTypes_fwd.h"
@@ -78,7 +78,7 @@ struct KEYImage
 struct KEYMedia
 {
   IWORKGeometryPtr_t geometry;
-  KEYGraphicStylePtr_t style;
+  IWORKStylePtr_t style;
   boost::optional<bool> placeholder;
   boost::optional<IWORKSize> placeholderSize;
   KEYMediaContentPtr_t content;
@@ -113,7 +113,7 @@ struct KEYPlaceholder
 {
   boost::optional<bool> title;
   boost::optional<bool> empty;
-  KEYPlaceholderStylePtr_t style;
+  IWORKStylePtr_t style;
   IWORKGeometryPtr_t geometry;
   KEYTextPtr_t text;
 

@@ -7,17 +7,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "IWORKStylesheet.h"
+#ifndef IWORKSTYLE_FWD_H_INCLUDED
+#define IWORKSTYLE_FWD_H_INCLUDED
+
+#include <boost/shared_ptr.hpp>
+#include <boost/unordered_map.hpp>
+
+#include "IWORKTypes_fwd.h"
 
 namespace libetonyek
 {
 
-IWORKStylesheet::IWORKStylesheet()
-  : parent()
-  , m_styles()
-{
-}
+class IWORKStyle;
+
+typedef boost::shared_ptr<IWORKStyle> IWORKStylePtr_t;
+typedef boost::unordered_map<ID_t, IWORKStylePtr_t> IWORKStyleMap_t;
 
 }
+
+#endif // IWORKSTYLE_FWD_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

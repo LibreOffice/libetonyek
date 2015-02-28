@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKStyle.h"
 #include "IWORKStyleContext.h"
-#include "KEYStyles.h"
 
 #include "IWORKStyleContextTest.h"
 
@@ -18,9 +18,9 @@ namespace test
 using boost::any_cast;
 using boost::optional;
 
+using libetonyek::IWORKStyle;
+using libetonyek::IWORKStylePtr_t;
 using libetonyek::IWORKStyleContext;
-using libetonyek::KEYParagraphStyle;
-using libetonyek::KEYParagraphStylePtr_t;
 using libetonyek::IWORKPropertyMap;
 
 using std::string;
@@ -28,10 +28,10 @@ using std::string;
 namespace
 {
 
-KEYParagraphStylePtr_t makeStyle(const IWORKPropertyMap &props)
+IWORKStylePtr_t makeStyle(const IWORKPropertyMap &props)
 {
   const optional<string> dummyIdent;
-  const KEYParagraphStylePtr_t style(new KEYParagraphStyle(props, dummyIdent, dummyIdent));
+  const IWORKStylePtr_t style(new IWORKStyle(props, dummyIdent, dummyIdent));
 
   return style;
 }

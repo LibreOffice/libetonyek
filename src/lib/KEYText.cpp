@@ -9,6 +9,7 @@
 
 #include <cassert>
 
+#include <boost/make_shared.hpp>
 #include <boost/optional.hpp>
 
 #include <librevenge/librevenge.h>
@@ -30,7 +31,7 @@ namespace libetonyek
 struct KEYText::Paragraph
 {
   IWORKStyleContext m_styleContext;
-  KEYParagraphStylePtr_t style;
+  IWORKStylePtr_t style;
   IWORKObjectList_t objects;
 
   explicit Paragraph(const IWORKStyleContext &styleContext);
@@ -53,64 +54,66 @@ librevenge::RVNGString makeColor(const IWORKColor &color)
   return str;
 }
 
-void fillCharPropList(librevenge::RVNGPropertyList &props, const KEYCharacterStyle &style, const IWORKStyleContext &context)
+void fillCharPropList(librevenge::RVNGPropertyList &props, const KEYCharacterStyle &style)
 {
-  if (style.getItalic(context))
+  if (style.getItalic())
     props.insert("fo:font-style", "italic");
-  if (style.getBold(context))
+  if (style.getBold())
     props.insert("fo:font-weight", "bold");
-  if (style.getUnderline(context))
+  if (style.getUnderline())
     props.insert("style:text-underline-type", "single");
-  if (style.getStrikethru(context))
+  if (style.getStrikethru())
     props.insert("style:text-line-through-type", "single");
-  if (style.getOutline(context))
+  if (style.getOutline())
     props.insert("style:text-outline", true);
 
-  const optional<IWORKCapitalization> capitalization = style.getCapitalization(context);
+  const optional<IWORKCapitalization> capitalization = style.getCapitalization();
   if (capitalization)
   {
     if (IWORK_CAPITALIZATION_SMALL_CAPS == get(capitalization))
       props.insert("fo:font-variant", "small-caps");
   }
 
-  const optional<string> fontName = style.getFontName(context);
+  const optional<string> fontName = style.getFontName();
   if (fontName)
     props.insert("style:font-name", librevenge::RVNGString(get(fontName).c_str()));
 
-  const optional<double> fontSize = style.getFontSize(context);
+  const optional<double> fontSize = style.getFontSize();
   if (fontSize)
     props.insert("fo:font-size", pt2in(get(fontSize)));
 
-  const optional<IWORKColor> fontColor = style.getFontColor(context);
+  const optional<IWORKColor> fontColor = style.getFontColor();
   if (fontColor)
     props.insert("fo:color", makeColor(get(fontColor)));
 }
 
-KEYCharacterStyle makeEmptyStyle()
+IWORKStylePtr_t makeEmptyStyle()
 {
   optional<string> dummy;
-  return KEYCharacterStyle(IWORKPropertyMap(), dummy, dummy);
+  return boost::make_shared<IWORKStyle>(IWORKPropertyMap(), dummy, dummy);
 }
 
-librevenge::RVNGPropertyList makePropList(const KEYCharacterStylePtr_t &style, const IWORKStyleContext &context)
+librevenge::RVNGPropertyList makeCharPropList(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
 {
   librevenge::RVNGPropertyList props;
 
   // Even if there is no character style for the span, there might still
   // be attributes inherited from the paragraph style through context.
   // We use an empty style so these can be picked up.
-  fillCharPropList(props, bool(style) ? *style : makeEmptyStyle(), context);
+  fillCharPropList(props, KEYCharacterStyle(bool(style) ? style : makeEmptyStyle(), context));
 
   return props;
 }
 
-librevenge::RVNGPropertyList makePropList(const KEYParagraphStylePtr_t &style, const IWORKStyleContext &context)
+librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
 {
   librevenge::RVNGPropertyList props;
 
   if (bool(style))
   {
-    const optional<IWORKAlignment> alignment(style->getAlignment(context));
+    const KEYParagraphStyle paraStyle(style, context);
+
+    const optional<IWORKAlignment> alignment(paraStyle.getAlignment());
     if (bool(alignment))
     {
       switch (get(alignment))
@@ -130,7 +133,7 @@ librevenge::RVNGPropertyList makePropList(const KEYParagraphStylePtr_t &style, c
       }
     }
 
-    const optional<IWORKTabStops_t> &tabStops = style->getTabs(context);
+    const optional<IWORKTabStops_t> &tabStops = paraStyle.getTabs();
     if (bool(tabStops))
     {
       for (IWORKTabStops_t::const_iterator it = get(tabStops).begin(); get(tabStops).end() != it; ++it)
@@ -153,18 +156,18 @@ namespace
 class TextSpanObject : public IWORKObject
 {
 public:
-  TextSpanObject(const KEYCharacterStylePtr_t &style, const IWORKStyleContext &styleContext, const string &text);
+  TextSpanObject(const IWORKStylePtr_t &style, const IWORKStyleContext &styleContext, const string &text);
 
 private:
   virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
-  const KEYCharacterStylePtr_t m_style;
+  const IWORKStylePtr_t m_style;
   const IWORKStyleContext m_styleContext;
   const string m_text;
 };
 
-TextSpanObject::TextSpanObject(const KEYCharacterStylePtr_t &style, const IWORKStyleContext &styleContext, const string &text)
+TextSpanObject::TextSpanObject(const IWORKStylePtr_t &style, const IWORKStyleContext &styleContext, const string &text)
   : m_style(style)
   , m_styleContext(styleContext)
   , m_text(text)
@@ -173,7 +176,7 @@ TextSpanObject::TextSpanObject(const KEYCharacterStylePtr_t &style, const IWORKS
 
 void TextSpanObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
-  const librevenge::RVNGPropertyList props(makePropList(m_style, m_styleContext));
+  const librevenge::RVNGPropertyList props(makeCharPropList(m_style, m_styleContext));
   painter->openSpan(props);
   painter->insertText(librevenge::RVNGString(m_text.c_str()));
   painter->closeSpan();
@@ -222,7 +225,7 @@ LineBreakObject::LineBreakObject(const IWORKStyleContext &styleContext)
 void LineBreakObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
   painter->closeParagraph();
-  const librevenge::RVNGPropertyList props(makePropList(KEYParagraphStylePtr_t(), m_styleContext));
+  const librevenge::RVNGPropertyList props(makeParaPropList(IWORKStylePtr_t(), m_styleContext));
   painter->openParagraph(props);
 }
 
@@ -289,7 +292,7 @@ void TextObject::draw(librevenge::RVNGPresentationInterface *const painter)
 
   for (KEYText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
   {
-    const librevenge::RVNGPropertyList paraProps(makePropList((*it)->style, (*it)->m_styleContext));
+    const librevenge::RVNGPropertyList paraProps(makeParaPropList((*it)->style, (*it)->m_styleContext));
     painter->openParagraph(paraProps);
     drawAll((*it)->objects, painter);
     painter->closeParagraph();
@@ -319,7 +322,7 @@ KEYText::Paragraph::Paragraph(const IWORKStyleContext &styleContext)
 {
 }
 
-void KEYText::setLayoutStyle(const KEYLayoutStylePtr_t &style)
+void KEYText::setLayoutStyle(const IWORKStylePtr_t &style)
 {
   assert(!m_layoutStyle);
 
@@ -338,7 +341,7 @@ void KEYText::setBoundingBox(const IWORKGeometryPtr_t &boundingBox)
   m_boundingBox = boundingBox;
 }
 
-void KEYText::openParagraph(const KEYParagraphStylePtr_t &style)
+void KEYText::openParagraph(const IWORKStylePtr_t &style)
 {
   assert(!m_currentParagraph);
 
@@ -357,7 +360,7 @@ void KEYText::closeParagraph()
   m_styleContext.pop();
 }
 
-void KEYText::insertText(const std::string &text, const KEYCharacterStylePtr_t &style)
+void KEYText::insertText(const std::string &text, const IWORKStylePtr_t &style)
 {
   assert(bool(m_currentParagraph));
 
@@ -380,7 +383,7 @@ void KEYText::insertLineBreak()
   ++m_lineBreaks;
 }
 
-const KEYLayoutStylePtr_t &KEYText::getLayoutStyle() const
+const IWORKStylePtr_t &KEYText::getLayoutStyle() const
 {
   return m_layoutStyle;
 }

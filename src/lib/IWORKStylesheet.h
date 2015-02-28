@@ -10,8 +10,8 @@
 #ifndef IWORKSTYLESHEET_H_INCLUDED
 #define IWORKSTYLESHEET_H_INCLUDED
 
+#include "IWORKStyle_fwd.h"
 #include "IWORKTypes_fwd.h"
-#include "KEYStyles_fwd.h"
 
 namespace libetonyek
 {
@@ -34,17 +34,7 @@ struct IWORKStylesheet
 {
   IWORKStylesheetPtr_t parent;
 
-  KEYCellStyleMap_t cellStyles;
-  KEYCharacterStyleMap_t characterStyles;
-  KEYConnectionStyleMap_t connectionStyles;
-  KEYGraphicStyleMap_t graphicStyles;
-  KEYLayoutStyleMap_t layoutStyles;
-  KEYListStyleMap_t listStyles;
-  KEYParagraphStyleMap_t paragraphStyles;
-  KEYPlaceholderStyleMap_t placeholderStyles;
-  KEYSlideStyleMap_t slideStyles;
-  KEYTabularStyleMap_t tabularStyles;
-  KEYVectorStyleMap_t vectorStyles;
+  IWORKStyleMap_t m_styles;
 
   IWORKStylesheet();
 };
