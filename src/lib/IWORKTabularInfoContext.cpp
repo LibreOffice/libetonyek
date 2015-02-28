@@ -28,8 +28,8 @@ struct TableData
 {
   TableData();
 
-  KEYTable::ColumnSizes_t m_columnSizes;
-  KEYTable::RowSizes_t m_rowSizes;
+  IWORKTable::ColumnSizes_t m_columnSizes;
+  IWORKTable::RowSizes_t m_rowSizes;
 
   unsigned m_column;
   unsigned m_row;

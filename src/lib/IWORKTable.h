@@ -13,13 +13,14 @@
 #include <deque>
 
 #include "IWORKObject.h"
+#include "IWORKTypes_fwd.h"
 
 namespace libetonyek
 {
 
 class IWORKTransformation;
 
-class KEYTable
+class IWORKTable
 {
   struct Cell
   {
@@ -39,7 +40,7 @@ public:
   typedef std::deque<double> RowSizes_t;
 
 public:
-  KEYTable();
+  IWORKTable();
 
   void setSizes(const ColumnSizes_t &columnSizes, const RowSizes_t &rowSizes);
   void insertCell(unsigned column, unsigned row, const IWORKObjectPtr_t &content = IWORKObjectPtr_t(), unsigned columnSpan = 1, unsigned rowSpan = 1);
@@ -56,7 +57,7 @@ private:
   IWORKGeometryPtr_t m_geometry;
 };
 
-IWORKObjectPtr_t makeObject(const KEYTable &table, const IWORKTransformation &trafo);
+IWORKObjectPtr_t makeObject(const IWORKTable &table, const IWORKTransformation &trafo);
 
 }
 

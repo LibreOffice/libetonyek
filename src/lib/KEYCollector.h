@@ -16,9 +16,9 @@
 
 #include "libetonyek_utils.h"
 #include "IWORKPath_fwd.h"
+#include "IWORKTable.h"
 #include "IWORKTypes.h"
 #include "KEYTypes_fwd.h"
-#include "KEYTable.h"
 
 namespace libetonyek
 {
@@ -120,7 +120,7 @@ public:
 
   virtual void collectTextPlaceholder(const boost::optional<ID_t> &id, const boost::optional<ID_t> &style, bool title, bool ref) = 0;
 
-  virtual void collectTableSizes(const KEYTable::RowSizes_t &rowSizes, const KEYTable::ColumnSizes_t &columnSizes) = 0;
+  virtual void collectTableSizes(const IWORKTable::RowSizes_t &rowSizes, const IWORKTable::ColumnSizes_t &columnSizes) = 0;
   virtual void collectTableCell(unsigned row, unsigned column, const boost::optional<std::string> &content, unsigned rowSpan, unsigned columnSpan) = 0;
   virtual void collectCoveredTableCell(unsigned row, unsigned column) = 0;
   virtual void collectTableRow() = 0;

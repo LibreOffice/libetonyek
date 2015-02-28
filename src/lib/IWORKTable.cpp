@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKTable.h"
+
 #include <boost/numeric/conversion/cast.hpp>
 
 #include <librevenge/librevenge.h>
@@ -14,15 +16,13 @@
 #include "libetonyek_utils.h"
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
-#include "KEYTable.h"
-#include "KEYTypes.h"
 
 using boost::numeric_cast;
 
 namespace libetonyek
 {
 
-KEYTable::Cell::Cell()
+IWORKTable::Cell::Cell()
   : content()
   , columnSpan(1)
   , rowSpan(1)
@@ -30,7 +30,7 @@ KEYTable::Cell::Cell()
 {
 }
 
-KEYTable::KEYTable()
+IWORKTable::IWORKTable()
   : m_table()
   , m_columnSizes()
   , m_rowSizes()
@@ -38,7 +38,7 @@ KEYTable::KEYTable()
 {
 }
 
-void KEYTable::setSizes(const ColumnSizes_t &columnSizes, const RowSizes_t &rowSizes)
+void IWORKTable::setSizes(const ColumnSizes_t &columnSizes, const RowSizes_t &rowSizes)
 {
   m_columnSizes = columnSizes;
   m_rowSizes = rowSizes;
@@ -47,7 +47,7 @@ void KEYTable::setSizes(const ColumnSizes_t &columnSizes, const RowSizes_t &rowS
   m_table = Table_t(m_rowSizes.size(), Row_t(m_columnSizes.size()));
 }
 
-void KEYTable::insertCell(const unsigned column, const unsigned row, const IWORKObjectPtr_t &content, const unsigned columnSpan, const unsigned rowSpan)
+void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWORKObjectPtr_t &content, const unsigned columnSpan, const unsigned rowSpan)
 {
   if ((m_rowSizes.size() <= row) || (m_columnSizes.size() <= column))
     return;
@@ -59,7 +59,7 @@ void KEYTable::insertCell(const unsigned column, const unsigned row, const IWORK
   m_table[row][column] = cell;
 }
 
-void KEYTable::insertCoveredCell(const unsigned column, const unsigned row)
+void IWORKTable::insertCoveredCell(const unsigned column, const unsigned row)
 {
   if ((m_rowSizes.size() <= row) || (m_columnSizes.size() <= column))
     return;
@@ -69,12 +69,12 @@ void KEYTable::insertCoveredCell(const unsigned column, const unsigned row)
   m_table[row][column] = cell;
 }
 
-void KEYTable::setGeometry(const IWORKGeometryPtr_t &geometry)
+void IWORKTable::setGeometry(const IWORKGeometryPtr_t &geometry)
 {
   m_geometry = geometry;
 }
 
-void KEYTable::draw(librevenge::RVNGPresentationInterface *const painter, const IWORKTransformation &trafo) const
+void IWORKTable::draw(librevenge::RVNGPresentationInterface *const painter, const IWORKTransformation &trafo) const
 {
   librevenge::RVNGPropertyList tableProps;
   tableProps.insert("table:align", "center");
@@ -152,16 +152,16 @@ namespace
 class TableObject : public IWORKObject
 {
 public:
-  TableObject(const KEYTable &table, const IWORKTransformation &trafo);
+  TableObject(const IWORKTable &table, const IWORKTransformation &trafo);
 
   virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
-  const KEYTable m_table;
+  const IWORKTable m_table;
   const IWORKTransformation m_trafo;
 };
 
-TableObject::TableObject(const KEYTable &table, const IWORKTransformation &trafo)
+TableObject::TableObject(const IWORKTable &table, const IWORKTransformation &trafo)
   : m_table(table)
   , m_trafo(trafo)
 {
@@ -174,7 +174,7 @@ void TableObject::draw(librevenge::RVNGPresentationInterface *const painter)
 
 }
 
-IWORKObjectPtr_t makeObject(const KEYTable &table, const IWORKTransformation &trafo)
+IWORKObjectPtr_t makeObject(const IWORKTable &table, const IWORKTransformation &trafo)
 {
   const IWORKObjectPtr_t object(new TableObject(table, trafo));
   return object;

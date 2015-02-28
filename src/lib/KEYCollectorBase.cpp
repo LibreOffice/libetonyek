@@ -756,7 +756,7 @@ void KEYCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const op
   }
 }
 
-void KEYCollectorBase::collectTableSizes(const KEYTable::RowSizes_t &rowSizes, const KEYTable::ColumnSizes_t &columnSizes)
+void KEYCollectorBase::collectTableSizes(const IWORKTable::RowSizes_t &rowSizes, const IWORKTable::ColumnSizes_t &columnSizes)
 {
   if (m_collecting)
     m_currentTable.setSizes(columnSizes, rowSizes);
@@ -811,7 +811,7 @@ void KEYCollectorBase::collectTable()
     m_levelStack.top().geometry.reset();
 
     m_objectsStack.top().push_back(makeObject(m_currentTable, m_levelStack.top().m_trafo));
-    m_currentTable = KEYTable();
+    m_currentTable = IWORKTable();
   }
 }
 

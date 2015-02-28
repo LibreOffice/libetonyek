@@ -131,7 +131,7 @@ public:
 
   virtual void collectTextPlaceholder(const boost::optional<ID_t> &id, const boost::optional<ID_t> &style, bool title, bool ref);
 
-  virtual void collectTableSizes(const KEYTable::RowSizes_t &rowSizes, const KEYTable::ColumnSizes_t &columnSizes);
+  virtual void collectTableSizes(const IWORKTable::RowSizes_t &rowSizes, const IWORKTable::ColumnSizes_t &columnSizes);
   virtual void collectTableCell(unsigned row, unsigned column, const boost::optional<std::string> &content, unsigned rowSpan, unsigned columnSpan);
   virtual void collectCoveredTableCell(unsigned row, unsigned column);
   virtual void collectTableRow();
@@ -196,7 +196,7 @@ private:
   KEYMediaContentPtr_t m_currentLeveled;
   KEYMediaContentPtr_t m_currentContent;
 
-  KEYTable m_currentTable;
+  IWORKTable m_currentTable;
 
   IWORKObjectList_t m_notes;
 
