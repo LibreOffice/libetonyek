@@ -29,9 +29,9 @@ namespace libetonyek
   * from the enclosing style.
   *
   * The property getters in specific implementations of @c IWORKStyle
-  * should take a pointer to a @c KEYStyleContext.
+  * should take a pointer to a @c IWORKStyleContext.
   */
-class KEYStyleContext
+class IWORKStyleContext
 {
   /** The internal type of style stack.
     *
@@ -43,7 +43,7 @@ class KEYStyleContext
 public:
   /** Construct an empty context.
     */
-  KEYStyleContext();
+  IWORKStyleContext();
 
   /** Push a style onto the active styles stack.
     *

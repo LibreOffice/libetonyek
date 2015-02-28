@@ -16,6 +16,8 @@ test_SOURCES = \
 	IWORKPathTest.h \
 	IWORKPropertyMapTest.cpp \
 	IWORKPropertyMapTest.h \
+	IWORKStyleContextTest.cpp \
+	IWORKStyleContextTest.h \
 	IWORKToken.h \
 	IWORKTokenInfo.h \
 	IWORKTransformationTest.cpp \
@@ -26,8 +28,6 @@ test_SOURCES = \
 	KEY2TokenTest.h \
 	KEYShapeTest.cpp \
 	KEYShapeTest.h \
-	KEYStyleContextTest.cpp \
-	KEYStyleContextTest.h \
 	KEYStylesTest.cpp \
 	KEYStylesTest.h \
 	test.cpp

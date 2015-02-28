@@ -29,11 +29,11 @@ namespace libetonyek
 
 struct KEYText::Paragraph
 {
-  KEYStyleContext m_styleContext;
+  IWORKStyleContext m_styleContext;
   KEYParagraphStylePtr_t style;
   KEYObjectList_t objects;
 
-  explicit Paragraph(const KEYStyleContext &styleContext);
+  explicit Paragraph(const IWORKStyleContext &styleContext);
 };
 
 namespace
@@ -53,7 +53,7 @@ librevenge::RVNGString makeColor(const IWORKColor &color)
   return str;
 }
 
-void fillCharPropList(librevenge::RVNGPropertyList &props, const KEYCharacterStyle &style, const KEYStyleContext &context)
+void fillCharPropList(librevenge::RVNGPropertyList &props, const KEYCharacterStyle &style, const IWORKStyleContext &context)
 {
   if (style.getItalic(context))
     props.insert("fo:font-style", "italic");
@@ -92,7 +92,7 @@ KEYCharacterStyle makeEmptyStyle()
   return KEYCharacterStyle(IWORKPropertyMap(), dummy, dummy);
 }
 
-librevenge::RVNGPropertyList makePropList(const KEYCharacterStylePtr_t &style, const KEYStyleContext &context)
+librevenge::RVNGPropertyList makePropList(const KEYCharacterStylePtr_t &style, const IWORKStyleContext &context)
 {
   librevenge::RVNGPropertyList props;
 
@@ -104,7 +104,7 @@ librevenge::RVNGPropertyList makePropList(const KEYCharacterStylePtr_t &style, c
   return props;
 }
 
-librevenge::RVNGPropertyList makePropList(const KEYParagraphStylePtr_t &style, const KEYStyleContext &context)
+librevenge::RVNGPropertyList makePropList(const KEYParagraphStylePtr_t &style, const IWORKStyleContext &context)
 {
   librevenge::RVNGPropertyList props;
 
@@ -153,18 +153,18 @@ namespace
 class TextSpanObject : public KEYObject
 {
 public:
-  TextSpanObject(const KEYCharacterStylePtr_t &style, const KEYStyleContext &styleContext, const string &text);
+  TextSpanObject(const KEYCharacterStylePtr_t &style, const IWORKStyleContext &styleContext, const string &text);
 
 private:
   virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
   const KEYCharacterStylePtr_t m_style;
-  const KEYStyleContext m_styleContext;
+  const IWORKStyleContext m_styleContext;
   const string m_text;
 };
 
-TextSpanObject::TextSpanObject(const KEYCharacterStylePtr_t &style, const KEYStyleContext &styleContext, const string &text)
+TextSpanObject::TextSpanObject(const KEYCharacterStylePtr_t &style, const IWORKStyleContext &styleContext, const string &text)
   : m_style(style)
   , m_styleContext(styleContext)
   , m_text(text)
@@ -205,16 +205,16 @@ namespace
 class LineBreakObject : public KEYObject
 {
 public:
-  explicit LineBreakObject(const KEYStyleContext &styleContext);
+  explicit LineBreakObject(const IWORKStyleContext &styleContext);
 
 private:
   virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
-  const KEYStyleContext m_styleContext;
+  const IWORKStyleContext m_styleContext;
 };
 
-LineBreakObject::LineBreakObject(const KEYStyleContext &styleContext)
+LineBreakObject::LineBreakObject(const IWORKStyleContext &styleContext)
   : m_styleContext(styleContext)
 {
 }
@@ -312,7 +312,7 @@ KEYText::KEYText(const bool object)
 {
 }
 
-KEYText::Paragraph::Paragraph(const KEYStyleContext &styleContext)
+KEYText::Paragraph::Paragraph(const IWORKStyleContext &styleContext)
   : m_styleContext(styleContext)
   , style()
   , objects()

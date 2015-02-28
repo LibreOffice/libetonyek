@@ -82,7 +82,7 @@ const IWORKPropertyMap &KEYStyleBase::getPropertyMap() const
   return m_props;
 }
 
-boost::any KEYStyleBase::lookup(const char *property, const KEYStyleContext &context) const
+boost::any KEYStyleBase::lookup(const char *property, const IWORKStyleContext &context) const
 {
   any value = getPropertyMap().get(property, true);
   if (value.empty())
@@ -106,47 +106,47 @@ KEYCharacterStyle::KEYCharacterStyle(const IWORKPropertyMap &props, const boost:
 {
 }
 
-boost::optional<bool> KEYCharacterStyle::getBold(const KEYStyleContext &context) const
+boost::optional<bool> KEYCharacterStyle::getBold(const IWORKStyleContext &context) const
 {
   return extractOptional<bool>(lookup("bold", context));
 }
 
-boost::optional<IWORKCapitalization> KEYCharacterStyle::getCapitalization(const KEYStyleContext &context) const
+boost::optional<IWORKCapitalization> KEYCharacterStyle::getCapitalization(const IWORKStyleContext &context) const
 {
   return extractOptional<IWORKCapitalization>(lookup("capitalization", context));
 }
 
-boost::optional<bool> KEYCharacterStyle::getItalic(const KEYStyleContext &context) const
+boost::optional<bool> KEYCharacterStyle::getItalic(const IWORKStyleContext &context) const
 {
   return extractOptional<bool>(lookup("italic", context));
 }
 
-boost::optional<IWORKColor> KEYCharacterStyle::getFontColor(const KEYStyleContext &context) const
+boost::optional<IWORKColor> KEYCharacterStyle::getFontColor(const IWORKStyleContext &context) const
 {
   return extractOptional<IWORKColor>(lookup("fontColor", context));
 }
 
-boost::optional<double> KEYCharacterStyle::getFontSize(const KEYStyleContext &context) const
+boost::optional<double> KEYCharacterStyle::getFontSize(const IWORKStyleContext &context) const
 {
   return extractOptional<double>(lookup("fontSize", context));
 }
 
-boost::optional<std::string> KEYCharacterStyle::getFontName(const KEYStyleContext &context) const
+boost::optional<std::string> KEYCharacterStyle::getFontName(const IWORKStyleContext &context) const
 {
   return extractOptional<std::string>(lookup("fontName", context));
 }
 
-boost::optional<bool> KEYCharacterStyle::getOutline(const KEYStyleContext &context) const
+boost::optional<bool> KEYCharacterStyle::getOutline(const IWORKStyleContext &context) const
 {
   return extractOptional<bool>(lookup("outline", context));
 }
 
-boost::optional<bool> KEYCharacterStyle::getStrikethru(const KEYStyleContext &context) const
+boost::optional<bool> KEYCharacterStyle::getStrikethru(const IWORKStyleContext &context) const
 {
   return extractOptional<bool>(lookup("strikethru", context));
 }
 
-boost::optional<bool> KEYCharacterStyle::getUnderline(const KEYStyleContext &context) const
+boost::optional<bool> KEYCharacterStyle::getUnderline(const IWORKStyleContext &context) const
 {
   return extractOptional<bool>(lookup("underline", context));
 }
@@ -201,12 +201,12 @@ KEYParagraphStyle::KEYParagraphStyle(const IWORKPropertyMap &props, const boost:
 {
 }
 
-boost::optional<IWORKAlignment> KEYParagraphStyle::getAlignment(const KEYStyleContext &context) const
+boost::optional<IWORKAlignment> KEYParagraphStyle::getAlignment(const IWORKStyleContext &context) const
 {
   return extractOptional<IWORKAlignment>(lookup("alignment", context));
 }
 
-boost::optional<IWORKTabStops_t> KEYParagraphStyle::getTabs(const KEYStyleContext &context) const
+boost::optional<IWORKTabStops_t> KEYParagraphStyle::getTabs(const IWORKStyleContext &context) const
 {
   return extractOptional<IWORKTabStops_t>(lookup("tabs", context));
 }
@@ -221,7 +221,7 @@ KEYPlaceholderStyle::KEYPlaceholderStyle(const IWORKPropertyMap &props, const bo
 {
 }
 
-IWORKGeometryPtr_t KEYPlaceholderStyle::getGeometry(const KEYStyleContext &context) const
+IWORKGeometryPtr_t KEYPlaceholderStyle::getGeometry(const IWORKStyleContext &context) const
 {
   return extract<IWORKGeometryPtr_t>(lookup("geometry", context));
 }

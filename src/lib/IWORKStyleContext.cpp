@@ -10,34 +10,34 @@
 #include <cassert>
 
 #include "IWORKPropertyMap.h"
-#include "KEYStyleContext.h"
+#include "IWORKStyleContext.h"
 
 namespace libetonyek
 {
 
-KEYStyleContext::KEYStyleContext()
+IWORKStyleContext::IWORKStyleContext()
   : m_stack()
 {
 }
 
-void KEYStyleContext::push()
+void IWORKStyleContext::push()
 {
   m_stack.push_front(IWORKStylePtr_t());
 }
 
-void KEYStyleContext::pop()
+void IWORKStyleContext::pop()
 {
   m_stack.pop_front();
 }
 
-void KEYStyleContext::set(const IWORKStylePtr_t &style)
+void IWORKStyleContext::set(const IWORKStylePtr_t &style)
 {
   assert(!m_stack.top());
 
   m_stack.front() = style;
 }
 
-boost::any KEYStyleContext::find(const std::string &property, const bool lookInParent) const
+boost::any IWORKStyleContext::find(const std::string &property, const bool lookInParent) const
 {
   boost::any value;
 

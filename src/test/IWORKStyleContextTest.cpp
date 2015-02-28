@@ -7,10 +7,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "KEYStyleContext.h"
+#include "IWORKStyleContext.h"
 #include "KEYStyles.h"
 
-#include "KEYStyleContextTest.h"
+#include "IWORKStyleContextTest.h"
 
 namespace test
 {
@@ -18,7 +18,7 @@ namespace test
 using boost::any_cast;
 using boost::optional;
 
-using libetonyek::KEYStyleContext;
+using libetonyek::IWORKStyleContext;
 using libetonyek::KEYParagraphStyle;
 using libetonyek::KEYParagraphStylePtr_t;
 using libetonyek::IWORKPropertyMap;
@@ -38,17 +38,17 @@ KEYParagraphStylePtr_t makeStyle(const IWORKPropertyMap &props)
 
 }
 
-void KEYStyleContextTest::setUp()
+void IWORKStyleContextTest::setUp()
 {
 }
 
-void KEYStyleContextTest::tearDown()
+void IWORKStyleContextTest::tearDown()
 {
 }
 
-void KEYStyleContextTest::testLookup()
+void IWORKStyleContextTest::testLookup()
 {
-  KEYStyleContext context;
+  IWORKStyleContext context;
 
   // lookup in empty context finds nothing
   CPPUNIT_ASSERT(context.find("answer").empty());
@@ -96,7 +96,7 @@ void KEYStyleContextTest::testLookup()
   CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(context.find("answer")));
 }
 
-CPPUNIT_TEST_SUITE_REGISTRATION(KEYStyleContextTest);
+CPPUNIT_TEST_SUITE_REGISTRATION(IWORKStyleContextTest);
 
 }
 

@@ -10,10 +10,10 @@
 #include <cassert>
 
 #include "libetonyek_utils.h"
+#include "IWORKStyleContext.h"
 #include "KEYContentCollector.h"
 #include "KEYDefaults.h"
 #include "KEYDictionary.h"
-#include "KEYStyleContext.h"
 #include "KEYText.h"
 
 using boost::optional;

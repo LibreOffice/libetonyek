@@ -19,8 +19,8 @@
 #include "IWORKEnum.h"
 #include "IWORKPropertyMap.h"
 #include "IWORKStyle.h"
+#include "IWORKStyleContext.h"
 #include "IWORKTypes.h"
-#include "KEYStyleContext.h"
 #include "KEYStyles_fwd.h"
 #include "KEYTypes.h"
 
@@ -51,7 +51,7 @@ protected:
     * @arg[in] context the context for dynamic lookup
     * @returns the found property or empty boost::any
     */
-  boost::any lookup(const char *property, const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::any lookup(const char *property, const IWORKStyleContext &context = IWORKStyleContext()) const;
 
 private:
   IWORKPropertyMap m_props;
@@ -79,17 +79,17 @@ class KEYCharacterStyle : public KEYStyleBase
 public:
   KEYCharacterStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
-  boost::optional<IWORKBaseline> getBaseline(const KEYStyleContext &context = KEYStyleContext()) const;
-  boost::optional<double> getBaselineShift(const KEYStyleContext &context = KEYStyleContext()) const;
-  boost::optional<bool> getBold(const KEYStyleContext &context = KEYStyleContext()) const;
-  boost::optional<IWORKCapitalization> getCapitalization(const KEYStyleContext &context = KEYStyleContext()) const;
-  boost::optional<bool> getItalic(const KEYStyleContext &context = KEYStyleContext()) const;
-  boost::optional<IWORKColor> getFontColor(const KEYStyleContext &context = KEYStyleContext()) const;
-  boost::optional<double> getFontSize(const KEYStyleContext &context = KEYStyleContext()) const;
-  boost::optional<std::string> getFontName(const KEYStyleContext &context = KEYStyleContext()) const;
-  boost::optional<bool> getOutline(const KEYStyleContext &context = KEYStyleContext()) const;
-  boost::optional<bool> getStrikethru(const KEYStyleContext &context = KEYStyleContext()) const;
-  boost::optional<bool> getUnderline(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<IWORKBaseline> getBaseline(const IWORKStyleContext &context = IWORKStyleContext()) const;
+  boost::optional<double> getBaselineShift(const IWORKStyleContext &context = IWORKStyleContext()) const;
+  boost::optional<bool> getBold(const IWORKStyleContext &context = IWORKStyleContext()) const;
+  boost::optional<IWORKCapitalization> getCapitalization(const IWORKStyleContext &context = IWORKStyleContext()) const;
+  boost::optional<bool> getItalic(const IWORKStyleContext &context = IWORKStyleContext()) const;
+  boost::optional<IWORKColor> getFontColor(const IWORKStyleContext &context = IWORKStyleContext()) const;
+  boost::optional<double> getFontSize(const IWORKStyleContext &context = IWORKStyleContext()) const;
+  boost::optional<std::string> getFontName(const IWORKStyleContext &context = IWORKStyleContext()) const;
+  boost::optional<bool> getOutline(const IWORKStyleContext &context = IWORKStyleContext()) const;
+  boost::optional<bool> getStrikethru(const IWORKStyleContext &context = IWORKStyleContext()) const;
+  boost::optional<bool> getUnderline(const IWORKStyleContext &context = IWORKStyleContext()) const;
 
 private:
   virtual IWORKStylePtr_t find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const;
@@ -146,8 +146,8 @@ class KEYParagraphStyle : public KEYCharacterStyle
 public:
   KEYParagraphStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
-  boost::optional<IWORKAlignment> getAlignment(const KEYStyleContext &context = KEYStyleContext()) const;
-  boost::optional<IWORKTabStops_t> getTabs(const KEYStyleContext &context = KEYStyleContext()) const;
+  boost::optional<IWORKAlignment> getAlignment(const IWORKStyleContext &context = IWORKStyleContext()) const;
+  boost::optional<IWORKTabStops_t> getTabs(const IWORKStyleContext &context = IWORKStyleContext()) const;
 
 private:
   virtual IWORKStylePtr_t find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const;
@@ -160,7 +160,7 @@ class KEYPlaceholderStyle : public KEYStyleBase
 public:
   KEYPlaceholderStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
-  IWORKGeometryPtr_t getGeometry(const KEYStyleContext &context = KEYStyleContext()) const;
+  IWORKGeometryPtr_t getGeometry(const IWORKStyleContext &context = IWORKStyleContext()) const;
 
 private:
   virtual IWORKStylePtr_t find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const;

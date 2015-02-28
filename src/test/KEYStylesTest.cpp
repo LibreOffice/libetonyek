@@ -26,7 +26,7 @@ using libetonyek::IWORKStylePtr_t;
 using libetonyek::IWORKStylesheet;
 using libetonyek::IWORKStylesheetPtr_t;
 using libetonyek::KEYStyleBase;
-using libetonyek::KEYStyleContext;
+using libetonyek::IWORKStyleContext;
 
 using std::string;
 
@@ -52,7 +52,7 @@ public:
                  const optional<string> &ident = optional<string>(),
                  const optional<string> &parentIdent = optional<string>());
 
-  optional<int> getAnswer(const KEYStyleContext &context = KEYStyleContext()) const;
+  optional<int> getAnswer(const IWORKStyleContext &context = IWORKStyleContext()) const;
 
   any get(const char *const prop, bool lookInParent) const;
 
@@ -65,7 +65,7 @@ Style::Style(const IWORKPropertyMap &props, const optional<string> &ident, const
 {
 }
 
-optional<int> Style::getAnswer(const KEYStyleContext &context) const
+optional<int> Style::getAnswer(const IWORKStyleContext &context) const
 {
   optional<int> value;
 
@@ -213,7 +213,7 @@ void KEYStylesTest::testLookup()
 
   // with context
   {
-    KEYStyleContext context;
+    IWORKStyleContext context;
 
     IWORKPropertyMap ctxtProps;
     ctxtProps.set("answer", 2);

@@ -14,11 +14,11 @@
 #include <stack>
 
 #include "IWORKStyle.h"
+#include "IWORKStyleContext.h"
 #include "IWORKStylesheet.h"
 #include "IWORKTransformation.h"
 #include "KEYCollector.h"
 #include "KEYObject.h"
-#include "KEYStyleContext.h"
 #include "KEYText_fwd.h"
 #include "KEYTypes.h"
 
@@ -181,7 +181,7 @@ private:
   KEYLayerPtr_t m_currentLayer;
 
   std::stack<Level> m_levelStack;
-  KEYStyleContext m_styleContext;
+  IWORKStyleContext m_styleContext;
   std::stack<KEYObjectList_t> m_objectsStack;
   IWORKPathPtr_t m_currentPath;
 

@@ -12,8 +12,8 @@
 
 #include <deque>
 
+#include "IWORKStyleContext.h"
 #include "KEYObject.h"
-#include "KEYStyleContext.h"
 #include "KEYStyles_fwd.h"
 #include "KEYText_fwd.h"
 
@@ -55,7 +55,7 @@ private:
   void insertDeferredLineBreaks();
 
 private:
-  KEYStyleContext m_styleContext;
+  IWORKStyleContext m_styleContext;
   KEYLayoutStylePtr_t m_layoutStyle;
   ParagraphList_t m_paragraphs;
   ParagraphPtr_t m_currentParagraph;
