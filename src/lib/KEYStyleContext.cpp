@@ -22,7 +22,7 @@ KEYStyleContext::KEYStyleContext()
 
 void KEYStyleContext::push()
 {
-  m_stack.push_front(KEYStylePtr_t());
+  m_stack.push_front(IWORKStylePtr_t());
 }
 
 void KEYStyleContext::pop()
@@ -30,7 +30,7 @@ void KEYStyleContext::pop()
   m_stack.pop_front();
 }
 
-void KEYStyleContext::set(const KEYStylePtr_t &style)
+void KEYStyleContext::set(const IWORKStylePtr_t &style)
 {
   assert(!m_stack.top());
 

@@ -18,6 +18,7 @@
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"
 #include "IWORKPath.h"
+#include "IWORKStyle.h"
 #include "IWORKTabularInfoContext.h"
 #include "IWORKToken.h"
 #include "IWORKTypes.h"
@@ -28,7 +29,6 @@
 #include "KEY2StyleContext.h"
 #include "KEY2Token.h"
 #include "KEYCollector.h"
-#include "KEYStyle.h"
 #include "KEYTypes.h"
 
 using boost::get_optional_value_or;

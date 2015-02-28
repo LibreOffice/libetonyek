@@ -48,7 +48,7 @@ public:
 private:
   // helper functions
 
-  void resolveStyle(KEYStyle &style);
+  void resolveStyle(IWORKStyle &style);
 
   void drawLayer(const KEYLayerPtr_t &layer);
   void drawNotes(const KEYObjectList_t &notes);

@@ -22,11 +22,11 @@ using boost::shared_ptr;
 using boost::unordered_map;
 
 using libetonyek::IWORKPropertyMap;
+using libetonyek::IWORKStylePtr_t;
+using libetonyek::IWORKStylesheet;
+using libetonyek::IWORKStylesheetPtr_t;
 using libetonyek::KEYStyleBase;
 using libetonyek::KEYStyleContext;
-using libetonyek::KEYStylePtr_t;
-using libetonyek::KEYStylesheet;
-using libetonyek::KEYStylesheetPtr_t;
 
 using std::string;
 
@@ -35,7 +35,7 @@ namespace
 
 class Style;
 
-struct Stylesheet : public KEYStylesheet
+struct Stylesheet : public IWORKStylesheet
 {
   unordered_map<string, shared_ptr<Style> > testStyles;
 };
@@ -57,7 +57,7 @@ public:
   any get(const char *const prop, bool lookInParent) const;
 
 private:
-  virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
+  virtual IWORKStylePtr_t find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const;
 };
 
 Style::Style(const IWORKPropertyMap &props, const optional<string> &ident, const optional<string> &parentIdent)
@@ -81,9 +81,9 @@ any Style::get(const char *const prop, const bool lookInParent) const
   return getPropertyMap().get(prop, lookInParent);
 }
 
-KEYStylePtr_t Style::find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const
+IWORKStylePtr_t Style::find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const
 {
-  KEYStylePtr_t style;
+  IWORKStylePtr_t style;
 
   const Stylesheet *const testStylesheet = static_cast<const Stylesheet *>(stylesheet.get());
 
@@ -120,7 +120,7 @@ void KEYStylesTest::tearDown()
 void KEYStylesTest::testLink()
 {
   const shared_ptr<Stylesheet> stylesheet(new Stylesheet());
-  KEYStylePtr_t parent;
+  IWORKStylePtr_t parent;
 
   {
     IWORKPropertyMap props;

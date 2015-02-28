@@ -8,7 +8,7 @@
  */
 
 #include "KEYStyles.h"
-#include "KEYStylesheet.h"
+#include "IWORKStylesheet.h"
 
 using boost::any;
 using boost::any_cast;
@@ -40,12 +40,12 @@ optional<T> extractOptional(const any &property)
 
 }
 
-bool KEYStyleBase::link(const KEYStylesheetPtr_t &stylesheet)
+bool KEYStyleBase::link(const IWORKStylesheetPtr_t &stylesheet)
 {
   if (m_parent || !m_parentIdent)
     return true;
 
-  KEYStylesheetPtr_t currentStylesheet = stylesheet;
+  IWORKStylesheetPtr_t currentStylesheet = stylesheet;
 
   if (currentStylesheet && (m_ident == m_parentIdent))
     currentStylesheet = currentStylesheet->parent;
@@ -96,7 +96,7 @@ KEYCellStyle::KEYCellStyle(const IWORKPropertyMap &props, const boost::optional<
 {
 }
 
-KEYStylePtr_t KEYCellStyle::find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const
+IWORKStylePtr_t KEYCellStyle::find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const
 {
   return stylesheet->cellStyles[ident];
 }
@@ -151,7 +151,7 @@ boost::optional<bool> KEYCharacterStyle::getUnderline(const KEYStyleContext &con
   return extractOptional<bool>(lookup("underline", context));
 }
 
-KEYStylePtr_t KEYCharacterStyle::find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const
+IWORKStylePtr_t KEYCharacterStyle::find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const
 {
   return stylesheet->characterStyles[ident];
 }
@@ -161,7 +161,7 @@ KEYConnectionStyle::KEYConnectionStyle(const IWORKPropertyMap &props, const boos
 {
 }
 
-KEYStylePtr_t KEYConnectionStyle::find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const
+IWORKStylePtr_t KEYConnectionStyle::find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const
 {
   return stylesheet->connectionStyles[ident];
 }
@@ -171,7 +171,7 @@ KEYGraphicStyle::KEYGraphicStyle(const IWORKPropertyMap &props, const boost::opt
 {
 }
 
-KEYStylePtr_t KEYGraphicStyle::find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const
+IWORKStylePtr_t KEYGraphicStyle::find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const
 {
   return stylesheet->graphicStyles[ident];
 }
@@ -181,7 +181,7 @@ KEYLayoutStyle::KEYLayoutStyle(const IWORKPropertyMap &props, const boost::optio
 {
 }
 
-KEYStylePtr_t KEYLayoutStyle::find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const
+IWORKStylePtr_t KEYLayoutStyle::find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const
 {
   return stylesheet->layoutStyles[ident];
 }
@@ -191,7 +191,7 @@ KEYListStyle::KEYListStyle(const IWORKPropertyMap &props, const boost::optional<
 {
 }
 
-KEYStylePtr_t KEYListStyle::find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const
+IWORKStylePtr_t KEYListStyle::find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const
 {
   return stylesheet->listStyles[ident];
 }
@@ -211,7 +211,7 @@ boost::optional<IWORKTabStops_t> KEYParagraphStyle::getTabs(const KEYStyleContex
   return extractOptional<IWORKTabStops_t>(lookup("tabs", context));
 }
 
-KEYStylePtr_t KEYParagraphStyle::find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const
+IWORKStylePtr_t KEYParagraphStyle::find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const
 {
   return stylesheet->paragraphStyles[ident];
 }
@@ -226,7 +226,7 @@ IWORKGeometryPtr_t KEYPlaceholderStyle::getGeometry(const KEYStyleContext &conte
   return extract<IWORKGeometryPtr_t>(lookup("geometry", context));
 }
 
-KEYStylePtr_t KEYPlaceholderStyle::find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const
+IWORKStylePtr_t KEYPlaceholderStyle::find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const
 {
   return stylesheet->placeholderStyles[ident];
 }
@@ -236,7 +236,7 @@ KEYSlideStyle::KEYSlideStyle(const IWORKPropertyMap &props, const boost::optiona
 {
 }
 
-KEYStylePtr_t KEYSlideStyle::find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const
+IWORKStylePtr_t KEYSlideStyle::find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const
 {
   return stylesheet->slideStyles[ident];
 }
@@ -246,7 +246,7 @@ KEYTabularStyle::KEYTabularStyle(const IWORKPropertyMap &props, const boost::opt
 {
 }
 
-KEYStylePtr_t KEYTabularStyle::find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const
+IWORKStylePtr_t KEYTabularStyle::find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const
 {
   return stylesheet->tabularStyles[ident];
 }
@@ -256,7 +256,7 @@ KEYVectorStyle::KEYVectorStyle(const IWORKPropertyMap &props, const boost::optio
 {
 }
 
-KEYStylePtr_t KEYVectorStyle::find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const
+IWORKStylePtr_t KEYVectorStyle::find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const
 {
   return stylesheet->vectorStyles[ident];
 }

@@ -7,12 +7,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "KEYStyle.h"
+#include "IWORKStylesheet.h"
 
 namespace libetonyek
 {
 
-KEYStyle::~KEYStyle()
+IWORKStylesheet::IWORKStylesheet()
+  : parent()
+  , cellStyles()
+  , characterStyles()
+  , connectionStyles()
+  , graphicStyles()
+  , layoutStyles()
+  , listStyles()
+  , paragraphStyles()
+  , placeholderStyles()
+  , slideStyles()
+  , tabularStyles()
+  , vectorStyles()
 {
 }
 

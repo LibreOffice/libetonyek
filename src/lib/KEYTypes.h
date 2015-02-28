@@ -16,9 +16,9 @@
 
 #include "libetonyek_utils.h"
 #include "IWORKPath_fwd.h"
+#include "IWORKStyle.h"
 #include "IWORKTypes_fwd.h"
 #include "KEYObject.h"
-#include "KEYStyle.h"
 #include "KEYText_fwd.h"
 #include "KEYTypes_fwd.h"
 
@@ -30,7 +30,7 @@ class IWORKTransformation;
 struct KEYLine
 {
   IWORKGeometryPtr_t geometry;
-  KEYStylePtr_t style;
+  IWORKStylePtr_t style;
   boost::optional<double> x1;
   boost::optional<double> y1;
   boost::optional<double> x2;

@@ -7,18 +7,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYSTYLESHEET_H_INCLUDED
-#define KEYSTYLESHEET_H_INCLUDED
+#ifndef IWORKSTYLESHEET_H_INCLUDED
+#define IWORKSTYLESHEET_H_INCLUDED
 
+#include "IWORKTypes_fwd.h"
 #include "KEYStyles_fwd.h"
-#include "KEYTypes_fwd.h"
 
 namespace libetonyek
 {
 
-struct KEYStylesheet;
-typedef boost::shared_ptr<KEYStylesheet> KEYStylesheetPtr_t;
-typedef boost::unordered_map<ID_t, KEYStylesheetPtr_t> KEYStylesheetMap_t;
+struct IWORKStylesheet;
+typedef boost::shared_ptr<IWORKStylesheet> IWORKStylesheetPtr_t;
+typedef boost::unordered_map<ID_t, IWORKStylesheetPtr_t> IWORKStylesheetMap_t;
 
 /** Representation of a stylesheet.
   *
@@ -30,9 +30,9 @@ typedef boost::unordered_map<ID_t, KEYStylesheetPtr_t> KEYStylesheetMap_t;
   * @note The retrieval key for a style is its @c ident attribute, not
   * its ID.
   */
-struct KEYStylesheet
+struct IWORKStylesheet
 {
-  KEYStylesheetPtr_t parent;
+  IWORKStylesheetPtr_t parent;
 
   KEYCellStyleMap_t cellStyles;
   KEYCharacterStyleMap_t characterStyles;
@@ -46,11 +46,11 @@ struct KEYStylesheet
   KEYTabularStyleMap_t tabularStyles;
   KEYVectorStyleMap_t vectorStyles;
 
-  KEYStylesheet();
+  IWORKStylesheet();
 };
 
 }
 
-#endif // KEYSTYLESHEET_H_INCLUDED
+#endif // IWORKSTYLESHEET_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

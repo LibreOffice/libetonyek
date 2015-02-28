@@ -98,7 +98,7 @@ void KEYContentCollector::endThemes()
 {
 }
 
-void KEYContentCollector::resolveStyle(KEYStyle &style)
+void KEYContentCollector::resolveStyle(IWORKStyle &style)
 {
   // TODO: implement me
   (void) style;

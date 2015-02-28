@@ -13,12 +13,12 @@
 #include <deque>
 #include <stack>
 
+#include "IWORKStyle.h"
+#include "IWORKStylesheet.h"
 #include "IWORKTransformation.h"
 #include "KEYCollector.h"
 #include "KEYObject.h"
-#include "KEYStyle.h"
 #include "KEYStyleContext.h"
-#include "KEYStylesheet.h"
 #include "KEYText_fwd.h"
 #include "KEYTypes.h"
 
@@ -172,7 +172,7 @@ protected:
   const IWORKTransformation &getTransformation() const;
 
 private:
-  void pushStyle(const KEYStylePtr_t &style);
+  void pushStyle(const IWORKStylePtr_t &style);
 
 private:
   KEYDictionary &m_dict;
@@ -189,8 +189,8 @@ private:
 
   KEYPlaceholderStylePtr_t m_currentPlaceholderStyle;
 
-  KEYStylesheetPtr_t m_currentStylesheet;
-  std::deque<KEYStylePtr_t> m_newStyles;
+  IWORKStylesheetPtr_t m_currentStylesheet;
+  std::deque<IWORKStylePtr_t> m_newStyles;
 
   KEYDataPtr_t m_currentData;
   KEYMediaContentPtr_t m_currentUnfiltered;

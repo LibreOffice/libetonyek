@@ -13,8 +13,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
 
-#include "KEYStylesheet.h"
-#include "KEYTypes_fwd.h"
+#include "IWORKStylesheet.h"
+#include "IWORKTypes_fwd.h"
 
 namespace libetonyek
 {
@@ -23,17 +23,17 @@ class IWORKPropertyMap;
 
 /** Represents a hierarchical style.
   */
-class KEYStyle
+class IWORKStyle
 {
 public:
-  virtual ~KEYStyle() = 0;
+  virtual ~IWORKStyle() = 0;
 
   /** Find the parent style by its ID.
     *
     * @arg[in] stylesheet the stylesheet to use for looking for parent.
     * @return @c true if the parent style has been found, @c false otherwise.
     */
-  virtual bool link(const KEYStylesheetPtr_t &stylesheet) = 0;
+  virtual bool link(const IWORKStylesheetPtr_t &stylesheet) = 0;
 
   /** Copy attributes from parent style (recursively).
     *
@@ -46,8 +46,8 @@ public:
   virtual const IWORKPropertyMap &getPropertyMap() const = 0;
 };
 
-typedef boost::shared_ptr<KEYStyle> KEYStylePtr_t;
-typedef boost::unordered_map<ID_t, KEYStylePtr_t> KEYStyleMap_t;
+typedef boost::shared_ptr<IWORKStyle> IWORKStylePtr_t;
+typedef boost::unordered_map<ID_t, IWORKStylePtr_t> IWORKStyleMap_t;
 
 }
 

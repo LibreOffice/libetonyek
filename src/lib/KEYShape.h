@@ -13,8 +13,8 @@
 #include <boost/shared_ptr.hpp>
 
 #include "IWORKPath_fwd.h"
+#include "IWORKStyle.h"
 #include "KEYObject.h"
-#include "KEYStyle.h"
 #include "KEYText_fwd.h"
 
 namespace libetonyek
@@ -28,7 +28,7 @@ class IWORKTransformation;
 struct KEYShape
 {
   IWORKGeometryPtr_t geometry;
-  KEYStylePtr_t style;
+  IWORKStylePtr_t style;
   IWORKPathPtr_t path;
   KEYTextPtr_t text;
 

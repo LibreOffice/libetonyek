@@ -18,8 +18,8 @@
 
 #include "IWORKEnum.h"
 #include "IWORKPropertyMap.h"
+#include "IWORKStyle.h"
 #include "IWORKTypes.h"
-#include "KEYStyle.h"
 #include "KEYStyleContext.h"
 #include "KEYStyles_fwd.h"
 #include "KEYTypes.h"
@@ -29,10 +29,10 @@ namespace libetonyek
 
 /** A common implementation of a style.
   */
-class KEYStyleBase : public KEYStyle
+class KEYStyleBase : public IWORKStyle
 {
 public:
-  virtual bool link(const KEYStylesheetPtr_t &stylesheet);
+  virtual bool link(const IWORKStylesheetPtr_t &stylesheet);
 
   virtual void flatten();
 
@@ -43,7 +43,7 @@ protected:
 
   virtual const IWORKPropertyMap &getPropertyMap() const;
 
-  virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const = 0;
+  virtual IWORKStylePtr_t find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const = 0;
 
   /** Look up a property in this style.
     *
@@ -58,7 +58,7 @@ private:
 
   const boost::optional<std::string> m_ident;
   const boost::optional<std::string> m_parentIdent;
-  KEYStylePtr_t m_parent;
+  IWORKStylePtr_t m_parent;
 };
 
 /** Represents a cell style.
@@ -69,7 +69,7 @@ public:
   KEYCellStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
 private:
-  virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
+  virtual IWORKStylePtr_t find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const;
 };
 
 /** Represents a character style.
@@ -92,7 +92,7 @@ public:
   boost::optional<bool> getUnderline(const KEYStyleContext &context = KEYStyleContext()) const;
 
 private:
-  virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
+  virtual IWORKStylePtr_t find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const;
 };
 
 /** Represents a connection style.
@@ -103,7 +103,7 @@ public:
   KEYConnectionStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
 private:
-  virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
+  virtual IWORKStylePtr_t find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const;
 };
 
 /** Represents a graphic style.
@@ -114,7 +114,7 @@ public:
   KEYGraphicStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
 private:
-  virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
+  virtual IWORKStylePtr_t find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const;
 };
 
 /** Represents a layout style.
@@ -125,7 +125,7 @@ public:
   KEYLayoutStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
 private:
-  virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
+  virtual IWORKStylePtr_t find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const;
 };
 
 /** Represents a list style.
@@ -136,7 +136,7 @@ public:
   KEYListStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
 private:
-  virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
+  virtual IWORKStylePtr_t find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const;
 };
 
 /** Represents a paragraph style.
@@ -150,7 +150,7 @@ public:
   boost::optional<IWORKTabStops_t> getTabs(const KEYStyleContext &context = KEYStyleContext()) const;
 
 private:
-  virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
+  virtual IWORKStylePtr_t find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const;
 };
 
 /** Represents a placeholder style.
@@ -163,7 +163,7 @@ public:
   IWORKGeometryPtr_t getGeometry(const KEYStyleContext &context = KEYStyleContext()) const;
 
 private:
-  virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
+  virtual IWORKStylePtr_t find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const;
 };
 
 /** Represents a slide style.
@@ -174,7 +174,7 @@ public:
   KEYSlideStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
 private:
-  virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
+  virtual IWORKStylePtr_t find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const;
 };
 
 /** Represents a tabular style.
@@ -185,7 +185,7 @@ public:
   KEYTabularStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
 private:
-  virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
+  virtual IWORKStylePtr_t find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const;
 };
 
 /** Represents a vector style.
@@ -196,7 +196,7 @@ public:
   KEYVectorStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
 
 private:
-  virtual KEYStylePtr_t find(const KEYStylesheetPtr_t &stylesheet, const std::string &ident) const;
+  virtual IWORKStylePtr_t find(const IWORKStylesheetPtr_t &stylesheet, const std::string &ident) const;
 };
 
 }

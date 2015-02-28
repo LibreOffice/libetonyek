@@ -14,7 +14,7 @@
 
 #include <boost/any.hpp>
 
-#include "KEYStyle.h"
+#include "IWORKStyle.h"
 
 namespace libetonyek
 {
@@ -28,7 +28,7 @@ namespace libetonyek
   * paragraph style of the paragraph) and a property can be inherited
   * from the enclosing style.
   *
-  * The property getters in specific implementations of @c KEYStyle
+  * The property getters in specific implementations of @c IWORKStyle
   * should take a pointer to a @c KEYStyleContext.
   */
 class KEYStyleContext
@@ -38,7 +38,7 @@ class KEYStyleContext
     * @c std::deque is used instead of @c std::stack because @c
     * std::stack does not allow iteration through the elements.
     */
-  typedef std::deque<KEYStylePtr_t> Stack_t;
+  typedef std::deque<IWORKStylePtr_t> Stack_t;
 
 public:
   /** Construct an empty context.
@@ -55,7 +55,7 @@ public:
     */
   void pop();
 
-  void set(const KEYStylePtr_t &style);
+  void set(const IWORKStylePtr_t &style);
 
   /** Find the current value of property @c property.
     *

@@ -105,7 +105,7 @@ KEYCollectorBase::KEYCollectorBase(KEYDictionary &dict, const KEYDefaults &defau
   , m_currentPath()
   , m_currentText()
   , m_currentPlaceholderStyle()
-  , m_currentStylesheet(new KEYStylesheet())
+  , m_currentStylesheet(new IWORKStylesheet())
   , m_newStyles()
   , m_currentData()
   , m_currentUnfiltered()
@@ -672,9 +672,9 @@ void KEYCollectorBase::collectStylesheet(const boost::optional<ID_t> &id, const 
     if (id)
       m_dict.stylesheets[get(id)] = m_currentStylesheet;
 
-    for_each(m_newStyles.begin(), m_newStyles.end(), boost::bind(&KEYStyle::link, _1, m_currentStylesheet));
+    for_each(m_newStyles.begin(), m_newStyles.end(), boost::bind(&IWORKStyle::link, _1, m_currentStylesheet));
 
-    m_currentStylesheet.reset(new KEYStylesheet());
+    m_currentStylesheet.reset(new IWORKStylesheet());
     m_newStyles.clear();
     m_currentPlaceholderStyle.reset();
   }
