@@ -1302,12 +1302,12 @@ private:
   virtual void endOfElement();
 
 private:
-  KEYImagePtr_t m_image;
+  IWORKImagePtr_t m_image;
 };
 
 ImageContext::ImageContext(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
-  , m_image(new KEYImage())
+  , m_image(new IWORKImage())
 {
 }
 
@@ -1393,7 +1393,7 @@ IWORKXMLContextPtr_t LineContext::element(const int name)
 
 void LineContext::endOfElement()
 {
-  KEYLinePtr_t line(new KEYLine());
+  IWORKLinePtr_t line(new IWORKLine());
   if (m_head)
   {
     line->x1 = get(m_head).x;
@@ -1458,7 +1458,7 @@ IWORKXMLContextPtr_t GroupContext::element(const int name)
 
 void GroupContext::endOfElement()
 {
-  KEYGroupPtr_t group(new KEYGroup());
+  IWORKGroupPtr_t group(new IWORKGroup());
   getCollector()->collectGroup(getId(), group);
   getCollector()->endGroup();
   getCollector()->endLevel();

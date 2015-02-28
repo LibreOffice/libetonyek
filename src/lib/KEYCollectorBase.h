@@ -101,9 +101,9 @@ public:
                                boost::optional<bool> &aspectRatioLocked, boost::optional<bool> &sizesLocked);
 
   virtual void collectBezier(const boost::optional<ID_t> &id, const IWORKPathPtr_t &path, bool ref);
-  virtual void collectGroup(const boost::optional<ID_t> &id, const KEYGroupPtr_t &group);
-  virtual void collectImage(const boost::optional<ID_t> &id, const KEYImagePtr_t &image);
-  virtual void collectLine(const boost::optional<ID_t> &id, const KEYLinePtr_t &line);
+  virtual void collectGroup(const boost::optional<ID_t> &id, const IWORKGroupPtr_t &group);
+  virtual void collectImage(const boost::optional<ID_t> &id, const IWORKImagePtr_t &image);
+  virtual void collectLine(const boost::optional<ID_t> &id, const IWORKLinePtr_t &line);
   virtual void collectShape(const boost::optional<ID_t> &id);
 
   virtual void collectBezierPath(const boost::optional<ID_t> &id);
@@ -190,11 +190,11 @@ private:
   IWORKStylesheetPtr_t m_currentStylesheet;
   std::deque<IWORKStylePtr_t> m_newStyles;
 
-  KEYDataPtr_t m_currentData;
-  KEYMediaContentPtr_t m_currentUnfiltered;
-  KEYMediaContentPtr_t m_currentFiltered;
-  KEYMediaContentPtr_t m_currentLeveled;
-  KEYMediaContentPtr_t m_currentContent;
+  IWORKDataPtr_t m_currentData;
+  IWORKMediaContentPtr_t m_currentUnfiltered;
+  IWORKMediaContentPtr_t m_currentFiltered;
+  IWORKMediaContentPtr_t m_currentLeveled;
+  IWORKMediaContentPtr_t m_currentContent;
 
   IWORKTable m_currentTable;
 

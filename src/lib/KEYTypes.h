@@ -27,80 +27,6 @@ namespace libetonyek
 
 class IWORKTransformation;
 
-struct KEYLine
-{
-  IWORKGeometryPtr_t geometry;
-  IWORKStylePtr_t style;
-  boost::optional<double> x1;
-  boost::optional<double> y1;
-  boost::optional<double> x2;
-  boost::optional<double> y2;
-
-  KEYLine();
-};
-
-struct KEYData
-{
-  RVNGInputStreamPtr_t stream;
-  boost::optional<std::string> displayName;
-  boost::optional<int> type;
-
-  KEYData();
-};
-
-struct KEYMediaContent
-{
-  boost::optional<IWORKSize> size;
-  KEYDataPtr_t data;
-
-  KEYMediaContent();
-};
-
-struct KEYBinary
-{
-  boost::optional<IWORKSize> size;
-  boost::optional<std::string> path;
-  boost::optional<std::string> type;
-  boost::optional<unsigned> dataSize;
-
-  KEYBinary();
-};
-
-struct KEYImage
-{
-  boost::optional<bool> locked;
-  IWORKGeometryPtr_t geometry;
-  boost::optional<KEYBinary> binary;
-
-  KEYImage();
-};
-
-struct KEYMedia
-{
-  IWORKGeometryPtr_t geometry;
-  IWORKStylePtr_t style;
-  boost::optional<bool> placeholder;
-  boost::optional<IWORKSize> placeholderSize;
-  KEYMediaContentPtr_t content;
-
-  KEYMedia();
-};
-
-struct KEYWrap
-{
-  IWORKPathPtr_t path;
-  IWORKGeometryPtr_t geometry;
-
-  KEYWrap();
-};
-
-struct KEYGroup
-{
-  IWORKObjectList_t objects;
-
-  KEYGroup();
-};
-
 struct KEYLayer
 {
   boost::optional<std::string> type;
@@ -131,10 +57,6 @@ struct KEYStickyNote
 
 typedef std::deque<KEYStickyNote> KEYStickyNotes_t;
 
-IWORKObjectPtr_t makeObject(const KEYGroupPtr_t &group);
-IWORKObjectPtr_t makeObject(const KEYImagePtr_t &image, const IWORKTransformation &trafo);
-IWORKObjectPtr_t makeObject(const KEYLinePtr_t &line, const IWORKTransformation &trafo);
-IWORKObjectPtr_t makeObject(const KEYMediaPtr_t &media, const IWORKTransformation &trafo);
 IWORKObjectPtr_t makeObject(const KEYPlaceholderPtr_t &placeholder, const IWORKTransformation &trafo);
 
 }

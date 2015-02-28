@@ -384,7 +384,7 @@ void KEYCollectorBase::collectBezier(const optional<ID_t> &id, const IWORKPathPt
     m_currentPath = getValue(id, path, ref, m_dict.beziers);
 }
 
-void KEYCollectorBase::collectGroup(const optional<ID_t> &, const KEYGroupPtr_t &group)
+void KEYCollectorBase::collectGroup(const optional<ID_t> &, const IWORKGroupPtr_t &group)
 {
   if (m_collecting)
   {
@@ -397,7 +397,7 @@ void KEYCollectorBase::collectGroup(const optional<ID_t> &, const KEYGroupPtr_t 
   }
 }
 
-void KEYCollectorBase::collectImage(const optional<ID_t> &id, const KEYImagePtr_t &image)
+void KEYCollectorBase::collectImage(const optional<ID_t> &id, const IWORKImagePtr_t &image)
 {
   if (m_collecting)
   {
@@ -412,7 +412,7 @@ void KEYCollectorBase::collectImage(const optional<ID_t> &id, const KEYImagePtr_
   }
 }
 
-void KEYCollectorBase::collectLine(const optional<ID_t> &, const KEYLinePtr_t &line)
+void KEYCollectorBase::collectLine(const optional<ID_t> &, const IWORKLinePtr_t &line)
 {
   if (m_collecting)
   {
@@ -513,11 +513,11 @@ void KEYCollectorBase::collectData(const boost::optional<ID_t> &id, const RVNGIn
 {
   if (m_collecting)
   {
-    KEYDataPtr_t newData;
+    IWORKDataPtr_t newData;
 
     if (!ref)
     {
-      newData.reset(new KEYData());
+      newData.reset(new IWORKData());
       newData->stream = stream;
       newData->displayName = displayName;
       newData->type = type;
@@ -532,11 +532,11 @@ void KEYCollectorBase::collectUnfiltered(const boost::optional<ID_t> &id, const 
 {
   if (m_collecting)
   {
-    KEYMediaContentPtr_t newUnfiltered;
+    IWORKMediaContentPtr_t newUnfiltered;
 
     if (!ref)
     {
-      newUnfiltered.reset(new KEYMediaContent());
+      newUnfiltered.reset(new IWORKMediaContent());
       newUnfiltered->size = size;
       newUnfiltered->data = m_currentData;
 
@@ -552,7 +552,7 @@ void KEYCollectorBase::collectFiltered(const boost::optional<ID_t> &, const boos
 {
   if (m_collecting)
   {
-    const KEYMediaContentPtr_t newFiltered(new KEYMediaContent());
+    const IWORKMediaContentPtr_t newFiltered(new IWORKMediaContent());
     newFiltered->size = size;
     newFiltered->data = m_currentData;
 
@@ -567,7 +567,7 @@ void KEYCollectorBase::collectLeveled(const boost::optional<ID_t> &, const boost
 {
   if (m_collecting)
   {
-    const KEYMediaContentPtr_t newLeveled(new KEYMediaContent());
+    const IWORKMediaContentPtr_t newLeveled(new IWORKMediaContent());
     newLeveled->size = size;
     newLeveled->data = m_currentData;
 
@@ -582,7 +582,7 @@ void KEYCollectorBase::collectFilteredImage(const boost::optional<ID_t> &id, con
 {
   if (m_collecting)
   {
-    KEYMediaContentPtr_t newFilteredImage;
+    IWORKMediaContentPtr_t newFilteredImage;
 
     if (!ref)
     {
@@ -614,7 +614,7 @@ void KEYCollectorBase::collectMovieMedia(const boost::optional<ID_t> &)
   {
     assert(m_currentData);
 
-    const KEYMediaContentPtr_t newContent(new KEYMediaContent());
+    const IWORKMediaContentPtr_t newContent(new IWORKMediaContent());
     newContent->data = m_currentData;
     m_currentData.reset();
 
@@ -630,7 +630,7 @@ void KEYCollectorBase::collectMedia(const optional<ID_t> &)
     assert(!m_objectsStack.empty());
     assert(!m_levelStack.empty());
 
-    const KEYMediaPtr_t media(new KEYMedia());
+    const IWORKMediaPtr_t media(new IWORKMedia());
     media->geometry = m_levelStack.top().geometry;
     media->style = m_levelStack.top().graphicStyle;
     media->content = m_currentContent;

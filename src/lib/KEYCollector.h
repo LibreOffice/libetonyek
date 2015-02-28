@@ -87,9 +87,9 @@ public:
                                boost::optional<bool> &aspectRatioLocked, boost::optional<bool> &sizesLocked) = 0;
 
   virtual void collectBezier(const boost::optional<ID_t> &id, const IWORKPathPtr_t &path, bool ref) = 0;
-  virtual void collectGroup(const boost::optional<ID_t> &id, const KEYGroupPtr_t &group) = 0;
-  virtual void collectImage(const boost::optional<ID_t> &id, const KEYImagePtr_t &image) = 0;
-  virtual void collectLine(const boost::optional<ID_t> &id, const KEYLinePtr_t &line) = 0;
+  virtual void collectGroup(const boost::optional<ID_t> &id, const IWORKGroupPtr_t &group) = 0;
+  virtual void collectImage(const boost::optional<ID_t> &id, const IWORKImagePtr_t &image) = 0;
+  virtual void collectLine(const boost::optional<ID_t> &id, const IWORKLinePtr_t &line) = 0;
   virtual void collectShape(const boost::optional<ID_t> &id) = 0;
 
   virtual void collectBezierPath(const boost::optional<ID_t> &id) = 0;

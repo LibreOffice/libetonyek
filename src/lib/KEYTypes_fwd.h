@@ -19,37 +19,6 @@
 namespace libetonyek
 {
 
-struct KEYLine;
-
-typedef boost::shared_ptr<KEYLine> KEYLinePtr_t;
-
-struct KEYData;
-
-typedef boost::shared_ptr<KEYData> KEYDataPtr_t;
-typedef boost::unordered_map<ID_t, KEYDataPtr_t> KEYDataMap_t;
-
-struct KEYMediaContent;
-
-typedef boost::shared_ptr<KEYMediaContent> KEYMediaContentPtr_t;
-typedef boost::unordered_map<ID_t, KEYMediaContentPtr_t> KEYMediaContentMap_t;
-
-struct KEYImage;
-
-typedef boost::shared_ptr<KEYImage> KEYImagePtr_t;
-typedef boost::unordered_map<ID_t, KEYImagePtr_t> KEYImageMap_t;
-
-struct KEYMedia;
-
-typedef boost::shared_ptr<KEYMedia> KEYMediaPtr_t;
-
-struct KEYWrap;
-
-typedef boost::shared_ptr<KEYWrap> KEYWrapPtr_t;
-
-struct KEYGroup;
-
-typedef boost::shared_ptr<KEYGroup> KEYGroupPtr_t;
-
 struct KEYLayer;
 
 typedef boost::shared_ptr<KEYLayer> KEYLayerPtr_t;

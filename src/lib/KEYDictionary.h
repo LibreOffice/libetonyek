@@ -45,10 +45,10 @@ struct KEYDictionary
 
   IWORKPathMap_t beziers;
 
-  KEYDataMap_t data;
-  KEYMediaContentMap_t unfiltereds;
-  KEYMediaContentMap_t filteredImages;
-  KEYImageMap_t images;
+  IWORKDataMap_t data;
+  IWORKMediaContentMap_t unfiltereds;
+  IWORKMediaContentMap_t filteredImages;
+  IWORKImageMap_t images;
 
   KEYPlaceholderMap_t bodyPlaceholders;
   KEYPlaceholderMap_t titlePlaceholders;

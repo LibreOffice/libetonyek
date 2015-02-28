@@ -15,10 +15,15 @@
 #include <boost/optional.hpp>
 
 #include "libetonyek_utils.h"
+#include "IWORKObject.h"
+#include "IWORKPath_fwd.h"
+#include "IWORKStyle_fwd.h"
 #include "IWORKTypes_fwd.h"
 
 namespace libetonyek
 {
+
+class IWORKTransformation;
 
 struct IWORKSize
 {
@@ -83,6 +88,85 @@ struct IWORKTabStop
 };
 
 typedef std::deque<IWORKTabStop> IWORKTabStops_t;
+
+struct IWORKLine
+{
+  IWORKGeometryPtr_t geometry;
+  IWORKStylePtr_t style;
+  boost::optional<double> x1;
+  boost::optional<double> y1;
+  boost::optional<double> x2;
+  boost::optional<double> y2;
+
+  IWORKLine();
+};
+
+struct IWORKData
+{
+  RVNGInputStreamPtr_t stream;
+  boost::optional<std::string> displayName;
+  boost::optional<int> type;
+
+  IWORKData();
+};
+
+struct IWORKMediaContent
+{
+  boost::optional<IWORKSize> size;
+  IWORKDataPtr_t data;
+
+  IWORKMediaContent();
+};
+
+struct IWORKBinary
+{
+  boost::optional<IWORKSize> size;
+  boost::optional<std::string> path;
+  boost::optional<std::string> type;
+  boost::optional<unsigned> dataSize;
+
+  IWORKBinary();
+};
+
+struct IWORKImage
+{
+  boost::optional<bool> locked;
+  IWORKGeometryPtr_t geometry;
+  boost::optional<IWORKBinary> binary;
+
+  IWORKImage();
+};
+
+struct IWORKMedia
+{
+  IWORKGeometryPtr_t geometry;
+  IWORKStylePtr_t style;
+  boost::optional<bool> placeholder;
+  boost::optional<IWORKSize> placeholderSize;
+  IWORKMediaContentPtr_t content;
+
+  IWORKMedia();
+};
+
+struct IWORKWrap
+{
+  IWORKPathPtr_t path;
+  IWORKGeometryPtr_t geometry;
+
+  IWORKWrap();
+};
+
+struct IWORKGroup
+{
+  IWORKObjectList_t objects;
+
+  IWORKGroup();
+};
+
+IWORKObjectPtr_t makeObject(const IWORKGroupPtr_t &group);
+IWORKObjectPtr_t makeObject(const IWORKImagePtr_t &image, const IWORKTransformation &trafo);
+IWORKObjectPtr_t makeObject(const IWORKLinePtr_t &line, const IWORKTransformation &trafo);
+IWORKObjectPtr_t makeObject(const IWORKMediaPtr_t &media, const IWORKTransformation &trafo);
 
 }
 
