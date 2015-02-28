@@ -129,7 +129,7 @@ public:
   virtual void collectTab();
   virtual void collectLineBreak();
 
-  virtual void collectTextPlaceholder(const boost::optional<ID_t> &id, bool title, bool ref);
+  virtual void collectTextPlaceholder(const boost::optional<ID_t> &id, const boost::optional<ID_t> &style, bool title, bool ref);
 
   virtual void collectTableSizes(const KEYTable::RowSizes_t &rowSizes, const KEYTable::ColumnSizes_t &columnSizes);
   virtual void collectTableCell(unsigned row, unsigned column, const boost::optional<std::string> &content, unsigned rowSpan, unsigned columnSpan);
@@ -186,8 +186,6 @@ private:
   IWORKPathPtr_t m_currentPath;
 
   KEYTextPtr_t m_currentText;
-
-  IWORKStylePtr_t m_currentPlaceholderStyle;
 
   IWORKStylesheetPtr_t m_currentStylesheet;
   std::deque<IWORKStylePtr_t> m_newStyles;

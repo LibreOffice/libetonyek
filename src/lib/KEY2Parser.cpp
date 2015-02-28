@@ -1489,7 +1489,7 @@ PlaceholderRefContext::PlaceholderRefContext(IWORKXMLParserState &state, const b
 
 void PlaceholderRefContext::endOfElement()
 {
-  getCollector()->collectTextPlaceholder(getRef(), m_title, true);
+  getCollector()->collectTextPlaceholder(getRef(), optional<ID_t>(), m_title, true);
 }
 
 }
@@ -1842,12 +1842,7 @@ IWORKXMLContextPtr_t PlaceholderContext::element(const int name)
 
 void PlaceholderContext::endOfElement()
 {
-  if (m_ref)
-  {
-    const optional<string> none;
-    getCollector()->collectPlaceholderStyle(get(m_ref), optional<IWORKPropertyMap>(), none, none, true, false);
-  }
-  getCollector()->collectTextPlaceholder(getId(), m_title, false);
+  getCollector()->collectTextPlaceholder(getId(), m_ref, m_title, false);
   getCollector()->endText();
 }
 

@@ -104,7 +104,6 @@ KEYCollectorBase::KEYCollectorBase(KEYDictionary &dict, const KEYDefaults &defau
   , m_objectsStack()
   , m_currentPath()
   , m_currentText()
-  , m_currentPlaceholderStyle()
   , m_currentStylesheet(new IWORKStylesheet())
   , m_newStyles()
   , m_currentData()
@@ -130,7 +129,6 @@ KEYCollectorBase::~KEYCollectorBase()
 
   assert(!m_currentPath);
   assert(!m_currentText);
-  assert(!m_currentPlaceholderStyle);
 }
 
 void KEYCollectorBase::collectCellStyle(const boost::optional<ID_t> &id,
@@ -304,8 +302,6 @@ void KEYCollectorBase::collectPlaceholderStyle(const boost::optional<ID_t> &id,
       if (!ref)
         m_newStyles.push_back(style);
     }
-
-    m_currentPlaceholderStyle = style;
   }
 }
 
@@ -676,7 +672,6 @@ void KEYCollectorBase::collectStylesheet(const boost::optional<ID_t> &id, const 
 
     m_currentStylesheet.reset(new IWORKStylesheet());
     m_newStyles.clear();
-    m_currentPlaceholderStyle.reset();
   }
 }
 
@@ -710,7 +705,7 @@ void KEYCollectorBase::collectLineBreak()
   }
 }
 
-void KEYCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const bool title, const bool ref)
+void KEYCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const optional<ID_t> &style, const bool title, const bool ref)
 {
   if (m_collecting)
   {
@@ -741,9 +736,10 @@ void KEYCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const bo
 
       placeholder.reset(new KEYPlaceholder());
       placeholder->title = title;
-      if (bool(m_currentPlaceholderStyle))
+      placeholder->style = getValue(style, m_dict.placeholderStyles);
+      if (bool(placeholder->style))
       {
-        const KEYPlaceholderStyle placeholderStyle(m_currentPlaceholderStyle, m_styleContext);
+        const KEYPlaceholderStyle placeholderStyle(placeholder->style, m_styleContext);
         placeholder->geometry = placeholderStyle.getGeometry();
       }
       if (!m_currentText->empty())
@@ -751,10 +747,8 @@ void KEYCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const bo
         m_currentText->setBoundingBox(placeholder->geometry);
         placeholder->text = m_currentText;
       }
-      placeholder->style = m_currentPlaceholderStyle;
 
       m_currentText.reset();
-      m_currentPlaceholderStyle.reset();
 
       if (id)
         placeholderMap[get(id)] = placeholder;

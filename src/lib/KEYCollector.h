@@ -118,7 +118,7 @@ public:
   virtual void collectTab() = 0;
   virtual void collectLineBreak() = 0;
 
-  virtual void collectTextPlaceholder(const boost::optional<ID_t> &id, bool title, bool ref) = 0;
+  virtual void collectTextPlaceholder(const boost::optional<ID_t> &id, const boost::optional<ID_t> &style, bool title, bool ref) = 0;
 
   virtual void collectTableSizes(const KEYTable::RowSizes_t &rowSizes, const KEYTable::ColumnSizes_t &columnSizes) = 0;
   virtual void collectTableCell(unsigned row, unsigned column, const boost::optional<std::string> &content, unsigned rowSpan, unsigned columnSpan) = 0;
