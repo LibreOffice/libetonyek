@@ -32,49 +32,6 @@ class KEY2ParserUtils
   KEY2ParserUtils &operator=(const KEY2ParserUtils &other);
 
 public:
-  virtual ~KEY2ParserUtils();
-
-  /** Read sfa:ID attribute of an element.
-    *
-    * ID is expected to be the only attribute.
-    *
-    * @arg[in] reader the reader
-    * @returns the ID
-    */
-  static boost::optional<ID_t> readID(const IWORKXMLReader &reader);
-
-  /** Read a reference element.
-    *
-    * It is expected that the element is empty and does have a single
-    * attribute: sfa:IDREF.
-    *
-    * @arg[in] reader the reader
-    * @returns the value of the sfa:IDREF attribute
-    * @throws a GenericException if sfa:IDREF attribute is not present
-    */
-  static ID_t readRef(const IWORKXMLReader &reader);
-
-  /** Read sf:point element.
-    *
-    * @arg[in] reader the reader
-    * @returns a pair of "coordinates"
-    */
-  static std::pair<boost::optional<double>, boost::optional<double> > readPoint(const IWORKXMLReader &reader);
-
-  /** Read sf:position element.
-    *
-    * @arg[in] reader the reader
-    * @returns the position
-    */
-  static IWORKPosition readPosition(const IWORKXMLReader &reader);
-
-  /** Read sf:size element.
-    *
-    * @arg[in] reader the reader
-    * @returns the size
-    */
-  static IWORKSize readSize(const IWORKXMLReader &reader);
-
   /** Convert string value to bool.
     *
     * @arg value the string
