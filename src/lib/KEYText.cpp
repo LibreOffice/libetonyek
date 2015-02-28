@@ -16,7 +16,6 @@
 #include "IWORKPath.h"
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
-#include "KEYOutput.h"
 #include "KEYStyles.h"
 #include "KEYText.h"
 #include "KEYTypes.h"
@@ -157,7 +156,7 @@ public:
   TextSpanObject(const KEYCharacterStylePtr_t &style, const KEYStyleContext &styleContext, const string &text);
 
 private:
-  virtual void draw(const KEYOutput &output);
+  virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
   const KEYCharacterStylePtr_t m_style;
@@ -172,12 +171,12 @@ TextSpanObject::TextSpanObject(const KEYCharacterStylePtr_t &style, const KEYSty
 {
 }
 
-void TextSpanObject::draw(const KEYOutput &output)
+void TextSpanObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
   const librevenge::RVNGPropertyList props(makePropList(m_style, m_styleContext));
-  output.getPainter()->openSpan(props);
-  output.getPainter()->insertText(librevenge::RVNGString(m_text.c_str()));
-  output.getPainter()->closeSpan();
+  painter->openSpan(props);
+  painter->insertText(librevenge::RVNGString(m_text.c_str()));
+  painter->closeSpan();
 }
 
 }
@@ -188,14 +187,14 @@ namespace
 class TabObject : public KEYObject
 {
 private:
-  virtual void draw(const KEYOutput &output);
+  virtual void draw(librevenge::RVNGPresentationInterface *painter);
 };
 
-void TabObject::draw(const KEYOutput &output)
+void TabObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
-  output.getPainter()->openSpan(librevenge::RVNGPropertyList());
-  output.getPainter()->insertTab();
-  output.getPainter()->closeSpan();
+  painter->openSpan(librevenge::RVNGPropertyList());
+  painter->insertTab();
+  painter->closeSpan();
 }
 
 }
@@ -209,7 +208,7 @@ public:
   explicit LineBreakObject(const KEYStyleContext &styleContext);
 
 private:
-  virtual void draw(const KEYOutput &output);
+  virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
   const KEYStyleContext m_styleContext;
@@ -220,11 +219,11 @@ LineBreakObject::LineBreakObject(const KEYStyleContext &styleContext)
 {
 }
 
-void LineBreakObject::draw(const KEYOutput &output)
+void LineBreakObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
-  output.getPainter()->closeParagraph();
+  painter->closeParagraph();
   const librevenge::RVNGPropertyList props(makePropList(KEYParagraphStylePtr_t(), m_styleContext));
-  output.getPainter()->openParagraph(props);
+  painter->openParagraph(props);
 }
 
 }
@@ -238,7 +237,7 @@ public:
   TextObject(const IWORKGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, bool object, const IWORKTransformation &trafo);
 
 private:
-  virtual void draw(const KEYOutput &output);
+  virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
   const IWORKGeometryPtr_t m_boundingBox;
@@ -255,7 +254,7 @@ TextObject::TextObject(const IWORKGeometryPtr_t &boundingBox, const KEYText::Par
 {
 }
 
-void TextObject::draw(const KEYOutput &output)
+void TextObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
   librevenge::RVNGPropertyList props;
 
@@ -286,19 +285,18 @@ void TextObject::draw(const KEYOutput &output)
   props.insert("svg:d", path.toWPG());
 
   if (m_object)
-    output.getPainter()->startTextObject(props);
+    painter->startTextObject(props);
 
   for (KEYText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
   {
     const librevenge::RVNGPropertyList paraProps(makePropList((*it)->style, (*it)->m_styleContext));
-    output.getPainter()->openParagraph(paraProps);
-    const KEYOutput paraOutput(output);
-    drawAll((*it)->objects, paraOutput);
-    output.getPainter()->closeParagraph();
+    painter->openParagraph(paraProps);
+    drawAll((*it)->objects, painter);
+    painter->closeParagraph();
   }
 
   if (m_object)
-    output.getPainter()->endTextObject();
+    painter->endTextObject();
 }
 
 }

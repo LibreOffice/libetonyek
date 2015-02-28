@@ -90,8 +90,6 @@ libetonyek_internal_la_SOURCES = \
 	KEYDictionary.h \
 	KEYObject.cpp \
 	KEYObject.h \
-	KEYOutput.cpp \
-	KEYOutput.h \
 	KEYParser.cpp \
 	KEYParser.h \
 	KEYShape.cpp \

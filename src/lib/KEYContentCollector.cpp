@@ -13,7 +13,6 @@
 #include "KEYContentCollector.h"
 #include "KEYDefaults.h"
 #include "KEYDictionary.h"
-#include "KEYOutput.h"
 #include "KEYStyleContext.h"
 #include "KEYText.h"
 
@@ -175,9 +174,8 @@ void KEYContentCollector::drawLayer(const KEYLayerPtr_t &layer)
 {
   if (bool(layer))
   {
-    const KEYOutput output(m_painter);
     for (KEYObjectList_t::const_iterator it = layer->objects.begin(); it != layer->objects.end(); ++it)
-      (*it)->draw(output);
+      (*it)->draw(m_painter);
   }
   else
   {
@@ -190,11 +188,9 @@ void KEYContentCollector::drawNotes(const KEYObjectList_t &notes)
   if (notes.empty())
     return;
 
-  const KEYOutput output(m_painter);
-
   m_painter->startNotes(librevenge::RVNGPropertyList());
   for (KEYObjectList_t::const_iterator it = notes.begin(); notes.end() != it; ++it)
-    (*it)->draw(output);
+    (*it)->draw(m_painter);
   m_painter->endNotes();
 }
 
@@ -202,8 +198,6 @@ void KEYContentCollector::drawStickyNotes(const KEYStickyNotes_t &stickyNotes)
 {
   if (stickyNotes.empty())
     return;
-
-  const KEYOutput output(m_painter);
 
   for (KEYStickyNotes_t::const_iterator it = stickyNotes.begin(); stickyNotes.end() != it; ++it)
   {
@@ -219,7 +213,7 @@ void KEYContentCollector::drawStickyNotes(const KEYStickyNotes_t &stickyNotes)
 
     m_painter->startComment(props);
     if (bool(it->text))
-      makeObject(it->text, getTransformation())->draw(output);
+      makeObject(it->text, getTransformation())->draw(m_painter);
     m_painter->endComment();
   }
 }

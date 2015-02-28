@@ -16,7 +16,6 @@
 #include "IWORKTypes.h"
 #include "KEYShape.h"
 #include "IWORKTransformation.h"
-#include "KEYOutput.h"
 #include "KEYText.h"
 #include "KEYTypes.h"
 
@@ -43,7 +42,7 @@ public:
   virtual ~ShapeObject();
 
 private:
-  virtual void draw(const KEYOutput &output);
+  virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
   const KEYShapePtr_t m_shape;
@@ -60,15 +59,13 @@ ShapeObject::~ShapeObject()
 {
 }
 
-void ShapeObject::draw(const KEYOutput &output)
+void ShapeObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
   if (bool(m_shape) && bool(m_shape->path))
   {
     // TODO: make style
 
     const IWORKPath path = *m_shape->path * m_trafo;
-
-    librevenge::RVNGPresentationInterface *const painter = output.getPainter();
 
     librevenge::RVNGPropertyList props;
     props.insert("svg:d", path.toWPG());
@@ -77,7 +74,7 @@ void ShapeObject::draw(const KEYOutput &output)
     painter->drawPath(props);
 
     if (bool(m_shape->text))
-      makeObject(m_shape->text, m_trafo)->draw(output);
+      makeObject(m_shape->text, m_trafo)->draw(painter);
   }
 }
 

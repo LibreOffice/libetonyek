@@ -12,7 +12,6 @@
 #include <boost/bind.hpp>
 
 #include "KEYObject.h"
-#include "KEYOutput.h"
 
 namespace libetonyek
 {
@@ -21,9 +20,9 @@ KEYObject::~KEYObject()
 {
 }
 
-void drawAll(const KEYObjectList_t &list, const KEYOutput &output)
+void drawAll(const KEYObjectList_t &list, librevenge::RVNGPresentationInterface *const painter)
 {
-  for_each(list.begin(), list.end(), boost::bind(&KEYObject::draw, _1, output));
+  for_each(list.begin(), list.end(), boost::bind(&KEYObject::draw, _1, painter));
 }
 
 }

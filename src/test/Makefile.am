@@ -24,8 +24,6 @@ test_SOURCES = \
 	IWORKXMLReaderTest.h \
 	KEY2TokenTest.cpp \
 	KEY2TokenTest.h \
-	KEYOutputTest.cpp \
-	KEYOutputTest.h \
 	KEYShapeTest.cpp \
 	KEYShapeTest.h \
 	KEYStyleContextTest.cpp \

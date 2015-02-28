@@ -14,10 +14,10 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <librevenge/librevenge.h>
+
 namespace libetonyek
 {
-
-class KEYOutput;
 
 /** An interface for saved presentation objects.
   *
@@ -34,11 +34,11 @@ class KEYObject
 public:
   virtual ~KEYObject() = 0;
 
-  /** Draw the object using @c output as context.
+  /** Draw the object using @c painter.
     *
-    * @arg[in] output the output to use
+    * @arg[in] painter the painter to use
     */
-  virtual void draw(const KEYOutput &output) = 0;
+  virtual void draw(librevenge::RVNGPresentationInterface *painter) = 0;
 };
 
 typedef boost::shared_ptr<KEYObject> KEYObjectPtr_t;
@@ -47,12 +47,12 @@ typedef boost::shared_ptr<KEYObject> KEYObjectPtr_t;
   */
 typedef std::deque<KEYObjectPtr_t> KEYObjectList_t;
 
-/** Draw all objects of list @list using @c output as context.
+/** Draw all objects of list @list using @c painter.
   *
   * @arg[in] list the object list
-  * @arg[in] output the output to use
+  * @arg[in] painter the painter to use
   */
-void drawAll(const KEYObjectList_t &list, const KEYOutput &output);
+void drawAll(const KEYObjectList_t &list, librevenge::RVNGPresentationInterface *painter);
 
 }
 

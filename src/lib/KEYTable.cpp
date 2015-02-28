@@ -14,7 +14,6 @@
 #include "libetonyek_utils.h"
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
-#include "KEYOutput.h"
 #include "KEYTable.h"
 #include "KEYTypes.h"
 
@@ -75,10 +74,8 @@ void KEYTable::setGeometry(const IWORKGeometryPtr_t &geometry)
   m_geometry = geometry;
 }
 
-void KEYTable::draw(const KEYOutput &output, const IWORKTransformation &trafo) const
+void KEYTable::draw(librevenge::RVNGPresentationInterface *const painter, const IWORKTransformation &trafo) const
 {
-  librevenge::RVNGPresentationInterface *const painter = output.getPainter();
-
   librevenge::RVNGPropertyList tableProps;
   tableProps.insert("table:align", "center");
 
@@ -140,7 +137,7 @@ void KEYTable::draw(const KEYOutput &output, const IWORKTransformation &trafo) c
 
         painter->openTableCell(cellProps);
         if (bool(cell.content))
-          cell.content->draw(output);
+          cell.content->draw(painter);
         painter->closeTableCell();
       }
     }
@@ -157,7 +154,7 @@ class TableObject : public KEYObject
 public:
   TableObject(const KEYTable &table, const IWORKTransformation &trafo);
 
-  virtual void draw(const KEYOutput &output);
+  virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
   const KEYTable m_table;
@@ -170,9 +167,9 @@ TableObject::TableObject(const KEYTable &table, const IWORKTransformation &trafo
 {
 }
 
-void TableObject::draw(const KEYOutput &output)
+void TableObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
-  m_table.draw(output, m_trafo);
+  m_table.draw(painter, m_trafo);
 }
 
 }

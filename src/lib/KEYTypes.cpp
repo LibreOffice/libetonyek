@@ -15,7 +15,6 @@
 
 #include "libetonyek_utils.h"
 #include "IWORKTransformation.h"
-#include "KEYOutput.h"
 #include "KEYStyles.h"
 #include "KEYText.h"
 #include "KEYTypes.h"
@@ -203,7 +202,7 @@ public:
   explicit GroupObject(const KEYGroupPtr_t &group);
 
 private:
-  virtual void draw(const KEYOutput &output);
+  virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
   const KEYGroupPtr_t m_group;
@@ -215,9 +214,9 @@ GroupObject::GroupObject(const KEYGroupPtr_t &group)
 {
 }
 
-void GroupObject::draw(const KEYOutput &output)
+void GroupObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
-  drawAll(m_group->objects, output);
+  drawAll(m_group->objects, painter);
 }
 
 }
@@ -231,7 +230,7 @@ public:
   ImageObject(const KEYImagePtr_t &image, const IWORKTransformation &trafo);
 
 private:
-  virtual void draw(const KEYOutput &output);
+  virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
   const KEYImagePtr_t m_image;
@@ -244,10 +243,10 @@ ImageObject::ImageObject(const KEYImagePtr_t &image, const IWORKTransformation &
 {
 }
 
-void ImageObject::draw(const KEYOutput &output)
+void ImageObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
   // TODO: implement me
-  (void) output;
+  (void) painter;
 }
 
 }
@@ -261,7 +260,7 @@ public:
   LineObject(const KEYLinePtr_t &line, const IWORKTransformation &trafo);
 
 private:
-  virtual void draw(const KEYOutput &output);
+  virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
   const KEYLinePtr_t m_line;
@@ -274,7 +273,7 @@ LineObject::LineObject(const KEYLinePtr_t &line, const IWORKTransformation &traf
 {
 }
 
-void LineObject::draw(const KEYOutput &output)
+void LineObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
   // TODO: transform the line
 
@@ -294,7 +293,7 @@ void LineObject::draw(const KEYOutput &output)
       }
     }
 #endif
-    output.getPainter()->setStyle(props);
+    painter->setStyle(props);
 
     librevenge::RVNGPropertyListVector vertices;
     vertices.append(pointToWPG(get(m_line->x1), get(m_line->y1)));
@@ -303,7 +302,7 @@ void LineObject::draw(const KEYOutput &output)
     librevenge::RVNGPropertyList points;
     points.insert("svg:points", vertices);
 
-    output.getPainter()->drawPolyline(points);
+    painter->drawPolyline(points);
   }
   else
   {
@@ -322,7 +321,7 @@ public:
   MediaObject(const KEYMediaPtr_t &media, const IWORKTransformation &trafo);
 
 private:
-  virtual void draw(const KEYOutput &output);
+  virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
   const KEYMediaPtr_t m_media;
@@ -335,7 +334,7 @@ MediaObject::MediaObject(const KEYMediaPtr_t &media, const IWORKTransformation &
 {
 }
 
-void MediaObject::draw(const KEYOutput &output)
+void MediaObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
   if (bool(m_media)
       && bool(m_media->geometry)
@@ -375,7 +374,7 @@ void MediaObject::draw(const KEYOutput &output)
       props.insert("svg:width", pt2in(width));
       props.insert("svg:height", pt2in(height));
 
-      output.getPainter()->drawGraphicObject(props);
+      painter->drawGraphicObject(props);
     }
   }
 }
@@ -391,7 +390,7 @@ public:
   PlaceholderObject(const KEYPlaceholderPtr_t &body, const IWORKTransformation &trafo);
 
 private:
-  virtual void draw(const KEYOutput &output);
+  virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
   const KEYPlaceholderPtr_t m_body;
@@ -404,10 +403,10 @@ PlaceholderObject::PlaceholderObject(const KEYPlaceholderPtr_t &body, const IWOR
 {
 }
 
-void PlaceholderObject::draw(const KEYOutput &output)
+void PlaceholderObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
   if (bool(m_body) && bool(m_body->style) && bool(m_body->text))
-    makeObject(m_body->text, m_trafo)->draw(output);
+    makeObject(m_body->text, m_trafo)->draw(painter);
 }
 
 }
