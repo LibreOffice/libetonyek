@@ -7,10 +7,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <cppunit/TestFixture.h>
+#include <cppunit/extensions/HelperMacros.h>
+
 #include "IWORKStyle.h"
 #include "IWORKStyleContext.h"
-
-#include "IWORKStyleContextTest.h"
 
 namespace test
 {
@@ -37,6 +38,21 @@ IWORKStylePtr_t makeStyle(const IWORKPropertyMap &props)
 }
 
 }
+
+class IWORKStyleContextTest : public CPPUNIT_NS::TestFixture
+{
+public:
+  virtual void setUp();
+  virtual void tearDown();
+
+private:
+  CPPUNIT_TEST_SUITE(IWORKStyleContextTest);
+  CPPUNIT_TEST(testLookup);
+  CPPUNIT_TEST_SUITE_END();
+
+private:
+  void testLookup();
+};
 
 void IWORKStyleContextTest::setUp()
 {

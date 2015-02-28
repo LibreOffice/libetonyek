@@ -7,10 +7,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <cppunit/TestFixture.h>
+#include <cppunit/extensions/HelperMacros.h>
+
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
-
-#include "IWORKTransformationTest.h"
 
 #include "libetonyek_utils.h"
 
@@ -33,6 +34,33 @@ IWORKTransformation wrap(const double width, const double height, const IWORKTra
 }
 
 }
+
+class IWORKTransformationTest : public CPPUNIT_NS::TestFixture
+{
+public:
+  virtual void setUp();
+  virtual void tearDown();
+
+private:
+  CPPUNIT_TEST_SUITE(IWORKTransformationTest);
+  CPPUNIT_TEST(testApplication);
+  CPPUNIT_TEST(testConstruction);
+  CPPUNIT_TEST(testConstructionIdentity);
+  CPPUNIT_TEST(testConstructionFromGeometry);
+  CPPUNIT_TEST(testIdentities);
+  CPPUNIT_TEST(testInverseOperations);
+  CPPUNIT_TEST(testMultiplication);
+  CPPUNIT_TEST_SUITE_END();
+
+private:
+  void testApplication();
+  void testConstruction();
+  void testConstructionIdentity();
+  void testConstructionFromGeometry();
+  void testIdentities();
+  void testInverseOperations();
+  void testMultiplication();
+};
 
 void IWORKTransformationTest::setUp()
 {

@@ -7,11 +7,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <cppunit/TestFixture.h>
+#include <cppunit/extensions/HelperMacros.h>
+
 #include "IWORKToken.h"
 #include "IWORKXMLReader.h"
 #include "KEY2Token.h"
-
-#include "KEY2TokenTest.h"
 
 using namespace libetonyek;
 
@@ -37,6 +38,23 @@ void testTokenizer(const IWORKXMLReader::TokenizerFunction_t &tok)
 }
 
 }
+
+class KEY2TokenTest : public CPPUNIT_NS::TestFixture
+{
+public:
+  virtual void setUp();
+  virtual void tearDown();
+
+private:
+  CPPUNIT_TEST_SUITE(KEY2TokenTest);
+  CPPUNIT_TEST(testSimpleTokenizer);
+  CPPUNIT_TEST(testChainedTokenizer);
+  CPPUNIT_TEST_SUITE_END();
+
+private:
+  void testSimpleTokenizer();
+  void testChainedTokenizer();
+};
 
 void KEY2TokenTest::setUp()
 {

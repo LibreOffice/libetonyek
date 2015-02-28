@@ -9,10 +9,11 @@
 
 #include <cstring>
 
+#include <cppunit/TestFixture.h>
+#include <cppunit/extensions/HelperMacros.h>
+
 #include "IWORKMemoryStream.h"
 #include "IWORKXMLReader.h"
-
-#include "IWORKXMLReaderTest.h"
 
 using libetonyek::IWORKMemoryStream;
 using libetonyek::IWORKXMLReader;
@@ -58,6 +59,51 @@ int Tokenizer::operator()(const char *const token) const
 }
 
 }
+
+class IWORKXMLReaderTest : public CPPUNIT_NS::TestFixture
+{
+public:
+  virtual void setUp();
+  virtual void tearDown();
+
+private:
+  CPPUNIT_TEST_SUITE(IWORKXMLReaderTest);
+
+  CPPUNIT_TEST(testEmptyAttributeList);
+  CPPUNIT_TEST(testOnlyXmlnsAttributes);
+  CPPUNIT_TEST(testIterateAttributes);
+
+  CPPUNIT_TEST(testEmptyElement);
+  CPPUNIT_TEST(testIterateElements);
+  CPPUNIT_TEST(testIterateNestedElements);
+  CPPUNIT_TEST(testIterateElementsWithAttributes);
+
+  CPPUNIT_TEST(testEmptyMixed);
+  CPPUNIT_TEST(testIterateMixed);
+
+  CPPUNIT_TEST(testElementName);
+
+  CPPUNIT_TEST(testTokenizer);
+
+  CPPUNIT_TEST_SUITE_END();
+
+private:
+  void testEmptyAttributeList();
+  void testOnlyXmlnsAttributes();
+  void testIterateAttributes();
+
+  void testEmptyElement();
+  void testIterateElements();
+  void testIterateNestedElements();
+  void testIterateElementsWithAttributes();
+
+  void testEmptyMixed();
+  void testIterateMixed();
+
+  void testElementName();
+
+  void testTokenizer();
+};
 
 void IWORKXMLReaderTest::setUp()
 {

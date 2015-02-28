@@ -7,9 +7,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "IWORKPropertyMap.h"
+#include <cppunit/TestFixture.h>
+#include <cppunit/extensions/HelperMacros.h>
 
-#include "IWORKPropertyMapTest.h"
+#include "IWORKPropertyMap.h"
 
 namespace test
 {
@@ -18,6 +19,23 @@ using boost::any;
 using boost::any_cast;
 
 using libetonyek::IWORKPropertyMap;
+
+class IWORKPropertyMapTest : public CPPUNIT_NS::TestFixture
+{
+public:
+  virtual void setUp();
+  virtual void tearDown();
+
+private:
+  CPPUNIT_TEST_SUITE(IWORKPropertyMapTest);
+  CPPUNIT_TEST(testLookup);
+  CPPUNIT_TEST(testLookupWithParent);
+  CPPUNIT_TEST_SUITE_END();
+
+private:
+  void testLookup();
+  void testLookupWithParent();
+};
 
 void IWORKPropertyMapTest::setUp()
 {

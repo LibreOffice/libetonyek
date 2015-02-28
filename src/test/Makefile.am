@@ -13,22 +13,15 @@ test_LDADD = \
 
 test_SOURCES = \
 	IWORKPathTest.cpp \
-	IWORKPathTest.h \
 	IWORKPropertyMapTest.cpp \
-	IWORKPropertyMapTest.h \
 	IWORKShapeTest.cpp \
-	IWORKShapeTest.h \
 	IWORKStyleTest.cpp \
 	IWORKStyleContextTest.cpp \
-	IWORKStyleContextTest.h \
 	IWORKToken.h \
 	IWORKTokenInfo.h \
 	IWORKTransformationTest.cpp \
-	IWORKTransformationTest.h \
 	IWORKXMLReaderTest.cpp \
-	IWORKXMLReaderTest.h \
 	KEY2TokenTest.cpp \
-	KEY2TokenTest.h \
 	test.cpp
 
 TESTS = $(target_test)

@@ -10,9 +10,10 @@
 #include <string>
 #include <sstream>
 
-#include "IWORKPath.h"
+#include <cppunit/TestFixture.h>
+#include <cppunit/extensions/HelperMacros.h>
 
-#include "IWORKPathTest.h"
+#include "IWORKPath.h"
 
 using libetonyek::IWORKPath;
 
@@ -69,6 +70,23 @@ string toSVG(const IWORKPath &path)
 }
 
 }
+
+class IWORKPathTest : public CPPUNIT_NS::TestFixture
+{
+public:
+  virtual void setUp();
+  virtual void tearDown();
+
+private:
+  CPPUNIT_TEST_SUITE(IWORKPathTest);
+  CPPUNIT_TEST(testConstruction);
+  CPPUNIT_TEST(testConversion);
+  CPPUNIT_TEST_SUITE_END();
+
+private:
+  void testConstruction();
+  void testConversion();
+};
 
 void IWORKPathTest::setUp()
 {

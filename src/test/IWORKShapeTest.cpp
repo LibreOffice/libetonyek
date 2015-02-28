@@ -7,7 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "IWORKShapeTest.h"
+#include <cppunit/TestFixture.h>
+#include <cppunit/extensions/HelperMacros.h>
 
 #include "IWORKObject.h"
 #include "IWORKPath.h"
@@ -23,6 +24,35 @@ using libetonyek::IWORKPathPtr_t;
 using libetonyek::IWORKSize;
 using libetonyek::etonyek_root_three;
 using libetonyek::etonyek_root_two;
+
+class IWORKShapeTest : public CPPUNIT_NS::TestFixture
+{
+public:
+  virtual void setUp();
+  virtual void tearDown();
+
+private:
+  CPPUNIT_TEST_SUITE(IWORKShapeTest);
+  CPPUNIT_TEST(testMakePolygonPath);
+  CPPUNIT_TEST(testMakeRoundedRectanglePath);
+  CPPUNIT_TEST(testMakeArrowPath);
+  CPPUNIT_TEST(testMakeDoubleArrowPath);
+  CPPUNIT_TEST(testMakeStarPath);
+  CPPUNIT_TEST(testMakeConnectionPath);
+  CPPUNIT_TEST(testMakeCalloutPath);
+  CPPUNIT_TEST(testMakeQuoteBubblePath);
+  CPPUNIT_TEST_SUITE_END();
+
+private:
+  void testMakePolygonPath();
+  void testMakeRoundedRectanglePath();
+  void testMakeArrowPath();
+  void testMakeDoubleArrowPath();
+  void testMakeStarPath();
+  void testMakeConnectionPath();
+  void testMakeCalloutPath();
+  void testMakeQuoteBubblePath();
+};
 
 void IWORKShapeTest::setUp()
 {
