@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYSTYLECONTEXT_H_INCLUDED
-#define KEYSTYLECONTEXT_H_INCLUDED
+#ifndef IWORKSTYLECONTEXT_H_INCLUDED
+#define IWORKSTYLECONTEXT_H_INCLUDED
 
 #include <deque>
 
@@ -79,6 +79,6 @@ private:
 
 }
 
-#endif // KEYSTYLECONTEXT_H_INCLUDED
+#endif // IWORKSTYLECONTEXT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
