@@ -14,12 +14,12 @@
 #include <boost/lexical_cast.hpp>
 
 #include "libetonyek_utils.h"
+#include "libetonyek_xml.h"
 #include "IWORKPropertyMap.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 #include "KEYCollector.h"
 #include "KEYDefaults.h"
-#include "KEY2ParserUtils.h"
 
 namespace libetonyek
 {
@@ -337,25 +337,25 @@ void IWORKGeometryContext::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::angle :
-    m_angle = KEY2ParserUtils::deg2rad(lexical_cast<double>(value));
+    m_angle = deg2rad(lexical_cast<double>(value));
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::aspectRatioLocked :
-    m_aspectRatioLocked = KEY2ParserUtils::bool_cast(value);
+    m_aspectRatioLocked = bool_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::horizontalFlip :
-    m_horizontalFlip = KEY2ParserUtils::bool_cast(value);
+    m_horizontalFlip = bool_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::shearXAngle :
-    m_shearXAngle = KEY2ParserUtils::deg2rad(lexical_cast<double>(value));
+    m_shearXAngle = deg2rad(lexical_cast<double>(value));
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::shearYAngle :
-    m_shearYAngle = KEY2ParserUtils::deg2rad(lexical_cast<double>(value));
+    m_shearYAngle = deg2rad(lexical_cast<double>(value));
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::sizesLocked :
-    m_sizesLocked = KEY2ParserUtils::bool_cast(value);
+    m_sizesLocked = bool_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::verticalFlip :
-    m_verticalFlip = KEY2ParserUtils::bool_cast(value);
+    m_verticalFlip = bool_cast(value);
     break;
   default :
     IWORKXMLElementContextBase::attribute(name, value);

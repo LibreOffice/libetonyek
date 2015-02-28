@@ -16,7 +16,6 @@
 #include "IWORKToken.h"
 #include "IWORKXMLContexts.h"
 #include "IWORKXMLParserState.h"
-#include "KEY2ParserUtils.h"
 #include "KEY2Token.h"
 #include "KEYCollector.h"
 #include "KEYDefaults.h"
@@ -76,7 +75,7 @@ struct NumberConverter<bool>
 {
   static bool convert(const char *const value)
   {
-    return KEY2ParserUtils::bool_cast(value);
+    return bool_cast(value);
   }
 };
 
@@ -85,7 +84,7 @@ struct NumberConverter<int>
 {
   static int convert(const char *const value)
   {
-    return KEY2ParserUtils::int_cast(value);
+    return int_cast(value);
   }
 };
 
@@ -94,7 +93,7 @@ struct NumberConverter<double>
 {
   static double convert(const char *const value)
   {
-    return KEY2ParserUtils::double_cast(value);
+    return double_cast(value);
   }
 };
 

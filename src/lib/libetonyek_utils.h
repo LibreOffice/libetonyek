@@ -116,6 +116,13 @@ bool approxEqual(double x, double y, double eps = ETONYEK_EPSILON);
   */
 double pt2in(double d);
 
+/** Convert an angle from degrees to radians.
+  *
+  * @arg[in] value angle in degrees
+  * @returns the same angle in radians
+  */
+  double deg2rad(double value);
+
 class EndOfStreamException
 {
 };

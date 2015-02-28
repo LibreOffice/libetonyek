@@ -37,6 +37,15 @@ bool checkNoAttributes(const IWORKXMLReader &reader);
 std::string readOnlyAttribute(const IWORKXMLReader &reader, int name, int ns);
 std::string readOnlyElementAttribute(const IWORKXMLReader &reader, int name, int ns);
 
+/** Convert string value to bool.
+  *
+  * @arg value the string
+  * @returns the boolean value of the string
+  */
+bool bool_cast(const char *value);
+double double_cast(const char *value);
+int int_cast(const char *value);
+
 }
 
 #endif // LIBETONYEK_XML_H_INCLUDED

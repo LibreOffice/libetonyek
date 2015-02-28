@@ -25,7 +25,6 @@
 #include "IWORKXMLContextBase.h"
 #include "IWORKXMLContexts.h"
 #include "IWORKXMLReader.h"
-#include "KEY2ParserUtils.h"
 #include "KEY2StyleContext.h"
 #include "KEY2Token.h"
 #include "KEYCollector.h"
@@ -1085,7 +1084,7 @@ void Callout2PathContext::attribute(const int name, const char *const value)
     m_cornerRadius = lexical_cast<double>(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::tailAtCenter :
-    m_tailAtCenter = KEY2ParserUtils::bool_cast(value);
+    m_tailAtCenter = bool_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::tailPositionX :
     m_tailPosX = lexical_cast<double>(value);
@@ -1321,7 +1320,7 @@ void ImageContext::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::locked :
-    m_image->locked = KEY2ParserUtils::bool_cast(value);
+    m_image->locked = bool_cast(value);
     break;
   default :
     IWORKXMLElementContextBase::attribute(name, value);

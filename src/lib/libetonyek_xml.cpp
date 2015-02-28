@@ -7,12 +7,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "libetonyek_xml.h"
+
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
 
-#include "libetonyek_xml.h"
+#include "IWORKToken.h"
 #include "IWORKXMLReader.h"
 
+using boost::lexical_cast;
 using boost::optional;
 
 using std::string;
@@ -90,6 +93,33 @@ string readOnlyElementAttribute(const IWORKXMLReader &reader, const int name, co
   checkEmptyElement(reader);
 
   return value;
+}
+
+bool bool_cast(const char *value)
+{
+  IWORKTokenizer tok;
+  switch (tok(value))
+  {
+  case IWORKToken::_1 :
+  case IWORKToken::true_ :
+    return true;
+  case IWORKToken::_0 :
+  case IWORKToken::false_ :
+  default :
+    return false;
+  }
+
+  return false;
+}
+
+double double_cast(const char *value)
+{
+  return lexical_cast<double, const char *>(value);
+}
+
+int int_cast(const char *value)
+{
+  return lexical_cast<int, const char *>(value);
 }
 
 }

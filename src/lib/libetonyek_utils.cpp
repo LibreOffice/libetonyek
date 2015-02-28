@@ -93,6 +93,18 @@ double pt2in(const double d)
   return d / 72;
 }
 
+double deg2rad(double value)
+{
+  // normalize range
+  while (360 <= value)
+    value -= 360;
+  while (0 > value)
+    value += 360;
+
+  // convert
+  return etonyek_pi / 180 * value;
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
