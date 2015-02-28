@@ -47,10 +47,10 @@ libetonyek_internal_la_SOURCES = \
 	IWORKStyle.h \
 	IWORKStyles.cpp \
 	IWORKStyles.h \
-	IWORKStyleContext.cpp \
-	IWORKStyleContext.h \
 	IWORKStylesheet.cpp \
 	IWORKStylesheet.h \
+	IWORKStyleStack.cpp \
+	IWORKStyleStack.h \
 	IWORKTable.cpp \
 	IWORKTable.h \
 	IWORKTabularInfoContext.cpp \

@@ -211,7 +211,7 @@ void KEYCollectorBase::collectGraphicStyle(const optional<ID_t> &id,
       assert(!m_levelStack.empty());
 
       m_levelStack.top().graphicStyle = style;
-      m_styleContext.set(style);
+      m_styleStack.set(style);
     }
   }
 }
@@ -739,7 +739,7 @@ void KEYCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const op
       placeholder->style = getValue(style, m_dict.placeholderStyles);
       if (bool(placeholder->style))
       {
-        const KEYPlaceholderStyle placeholderStyle(placeholder->style, m_styleContext);
+        const KEYPlaceholderStyle placeholderStyle(placeholder->style, m_styleStack);
         placeholder->geometry = placeholderStyle.getGeometry();
       }
       if (!m_currentText->empty())
@@ -1014,12 +1014,12 @@ const IWORKTransformation &KEYCollectorBase::getTransformation() const
 
 void KEYCollectorBase::pushStyle()
 {
-  m_styleContext.push();
+  m_styleStack.push();
 }
 
 void KEYCollectorBase::popStyle()
 {
-  m_styleContext.pop();
+  m_styleStack.pop();
 }
 
 } // namespace libetonyek

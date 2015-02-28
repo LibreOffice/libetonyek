@@ -16,7 +16,7 @@
 
 #include "IWORKObject.h"
 #include "IWORKStyle_fwd.h"
-#include "IWORKStyleContext.h"
+#include "IWORKStyleStack.h"
 
 namespace libetonyek
 {
@@ -56,7 +56,7 @@ private:
   void insertDeferredLineBreaks();
 
 private:
-  IWORKStyleContext m_styleContext;
+  IWORKStyleStack m_styleStack;
   IWORKStylePtr_t m_layoutStyle;
   ParagraphList_t m_paragraphs;
   ParagraphPtr_t m_currentParagraph;

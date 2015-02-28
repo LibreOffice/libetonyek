@@ -42,107 +42,107 @@ optional<T> extractOptional(const any &property)
 
 }
 
-IWORKCellStyle::IWORKCellStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
+IWORKCellStyle::IWORKCellStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack)
   : m_style(style)
-  , m_context(context)
+  , m_stack(stack)
 {
 }
 
-IWORKCharacterStyle::IWORKCharacterStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
+IWORKCharacterStyle::IWORKCharacterStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack)
   : m_style(style)
-  , m_context(context)
+  , m_stack(stack)
 {
 }
 
 boost::optional<bool> IWORKCharacterStyle::getBold() const
 {
-  return extractOptional<bool>(m_style->lookup("bold", m_context));
+  return extractOptional<bool>(m_style->lookup("bold", m_stack));
 }
 
 boost::optional<IWORKCapitalization> IWORKCharacterStyle::getCapitalization() const
 {
-  return extractOptional<IWORKCapitalization>(m_style->lookup("capitalization", m_context));
+  return extractOptional<IWORKCapitalization>(m_style->lookup("capitalization", m_stack));
 }
 
 boost::optional<bool> IWORKCharacterStyle::getItalic() const
 {
-  return extractOptional<bool>(m_style->lookup("italic", m_context));
+  return extractOptional<bool>(m_style->lookup("italic", m_stack));
 }
 
 boost::optional<IWORKColor> IWORKCharacterStyle::getFontColor() const
 {
-  return extractOptional<IWORKColor>(m_style->lookup("fontColor", m_context));
+  return extractOptional<IWORKColor>(m_style->lookup("fontColor", m_stack));
 }
 
 boost::optional<double> IWORKCharacterStyle::getFontSize() const
 {
-  return extractOptional<double>(m_style->lookup("fontSize", m_context));
+  return extractOptional<double>(m_style->lookup("fontSize", m_stack));
 }
 
 boost::optional<std::string> IWORKCharacterStyle::getFontName() const
 {
-  return extractOptional<std::string>(m_style->lookup("fontName", m_context));
+  return extractOptional<std::string>(m_style->lookup("fontName", m_stack));
 }
 
 boost::optional<bool> IWORKCharacterStyle::getOutline() const
 {
-  return extractOptional<bool>(m_style->lookup("outline", m_context));
+  return extractOptional<bool>(m_style->lookup("outline", m_stack));
 }
 
 boost::optional<bool> IWORKCharacterStyle::getStrikethru() const
 {
-  return extractOptional<bool>(m_style->lookup("strikethru", m_context));
+  return extractOptional<bool>(m_style->lookup("strikethru", m_stack));
 }
 
 boost::optional<bool> IWORKCharacterStyle::getUnderline() const
 {
-  return extractOptional<bool>(m_style->lookup("underline", m_context));
+  return extractOptional<bool>(m_style->lookup("underline", m_stack));
 }
 
-IWORKConnectionStyle::IWORKConnectionStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
+IWORKConnectionStyle::IWORKConnectionStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack)
   : m_style(style)
-  , m_context(context)
+  , m_stack(stack)
 {
 }
 
-IWORKGraphicStyle::IWORKGraphicStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
+IWORKGraphicStyle::IWORKGraphicStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack)
   : m_style(style)
-  , m_context(context)
+  , m_stack(stack)
 {
 }
 
-IWORKListStyle::IWORKListStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
+IWORKListStyle::IWORKListStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack)
   : m_style(style)
-  , m_context(context)
+  , m_stack(stack)
 {
 }
 
-IWORKParagraphStyle::IWORKParagraphStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
-  : IWORKCharacterStyle(style, context)
+IWORKParagraphStyle::IWORKParagraphStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack)
+  : IWORKCharacterStyle(style, stack)
   , m_style(style)
-  , m_context(context)
+  , m_stack(stack)
 {
 }
 
 boost::optional<IWORKAlignment> IWORKParagraphStyle::getAlignment() const
 {
-  return extractOptional<IWORKAlignment>(m_style->lookup("alignment", m_context));
+  return extractOptional<IWORKAlignment>(m_style->lookup("alignment", m_stack));
 }
 
 boost::optional<IWORKTabStops_t> IWORKParagraphStyle::getTabs() const
 {
-  return extractOptional<IWORKTabStops_t>(m_style->lookup("tabs", m_context));
+  return extractOptional<IWORKTabStops_t>(m_style->lookup("tabs", m_stack));
 }
 
-IWORKTabularStyle::IWORKTabularStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
+IWORKTabularStyle::IWORKTabularStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack)
   : m_style(style)
-  , m_context(context)
+  , m_stack(stack)
 {
 }
 
-IWORKVectorStyle::IWORKVectorStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
+IWORKVectorStyle::IWORKVectorStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack)
   : m_style(style)
-  , m_context(context)
+  , m_stack(stack)
 {
 }
 

@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef IWORKSTYLECONTEXT_H_INCLUDED
-#define IWORKSTYLECONTEXT_H_INCLUDED
+#ifndef IWORKSTYLESTACK_H_INCLUDED
+#define IWORKSTYLESTACK_H_INCLUDED
 
 #include <deque>
 
@@ -29,9 +29,9 @@ namespace libetonyek
   * from the enclosing style.
   *
   * The property getters in specific implementations of @c IWORKStyle
-  * should take a pointer to a @c IWORKStyleContext.
+  * should take a pointer to a @c IWORKStyleStack.
   */
-class IWORKStyleContext
+class IWORKStyleStack
 {
   /** The internal type of style stack.
     *
@@ -43,7 +43,7 @@ class IWORKStyleContext
 public:
   /** Construct an empty context.
     */
-  IWORKStyleContext();
+  IWORKStyleStack();
 
   /** Push a style onto the active styles stack.
     *
@@ -79,6 +79,6 @@ private:
 
 }
 
-#endif // IWORKSTYLECONTEXT_H_INCLUDED
+#endif // IWORKSTYLESTACK_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

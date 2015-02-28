@@ -30,11 +30,11 @@ namespace libetonyek
 
 struct IWORKText::Paragraph
 {
-  IWORKStyleContext m_styleContext;
+  IWORKStyleStack m_styleStack;
   IWORKStylePtr_t style;
   IWORKObjectList_t objects;
 
-  explicit Paragraph(const IWORKStyleContext &styleContext);
+  explicit Paragraph(const IWORKStyleStack &styleStack);
 };
 
 namespace
@@ -93,7 +93,7 @@ IWORKStylePtr_t makeEmptyStyle()
   return boost::make_shared<IWORKStyle>(IWORKPropertyMap(), dummy, dummy);
 }
 
-librevenge::RVNGPropertyList makeCharPropList(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
+librevenge::RVNGPropertyList makeCharPropList(const IWORKStylePtr_t &style, const IWORKStyleStack &context)
 {
   librevenge::RVNGPropertyList props;
 
@@ -105,7 +105,7 @@ librevenge::RVNGPropertyList makeCharPropList(const IWORKStylePtr_t &style, cons
   return props;
 }
 
-librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
+librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, const IWORKStyleStack &context)
 {
   librevenge::RVNGPropertyList props;
 
@@ -156,27 +156,27 @@ namespace
 class TextSpanObject : public IWORKObject
 {
 public:
-  TextSpanObject(const IWORKStylePtr_t &style, const IWORKStyleContext &styleContext, const string &text);
+  TextSpanObject(const IWORKStylePtr_t &style, const IWORKStyleStack &styleStack, const string &text);
 
 private:
   virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
   const IWORKStylePtr_t m_style;
-  const IWORKStyleContext m_styleContext;
+  const IWORKStyleStack m_styleStack;
   const string m_text;
 };
 
-TextSpanObject::TextSpanObject(const IWORKStylePtr_t &style, const IWORKStyleContext &styleContext, const string &text)
+TextSpanObject::TextSpanObject(const IWORKStylePtr_t &style, const IWORKStyleStack &styleStack, const string &text)
   : m_style(style)
-  , m_styleContext(styleContext)
+  , m_styleStack(styleStack)
   , m_text(text)
 {
 }
 
 void TextSpanObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
-  const librevenge::RVNGPropertyList props(makeCharPropList(m_style, m_styleContext));
+  const librevenge::RVNGPropertyList props(makeCharPropList(m_style, m_styleStack));
   painter->openSpan(props);
   painter->insertText(librevenge::RVNGString(m_text.c_str()));
   painter->closeSpan();
@@ -208,24 +208,24 @@ namespace
 class LineBreakObject : public IWORKObject
 {
 public:
-  explicit LineBreakObject(const IWORKStyleContext &styleContext);
+  explicit LineBreakObject(const IWORKStyleStack &styleStack);
 
 private:
   virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
-  const IWORKStyleContext m_styleContext;
+  const IWORKStyleStack m_styleStack;
 };
 
-LineBreakObject::LineBreakObject(const IWORKStyleContext &styleContext)
-  : m_styleContext(styleContext)
+LineBreakObject::LineBreakObject(const IWORKStyleStack &styleStack)
+  : m_styleStack(styleStack)
 {
 }
 
 void LineBreakObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
   painter->closeParagraph();
-  const librevenge::RVNGPropertyList props(makeParaPropList(IWORKStylePtr_t(), m_styleContext));
+  const librevenge::RVNGPropertyList props(makeParaPropList(IWORKStylePtr_t(), m_styleStack));
   painter->openParagraph(props);
 }
 
@@ -292,7 +292,7 @@ void TextObject::draw(librevenge::RVNGPresentationInterface *const painter)
 
   for (IWORKText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
   {
-    const librevenge::RVNGPropertyList paraProps(makeParaPropList((*it)->style, (*it)->m_styleContext));
+    const librevenge::RVNGPropertyList paraProps(makeParaPropList((*it)->style, (*it)->m_styleStack));
     painter->openParagraph(paraProps);
     drawAll((*it)->objects, painter);
     painter->closeParagraph();
@@ -305,7 +305,7 @@ void TextObject::draw(librevenge::RVNGPresentationInterface *const painter)
 }
 
 IWORKText::IWORKText(const bool object)
-  : m_styleContext()
+  : m_styleStack()
   , m_layoutStyle()
   , m_paragraphs()
   , m_currentParagraph()
@@ -315,8 +315,8 @@ IWORKText::IWORKText(const bool object)
 {
 }
 
-IWORKText::Paragraph::Paragraph(const IWORKStyleContext &styleContext)
-  : m_styleContext(styleContext)
+IWORKText::Paragraph::Paragraph(const IWORKStyleStack &styleStack)
+  : m_styleStack(styleStack)
   , style()
   , objects()
 {
@@ -327,8 +327,8 @@ void IWORKText::setLayoutStyle(const IWORKStylePtr_t &style)
   assert(!m_layoutStyle);
 
   m_layoutStyle = style;
-  m_styleContext.push();
-  m_styleContext.set(style);
+  m_styleStack.push();
+  m_styleStack.set(style);
 }
 
 const IWORKGeometryPtr_t &IWORKText::getBoundingBox() const
@@ -345,10 +345,10 @@ void IWORKText::openParagraph(const IWORKStylePtr_t &style)
 {
   assert(!m_currentParagraph);
 
-  m_currentParagraph.reset(new Paragraph(m_styleContext));
+  m_currentParagraph.reset(new Paragraph(m_styleStack));
   m_currentParagraph->style = style;
-  m_styleContext.push();
-  m_styleContext.set(style);
+  m_styleStack.push();
+  m_styleStack.set(style);
 }
 
 void IWORKText::closeParagraph()
@@ -357,14 +357,14 @@ void IWORKText::closeParagraph()
 
   m_paragraphs.push_back(m_currentParagraph);
   m_currentParagraph.reset();
-  m_styleContext.pop();
+  m_styleStack.pop();
 }
 
 void IWORKText::insertText(const std::string &text, const IWORKStylePtr_t &style)
 {
   assert(bool(m_currentParagraph));
 
-  const IWORKObjectPtr_t object(new TextSpanObject(style, m_styleContext, text));
+  const IWORKObjectPtr_t object(new TextSpanObject(style, m_styleStack, text));
   m_currentParagraph->objects.push_back(object);
 }
 
@@ -404,7 +404,7 @@ void IWORKText::insertDeferredLineBreaks()
 
   if (0 < m_lineBreaks)
   {
-    const IWORKObjectPtr_t object(new LineBreakObject(m_currentParagraph->m_styleContext));
+    const IWORKObjectPtr_t object(new LineBreakObject(m_currentParagraph->m_styleStack));
     m_currentParagraph->objects.insert(m_currentParagraph->objects.end(), m_lineBreaks, object);
     m_lineBreaks = 0;
   }

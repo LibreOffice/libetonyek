@@ -13,7 +13,7 @@
 #include <string>
 
 #include "IWORKStyle_fwd.h"
-#include "IWORKStyleContext.h"
+#include "IWORKStyleStack.h"
 #include "IWORKTypes.h"
 
 namespace libetonyek
@@ -24,11 +24,11 @@ namespace libetonyek
 class KEYLayoutStyle
 {
 public:
-  KEYLayoutStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context);
+  KEYLayoutStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack);
 
 private:
   const IWORKStylePtr_t &m_style;
-  const IWORKStyleContext &m_context;
+  const IWORKStyleStack &m_stack;
 };
 
 /** Represents a placeholder style.
@@ -36,13 +36,13 @@ private:
 class KEYPlaceholderStyle
 {
 public:
-  KEYPlaceholderStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context);
+  KEYPlaceholderStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack);
 
   IWORKGeometryPtr_t getGeometry() const;
 
 private:
   const IWORKStylePtr_t &m_style;
-  const IWORKStyleContext &m_context;
+  const IWORKStyleStack &m_stack;
 };
 
 /** Represents a slide style.
@@ -50,11 +50,11 @@ private:
 class KEYSlideStyle
 {
 public:
-  KEYSlideStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context);
+  KEYSlideStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack);
 
 private:
   const IWORKStylePtr_t &m_style;
-  const IWORKStyleContext &m_context;
+  const IWORKStyleStack &m_stack;
 };
 
 }

@@ -20,7 +20,7 @@
 namespace libetonyek
 {
 
-class IWORKStyleContext;
+class IWORKStyleStack;
 
 /** Represents a hierarchical style.
   */
@@ -52,7 +52,7 @@ public:
     * @arg[in] context the context for dynamic lookup
     * @returns the found property or empty boost::any
     */
-  boost::any lookup(const char *property, const IWORKStyleContext &context) const;
+  boost::any lookup(const char *property, const IWORKStyleStack &stack) const;
 
 private:
   IWORKPropertyMap m_props;

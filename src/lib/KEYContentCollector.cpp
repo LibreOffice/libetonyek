@@ -10,7 +10,7 @@
 #include <cassert>
 
 #include "libetonyek_utils.h"
-#include "IWORKStyleContext.h"
+#include "IWORKStyleStack.h"
 #include "IWORKText.h"
 #include "KEYContentCollector.h"
 #include "KEYDefaults.h"

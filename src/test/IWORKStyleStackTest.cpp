@@ -11,7 +11,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "IWORKStyle.h"
-#include "IWORKStyleContext.h"
+#include "IWORKStyleStack.h"
 
 namespace test
 {
@@ -21,7 +21,7 @@ using boost::optional;
 
 using libetonyek::IWORKStyle;
 using libetonyek::IWORKStylePtr_t;
-using libetonyek::IWORKStyleContext;
+using libetonyek::IWORKStyleStack;
 using libetonyek::IWORKPropertyMap;
 
 using std::string;
@@ -39,14 +39,14 @@ IWORKStylePtr_t makeStyle(const IWORKPropertyMap &props)
 
 }
 
-class IWORKStyleContextTest : public CPPUNIT_NS::TestFixture
+class IWORKStyleStackTest : public CPPUNIT_NS::TestFixture
 {
 public:
   virtual void setUp();
   virtual void tearDown();
 
 private:
-  CPPUNIT_TEST_SUITE(IWORKStyleContextTest);
+  CPPUNIT_TEST_SUITE(IWORKStyleStackTest);
   CPPUNIT_TEST(testLookup);
   CPPUNIT_TEST_SUITE_END();
 
@@ -54,17 +54,17 @@ private:
   void testLookup();
 };
 
-void IWORKStyleContextTest::setUp()
+void IWORKStyleStackTest::setUp()
 {
 }
 
-void IWORKStyleContextTest::tearDown()
+void IWORKStyleStackTest::tearDown()
 {
 }
 
-void IWORKStyleContextTest::testLookup()
+void IWORKStyleStackTest::testLookup()
 {
-  IWORKStyleContext context;
+  IWORKStyleStack context;
 
   // lookup in empty context finds nothing
   CPPUNIT_ASSERT(context.find("answer").empty());
@@ -112,7 +112,7 @@ void IWORKStyleContextTest::testLookup()
   CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(context.find("answer")));
 }
 
-CPPUNIT_TEST_SUITE_REGISTRATION(IWORKStyleContextTest);
+CPPUNIT_TEST_SUITE_REGISTRATION(IWORKStyleStackTest);
 
 }
 

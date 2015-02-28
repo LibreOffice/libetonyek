@@ -14,7 +14,7 @@
 
 #include "IWORKEnum.h"
 #include "IWORKStyle_fwd.h"
-#include "IWORKStyleContext.h"
+#include "IWORKStyleStack.h"
 #include "IWORKTypes.h"
 
 namespace libetonyek
@@ -25,11 +25,11 @@ namespace libetonyek
 class IWORKCellStyle
 {
 public:
-  IWORKCellStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context);
+  IWORKCellStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack);
 
 private:
   const IWORKStylePtr_t &m_style;
-  const IWORKStyleContext &m_context;
+  const IWORKStyleStack &m_stack;
 };
 
 /** Represents a character style.
@@ -37,7 +37,7 @@ private:
 class IWORKCharacterStyle
 {
 public:
-  IWORKCharacterStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context);
+  IWORKCharacterStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack);
 
   boost::optional<IWORKBaseline> getBaseline() const;
   boost::optional<double> getBaselineShift() const;
@@ -53,7 +53,7 @@ public:
 
 private:
   const IWORKStylePtr_t &m_style;
-  const IWORKStyleContext &m_context;
+  const IWORKStyleStack &m_stack;
 };
 
 /** Represents a connection style.
@@ -61,11 +61,11 @@ private:
 class IWORKConnectionStyle
 {
 public:
-  IWORKConnectionStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context);
+  IWORKConnectionStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack);
 
 private:
   const IWORKStylePtr_t &m_style;
-  const IWORKStyleContext &m_context;
+  const IWORKStyleStack &m_stack;
 };
 
 /** Represents a graphic style.
@@ -73,11 +73,11 @@ private:
 class IWORKGraphicStyle
 {
 public:
-  IWORKGraphicStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context);
+  IWORKGraphicStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack);
 
 private:
   const IWORKStylePtr_t &m_style;
-  const IWORKStyleContext &m_context;
+  const IWORKStyleStack &m_stack;
 };
 
 /** Represents a list style.
@@ -85,11 +85,11 @@ private:
 class IWORKListStyle
 {
 public:
-  IWORKListStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context);
+  IWORKListStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack);
 
 private:
   const IWORKStylePtr_t &m_style;
-  const IWORKStyleContext &m_context;
+  const IWORKStyleStack &m_stack;
 };
 
 /** Represents a paragraph style.
@@ -97,14 +97,14 @@ private:
 class IWORKParagraphStyle : public IWORKCharacterStyle
 {
 public:
-  IWORKParagraphStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context);
+  IWORKParagraphStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack);
 
   boost::optional<IWORKAlignment> getAlignment() const;
   boost::optional<IWORKTabStops_t> getTabs() const;
 
 private:
   const IWORKStylePtr_t &m_style;
-  const IWORKStyleContext &m_context;
+  const IWORKStyleStack &m_stack;
 };
 
 /** Represents a tabular style.
@@ -112,11 +112,11 @@ private:
 class IWORKTabularStyle
 {
 public:
-  IWORKTabularStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context);
+  IWORKTabularStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack);
 
 private:
   const IWORKStylePtr_t &m_style;
-  const IWORKStyleContext &m_context;
+  const IWORKStyleStack &m_stack;
 };
 
 /** Represents a vector style.
@@ -124,11 +124,11 @@ private:
 class IWORKVectorStyle
 {
 public:
-  IWORKVectorStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context);
+  IWORKVectorStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack);
 
 private:
   const IWORKStylePtr_t &m_style;
-  const IWORKStyleContext &m_context;
+  const IWORKStyleStack &m_stack;
 };
 
 }

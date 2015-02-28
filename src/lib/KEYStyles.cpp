@@ -42,26 +42,26 @@ optional<T> extractOptional(const any &property)
 
 }
 
-KEYLayoutStyle::KEYLayoutStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
+KEYLayoutStyle::KEYLayoutStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack)
   : m_style(style)
-  , m_context(context)
+  , m_stack(stack)
 {
 }
 
-KEYPlaceholderStyle::KEYPlaceholderStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
+KEYPlaceholderStyle::KEYPlaceholderStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack)
   : m_style(style)
-  , m_context(context)
+  , m_stack(stack)
 {
 }
 
 IWORKGeometryPtr_t KEYPlaceholderStyle::getGeometry() const
 {
-  return extract<IWORKGeometryPtr_t>(m_style->lookup("geometry", m_context));
+  return extract<IWORKGeometryPtr_t>(m_style->lookup("geometry", m_stack));
 }
 
-KEYSlideStyle::KEYSlideStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
+KEYSlideStyle::KEYSlideStyle(const IWORKStylePtr_t &style, const IWORKStyleStack &stack)
   : m_style(style)
-  , m_context(context)
+  , m_stack(stack)
 {
 }
 

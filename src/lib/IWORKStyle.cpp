@@ -9,7 +9,7 @@
 
 #include "IWORKStyle.h"
 
-#include "IWORKStyleContext.h"
+#include "IWORKStyleStack.h"
 
 namespace libetonyek
 {
@@ -55,11 +55,11 @@ const IWORKPropertyMap &IWORKStyle::getPropertyMap() const
   return m_props;
 }
 
-boost::any IWORKStyle::lookup(const char *property, const IWORKStyleContext &context) const
+boost::any IWORKStyle::lookup(const char *property, const IWORKStyleStack &stack) const
 {
   boost::any value = getPropertyMap().get(property, true);
   if (value.empty())
-    value = context.find(property, true);
+    value = stack.find(property, true);
 
   return value;
 }

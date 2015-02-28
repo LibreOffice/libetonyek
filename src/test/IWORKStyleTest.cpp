@@ -11,7 +11,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "IWORKStyle.h"
-#include "IWORKStyleContext.h"
+#include "IWORKStyleStack.h"
 
 namespace test
 {
@@ -29,7 +29,7 @@ using libetonyek::IWORKStyle;
 using libetonyek::IWORKStylePtr_t;
 using libetonyek::IWORKStylesheet;
 using libetonyek::IWORKStylesheetPtr_t;
-using libetonyek::IWORKStyleContext;
+using libetonyek::IWORKStyleStack;
 
 using std::string;
 
@@ -44,11 +44,11 @@ IWORKStylePtr_t makeStyle(const IWORKPropertyMap &props,
   return style;
 }
 
-optional<int> getAnswer(const IWORKStyle &style, const IWORKStyleContext &context = IWORKStyleContext())
+optional<int> getAnswer(const IWORKStyle &style, const IWORKStyleStack &stack = IWORKStyleStack())
 {
   optional<int> value;
 
-  any prop = style.lookup("answer", context);
+  any prop = style.lookup("answer", stack);
   if (!prop.empty())
     value = any_cast<int>(prop);
 
@@ -177,7 +177,7 @@ void IWORKStyleTest::testLookup()
 {
   optional<ID_t> dummyIdent;
 
-  // without context
+  // without stack
   {
     IWORKPropertyMap props;
     props.set("answer", 42);
@@ -187,21 +187,21 @@ void IWORKStyleTest::testLookup()
     CPPUNIT_ASSERT_EQUAL(42, get(getAnswer(style)));
   }
 
-  // with context
+  // with stack
   {
-    IWORKStyleContext context;
+    IWORKStyleStack stack;
 
     IWORKPropertyMap ctxtProps;
     ctxtProps.set("answer", 2);
 
-    context.push();
-    context.set(makeStyle(ctxtProps));
+    stack.push();
+    stack.set(makeStyle(ctxtProps));
 
-    // lookup through context only
+    // lookup through stack only
     {
       const IWORKStyle style(IWORKPropertyMap(), dummyIdent, dummyIdent);
-      CPPUNIT_ASSERT(getAnswer(style, context));
-      CPPUNIT_ASSERT_EQUAL(2, get(getAnswer(style, context)));
+      CPPUNIT_ASSERT(getAnswer(style, stack));
+      CPPUNIT_ASSERT_EQUAL(2, get(getAnswer(style, stack)));
     }
 
     IWORKPropertyMap props;
@@ -210,8 +210,8 @@ void IWORKStyleTest::testLookup()
     // lookup in own prop. set
     {
       const IWORKStyle style(props, dummyIdent, dummyIdent);
-      CPPUNIT_ASSERT(getAnswer(style, context));
-      CPPUNIT_ASSERT_EQUAL(42, get(getAnswer(style, context)));
+      CPPUNIT_ASSERT(getAnswer(style, stack));
+      CPPUNIT_ASSERT_EQUAL(42, get(getAnswer(style, stack)));
     }
   }
 }
