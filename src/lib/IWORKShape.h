@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYSHAPE_H_INCLUDED
-#define KEYSHAPE_H_INCLUDED
+#ifndef IWORKSHAPE_H_INCLUDED
+#define IWORKSHAPE_H_INCLUDED
 
 #include <boost/shared_ptr.hpp>
 
@@ -25,21 +25,21 @@ class IWORKTransformation;
 
 /** Representation of a shape.
  */
-struct KEYShape
+struct IWORKShape
 {
   IWORKGeometryPtr_t geometry;
   IWORKStylePtr_t style;
   IWORKPathPtr_t path;
   IWORKTextPtr_t text;
 
-  KEYShape();
+  IWORKShape();
 };
 
-typedef boost::shared_ptr<KEYShape> KEYShapePtr_t;
+typedef boost::shared_ptr<IWORKShape> IWORKShapePtr_t;
 
 /** Object creator function for shape.
  */
-IWORKObjectPtr_t makeObject(const KEYShapePtr_t &shape, const IWORKTransformation &trafo);
+IWORKObjectPtr_t makeObject(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo);
 
 /** Path creator functions for stock shapes.
  */
@@ -56,6 +56,6 @@ IWORKPathPtr_t makeQuoteBubblePath(const IWORKSize &size, double radius, double 
 
 }
 
-#endif // KEYSHAPE_H_INCLUDED
+#endif // IWORKSHAPE_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

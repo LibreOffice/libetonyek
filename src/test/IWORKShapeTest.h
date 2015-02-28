@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYSHAPETEST_H_INCLUDED
-#define KEYSHAPETEST_H_INCLUDED
+#ifndef IWORKSHAPETEST_H_INCLUDED
+#define IWORKSHAPETEST_H_INCLUDED
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -16,14 +16,14 @@
 namespace test
 {
 
-class KEYShapeTest : public CPPUNIT_NS::TestFixture
+class IWORKShapeTest : public CPPUNIT_NS::TestFixture
 {
 public:
   virtual void setUp();
   virtual void tearDown();
 
 private:
-  CPPUNIT_TEST_SUITE(KEYShapeTest);
+  CPPUNIT_TEST_SUITE(IWORKShapeTest);
   CPPUNIT_TEST(testMakePolygonPath);
   CPPUNIT_TEST(testMakeRoundedRectanglePath);
   CPPUNIT_TEST(testMakeArrowPath);
@@ -47,6 +47,6 @@ private:
 
 }
 
-#endif //  KEYSHAPETEST_H_INCLUDED
+#endif // IWORKSHAPETEST_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

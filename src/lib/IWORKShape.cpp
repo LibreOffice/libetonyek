@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKShape.h"
+
 #include <algorithm>
 #include <cmath>
 #include <deque>
@@ -15,15 +17,13 @@
 #include "IWORKText.h"
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
-#include "KEYShape.h"
-#include "KEYTypes.h"
 
 using std::deque;
 
 namespace libetonyek
 {
 
-KEYShape::KEYShape()
+IWORKShape::IWORKShape()
   : geometry()
   , style()
   , path()
@@ -37,18 +37,18 @@ namespace
 class ShapeObject : public IWORKObject
 {
 public:
-  ShapeObject(const KEYShapePtr_t &shape, const IWORKTransformation &trafo);
+  ShapeObject(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo);
   virtual ~ShapeObject();
 
 private:
   virtual void draw(librevenge::RVNGPresentationInterface *painter);
 
 private:
-  const KEYShapePtr_t m_shape;
+  const IWORKShapePtr_t m_shape;
   const IWORKTransformation m_trafo;
 };
 
-ShapeObject::ShapeObject(const KEYShapePtr_t &shape, const IWORKTransformation &trafo)
+ShapeObject::ShapeObject(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo)
   : m_shape(shape)
   , m_trafo(trafo)
 {
@@ -79,7 +79,7 @@ void ShapeObject::draw(librevenge::RVNGPresentationInterface *const painter)
 
 }
 
-IWORKObjectPtr_t makeObject(const KEYShapePtr_t &shape, const IWORKTransformation &trafo)
+IWORKObjectPtr_t makeObject(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo)
 {
   const IWORKObjectPtr_t object(new ShapeObject(shape, trafo));
   return object;

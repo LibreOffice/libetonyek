@@ -7,13 +7,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKShapeTest.h"
+
 #include "IWORKObject.h"
 #include "IWORKPath.h"
 #include "IWORKTypes.h"
-#include "KEYShape.h"
+#include "IWORKShape.h"
 #include "KEYTypes.h"
-
-#include "KEYShapeTest.h"
 
 namespace test
 {
@@ -24,15 +24,15 @@ using libetonyek::IWORKSize;
 using libetonyek::etonyek_root_three;
 using libetonyek::etonyek_root_two;
 
-void KEYShapeTest::setUp()
+void IWORKShapeTest::setUp()
 {
 }
 
-void KEYShapeTest::tearDown()
+void IWORKShapeTest::tearDown()
 {
 }
 
-void KEYShapeTest::testMakePolygonPath()
+void IWORKShapeTest::testMakePolygonPath()
 {
   using libetonyek::makePolygonPath;
 
@@ -92,42 +92,42 @@ void KEYShapeTest::testMakePolygonPath()
   }
 }
 
-void KEYShapeTest::testMakeRoundedRectanglePath()
+void IWORKShapeTest::testMakeRoundedRectanglePath()
 {
   // TODO: implement me
 }
 
-void KEYShapeTest::testMakeArrowPath()
+void IWORKShapeTest::testMakeArrowPath()
 {
   // TODO: implement me
 }
 
-void KEYShapeTest::testMakeDoubleArrowPath()
+void IWORKShapeTest::testMakeDoubleArrowPath()
 {
   // TODO: implement me
 }
 
-void KEYShapeTest::testMakeStarPath()
+void IWORKShapeTest::testMakeStarPath()
 {
   // TODO: implement me
 }
 
-void KEYShapeTest::testMakeConnectionPath()
+void IWORKShapeTest::testMakeConnectionPath()
 {
   // TODO: implement me
 }
 
-void KEYShapeTest::testMakeCalloutPath()
+void IWORKShapeTest::testMakeCalloutPath()
 {
   // TODO: implement me
 }
 
-void KEYShapeTest::testMakeQuoteBubblePath()
+void IWORKShapeTest::testMakeQuoteBubblePath()
 {
   // TODO: implement me
 }
 
-CPPUNIT_TEST_SUITE_REGISTRATION(KEYShapeTest);
+CPPUNIT_TEST_SUITE_REGISTRATION(IWORKShapeTest);
 
 }
 

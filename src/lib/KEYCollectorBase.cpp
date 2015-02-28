@@ -13,12 +13,12 @@
 #include <boost/bind.hpp>
 
 #include "libetonyek_utils.h"
+#include "IWORKShape.h"
 #include "IWORKText.h"
 #include "IWORKTransformation.h"
 #include "KEYCollectorBase.h"
 #include "KEYDefaults.h"
 #include "KEYDictionary.h"
-#include "KEYShape.h"
 #include "KEYStyles.h"
 
 using boost::optional;
@@ -432,7 +432,7 @@ void KEYCollectorBase::collectShape(const optional<ID_t> &)
     assert(!m_objectsStack.empty());
     assert(!m_levelStack.empty());
 
-    const KEYShapePtr_t shape(new KEYShape());
+    const IWORKShapePtr_t shape(new IWORKShape());
 
     if (!m_currentPath)
     {
