@@ -11,18 +11,18 @@
 
 #include <boost/bind.hpp>
 
-#include "KEYObject.h"
+#include "IWORKObject.h"
 
 namespace libetonyek
 {
 
-KEYObject::~KEYObject()
+IWORKObject::~IWORKObject()
 {
 }
 
-void drawAll(const KEYObjectList_t &list, librevenge::RVNGPresentationInterface *const painter)
+void drawAll(const IWORKObjectList_t &list, librevenge::RVNGPresentationInterface *const painter)
 {
-  for_each(list.begin(), list.end(), boost::bind(&KEYObject::draw, _1, painter));
+  for_each(list.begin(), list.end(), boost::bind(&IWORKObject::draw, _1, painter));
 }
 
 }

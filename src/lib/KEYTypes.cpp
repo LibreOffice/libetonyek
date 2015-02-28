@@ -196,7 +196,7 @@ librevenge::RVNGPropertyList pointToWPG(const double x, const double y)
 namespace
 {
 
-class GroupObject : public KEYObject
+class GroupObject : public IWORKObject
 {
 public:
   explicit GroupObject(const KEYGroupPtr_t &group);
@@ -224,7 +224,7 @@ void GroupObject::draw(librevenge::RVNGPresentationInterface *const painter)
 namespace
 {
 
-class ImageObject : public KEYObject
+class ImageObject : public IWORKObject
 {
 public:
   ImageObject(const KEYImagePtr_t &image, const IWORKTransformation &trafo);
@@ -254,7 +254,7 @@ void ImageObject::draw(librevenge::RVNGPresentationInterface *const painter)
 namespace
 {
 
-class LineObject : public KEYObject
+class LineObject : public IWORKObject
 {
 public:
   LineObject(const KEYLinePtr_t &line, const IWORKTransformation &trafo);
@@ -315,7 +315,7 @@ void LineObject::draw(librevenge::RVNGPresentationInterface *const painter)
 namespace
 {
 
-class MediaObject : public KEYObject
+class MediaObject : public IWORKObject
 {
 public:
   MediaObject(const KEYMediaPtr_t &media, const IWORKTransformation &trafo);
@@ -384,7 +384,7 @@ void MediaObject::draw(librevenge::RVNGPresentationInterface *const painter)
 namespace
 {
 
-class PlaceholderObject : public KEYObject
+class PlaceholderObject : public IWORKObject
 {
 public:
   PlaceholderObject(const KEYPlaceholderPtr_t &body, const IWORKTransformation &trafo);
@@ -411,33 +411,33 @@ void PlaceholderObject::draw(librevenge::RVNGPresentationInterface *const painte
 
 }
 
-KEYObjectPtr_t makeObject(const KEYGroupPtr_t &group)
+IWORKObjectPtr_t makeObject(const KEYGroupPtr_t &group)
 {
-  const KEYObjectPtr_t object(new GroupObject(group));
+  const IWORKObjectPtr_t object(new GroupObject(group));
   return object;
 }
 
-KEYObjectPtr_t makeObject(const KEYImagePtr_t &image, const IWORKTransformation &trafo)
+IWORKObjectPtr_t makeObject(const KEYImagePtr_t &image, const IWORKTransformation &trafo)
 {
-  const KEYObjectPtr_t object(new ImageObject(image, trafo));
+  const IWORKObjectPtr_t object(new ImageObject(image, trafo));
   return object;
 }
 
-KEYObjectPtr_t makeObject(const KEYLinePtr_t &line, const IWORKTransformation &trafo)
+IWORKObjectPtr_t makeObject(const KEYLinePtr_t &line, const IWORKTransformation &trafo)
 {
-  const KEYObjectPtr_t object(new LineObject(line, trafo));
+  const IWORKObjectPtr_t object(new LineObject(line, trafo));
   return object;
 }
 
-KEYObjectPtr_t makeObject(const KEYMediaPtr_t &media, const IWORKTransformation &trafo)
+IWORKObjectPtr_t makeObject(const KEYMediaPtr_t &media, const IWORKTransformation &trafo)
 {
-  const KEYObjectPtr_t object(new MediaObject(media, trafo));
+  const IWORKObjectPtr_t object(new MediaObject(media, trafo));
   return object;
 }
 
-KEYObjectPtr_t makeObject(const KEYPlaceholderPtr_t &body, const IWORKTransformation &trafo)
+IWORKObjectPtr_t makeObject(const KEYPlaceholderPtr_t &body, const IWORKTransformation &trafo)
 {
-  const KEYObjectPtr_t object(new PlaceholderObject(body, trafo));
+  const IWORKObjectPtr_t object(new PlaceholderObject(body, trafo));
   return object;
 }
 

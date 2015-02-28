@@ -47,7 +47,7 @@ void KEYTable::setSizes(const ColumnSizes_t &columnSizes, const RowSizes_t &rowS
   m_table = Table_t(m_rowSizes.size(), Row_t(m_columnSizes.size()));
 }
 
-void KEYTable::insertCell(const unsigned column, const unsigned row, const KEYObjectPtr_t &content, const unsigned columnSpan, const unsigned rowSpan)
+void KEYTable::insertCell(const unsigned column, const unsigned row, const IWORKObjectPtr_t &content, const unsigned columnSpan, const unsigned rowSpan)
 {
   if ((m_rowSizes.size() <= row) || (m_columnSizes.size() <= column))
     return;
@@ -149,7 +149,7 @@ void KEYTable::draw(librevenge::RVNGPresentationInterface *const painter, const 
 namespace
 {
 
-class TableObject : public KEYObject
+class TableObject : public IWORKObject
 {
 public:
   TableObject(const KEYTable &table, const IWORKTransformation &trafo);
@@ -174,9 +174,9 @@ void TableObject::draw(librevenge::RVNGPresentationInterface *const painter)
 
 }
 
-KEYObjectPtr_t makeObject(const KEYTable &table, const IWORKTransformation &trafo)
+IWORKObjectPtr_t makeObject(const KEYTable &table, const IWORKTransformation &trafo)
 {
-  const KEYObjectPtr_t object(new TableObject(table, trafo));
+  const IWORKObjectPtr_t object(new TableObject(table, trafo));
   return object;
 }
 

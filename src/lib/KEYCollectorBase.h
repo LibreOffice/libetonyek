@@ -13,12 +13,12 @@
 #include <deque>
 #include <stack>
 
+#include "IWORKObject.h"
 #include "IWORKStyle.h"
 #include "IWORKStyleContext.h"
 #include "IWORKStylesheet.h"
 #include "IWORKTransformation.h"
 #include "KEYCollector.h"
-#include "KEYObject.h"
 #include "KEYText_fwd.h"
 #include "KEYTypes.h"
 
@@ -166,7 +166,7 @@ protected:
   const KEYDefaults &getDefaults() const;
 
   const KEYLayerPtr_t &getLayer() const;
-  const KEYObjectList_t &getNotes() const;
+  const IWORKObjectList_t &getNotes() const;
   const KEYStickyNotes_t &getStickyNotes() const;
 
   const IWORKTransformation &getTransformation() const;
@@ -182,7 +182,7 @@ private:
 
   std::stack<Level> m_levelStack;
   IWORKStyleContext m_styleContext;
-  std::stack<KEYObjectList_t> m_objectsStack;
+  std::stack<IWORKObjectList_t> m_objectsStack;
   IWORKPathPtr_t m_currentPath;
 
   KEYTextPtr_t m_currentText;
@@ -200,7 +200,7 @@ private:
 
   KEYTable m_currentTable;
 
-  KEYObjectList_t m_notes;
+  IWORKObjectList_t m_notes;
 
   KEYStickyNotes_t m_stickyNotes;
 

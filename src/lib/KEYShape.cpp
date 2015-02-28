@@ -35,7 +35,7 @@ KEYShape::KEYShape()
 namespace
 {
 
-class ShapeObject : public KEYObject
+class ShapeObject : public IWORKObject
 {
 public:
   ShapeObject(const KEYShapePtr_t &shape, const IWORKTransformation &trafo);
@@ -80,9 +80,9 @@ void ShapeObject::draw(librevenge::RVNGPresentationInterface *const painter)
 
 }
 
-KEYObjectPtr_t makeObject(const KEYShapePtr_t &shape, const IWORKTransformation &trafo)
+IWORKObjectPtr_t makeObject(const KEYShapePtr_t &shape, const IWORKTransformation &trafo)
 {
-  const KEYObjectPtr_t object(new ShapeObject(shape, trafo));
+  const IWORKObjectPtr_t object(new ShapeObject(shape, trafo));
   return object;
 }
 

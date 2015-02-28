@@ -7,9 +7,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKObject.h"
 #include "IWORKPath.h"
 #include "IWORKTypes.h"
-#include "KEYObject.h"
 #include "KEYShape.h"
 #include "KEYTypes.h"
 

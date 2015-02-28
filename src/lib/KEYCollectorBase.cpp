@@ -769,7 +769,7 @@ void KEYCollectorBase::collectTableCell(const unsigned row, const unsigned colum
 {
   if (m_collecting)
   {
-    KEYObjectPtr_t textObject;
+    IWORKObjectPtr_t textObject;
 
     if (bool(content))
     {
@@ -859,7 +859,7 @@ void KEYCollectorBase::startLayer()
     assert(m_objectsStack.empty());
     assert(!m_currentLayer);
 
-    m_objectsStack.push(KEYObjectList_t());
+    m_objectsStack.push(IWORKObjectList_t());
     m_layerOpened = true;
 
     startLevel();
@@ -892,7 +892,7 @@ void KEYCollectorBase::startGroup()
     assert(m_layerOpened);
     assert(!m_objectsStack.empty());
 
-    m_objectsStack.push(KEYObjectList_t());
+    m_objectsStack.push(IWORKObjectList_t());
     ++m_groupLevel;
   }
 }
@@ -998,7 +998,7 @@ const KEYLayerPtr_t &KEYCollectorBase::getLayer() const
   return m_currentLayer;
 }
 
-const KEYObjectList_t &KEYCollectorBase::getNotes() const
+const IWORKObjectList_t &KEYCollectorBase::getNotes() const
 {
   return m_notes;
 }

@@ -174,7 +174,7 @@ void KEYContentCollector::drawLayer(const KEYLayerPtr_t &layer)
 {
   if (bool(layer))
   {
-    for (KEYObjectList_t::const_iterator it = layer->objects.begin(); it != layer->objects.end(); ++it)
+    for (IWORKObjectList_t::const_iterator it = layer->objects.begin(); it != layer->objects.end(); ++it)
       (*it)->draw(m_painter);
   }
   else
@@ -183,13 +183,13 @@ void KEYContentCollector::drawLayer(const KEYLayerPtr_t &layer)
   }
 }
 
-void KEYContentCollector::drawNotes(const KEYObjectList_t &notes)
+void KEYContentCollector::drawNotes(const IWORKObjectList_t &notes)
 {
   if (notes.empty())
     return;
 
   m_painter->startNotes(librevenge::RVNGPropertyList());
-  for (KEYObjectList_t::const_iterator it = notes.begin(); notes.end() != it; ++it)
+  for (IWORKObjectList_t::const_iterator it = notes.begin(); notes.end() != it; ++it)
     (*it)->draw(m_painter);
   m_painter->endNotes();
 }

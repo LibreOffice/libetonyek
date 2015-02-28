@@ -12,9 +12,9 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include "IWORKObject.h"
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle.h"
-#include "KEYObject.h"
 #include "KEYText_fwd.h"
 
 namespace libetonyek
@@ -39,7 +39,7 @@ typedef boost::shared_ptr<KEYShape> KEYShapePtr_t;
 
 /** Object creator function for shape.
  */
-KEYObjectPtr_t makeObject(const KEYShapePtr_t &shape, const IWORKTransformation &trafo);
+IWORKObjectPtr_t makeObject(const KEYShapePtr_t &shape, const IWORKTransformation &trafo);
 
 /** Path creator functions for stock shapes.
  */

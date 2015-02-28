@@ -12,7 +12,7 @@
 
 #include <deque>
 
-#include "KEYObject.h"
+#include "IWORKObject.h"
 
 namespace libetonyek
 {
@@ -23,7 +23,7 @@ class KEYTable
 {
   struct Cell
   {
-    KEYObjectPtr_t content;
+    IWORKObjectPtr_t content;
     unsigned columnSpan;
     unsigned rowSpan;
     bool covered;
@@ -42,7 +42,7 @@ public:
   KEYTable();
 
   void setSizes(const ColumnSizes_t &columnSizes, const RowSizes_t &rowSizes);
-  void insertCell(unsigned column, unsigned row, const KEYObjectPtr_t &content = KEYObjectPtr_t(), unsigned columnSpan = 1, unsigned rowSpan = 1);
+  void insertCell(unsigned column, unsigned row, const IWORKObjectPtr_t &content = IWORKObjectPtr_t(), unsigned columnSpan = 1, unsigned rowSpan = 1);
   void insertCoveredCell(unsigned column, unsigned row);
 
   void setGeometry(const IWORKGeometryPtr_t &geometry);
@@ -56,7 +56,7 @@ private:
   IWORKGeometryPtr_t m_geometry;
 };
 
-KEYObjectPtr_t makeObject(const KEYTable &table, const IWORKTransformation &trafo);
+IWORKObjectPtr_t makeObject(const KEYTable &table, const IWORKTransformation &trafo);
 
 }
 

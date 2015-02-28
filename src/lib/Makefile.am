@@ -28,6 +28,8 @@ libetonyek_internal_la_SOURCES = \
 	IWORKEnum.h \
 	IWORKMemoryStream.cpp \
 	IWORKMemoryStream.h \
+	IWORKObject.cpp \
+	IWORKObject.h \
 	IWORKOutputElements.cpp \
 	IWORKOutputElements.h \
 	IWORKPath.cpp \
@@ -94,8 +96,6 @@ libetonyek_internal_la_SOURCES = \
 	KEYDefaults.h \
 	KEYDictionary.cpp \
 	KEYDictionary.h \
-	KEYObject.cpp \
-	KEYObject.h \
 	KEYParser.cpp \
 	KEYParser.h \
 	KEYShape.cpp \

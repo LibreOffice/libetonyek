@@ -51,7 +51,7 @@ private:
   void resolveStyle(IWORKStyle &style);
 
   void drawLayer(const KEYLayerPtr_t &layer);
-  void drawNotes(const KEYObjectList_t &notes);
+  void drawNotes(const IWORKObjectList_t &notes);
   void drawStickyNotes(const KEYStickyNotes_t &stickyNotes);
 
 private:

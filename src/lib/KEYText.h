@@ -13,7 +13,7 @@
 #include <deque>
 
 #include "IWORKStyleContext.h"
-#include "KEYObject.h"
+#include "IWORKObject.h"
 #include "KEYStyles_fwd.h"
 #include "KEYText_fwd.h"
 
@@ -65,7 +65,7 @@ private:
   IWORKGeometryPtr_t m_boundingBox;
 };
 
-KEYObjectPtr_t makeObject(const KEYTextPtr_t &text, const IWORKTransformation &trafo);
+IWORKObjectPtr_t makeObject(const KEYTextPtr_t &text, const IWORKTransformation &trafo);
 
 }
 

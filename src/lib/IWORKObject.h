@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYOBJECT_H_INCLUDED
-#define KEYOBJECT_H_INCLUDED
+#ifndef IWORKOBJECT_H_INCLUDED
+#define IWORKOBJECT_H_INCLUDED
 
 #include <deque>
 
@@ -29,10 +29,10 @@ namespace libetonyek
   * it is convenient to use the same mechanism for processing regular
   * slides too.
   */
-class KEYObject
+class IWORKObject
 {
 public:
-  virtual ~KEYObject() = 0;
+  virtual ~IWORKObject() = 0;
 
   /** Draw the object using @c painter.
     *
@@ -41,21 +41,21 @@ public:
   virtual void draw(librevenge::RVNGPresentationInterface *painter) = 0;
 };
 
-typedef boost::shared_ptr<KEYObject> KEYObjectPtr_t;
+typedef boost::shared_ptr<IWORKObject> IWORKObjectPtr_t;
 
 /** A list of presentation objects.
   */
-typedef std::deque<KEYObjectPtr_t> KEYObjectList_t;
+typedef std::deque<IWORKObjectPtr_t> IWORKObjectList_t;
 
 /** Draw all objects of list @list using @c painter.
   *
   * @arg[in] list the object list
   * @arg[in] painter the painter to use
   */
-void drawAll(const KEYObjectList_t &list, librevenge::RVNGPresentationInterface *painter);
+void drawAll(const IWORKObjectList_t &list, librevenge::RVNGPresentationInterface *painter);
 
 }
 
-#endif // KEYOBJECT_H_INCLUDED
+#endif // IWORKOBJECT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

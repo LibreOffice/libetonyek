@@ -15,10 +15,10 @@
 #include <boost/optional.hpp>
 
 #include "libetonyek_utils.h"
+#include "IWORKObject.h"
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle.h"
 #include "IWORKTypes_fwd.h"
-#include "KEYObject.h"
 #include "KEYText_fwd.h"
 #include "KEYTypes_fwd.h"
 
@@ -96,7 +96,7 @@ struct KEYWrap
 
 struct KEYGroup
 {
-  KEYObjectList_t objects;
+  IWORKObjectList_t objects;
 
   KEYGroup();
 };
@@ -104,7 +104,7 @@ struct KEYGroup
 struct KEYLayer
 {
   boost::optional<std::string> type;
-  KEYObjectList_t objects;
+  IWORKObjectList_t objects;
 
   KEYLayer();
 };
@@ -131,11 +131,11 @@ struct KEYStickyNote
 
 typedef std::deque<KEYStickyNote> KEYStickyNotes_t;
 
-KEYObjectPtr_t makeObject(const KEYGroupPtr_t &group);
-KEYObjectPtr_t makeObject(const KEYImagePtr_t &image, const IWORKTransformation &trafo);
-KEYObjectPtr_t makeObject(const KEYLinePtr_t &line, const IWORKTransformation &trafo);
-KEYObjectPtr_t makeObject(const KEYMediaPtr_t &media, const IWORKTransformation &trafo);
-KEYObjectPtr_t makeObject(const KEYPlaceholderPtr_t &placeholder, const IWORKTransformation &trafo);
+IWORKObjectPtr_t makeObject(const KEYGroupPtr_t &group);
+IWORKObjectPtr_t makeObject(const KEYImagePtr_t &image, const IWORKTransformation &trafo);
+IWORKObjectPtr_t makeObject(const KEYLinePtr_t &line, const IWORKTransformation &trafo);
+IWORKObjectPtr_t makeObject(const KEYMediaPtr_t &media, const IWORKTransformation &trafo);
+IWORKObjectPtr_t makeObject(const KEYPlaceholderPtr_t &placeholder, const IWORKTransformation &trafo);
 
 }
 

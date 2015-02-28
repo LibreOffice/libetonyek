@@ -31,7 +31,7 @@ struct KEYText::Paragraph
 {
   IWORKStyleContext m_styleContext;
   KEYParagraphStylePtr_t style;
-  KEYObjectList_t objects;
+  IWORKObjectList_t objects;
 
   explicit Paragraph(const IWORKStyleContext &styleContext);
 };
@@ -150,7 +150,7 @@ librevenge::RVNGPropertyList makePropList(const KEYParagraphStylePtr_t &style, c
 namespace
 {
 
-class TextSpanObject : public KEYObject
+class TextSpanObject : public IWORKObject
 {
 public:
   TextSpanObject(const KEYCharacterStylePtr_t &style, const IWORKStyleContext &styleContext, const string &text);
@@ -184,7 +184,7 @@ void TextSpanObject::draw(librevenge::RVNGPresentationInterface *const painter)
 namespace
 {
 
-class TabObject : public KEYObject
+class TabObject : public IWORKObject
 {
 private:
   virtual void draw(librevenge::RVNGPresentationInterface *painter);
@@ -202,7 +202,7 @@ void TabObject::draw(librevenge::RVNGPresentationInterface *const painter)
 namespace
 {
 
-class LineBreakObject : public KEYObject
+class LineBreakObject : public IWORKObject
 {
 public:
   explicit LineBreakObject(const IWORKStyleContext &styleContext);
@@ -231,7 +231,7 @@ void LineBreakObject::draw(librevenge::RVNGPresentationInterface *const painter)
 namespace
 {
 
-class TextObject : public KEYObject
+class TextObject : public IWORKObject
 {
 public:
   TextObject(const IWORKGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, bool object, const IWORKTransformation &trafo);
@@ -361,7 +361,7 @@ void KEYText::insertText(const std::string &text, const KEYCharacterStylePtr_t &
 {
   assert(bool(m_currentParagraph));
 
-  const KEYObjectPtr_t object(new TextSpanObject(style, m_styleContext, text));
+  const IWORKObjectPtr_t object(new TextSpanObject(style, m_styleContext, text));
   m_currentParagraph->objects.push_back(object);
 }
 
@@ -369,7 +369,7 @@ void KEYText::insertTab()
 {
   assert(bool(m_currentParagraph));
 
-  const KEYObjectPtr_t object(new TabObject());
+  const IWORKObjectPtr_t object(new TabObject());
   m_currentParagraph->objects.push_back(object);
 }
 
@@ -401,7 +401,7 @@ void KEYText::insertDeferredLineBreaks()
 
   if (0 < m_lineBreaks)
   {
-    const KEYObjectPtr_t object(new LineBreakObject(m_currentParagraph->m_styleContext));
+    const IWORKObjectPtr_t object(new LineBreakObject(m_currentParagraph->m_styleContext));
     m_currentParagraph->objects.insert(m_currentParagraph->objects.end(), m_lineBreaks, object);
     m_lineBreaks = 0;
   }
@@ -412,9 +412,9 @@ bool KEYText::empty() const
   return m_paragraphs.empty();
 }
 
-KEYObjectPtr_t makeObject(const KEYTextPtr_t &text, const IWORKTransformation &trafo)
+IWORKObjectPtr_t makeObject(const KEYTextPtr_t &text, const IWORKTransformation &trafo)
 {
-  const KEYObjectPtr_t object(new TextObject(text->getBoundingBox(), text->getParagraphs(), text->isObject(), trafo));
+  const IWORKObjectPtr_t object(new TextObject(text->getBoundingBox(), text->getParagraphs(), text->isObject(), trafo));
   return object;
 }
 
