@@ -43,6 +43,8 @@ libetonyek_internal_la_SOURCES = \
 	IWORKSpreadsheetInterfaceRedirector.h \
 	IWORKStyle.cpp \
 	IWORKStyle.h \
+	IWORKStyles.cpp \
+	IWORKStyles.h \
 	IWORKStyleContext.cpp \
 	IWORKStyleContext.h \
 	IWORKStylesheet.cpp \

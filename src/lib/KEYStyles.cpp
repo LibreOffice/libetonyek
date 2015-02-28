@@ -42,102 +42,10 @@ optional<T> extractOptional(const any &property)
 
 }
 
-KEYCellStyle::KEYCellStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
-  : m_style(style)
-  , m_context(context)
-{
-}
-
-KEYCharacterStyle::KEYCharacterStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
-  : m_style(style)
-  , m_context(context)
-{
-}
-
-boost::optional<bool> KEYCharacterStyle::getBold() const
-{
-  return extractOptional<bool>(m_style->lookup("bold", m_context));
-}
-
-boost::optional<IWORKCapitalization> KEYCharacterStyle::getCapitalization() const
-{
-  return extractOptional<IWORKCapitalization>(m_style->lookup("capitalization", m_context));
-}
-
-boost::optional<bool> KEYCharacterStyle::getItalic() const
-{
-  return extractOptional<bool>(m_style->lookup("italic", m_context));
-}
-
-boost::optional<IWORKColor> KEYCharacterStyle::getFontColor() const
-{
-  return extractOptional<IWORKColor>(m_style->lookup("fontColor", m_context));
-}
-
-boost::optional<double> KEYCharacterStyle::getFontSize() const
-{
-  return extractOptional<double>(m_style->lookup("fontSize", m_context));
-}
-
-boost::optional<std::string> KEYCharacterStyle::getFontName() const
-{
-  return extractOptional<std::string>(m_style->lookup("fontName", m_context));
-}
-
-boost::optional<bool> KEYCharacterStyle::getOutline() const
-{
-  return extractOptional<bool>(m_style->lookup("outline", m_context));
-}
-
-boost::optional<bool> KEYCharacterStyle::getStrikethru() const
-{
-  return extractOptional<bool>(m_style->lookup("strikethru", m_context));
-}
-
-boost::optional<bool> KEYCharacterStyle::getUnderline() const
-{
-  return extractOptional<bool>(m_style->lookup("underline", m_context));
-}
-
-KEYConnectionStyle::KEYConnectionStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
-  : m_style(style)
-  , m_context(context)
-{
-}
-
-KEYGraphicStyle::KEYGraphicStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
-  : m_style(style)
-  , m_context(context)
-{
-}
-
 KEYLayoutStyle::KEYLayoutStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
   : m_style(style)
   , m_context(context)
 {
-}
-
-KEYListStyle::KEYListStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
-  : m_style(style)
-  , m_context(context)
-{
-}
-
-KEYParagraphStyle::KEYParagraphStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
-  : KEYCharacterStyle(style, context)
-  , m_style(style)
-  , m_context(context)
-{
-}
-
-boost::optional<IWORKAlignment> KEYParagraphStyle::getAlignment() const
-{
-  return extractOptional<IWORKAlignment>(m_style->lookup("alignment", m_context));
-}
-
-boost::optional<IWORKTabStops_t> KEYParagraphStyle::getTabs() const
-{
-  return extractOptional<IWORKTabStops_t>(m_style->lookup("tabs", m_context));
 }
 
 KEYPlaceholderStyle::KEYPlaceholderStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
@@ -152,18 +60,6 @@ IWORKGeometryPtr_t KEYPlaceholderStyle::getGeometry() const
 }
 
 KEYSlideStyle::KEYSlideStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
-  : m_style(style)
-  , m_context(context)
-{
-}
-
-KEYTabularStyle::KEYTabularStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
-  : m_style(style)
-  , m_context(context)
-{
-}
-
-KEYVectorStyle::KEYVectorStyle(const IWORKStylePtr_t &style, const IWORKStyleContext &context)
   : m_style(style)
   , m_context(context)
 {

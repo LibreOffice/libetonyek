@@ -12,6 +12,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "libetonyek_xml.h"
+#include "IWORKStyles.h"
 #include "IWORKToken.h"
 #include "IWORKXMLContexts.h"
 #include "IWORKXMLParserState.h"
@@ -19,7 +20,6 @@
 #include "KEY2Token.h"
 #include "KEYCollector.h"
 #include "KEYDefaults.h"
-#include "KEYStyles.h"
 #include "KEYTypes.h"
 
 namespace libetonyek

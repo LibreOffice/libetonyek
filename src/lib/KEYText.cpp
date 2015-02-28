@@ -15,9 +15,9 @@
 #include <librevenge/librevenge.h>
 
 #include "IWORKPath.h"
+#include "IWORKStyles.h"
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
-#include "KEYStyles.h"
 #include "KEYText.h"
 #include "KEYTypes.h"
 
@@ -54,7 +54,7 @@ librevenge::RVNGString makeColor(const IWORKColor &color)
   return str;
 }
 
-void fillCharPropList(librevenge::RVNGPropertyList &props, const KEYCharacterStyle &style)
+void fillCharPropList(librevenge::RVNGPropertyList &props, const IWORKCharacterStyle &style)
 {
   if (style.getItalic())
     props.insert("fo:font-style", "italic");
@@ -100,7 +100,7 @@ librevenge::RVNGPropertyList makeCharPropList(const IWORKStylePtr_t &style, cons
   // Even if there is no character style for the span, there might still
   // be attributes inherited from the paragraph style through context.
   // We use an empty style so these can be picked up.
-  fillCharPropList(props, KEYCharacterStyle(bool(style) ? style : makeEmptyStyle(), context));
+  fillCharPropList(props, IWORKCharacterStyle(bool(style) ? style : makeEmptyStyle(), context));
 
   return props;
 }
@@ -111,7 +111,7 @@ librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, cons
 
   if (bool(style))
   {
-    const KEYParagraphStyle paraStyle(style, context);
+    const IWORKParagraphStyle paraStyle(style, context);
 
     const optional<IWORKAlignment> alignment(paraStyle.getAlignment());
     if (bool(alignment))
