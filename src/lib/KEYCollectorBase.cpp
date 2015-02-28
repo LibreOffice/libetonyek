@@ -213,6 +213,7 @@ void KEYCollectorBase::collectGraphicStyle(const optional<ID_t> &id,
       assert(!m_levelStack.empty());
 
       m_levelStack.top().graphicStyle = style;
+      m_styleContext.set(style);
     }
   }
 }
@@ -961,6 +962,8 @@ void KEYCollectorBase::startLevel()
       currentTrafo = m_levelStack.top().m_trafo;
     m_levelStack.push(Level());
     m_levelStack.top().m_trafo = currentTrafo;
+
+    pushStyle();
   }
 }
 
@@ -970,6 +973,8 @@ void KEYCollectorBase::endLevel()
   {
     assert(!m_levelStack.empty());
     m_levelStack.pop();
+
+    popStyle();
   }
 }
 
@@ -1008,6 +1013,16 @@ const IWORKTransformation &KEYCollectorBase::getTransformation() const
   assert(!m_levelStack.empty());
 
   return m_levelStack.top().m_trafo;
+}
+
+void KEYCollectorBase::pushStyle()
+{
+  m_styleContext.push();
+}
+
+void KEYCollectorBase::popStyle()
+{
+  m_styleContext.pop();
 }
 
 } // namespace libetonyek

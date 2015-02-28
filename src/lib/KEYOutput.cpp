@@ -8,48 +8,27 @@
  */
 
 #include "KEYOutput.h"
-#include "KEYStyleContext.h"
 
 namespace libetonyek
 {
 
-KEYOutput::KEYOutput(librevenge::RVNGPresentationInterface *const painter, KEYStyleContext &context)
+KEYOutput::KEYOutput(librevenge::RVNGPresentationInterface *const painter)
   : m_painter(painter)
-  , m_styleContext(context)
-  , m_stylePushed(false)
 {
-}
-
-KEYOutput::KEYOutput(const KEYOutput &output, const KEYStylePtr_t &style)
-  : m_painter(output.m_painter)
-  , m_styleContext(output.m_styleContext)
-  , m_stylePushed(false)
-{
-  m_styleContext.push(style);
-  m_stylePushed = true;
 }
 
 KEYOutput::KEYOutput(const KEYOutput &other)
   : m_painter(other.m_painter)
-  , m_styleContext(other.m_styleContext)
-  , m_stylePushed(false)
 {
 }
 
 KEYOutput::~KEYOutput()
 {
-  if (m_stylePushed)
-    m_styleContext.pop();
 }
 
 librevenge::RVNGPresentationInterface *KEYOutput::getPainter() const
 {
   return m_painter;
-}
-
-const KEYStyleContext &KEYOutput::getStyleContext() const
-{
-  return m_styleContext;
 }
 
 }

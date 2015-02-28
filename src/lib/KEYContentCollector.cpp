@@ -175,8 +175,7 @@ void KEYContentCollector::drawLayer(const KEYLayerPtr_t &layer)
 {
   if (bool(layer))
   {
-    KEYStyleContext styleContext;
-    const KEYOutput output(m_painter, styleContext);
+    const KEYOutput output(m_painter);
     for (KEYObjectList_t::const_iterator it = layer->objects.begin(); it != layer->objects.end(); ++it)
       (*it)->draw(output);
   }
@@ -191,8 +190,7 @@ void KEYContentCollector::drawNotes(const KEYObjectList_t &notes)
   if (notes.empty())
     return;
 
-  KEYStyleContext styleContext;
-  const KEYOutput output(m_painter, styleContext);
+  const KEYOutput output(m_painter);
 
   m_painter->startNotes(librevenge::RVNGPropertyList());
   for (KEYObjectList_t::const_iterator it = notes.begin(); notes.end() != it; ++it)
@@ -205,8 +203,7 @@ void KEYContentCollector::drawStickyNotes(const KEYStickyNotes_t &stickyNotes)
   if (stickyNotes.empty())
     return;
 
-  KEYStyleContext styleContext;
-  const KEYOutput output(m_painter, styleContext);
+  const KEYOutput output(m_painter);
 
   for (KEYStickyNotes_t::const_iterator it = stickyNotes.begin(); stickyNotes.end() != it; ++it)
   {

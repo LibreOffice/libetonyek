@@ -33,20 +33,8 @@ public:
     * operation.
     *
     * @arg[in] painter a painter
-    * @arg[in] context a style context
     */
-  KEYOutput(librevenge::RVNGPresentationInterface *painter, KEYStyleContext &context);
-
-  /** Apply a style to the current output.
-    *
-    * The style is pushed to the style context.
-    *
-    * @arg[in] output the current output
-    * @arg[in] style a style
-    *
-    * @seealso KEYStyleContext
-    */
-  KEYOutput(const KEYOutput &output, const KEYStylePtr_t &style);
+  explicit KEYOutput(librevenge::RVNGPresentationInterface *painter);
 
   /** Create a @c KEYOutput as a copy of an existing one.
     *
@@ -67,16 +55,8 @@ public:
     */
   librevenge::RVNGPresentationInterface *getPainter() const;
 
-  /** Get the style context.
-    *
-    * @return the style context.
-    */
-  const KEYStyleContext &getStyleContext() const;
-
 private:
   librevenge::RVNGPresentationInterface *const m_painter;
-  KEYStyleContext &m_styleContext;
-  bool m_stylePushed;
 };
 
 }

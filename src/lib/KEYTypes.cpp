@@ -407,10 +407,7 @@ PlaceholderObject::PlaceholderObject(const KEYPlaceholderPtr_t &body, const IWOR
 void PlaceholderObject::draw(const KEYOutput &output)
 {
   if (bool(m_body) && bool(m_body->style) && bool(m_body->text))
-  {
-    const KEYOutput newOutput(output, m_body->style);
-    makeObject(m_body->text, m_trafo)->draw(newOutput);
-  }
+    makeObject(m_body->text, m_trafo)->draw(output);
 }
 
 }

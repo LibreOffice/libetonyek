@@ -48,14 +48,14 @@ public:
   /** Push a style onto the active styles stack.
     *
     * The previous top style becomes a dynamic parent @c style.
-    *
-    * @arg[in] style the style to push
     */
-  void push(const KEYStylePtr_t &style);
+  void push();
 
   /** Pop a style from the active styles stack.
     */
   void pop();
+
+  void set(const KEYStylePtr_t &style);
 
   /** Find the current value of property @c property.
     *
@@ -74,6 +74,7 @@ public:
 
 private:
   Stack_t m_stack;
+  bool m_pending;
 };
 
 }

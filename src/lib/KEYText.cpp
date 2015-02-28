@@ -30,10 +30,11 @@ namespace libetonyek
 
 struct KEYText::Paragraph
 {
+  KEYStyleContext m_styleContext;
   KEYParagraphStylePtr_t style;
   KEYObjectList_t objects;
 
-  Paragraph();
+  explicit Paragraph(const KEYStyleContext &styleContext);
 };
 
 namespace
@@ -153,25 +154,27 @@ namespace
 class TextSpanObject : public KEYObject
 {
 public:
-  TextSpanObject(const KEYCharacterStylePtr_t &style, const string &text);
+  TextSpanObject(const KEYCharacterStylePtr_t &style, const KEYStyleContext &styleContext, const string &text);
 
 private:
   virtual void draw(const KEYOutput &output);
 
 private:
   const KEYCharacterStylePtr_t m_style;
+  const KEYStyleContext m_styleContext;
   const string m_text;
 };
 
-TextSpanObject::TextSpanObject(const KEYCharacterStylePtr_t &style, const string &text)
+TextSpanObject::TextSpanObject(const KEYCharacterStylePtr_t &style, const KEYStyleContext &styleContext, const string &text)
   : m_style(style)
+  , m_styleContext(styleContext)
   , m_text(text)
 {
 }
 
 void TextSpanObject::draw(const KEYOutput &output)
 {
-  const librevenge::RVNGPropertyList props(makePropList(m_style, output.getStyleContext()));
+  const librevenge::RVNGPropertyList props(makePropList(m_style, m_styleContext));
   output.getPainter()->openSpan(props);
   output.getPainter()->insertText(librevenge::RVNGString(m_text.c_str()));
   output.getPainter()->closeSpan();
@@ -203,24 +206,24 @@ namespace
 class LineBreakObject : public KEYObject
 {
 public:
-  explicit LineBreakObject(const KEYParagraphStylePtr_t &paraStyle);
+  explicit LineBreakObject(const KEYStyleContext &styleContext);
 
 private:
   virtual void draw(const KEYOutput &output);
 
 private:
-  const KEYParagraphStylePtr_t m_paraStyle;
+  const KEYStyleContext m_styleContext;
 };
 
-LineBreakObject::LineBreakObject(const KEYParagraphStylePtr_t &paraStyle)
-  : m_paraStyle(paraStyle)
+LineBreakObject::LineBreakObject(const KEYStyleContext &styleContext)
+  : m_styleContext(styleContext)
 {
 }
 
 void LineBreakObject::draw(const KEYOutput &output)
 {
   output.getPainter()->closeParagraph();
-  const librevenge::RVNGPropertyList props(makePropList(m_paraStyle, output.getStyleContext()));
+  const librevenge::RVNGPropertyList props(makePropList(KEYParagraphStylePtr_t(), m_styleContext));
   output.getPainter()->openParagraph(props);
 }
 
@@ -232,22 +235,20 @@ namespace
 class TextObject : public KEYObject
 {
 public:
-  TextObject(const KEYLayoutStylePtr_t &layoutStyle, const IWORKGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, bool object, const IWORKTransformation &trafo);
+  TextObject(const IWORKGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, bool object, const IWORKTransformation &trafo);
 
 private:
   virtual void draw(const KEYOutput &output);
 
 private:
-  const KEYLayoutStylePtr_t m_layoutStyle;
   const IWORKGeometryPtr_t m_boundingBox;
   const KEYText::ParagraphList_t m_paragraphs;
   const bool m_object;
   const IWORKTransformation m_trafo;
 };
 
-TextObject::TextObject(const KEYLayoutStylePtr_t &layoutStyle, const IWORKGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, const bool object, const IWORKTransformation &trafo)
-  : m_layoutStyle(layoutStyle)
-  , m_boundingBox(boundingBox)
+TextObject::TextObject(const IWORKGeometryPtr_t &boundingBox, const KEYText::ParagraphList_t &paragraphs, const bool object, const IWORKTransformation &trafo)
+  : m_boundingBox(boundingBox)
   , m_paragraphs(paragraphs)
   , m_object(object)
   , m_trafo(trafo)
@@ -289,9 +290,9 @@ void TextObject::draw(const KEYOutput &output)
 
   for (KEYText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
   {
-    const librevenge::RVNGPropertyList paraProps(makePropList((*it)->style, output.getStyleContext()));
+    const librevenge::RVNGPropertyList paraProps(makePropList((*it)->style, (*it)->m_styleContext));
     output.getPainter()->openParagraph(paraProps);
-    const KEYOutput paraOutput(output, (*it)->style);
+    const KEYOutput paraOutput(output);
     drawAll((*it)->objects, paraOutput);
     output.getPainter()->closeParagraph();
   }
@@ -303,7 +304,8 @@ void TextObject::draw(const KEYOutput &output)
 }
 
 KEYText::KEYText(const bool object)
-  : m_layoutStyle()
+  : m_styleContext()
+  , m_layoutStyle()
   , m_paragraphs()
   , m_currentParagraph()
   , m_lineBreaks(0)
@@ -312,15 +314,20 @@ KEYText::KEYText(const bool object)
 {
 }
 
-KEYText::Paragraph::Paragraph()
-  : style()
+KEYText::Paragraph::Paragraph(const KEYStyleContext &styleContext)
+  : m_styleContext(styleContext)
+  , style()
   , objects()
 {
 }
 
 void KEYText::setLayoutStyle(const KEYLayoutStylePtr_t &style)
 {
+  assert(!m_layoutStyle);
+
   m_layoutStyle = style;
+  m_styleContext.push();
+  m_styleContext.set(style);
 }
 
 const IWORKGeometryPtr_t &KEYText::getBoundingBox() const
@@ -337,8 +344,10 @@ void KEYText::openParagraph(const KEYParagraphStylePtr_t &style)
 {
   assert(!m_currentParagraph);
 
-  m_currentParagraph.reset(new Paragraph());
+  m_currentParagraph.reset(new Paragraph(m_styleContext));
   m_currentParagraph->style = style;
+  m_styleContext.push();
+  m_styleContext.set(style);
 }
 
 void KEYText::closeParagraph()
@@ -347,13 +356,14 @@ void KEYText::closeParagraph()
 
   m_paragraphs.push_back(m_currentParagraph);
   m_currentParagraph.reset();
+  m_styleContext.pop();
 }
 
 void KEYText::insertText(const std::string &text, const KEYCharacterStylePtr_t &style)
 {
   assert(bool(m_currentParagraph));
 
-  const KEYObjectPtr_t object(new TextSpanObject(style, text));
+  const KEYObjectPtr_t object(new TextSpanObject(style, m_styleContext, text));
   m_currentParagraph->objects.push_back(object);
 }
 
@@ -393,7 +403,7 @@ void KEYText::insertDeferredLineBreaks()
 
   if (0 < m_lineBreaks)
   {
-    const KEYObjectPtr_t object(new LineBreakObject(m_currentParagraph->style));
+    const KEYObjectPtr_t object(new LineBreakObject(m_currentParagraph->m_styleContext));
     m_currentParagraph->objects.insert(m_currentParagraph->objects.end(), m_lineBreaks, object);
     m_lineBreaks = 0;
   }
@@ -406,7 +416,7 @@ bool KEYText::empty() const
 
 KEYObjectPtr_t makeObject(const KEYTextPtr_t &text, const IWORKTransformation &trafo)
 {
-  const KEYObjectPtr_t object(new TextObject(text->getLayoutStyle(), text->getBoundingBox(), text->getParagraphs(), text->isObject(), trafo));
+  const KEYObjectPtr_t object(new TextObject(text->getBoundingBox(), text->getParagraphs(), text->isObject(), trafo));
   return object;
 }
 

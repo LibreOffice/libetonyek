@@ -17,6 +17,7 @@
 #include "KEYCollector.h"
 #include "KEYObject.h"
 #include "KEYStyle.h"
+#include "KEYStyleContext.h"
 #include "KEYStylesheet.h"
 #include "KEYText_fwd.h"
 #include "KEYTypes.h"
@@ -155,6 +156,9 @@ public:
   virtual void startLevel();
   virtual void endLevel();
 
+  void pushStyle();
+  void popStyle();
+
 protected:
   bool isCollecting() const;
   void setCollecting(bool collecting);
@@ -168,12 +172,16 @@ protected:
   const IWORKTransformation &getTransformation() const;
 
 private:
+  void pushStyle(const KEYStylePtr_t &style);
+
+private:
   KEYDictionary &m_dict;
   const KEYDefaults &m_defaults;
 
   KEYLayerPtr_t m_currentLayer;
 
   std::stack<Level> m_levelStack;
+  KEYStyleContext m_styleContext;
   std::stack<KEYObjectList_t> m_objectsStack;
   IWORKPathPtr_t m_currentPath;
 

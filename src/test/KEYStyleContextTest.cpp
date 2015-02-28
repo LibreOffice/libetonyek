@@ -57,7 +57,8 @@ void KEYStyleContextTest::testLookup()
   props.set("answer", 42);
 
   // lookup works after we push a style
-  context.push(makeStyle(props));
+  context.push();
+  context.set(makeStyle(props));
   CPPUNIT_ASSERT(!context.find("answer").empty());
   CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(context.find("answer")));
 
@@ -69,8 +70,10 @@ void KEYStyleContextTest::testLookup()
   // the last pushed one
   IWORKPropertyMap props2;
   props2.set("answer", 1);
-  context.push(makeStyle(props2));
-  context.push(makeStyle(props));
+  context.push();
+  context.set(makeStyle(props2));
+  context.push();
+  context.set(makeStyle(props));
   CPPUNIT_ASSERT(!context.find("answer").empty());
   CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(context.find("answer")));
 
@@ -79,13 +82,16 @@ void KEYStyleContextTest::testLookup()
   CPPUNIT_ASSERT(context.find("answer").empty());
 
   // lookup works recursively through more levels
-  context.push(makeStyle(props));
-  context.push(makeStyle(IWORKPropertyMap()));
+  context.push();
+  context.set(makeStyle(props));
+  context.push();
+  context.set(makeStyle(IWORKPropertyMap()));
   CPPUNIT_ASSERT(!context.find("answer").empty());
   CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(context.find("answer")));
 
   // yet another one...
-  context.push(makeStyle(IWORKPropertyMap()));
+  context.push();
+  context.set(makeStyle(IWORKPropertyMap()));
   CPPUNIT_ASSERT(!context.find("answer").empty());
   CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(context.find("answer")));
 }

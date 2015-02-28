@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <cassert>
+
 #include "IWORKPropertyMap.h"
 #include "KEYStyleContext.h"
 
@@ -18,14 +20,21 @@ KEYStyleContext::KEYStyleContext()
 {
 }
 
-void KEYStyleContext::push(const KEYStylePtr_t &style)
+void KEYStyleContext::push()
 {
-  m_stack.push_front(style);
+  m_stack.push_front(KEYStylePtr_t());
 }
 
 void KEYStyleContext::pop()
 {
   m_stack.pop_front();
+}
+
+void KEYStyleContext::set(const KEYStylePtr_t &style)
+{
+  assert(!m_stack.top());
+
+  m_stack.front() = style;
 }
 
 boost::any KEYStyleContext::find(const std::string &property, const bool lookInParent) const

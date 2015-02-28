@@ -49,38 +49,6 @@ void KEYOutputTest::tearDown()
 {
 }
 
-void KEYOutputTest::testStyle()
-{
-  KEYStyleContext context;
-  const KEYOutput output(0, context);
-
-  // empty context
-  CPPUNIT_ASSERT(output.getStyleContext().find("answer", true).empty());
-
-  // push a style
-  {
-    IWORKPropertyMap props;
-    props.set("answer", 42);
-
-    const KEYOutput output2(output, makeStyle(props));
-    CPPUNIT_ASSERT(!output2.getStyleContext().find("answer", true).empty());
-    CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(output2.getStyleContext().find("answer", true)));
-
-    // nested styles are applied correctly
-    {
-      IWORKPropertyMap props2;
-      props2.set("answer", 2);
-      const KEYOutput output3(output2, makeStyle(props2));
-      CPPUNIT_ASSERT(!output3.getStyleContext().find("answer", true).empty());
-      CPPUNIT_ASSERT_EQUAL(2, any_cast<int>(output3.getStyleContext().find("answer", true)));
-    }
-
-    CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(output2.getStyleContext().find("answer", true)));
-  }
-
-  CPPUNIT_ASSERT(output.getStyleContext().find("answer", true).empty());
-}
-
 CPPUNIT_TEST_SUITE_REGISTRATION(KEYOutputTest);
 
 }

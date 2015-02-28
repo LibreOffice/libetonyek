@@ -218,7 +218,8 @@ void KEYStylesTest::testLookup()
     IWORKPropertyMap ctxtProps;
     ctxtProps.set("answer", 2);
 
-    context.push(makeStyle(ctxtProps));
+    context.push();
+    context.set(makeStyle(ctxtProps));
 
     // lookup through context only
     {
