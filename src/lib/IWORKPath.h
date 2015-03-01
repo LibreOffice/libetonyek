@@ -10,13 +10,14 @@
 #ifndef IWORKPATH_H_INCLUDED
 #define IWORKPATH_H_INCLUDED
 
+#include "IWORKPath_fwd.h"
+
 #include <deque>
 #include <string>
 
 #include <librevenge/librevenge.h>
 
 #include "libetonyek_utils.h"
-#include "IWORKPath_fwd.h"
 
 namespace libetonyek
 {

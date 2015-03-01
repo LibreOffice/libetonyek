@@ -7,13 +7,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKXMLReader.h"
+
 #include <cassert>
 
 #include <librevenge-stream/librevenge-stream.h>
 
 #include <libxml/xmlreader.h>
-
-#include "IWORKXMLReader.h"
 
 namespace libetonyek
 {

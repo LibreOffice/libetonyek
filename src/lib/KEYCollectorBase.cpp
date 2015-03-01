@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "KEYCollectorBase.h"
+
 #include <algorithm>
 #include <cassert>
 
@@ -16,7 +18,6 @@
 #include "IWORKShape.h"
 #include "IWORKText.h"
 #include "IWORKTransformation.h"
-#include "KEYCollectorBase.h"
 #include "KEYDictionary.h"
 #include "KEYStyles.h"
 

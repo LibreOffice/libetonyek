@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKPath.h"
+
 #include <cassert>
 #include <utility>
 
@@ -15,7 +17,6 @@
 #include <boost/spirit/include/classic_core.hpp>
 
 #include "libetonyek_utils.h"
-#include "IWORKPath.h"
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 

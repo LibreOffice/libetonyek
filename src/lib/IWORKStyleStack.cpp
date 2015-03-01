@@ -7,10 +7,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKStyleStack.h"
+
 #include <cassert>
 
 #include "IWORKPropertyMap.h"
-#include "IWORKStyleStack.h"
 
 namespace libetonyek
 {

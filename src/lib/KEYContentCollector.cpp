@@ -7,12 +7,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "KEYContentCollector.h"
+
 #include <cassert>
 
 #include "libetonyek_utils.h"
 #include "IWORKStyleStack.h"
 #include "IWORKText.h"
-#include "KEYContentCollector.h"
 #include "KEYDictionary.h"
 
 using boost::optional;

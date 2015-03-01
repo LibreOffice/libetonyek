@@ -10,6 +10,8 @@
 #ifndef IWORKTYPES_H_INCLUDED
 #define IWORKTYPES_H_INCLUDED
 
+#include "IWORKTypes_fwd.h"
+
 #include <deque>
 
 #include <boost/optional.hpp>
@@ -18,7 +20,6 @@
 #include "IWORKObject.h"
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle_fwd.h"
-#include "IWORKTypes_fwd.h"
 
 namespace libetonyek
 {

@@ -7,9 +7,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <cstring>
-
 #include "KEY1Token.h"
+
+#include <cstring>
 
 using std::strlen;
 

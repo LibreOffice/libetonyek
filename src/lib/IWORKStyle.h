@@ -10,11 +10,12 @@
 #ifndef IWORKSTYLE_H_INCLUDED
 #define IWORKSTYLE_H_INCLUDED
 
+#include "IWORKStyle_fwd.h"
+
 #include <boost/any.hpp>
 #include <boost/optional.hpp>
 
 #include "IWORKPropertyMap.h"
-#include "IWORKStyle_fwd.h"
 #include "IWORKStylesheet.h"
 
 namespace libetonyek

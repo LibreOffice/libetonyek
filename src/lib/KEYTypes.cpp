@@ -7,13 +7,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "KEYTypes.h"
+
 #include <librevenge/librevenge.h>
 
 #include "libetonyek_utils.h"
 #include "IWORKText.h"
 #include "IWORKTransformation.h"
 #include "KEYStyles.h"
-#include "KEYTypes.h"
 
 namespace libetonyek
 {

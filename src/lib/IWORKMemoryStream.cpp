@@ -7,11 +7,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKMemoryStream.h"
+
 #include <algorithm>
 #include <cassert>
 
 #include "libetonyek_utils.h"
-#include "IWORKMemoryStream.h"
 
 namespace libetonyek
 {

@@ -7,9 +7,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKXMLContextBase.h"
+
 #include "libetonyek_utils.h"
 #include "IWORKToken.h"
-#include "IWORKXMLContextBase.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek

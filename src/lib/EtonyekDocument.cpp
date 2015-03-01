@@ -7,11 +7,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <libetonyek/libetonyek.h>
+
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/logic/tribool.hpp>
-
-#include <libetonyek/libetonyek.h>
 
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"

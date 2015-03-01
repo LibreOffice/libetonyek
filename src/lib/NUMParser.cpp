@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "NUMParser.h"
+
 #include <cassert>
 
 #include <librevenge-stream/librevenge-stream.h>
@@ -14,7 +16,6 @@
 #include "libetonyek_xml.h"
 #include "IWORKToken.h"
 #include "IWORKXMLReader.h"
-#include "NUMParser.h"
 #include "NUMCollector.h"
 #include "NUMToken.h"
 

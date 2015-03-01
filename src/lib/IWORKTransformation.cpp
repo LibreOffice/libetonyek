@@ -7,9 +7,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKTransformation.h"
+
 #include <cmath>
 
-#include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 
 namespace libetonyek

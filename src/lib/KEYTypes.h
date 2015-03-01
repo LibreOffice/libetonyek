@@ -10,6 +10,8 @@
 #ifndef KEYTYPES_H_INCLUDED
 #define KEYTYPES_H_INCLUDED
 
+#include "KEYTypes_fwd.h"
+
 #include <deque>
 
 #include <boost/optional.hpp>
@@ -20,7 +22,6 @@
 #include "IWORKStyle_fwd.h"
 #include "IWORKText_fwd.h"
 #include "IWORKTypes_fwd.h"
-#include "KEYTypes_fwd.h"
 
 namespace libetonyek
 {

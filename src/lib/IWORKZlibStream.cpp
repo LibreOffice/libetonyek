@@ -7,13 +7,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKZlibStream.h"
+
 #include <vector>
 
 #include <zlib.h>
 
 #include "libetonyek_utils.h"
 #include "IWORKMemoryStream.h"
-#include "IWORKZlibStream.h"
 
 using std::vector;
 

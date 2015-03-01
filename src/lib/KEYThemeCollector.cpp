@@ -7,9 +7,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "KEYThemeCollector.h"
+
 #include "libetonyek_utils.h"
 #include "KEYDictionary.h"
-#include "KEYThemeCollector.h"
 
 using boost::optional;
 

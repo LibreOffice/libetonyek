@@ -7,8 +7,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "IWORKParser.h"
 #include "IWORKXMLParserState.h"
+
+#include "IWORKParser.h"
 #include "KEYCollector.h"
 
 namespace libetonyek
