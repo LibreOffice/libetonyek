@@ -17,7 +17,6 @@
 #include "IWORKText.h"
 #include "IWORKTransformation.h"
 #include "KEYCollectorBase.h"
-#include "KEYDefaults.h"
 #include "KEYDictionary.h"
 #include "KEYStyles.h"
 
@@ -96,9 +95,8 @@ KEYCollectorBase::Level::Level()
 {
 }
 
-KEYCollectorBase::KEYCollectorBase(KEYDictionary &dict, const KEYDefaults &defaults)
+KEYCollectorBase::KEYCollectorBase(KEYDictionary &dict)
   : m_dict(dict)
-  , m_defaults(defaults)
   , m_currentLayer()
   , m_levelStack()
   , m_objectsStack()
@@ -358,7 +356,6 @@ void KEYCollectorBase::collectGeometry(const boost::optional<ID_t> &,
   {
     assert(!m_levelStack.empty());
 
-    m_defaults.applyGeometry(naturalSize, position);
     assert(naturalSize && position);
 
     const IWORKGeometryPtr_t geometry(new IWORKGeometry);
@@ -983,11 +980,6 @@ bool KEYCollectorBase::isCollecting() const
 void KEYCollectorBase::setCollecting(bool collecting)
 {
   m_collecting = collecting;
-}
-
-const KEYDefaults &KEYCollectorBase::getDefaults() const
-{
-  return m_defaults;
 }
 
 const KEYLayerPtr_t &KEYCollectorBase::getLayer() const

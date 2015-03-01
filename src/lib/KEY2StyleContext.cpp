@@ -18,7 +18,6 @@
 #include "IWORKXMLParserState.h"
 #include "KEY2Token.h"
 #include "KEYCollector.h"
-#include "KEYDefaults.h"
 #include "KEYTypes.h"
 
 namespace libetonyek

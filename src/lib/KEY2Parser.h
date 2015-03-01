@@ -18,7 +18,7 @@ namespace libetonyek
 class KEY2Parser : public KEYParser
 {
 public:
-  KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *collector, const KEYDefaults &defaults);
+  KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *collector);
   virtual ~KEY2Parser();
 
 private:

@@ -20,7 +20,7 @@ struct KEYDictionary;
 class KEYThemeCollector : public KEYCollectorBase
 {
 public:
-  KEYThemeCollector(KEYDictionary &dict, KEYLayerMap_t &masterPages, IWORKSize &size, const KEYDefaults &defaults);
+  KEYThemeCollector(KEYDictionary &dict, KEYLayerMap_t &masterPages, IWORKSize &size);
   virtual ~KEYThemeCollector();
 
   // collector functions

@@ -25,7 +25,7 @@ class KEYContentCollector : public KEYCollectorBase
   KEYContentCollector &operator=(const KEYContentCollector &other);
 
 public:
-  KEYContentCollector(librevenge::RVNGPresentationInterface *painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const IWORKSize &size, const KEYDefaults &defaults);
+  KEYContentCollector(librevenge::RVNGPresentationInterface *painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const IWORKSize &size);
   virtual ~KEYContentCollector();
 
   // collector functions

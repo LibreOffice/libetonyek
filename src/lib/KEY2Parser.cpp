@@ -2239,8 +2239,8 @@ void PresentationContext::endOfElement()
 
 }
 
-KEY2Parser::KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector, const KEYDefaults &defaults)
-  : KEYParser(input, package, collector, defaults)
+KEY2Parser::KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector)
+  : KEYParser(input, package, collector)
   , m_version(0)
 {
 }

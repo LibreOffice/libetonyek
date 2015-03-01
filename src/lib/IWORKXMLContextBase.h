@@ -22,7 +22,6 @@ namespace libetonyek
 class IWORKXMLParserState;
 
 class KEYCollector;
-class KEYDefaults;
 
 class IWORKXMLContextBase : public IWORKXMLContext
 {
@@ -34,7 +33,6 @@ protected:
   virtual void endOfElement();
 
   KEYCollector *getCollector() const;
-  const KEYDefaults &getDefaults() const;
   int getToken(const char *value) const;
 
   IWORKXMLParserState &getState();

@@ -19,7 +19,6 @@
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 #include "KEYCollector.h"
-#include "KEYDefaults.h"
 
 namespace libetonyek
 {
@@ -383,8 +382,6 @@ void IWORKGeometryContext::endOfElement()
   if (m_geometry)
   {
     // TODO: remove duplication of code with KEYCollectorBase::collectGeometry
-    getDefaults().applyGeometry(m_naturalSize, m_pos);
-
     IWORKGeometryPtr_t geometry(new IWORKGeometry());
     geometry->naturalSize = get(m_naturalSize);
     geometry->size = bool(m_size) ? get(m_size) : get(m_naturalSize);

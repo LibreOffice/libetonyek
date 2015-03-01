@@ -37,11 +37,6 @@ KEYCollector *IWORKXMLContextBase::getCollector() const
   return m_state.getCollector();
 }
 
-const KEYDefaults &IWORKXMLContextBase::getDefaults() const
-{
-  return m_state.getDefaults();
-}
-
 int IWORKXMLContextBase::getToken(const char *const value) const
 {
   return m_state.getTokenizer()(value);

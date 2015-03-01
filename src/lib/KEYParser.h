@@ -19,7 +19,6 @@ namespace libetonyek
 {
 
 class KEYCollector;
-class KEYDefaults;
 
 class KEYParser
 {
@@ -28,7 +27,7 @@ class KEYParser
   KEYParser &operator=(const KEYParser &);
 
 public:
-  KEYParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *collector, const KEYDefaults &defaults);
+  KEYParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *collector);
   virtual ~KEYParser() = 0;
   bool parse();
 
@@ -38,7 +37,6 @@ public:
   RVNGInputStreamPtr_t getPackage() const;
 
   KEYCollector *getCollector() const;
-  const KEYDefaults &getDefaults() const;
 
 private:
   virtual IWORKXMLContextPtr_t makeDocumentContext(IWORKXMLParserState &state) const = 0;
@@ -48,7 +46,6 @@ private:
   RVNGInputStreamPtr_t m_input;
   RVNGInputStreamPtr_t m_package;
   KEYCollector *m_collector;
-  const KEYDefaults &m_defaults;
 };
 
 } // namespace libetonyek

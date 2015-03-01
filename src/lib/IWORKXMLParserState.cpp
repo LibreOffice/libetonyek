@@ -9,7 +9,6 @@
 
 #include "IWORKXMLParserState.h"
 #include "KEYCollector.h"
-#include "KEYDefaults.h"
 #include "KEYParser.h"
 
 namespace libetonyek
@@ -29,11 +28,6 @@ KEYParser &IWORKXMLParserState::getParser()
 KEYCollector *IWORKXMLParserState::getCollector() const
 {
   return m_parser.getCollector();
-}
-
-const KEYDefaults &IWORKXMLParserState::getDefaults() const
-{
-  return m_parser.getDefaults();
 }
 
 const IWORKXMLReader::TokenizerFunction_t &IWORKXMLParserState::getTokenizer() const

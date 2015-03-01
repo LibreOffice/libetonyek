@@ -13,7 +13,6 @@
 #include "IWORKXMLReader.h"
 #include "KEYParser.h"
 #include "KEYCollector.h"
-#include "KEYDefaults.h"
 
 namespace libetonyek
 {
@@ -92,11 +91,10 @@ void processElement(const IWORKXMLReader &reader, const IWORKXMLContextPtr_t &co
 
 }
 
-KEYParser::KEYParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector, const KEYDefaults &defaults)
+KEYParser::KEYParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector)
   : m_input(input)
   , m_package(package)
   , m_collector(collector)
-  , m_defaults(defaults)
 {
 }
 
@@ -136,11 +134,6 @@ RVNGInputStreamPtr_t KEYParser::getPackage() const
 KEYCollector *KEYParser::getCollector() const
 {
   return m_collector;
-}
-
-const KEYDefaults &KEYParser::getDefaults() const
-{
-  return m_defaults;
 }
 
 }

@@ -81,14 +81,10 @@ libetonyek_internal_la_SOURCES = \
 	IWORKXMLReader.h \
 	IWORKZlibStream.cpp \
 	IWORKZlibStream.h \
-	KEY1Defaults.cpp \
-	KEY1Defaults.h \
 	KEY1Parser.cpp \
 	KEY1Parser.h \
 	KEY1Token.cpp \
 	KEY1Token.h \
-	KEY2Defaults.cpp \
-	KEY2Defaults.h \
 	KEY2Parser.cpp \
 	KEY2Parser.h \
 	KEY2StyleContext.cpp \
@@ -101,8 +97,6 @@ libetonyek_internal_la_SOURCES = \
 	KEYCollectorBase.h \
 	KEYContentCollector.cpp \
 	KEYContentCollector.h \
-	KEYDefaults.cpp \
-	KEYDefaults.h \
 	KEYDictionary.cpp \
 	KEYDictionary.h \
 	KEYParser.cpp \

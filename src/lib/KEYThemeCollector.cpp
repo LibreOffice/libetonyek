@@ -8,7 +8,6 @@
  */
 
 #include "libetonyek_utils.h"
-#include "KEYDefaults.h"
 #include "KEYDictionary.h"
 #include "KEYThemeCollector.h"
 
@@ -17,8 +16,8 @@ using boost::optional;
 namespace libetonyek
 {
 
-KEYThemeCollector::KEYThemeCollector(KEYDictionary &dict, KEYLayerMap_t &masterPages, IWORKSize &size, const KEYDefaults &defaults)
-  : KEYCollectorBase(dict, defaults)
+KEYThemeCollector::KEYThemeCollector(KEYDictionary &dict, KEYLayerMap_t &masterPages, IWORKSize &size)
+  : KEYCollectorBase(dict)
   , m_masterPages(masterPages)
   , m_size(size)
 {
@@ -30,10 +29,8 @@ KEYThemeCollector::~KEYThemeCollector()
 
 void KEYThemeCollector::collectPresentation(const boost::optional<IWORKSize> &size)
 {
-  optional<IWORKSize> size_(size);
-  getDefaults().applyPresentationSize(size_);
-  assert(size_);
-  m_size = get(size_);
+  if (size)
+    m_size = get(size);
 }
 
 void KEYThemeCollector::collectLayer(const boost::optional<ID_t> &id, const bool ref)

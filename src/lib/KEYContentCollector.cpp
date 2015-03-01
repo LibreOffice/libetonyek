@@ -13,7 +13,6 @@
 #include "IWORKStyleStack.h"
 #include "IWORKText.h"
 #include "KEYContentCollector.h"
-#include "KEYDefaults.h"
 #include "KEYDictionary.h"
 
 using boost::optional;
@@ -21,8 +20,8 @@ using boost::optional;
 namespace libetonyek
 {
 
-KEYContentCollector::KEYContentCollector(librevenge::RVNGPresentationInterface *const painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const IWORKSize &size, const KEYDefaults &defaults)
-  : KEYCollectorBase(dict, defaults)
+KEYContentCollector::KEYContentCollector(librevenge::RVNGPresentationInterface *const painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const IWORKSize &size)
+  : KEYCollectorBase(dict)
   , m_painter(painter)
   , m_masterPages(masterPages)
   , m_size(size)

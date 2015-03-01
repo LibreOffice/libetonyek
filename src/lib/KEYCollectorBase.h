@@ -43,7 +43,7 @@ class KEYCollectorBase : public KEYCollector
   };
 
 public:
-  KEYCollectorBase(KEYDictionary &dict, const KEYDefaults &defaults);
+  explicit KEYCollectorBase(KEYDictionary &dict);
   ~KEYCollectorBase();
 
   // collector functions
@@ -163,8 +163,6 @@ protected:
   bool isCollecting() const;
   void setCollecting(bool collecting);
 
-  const KEYDefaults &getDefaults() const;
-
   const KEYLayerPtr_t &getLayer() const;
   const IWORKObjectList_t &getNotes() const;
   const KEYStickyNotes_t &getStickyNotes() const;
@@ -176,7 +174,6 @@ private:
 
 private:
   KEYDictionary &m_dict;
-  const KEYDefaults &m_defaults;
 
   KEYLayerPtr_t m_currentLayer;
 

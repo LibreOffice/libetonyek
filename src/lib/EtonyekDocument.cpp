@@ -16,13 +16,10 @@
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"
 #include "IWORKZlibStream.h"
-#include "KEY1Defaults.h"
 #include "KEY1Parser.h"
-#include "KEY2Defaults.h"
 #include "KEY2Parser.h"
 #include "KEY2Token.h"
 #include "KEYContentCollector.h"
-#include "KEYDefaults.h"
 #include "KEYDictionary.h"
 #include "KEYThemeCollector.h"
 #include "NUMCollector.h"
@@ -313,34 +310,14 @@ bool detect(const RVNGInputStreamPtr_t &input, unsigned checkTypes, DetectionInf
 namespace
 {
 
-KEYDefaults *makeKeynoteDefaults(const unsigned version)
-{
-  switch (version)
-  {
-  case 1 :
-    return new KEY1Defaults();
-  case 2 :
-  case 3 :
-  case 4 :
-  case 5 :
-    // I am going to suppose these have not changed
-    return new KEY2Defaults();
-  // TODO: handle version 6
-  default :
-    assert(0);
-  }
-
-  return 0;
-}
-
-shared_ptr<KEYParser> makeKeynoteParser(const unsigned version, const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector, const KEYDefaults &defaults)
+shared_ptr<KEYParser> makeKeynoteParser(const unsigned version, const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector)
 {
   shared_ptr<KEYParser> parser;
 
   if (1 == version)
-    parser.reset(new KEY1Parser(input, package, collector, defaults));
+    parser.reset(new KEY1Parser(input, package, collector));
   else if ((2 <= version) && (5 >= version))
-    parser.reset(new KEY2Parser(input, package, collector, defaults));
+    parser.reset(new KEY2Parser(input, package, collector));
   else
     assert(0);
 
@@ -395,19 +372,18 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   KEYDictionary dict;
   KEYLayerMap_t masterPages;
   IWORKSize presentationSize;
-  const scoped_ptr<KEYDefaults> defaults(makeKeynoteDefaults(info.version));
 
   info.input->seek(0, librevenge::RVNG_SEEK_SET);
 
-  KEYThemeCollector themeCollector(dict, masterPages, presentationSize, *defaults);
-  shared_ptr<KEYParser> parser = makeKeynoteParser(info.version, info.input, info.package, &themeCollector, *defaults);
+  KEYThemeCollector themeCollector(dict, masterPages, presentationSize);
+  shared_ptr<KEYParser> parser = makeKeynoteParser(info.version, info.input, info.package, &themeCollector);
   if (!parser->parse())
     return false;
 
   info.input->seek(0, librevenge::RVNG_SEEK_SET);
 
-  KEYContentCollector contentCollector(generator, dict, masterPages, presentationSize, *defaults);
-  parser = makeKeynoteParser(info.version, info.input, info.package, &contentCollector, *defaults);
+  KEYContentCollector contentCollector(generator, dict, masterPages, presentationSize);
+  parser = makeKeynoteParser(info.version, info.input, info.package, &contentCollector);
   return parser->parse();
 }
 catch (...)
