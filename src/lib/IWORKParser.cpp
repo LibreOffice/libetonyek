@@ -7,11 +7,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKParser.h"
+
 #include <boost/enable_shared_from_this.hpp>
 
 #include "IWORKXMLContextBase.h"
+#include "IWORKXMLParserState.h"
 #include "IWORKXMLReader.h"
-#include "KEYParser.h"
 #include "KEYCollector.h"
 
 namespace libetonyek
@@ -91,18 +93,18 @@ void processElement(const IWORKXMLReader &reader, const IWORKXMLContextPtr_t &co
 
 }
 
-KEYParser::KEYParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector)
+IWORKParser::IWORKParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector)
   : m_input(input)
   , m_package(package)
   , m_collector(collector)
 {
 }
 
-KEYParser::~KEYParser()
+IWORKParser::~IWORKParser()
 {
 }
 
-bool KEYParser::parse()
+bool IWORKParser::parse()
 {
   IWORKXMLReader reader(m_input.get(), getTokenizer());
   IWORKXMLParserState state(*this, getTokenizer());
@@ -111,27 +113,27 @@ bool KEYParser::parse()
   return true;
 }
 
-RVNGInputStreamPtr_t &KEYParser::getInput()
+RVNGInputStreamPtr_t &IWORKParser::getInput()
 {
   return m_input;
 }
 
-RVNGInputStreamPtr_t KEYParser::getInput() const
+RVNGInputStreamPtr_t IWORKParser::getInput() const
 {
   return m_input;
 }
 
-RVNGInputStreamPtr_t &KEYParser::getPackage()
+RVNGInputStreamPtr_t &IWORKParser::getPackage()
 {
   return m_package;
 }
 
-RVNGInputStreamPtr_t KEYParser::getPackage() const
+RVNGInputStreamPtr_t IWORKParser::getPackage() const
 {
   return m_package;
 }
 
-KEYCollector *KEYParser::getCollector() const
+KEYCollector *IWORKParser::getCollector() const
 {
   return m_collector;
 }

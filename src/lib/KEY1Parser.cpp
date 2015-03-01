@@ -15,7 +15,7 @@ namespace libetonyek
 {
 
 KEY1Parser::KEY1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector)
-  : KEYParser(input, package, collector)
+  : IWORKParser(input, package, collector)
 {
 }
 

@@ -10,12 +10,12 @@
 #ifndef KEY2PARSER_H_INCLUDED
 #define KEY2PARSER_H_INCLUDED
 
-#include "KEYParser.h"
+#include "IWORKParser.h"
 
 namespace libetonyek
 {
 
-class KEY2Parser : public KEYParser
+class KEY2Parser : public IWORKParser
 {
 public:
   KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *collector);

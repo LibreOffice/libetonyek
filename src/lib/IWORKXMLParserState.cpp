@@ -7,20 +7,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKParser.h"
 #include "IWORKXMLParserState.h"
 #include "KEYCollector.h"
-#include "KEYParser.h"
 
 namespace libetonyek
 {
 
-IWORKXMLParserState::IWORKXMLParserState(KEYParser &parser, const IWORKXMLReader::TokenizerFunction_t &tokenizer)
+IWORKXMLParserState::IWORKXMLParserState(IWORKParser &parser, const IWORKXMLReader::TokenizerFunction_t &tokenizer)
   : m_parser(parser)
   , m_tokenizer(tokenizer)
 {
 }
 
-KEYParser &IWORKXMLParserState::getParser()
+IWORKParser &IWORKXMLParserState::getParser()
 {
   return m_parser;
 }

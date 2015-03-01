@@ -34,6 +34,8 @@ libetonyek_internal_la_SOURCES = \
 	IWORKObject.h \
 	IWORKOutputElements.cpp \
 	IWORKOutputElements.h \
+	IWORKParser.cpp \
+	IWORKParser.h \
 	IWORKPath.cpp \
 	IWORKPath.h \
 	IWORKPath_fwd.h \
@@ -99,8 +101,6 @@ libetonyek_internal_la_SOURCES = \
 	KEYContentCollector.h \
 	KEYDictionary.cpp \
 	KEYDictionary.h \
-	KEYParser.cpp \
-	KEYParser.h \
 	KEYStyles.cpp \
 	KEYStyles.h \
 	KEYThemeCollector.cpp \

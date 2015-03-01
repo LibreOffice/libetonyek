@@ -310,9 +310,9 @@ bool detect(const RVNGInputStreamPtr_t &input, unsigned checkTypes, DetectionInf
 namespace
 {
 
-shared_ptr<KEYParser> makeKeynoteParser(const unsigned version, const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector)
+shared_ptr<IWORKParser> makeKeynoteParser(const unsigned version, const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector)
 {
-  shared_ptr<KEYParser> parser;
+  shared_ptr<IWORKParser> parser;
 
   if (1 == version)
     parser.reset(new KEY1Parser(input, package, collector));
@@ -376,7 +376,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   info.input->seek(0, librevenge::RVNG_SEEK_SET);
 
   KEYThemeCollector themeCollector(dict, masterPages, presentationSize);
-  shared_ptr<KEYParser> parser = makeKeynoteParser(info.version, info.input, info.package, &themeCollector);
+  shared_ptr<IWORKParser> parser = makeKeynoteParser(info.version, info.input, info.package, &themeCollector);
   if (!parser->parse())
     return false;
 

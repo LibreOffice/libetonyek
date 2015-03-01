@@ -7,28 +7,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYPARSER_H_INCLUDED
-#define KEYPARSER_H_INCLUDED
+#ifndef IWORKPARSER_H_INCLUDED
+#define IWORKPARSER_H_INCLUDED
 
 #include "libetonyek_utils.h"
 #include "IWORKXMLContext.h"
-#include "IWORKXMLParserState.h"
 #include "IWORKXMLReader.h"
 
 namespace libetonyek
 {
 
+class IWORKXMLParserState;
 class KEYCollector;
 
-class KEYParser
+class IWORKParser
 {
   // -Weffc++
-  KEYParser(const KEYParser &);
-  KEYParser &operator=(const KEYParser &);
+  IWORKParser(const IWORKParser &);
+  IWORKParser &operator=(const IWORKParser &);
 
 public:
-  KEYParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *collector);
-  virtual ~KEYParser() = 0;
+  IWORKParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *collector);
+  virtual ~IWORKParser() = 0;
   bool parse();
 
   RVNGInputStreamPtr_t &getInput();
@@ -50,6 +50,6 @@ private:
 
 } // namespace libetonyek
 
-#endif //  KEYPARSER_H_INCLUDED
+#endif // IWORKPARSER_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

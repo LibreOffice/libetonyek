@@ -24,6 +24,7 @@
 #include "IWORKTypes.h"
 #include "IWORKXMLContextBase.h"
 #include "IWORKXMLContexts.h"
+#include "IWORKXMLParserState.h"
 #include "IWORKXMLReader.h"
 #include "KEY2StyleContext.h"
 #include "KEY2Token.h"
@@ -2240,7 +2241,7 @@ void PresentationContext::endOfElement()
 }
 
 KEY2Parser::KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector)
-  : KEYParser(input, package, collector)
+  : IWORKParser(input, package, collector)
   , m_version(0)
 {
 }
