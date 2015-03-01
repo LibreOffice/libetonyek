@@ -23,7 +23,6 @@
 namespace libetonyek
 {
 
-class KEYDefaults;
 class IWORKPropertyMap;
 struct IWORKSize;
 

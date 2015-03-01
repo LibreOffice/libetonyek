@@ -20,8 +20,6 @@
 namespace libetonyek
 {
 
-class KEYDefaults;
-
 class KEY2StyleContext : public IWORKXMLElementContextBase
 {
 public:
