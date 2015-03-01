@@ -121,7 +121,7 @@ double pt2in(double d);
   * @arg[in] value angle in degrees
   * @returns the same angle in radians
   */
-  double deg2rad(double value);
+double deg2rad(double value);
 
 class EndOfStreamException
 {
