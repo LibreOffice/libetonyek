@@ -7,11 +7,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYDICTIONARY_H_INCLUDED
-#define KEYDICTIONARY_H_INCLUDED
+#ifndef IWORKDICTIONARY_H_INCLUDED
+#define IWORKDICTIONARY_H_INCLUDED
 
-#include "IWORKDictionary.h"
-#include "KEYTypes.h"
+#include "IWORKPath.h"
+#include "IWORKStyle.h"
+#include "IWORKStylesheet.h"
+#include "IWORKTypes.h"
 
 namespace libetonyek
 {
@@ -30,19 +32,26 @@ namespace libetonyek
   * styles, therefore we do not handle them separately. (We might do
   * that in the future, to ensure correctness of the format.)
   */
-struct KEYDictionary : public IWORKDictionary
+struct IWORKDictionary
 {
-  IWORKStyleMap_t layoutStyles;
-  IWORKStyleMap_t placeholderStyles;
+  IWORKDictionary();
 
-  KEYPlaceholderMap_t bodyPlaceholders;
-  KEYPlaceholderMap_t titlePlaceholders;
+  IWORKStyleMap_t characterStyles;
+  IWORKStyleMap_t graphicStyles;
+  IWORKStyleMap_t paragraphStyles;
 
-  KEYDictionary();
+  IWORKStylesheetMap_t stylesheets;
+
+  IWORKPathMap_t beziers;
+
+  IWORKDataMap_t data;
+  IWORKMediaContentMap_t unfiltereds;
+  IWORKMediaContentMap_t filteredImages;
+  IWORKImageMap_t images;
 };
 
 }
 
-#endif //  KEYDICTIONARY_H_INCLUDED
+#endif // IWORKDICTIONARY_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

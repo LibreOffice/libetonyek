@@ -7,17 +7,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "KEYDictionary.h"
+#include "IWORKDictionary.h"
 
 namespace libetonyek
 {
 
-KEYDictionary::KEYDictionary()
-  : IWORKDictionary()
-  , layoutStyles()
-  , placeholderStyles()
-  , bodyPlaceholders()
-  , titlePlaceholders()
+IWORKDictionary::IWORKDictionary()
+  : characterStyles()
+  , graphicStyles()
+  , paragraphStyles()
+  , stylesheets()
+  , beziers()
+  , data()
+  , unfiltereds()
+  , filteredImages()
+  , images()
 {
 }
 
