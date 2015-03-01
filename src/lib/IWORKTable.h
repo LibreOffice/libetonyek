@@ -24,10 +24,10 @@ class IWORKTable
 {
   struct Cell
   {
-    IWORKObjectPtr_t content;
-    unsigned columnSpan;
-    unsigned rowSpan;
-    bool covered;
+    IWORKObjectPtr_t m_content;
+    unsigned m_columnSpan;
+    unsigned m_rowSpan;
+    bool m_covered;
 
     Cell();
   };

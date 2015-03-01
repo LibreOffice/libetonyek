@@ -32,11 +32,11 @@ namespace libetonyek
   */
 struct KEYDictionary : public IWORKDictionary
 {
-  IWORKStyleMap_t layoutStyles;
-  IWORKStyleMap_t placeholderStyles;
+  IWORKStyleMap_t m_layoutStyles;
+  IWORKStyleMap_t m_placeholderStyles;
 
-  KEYPlaceholderMap_t bodyPlaceholders;
-  KEYPlaceholderMap_t titlePlaceholders;
+  KEYPlaceholderMap_t m_bodyPlaceholders;
+  KEYPlaceholderMap_t m_titlePlaceholders;
 
   KEYDictionary();
 };

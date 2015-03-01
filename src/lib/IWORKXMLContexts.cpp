@@ -383,16 +383,16 @@ void IWORKGeometryContext::endOfElement()
   {
     // TODO: remove duplication of code with KEYCollectorBase::collectGeometry
     IWORKGeometryPtr_t geometry(new IWORKGeometry());
-    geometry->naturalSize = get(m_naturalSize);
-    geometry->size = bool(m_size) ? get(m_size) : get(m_naturalSize);
-    geometry->position = get(m_pos);
-    geometry->angle = m_angle;
-    geometry->shearXAngle = m_shearXAngle;
-    geometry->shearYAngle = m_shearYAngle;
-    geometry->horizontalFlip = m_horizontalFlip;
-    geometry->verticalFlip = m_verticalFlip;
-    geometry->aspectRatioLocked = m_aspectRatioLocked;
-    geometry->sizesLocked = m_sizesLocked;
+    geometry->m_naturalSize = get(m_naturalSize);
+    geometry->m_size = bool(m_size) ? get(m_size) : get(m_naturalSize);
+    geometry->m_position = get(m_pos);
+    geometry->m_angle = m_angle;
+    geometry->m_shearXAngle = m_shearXAngle;
+    geometry->m_shearYAngle = m_shearYAngle;
+    geometry->m_horizontalFlip = m_horizontalFlip;
+    geometry->m_verticalFlip = m_verticalFlip;
+    geometry->m_aspectRatioLocked = m_aspectRatioLocked;
+    geometry->m_sizesLocked = m_sizesLocked;
 
     *m_geometry = geometry;
   }

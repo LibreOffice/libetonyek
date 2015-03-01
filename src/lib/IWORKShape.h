@@ -27,10 +27,10 @@ class IWORKTransformation;
  */
 struct IWORKShape
 {
-  IWORKGeometryPtr_t geometry;
-  IWORKStylePtr_t style;
-  IWORKPathPtr_t path;
-  IWORKTextPtr_t text;
+  IWORKGeometryPtr_t m_geometry;
+  IWORKStylePtr_t m_style;
+  IWORKPathPtr_t m_path;
+  IWORKTextPtr_t m_text;
 
   IWORKShape();
 };

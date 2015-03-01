@@ -19,29 +19,29 @@ namespace libetonyek
 {
 
 KEYLayer::KEYLayer()
-  : type()
-  , objects()
+  : m_type()
+  , m_objects()
 {
 }
 
 KEYPlaceholder::KEYPlaceholder()
-  : title()
-  , empty()
-  , style()
-  , geometry()
-  , text()
+  : m_title()
+  , m_empty()
+  , m_style()
+  , m_geometry()
+  , m_text()
 {
 }
 
 KEYStickyNote::KEYStickyNote()
-  : geometry()
-  , text()
+  : m_geometry()
+  , m_text()
 {
 }
 
 KEYStickyNote::KEYStickyNote(const IWORKGeometryPtr_t &geometry_, const IWORKTextPtr_t &text_)
-  : geometry(geometry_)
-  , text(text_)
+  : m_geometry(geometry_)
+  , m_text(text_)
 {
 }
 
@@ -69,8 +69,8 @@ PlaceholderObject::PlaceholderObject(const KEYPlaceholderPtr_t &body, const IWOR
 
 void PlaceholderObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
-  if (bool(m_body) && bool(m_body->style) && bool(m_body->text))
-    makeObject(m_body->text, m_trafo)->draw(painter);
+  if (bool(m_body) && bool(m_body->m_style) && bool(m_body->m_text))
+    makeObject(m_body->m_text, m_trafo)->draw(painter);
 }
 
 }

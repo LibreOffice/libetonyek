@@ -13,15 +13,15 @@ namespace libetonyek
 {
 
 IWORKDictionary::IWORKDictionary()
-  : characterStyles()
-  , graphicStyles()
-  , paragraphStyles()
-  , stylesheets()
-  , beziers()
-  , data()
-  , unfiltereds()
-  , filteredImages()
-  , images()
+  : m_characterStyles()
+  , m_graphicStyles()
+  , m_paragraphStyles()
+  , m_stylesheets()
+  , m_beziers()
+  , m_data()
+  , m_unfiltereds()
+  , m_filteredImages()
+  , m_images()
 {
 }
 

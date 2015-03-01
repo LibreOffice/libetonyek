@@ -35,8 +35,8 @@ class KEYCollectorBase : public KEYCollector
 {
   struct Level
   {
-    IWORKGeometryPtr_t geometry;
-    IWORKStylePtr_t graphicStyle;
+    IWORKGeometryPtr_t m_geometry;
+    IWORKStylePtr_t m_graphicStyle;
     IWORKTransformation m_trafo;
 
     Level();

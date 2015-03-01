@@ -89,8 +89,8 @@ T getValue(const optional<ID_t> &id, boost::unordered_map<ID_t, T> &map)
 }
 
 KEYCollectorBase::Level::Level()
-  : geometry()
-  , graphicStyle()
+  : m_geometry()
+  , m_graphicStyle()
   , m_trafo()
 {
 }
@@ -157,7 +157,7 @@ void KEYCollectorBase::collectCharacterStyle(const optional<ID_t> &id,
     if (!ref && props)
       newStyle.reset(new IWORKStyle(get(props), ident, parentIdent));
 
-    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.characterStyles);
+    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.m_characterStyles);
     if (bool(style))
     {
       if (ident && !anonymous)
@@ -195,7 +195,7 @@ void KEYCollectorBase::collectGraphicStyle(const optional<ID_t> &id,
     if (!ref && props)
       newStyle.reset(new IWORKStyle(get(props), ident, parentIdent));
 
-    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.graphicStyles);
+    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.m_graphicStyles);
     if (bool(style))
     {
       if (ident && !anonymous)
@@ -208,7 +208,7 @@ void KEYCollectorBase::collectGraphicStyle(const optional<ID_t> &id,
     {
       assert(!m_levelStack.empty());
 
-      m_levelStack.top().graphicStyle = style;
+      m_levelStack.top().m_graphicStyle = style;
       m_styleStack.set(style);
     }
   }
@@ -227,7 +227,7 @@ void KEYCollectorBase::collectLayoutStyle(const optional<ID_t> &id,
     if (!ref && props)
       newStyle.reset(new IWORKStyle(get(props), ident, parentIdent));
 
-    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.layoutStyles);
+    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.m_layoutStyles);
     if (bool(style))
     {
       if (ident && !anonymous)
@@ -268,7 +268,7 @@ void KEYCollectorBase::collectParagraphStyle(const optional<ID_t> &id,
     if (!ref && props)
       newStyle.reset(new IWORKStyle(get(props), ident, parentIdent));
 
-    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.paragraphStyles);
+    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.m_paragraphStyles);
     if (bool(style))
     {
       if (ident && !anonymous)
@@ -292,7 +292,7 @@ void KEYCollectorBase::collectPlaceholderStyle(const boost::optional<ID_t> &id,
     if (!ref && props)
       newStyle.reset(new IWORKStyle(get(props), ident, parentIdent));
 
-    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.placeholderStyles);
+    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.m_placeholderStyles);
     if (bool(style))
     {
       if (ident && !anonymous)
@@ -359,18 +359,18 @@ void KEYCollectorBase::collectGeometry(const boost::optional<ID_t> &,
     assert(naturalSize && position);
 
     const IWORKGeometryPtr_t geometry(new IWORKGeometry);
-    geometry->naturalSize = get(naturalSize);
-    geometry->size = bool(size) ? get(size) : get(naturalSize);
-    geometry->position = get(position);
-    geometry->angle = angle;
-    geometry->shearXAngle = shearXAngle;
-    geometry->shearYAngle = shearYAngle;
-    geometry->horizontalFlip = horizontalFlip;
-    geometry->verticalFlip = verticalFlip;
-    geometry->aspectRatioLocked = aspectRatioLocked;
-    geometry->sizesLocked = sizesLocked;
+    geometry->m_naturalSize = get(naturalSize);
+    geometry->m_size = bool(size) ? get(size) : get(naturalSize);
+    geometry->m_position = get(position);
+    geometry->m_angle = angle;
+    geometry->m_shearXAngle = shearXAngle;
+    geometry->m_shearYAngle = shearYAngle;
+    geometry->m_horizontalFlip = horizontalFlip;
+    geometry->m_verticalFlip = verticalFlip;
+    geometry->m_aspectRatioLocked = aspectRatioLocked;
+    geometry->m_sizesLocked = sizesLocked;
 
-    m_levelStack.top().geometry = geometry;
+    m_levelStack.top().m_geometry = geometry;
     m_levelStack.top().m_trafo = makeTransformation(*geometry) * m_levelStack.top().m_trafo;
   }
 }
@@ -378,7 +378,7 @@ void KEYCollectorBase::collectGeometry(const boost::optional<ID_t> &,
 void KEYCollectorBase::collectBezier(const optional<ID_t> &id, const IWORKPathPtr_t &path, const bool ref)
 {
   if (m_collecting)
-    m_currentPath = getValue(id, path, ref, m_dict.beziers);
+    m_currentPath = getValue(id, path, ref, m_dict.m_beziers);
 }
 
 void KEYCollectorBase::collectGroup(const optional<ID_t> &, const IWORKGroupPtr_t &group)
@@ -387,7 +387,7 @@ void KEYCollectorBase::collectGroup(const optional<ID_t> &, const IWORKGroupPtr_
   {
     assert(!m_objectsStack.empty());
 
-    group->objects = m_objectsStack.top();
+    group->m_objects = m_objectsStack.top();
     m_objectsStack.pop();
     assert(!m_objectsStack.empty());
     m_objectsStack.top().push_back(makeObject(group));
@@ -401,10 +401,10 @@ void KEYCollectorBase::collectImage(const optional<ID_t> &id, const IWORKImagePt
     assert(!m_objectsStack.empty());
     assert(!m_levelStack.empty());
 
-    image->geometry = m_levelStack.top().geometry;
-    m_levelStack.top().geometry.reset();
+    image->m_geometry = m_levelStack.top().m_geometry;
+    m_levelStack.top().m_geometry.reset();
     if (id)
-      m_dict.images[get(id)] = image;
+      m_dict.m_images[get(id)] = image;
     m_objectsStack.top().push_back(makeObject(image, m_levelStack.top().m_trafo));
   }
 }
@@ -416,8 +416,8 @@ void KEYCollectorBase::collectLine(const optional<ID_t> &, const IWORKLinePtr_t 
     assert(!m_objectsStack.empty());
     assert(!m_levelStack.empty());
 
-    line->geometry = m_levelStack.top().geometry;
-    m_levelStack.top().geometry.reset();
+    line->m_geometry = m_levelStack.top().m_geometry;
+    m_levelStack.top().m_geometry.reset();
     m_objectsStack.top().push_back(makeObject(line, m_levelStack.top().m_trafo));
   }
 }
@@ -435,21 +435,21 @@ void KEYCollectorBase::collectShape(const optional<ID_t> &)
     {
       ETONYEK_DEBUG_MSG(("the path is empty\n"));
     }
-    shape->path = m_currentPath;
+    shape->m_path = m_currentPath;
     m_currentPath.reset();
 
-    shape->geometry = m_levelStack.top().geometry;
-    m_levelStack.top().geometry.reset();
+    shape->m_geometry = m_levelStack.top().m_geometry;
+    m_levelStack.top().m_geometry.reset();
 
     if (bool(m_currentText))
     {
-      m_currentText->setBoundingBox(shape->geometry);
-      shape->text = m_currentText;
+      m_currentText->setBoundingBox(shape->m_geometry);
+      shape->m_text = m_currentText;
       m_currentText.reset();
     }
 
-    shape->style = m_levelStack.top().graphicStyle;
-    m_levelStack.top().graphicStyle.reset();
+    shape->m_style = m_levelStack.top().m_graphicStyle;
+    m_levelStack.top().m_graphicStyle.reset();
 
     m_objectsStack.top().push_back(makeObject(shape, m_levelStack.top().m_trafo));
   }
@@ -515,13 +515,13 @@ void KEYCollectorBase::collectData(const boost::optional<ID_t> &id, const RVNGIn
     if (!ref)
     {
       newData.reset(new IWORKData());
-      newData->stream = stream;
-      newData->displayName = displayName;
-      newData->type = type;
+      newData->m_stream = stream;
+      newData->m_displayName = displayName;
+      newData->m_type = type;
     }
 
     assert(!m_currentData);
-    m_currentData = getValue(id, newData, ref, m_dict.data);
+    m_currentData = getValue(id, newData, ref, m_dict.m_data);
   }
 }
 
@@ -534,14 +534,14 @@ void KEYCollectorBase::collectUnfiltered(const boost::optional<ID_t> &id, const 
     if (!ref)
     {
       newUnfiltered.reset(new IWORKMediaContent());
-      newUnfiltered->size = size;
-      newUnfiltered->data = m_currentData;
+      newUnfiltered->m_size = size;
+      newUnfiltered->m_data = m_currentData;
 
       m_currentData.reset();
     }
 
     assert(!m_currentUnfiltered);
-    m_currentUnfiltered = getValue(id, newUnfiltered, ref, m_dict.unfiltereds);
+    m_currentUnfiltered = getValue(id, newUnfiltered, ref, m_dict.m_unfiltereds);
   }
 }
 
@@ -550,8 +550,8 @@ void KEYCollectorBase::collectFiltered(const boost::optional<ID_t> &, const boos
   if (m_collecting)
   {
     const IWORKMediaContentPtr_t newFiltered(new IWORKMediaContent());
-    newFiltered->size = size;
-    newFiltered->data = m_currentData;
+    newFiltered->m_size = size;
+    newFiltered->m_data = m_currentData;
 
     m_currentData.reset();
 
@@ -565,8 +565,8 @@ void KEYCollectorBase::collectLeveled(const boost::optional<ID_t> &, const boost
   if (m_collecting)
   {
     const IWORKMediaContentPtr_t newLeveled(new IWORKMediaContent());
-    newLeveled->size = size;
-    newLeveled->data = m_currentData;
+    newLeveled->m_size = size;
+    newLeveled->m_data = m_currentData;
 
     m_currentData.reset();
 
@@ -601,7 +601,7 @@ void KEYCollectorBase::collectFilteredImage(const boost::optional<ID_t> &id, con
     }
 
     assert(!m_currentContent);
-    m_currentContent = getValue(id, newFilteredImage, ref, m_dict.filteredImages);
+    m_currentContent = getValue(id, newFilteredImage, ref, m_dict.m_filteredImages);
   }
 }
 
@@ -612,7 +612,7 @@ void KEYCollectorBase::collectMovieMedia(const boost::optional<ID_t> &)
     assert(m_currentData);
 
     const IWORKMediaContentPtr_t newContent(new IWORKMediaContent());
-    newContent->data = m_currentData;
+    newContent->m_data = m_currentData;
     m_currentData.reset();
 
     assert(!m_currentContent);
@@ -628,13 +628,13 @@ void KEYCollectorBase::collectMedia(const optional<ID_t> &)
     assert(!m_levelStack.empty());
 
     const IWORKMediaPtr_t media(new IWORKMedia());
-    media->geometry = m_levelStack.top().geometry;
-    media->style = m_levelStack.top().graphicStyle;
-    media->content = m_currentContent;
+    media->m_geometry = m_levelStack.top().m_geometry;
+    media->m_style = m_levelStack.top().m_graphicStyle;
+    media->m_content = m_currentContent;
 
     m_currentContent.reset();
-    m_levelStack.top().geometry.reset();
-    m_levelStack.top().graphicStyle.reset();
+    m_levelStack.top().m_geometry.reset();
+    m_levelStack.top().m_graphicStyle.reset();
 
     m_objectsStack.top().push_back(makeObject(media, m_levelStack.top().m_trafo));
   }
@@ -648,7 +648,7 @@ void KEYCollectorBase::collectLayer(const optional<ID_t> &, bool)
     assert(!m_objectsStack.empty());
 
     m_currentLayer.reset(new KEYLayer());
-    m_currentLayer->objects = m_objectsStack.top();
+    m_currentLayer->m_objects = m_objectsStack.top();
     m_objectsStack.pop();
   }
 }
@@ -660,10 +660,10 @@ void KEYCollectorBase::collectStylesheet(const boost::optional<ID_t> &id, const 
     assert(m_currentStylesheet);
 
     if (parent)
-      m_currentStylesheet->parent = m_dict.stylesheets[get(parent)];
+      m_currentStylesheet->parent = m_dict.m_stylesheets[get(parent)];
 
     if (id)
-      m_dict.stylesheets[get(id)] = m_currentStylesheet;
+      m_dict.m_stylesheets[get(id)] = m_currentStylesheet;
 
     for_each(m_newStyles.begin(), m_newStyles.end(), boost::bind(&IWORKStyle::link, _1, m_currentStylesheet));
 
@@ -678,7 +678,7 @@ void KEYCollectorBase::collectText(const optional<ID_t> &style, const std::strin
   {
     assert(bool(m_currentText));
 
-    m_currentText->insertText(text, getValue(style, m_dict.characterStyles));
+    m_currentText->insertText(text, getValue(style, m_dict.m_characterStyles));
   }
 }
 
@@ -707,7 +707,7 @@ void KEYCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const op
   if (m_collecting)
   {
     KEYPlaceholderPtr_t placeholder;
-    KEYPlaceholderMap_t &placeholderMap = title ? m_dict.titlePlaceholders : m_dict.bodyPlaceholders;
+    KEYPlaceholderMap_t &placeholderMap = title ? m_dict.m_titlePlaceholders : m_dict.m_bodyPlaceholders;
 
     if (ref)
     {
@@ -718,8 +718,8 @@ void KEYCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const op
       if (bool(placeholder))
       {
         IWORKTransformation trafo;
-        if (bool(placeholder->geometry))
-          trafo = makeTransformation(*placeholder->geometry);
+        if (bool(placeholder->m_geometry))
+          trafo = makeTransformation(*placeholder->m_geometry);
         m_objectsStack.top().push_back(makeObject(placeholder, trafo * m_levelStack.top().m_trafo));
       }
       else
@@ -732,17 +732,17 @@ void KEYCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const op
       assert(bool(m_currentText));
 
       placeholder.reset(new KEYPlaceholder());
-      placeholder->title = title;
-      placeholder->style = getValue(style, m_dict.placeholderStyles);
-      if (bool(placeholder->style))
+      placeholder->m_title = title;
+      placeholder->m_style = getValue(style, m_dict.m_placeholderStyles);
+      if (bool(placeholder->m_style))
       {
-        const KEYPlaceholderStyle placeholderStyle(placeholder->style, m_styleStack);
-        placeholder->geometry = placeholderStyle.getGeometry();
+        const KEYPlaceholderStyle placeholderStyle(placeholder->m_style, m_styleStack);
+        placeholder->m_geometry = placeholderStyle.getGeometry();
       }
       if (!m_currentText->empty())
       {
-        m_currentText->setBoundingBox(placeholder->geometry);
-        placeholder->text = m_currentText;
+        m_currentText->setBoundingBox(placeholder->m_geometry);
+        placeholder->m_text = m_currentText;
       }
 
       m_currentText.reset();
@@ -804,8 +804,8 @@ void KEYCollectorBase::collectTable()
     assert(!m_levelStack.empty());
     assert(!m_objectsStack.empty());
 
-    m_currentTable.setGeometry(m_levelStack.top().geometry);
-    m_levelStack.top().geometry.reset();
+    m_currentTable.setGeometry(m_levelStack.top().m_geometry);
+    m_levelStack.top().m_geometry.reset();
 
     m_objectsStack.top().push_back(makeObject(m_currentTable, m_levelStack.top().m_trafo));
     m_currentTable = IWORKTable();
@@ -827,8 +827,8 @@ void KEYCollectorBase::collectStickyNote()
   {
     assert(!m_levelStack.empty());
 
-    m_stickyNotes.push_back(KEYStickyNote(m_levelStack.top().geometry, m_currentText));
-    m_levelStack.top().geometry.reset();
+    m_stickyNotes.push_back(KEYStickyNote(m_levelStack.top().m_geometry, m_currentText));
+    m_levelStack.top().m_geometry.reset();
     m_currentText.reset();
   }
 }
@@ -910,7 +910,7 @@ void KEYCollectorBase::startParagraph(const optional<ID_t> &style)
   {
     assert(bool(m_currentText));
 
-    m_currentText->openParagraph(getValue(style, m_dict.paragraphStyles));
+    m_currentText->openParagraph(getValue(style, m_dict.m_paragraphStyles));
   }
 }
 

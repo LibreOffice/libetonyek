@@ -195,8 +195,8 @@ void IWORKTransformationTest::testConstructionFromGeometry()
 
   {
     IWORKGeometry g;
-    g.naturalSize = IWORKSize(100, 100);
-    g.position = IWORKPosition(0, 0);
+    g.m_naturalSize = IWORKSize(100, 100);
+    g.m_position = IWORKPosition(0, 0);
 
     const IWORKTransformation tr = makeTransformation(g);
     CPPUNIT_ASSERT(IWORKTransformation() == tr);
@@ -204,8 +204,8 @@ void IWORKTransformationTest::testConstructionFromGeometry()
 
   {
     IWORKGeometry g;
-    g.naturalSize = IWORKSize(100, 100);
-    g.position = IWORKPosition(200, 150);
+    g.m_naturalSize = IWORKSize(100, 100);
+    g.m_position = IWORKPosition(200, 150);
 
     const IWORKTransformation tr = makeTransformation(g);
     CPPUNIT_ASSERT(translate(200, 150) == tr);
@@ -213,9 +213,9 @@ void IWORKTransformationTest::testConstructionFromGeometry()
 
   {
     IWORKGeometry g;
-    g.naturalSize = IWORKSize(100, 100);
-    g.position = IWORKPosition(0, 0);
-    g.angle = etonyek_half_pi;
+    g.m_naturalSize = IWORKSize(100, 100);
+    g.m_position = IWORKPosition(0, 0);
+    g.m_angle = etonyek_half_pi;
 
     const IWORKTransformation tr = makeTransformation(g);
     CPPUNIT_ASSERT(wrap(100, 100, rotate(etonyek_half_pi)) == tr);
@@ -223,9 +223,9 @@ void IWORKTransformationTest::testConstructionFromGeometry()
 
   {
     IWORKGeometry g;
-    g.naturalSize = IWORKSize(100, 100);
-    g.position = IWORKPosition(0, 0);
-    g.horizontalFlip = true;
+    g.m_naturalSize = IWORKSize(100, 100);
+    g.m_position = IWORKPosition(0, 0);
+    g.m_horizontalFlip = true;
 
     const IWORKTransformation tr = makeTransformation(g);
     CPPUNIT_ASSERT(wrap(100, 100, flip(true, false)) == tr);
@@ -233,9 +233,9 @@ void IWORKTransformationTest::testConstructionFromGeometry()
 
   {
     IWORKGeometry g;
-    g.naturalSize = IWORKSize(100, 100);
-    g.position = IWORKPosition(0, 0);
-    g.verticalFlip = true;
+    g.m_naturalSize = IWORKSize(100, 100);
+    g.m_position = IWORKPosition(0, 0);
+    g.m_verticalFlip = true;
 
     const IWORKTransformation tr = makeTransformation(g);
     CPPUNIT_ASSERT(wrap(100, 100, flip(false, true)) == tr);
@@ -243,9 +243,9 @@ void IWORKTransformationTest::testConstructionFromGeometry()
 
   {
     IWORKGeometry g;
-    g.naturalSize = IWORKSize(100, 100);
-    g.position = IWORKPosition(200, 150);
-    g.angle = etonyek_half_pi;
+    g.m_naturalSize = IWORKSize(100, 100);
+    g.m_position = IWORKPosition(200, 150);
+    g.m_angle = etonyek_half_pi;
 
     const IWORKTransformation tr = makeTransformation(g);
     CPPUNIT_ASSERT(wrap(100, 100, rotate(etonyek_half_pi) * translate(200, 150)) == tr);

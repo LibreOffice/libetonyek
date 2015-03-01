@@ -102,25 +102,25 @@ IWORKTransformation makeTransformation(const IWORKGeometry &geometry)
 
   IWORKTransformation tr;
 
-  const double w = geometry.naturalSize.width;
-  const double h = geometry.naturalSize.height;
+  const double w = geometry.m_naturalSize.m_width;
+  const double h = geometry.m_naturalSize.m_height;
 
   tr *= origin(w, h);
 
   // TODO: make sure the order of transformations is right
-  if (geometry.shearXAngle || geometry.shearYAngle)
-    tr *= shear(get_optional_value_or(geometry.shearXAngle, 0), get_optional_value_or(geometry.shearYAngle, 0));
+  if (geometry.m_shearXAngle || geometry.m_shearYAngle)
+    tr *= shear(get_optional_value_or(geometry.m_shearXAngle, 0), get_optional_value_or(geometry.m_shearYAngle, 0));
 
-  if (geometry.horizontalFlip)
-    tr *= flip(get(geometry.horizontalFlip), false);
-  if (geometry.verticalFlip)
-    tr *= flip(false, get(geometry.verticalFlip));
+  if (geometry.m_horizontalFlip)
+    tr *= flip(get(geometry.m_horizontalFlip), false);
+  if (geometry.m_verticalFlip)
+    tr *= flip(false, get(geometry.m_verticalFlip));
 
-  if (geometry.angle)
-    tr *= rotate(get(geometry.angle));
+  if (geometry.m_angle)
+    tr *= rotate(get(geometry.m_angle));
 
   tr *= center(w, h);
-  tr *= translate(geometry.position.x, geometry.position.y);
+  tr *= translate(geometry.m_position.m_x, geometry.m_position.m_y);
 
   return tr;
 }

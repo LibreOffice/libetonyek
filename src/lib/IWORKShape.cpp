@@ -24,10 +24,10 @@ namespace libetonyek
 {
 
 IWORKShape::IWORKShape()
-  : geometry()
-  , style()
-  , path()
-  , text()
+  : m_geometry()
+  , m_style()
+  , m_path()
+  , m_text()
 {
 }
 
@@ -60,11 +60,11 @@ ShapeObject::~ShapeObject()
 
 void ShapeObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
-  if (bool(m_shape) && bool(m_shape->path))
+  if (bool(m_shape) && bool(m_shape->m_path))
   {
     // TODO: make style
 
-    const IWORKPath path = *m_shape->path * m_trafo;
+    const IWORKPath path = *m_shape->m_path * m_trafo;
 
     librevenge::RVNGPropertyList props;
     props.insert("svg:d", path.toWPG());
@@ -72,8 +72,8 @@ void ShapeObject::draw(librevenge::RVNGPresentationInterface *const painter)
     painter->setStyle(librevenge::RVNGPropertyList());
     painter->drawPath(props);
 
-    if (bool(m_shape->text))
-      makeObject(m_shape->text, m_trafo)->draw(painter);
+    if (bool(m_shape->m_text))
+      makeObject(m_shape->m_text, m_trafo)->draw(painter);
   }
 }
 
@@ -231,7 +231,7 @@ IWORKPathPtr_t makePolygonPath(const IWORKSize &size, const unsigned edges)
 
   // FIXME: the shape should probably be scaled to whole width/height.
   // Check.
-  transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.width, size.height));
+  transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.m_width, size.m_height));
   const IWORKPathPtr_t path = makePolyLine(points);
 
   return path;
@@ -246,7 +246,7 @@ IWORKPathPtr_t makeRoundedRectanglePath(const IWORKSize &size, const double radi
 
   deque<Point> points = rotatePoint(Point(1, 1), 4);
 
-  transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.width, size.height));
+  transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.m_width, size.m_height));
   const IWORKPathPtr_t path = makePolyLine(points);
 
   return path;
@@ -254,7 +254,7 @@ IWORKPathPtr_t makeRoundedRectanglePath(const IWORKSize &size, const double radi
 
 IWORKPathPtr_t makeArrowPath(const IWORKSize &size, const double headWidth, const double stemThickness)
 {
-  deque<Point> points = drawArrowHalf(headWidth / size.width, 1 - 2 * stemThickness);
+  deque<Point> points = drawArrowHalf(headWidth / size.m_width, 1 - 2 * stemThickness);
 
   // mirror around the x axis
   deque<Point> mirroredPoints = points;
@@ -264,14 +264,14 @@ IWORKPathPtr_t makeArrowPath(const IWORKSize &size, const double headWidth, cons
   copy(mirroredPoints.rbegin(), mirroredPoints.rend(), back_inserter(points));
 
   // transform and create path
-  transform(points, translate(0, 1) * scale(1, 0.5) * scale(size.width, size.height));
+  transform(points, translate(0, 1) * scale(1, 0.5) * scale(size.m_width, size.m_height));
   const IWORKPathPtr_t path = makePolyLine(points);
   return path;
 }
 
 IWORKPathPtr_t makeDoubleArrowPath(const IWORKSize &size, const double headWidth, const double stemThickness)
 {
-  deque<Point> points = drawArrowHalf(2 * headWidth / size.width, 1 - 2 * stemThickness);
+  deque<Point> points = drawArrowHalf(2 * headWidth / size.m_width, 1 - 2 * stemThickness);
 
   {
     // mirror around the y axis
@@ -289,7 +289,7 @@ IWORKPathPtr_t makeDoubleArrowPath(const IWORKSize &size, const double headWidth
     copy(mirroredPoints.rbegin(), mirroredPoints.rend(), back_inserter(points));
   }
 
-  transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.width, size.height));
+  transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.m_width, size.m_height));
   const IWORKPathPtr_t path = makePolyLine(points);
   return path;
 }
@@ -318,7 +318,7 @@ IWORKPathPtr_t makeStarPath(const IWORKSize &size, const unsigned points, const 
   }
 
   // create the path
-  transform(pathPoints, translate(1, 1) * scale(0.5, 0.5) * scale(size.width, size.height));
+  transform(pathPoints, translate(1, 1) * scale(0.5, 0.5) * scale(size.m_width, size.m_height));
   const IWORKPathPtr_t path = makePolyLine(pathPoints);
 
   return path;
@@ -349,7 +349,7 @@ IWORKPathPtr_t makeCalloutPath(const IWORKSize &size, const double radius, const
   points.push_back(Point(-1, -0.5));
 
   // create the path
-  transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.width, size.height));
+  transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.m_width, size.m_height));
   const IWORKPathPtr_t path = makePolyLine(points);
 
   return path;

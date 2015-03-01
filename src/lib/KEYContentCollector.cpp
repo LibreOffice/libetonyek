@@ -114,8 +114,8 @@ void KEYContentCollector::startPage()
     startLevel();
 
     librevenge::RVNGPropertyList props;
-    props.insert("svg:width", pt2in(m_size.width));
-    props.insert("svg:height", pt2in(m_size.height));
+    props.insert("svg:width", pt2in(m_size.m_width));
+    props.insert("svg:height", pt2in(m_size.m_height));
 
     m_pageOpened = true;
     m_painter->startSlide(props);
@@ -173,7 +173,7 @@ void KEYContentCollector::drawLayer(const KEYLayerPtr_t &layer)
 {
   if (bool(layer))
   {
-    for (IWORKObjectList_t::const_iterator it = layer->objects.begin(); it != layer->objects.end(); ++it)
+    for (IWORKObjectList_t::const_iterator it = layer->m_objects.begin(); it != layer->m_objects.end(); ++it)
       (*it)->draw(m_painter);
   }
   else
@@ -202,17 +202,17 @@ void KEYContentCollector::drawStickyNotes(const KEYStickyNotes_t &stickyNotes)
   {
     librevenge::RVNGPropertyList props;
 
-    if (bool(it->geometry))
+    if (bool(it->m_geometry))
     {
-      props.insert("svg:x", pt2in(it->geometry->position.x));
-      props.insert("svg:y", pt2in(it->geometry->position.y));
-      props.insert("svg:width", pt2in(it->geometry->naturalSize.width));
-      props.insert("svg:height", pt2in(it->geometry->naturalSize.height));
+      props.insert("svg:x", pt2in(it->m_geometry->m_position.m_x));
+      props.insert("svg:y", pt2in(it->m_geometry->m_position.m_y));
+      props.insert("svg:width", pt2in(it->m_geometry->m_naturalSize.m_width));
+      props.insert("svg:height", pt2in(it->m_geometry->m_naturalSize.m_height));
     }
 
     m_painter->startComment(props);
-    if (bool(it->text))
-      makeObject(it->text, getTransformation())->draw(m_painter);
+    if (bool(it->m_text))
+      makeObject(it->m_text, getTransformation())->draw(m_painter);
     m_painter->endComment();
   }
 }

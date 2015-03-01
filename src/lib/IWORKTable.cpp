@@ -23,10 +23,10 @@ namespace libetonyek
 {
 
 IWORKTable::Cell::Cell()
-  : content()
-  , columnSpan(1)
-  , rowSpan(1)
-  , covered(false)
+  : m_content()
+  , m_columnSpan(1)
+  , m_rowSpan(1)
+  , m_covered(false)
 {
 }
 
@@ -53,9 +53,9 @@ void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWO
     return;
 
   Cell cell;
-  cell.content = content;
-  cell.columnSpan = columnSpan;
-  cell.rowSpan = rowSpan;
+  cell.m_content = content;
+  cell.m_columnSpan = columnSpan;
+  cell.m_rowSpan = rowSpan;
   m_table[row][column] = cell;
 }
 
@@ -65,7 +65,7 @@ void IWORKTable::insertCoveredCell(const unsigned column, const unsigned row)
     return;
 
   Cell cell;
-  cell.covered = true;
+  cell.m_covered = true;
   m_table[row][column] = cell;
 }
 
@@ -87,8 +87,8 @@ void IWORKTable::draw(librevenge::RVNGPresentationInterface *const painter, cons
 
   if (m_geometry)
   {
-    double w = m_geometry->naturalSize.width;
-    double h = m_geometry->naturalSize.height;
+    double w = m_geometry->m_naturalSize.m_width;
+    double h = m_geometry->m_naturalSize.m_height;
 
     trafo(w, h, true);
 
@@ -124,20 +124,20 @@ void IWORKTable::draw(librevenge::RVNGPresentationInterface *const painter, cons
       cellProps.insert("librevenge:row", numeric_cast<int>(r));
       cellProps.insert("fo:vertical-align", "middle");
 
-      if (cell.covered)
+      if (cell.m_covered)
       {
         painter->insertCoveredTableCell(cellProps);
       }
       else
       {
-        if (1 < cell.columnSpan)
-          cellProps.insert("table:number-columns-spanned", numeric_cast<int>(cell.columnSpan));
-        if (1 < cell.rowSpan)
-          cellProps.insert("table:number-rows-spanned", numeric_cast<int>(cell.rowSpan));
+        if (1 < cell.m_columnSpan)
+          cellProps.insert("table:number-columns-spanned", numeric_cast<int>(cell.m_columnSpan));
+        if (1 < cell.m_rowSpan)
+          cellProps.insert("table:number-rows-spanned", numeric_cast<int>(cell.m_rowSpan));
 
         painter->openTableCell(cellProps);
-        if (bool(cell.content))
-          cell.content->draw(painter);
+        if (bool(cell.m_content))
+          cell.m_content->draw(painter);
         painter->closeTableCell();
       }
     }

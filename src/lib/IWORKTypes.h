@@ -27,8 +27,8 @@ class IWORKTransformation;
 
 struct IWORKSize
 {
-  double width;
-  double height;
+  double m_width;
+  double m_height;
 
   IWORKSize();
   IWORKSize(double w, double h);
@@ -36,8 +36,8 @@ struct IWORKSize
 
 struct IWORKPosition
 {
-  double x;
-  double y;
+  double m_x;
+  double m_y;
 
   IWORKPosition();
   IWORKPosition(double x_, double y_);
@@ -45,26 +45,26 @@ struct IWORKPosition
 
 struct IWORKGeometry
 {
-  IWORKSize naturalSize;
-  IWORKSize size;
-  IWORKPosition position;
-  boost::optional<double> angle;
-  boost::optional<double> shearXAngle;
-  boost::optional<double> shearYAngle;
-  boost::optional<bool> horizontalFlip;
-  boost::optional<bool> verticalFlip;
-  boost::optional<bool> aspectRatioLocked;
-  boost::optional<bool> sizesLocked;
+  IWORKSize m_naturalSize;
+  IWORKSize m_size;
+  IWORKPosition m_position;
+  boost::optional<double> m_angle;
+  boost::optional<double> m_shearXAngle;
+  boost::optional<double> m_shearYAngle;
+  boost::optional<bool> m_horizontalFlip;
+  boost::optional<bool> m_verticalFlip;
+  boost::optional<bool> m_aspectRatioLocked;
+  boost::optional<bool> m_sizesLocked;
 
   IWORKGeometry();
 };
 
 struct IWORKColor
 {
-  double red;
-  double green;
-  double blue;
-  double alpha;
+  double m_red;
+  double m_green;
+  double m_blue;
+  double m_alpha;
 
   IWORKColor();
   IWORKColor(double r, double g, double b, double a);
@@ -72,17 +72,17 @@ struct IWORKColor
 
 struct IWORKPadding
 {
-  boost::optional<int> top;
-  boost::optional<int> right;
-  boost::optional<int> bottom;
-  boost::optional<int> left;
+  boost::optional<int> m_top;
+  boost::optional<int> m_right;
+  boost::optional<int> m_bottom;
+  boost::optional<int> m_left;
 
   IWORKPadding();
 };
 
 struct IWORKTabStop
 {
-  double pos;
+  double m_pos;
 
   explicit IWORKTabStop(double pos_);
 };
@@ -91,74 +91,74 @@ typedef std::deque<IWORKTabStop> IWORKTabStops_t;
 
 struct IWORKLine
 {
-  IWORKGeometryPtr_t geometry;
-  IWORKStylePtr_t style;
-  boost::optional<double> x1;
-  boost::optional<double> y1;
-  boost::optional<double> x2;
-  boost::optional<double> y2;
+  IWORKGeometryPtr_t m_geometry;
+  IWORKStylePtr_t m_style;
+  boost::optional<double> m_x1;
+  boost::optional<double> m_y1;
+  boost::optional<double> m_x2;
+  boost::optional<double> m_y2;
 
   IWORKLine();
 };
 
 struct IWORKData
 {
-  RVNGInputStreamPtr_t stream;
-  boost::optional<std::string> displayName;
-  boost::optional<int> type;
+  RVNGInputStreamPtr_t m_stream;
+  boost::optional<std::string> m_displayName;
+  boost::optional<int> m_type;
 
   IWORKData();
 };
 
 struct IWORKMediaContent
 {
-  boost::optional<IWORKSize> size;
-  IWORKDataPtr_t data;
+  boost::optional<IWORKSize> m_size;
+  IWORKDataPtr_t m_data;
 
   IWORKMediaContent();
 };
 
 struct IWORKBinary
 {
-  boost::optional<IWORKSize> size;
-  boost::optional<std::string> path;
-  boost::optional<std::string> type;
-  boost::optional<unsigned> dataSize;
+  boost::optional<IWORKSize> m_size;
+  boost::optional<std::string> m_path;
+  boost::optional<std::string> m_type;
+  boost::optional<unsigned> m_dataSize;
 
   IWORKBinary();
 };
 
 struct IWORKImage
 {
-  boost::optional<bool> locked;
-  IWORKGeometryPtr_t geometry;
-  boost::optional<IWORKBinary> binary;
+  boost::optional<bool> m_locked;
+  IWORKGeometryPtr_t m_geometry;
+  boost::optional<IWORKBinary> m_binary;
 
   IWORKImage();
 };
 
 struct IWORKMedia
 {
-  IWORKGeometryPtr_t geometry;
-  IWORKStylePtr_t style;
-  boost::optional<bool> placeholder;
-  boost::optional<IWORKSize> placeholderSize;
-  IWORKMediaContentPtr_t content;
+  IWORKGeometryPtr_t m_geometry;
+  IWORKStylePtr_t m_style;
+  boost::optional<bool> m_placeholder;
+  boost::optional<IWORKSize> m_placeholderSize;
+  IWORKMediaContentPtr_t m_content;
 
   IWORKMedia();
 };
 
 struct IWORKWrap
 {
-  IWORKPathPtr_t path;
-  IWORKGeometryPtr_t geometry;
+  IWORKPathPtr_t m_path;
+  IWORKGeometryPtr_t m_geometry;
 
   IWORKWrap();
 };
 
 struct IWORKGroup
 {
-  IWORKObjectList_t objects;
+  IWORKObjectList_t m_objects;
 
   IWORKGroup();
 };

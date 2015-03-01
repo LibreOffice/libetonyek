@@ -29,27 +29,27 @@ class IWORKTransformation;
 
 struct KEYLayer
 {
-  boost::optional<std::string> type;
-  IWORKObjectList_t objects;
+  boost::optional<std::string> m_type;
+  IWORKObjectList_t m_objects;
 
   KEYLayer();
 };
 
 struct KEYPlaceholder
 {
-  boost::optional<bool> title;
-  boost::optional<bool> empty;
-  IWORKStylePtr_t style;
-  IWORKGeometryPtr_t geometry;
-  IWORKTextPtr_t text;
+  boost::optional<bool> m_title;
+  boost::optional<bool> m_empty;
+  IWORKStylePtr_t m_style;
+  IWORKGeometryPtr_t m_geometry;
+  IWORKTextPtr_t m_text;
 
   KEYPlaceholder();
 };
 
 struct KEYStickyNote
 {
-  IWORKGeometryPtr_t geometry;
-  IWORKTextPtr_t text;
+  IWORKGeometryPtr_t m_geometry;
+  IWORKTextPtr_t m_text;
 
   KEYStickyNote();
   KEYStickyNote(const IWORKGeometryPtr_t &geometry, const IWORKTextPtr_t &text);

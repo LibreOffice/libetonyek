@@ -36,18 +36,18 @@ struct IWORKDictionary
 {
   IWORKDictionary();
 
-  IWORKStyleMap_t characterStyles;
-  IWORKStyleMap_t graphicStyles;
-  IWORKStyleMap_t paragraphStyles;
+  IWORKStyleMap_t m_characterStyles;
+  IWORKStyleMap_t m_graphicStyles;
+  IWORKStyleMap_t m_paragraphStyles;
 
-  IWORKStylesheetMap_t stylesheets;
+  IWORKStylesheetMap_t m_stylesheets;
 
-  IWORKPathMap_t beziers;
+  IWORKPathMap_t m_beziers;
 
-  IWORKDataMap_t data;
-  IWORKMediaContentMap_t unfiltereds;
-  IWORKMediaContentMap_t filteredImages;
-  IWORKImageMap_t images;
+  IWORKDataMap_t m_data;
+  IWORKMediaContentMap_t m_unfiltereds;
+  IWORKMediaContentMap_t m_filteredImages;
+  IWORKImageMap_t m_images;
 };
 
 }

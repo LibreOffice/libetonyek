@@ -44,9 +44,9 @@ librevenge::RVNGString makeColor(const IWORKColor &color)
 {
   // TODO: alpha
 
-  const unsigned r = color.red * 256 - 0.5;
-  const unsigned g = color.green * 256 - 0.5;
-  const unsigned b = color.blue * 256 - 0.5;
+  const unsigned r = color.m_red * 256 - 0.5;
+  const unsigned g = color.m_green * 256 - 0.5;
+  const unsigned b = color.m_blue * 256 - 0.5;
 
   librevenge::RVNGString str;
   str.sprintf("#%.2x%.2x%.2x", r, g, b);
@@ -139,7 +139,7 @@ librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, cons
       for (IWORKTabStops_t::const_iterator it = get(tabStops).begin(); get(tabStops).end() != it; ++it)
       {
         librevenge::RVNGPropertyList tab;
-        tab.insert("style:position", pt2in(it->pos));
+        tab.insert("style:position", pt2in(it->m_pos));
         tab.insert("style:type", "left");
       }
     }
@@ -269,8 +269,8 @@ void TextObject::draw(librevenge::RVNGPresentationInterface *const painter)
 
   if (bool(m_boundingBox))
   {
-    double w = m_boundingBox->naturalSize.width;
-    double h = m_boundingBox->naturalSize.height;
+    double w = m_boundingBox->m_naturalSize.m_width;
+    double h = m_boundingBox->m_naturalSize.m_height;
     m_trafo(w, h, true);
 
     props.insert("svg:width", pt2in(w));

@@ -14,10 +14,10 @@ namespace libetonyek
 
 KEYDictionary::KEYDictionary()
   : IWORKDictionary()
-  , layoutStyles()
-  , placeholderStyles()
-  , bodyPlaceholders()
-  , titlePlaceholders()
+  , m_layoutStyles()
+  , m_placeholderStyles()
+  , m_bodyPlaceholders()
+  , m_titlePlaceholders()
 {
 }
 

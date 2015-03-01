@@ -90,127 +90,127 @@ optional<string> getMimetype(const optional<int> &type, const RVNGInputStreamPtr
 }
 
 IWORKSize::IWORKSize()
-  : width(0)
-  , height(0)
+  : m_width(0)
+  , m_height(0)
 {
 }
 
 IWORKSize::IWORKSize(const double w, const double h)
-  : width(w)
-  , height(h)
+  : m_width(w)
+  , m_height(h)
 {
 }
 
 IWORKPosition::IWORKPosition()
-  : x(0)
-  , y(0)
+  : m_x(0)
+  , m_y(0)
 {
 }
 
 IWORKPosition::IWORKPosition(const double x_, const double y_)
-  : x(x_)
-  , y(y_)
+  : m_x(x_)
+  , m_y(y_)
 {
 }
 
 IWORKGeometry::IWORKGeometry()
-  : naturalSize()
-  , size()
-  , position()
-  , angle()
-  , shearXAngle()
-  , shearYAngle()
-  , horizontalFlip()
-  , verticalFlip()
-  , aspectRatioLocked()
-  , sizesLocked()
+  : m_naturalSize()
+  , m_size()
+  , m_position()
+  , m_angle()
+  , m_shearXAngle()
+  , m_shearYAngle()
+  , m_horizontalFlip()
+  , m_verticalFlip()
+  , m_aspectRatioLocked()
+  , m_sizesLocked()
 {
 }
 
 IWORKColor::IWORKColor()
-  : red()
-  , green()
-  , blue()
-  , alpha()
+  : m_red()
+  , m_green()
+  , m_blue()
+  , m_alpha()
 {
 }
 
 IWORKColor::IWORKColor(const double r, const double g, const double b, const double a)
-  : red(r)
-  , green(g)
-  , blue(b)
-  , alpha(a)
+  : m_red(r)
+  , m_green(g)
+  , m_blue(b)
+  , m_alpha(a)
 {
 }
 
 IWORKPadding::IWORKPadding()
-  : top()
-  , right()
-  , bottom()
-  , left()
+  : m_top()
+  , m_right()
+  , m_bottom()
+  , m_left()
 {
 }
 
 IWORKTabStop::IWORKTabStop(double pos_)
-  : pos(pos_)
+  : m_pos(pos_)
 {
 }
 
 IWORKLine::IWORKLine()
-  : geometry()
-  , style()
-  , x1()
-  , y1()
-  , x2()
-  , y2()
+  : m_geometry()
+  , m_style()
+  , m_x1()
+  , m_y1()
+  , m_x2()
+  , m_y2()
 {
 }
 
 IWORKData::IWORKData()
-  : stream()
-  , displayName()
-  , type()
+  : m_stream()
+  , m_displayName()
+  , m_type()
 {
 }
 
 IWORKMediaContent::IWORKMediaContent()
-  : size()
-  , data()
+  : m_size()
+  , m_data()
 {
 }
 
 IWORKBinary::IWORKBinary()
-  : size()
-  , path()
-  , type()
-  , dataSize()
+  : m_size()
+  , m_path()
+  , m_type()
+  , m_dataSize()
 {
 }
 
 IWORKImage::IWORKImage()
-  : locked()
-  , geometry()
-  , binary()
+  : m_locked()
+  , m_geometry()
+  , m_binary()
 {
 }
 
 IWORKMedia::IWORKMedia()
-  : geometry()
-  , style()
-  , placeholder()
-  , placeholderSize()
-  , content()
+  : m_geometry()
+  , m_style()
+  , m_placeholder()
+  , m_placeholderSize()
+  , m_content()
 {
 }
 
 IWORKWrap::IWORKWrap()
-  : path()
-  , geometry()
+  : m_path()
+  , m_geometry()
 {
 }
 
 IWORKGroup::IWORKGroup()
-  : objects()
+  : m_objects()
 {
 }
 
@@ -252,7 +252,7 @@ GroupObject::GroupObject(const IWORKGroupPtr_t &group)
 
 void GroupObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
-  drawAll(m_group->objects, painter);
+  drawAll(m_group->m_objects, painter);
 }
 
 }
@@ -313,7 +313,7 @@ void LineObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
   // TODO: transform the line
 
-  if (m_line->x1 && m_line->y1 && m_line->x2 && m_line->y2)
+  if (m_line->m_x1 && m_line->m_y1 && m_line->m_x2 && m_line->m_y2)
   {
     librevenge::RVNGPropertyList props;
 #if 0
@@ -332,8 +332,8 @@ void LineObject::draw(librevenge::RVNGPresentationInterface *const painter)
     painter->setStyle(props);
 
     librevenge::RVNGPropertyListVector vertices;
-    vertices.append(pointToWPG(get(m_line->x1), get(m_line->y1)));
-    vertices.append(pointToWPG(get(m_line->x2), get(m_line->y2)));
+    vertices.append(pointToWPG(get(m_line->m_x1), get(m_line->m_y1)));
+    vertices.append(pointToWPG(get(m_line->m_x2), get(m_line->m_y2)));
 
     librevenge::RVNGPropertyList points;
     points.insert("svg:points", vertices);
@@ -373,14 +373,14 @@ MediaObject::MediaObject(const IWORKMediaPtr_t &media, const IWORKTransformation
 void MediaObject::draw(librevenge::RVNGPresentationInterface *const painter)
 {
   if (bool(m_media)
-      && bool(m_media->geometry)
-      && bool(m_media->content)
-      && bool(m_media->content->data)
-      && bool(m_media->content->data->stream))
+      && bool(m_media->m_geometry)
+      && bool(m_media->m_content)
+      && bool(m_media->m_content->m_data)
+      && bool(m_media->m_content->m_data->m_stream))
   {
-    const RVNGInputStreamPtr_t input = m_media->content->data->stream;
+    const RVNGInputStreamPtr_t input = m_media->m_content->m_data->m_stream;
 
-    const optional<string> mimetype = getMimetype(m_media->content->data->type, input);
+    const optional<string> mimetype = getMimetype(m_media->m_content->m_data->m_type, input);
 
     if (mimetype)
     {
@@ -404,8 +404,8 @@ void MediaObject::draw(librevenge::RVNGPresentationInterface *const painter)
       props.insert("svg:x", pt2in(x));
       props.insert("svg:y", pt2in(y));
 
-      double width = m_media->geometry->size.width;
-      double height = m_media->geometry->size.height;
+      double width = m_media->m_geometry->m_size.m_width;
+      double height = m_media->m_geometry->m_size.m_height;
       m_trafo(width, height, true);
       props.insert("svg:width", pt2in(width));
       props.insert("svg:height", pt2in(height));

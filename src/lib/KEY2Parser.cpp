@@ -1321,7 +1321,7 @@ void ImageContext::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::locked :
-    m_image->locked = bool_cast(value);
+    m_image->m_locked = bool_cast(value);
     break;
   default :
     IWORKXMLElementContextBase::attribute(name, value);
@@ -1396,13 +1396,13 @@ void LineContext::endOfElement()
   IWORKLinePtr_t line(new IWORKLine());
   if (m_head)
   {
-    line->x1 = get(m_head).x;
-    line->y1 = get(m_head).y;
+    line->m_x1 = get(m_head).m_x;
+    line->m_y1 = get(m_head).m_y;
   }
   if (m_tail)
   {
-    line->x2 = get(m_tail).x;
-    line->y2 = get(m_tail).y;
+    line->m_x2 = get(m_tail).m_x;
+    line->m_y2 = get(m_tail).m_y;
   }
   getCollector()->collectLine(getId(), line);
   getCollector()->endLevel();
