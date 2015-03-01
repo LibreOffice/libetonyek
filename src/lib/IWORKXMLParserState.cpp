@@ -9,14 +9,16 @@
 
 #include "IWORKXMLParserState.h"
 
+#include "IWORKDictionary.h"
 #include "IWORKParser.h"
 #include "KEYCollector.h"
 
 namespace libetonyek
 {
 
-IWORKXMLParserState::IWORKXMLParserState(IWORKParser &parser, const IWORKXMLReader::TokenizerFunction_t &tokenizer)
+IWORKXMLParserState::IWORKXMLParserState(IWORKParser &parser, IWORKDictionary &dict, const IWORKXMLReader::TokenizerFunction_t &tokenizer)
   : m_parser(parser)
+  , m_dict(dict)
   , m_tokenizer(tokenizer)
 {
 }
@@ -24,6 +26,11 @@ IWORKXMLParserState::IWORKXMLParserState(IWORKParser &parser, const IWORKXMLRead
 IWORKParser &IWORKXMLParserState::getParser()
 {
   return m_parser;
+}
+
+IWORKDictionary &IWORKXMLParserState::getDictionary()
+{
+  return m_dict;
 }
 
 KEYCollector *IWORKXMLParserState::getCollector() const
@@ -34,6 +41,11 @@ KEYCollector *IWORKXMLParserState::getCollector() const
 const IWORKXMLReader::TokenizerFunction_t &IWORKXMLParserState::getTokenizer() const
 {
   return m_tokenizer;
+}
+
+bool IWORKXMLParserState::isDictLocked() const
+{
+  return m_dict.m_locked;
 }
 
 }

@@ -17,6 +17,7 @@
 namespace libetonyek
 {
 
+class IWORKDictionary;
 class IWORKXMLParserState;
 class KEYCollector;
 
@@ -39,7 +40,7 @@ public:
   KEYCollector *getCollector() const;
 
 private:
-  virtual IWORKXMLContextPtr_t makeDocumentContext(IWORKXMLParserState &state) const = 0;
+  virtual IWORKXMLContextPtr_t createDocumentContext() = 0;
   virtual IWORKXMLReader::TokenizerFunction_t getTokenizer() const = 0;
 
 private:

@@ -55,6 +55,8 @@ public:
     */
   boost::any lookup(const char *property, const IWORKStyleStack &stack) const;
 
+  const boost::optional<std::string> &getIdent() const;
+
 private:
   IWORKPropertyMap m_props;
 

@@ -312,14 +312,14 @@ bool detect(const RVNGInputStreamPtr_t &input, unsigned checkTypes, DetectionInf
 namespace
 {
 
-shared_ptr<IWORKParser> makeKeynoteParser(const unsigned version, const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector)
+shared_ptr<IWORKParser> makeKeynoteParser(const unsigned version, const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector, KEYDictionary &dict)
 {
   shared_ptr<IWORKParser> parser;
 
   if (1 == version)
     parser.reset(new KEY1Parser(input, package, collector));
   else if ((2 <= version) && (5 >= version))
-    parser.reset(new KEY2Parser(input, package, collector));
+    parser.reset(new KEY2Parser(input, package, collector, dict));
   else
     assert(0);
 
@@ -372,20 +372,20 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   assert(0 != info.version);
 
   KEYDictionary dict;
-  KEYLayerMap_t masterPages;
   IWORKSize presentationSize;
 
   info.input->seek(0, librevenge::RVNG_SEEK_SET);
 
-  KEYThemeCollector themeCollector(dict, masterPages, presentationSize);
-  shared_ptr<IWORKParser> parser = makeKeynoteParser(info.version, info.input, info.package, &themeCollector);
+  KEYThemeCollector themeCollector(presentationSize);
+  shared_ptr<IWORKParser> parser = makeKeynoteParser(info.version, info.input, info.package, &themeCollector, dict);
   if (!parser->parse())
     return false;
 
   info.input->seek(0, librevenge::RVNG_SEEK_SET);
 
-  KEYContentCollector contentCollector(generator, dict, masterPages, presentationSize);
-  parser = makeKeynoteParser(info.version, info.input, info.package, &contentCollector);
+  dict.m_locked = true; // do not add refs again
+  KEYContentCollector contentCollector(generator, presentationSize);
+  parser = makeKeynoteParser(info.version, info.input, info.package, &contentCollector, dict);
   return parser->parse();
 }
 catch (...)

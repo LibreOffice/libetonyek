@@ -20,6 +20,8 @@
 namespace libetonyek
 {
 
+struct IWORKDictionary;
+
 class KEY2StyleContext : public IWORKXMLElementContextBase
 {
 public:
@@ -29,6 +31,8 @@ private:
   virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
+
+  IWORKDictionary &getDictionary();
 
 private:
   const int m_id;
@@ -45,6 +49,8 @@ public:
 
 private:
   virtual void endOfElement();
+
+  IWORKDictionary &getDictionary();
 
 private:
   const int m_id;

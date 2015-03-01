@@ -17,9 +17,8 @@ using boost::optional;
 namespace libetonyek
 {
 
-KEYThemeCollector::KEYThemeCollector(KEYDictionary &dict, KEYLayerMap_t &masterPages, IWORKSize &size)
-  : KEYCollectorBase(dict)
-  , m_masterPages(masterPages)
+KEYThemeCollector::KEYThemeCollector(IWORKSize &size)
+  : KEYCollectorBase()
   , m_size(size)
 {
 }
@@ -34,33 +33,13 @@ void KEYThemeCollector::collectPresentation(const boost::optional<IWORKSize> &si
     m_size = get(size);
 }
 
-void KEYThemeCollector::collectLayer(const boost::optional<ID_t> &id, const bool ref)
+void KEYThemeCollector::insertLayer(const KEYLayerPtr_t &)
 {
-  if (isCollecting())
-  {
-    KEYCollectorBase::collectLayer(id, ref);
-
-    if (ref)
-    {
-      ETONYEK_DEBUG_MSG(("cannot use master page reference %s in a master page\n", id ? get(id).c_str() : ""));
-    }
-    else
-    {
-      const KEYLayerPtr_t layer = getLayer();
-      if (bool(layer) && id)
-        m_masterPages.insert(KEYLayerMap_t::value_type(get(id), layer));
-      else
-      {
-        ETONYEK_DEBUG_MSG(("master style layer is empty\n"));
-      }
-    }
-  }
 }
 
-void KEYThemeCollector::collectPage(const boost::optional<ID_t> &id)
+void KEYThemeCollector::collectPage()
 {
   // TODO: implement me
-  (void) id;
 }
 
 void KEYThemeCollector::startSlides()

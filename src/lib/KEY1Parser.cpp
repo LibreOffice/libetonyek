@@ -24,10 +24,9 @@ KEY1Parser::~KEY1Parser()
 {
 }
 
-IWORKXMLContextPtr_t KEY1Parser::makeDocumentContext(IWORKXMLParserState &state) const
+IWORKXMLContextPtr_t KEY1Parser::createDocumentContext()
 {
   // TODO: implement me
-  (void) state;
   return IWORKXMLContextPtr_t();
 }
 

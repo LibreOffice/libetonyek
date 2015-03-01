@@ -30,7 +30,10 @@ bool IWORKStyle::link(const IWORKStylesheetPtr_t &stylesheet)
   IWORKStylesheetPtr_t currentStylesheet = stylesheet;
 
   if (currentStylesheet && (m_ident == m_parentIdent))
+  {
+    assert(currentStylesheet->parent != currentStylesheet);
     currentStylesheet = currentStylesheet->parent;
+  }
 
   if (!currentStylesheet)
     return false;
@@ -62,6 +65,11 @@ boost::any IWORKStyle::lookup(const char *property, const IWORKStyleStack &stack
     value = stack.find(property, true);
 
   return value;
+}
+
+const boost::optional<std::string> &IWORKStyle::getIdent() const
+{
+  return m_ident;
 }
 
 }

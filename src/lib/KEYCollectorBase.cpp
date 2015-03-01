@@ -26,69 +26,6 @@ using boost::optional;
 namespace libetonyek
 {
 
-namespace
-{
-
-/** Return value, either directly or by its ID.
-  *
-  * If the input is not a reference, save value to @c map for future use.
-  *
-  * @arg[in] id the value's ID
-  * @arg[in] value a possible value
-  * @arg[in] ref indicator whether the input should be handled as a
-  *   value or a reference
-  * @arg[in] map the map to use to retrieve the value by ID or to save a
-  *   new value
-  * @return the value
-  */
-template<class T>
-T getValue(const optional<ID_t> &id, const T &value, const bool ref, boost::unordered_map<ID_t, T> &map)
-{
-  T retval;
-
-  if (ref)
-  {
-    if (bool(id))
-    {
-      const typename boost::unordered_map<ID_t, T>::const_iterator it = map.find(get(id));
-      if (map.end() != it)
-      {
-        retval = it->second;
-      }
-      else
-      {
-        ETONYEK_DEBUG_MSG(("item with ID %s does not exist\n", get(id).c_str()));
-      }
-    }
-    else
-    {
-      ETONYEK_DEBUG_MSG(("reference without ID\n"));
-    }
-  }
-  else
-  {
-    retval = value;
-    if (id)
-      map[get(id)] = value;
-  }
-
-  return retval;
-}
-
-/** Return value by its ID.
-  *
-  * @arg[in] id the value's ID
-  * @arg[in] map the map to use to retrieve the value
-  * @return the value
-  */
-template<class T>
-T getValue(const optional<ID_t> &id, boost::unordered_map<ID_t, T> &map)
-{
-  return getValue(id, T(), true, map);
-}
-
-}
-
 KEYCollectorBase::Level::Level()
   : m_geometry()
   , m_graphicStyle()
@@ -96,10 +33,8 @@ KEYCollectorBase::Level::Level()
 {
 }
 
-KEYCollectorBase::KEYCollectorBase(KEYDictionary &dict)
-  : m_dict(dict)
-  , m_currentLayer()
-  , m_levelStack()
+KEYCollectorBase::KEYCollectorBase()
+  : m_levelStack()
   , m_objectsStack()
   , m_currentPath()
   , m_currentText()
@@ -130,79 +65,46 @@ KEYCollectorBase::~KEYCollectorBase()
   assert(!m_currentText);
 }
 
-void KEYCollectorBase::collectCellStyle(const boost::optional<ID_t> &id,
-                                        const boost::optional<IWORKPropertyMap> &props,
-                                        const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-                                        const bool ref, const bool anonymous)
+void KEYCollectorBase::collectCellStyle(const IWORKStylePtr_t &style, const bool anonymous)
 {
   // TODO: implement me
-  (void) id;
-  (void) props;
-  (void) ident;
-  (void) parentIdent;
-  (void) ref;
+  (void) style;
   (void) anonymous;
 }
 
-void KEYCollectorBase::collectCharacterStyle(const optional<ID_t> &id,
-                                             const boost::optional<IWORKPropertyMap> &props,
-                                             const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-                                             const bool ref, const bool anonymous)
+void KEYCollectorBase::collectCharacterStyle(const IWORKStylePtr_t &style, const bool anonymous)
 {
   if (m_collecting)
   {
     assert(m_currentStylesheet);
 
-    IWORKStylePtr_t newStyle;
-    // TODO: handle default style properties
-    if (!ref && props)
-      newStyle.reset(new IWORKStyle(get(props), ident, parentIdent));
-
-    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.m_characterStyles);
     if (bool(style))
     {
-      if (ident && !anonymous)
-        m_currentStylesheet->m_styles[get(ident)] = style;
-      if (!ref)
-        m_newStyles.push_back(style);
+      if (style->getIdent() && !anonymous)
+        m_currentStylesheet->m_styles[get(style->getIdent())] = style;
+      m_newStyles.push_back(style);
     }
   }
 }
 
-void KEYCollectorBase::collectConnectionStyle(const boost::optional<ID_t> &id,
-                                              const boost::optional<IWORKPropertyMap> &props,
-                                              const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-                                              const bool ref, const bool anonymous)
+void KEYCollectorBase::collectConnectionStyle(const IWORKStylePtr_t &style, const bool anonymous)
 {
   // TODO: implement me
-  (void) id;
-  (void) props;
-  (void) ident;
-  (void) parentIdent;
-  (void) ref;
+  (void) style;
   (void) anonymous;
 }
 
-void KEYCollectorBase::collectGraphicStyle(const optional<ID_t> &id,
-                                           const boost::optional<IWORKPropertyMap> &props,
-                                           const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-                                           const bool ref, const bool anonymous)
+void KEYCollectorBase::collectGraphicStyle(const IWORKStylePtr_t &style, const bool anonymous)
 {
   if (m_collecting)
   {
     assert(m_currentStylesheet);
 
-    IWORKStylePtr_t newStyle;
-    if (!ref && props)
-      newStyle.reset(new IWORKStyle(get(props), ident, parentIdent));
-
-    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.m_graphicStyles);
     if (bool(style))
     {
-      if (ident && !anonymous)
-        m_currentStylesheet->m_styles[get(ident)] = style;
-      if (!ref)
-        m_newStyles.push_back(style);
+      if (style->getIdent() && !anonymous)
+        m_currentStylesheet->m_styles[get(style->getIdent())] = style;
+      m_newStyles.push_back(style);
     }
 
     if (m_layerOpened)
@@ -215,26 +117,17 @@ void KEYCollectorBase::collectGraphicStyle(const optional<ID_t> &id,
   }
 }
 
-void KEYCollectorBase::collectLayoutStyle(const optional<ID_t> &id,
-                                          const boost::optional<IWORKPropertyMap> &props,
-                                          const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-                                          const bool ref, const bool anonymous)
+void KEYCollectorBase::collectLayoutStyle(const IWORKStylePtr_t &style, const bool anonymous)
 {
   if (m_collecting)
   {
     assert(m_currentStylesheet);
 
-    IWORKStylePtr_t newStyle;
-    if (!ref && props)
-      newStyle.reset(new IWORKStyle(get(props), ident, parentIdent));
-
-    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.m_layoutStyles);
     if (bool(style))
     {
-      if (ident && !anonymous)
-        m_currentStylesheet->m_styles[get(ident)] = style;
-      if (!ref)
-        m_newStyles.push_back(style);
+      if (style->getIdent() && !anonymous)
+        m_currentStylesheet->m_styles[get(style->getIdent())] = style;
+      m_newStyles.push_back(style);
 
       if (bool(m_currentText))
         m_currentText->setLayoutStyle(style);
@@ -242,147 +135,82 @@ void KEYCollectorBase::collectLayoutStyle(const optional<ID_t> &id,
   }
 }
 
-void KEYCollectorBase::collectListStyle(const boost::optional<ID_t> &id,
-                                        const boost::optional<IWORKPropertyMap> &props,
-                                        const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-                                        const bool ref, const bool anonymous)
+void KEYCollectorBase::collectListStyle(const IWORKStylePtr_t &style, const bool anonymous)
 {
   // TODO: implement me
-  (void) id;
-  (void) props;
-  (void) ident;
-  (void) parentIdent;
-  (void) ref;
+  (void) style;
   (void) anonymous;
 }
 
-void KEYCollectorBase::collectParagraphStyle(const optional<ID_t> &id,
-                                             const boost::optional<IWORKPropertyMap> &props,
-                                             const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-                                             const bool ref, const bool anonymous)
+void KEYCollectorBase::collectParagraphStyle(const IWORKStylePtr_t &style, const bool anonymous)
 {
   if (m_collecting)
   {
     assert(m_currentStylesheet);
 
-    IWORKStylePtr_t newStyle;
-    if (!ref && props)
-      newStyle.reset(new IWORKStyle(get(props), ident, parentIdent));
-
-    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.m_paragraphStyles);
     if (bool(style))
     {
-      if (ident && !anonymous)
-        m_currentStylesheet->m_styles[get(ident)] = style;
-      if (!ref)
-        m_newStyles.push_back(style);
+      if (style->getIdent() && !anonymous)
+        m_currentStylesheet->m_styles[get(style->getIdent())] = style;
+      m_newStyles.push_back(style);
     }
   }
 }
 
-void KEYCollectorBase::collectPlaceholderStyle(const boost::optional<ID_t> &id,
-                                               const boost::optional<IWORKPropertyMap> &props,
-                                               const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-                                               const bool ref, const bool anonymous)
+void KEYCollectorBase::collectPlaceholderStyle(const IWORKStylePtr_t &style, const bool anonymous)
 {
   if (m_collecting)
   {
     assert(m_currentStylesheet);
 
-    IWORKStylePtr_t newStyle;
-    if (!ref && props)
-      newStyle.reset(new IWORKStyle(get(props), ident, parentIdent));
-
-    const IWORKStylePtr_t style = getValue(id, newStyle, ref, m_dict.m_placeholderStyles);
     if (bool(style))
     {
-      if (ident && !anonymous)
-        m_currentStylesheet->m_styles[get(ident)] = style;
-      if (!ref)
-        m_newStyles.push_back(style);
+      if (style->getIdent() && !anonymous)
+        m_currentStylesheet->m_styles[get(style->getIdent())] = style;
+      m_newStyles.push_back(style);
     }
   }
 }
 
-void KEYCollectorBase::collectSlideStyle(const boost::optional<ID_t> &id,
-                                         const boost::optional<IWORKPropertyMap> &props,
-                                         const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-                                         const bool ref, const bool anonymous)
+void KEYCollectorBase::collectSlideStyle(const IWORKStylePtr_t &style, const bool anonymous)
 {
   // TODO: implement me
-  (void) id;
-  (void) props;
-  (void) ident;
-  (void) parentIdent;
-  (void) ref;
+  (void) style;
   (void) anonymous;
 }
 
-void KEYCollectorBase::collectTabularStyle(const boost::optional<ID_t> &id,
-                                           const boost::optional<IWORKPropertyMap> &props,
-                                           const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-                                           const bool ref, const bool anonymous)
+void KEYCollectorBase::collectTabularStyle(const IWORKStylePtr_t &style, const bool anonymous)
 {
   // TODO: implement me
-  (void) id;
-  (void) props;
-  (void) ident;
-  (void) parentIdent;
-  (void) ref;
+  (void) style;
   (void) anonymous;
 }
 
-void KEYCollectorBase::collectVectorStyle(const boost::optional<ID_t> &id,
-                                          const boost::optional<IWORKPropertyMap> &props,
-                                          const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent,
-                                          const bool ref, const bool anonymous)
+void KEYCollectorBase::collectVectorStyle(const IWORKStylePtr_t &style, const bool anonymous)
 {
   // TODO: implement me
-  (void) id;
-  (void) props;
-  (void) ident;
-  (void) parentIdent;
-  (void) ref;
+  (void) style;
   (void) anonymous;
 }
 
-void KEYCollectorBase::collectGeometry(const boost::optional<ID_t> &,
-                                       boost::optional<IWORKSize> &naturalSize, boost::optional<IWORKSize> &size,
-                                       boost::optional<IWORKPosition> &position, boost::optional<double> &angle,
-                                       boost::optional<double> &shearXAngle, boost::optional<double> &shearYAngle,
-                                       boost::optional<bool> &horizontalFlip, boost::optional<bool> &verticalFlip,
-                                       boost::optional<bool> &aspectRatioLocked, boost::optional<bool> &sizesLocked)
+void KEYCollectorBase::collectGeometry(const IWORKGeometryPtr_t &geometry)
 {
   if (m_collecting)
   {
     assert(!m_levelStack.empty());
-
-    assert(naturalSize && position);
-
-    const IWORKGeometryPtr_t geometry(new IWORKGeometry);
-    geometry->m_naturalSize = get(naturalSize);
-    geometry->m_size = bool(size) ? get(size) : get(naturalSize);
-    geometry->m_position = get(position);
-    geometry->m_angle = angle;
-    geometry->m_shearXAngle = shearXAngle;
-    geometry->m_shearYAngle = shearYAngle;
-    geometry->m_horizontalFlip = horizontalFlip;
-    geometry->m_verticalFlip = verticalFlip;
-    geometry->m_aspectRatioLocked = aspectRatioLocked;
-    geometry->m_sizesLocked = sizesLocked;
 
     m_levelStack.top().m_geometry = geometry;
     m_levelStack.top().m_trafo = makeTransformation(*geometry) * m_levelStack.top().m_trafo;
   }
 }
 
-void KEYCollectorBase::collectBezier(const optional<ID_t> &id, const IWORKPathPtr_t &path, const bool ref)
+void KEYCollectorBase::collectBezier(const IWORKPathPtr_t &path)
 {
   if (m_collecting)
-    m_currentPath = getValue(id, path, ref, m_dict.m_beziers);
+    m_currentPath = path;
 }
 
-void KEYCollectorBase::collectGroup(const optional<ID_t> &, const IWORKGroupPtr_t &group)
+void KEYCollectorBase::collectGroup(const IWORKGroupPtr_t &group)
 {
   if (m_collecting)
   {
@@ -395,7 +223,7 @@ void KEYCollectorBase::collectGroup(const optional<ID_t> &, const IWORKGroupPtr_
   }
 }
 
-void KEYCollectorBase::collectImage(const optional<ID_t> &id, const IWORKImagePtr_t &image)
+void KEYCollectorBase::collectImage(const IWORKImagePtr_t &image)
 {
   if (m_collecting)
   {
@@ -404,13 +232,11 @@ void KEYCollectorBase::collectImage(const optional<ID_t> &id, const IWORKImagePt
 
     image->m_geometry = m_levelStack.top().m_geometry;
     m_levelStack.top().m_geometry.reset();
-    if (id)
-      m_dict.m_images[get(id)] = image;
     m_objectsStack.top().push_back(makeObject(image, m_levelStack.top().m_trafo));
   }
 }
 
-void KEYCollectorBase::collectLine(const optional<ID_t> &, const IWORKLinePtr_t &line)
+void KEYCollectorBase::collectLine(const IWORKLinePtr_t &line)
 {
   if (m_collecting)
   {
@@ -423,7 +249,7 @@ void KEYCollectorBase::collectLine(const optional<ID_t> &, const IWORKLinePtr_t 
   }
 }
 
-void KEYCollectorBase::collectShape(const optional<ID_t> &)
+void KEYCollectorBase::collectShape()
 {
   if (m_collecting)
   {
@@ -456,24 +282,24 @@ void KEYCollectorBase::collectShape(const optional<ID_t> &)
   }
 }
 
-void KEYCollectorBase::collectBezierPath(const optional<ID_t> &)
+void KEYCollectorBase::collectBezierPath()
 {
   // nothing needed
 }
 
-void KEYCollectorBase::collectPolygonPath(const optional<ID_t> &, const IWORKSize &size, const unsigned edges)
+void KEYCollectorBase::collectPolygonPath(const IWORKSize &size, const unsigned edges)
 {
   if (m_collecting)
     m_currentPath = makePolygonPath(size, edges);
 }
 
-void KEYCollectorBase::collectRoundedRectanglePath(const optional<ID_t> &, const IWORKSize &size, const double radius)
+void KEYCollectorBase::collectRoundedRectanglePath(const IWORKSize &size, const double radius)
 {
   if (m_collecting)
     m_currentPath = makeRoundedRectanglePath(size, radius);
 }
 
-void KEYCollectorBase::collectArrowPath(const optional<ID_t> &, const IWORKSize &size, const double headWidth, const double stemRelYPos, bool const doubleSided)
+void KEYCollectorBase::collectArrowPath(const IWORKSize &size, const double headWidth, const double stemRelYPos, bool const doubleSided)
 {
   if (m_collecting)
   {
@@ -484,19 +310,19 @@ void KEYCollectorBase::collectArrowPath(const optional<ID_t> &, const IWORKSize 
   }
 }
 
-void KEYCollectorBase::collectStarPath(const optional<ID_t> &, const IWORKSize &size, const unsigned points, const double innerRadius)
+void KEYCollectorBase::collectStarPath(const IWORKSize &size, const unsigned points, const double innerRadius)
 {
   if (m_collecting)
     m_currentPath = makeStarPath(size, points, innerRadius);
 }
 
-void KEYCollectorBase::collectConnectionPath(const optional<ID_t> &, const IWORKSize &size, const double middleX, const double middleY)
+void KEYCollectorBase::collectConnectionPath(const IWORKSize &size, const double middleX, const double middleY)
 {
   if (m_collecting)
     m_currentPath = makeConnectionPath(size, middleX, middleY);
 }
 
-void KEYCollectorBase::collectCalloutPath(const optional<ID_t> &, const IWORKSize &size, const double radius, const double tailSize, const double tailX, const double tailY, bool quoteBubble)
+void KEYCollectorBase::collectCalloutPath(const IWORKSize &size, const double radius, const double tailSize, const double tailX, const double tailY, bool quoteBubble)
 {
   if (m_collecting)
   {
@@ -507,46 +333,39 @@ void KEYCollectorBase::collectCalloutPath(const optional<ID_t> &, const IWORKSiz
   }
 }
 
-void KEYCollectorBase::collectData(const boost::optional<ID_t> &id, const RVNGInputStreamPtr_t &stream, const boost::optional<std::string> &displayName, const boost::optional<unsigned> &type, const bool ref)
+void KEYCollectorBase::collectData(const IWORKDataPtr_t &data)
 {
   if (m_collecting)
-  {
-    IWORKDataPtr_t newData;
-
-    if (!ref)
-    {
-      newData.reset(new IWORKData());
-      newData->m_stream = stream;
-      newData->m_displayName = displayName;
-      newData->m_type = type;
-    }
-
-    assert(!m_currentData);
-    m_currentData = getValue(id, newData, ref, m_dict.m_data);
-  }
+    m_currentData = data;
 }
 
-void KEYCollectorBase::collectUnfiltered(const boost::optional<ID_t> &id, const boost::optional<IWORKSize> &size, const bool ref)
+IWORKMediaContentPtr_t KEYCollectorBase::collectUnfiltered(const boost::optional<IWORKSize> &size)
+{
+  IWORKMediaContentPtr_t newUnfiltered;
+
+  if (m_collecting)
+  {
+    newUnfiltered.reset(new IWORKMediaContent());
+    newUnfiltered->m_size = size;
+    newUnfiltered->m_data = m_currentData;
+
+    m_currentData.reset();
+  }
+
+  return newUnfiltered;
+}
+
+void KEYCollectorBase::insertUnfiltered(const IWORKMediaContentPtr_t &content)
 {
   if (m_collecting)
   {
-    IWORKMediaContentPtr_t newUnfiltered;
-
-    if (!ref)
-    {
-      newUnfiltered.reset(new IWORKMediaContent());
-      newUnfiltered->m_size = size;
-      newUnfiltered->m_data = m_currentData;
-
-      m_currentData.reset();
-    }
-
     assert(!m_currentUnfiltered);
-    m_currentUnfiltered = getValue(id, newUnfiltered, ref, m_dict.m_unfiltereds);
+
+    m_currentUnfiltered = content;
   }
 }
 
-void KEYCollectorBase::collectFiltered(const boost::optional<ID_t> &, const boost::optional<IWORKSize> &size)
+void KEYCollectorBase::collectFiltered(const boost::optional<IWORKSize> &size)
 {
   if (m_collecting)
   {
@@ -561,7 +380,7 @@ void KEYCollectorBase::collectFiltered(const boost::optional<ID_t> &, const boos
   }
 }
 
-void KEYCollectorBase::collectLeveled(const boost::optional<ID_t> &, const boost::optional<IWORKSize> &size)
+void KEYCollectorBase::collectLeveled(const boost::optional<IWORKSize> &size)
 {
   if (m_collecting)
   {
@@ -576,37 +395,43 @@ void KEYCollectorBase::collectLeveled(const boost::optional<ID_t> &, const boost
   }
 }
 
-void KEYCollectorBase::collectFilteredImage(const boost::optional<ID_t> &id, const bool ref)
+IWORKMediaContentPtr_t KEYCollectorBase::collectFilteredImage()
+{
+  IWORKMediaContentPtr_t newFilteredImage;
+
+  if (m_collecting)
+  {
+    // If a filter is applied to an image, the new image is saved next
+    // to the original. So all we need is to pick the right one. We
+    // can happily ignore the whole filter-properties section :-)
+    // NOTE: Leveled is apparently used to save the result of using
+    // the "Enhance" button.
+    if (bool(m_currentFiltered))
+      newFilteredImage = m_currentFiltered;
+    else if (bool(m_currentLeveled))
+      newFilteredImage = m_currentLeveled;
+    else
+      newFilteredImage = m_currentUnfiltered;
+
+    m_currentFiltered.reset();
+    m_currentLeveled.reset();
+    m_currentUnfiltered.reset();
+  }
+
+  return newFilteredImage;
+}
+
+void KEYCollectorBase::insertFilteredImage(const IWORKMediaContentPtr_t &content)
 {
   if (m_collecting)
   {
-    IWORKMediaContentPtr_t newFilteredImage;
-
-    if (!ref)
-    {
-      // If a filter is applied to an image, the new image is saved next
-      // to the original. So all we need is to pick the right one. We
-      // can happily ignore the whole filter-properties section :-)
-      // NOTE: Leveled is apparently used to save the result of using
-      // the "Enhance" button.
-      if (bool(m_currentFiltered))
-        newFilteredImage = m_currentFiltered;
-      else if (bool(m_currentLeveled))
-        newFilteredImage = m_currentLeveled;
-      else
-        newFilteredImage = m_currentUnfiltered;
-
-      m_currentFiltered.reset();
-      m_currentLeveled.reset();
-      m_currentUnfiltered.reset();
-    }
-
     assert(!m_currentContent);
-    m_currentContent = getValue(id, newFilteredImage, ref, m_dict.m_filteredImages);
+
+    m_currentContent = content;
   }
 }
 
-void KEYCollectorBase::collectMovieMedia(const boost::optional<ID_t> &)
+void KEYCollectorBase::collectMovieMedia()
 {
   if (m_collecting)
   {
@@ -621,7 +446,7 @@ void KEYCollectorBase::collectMovieMedia(const boost::optional<ID_t> &)
   }
 }
 
-void KEYCollectorBase::collectMedia(const optional<ID_t> &)
+void KEYCollectorBase::collectMedia()
 {
   if (m_collecting)
   {
@@ -641,45 +466,51 @@ void KEYCollectorBase::collectMedia(const optional<ID_t> &)
   }
 }
 
-void KEYCollectorBase::collectLayer(const optional<ID_t> &, bool)
+KEYLayerPtr_t KEYCollectorBase::collectLayer()
 {
+  KEYLayerPtr_t layer;
+
   if (m_collecting)
   {
     assert(m_layerOpened);
     assert(!m_objectsStack.empty());
 
-    m_currentLayer.reset(new KEYLayer());
-    m_currentLayer->m_objects = m_objectsStack.top();
+    layer.reset(new KEYLayer());
+    layer->m_objects = m_objectsStack.top();
     m_objectsStack.pop();
   }
+
+  return layer;
 }
 
-void KEYCollectorBase::collectStylesheet(const boost::optional<ID_t> &id, const boost::optional<ID_t> &parent)
+IWORKStylesheetPtr_t KEYCollectorBase::collectStylesheet(const IWORKStylesheetPtr_t &parent)
 {
+  IWORKStylesheetPtr_t stylesheet;
+
   if (m_collecting)
   {
     assert(m_currentStylesheet);
+    assert(parent != m_currentStylesheet);
 
-    if (parent)
-      m_currentStylesheet->parent = m_dict.m_stylesheets[get(parent)];
-
-    if (id)
-      m_dict.m_stylesheets[get(id)] = m_currentStylesheet;
+    m_currentStylesheet->parent = parent;
 
     for_each(m_newStyles.begin(), m_newStyles.end(), boost::bind(&IWORKStyle::link, _1, m_currentStylesheet));
 
+    stylesheet = m_currentStylesheet;
     m_currentStylesheet.reset(new IWORKStylesheet());
     m_newStyles.clear();
   }
+
+  return stylesheet;
 }
 
-void KEYCollectorBase::collectText(const optional<ID_t> &style, const std::string &text)
+void KEYCollectorBase::collectText(const IWORKStylePtr_t &style, const std::string &text)
 {
   if (m_collecting)
   {
     assert(bool(m_currentText));
 
-    m_currentText->insertText(text, getValue(style, m_dict.m_characterStyles));
+    m_currentText->insertText(text, style);
   }
 }
 
@@ -703,53 +534,50 @@ void KEYCollectorBase::collectLineBreak()
   }
 }
 
-void KEYCollectorBase::collectTextPlaceholder(const optional<ID_t> &id, const optional<ID_t> &style, const bool title, const bool ref)
+KEYPlaceholderPtr_t KEYCollectorBase::collectTextPlaceholder(const IWORKStylePtr_t &style, const bool title)
+{
+  KEYPlaceholderPtr_t placeholder;
+
+  if (m_collecting)
+  {
+    assert(bool(m_currentText));
+
+    placeholder.reset(new KEYPlaceholder());
+    placeholder->m_title = title;
+    placeholder->m_style = style;
+    if (bool(placeholder->m_style))
+    {
+      const KEYPlaceholderStyle placeholderStyle(placeholder->m_style, m_styleStack);
+      placeholder->m_geometry = placeholderStyle.getGeometry();
+    }
+    if (!m_currentText->empty())
+    {
+      m_currentText->setBoundingBox(placeholder->m_geometry);
+      placeholder->m_text = m_currentText;
+    }
+
+    m_currentText.reset();
+  }
+
+  return placeholder;
+}
+
+void KEYCollectorBase::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
 {
   if (m_collecting)
   {
-    KEYPlaceholderPtr_t placeholder;
-    KEYPlaceholderMap_t &placeholderMap = title ? m_dict.m_titlePlaceholders : m_dict.m_bodyPlaceholders;
+    assert(!m_objectsStack.empty());
 
-    if (ref)
+    if (bool(placeholder))
     {
-      assert(!m_objectsStack.empty());
-      if (id)
-        placeholder = placeholderMap[get(id)];
-
-      if (bool(placeholder))
-      {
-        IWORKTransformation trafo;
-        if (bool(placeholder->m_geometry))
-          trafo = makeTransformation(*placeholder->m_geometry);
-        m_objectsStack.top().push_back(makeObject(placeholder, trafo * m_levelStack.top().m_trafo));
-      }
-      else
-      {
-        ETONYEK_DEBUG_MSG(("no text placeholder found\n"));
-      }
+      IWORKTransformation trafo;
+      if (bool(placeholder->m_geometry))
+        trafo = makeTransformation(*placeholder->m_geometry);
+      m_objectsStack.top().push_back(makeObject(placeholder, trafo * m_levelStack.top().m_trafo));
     }
     else
     {
-      assert(bool(m_currentText));
-
-      placeholder.reset(new KEYPlaceholder());
-      placeholder->m_title = title;
-      placeholder->m_style = getValue(style, m_dict.m_placeholderStyles);
-      if (bool(placeholder->m_style))
-      {
-        const KEYPlaceholderStyle placeholderStyle(placeholder->m_style, m_styleStack);
-        placeholder->m_geometry = placeholderStyle.getGeometry();
-      }
-      if (!m_currentText->empty())
-      {
-        m_currentText->setBoundingBox(placeholder->m_geometry);
-        placeholder->m_text = m_currentText;
-      }
-
-      m_currentText.reset();
-
-      if (id)
-        placeholderMap[get(id)] = placeholder;
+      ETONYEK_DEBUG_MSG(("no text placeholder found\n"));
     }
   }
 }
@@ -852,7 +680,6 @@ void KEYCollectorBase::startLayer()
   {
     assert(!m_layerOpened);
     assert(m_objectsStack.empty());
-    assert(!m_currentLayer);
 
     m_objectsStack.push(IWORKObjectList_t());
     m_layerOpened = true;
@@ -873,7 +700,6 @@ void KEYCollectorBase::endLayer()
 
     endLevel();
 
-    m_currentLayer.reset();
     m_layerOpened = false;
 
     assert(m_objectsStack.empty());
@@ -905,13 +731,13 @@ void KEYCollectorBase::endGroup()
   }
 }
 
-void KEYCollectorBase::startParagraph(const optional<ID_t> &style)
+void KEYCollectorBase::startParagraph(const IWORKStylePtr_t &style)
 {
   if (m_collecting)
   {
     assert(bool(m_currentText));
 
-    m_currentText->openParagraph(getValue(style, m_dict.m_paragraphStyles));
+    m_currentText->openParagraph(style);
   }
 }
 
@@ -981,11 +807,6 @@ bool KEYCollectorBase::isCollecting() const
 void KEYCollectorBase::setCollecting(bool collecting)
 {
   m_collecting = collecting;
-}
-
-const KEYLayerPtr_t &KEYCollectorBase::getLayer() const
-{
-  return m_currentLayer;
 }
 
 const IWORKObjectList_t &KEYCollectorBase::getNotes() const

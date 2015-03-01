@@ -20,15 +20,15 @@ struct KEYDictionary;
 class KEYThemeCollector : public KEYCollectorBase
 {
 public:
-  KEYThemeCollector(KEYDictionary &dict, KEYLayerMap_t &masterPages, IWORKSize &size);
+  explicit KEYThemeCollector(IWORKSize &size);
   virtual ~KEYThemeCollector();
 
   // collector functions
 
   virtual void collectPresentation(const boost::optional<IWORKSize> &size);
 
-  virtual void collectLayer(const boost::optional<ID_t> &id, bool ref);
-  virtual void collectPage(const boost::optional<ID_t> &id);
+  virtual void insertLayer(const KEYLayerPtr_t &layer);
+  virtual void collectPage();
 
   virtual void startSlides();
   virtual void endSlides();
@@ -41,7 +41,6 @@ public:
   virtual void endLayer();
 
 private:
-  KEYLayerMap_t &m_masterPages;
   IWORKSize &m_size;
 };
 

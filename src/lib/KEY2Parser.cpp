@@ -22,13 +22,14 @@
 #include "IWORKTabularInfoContext.h"
 #include "IWORKToken.h"
 #include "IWORKTypes.h"
-#include "IWORKXMLContextBase.h"
 #include "IWORKXMLContexts.h"
-#include "IWORKXMLParserState.h"
 #include "IWORKXMLReader.h"
+#include "KEY2ParserState.h"
 #include "KEY2StyleContext.h"
 #include "KEY2Token.h"
+#include "KEY2XMLContextBase.h"
 #include "KEYCollector.h"
+#include "KEYDictionary.h"
 #include "KEYTypes.h"
 
 using boost::get_optional_value_or;
@@ -67,10 +68,10 @@ unsigned getVersion(const int token)
 namespace
 {
 
-class RefContext : public IWORKXMLEmptyContextBase
+class RefContext : public KEY2XMLEmptyContextBase
 {
 public:
-  RefContext(IWORKXMLParserState &state, optional<ID_t> &ref);
+  RefContext(KEY2ParserState &state, optional<ID_t> &ref);
 
 private:
   virtual void endOfElement();
@@ -79,8 +80,8 @@ private:
   optional<ID_t> &m_ref;
 };
 
-RefContext::RefContext(IWORKXMLParserState &state, optional<ID_t> &ref)
-  : IWORKXMLEmptyContextBase(state)
+RefContext::RefContext(KEY2ParserState &state, optional<ID_t> &ref)
+  : KEY2XMLEmptyContextBase(state)
   , m_ref(ref)
 {
 }
@@ -95,17 +96,17 @@ void RefContext::endOfElement()
 namespace
 {
 
-class MetadataContext : public IWORKXMLElementContextBase
+class MetadataContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit MetadataContext(IWORKXMLParserState &state);
+  explicit MetadataContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-MetadataContext::MetadataContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+MetadataContext::MetadataContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -120,10 +121,10 @@ IWORKXMLContextPtr_t MetadataContext::element(int)
 namespace
 {
 
-class StylesContext : public IWORKXMLElementContextBase
+class StylesContext : public KEY2XMLElementContextBase
 {
 public:
-  StylesContext(IWORKXMLParserState &state, bool anonymous);
+  StylesContext(KEY2ParserState &state, bool anonymous);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -133,8 +134,8 @@ private:
   const bool m_anonymous;
 };
 
-StylesContext::StylesContext(IWORKXMLParserState &state, const bool anonymous)
-  : IWORKXMLElementContextBase(state)
+StylesContext::StylesContext(KEY2ParserState &state, const bool anonymous)
+  : KEY2XMLElementContextBase(state)
   , m_anonymous(anonymous)
 {
 }
@@ -179,10 +180,10 @@ void StylesContext::endOfElement()
 namespace
 {
 
-class StylesheetContext : public IWORKXMLElementContextBase
+class StylesheetContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit StylesheetContext(IWORKXMLParserState &state);
+  explicit StylesheetContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -192,8 +193,8 @@ private:
   optional<ID_t> m_parent;
 };
 
-StylesheetContext::StylesheetContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+StylesheetContext::StylesheetContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -214,7 +215,20 @@ IWORKXMLContextPtr_t StylesheetContext::element(const int name)
 
 void StylesheetContext::endOfElement()
 {
-  getCollector()->collectStylesheet(getId(), m_parent);
+  IWORKStylesheetPtr_t parent;
+
+  if (m_parent)
+  {
+    assert(getId() != m_parent);
+
+    const IWORKStylesheetMap_t::const_iterator it = getState().getDictionary().m_stylesheets.find(get(m_parent));
+    if (getState().getDictionary().m_stylesheets.end() != it)
+      parent = it->second;
+  }
+
+  const IWORKStylesheetPtr_t stylesheet = getCollector()->collectStylesheet(parent);
+  if (bool(stylesheet) && getId())
+    getState().getDictionary().m_stylesheets[get(getId())] = stylesheet;
 }
 
 }
@@ -222,13 +236,12 @@ void StylesheetContext::endOfElement()
 namespace
 {
 
-class ProxyMasterLayerContext : public IWORKXMLElementContextBase
+class ProxyMasterLayerContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit ProxyMasterLayerContext(IWORKXMLParserState &state);
+  explicit ProxyMasterLayerContext(KEY2ParserState &state);
 
 private:
-  virtual void startOfElement();
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
@@ -236,15 +249,10 @@ private:
   optional<ID_t> m_ref;
 };
 
-ProxyMasterLayerContext::ProxyMasterLayerContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+ProxyMasterLayerContext::ProxyMasterLayerContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
   , m_ref()
 {
-}
-
-void ProxyMasterLayerContext::startOfElement()
-{
-  getCollector()->startLayer();
 }
 
 IWORKXMLContextPtr_t ProxyMasterLayerContext::element(const int name)
@@ -260,8 +268,12 @@ IWORKXMLContextPtr_t ProxyMasterLayerContext::element(const int name)
 
 void ProxyMasterLayerContext::endOfElement()
 {
-  getCollector()->collectLayer(m_ref, true);
-  getCollector()->endLayer();
+  if (m_ref)
+  {
+    const KEYLayerMap_t::const_iterator it = getState().getDictionary().m_layers.find(get(m_ref));
+    if (getState().getDictionary().m_layers.end() != it)
+      getCollector()->insertLayer(it->second);
+  }
 }
 
 }
@@ -269,10 +281,10 @@ void ProxyMasterLayerContext::endOfElement()
 namespace
 {
 
-class DataContext : public IWORKXMLEmptyContextBase
+class DataContext : public KEY2XMLEmptyContextBase
 {
 public:
-  explicit DataContext(IWORKXMLParserState &state);
+  explicit DataContext(KEY2ParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -284,8 +296,8 @@ private:
   optional<unsigned> m_type;
 };
 
-DataContext::DataContext(IWORKXMLParserState &state)
-  : IWORKXMLEmptyContextBase(state)
+DataContext::DataContext(KEY2ParserState &state)
+  : KEY2XMLEmptyContextBase(state)
 {
 }
 
@@ -314,7 +326,15 @@ void DataContext::attribute(const int name, const char *const value)
 
 void DataContext::endOfElement()
 {
-  getCollector()->collectData(getId(), m_stream, m_displayName, m_type, false);
+  IWORKDataPtr_t data(new IWORKData());
+  data->m_stream = m_stream;
+  data->m_displayName = m_displayName;
+  data->m_type = m_type;
+
+  if (!getState().isDictLocked() && getId())
+    getState().getDictionary().m_data[get(getId())] = data;
+
+  getCollector()->collectData(data);
 }
 
 }
@@ -322,10 +342,10 @@ void DataContext::endOfElement()
 namespace
 {
 
-class FilteredContext : public IWORKXMLElementContextBase
+class FilteredContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit FilteredContext(IWORKXMLParserState &state);
+  explicit FilteredContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -335,8 +355,8 @@ private:
   optional<IWORKSize> m_size;
 };
 
-FilteredContext::FilteredContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+FilteredContext::FilteredContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -355,7 +375,7 @@ IWORKXMLContextPtr_t FilteredContext::element(const int name)
 
 void FilteredContext::endOfElement()
 {
-  getCollector()->collectFiltered(getId(), m_size);
+  getCollector()->collectFiltered(m_size);
 }
 
 }
@@ -363,18 +383,18 @@ void FilteredContext::endOfElement()
 namespace
 {
 
-class LeveledContext : public IWORKXMLElementContextBase
+class LeveledContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit LeveledContext(IWORKXMLParserState &state);
+  explicit LeveledContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 };
 
-LeveledContext::LeveledContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+LeveledContext::LeveledContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -394,7 +414,7 @@ IWORKXMLContextPtr_t LeveledContext::element(const int name)
 
 void LeveledContext::endOfElement()
 {
-  getCollector()->collectLeveled(getId(), optional<IWORKSize>());
+  getCollector()->collectLeveled(optional<IWORKSize>());
 }
 
 }
@@ -402,10 +422,10 @@ void LeveledContext::endOfElement()
 namespace
 {
 
-class UnfilteredContext : public IWORKXMLElementContextBase
+class UnfilteredContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit UnfilteredContext(IWORKXMLParserState &state);
+  explicit UnfilteredContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -415,8 +435,8 @@ private:
   optional<IWORKSize> m_size;
 };
 
-UnfilteredContext::UnfilteredContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+UnfilteredContext::UnfilteredContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -435,7 +455,12 @@ IWORKXMLContextPtr_t UnfilteredContext::element(const int name)
 
 void UnfilteredContext::endOfElement()
 {
-  getCollector()->collectUnfiltered(getId(), m_size, false);
+  const IWORKMediaContentPtr_t content = getCollector()->collectUnfiltered(m_size);
+
+  if (bool(content) && getId())
+    getState().getDictionary().m_unfiltereds[get(getId())] = content;
+
+  getCollector()->insertUnfiltered(content);
 }
 
 }
@@ -443,10 +468,10 @@ void UnfilteredContext::endOfElement()
 namespace
 {
 
-class FilteredImageContext : public IWORKXMLElementContextBase
+class FilteredImageContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit FilteredImageContext(IWORKXMLParserState &state);
+  explicit FilteredImageContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -456,8 +481,8 @@ private:
   optional<ID_t> m_unfilteredId;
 };
 
-FilteredImageContext::FilteredImageContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+FilteredImageContext::FilteredImageContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -481,8 +506,16 @@ IWORKXMLContextPtr_t FilteredImageContext::element(const int name)
 void FilteredImageContext::endOfElement()
 {
   if (m_unfilteredId)
-    getCollector()->collectUnfiltered(m_unfilteredId, optional<IWORKSize>(), true);
-  getCollector()->collectFilteredImage(getId(), false);
+  {
+    const IWORKMediaContentMap_t::const_iterator it = getState().getDictionary().m_unfiltereds.find(get(m_unfilteredId));
+    if (getState().getDictionary().m_unfiltereds.end() != it)
+      getCollector()->insertUnfiltered(it->second);
+  }
+
+  const IWORKMediaContentPtr_t content = getCollector()->collectFilteredImage();
+  if (bool(content) && getId())
+    getState().getDictionary().m_filteredImages[get(getId())] = content;
+  getCollector()->insertFilteredImage(content);
 }
 
 }
@@ -490,17 +523,17 @@ void FilteredImageContext::endOfElement()
 namespace
 {
 
-class ImageMediaContext : public IWORKXMLElementContextBase
+class ImageMediaContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit ImageMediaContext(IWORKXMLParserState &state);
+  explicit ImageMediaContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-ImageMediaContext::ImageMediaContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+ImageMediaContext::ImageMediaContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -520,10 +553,10 @@ IWORKXMLContextPtr_t ImageMediaContext::element(const int name)
 namespace
 {
 
-class OtherDatasContext : public IWORKXMLElementContextBase
+class OtherDatasContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit OtherDatasContext(IWORKXMLParserState &state);
+  explicit OtherDatasContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -533,8 +566,8 @@ private:
   optional<ID_t> m_dataRef;
 };
 
-OtherDatasContext::OtherDatasContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+OtherDatasContext::OtherDatasContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
   , m_dataRef()
 {
 }
@@ -554,7 +587,15 @@ IWORKXMLContextPtr_t OtherDatasContext::element(const int name)
 
 void OtherDatasContext::endOfElement()
 {
-  getCollector()->collectData(m_dataRef, RVNGInputStreamPtr_t(), optional<string>(), optional<unsigned>(), true);
+  IWORKDataPtr_t data;
+  if (m_dataRef)
+  {
+    const IWORKDataMap_t::const_iterator it = getState().getDictionary().m_data.find(get(m_dataRef));
+    if (getState().getDictionary().m_data.end() != it)
+      data = it->second;
+  }
+
+  getCollector()->collectData(data);
 }
 
 }
@@ -562,17 +603,17 @@ void OtherDatasContext::endOfElement()
 namespace
 {
 
-class SelfContainedMovieContext : public IWORKXMLElementContextBase
+class SelfContainedMovieContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit SelfContainedMovieContext(IWORKXMLParserState &state);
+  explicit SelfContainedMovieContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-SelfContainedMovieContext::SelfContainedMovieContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+SelfContainedMovieContext::SelfContainedMovieContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -592,18 +633,18 @@ IWORKXMLContextPtr_t SelfContainedMovieContext::element(const int name)
 namespace
 {
 
-class MovieMediaContext : public IWORKXMLElementContextBase
+class MovieMediaContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit MovieMediaContext(IWORKXMLParserState &state);
+  explicit MovieMediaContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 };
 
-MovieMediaContext::MovieMediaContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+MovieMediaContext::MovieMediaContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -620,7 +661,7 @@ IWORKXMLContextPtr_t MovieMediaContext::element(const int name)
 
 void MovieMediaContext::endOfElement()
 {
-  getCollector()->collectMovieMedia(optional<ID_t>());
+  getCollector()->collectMovieMedia();
 }
 
 }
@@ -628,17 +669,17 @@ void MovieMediaContext::endOfElement()
 namespace
 {
 
-class ContentContext : public IWORKXMLElementContextBase
+class ContentContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit ContentContext(IWORKXMLParserState &state);
+  explicit ContentContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-ContentContext::ContentContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+ContentContext::ContentContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -660,10 +701,10 @@ IWORKXMLContextPtr_t ContentContext::element(const int name)
 namespace
 {
 
-class MediaContext : public IWORKXMLElementContextBase
+class MediaContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit MediaContext(IWORKXMLParserState &state);
+  explicit MediaContext(KEY2ParserState &state);
 
 private:
   virtual void startOfElement();
@@ -671,8 +712,8 @@ private:
   virtual void endOfElement();
 };
 
-MediaContext::MediaContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+MediaContext::MediaContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -696,7 +737,7 @@ IWORKXMLContextPtr_t MediaContext::element(const int name)
 
 void MediaContext::endOfElement()
 {
-  getCollector()->collectMedia(getId());
+  getCollector()->collectMedia();
   getCollector()->endLevel();
 }
 
@@ -705,10 +746,10 @@ void MediaContext::endOfElement()
 namespace
 {
 
-class PointContext : public IWORKXMLEmptyContextBase
+class PointContext : public KEY2XMLEmptyContextBase
 {
 public:
-  PointContext(IWORKXMLParserState &state, pair<optional<double>, optional<double> > &point);
+  PointContext(KEY2ParserState &state, pair<optional<double>, optional<double> > &point);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -717,8 +758,8 @@ private:
   pair<optional<double>, optional<double> > &m_point;
 };
 
-PointContext::PointContext(IWORKXMLParserState &state, pair<optional<double>, optional<double> > &point)
-  : IWORKXMLEmptyContextBase(state)
+PointContext::PointContext(KEY2ParserState &state, pair<optional<double>, optional<double> > &point)
+  : KEY2XMLEmptyContextBase(state)
   , m_point(point)
 {
 }
@@ -739,10 +780,10 @@ void PointContext::attribute(const int name, const char *const value)
 namespace
 {
 
-class ConnectionPathContext : public IWORKXMLElementContextBase
+class ConnectionPathContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit ConnectionPathContext(IWORKXMLParserState &state);
+  explicit ConnectionPathContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -753,8 +794,8 @@ private:
   pair<optional<double>, optional<double> > m_point;
 };
 
-ConnectionPathContext::ConnectionPathContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+ConnectionPathContext::ConnectionPathContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -774,7 +815,7 @@ IWORKXMLContextPtr_t ConnectionPathContext::element(const int name)
 void ConnectionPathContext::endOfElement()
 {
   if (m_size)
-    getCollector()->collectConnectionPath(getId(), get(m_size), get_optional_value_or(m_point.first, 0), get_optional_value_or(m_point.second, 0));
+    getCollector()->collectConnectionPath(get(m_size), get_optional_value_or(m_point.first, 0), get_optional_value_or(m_point.second, 0));
 }
 
 }
@@ -782,10 +823,10 @@ void ConnectionPathContext::endOfElement()
 namespace
 {
 
-class PointPathContext : public IWORKXMLElementContextBase
+class PointPathContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit PointPathContext(IWORKXMLParserState &state);
+  explicit PointPathContext(KEY2ParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -799,8 +840,8 @@ private:
   pair<optional<double>, optional<double> > m_point;
 };
 
-PointPathContext::PointPathContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+PointPathContext::PointPathContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
   , m_star(false)
   , m_doubleArrow(false) // right arrow is the default (by my decree .-)
 {
@@ -828,7 +869,7 @@ void PointPathContext::attribute(const int name, const char *const value)
     }
   }
   default :
-    IWORKXMLElementContextBase::attribute(name, value);
+    KEY2XMLElementContextBase::attribute(name, value);
     break;
   }
 }
@@ -853,9 +894,9 @@ void PointPathContext::endOfElement()
     size = get(m_size);
 
   if (m_star)
-    getCollector()->collectStarPath(getId(), size, numeric_cast<unsigned>(get_optional_value_or(m_point.first, 0.0)), get_optional_value_or(m_point.second, 0));
+    getCollector()->collectStarPath(size, numeric_cast<unsigned>(get_optional_value_or(m_point.first, 0.0)), get_optional_value_or(m_point.second, 0));
   else
-    getCollector()->collectArrowPath(getId(), size, get_optional_value_or(m_point.first, 0), get_optional_value_or(m_point.second, 0), m_doubleArrow);
+    getCollector()->collectArrowPath(size, get_optional_value_or(m_point.first, 0), get_optional_value_or(m_point.second, 0), m_doubleArrow);
 }
 
 }
@@ -863,10 +904,10 @@ void PointPathContext::endOfElement()
 namespace
 {
 
-class ScalarPathContext : public IWORKXMLElementContextBase
+class ScalarPathContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit ScalarPathContext(IWORKXMLParserState &state);
+  explicit ScalarPathContext(KEY2ParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -879,8 +920,8 @@ private:
   double m_value;
 };
 
-ScalarPathContext::ScalarPathContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+ScalarPathContext::ScalarPathContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
   , m_size()
   , m_polygon(false)
   , m_value(0)
@@ -910,7 +951,7 @@ void ScalarPathContext::attribute(const int name, const char *const value)
     break;
   }
   default :
-    IWORKXMLElementContextBase::attribute(name, value);
+    KEY2XMLElementContextBase::attribute(name, value);
     break;
   }
 }
@@ -933,9 +974,9 @@ void ScalarPathContext::endOfElement()
     size = get(m_size);
 
   if (m_polygon)
-    getCollector()->collectPolygonPath(getId(), size, numeric_cast<unsigned>(m_value));
+    getCollector()->collectPolygonPath(size, numeric_cast<unsigned>(m_value));
   else
-    getCollector()->collectRoundedRectanglePath(getId(), size, m_value);
+    getCollector()->collectRoundedRectanglePath(size, m_value);
 }
 
 }
@@ -943,10 +984,10 @@ void ScalarPathContext::endOfElement()
 namespace
 {
 
-class BezierContext : public IWORKXMLEmptyContextBase
+class BezierContext : public KEY2XMLEmptyContextBase
 {
 public:
-  explicit BezierContext(IWORKXMLParserState &state);
+  explicit BezierContext(KEY2ParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -956,8 +997,8 @@ private:
   IWORKPathPtr_t m_path;
 };
 
-BezierContext::BezierContext(IWORKXMLParserState &state)
-  : IWORKXMLEmptyContextBase(state)
+BezierContext::BezierContext(KEY2ParserState &state)
+  : KEY2XMLEmptyContextBase(state)
   , m_path()
 {
 }
@@ -970,14 +1011,16 @@ void BezierContext::attribute(const int name, const char *const value)
     m_path.reset(new IWORKPath(value));
     break;
   default :
-    IWORKXMLEmptyContextBase::attribute(name, value);
+    KEY2XMLEmptyContextBase::attribute(name, value);
     break;
   }
 }
 
 void BezierContext::endOfAttributes()
 {
-  getCollector()->collectBezier(getId(), m_path, false);
+  if (!getState().isDictLocked() && getId())
+    getState().getDictionary().m_beziers[get(getId())] = m_path;
+  getCollector()->collectBezier(m_path);
 }
 
 }
@@ -985,23 +1028,28 @@ void BezierContext::endOfAttributes()
 namespace
 {
 
-class BezierRefContext : public IWORKXMLEmptyContextBase
+class BezierRefContext : public KEY2XMLEmptyContextBase
 {
 public:
-  explicit BezierRefContext(IWORKXMLParserState &state);
+  explicit BezierRefContext(KEY2ParserState &state);
 
 private:
   virtual void endOfElement();
 };
 
-BezierRefContext::BezierRefContext(IWORKXMLParserState &state)
-  : IWORKXMLEmptyContextBase(state)
+BezierRefContext::BezierRefContext(KEY2ParserState &state)
+  : KEY2XMLEmptyContextBase(state)
 {
 }
 
 void BezierRefContext::endOfElement()
 {
-  getCollector()->collectBezier(getRef(), IWORKPathPtr_t(), true);
+  if (getRef())
+  {
+    const IWORKPathMap_t::const_iterator it = getState().getDictionary().m_beziers.find(get(getRef()));
+    if (getState().getDictionary().m_beziers.end() != it)
+      getCollector()->collectBezier(it->second);
+  }
 }
 
 }
@@ -1009,18 +1057,18 @@ void BezierRefContext::endOfElement()
 namespace
 {
 
-class BezierPathContext : public IWORKXMLElementContextBase
+class BezierPathContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit BezierPathContext(IWORKXMLParserState &state);
+  explicit BezierPathContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 };
 
-BezierPathContext::BezierPathContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+BezierPathContext::BezierPathContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -1039,7 +1087,7 @@ IWORKXMLContextPtr_t BezierPathContext::element(const int name)
 
 void BezierPathContext::endOfElement()
 {
-  getCollector()->collectBezierPath(getId());
+  getCollector()->collectBezierPath();
 }
 
 }
@@ -1047,10 +1095,10 @@ void BezierPathContext::endOfElement()
 namespace
 {
 
-class Callout2PathContext : public IWORKXMLElementContextBase
+class Callout2PathContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit Callout2PathContext(IWORKXMLParserState &state);
+  explicit Callout2PathContext(KEY2ParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -1066,8 +1114,8 @@ private:
   double m_tailSize;
 };
 
-Callout2PathContext::Callout2PathContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+Callout2PathContext::Callout2PathContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
   , m_size()
   , m_cornerRadius(0)
   , m_tailAtCenter(false)
@@ -1097,7 +1145,7 @@ void Callout2PathContext::attribute(const int name, const char *const value)
     m_tailSize = lexical_cast<double>(value);
     break;
   default :
-    IWORKXMLElementContextBase::attribute(name, value);
+    KEY2XMLElementContextBase::attribute(name, value);
     break;
   }
 }
@@ -1115,7 +1163,7 @@ IWORKXMLContextPtr_t Callout2PathContext::element(const int name)
 
 void Callout2PathContext::endOfElement()
 {
-  getCollector()->collectCalloutPath(getId(), get_optional_value_or(m_size, IWORKSize()), m_cornerRadius, m_tailSize, m_tailPosX, m_tailPosY, m_tailAtCenter);
+  getCollector()->collectCalloutPath(get_optional_value_or(m_size, IWORKSize()), m_cornerRadius, m_tailSize, m_tailPosX, m_tailPosY, m_tailAtCenter);
 }
 
 }
@@ -1123,17 +1171,17 @@ void Callout2PathContext::endOfElement()
 namespace
 {
 
-class PathContext : public IWORKXMLElementContextBase
+class PathContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit PathContext(IWORKXMLParserState &state);
+  explicit PathContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-PathContext::PathContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+PathContext::PathContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -1162,17 +1210,17 @@ IWORKXMLContextPtr_t PathContext::element(const int name)
 namespace
 {
 
-class TextStorageContext : public IWORKXMLElementContextBase
+class TextStorageContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit TextStorageContext(IWORKXMLParserState &state);
+  explicit TextStorageContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-TextStorageContext::TextStorageContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+TextStorageContext::TextStorageContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -1195,33 +1243,28 @@ namespace
 
 // NOTE: isn't it wonderful that there are two text elements in two
 // different namespaces, but with the same schema?
-class TextContext : public IWORKXMLElementContextBase
+class TextContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit TextContext(IWORKXMLParserState &state);
+  explicit TextContext(KEY2ParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-TextContext::TextContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+TextContext::TextContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
-void TextContext::attribute(const int name, const char *const value)
+void TextContext::attribute(const int name, const char *)
 {
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
-  {
-    optional<IWORKPropertyMap> dummyProps;
-    optional<string> dummyIdent;
-    optional<ID_t> id(value);
-    getCollector()->collectLayoutStyle(id, dummyProps, dummyIdent, dummyIdent, true, false);
+    getCollector()->collectLayoutStyle(IWORKStylePtr_t(), false);
     break;
-  }
   }
 }
 
@@ -1241,10 +1284,10 @@ IWORKXMLContextPtr_t TextContext::element(const int name)
 namespace
 {
 
-class ShapeContext : public IWORKXMLElementContextBase
+class ShapeContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit ShapeContext(IWORKXMLParserState &state);
+  explicit ShapeContext(KEY2ParserState &state);
 
 private:
   virtual void startOfElement();
@@ -1252,8 +1295,8 @@ private:
   virtual void endOfElement();
 };
 
-ShapeContext::ShapeContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+ShapeContext::ShapeContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -1280,7 +1323,7 @@ IWORKXMLContextPtr_t ShapeContext::element(const int name)
 
 void ShapeContext::endOfElement()
 {
-  getCollector()->collectShape(getId());
+  getCollector()->collectShape();
   getCollector()->endText();
   getCollector()->endLevel();
 }
@@ -1290,10 +1333,10 @@ void ShapeContext::endOfElement()
 namespace
 {
 
-class ImageContext : public IWORKXMLElementContextBase
+class ImageContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit ImageContext(IWORKXMLParserState &state);
+  explicit ImageContext(KEY2ParserState &state);
 
 private:
   virtual void startOfElement();
@@ -1305,8 +1348,8 @@ private:
   IWORKImagePtr_t m_image;
 };
 
-ImageContext::ImageContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+ImageContext::ImageContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
   , m_image(new IWORKImage())
 {
 }
@@ -1324,7 +1367,7 @@ void ImageContext::attribute(const int name, const char *const value)
     m_image->m_locked = bool_cast(value);
     break;
   default :
-    IWORKXMLElementContextBase::attribute(name, value);
+    KEY2XMLElementContextBase::attribute(name, value);
     break;
   }
 }
@@ -1342,7 +1385,9 @@ IWORKXMLContextPtr_t ImageContext::element(const int name)
 
 void ImageContext::endOfElement()
 {
-  getCollector()->collectImage(getId(), m_image);
+  if (!getState().isDictLocked() && getId())
+    getState().getDictionary().m_images[get(getId())] = m_image;
+  getCollector()->collectImage(m_image);
   getCollector()->endLevel();
 }
 
@@ -1351,10 +1396,10 @@ void ImageContext::endOfElement()
 namespace
 {
 
-class LineContext : public IWORKXMLElementContextBase
+class LineContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit LineContext(IWORKXMLParserState &state);
+  explicit LineContext(KEY2ParserState &state);
 
 private:
   virtual void startOfElement();
@@ -1366,8 +1411,8 @@ private:
   optional<IWORKPosition> m_tail;
 };
 
-LineContext::LineContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+LineContext::LineContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -1404,7 +1449,7 @@ void LineContext::endOfElement()
     line->m_x2 = get(m_tail).m_x;
     line->m_y2 = get(m_tail).m_y;
   }
-  getCollector()->collectLine(getId(), line);
+  getCollector()->collectLine(line);
   getCollector()->endLevel();
 }
 
@@ -1413,10 +1458,10 @@ void LineContext::endOfElement()
 namespace
 {
 
-class GroupContext : public IWORKXMLElementContextBase
+class GroupContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit GroupContext(IWORKXMLParserState &state);
+  explicit GroupContext(KEY2ParserState &state);
 
 private:
   virtual void startOfElement();
@@ -1424,8 +1469,8 @@ private:
   virtual void endOfElement();
 };
 
-GroupContext::GroupContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+GroupContext::GroupContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -1459,7 +1504,7 @@ IWORKXMLContextPtr_t GroupContext::element(const int name)
 void GroupContext::endOfElement()
 {
   IWORKGroupPtr_t group(new IWORKGroup());
-  getCollector()->collectGroup(getId(), group);
+  getCollector()->collectGroup(group);
   getCollector()->endGroup();
   getCollector()->endLevel();
 }
@@ -1469,10 +1514,10 @@ void GroupContext::endOfElement()
 namespace
 {
 
-class PlaceholderRefContext : public IWORKXMLEmptyContextBase
+class PlaceholderRefContext : public KEY2XMLEmptyContextBase
 {
 public:
-  PlaceholderRefContext(IWORKXMLParserState &state, bool title);
+  PlaceholderRefContext(KEY2ParserState &state, bool title);
 
 private:
   virtual void endOfElement();
@@ -1481,15 +1526,22 @@ private:
   const bool m_title;
 };
 
-PlaceholderRefContext::PlaceholderRefContext(IWORKXMLParserState &state, const bool title)
-  : IWORKXMLEmptyContextBase(state)
+PlaceholderRefContext::PlaceholderRefContext(KEY2ParserState &state, const bool title)
+  : KEY2XMLEmptyContextBase(state)
   , m_title(title)
 {
 }
 
 void PlaceholderRefContext::endOfElement()
 {
-  getCollector()->collectTextPlaceholder(getRef(), optional<ID_t>(), m_title, true);
+  if (getRef())
+  {
+    KEYDictionary &dict = getState().getDictionary();
+    KEYPlaceholderMap_t &placeholderMap = m_title ? dict.m_titlePlaceholders : dict.m_bodyPlaceholders;
+    const KEYPlaceholderMap_t::const_iterator it = placeholderMap.find(get(getRef()));
+    if (placeholderMap.end() != it)
+      getCollector()->insertTextPlaceholder(it->second);
+  }
 }
 
 }
@@ -1497,18 +1549,18 @@ void PlaceholderRefContext::endOfElement()
 namespace
 {
 
-class ConnectionLineContext : public IWORKXMLElementContextBase
+class ConnectionLineContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit ConnectionLineContext(IWORKXMLParserState &state);
+  explicit ConnectionLineContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 };
 
-ConnectionLineContext::ConnectionLineContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+ConnectionLineContext::ConnectionLineContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -1527,7 +1579,7 @@ IWORKXMLContextPtr_t ConnectionLineContext::element(const int name)
 
 void ConnectionLineContext::endOfElement()
 {
-  getCollector()->collectShape(getId());
+  getCollector()->collectShape();
 }
 
 }
@@ -1535,10 +1587,10 @@ void ConnectionLineContext::endOfElement()
 namespace
 {
 
-class StickyNoteContext : public IWORKXMLElementContextBase
+class StickyNoteContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit StickyNoteContext(IWORKXMLParserState &state);
+  explicit StickyNoteContext(KEY2ParserState &state);
 
 private:
   virtual void startOfElement();
@@ -1546,8 +1598,8 @@ private:
   virtual void endOfElement();
 };
 
-StickyNoteContext::StickyNoteContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+StickyNoteContext::StickyNoteContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -1583,10 +1635,10 @@ void StickyNoteContext::endOfElement()
 namespace
 {
 
-class DrawablesContext : public IWORKXMLElementContextBase
+class DrawablesContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit DrawablesContext(IWORKXMLParserState &state);
+  explicit DrawablesContext(KEY2ParserState &state);
 
 private:
   virtual void startOfElement();
@@ -1595,8 +1647,8 @@ private:
   virtual void endOfElement();
 };
 
-DrawablesContext::DrawablesContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+DrawablesContext::DrawablesContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -1650,10 +1702,10 @@ void DrawablesContext::endOfElement()
 namespace
 {
 
-class LayerContext : public IWORKXMLElementContextBase
+class LayerContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit LayerContext(IWORKXMLParserState &state);
+  explicit LayerContext(KEY2ParserState &state);
 
 private:
   virtual void startOfElement();
@@ -1661,8 +1713,8 @@ private:
   virtual void endOfElement();
 };
 
-LayerContext::LayerContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+LayerContext::LayerContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -1684,8 +1736,14 @@ IWORKXMLContextPtr_t LayerContext::element(const int name)
 
 void LayerContext::endOfElement()
 {
-  getCollector()->collectLayer(getId(), false);
+  const KEYLayerPtr_t layer(getCollector()->collectLayer());
   getCollector()->endLayer();
+  if (bool(layer))
+  {
+    if (bool(layer) && getId())
+      getState().getDictionary().m_layers[get(getId())] = layer;
+    getCollector()->insertLayer(layer);
+  }
 }
 
 }
@@ -1693,17 +1751,17 @@ void LayerContext::endOfElement()
 namespace
 {
 
-class LayersContext : public IWORKXMLElementContextBase
+class LayersContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit LayersContext(IWORKXMLParserState &state);
+  explicit LayersContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-LayersContext::LayersContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+LayersContext::LayersContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -1725,10 +1783,10 @@ IWORKXMLContextPtr_t LayersContext::element(const int name)
 namespace
 {
 
-class PageContext : public IWORKXMLElementContextBase
+class PageContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit PageContext(IWORKXMLParserState &state);
+  explicit PageContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -1739,8 +1797,8 @@ private:
   optional<IWORKSize> m_size;
 };
 
-PageContext::PageContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+PageContext::PageContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -1766,10 +1824,10 @@ void PageContext::endOfElement()
 namespace
 {
 
-class StyleContext : public IWORKXMLElementContextBase
+class StyleContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit StyleContext(IWORKXMLParserState &state, optional<ID_t> &ref);
+  explicit StyleContext(KEY2ParserState &state, optional<ID_t> &ref);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -1778,8 +1836,8 @@ private:
   optional<ID_t> &m_ref;
 };
 
-StyleContext::StyleContext(IWORKXMLParserState &state, optional<ID_t> &ref)
-  : IWORKXMLElementContextBase(state)
+StyleContext::StyleContext(KEY2ParserState &state, optional<ID_t> &ref)
+  : KEY2XMLElementContextBase(state)
   , m_ref(ref)
 {
 }
@@ -1797,10 +1855,10 @@ IWORKXMLContextPtr_t StyleContext::element(const int name)
 namespace
 {
 
-class PlaceholderContext : public IWORKXMLElementContextBase
+class PlaceholderContext : public KEY2XMLElementContextBase
 {
 public:
-  PlaceholderContext(IWORKXMLParserState &state, bool title);
+  PlaceholderContext(KEY2ParserState &state, bool title);
 
 private:
   virtual void startOfElement();
@@ -1812,8 +1870,8 @@ private:
   optional<ID_t> m_ref;
 };
 
-PlaceholderContext::PlaceholderContext(IWORKXMLParserState &state, const bool title)
-  : IWORKXMLElementContextBase(state)
+PlaceholderContext::PlaceholderContext(KEY2ParserState &state, const bool title)
+  : KEY2XMLElementContextBase(state)
   , m_title(title)
   , m_ref()
 {
@@ -1842,7 +1900,21 @@ IWORKXMLContextPtr_t PlaceholderContext::element(const int name)
 
 void PlaceholderContext::endOfElement()
 {
-  getCollector()->collectTextPlaceholder(getId(), m_ref, m_title, false);
+  IWORKStylePtr_t style;
+  if (m_ref)
+  {
+    const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_placeholderStyles.find(get(m_ref));
+    if (getState().getDictionary().m_placeholderStyles.end() != it)
+      style = it->second;
+  }
+
+  const KEYPlaceholderPtr_t placeholder = getCollector()->collectTextPlaceholder(style, m_title);
+  if (bool(placeholder) && getId())
+  {
+    KEYDictionary &dict = getState().getDictionary();
+    KEYPlaceholderMap_t &placeholderMap = m_title ? dict.m_titlePlaceholders : dict.m_bodyPlaceholders;
+    placeholderMap[get(getId())] = placeholder;
+  }
   getCollector()->endText();
 }
 
@@ -1851,10 +1923,10 @@ void PlaceholderContext::endOfElement()
 namespace
 {
 
-class MasterSlideContext : public IWORKXMLElementContextBase
+class MasterSlideContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit MasterSlideContext(IWORKXMLParserState &state);
+  explicit MasterSlideContext(KEY2ParserState &state);
 
 private:
   virtual void startOfElement();
@@ -1862,8 +1934,8 @@ private:
   virtual void endOfElement();
 };
 
-MasterSlideContext::MasterSlideContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+MasterSlideContext::MasterSlideContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -1893,7 +1965,7 @@ IWORKXMLContextPtr_t MasterSlideContext::element(const int name)
 
 void MasterSlideContext::endOfElement()
 {
-  getCollector()->collectPage(getId());
+  getCollector()->collectPage();
   getCollector()->endPage();
 }
 
@@ -1902,17 +1974,17 @@ void MasterSlideContext::endOfElement()
 namespace
 {
 
-class MasterSlidesContext : public IWORKXMLElementContextBase
+class MasterSlidesContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit MasterSlidesContext(IWORKXMLParserState &state);
+  explicit MasterSlidesContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-MasterSlidesContext::MasterSlidesContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+MasterSlidesContext::MasterSlidesContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -1932,10 +2004,10 @@ IWORKXMLContextPtr_t MasterSlidesContext::element(const int name)
 namespace
 {
 
-class ThemeContext : public IWORKXMLElementContextBase
+class ThemeContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit ThemeContext(IWORKXMLParserState &state);
+  explicit ThemeContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -1945,8 +2017,8 @@ private:
   optional<IWORKSize> m_size;
 };
 
-ThemeContext::ThemeContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+ThemeContext::ThemeContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -1970,10 +2042,10 @@ IWORKXMLContextPtr_t ThemeContext::element(const int name)
 namespace
 {
 
-class ThemeListContext : public IWORKXMLElementContextBase
+class ThemeListContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit ThemeListContext(IWORKXMLParserState &state);
+  explicit ThemeListContext(KEY2ParserState &state);
 
 private:
   virtual void startOfElement();
@@ -1981,8 +2053,8 @@ private:
   virtual void endOfElement();
 };
 
-ThemeListContext::ThemeListContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+ThemeListContext::ThemeListContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -2012,10 +2084,10 @@ void ThemeListContext::endOfElement()
 namespace
 {
 
-class NotesContext : public IWORKXMLElementContextBase
+class NotesContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit NotesContext(IWORKXMLParserState &state);
+  explicit NotesContext(KEY2ParserState &state);
 
 private:
   virtual void startOfElement();
@@ -2023,8 +2095,8 @@ private:
   virtual void endOfElement();
 };
 
-NotesContext::NotesContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+NotesContext::NotesContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -2055,17 +2127,17 @@ void NotesContext::endOfElement()
 namespace
 {
 
-class StickyNotesContext : public IWORKXMLElementContextBase
+class StickyNotesContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit StickyNotesContext(IWORKXMLParserState &state);
+  explicit StickyNotesContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-StickyNotesContext::StickyNotesContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+StickyNotesContext::StickyNotesContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -2085,10 +2157,10 @@ IWORKXMLContextPtr_t StickyNotesContext::element(const int name)
 namespace
 {
 
-class SlideContext : public IWORKXMLElementContextBase
+class SlideContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit SlideContext(IWORKXMLParserState &state);
+  explicit SlideContext(KEY2ParserState &state);
 
 private:
   virtual void startOfElement();
@@ -2096,8 +2168,8 @@ private:
   virtual void endOfElement();
 };
 
-SlideContext::SlideContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+SlideContext::SlideContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -2129,7 +2201,7 @@ IWORKXMLContextPtr_t SlideContext::element(const int name)
 
 void SlideContext::endOfElement()
 {
-  getCollector()->collectPage(getId());
+  getCollector()->collectPage();
   getCollector()->endPage();
 }
 
@@ -2138,10 +2210,10 @@ void SlideContext::endOfElement()
 namespace
 {
 
-class SlideListContext : public IWORKXMLElementContextBase
+class SlideListContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit SlideListContext(IWORKXMLParserState &state);
+  explicit SlideListContext(KEY2ParserState &state);
 
 private:
   virtual void startOfElement();
@@ -2149,8 +2221,8 @@ private:
   virtual void endOfElement();
 };
 
-SlideListContext::SlideListContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+SlideListContext::SlideListContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
 {
 }
 
@@ -2180,10 +2252,10 @@ void SlideListContext::endOfElement()
 namespace
 {
 
-class PresentationContext : public IWORKXMLElementContextBase
+class PresentationContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit PresentationContext(IWORKXMLParserState &state);
+  explicit PresentationContext(KEY2ParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -2194,8 +2266,8 @@ private:
   optional<IWORKSize> m_size;
 };
 
-PresentationContext::PresentationContext(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
+PresentationContext::PresentationContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
   , m_size()
 {
 }
@@ -2240,8 +2312,9 @@ void PresentationContext::endOfElement()
 
 }
 
-KEY2Parser::KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector)
+KEY2Parser::KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector, KEYDictionary &dict)
   : IWORKParser(input, package, collector)
+  , m_state(*this, dict, getTokenizer())
   , m_version(0)
 {
 }
@@ -2250,9 +2323,9 @@ KEY2Parser::~KEY2Parser()
 {
 }
 
-IWORKXMLContextPtr_t KEY2Parser::makeDocumentContext(IWORKXMLParserState &state) const
+IWORKXMLContextPtr_t KEY2Parser::createDocumentContext()
 {
-  return makeContext<PresentationContext>(state);
+  return makeContext<PresentationContext>(m_state);
 }
 
 IWORKXMLReader::TokenizerFunction_t KEY2Parser::getTokenizer() const

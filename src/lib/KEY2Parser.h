@@ -11,21 +11,25 @@
 #define KEY2PARSER_H_INCLUDED
 
 #include "IWORKParser.h"
+#include "KEY2ParserState.h"
 
 namespace libetonyek
 {
 
+class KEYDictionary;
+
 class KEY2Parser : public IWORKParser
 {
 public:
-  KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *collector);
+  KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *collector, KEYDictionary &dict);
   virtual ~KEY2Parser();
 
 private:
-  virtual IWORKXMLContextPtr_t makeDocumentContext(IWORKXMLParserState &state) const;
+  virtual IWORKXMLContextPtr_t createDocumentContext();
   virtual IWORKXMLReader::TokenizerFunction_t getTokenizer() const;
 
 private:
+  KEY2ParserState m_state;
   unsigned m_version;
 };
 

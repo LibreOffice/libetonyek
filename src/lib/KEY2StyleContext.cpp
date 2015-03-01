@@ -12,12 +12,14 @@
 #include <boost/lexical_cast.hpp>
 
 #include "libetonyek_xml.h"
+#include "IWORKDictionary.h"
 #include "IWORKStyles.h"
 #include "IWORKToken.h"
 #include "IWORKXMLContexts.h"
 #include "IWORKXMLParserState.h"
 #include "KEY2Token.h"
 #include "KEYCollector.h"
+#include "KEYDictionary.h"
 #include "KEYTypes.h"
 
 namespace libetonyek
@@ -961,42 +963,122 @@ void KEY2StyleContext::endOfElement()
   switch (m_id)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::cell_style :
-    getCollector()->collectCellStyle(getId(), m_props, m_ident, m_parentIdent, false, m_nested);
+    getCollector()->collectCellStyle(IWORKStylePtr_t(), m_nested);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::characterstyle :
-    getCollector()->collectCharacterStyle(getId(), m_props, m_ident, m_parentIdent, false, m_nested);
+  {
+    IWORKStylePtr_t style;
+
+    if (getState().isDictLocked() && getId())
+    {
+      style = getDictionary().m_characterStyles[get(getId())];
+    }
+    else
+    {
+    style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));
+    if (!getState().isDictLocked() && getId())
+      getDictionary().m_characterStyles[get(getId())] = style;
+    }
+
+    getCollector()->collectCharacterStyle(style, m_nested);
     break;
+  }
   case IWORKToken::NS_URI_SF | IWORKToken::connection_style :
-    getCollector()->collectConnectionStyle(getId(), m_props, m_ident, m_parentIdent, false, m_nested);
+    getCollector()->collectConnectionStyle(IWORKStylePtr_t(), m_nested);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::graphic_style :
-    getCollector()->collectGraphicStyle(getId(), m_props, m_ident, m_parentIdent, false, m_nested);
+  {
+    IWORKStylePtr_t style;
+
+    if (getState().isDictLocked() && getId())
+    {
+      style = getDictionary().m_graphicStyles[get(getId())];
+    }
+    else
+    {
+    style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));
+    if (!getState().isDictLocked() && getId())
+      getDictionary().m_graphicStyles[get(getId())] = style;
+    }
+
+    getCollector()->collectGraphicStyle(style, m_nested);
     break;
+  }
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
-    getCollector()->collectLayoutStyle(getId(), m_props, m_ident, m_parentIdent, false, m_nested);
+  {
+    IWORKStylePtr_t style;
+
+    if (getState().isDictLocked() && getId())
+    {
+      style = static_cast<KEYDictionary &>(getDictionary()).m_layoutStyles[get(getId())];
+    }
+    else
+    {
+    style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));
+    if (!getState().isDictLocked() && getId())
+      static_cast<KEYDictionary &>(getDictionary()).m_layoutStyles[get(getId())] = style;
+    }
+
+    getCollector()->collectLayoutStyle(style, m_nested);
     break;
+  }
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
-    getCollector()->collectListStyle(getId(), m_props, m_ident, m_parentIdent, false, m_nested);
+    getCollector()->collectListStyle(IWORKStylePtr_t(), m_nested);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
-    getCollector()->collectParagraphStyle(getId(), m_props, m_ident, m_parentIdent, false, m_nested);
+  {
+    IWORKStylePtr_t style;
+
+    if (getState().isDictLocked() && getId())
+    {
+      style = getDictionary().m_paragraphStyles[get(getId())];
+    }
+    else
+    {
+    style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));
+    if (!getState().isDictLocked() && getId())
+      getDictionary().m_paragraphStyles[get(getId())] = style;
+    }
+
+    getCollector()->collectParagraphStyle(style, m_nested);
     break;
+  }
   case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style :
-    getCollector()->collectPlaceholderStyle(getId(), m_props, m_ident, m_parentIdent, false, m_nested);
+  {
+    IWORKStylePtr_t style;
+
+    if (getState().isDictLocked() && getId())
+    {
+      style = static_cast<KEYDictionary &>(getDictionary()).m_placeholderStyles[get(getId())];
+    }
+    else
+    {
+    style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));
+    if (!getState().isDictLocked() && getId())
+      static_cast<KEYDictionary &>(getDictionary()).m_placeholderStyles[get(getId())] = style;
+    }
+
+    getCollector()->collectPlaceholderStyle(style, m_nested);
     break;
+  }
   case IWORKToken::NS_URI_SF | IWORKToken::slide_style :
-    getCollector()->collectSlideStyle(getId(), m_props, m_ident, m_parentIdent, false, m_nested);
+    getCollector()->collectSlideStyle(IWORKStylePtr_t(), m_nested);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_style :
-    getCollector()->collectTabularStyle(getId(), m_props, m_ident, m_parentIdent, false, m_nested);
+    getCollector()->collectTabularStyle(IWORKStylePtr_t(), m_nested);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::vector_style :
-    getCollector()->collectVectorStyle(getId(), m_props, m_ident, m_parentIdent, false, m_nested);
+    getCollector()->collectVectorStyle(IWORKStylePtr_t(), m_nested);
     break;
   default :
     ETONYEK_DEBUG_MSG(("unhandled style %d\n", m_id));
     break;
   }
+}
+
+IWORKDictionary &KEY2StyleContext::getDictionary()
+{
+  return getState().getDictionary();
 }
 
 KEY2StyleRefContext::KEY2StyleRefContext(IWORKXMLParserState &state, const int id, const bool nested, const bool anonymous)
@@ -1016,29 +1098,72 @@ void KEY2StyleRefContext::endOfElement()
   switch (m_id)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref :
-    getCollector()->collectCellStyle(getRef(), dummyProps, dummyIdent, dummyIdent, true, m_anonymous);
+    getCollector()->collectCellStyle(IWORKStylePtr_t(), m_anonymous);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::characterstyle_ref :
-    getCollector()->collectCharacterStyle(getRef(), dummyProps, dummyIdent, dummyIdent, true, m_anonymous);
+  {
+    IWORKStylePtr_t style;
+    if (getRef())
+    {
+      const IWORKStyleMap_t::const_iterator it = getDictionary().m_characterStyles.find(get(getRef()));
+      if (getDictionary().m_characterStyles.end() != it)
+        style = it->second;
+    }
+    getCollector()->collectCharacterStyle(style, m_anonymous);
     break;
+  }
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
-    getCollector()->collectLayoutStyle(getRef(), dummyProps, dummyIdent, dummyIdent, true, m_anonymous);
+  {
+    IWORKStylePtr_t style;
+    if (getRef())
+    {
+      KEYDictionary &dict = static_cast<KEYDictionary &>(getDictionary());
+      const IWORKStyleMap_t::const_iterator it = dict.m_layoutStyles.find(get(getRef()));
+      if (dict.m_layoutStyles.end() != it)
+        style = it->second;
+    }
+    getCollector()->collectLayoutStyle(style, m_anonymous);
     break;
+  }
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
-    getCollector()->collectListStyle(getRef(), dummyProps, dummyIdent, dummyIdent, true, m_anonymous);
+    getCollector()->collectListStyle(IWORKStylePtr_t(), m_anonymous);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref :
-    getCollector()->collectParagraphStyle(getRef(), dummyProps, dummyIdent, dummyIdent, true, m_anonymous);
+  {
+    IWORKStylePtr_t style;
+    if (getRef())
+    {
+      const IWORKStyleMap_t::const_iterator it = getDictionary().m_paragraphStyles.find(get(getRef()));
+      if (getDictionary().m_paragraphStyles.end() != it)
+        style = it->second;
+    }
+    getCollector()->collectParagraphStyle(style, m_anonymous);
     break;
+  }
   case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style_ref :
-    getCollector()->collectPlaceholderStyle(getRef(), dummyProps, dummyIdent, dummyIdent, true, m_anonymous);
+  {
+    IWORKStylePtr_t style;
+    if (getRef())
+    {
+      KEYDictionary &dict = static_cast<KEYDictionary &>(getDictionary());
+      const IWORKStyleMap_t::const_iterator it = dict.m_placeholderStyles.find(get(getRef()));
+      if (dict.m_placeholderStyles.end() != it)
+        style = it->second;
+    }
+    getCollector()->collectPlaceholderStyle(style, m_anonymous);
     break;
+  }
   case IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref :
-    getCollector()->collectVectorStyle(getRef(), dummyProps, dummyIdent, dummyIdent, true, m_anonymous);
+    getCollector()->collectVectorStyle(IWORKStylePtr_t(), m_anonymous);
     break;
   default :
     break;
   }
+}
+
+IWORKDictionary &KEY2StyleRefContext::getDictionary()
+{
+  return getState().getDictionary();
 }
 
 }

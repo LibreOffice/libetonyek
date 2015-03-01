@@ -7,23 +7,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "IWORKDictionary.h"
+#include "KEY2ParserState.h"
+#include "KEYDictionary.h"
 
 namespace libetonyek
 {
 
-IWORKDictionary::IWORKDictionary()
-  : m_characterStyles()
-  , m_graphicStyles()
-  , m_paragraphStyles()
-  , m_stylesheets()
-  , m_beziers()
-  , m_data()
-  , m_unfiltereds()
-  , m_filteredImages()
-  , m_images()
-  , m_locked(false)
+KEY2ParserState::KEY2ParserState(IWORKParser &parser, KEYDictionary &dict, const IWORKXMLReader::TokenizerFunction_t &tokenizer)
+  : IWORKXMLParserState(parser, dict, tokenizer)
+  , m_dict(dict)
 {
+}
+
+KEYDictionary &KEY2ParserState::getDictionary()
+{
+  return m_dict;
 }
 
 }

@@ -22,7 +22,7 @@ public:
   virtual ~KEY1Parser();
 
 private:
-  virtual IWORKXMLContextPtr_t makeDocumentContext(IWORKXMLParserState &state) const;
+  virtual IWORKXMLContextPtr_t createDocumentContext();
   virtual IWORKXMLReader::TokenizerFunction_t getTokenizer() const;
 };
 

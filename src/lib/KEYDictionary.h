@@ -38,6 +38,8 @@ struct KEYDictionary : public IWORKDictionary
   KEYPlaceholderMap_t m_bodyPlaceholders;
   KEYPlaceholderMap_t m_titlePlaceholders;
 
+  KEYLayerMap_t m_layers;
+
   KEYDictionary();
 };
 

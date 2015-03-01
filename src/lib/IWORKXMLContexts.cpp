@@ -15,6 +15,7 @@
 
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"
+#include "IWORKDictionary.h"
 #include "IWORKPropertyMap.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
@@ -126,7 +127,14 @@ IWORKXMLContextPtr_t SpanContext::element(const int name)
 
 void SpanContext::text(const char *const value)
 {
-  getCollector()->collectText(m_style, value);
+  IWORKStylePtr_t style;
+  if (m_style)
+  {
+    const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_characterStyles.find(get(m_style));
+    if (getState().getDictionary().m_characterStyles.end() != it)
+      style = it->second;
+  }
+  getCollector()->collectText(style, value);
 }
 
 }
@@ -169,7 +177,7 @@ IWORKXMLContextPtr_t LinkContext::element(const int name)
 
 void LinkContext::text(const char *const value)
 {
-  getCollector()->collectText(optional<ID_t>(), value);
+  getCollector()->collectText(IWORKStylePtr_t(), value);
 }
 
 }
@@ -190,7 +198,7 @@ private:
   virtual void text(const char *value);
 
 private:
-  optional<ID_t> m_style;
+  IWORKStylePtr_t m_style;
 };
 
 PContext::PContext(IWORKXMLParserState &state)
@@ -203,8 +211,12 @@ void PContext::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::style :
-    m_style = value;
+  {
+    const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_paragraphStyles.find(value);
+    if (getState().getDictionary().m_paragraphStyles.end() != it)
+      m_style = it->second;
     break;
+  }
   }
 }
 
@@ -263,15 +275,10 @@ LayoutContext::LayoutContext(IWORKXMLParserState &state)
 {
 }
 
-void LayoutContext::attribute(const int name, const char *const value)
+void LayoutContext::attribute(const int name, const char *)
 {
   if ((IWORKToken::NS_URI_SF | IWORKToken::style) == name)
-  {
-    optional<IWORKPropertyMap> dummyProps;
-    optional<string> dummyIdent;
-    optional<string> id(value);
-    getCollector()->collectLayoutStyle(id, dummyProps, dummyIdent, dummyIdent, true, false);
-  }
+    getCollector()->collectLayoutStyle(IWORKStylePtr_t(), false);
 }
 
 IWORKXMLContextPtr_t LayoutContext::element(const int name)
@@ -379,27 +386,22 @@ IWORKXMLContextPtr_t IWORKGeometryContext::element(const int name)
 
 void IWORKGeometryContext::endOfElement()
 {
-  if (m_geometry)
-  {
-    // TODO: remove duplication of code with KEYCollectorBase::collectGeometry
-    IWORKGeometryPtr_t geometry(new IWORKGeometry());
-    geometry->m_naturalSize = get(m_naturalSize);
-    geometry->m_size = bool(m_size) ? get(m_size) : get(m_naturalSize);
-    geometry->m_position = get(m_pos);
-    geometry->m_angle = m_angle;
-    geometry->m_shearXAngle = m_shearXAngle;
-    geometry->m_shearYAngle = m_shearYAngle;
-    geometry->m_horizontalFlip = m_horizontalFlip;
-    geometry->m_verticalFlip = m_verticalFlip;
-    geometry->m_aspectRatioLocked = m_aspectRatioLocked;
-    geometry->m_sizesLocked = m_sizesLocked;
+  IWORKGeometryPtr_t geometry(new IWORKGeometry());
+  geometry->m_naturalSize = get(m_naturalSize);
+  geometry->m_size = bool(m_size) ? get(m_size) : get(m_naturalSize);
+  geometry->m_position = get(m_pos);
+  geometry->m_angle = m_angle;
+  geometry->m_shearXAngle = m_shearXAngle;
+  geometry->m_shearYAngle = m_shearYAngle;
+  geometry->m_horizontalFlip = m_horizontalFlip;
+  geometry->m_verticalFlip = m_verticalFlip;
+  geometry->m_aspectRatioLocked = m_aspectRatioLocked;
+  geometry->m_sizesLocked = m_sizesLocked;
 
+  if (m_geometry)
     *m_geometry = geometry;
-  }
   else
-  {
-    getCollector()->collectGeometry(getId(), m_naturalSize, m_size, m_pos, m_angle, m_shearXAngle, m_shearYAngle, m_horizontalFlip, m_verticalFlip, m_aspectRatioLocked, m_sizesLocked);
-  }
+    getCollector()->collectGeometry(geometry);
 }
 
 IWORKPositionContext::IWORKPositionContext(IWORKXMLParserState &state, optional<IWORKPosition> &position)

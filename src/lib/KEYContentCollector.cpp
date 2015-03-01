@@ -21,10 +21,9 @@ using boost::optional;
 namespace libetonyek
 {
 
-KEYContentCollector::KEYContentCollector(librevenge::RVNGPresentationInterface *const painter, KEYDictionary &dict, const KEYLayerMap_t &masterPages, const IWORKSize &size)
-  : KEYCollectorBase(dict)
+KEYContentCollector::KEYContentCollector(librevenge::RVNGPresentationInterface *const painter, const IWORKSize &size)
+  : KEYCollectorBase()
   , m_painter(painter)
-  , m_masterPages(masterPages)
   , m_size(size)
   , m_pageOpened(false)
   , m_layerOpened(false)
@@ -46,30 +45,34 @@ void KEYContentCollector::collectPresentation(const boost::optional<IWORKSize> &
 {
 }
 
-void KEYContentCollector::collectLayer(const optional<ID_t> &id, const bool ref)
+void KEYContentCollector::insertLayer(const KEYLayerPtr_t &layer)
 {
   if (isCollecting())
   {
-    assert(m_layerOpened);
+    assert(!m_layerOpened);
 
-    KEYCollectorBase::collectLayer(id, ref);
-
-    if (ref && id)
+    if (bool(layer))
     {
-      const KEYLayerMap_t::const_iterator it = m_masterPages.find(get(id));
-      if (m_masterPages.end() != it)
-        drawLayer(it->second);
-      else
-      {
-        ETONYEK_DEBUG_MSG(("master page layer %s not found\n", get(id).c_str()));
-      }
+      ++m_layerCount;
+
+      librevenge::RVNGPropertyList props;
+      props.insert("svg:id", m_layerCount);
+
+      m_painter->startLayer(props);
+
+      for (IWORKObjectList_t::const_iterator it = layer->m_objects.begin(); it != layer->m_objects.end(); ++it)
+        (*it)->draw(m_painter);
+
+      m_painter->endLayer();
     }
     else
-      drawLayer(getLayer());
+    {
+      ETONYEK_DEBUG_MSG(("no layer\n"));
+    }
   }
 }
 
-void KEYContentCollector::collectPage(const optional<ID_t> &)
+void KEYContentCollector::collectPage()
 {
   if (isCollecting())
   {
@@ -144,15 +147,10 @@ void KEYContentCollector::startLayer()
     assert(m_pageOpened);
     assert(!m_layerOpened);
 
+    m_layerOpened = true;
+
     KEYCollectorBase::startLayer();
 
-    ++m_layerCount;
-
-    librevenge::RVNGPropertyList props;
-    props.insert("svg:id", m_layerCount);
-
-    m_layerOpened = true;
-    m_painter->startLayer(props);
   }
 }
 
@@ -166,20 +164,6 @@ void KEYContentCollector::endLayer()
     KEYCollectorBase::endLayer();
 
     m_layerOpened = false;
-    m_painter->endLayer();
-  }
-}
-
-void KEYContentCollector::drawLayer(const KEYLayerPtr_t &layer)
-{
-  if (bool(layer))
-  {
-    for (IWORKObjectList_t::const_iterator it = layer->m_objects.begin(); it != layer->m_objects.end(); ++it)
-      (*it)->draw(m_painter);
-  }
-  else
-  {
-    ETONYEK_DEBUG_MSG(("no layer\n"));
   }
 }
 

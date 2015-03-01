@@ -107,8 +107,7 @@ IWORKParser::~IWORKParser()
 bool IWORKParser::parse()
 {
   IWORKXMLReader reader(m_input.get(), getTokenizer());
-  IWORKXMLParserState state(*this, getTokenizer());
-  processElement(reader, makeDocumentContext(state));
+  processElement(reader, createDocumentContext());
 
   return true;
 }
