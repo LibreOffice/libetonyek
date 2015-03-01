@@ -16,81 +16,65 @@
 namespace libetonyek
 {
 
-IWORKXMLContextBase::IWORKXMLContextBase(IWORKXMLParserState &state)
-  : m_state(state)
+IWORKXMLContextMinimal::IWORKXMLContextMinimal()
 {
 }
 
-void IWORKXMLContextBase::startOfElement()
+void IWORKXMLContextMinimal::startOfElement()
 {
 }
 
-void IWORKXMLContextBase::endOfAttributes()
+void IWORKXMLContextMinimal::endOfAttributes()
 {
 }
 
-void IWORKXMLContextBase::endOfElement()
+void IWORKXMLContextMinimal::endOfElement()
 {
 }
 
-KEYCollector *IWORKXMLContextBase::getCollector() const
-{
-  return m_state.getCollector();
-}
-
-int IWORKXMLContextBase::getToken(const char *const value) const
-{
-  return m_state.getTokenizer()(value);
-}
-
-IWORKXMLParserState &IWORKXMLContextBase::getState()
-{
-  return m_state;
-}
-
-IWORKXMLElementContextBase::IWORKXMLElementContextBase(IWORKXMLParserState &state)
-  : IWORKXMLContextBase(state)
+IWORKXMLContextElement::IWORKXMLContextElement()
+  : IWORKXMLContextMinimal()
 {
 }
 
-void IWORKXMLElementContextBase::attribute(const int name, const char *const value)
+void IWORKXMLContextElement::attribute(const int name, const char *const value)
 {
   if ((IWORKToken::NS_URI_SFA | IWORKToken::ID) == name)
     m_id = value;
 }
 
-void IWORKXMLElementContextBase::text(const char *)
+void IWORKXMLContextElement::text(const char *)
 {
   ETONYEK_DEBUG_MSG(("text content is not expected at this element\n"));
 }
 
-const boost::optional<ID_t> &IWORKXMLElementContextBase::getId() const
+const boost::optional<ID_t> &IWORKXMLContextElement::getId() const
 {
   return m_id;
 }
 
-IWORKXMLTextContextBase::IWORKXMLTextContextBase(IWORKXMLParserState &state)
-  : IWORKXMLContextBase(state)
+IWORKXMLContextText::IWORKXMLContextText()
+  : IWORKXMLContextMinimal()
 {
 }
 
-IWORKXMLContextPtr_t IWORKXMLTextContextBase::element(int)
+IWORKXMLContextPtr_t IWORKXMLContextText::element(int)
 {
   ETONYEK_DEBUG_MSG(("no subelement is expected at this element\n"));
   return IWORKXMLContextPtr_t();
 }
 
-IWORKXMLMixedContextBase::IWORKXMLMixedContextBase(IWORKXMLParserState &state)
-  : IWORKXMLContextBase(state)
+IWORKXMLContextMixed::IWORKXMLContextMixed()
+  : IWORKXMLContextMinimal()
 {
 }
 
-IWORKXMLEmptyContextBase::IWORKXMLEmptyContextBase(IWORKXMLParserState &state)
-  : IWORKXMLContextBase(state)
+IWORKXMLContextEmpty::IWORKXMLContextEmpty()
+  : IWORKXMLContextMinimal()
 {
 }
 
-void IWORKXMLEmptyContextBase::attribute(const int name, const char *const value)
+void IWORKXMLContextEmpty::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -103,23 +87,23 @@ void IWORKXMLEmptyContextBase::attribute(const int name, const char *const value
   }
 }
 
-IWORKXMLContextPtr_t IWORKXMLEmptyContextBase::element(int)
+IWORKXMLContextPtr_t IWORKXMLContextEmpty::element(int)
 {
   ETONYEK_DEBUG_MSG(("no subelement is expected at this element\n"));
   return IWORKXMLContextPtr_t();
 }
 
-void IWORKXMLEmptyContextBase::text(const char *)
+void IWORKXMLContextEmpty::text(const char *)
 {
   ETONYEK_DEBUG_MSG(("text content is not expected at this element\n"));
 }
 
-const boost::optional<ID_t> &IWORKXMLEmptyContextBase::getId() const
+const boost::optional<ID_t> &IWORKXMLContextEmpty::getId() const
 {
   return m_id;
 }
 
-const boost::optional<ID_t> &IWORKXMLEmptyContextBase::getRef() const
+const boost::optional<ID_t> &IWORKXMLContextEmpty::getRef() const
 {
   return m_ref;
 }

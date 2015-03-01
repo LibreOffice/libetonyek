@@ -23,28 +23,50 @@ class IWORKXMLParserState;
 
 class KEYCollector;
 
-class IWORKXMLContextBase : public IWORKXMLContext
+template<class Base, class State>
+class IWORKXMLContextBase : public Base
+{
+public:
+  explicit IWORKXMLContextBase(State &state)
+    : Base()
+    , m_state(state)
+  {
+  }
+
+  State &getState()
+  {
+    return m_state;
+  }
+
+protected:
+  KEYCollector *getCollector() const
+  {
+    return m_state.getCollector();
+  }
+
+  int getToken(const char *const value) const
+  {
+    return m_state.getTokenizer()(value);
+  }
+
+protected:
+  State &m_state;
+};
+
+class IWORKXMLContextMinimal : public IWORKXMLContext
 {
 protected:
-  explicit IWORKXMLContextBase(IWORKXMLParserState &state);
+  IWORKXMLContextMinimal();
 
   virtual void startOfElement();
   virtual void endOfAttributes();
   virtual void endOfElement();
-
-  KEYCollector *getCollector() const;
-  int getToken(const char *value) const;
-
-  IWORKXMLParserState &getState();
-
-protected:
-  IWORKXMLParserState &m_state;
 };
 
-class IWORKXMLElementContextBase : public IWORKXMLContextBase, public boost::enable_shared_from_this<IWORKXMLElementContextBase>
+class IWORKXMLContextElement : public IWORKXMLContextMinimal, public boost::enable_shared_from_this<IWORKXMLContextElement>
 {
 protected:
-  explicit IWORKXMLElementContextBase(IWORKXMLParserState &state);
+  IWORKXMLContextElement();
 
   virtual void attribute(int name, const char *value);
   virtual void text(const char *value);
@@ -55,24 +77,24 @@ private:
   boost::optional<ID_t> m_id;
 };
 
-class IWORKXMLTextContextBase : public IWORKXMLContextBase
+class IWORKXMLContextText : public IWORKXMLContextMinimal
 {
 protected:
-  explicit IWORKXMLTextContextBase(IWORKXMLParserState &state);
+  IWORKXMLContextText();
 
   virtual IWORKXMLContextPtr_t element(int token);
 };
 
-class IWORKXMLMixedContextBase : public IWORKXMLContextBase, public boost::enable_shared_from_this<IWORKXMLMixedContextBase>
+class IWORKXMLContextMixed : public IWORKXMLContextMinimal, public boost::enable_shared_from_this<IWORKXMLContextMixed>
 {
 protected:
-  explicit IWORKXMLMixedContextBase(IWORKXMLParserState &state);
+  IWORKXMLContextMixed();
 };
 
-class IWORKXMLEmptyContextBase : public IWORKXMLContextBase
+class IWORKXMLContextEmpty : public IWORKXMLContextMinimal
 {
 protected:
-  explicit IWORKXMLEmptyContextBase(IWORKXMLParserState &state);
+  IWORKXMLContextEmpty();
 
   virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int token);
@@ -85,6 +107,11 @@ private:
   boost::optional<ID_t> m_id;
   boost::optional<ID_t> m_ref;
 };
+
+typedef IWORKXMLContextBase<IWORKXMLContextElement, IWORKXMLParserState> IWORKXMLElementContextBase;
+typedef IWORKXMLContextBase<IWORKXMLContextText, IWORKXMLParserState> IWORKXMLTextContextBase;
+typedef IWORKXMLContextBase<IWORKXMLContextMixed, IWORKXMLParserState> IWORKXMLMixedContextBase;
+typedef IWORKXMLContextBase<IWORKXMLContextEmpty, IWORKXMLParserState> IWORKXMLEmptyContextBase;
 
 }
 
