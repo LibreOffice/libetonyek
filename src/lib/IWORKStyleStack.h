@@ -74,7 +74,6 @@ public:
 
 private:
   Stack_t m_stack;
-  bool m_pending;
 };
 
 }
