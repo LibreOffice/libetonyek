@@ -274,6 +274,8 @@ bool detect(const RVNGInputStreamPtr_t &input, unsigned checkTypes, DetectionInf
     assert(CHECK_TYPE_ANY & checkTypes);
     assert(!info.input->isStructured());
 
+    info.input->seek(0, RVNG_SEEK_SET);
+
     if (CHECK_TYPE_KEYNOTE & checkTypes)
     {
       const ProbeXMLFun_t probe = (isKeynote1 ? probeKeynote1XML : ((!isKeynote1) ? probeKeynote2XML : probeKeynoteXML));
