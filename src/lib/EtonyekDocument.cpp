@@ -24,6 +24,7 @@
 #include "KEYThemeCollector.h"
 #include "NUMCollector.h"
 #include "NUMParser.h"
+#include "NUMToken.h"
 #include "PAGCollector.h"
 #include "PAGParser.h"
 
@@ -123,9 +124,25 @@ bool probeKeynoteXML(const RVNGInputStreamPtr_t &input, unsigned &version)
 
 bool probeNumbersXML(const RVNGInputStreamPtr_t &input, unsigned &version)
 {
-  // TODO: implement me
-  (void) input;
-  (void) version;
+  if (input->isEnd())
+    return false;
+
+  const NUMTokenizer tokenizer = NUMTokenizer();
+  IWORKXMLReader reader(input.get(), tokenizer);
+
+  if (NUMToken::NS_URI_LS == getId(reader))
+  {
+
+    const std::string v = readOnlyAttribute(reader, 0, NUMToken::NS_URI_LS);
+
+    switch (tokenizer(v.c_str()))
+    {
+    case NUMToken::VERSION_STR_2 :
+      version = 2;
+      return true;
+    }
+  }
+
   return false;
 }
 
