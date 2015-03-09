@@ -35,8 +35,10 @@ enum
   workspace_array,
 
   // attributes
+  version,
 
   // attribute values
+  VERSION_STR_2,
 
   LAST_TOKEN
 };

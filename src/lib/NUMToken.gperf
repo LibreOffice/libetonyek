@@ -21,9 +21,11 @@ struct Token
   int id;
 };
 %%
+92008102400,VERSION_STR_2
 http://developer.apple.com/namespaces/ls,NS_URI_LS
 page-info,page_info
 stylesheet,stylesheet
 workspace,workspace
 workspace-array,workspace_array
+version,version
 %%
