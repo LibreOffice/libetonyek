@@ -37,6 +37,7 @@ enum
   // attributes
 
   // attribute values
+  VERSION_STR_5,
 
   LAST_TOKEN
 };

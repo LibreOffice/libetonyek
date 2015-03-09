@@ -21,6 +21,7 @@ struct Token
   int id;
 };
 %%
+92008102400,VERSION_STR_5
 http://developer.apple.com/namespaces/ls,NS_URI_LS
 page-info,page_info
 stylesheet,stylesheet
