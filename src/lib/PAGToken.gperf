@@ -21,6 +21,7 @@ struct Token
   int id;
 };
 %%
+92008102400,VERSION_STR_4
 body,body
 cell,cell
 document,document
@@ -32,4 +33,5 @@ note,note
 section-prototypes,section_prototypes
 stylesheet,stylesheet
 textbox,textbox
+version,version
 %%

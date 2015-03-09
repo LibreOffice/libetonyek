@@ -37,6 +37,7 @@ enum
   stylesheet,
 
   // attributes
+  version,
 
   // attribute values
   body,
@@ -44,6 +45,7 @@ enum
   footnote,
   note,
   textbox,
+  VERSION_STR_4,
 
   LAST_TOKEN
 };

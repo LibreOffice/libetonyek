@@ -27,6 +27,7 @@
 #include "NUMToken.h"
 #include "PAGCollector.h"
 #include "PAGParser.h"
+#include "PAGToken.h"
 
 using boost::logic::indeterminate;
 using boost::logic::tribool;
@@ -147,9 +148,24 @@ bool probeNumbersXML(const RVNGInputStreamPtr_t &input, unsigned &version)
 
 bool probePagesXML(const RVNGInputStreamPtr_t &input, unsigned &version)
 {
-  // TODO: implement me
-  (void) input;
-  (void) version;
+  if (input->isEnd())
+    return false;
+
+  const PAGTokenizer tokenizer = PAGTokenizer();
+  IWORKXMLReader reader(input.get(), tokenizer);
+
+  if ((PAGToken::NS_URI_SL | PAGToken::document) == getId(reader))
+  {
+    const std::string v = readOnlyAttribute(reader, PAGToken::version, PAGToken::NS_URI_SL);
+
+    switch (tokenizer(v.c_str()))
+    {
+    case PAGToken::VERSION_STR_4 :
+      version = 4;
+      return true;
+    }
+  }
+
   return false;
 }
 
