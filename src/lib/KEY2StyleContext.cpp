@@ -975,9 +975,9 @@ void KEY2StyleContext::endOfElement()
     }
     else
     {
-    style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));
-    if (!getState().isDictLocked() && getId())
-      getDictionary().m_characterStyles[get(getId())] = style;
+      style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));
+      if (!getState().isDictLocked() && getId())
+        getDictionary().m_characterStyles[get(getId())] = style;
     }
 
     getCollector()->collectCharacterStyle(style, m_nested);
@@ -996,9 +996,9 @@ void KEY2StyleContext::endOfElement()
     }
     else
     {
-    style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));
-    if (!getState().isDictLocked() && getId())
-      getDictionary().m_graphicStyles[get(getId())] = style;
+      style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));
+      if (!getState().isDictLocked() && getId())
+        getDictionary().m_graphicStyles[get(getId())] = style;
     }
 
     getCollector()->collectGraphicStyle(style, m_nested);
@@ -1014,9 +1014,9 @@ void KEY2StyleContext::endOfElement()
     }
     else
     {
-    style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));
-    if (!getState().isDictLocked() && getId())
-      static_cast<KEYDictionary &>(getDictionary()).m_layoutStyles[get(getId())] = style;
+      style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));
+      if (!getState().isDictLocked() && getId())
+        static_cast<KEYDictionary &>(getDictionary()).m_layoutStyles[get(getId())] = style;
     }
 
     getCollector()->collectLayoutStyle(style, m_nested);
@@ -1035,9 +1035,9 @@ void KEY2StyleContext::endOfElement()
     }
     else
     {
-    style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));
-    if (!getState().isDictLocked() && getId())
-      getDictionary().m_paragraphStyles[get(getId())] = style;
+      style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));
+      if (!getState().isDictLocked() && getId())
+        getDictionary().m_paragraphStyles[get(getId())] = style;
     }
 
     getCollector()->collectParagraphStyle(style, m_nested);
@@ -1053,9 +1053,9 @@ void KEY2StyleContext::endOfElement()
     }
     else
     {
-    style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));
-    if (!getState().isDictLocked() && getId())
-      static_cast<KEYDictionary &>(getDictionary()).m_placeholderStyles[get(getId())] = style;
+      style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));
+      if (!getState().isDictLocked() && getId())
+        static_cast<KEYDictionary &>(getDictionary()).m_placeholderStyles[get(getId())] = style;
     }
 
     getCollector()->collectPlaceholderStyle(style, m_nested);
