@@ -10,59 +10,30 @@
 #ifndef PAGPARSER_H_INCLUDED
 #define PAGPARSER_H_INCLUDED
 
-#include <libxml/xmlreader.h>
-
-#include "libetonyek_utils.h"
+#include "IWORKParser.h"
+#include "PAGParserState.h"
 
 namespace libetonyek
 {
 
-class IWORKXMLReader;
 class PAGCollector;
+class PAGDictionary;
 
-class PAGParser
+class PAGParser: public IWORKParser
 {
-  // -Weffc++
-  PAGParser(const PAGParser &);
-  PAGParser &operator=(const PAGParser &);
 
-  enum TextStorageKind
-  {
-    TEXT_STORAGE_KIND_UNKNOWN,
-    TEXT_STORAGE_KIND_BODY,
-    TEXT_STORAGE_KIND_HEADER,
-    TEXT_STORAGE_KIND_FOOTNOTE,
-    TEXT_STORAGE_KIND_TEXTBOX,
-    TEXT_STORAGE_KIND_NOTE,
-    TEXT_STORAGE_KIND_CELL
-  };
-
-public:
-  PAGParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGCollector *collector);
-
-  bool parse();
+  public:
+  PAGParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGCollector *collector, PAGDictionary *dict);
+  virtual ~PAGParser();
 
 private:
-  void parseDocument(const IWORKXMLReader &reader);
-  void parseMetadata(const IWORKXMLReader &reader);
-  void parseSectionPrototypes(const IWORKXMLReader &reader);
-  void parseStylesheet(const IWORKXMLReader &reader);
-  void parseHeaders(const IWORKXMLReader &reader);
-  void parseFooters(const IWORKXMLReader &reader);
-  void parseTextStorage(const IWORKXMLReader &reader);
-
-  void parseTextBody(const IWORKXMLReader &reader, TextStorageKind kind);
-  void parseSection(const IWORKXMLReader &reader);
-  void parseLayout(const IWORKXMLReader &reader);
-  void parseP(const IWORKXMLReader &reader);
-  void parseSpan(const IWORKXMLReader &reader);
-  void parseTab(const IWORKXMLReader &reader);
-  void parseBr(const IWORKXMLReader &reader);
+  virtual IWORKXMLContextPtr_t createDocumentContext();
+  virtual IWORKXMLReader::TokenizerFunction_t getTokenizer() const;
 
 private:
-  RVNGInputStreamPtr_t m_input;
-  RVNGInputStreamPtr_t m_package;
-  PAGCollector *m_collector;
+  PAGParserState m_state;
+  unsigned m_version;
+
 };
 
 } // namespace libetonyek

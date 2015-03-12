@@ -28,6 +28,7 @@
 #include "PAGCollector.h"
 #include "PAGParser.h"
 #include "PAGToken.h"
+#include "PAGDictionary.h"
 
 using boost::logic::indeterminate;
 using boost::logic::tribool;
@@ -469,7 +470,8 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   info.input->seek(0, librevenge::RVNG_SEEK_SET);
 
   PAGCollector collector(document);
-  PAGParser parser(info.input, info.package, &collector);
+  PAGDictionary dict;
+  PAGParser parser(info.input, info.package, &collector, &dict);
   return parser.parse();
 }
 catch (...)
