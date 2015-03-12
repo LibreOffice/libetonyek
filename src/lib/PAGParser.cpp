@@ -8,300 +8,241 @@
  */
 
 #include "PAGParser.h"
-
-#include <cassert>
-
-#include <librevenge-stream/librevenge-stream.h>
-
-#include "libetonyek_xml.h"
+#include "IWORKXMLContexts.h"
 #include "IWORKToken.h"
-#include "IWORKXMLReader.h"
 #include "PAGCollector.h"
 #include "PAGToken.h"
+#include "PAGXMLContextBase.h"
+
+using boost::optional;
 
 namespace libetonyek
 {
 
-PAGParser::PAGParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGCollector *const collector)
-  : m_input(input)
-  , m_package(package)
-  , m_collector(collector)
+namespace
 {
-}
 
-bool PAGParser::parse() try
+unsigned getVersion(const int token)
 {
-  const IWORKXMLReader reader(m_input.get(), IWORKXMLReader::ChainedTokenizer(PAGTokenizer(), IWORKTokenizer()));
-  parseDocument(reader);
-  return true;
-}
-catch (...)
-{
-  return false;
-}
-
-void PAGParser::parseDocument(const IWORKXMLReader &reader)
-{
-  assert((PAGToken::NS_URI_SL | PAGToken::document) == getId(reader));
-
-  m_collector->startDocument();
-
-  IWORKXMLReader::ElementIterator element(reader);
-  while (element.next())
+  switch (token)
   {
-    switch (getId(element))
+  case PAGToken::VERSION_STR_4 :
+    return 4;
+  }
+
+  return 0;
+}
+
+}
+
+namespace
+{
+
+class FootersContext : public PAGXMLElementContextBase
+{
+public:
+  explicit FootersContext(PAGParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+FootersContext::FootersContext(PAGParserState &state)
+  : PAGXMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t FootersContext::element(int)
+{
+  // TODO: parse
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
+class HeadersContext : public PAGXMLElementContextBase
+{
+public:
+  explicit HeadersContext(PAGParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+HeadersContext::HeadersContext(PAGParserState &state)
+  : PAGXMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t HeadersContext::element(int)
+{
+  // TODO: parse
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
+class StylesheetContext : public PAGXMLElementContextBase
+{
+public:
+  explicit StylesheetContext(PAGParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+StylesheetContext::StylesheetContext(PAGParserState &state)
+  : PAGXMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t StylesheetContext::element(int)
+{
+  // TODO: parse
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
+class SectionPrototypesContext : public PAGXMLElementContextBase
+{
+public:
+  explicit SectionPrototypesContext(PAGParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+SectionPrototypesContext::SectionPrototypesContext(PAGParserState &state)
+  : PAGXMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t SectionPrototypesContext::element(int)
+{
+  // TODO: parse
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
+class MetadataContext : public PAGXMLElementContextBase
+{
+public:
+  explicit MetadataContext(PAGParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+MetadataContext::MetadataContext(PAGParserState &state)
+  : PAGXMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t MetadataContext::element(int)
+{
+  // TODO: parse
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
+class DocumentContext : public PAGXMLElementContextBase
+{
+public:
+  explicit DocumentContext(PAGParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  optional<IWORKSize> m_size;
+};
+
+DocumentContext::DocumentContext(PAGParserState &state)
+  : PAGXMLElementContextBase(state)
+  , m_size()
+{
+}
+
+void DocumentContext::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case PAGToken::NS_URI_SL | PAGToken::version :
+  {
+    const unsigned version = getVersion(getToken(value));
+    if (0 == version)
     {
-    case IWORKToken::NS_URI_SF | IWORKToken::metadata :
-      parseMetadata(element);
-      break;
-    case PAGToken::NS_URI_SL | PAGToken::section_prototypes :
-      parseSectionPrototypes(element);
-      break;
-    case PAGToken::NS_URI_SL | PAGToken::stylesheet :
-      parseStylesheet(reader);
-      break;
-    case IWORKToken::NS_URI_SF | IWORKToken::headers :
-      parseHeaders(element);
-      break;
-    case IWORKToken::NS_URI_SF | IWORKToken::footers :
-      parseFooters(element);
-      break;
-    case IWORKToken::NS_URI_SF | IWORKToken::text_storage :
-      parseTextStorage(element);
-      break;
-    default :
-      skipElement(element);
-      break;
+      ETONYEK_DEBUG_MSG(("unknown version %s\n", value));
     }
   }
-
-  m_collector->endDocument();
-}
-
-void PAGParser::parseMetadata(const IWORKXMLReader &reader)
-{
-  assert((IWORKToken::NS_URI_SF | IWORKToken::metadata) == getId(reader));
-  // TODO: implement me
-  skipElement(reader);
-}
-
-void PAGParser::parseSectionPrototypes(const IWORKXMLReader &reader)
-{
-  assert((PAGToken::NS_URI_SL | PAGToken::section_prototypes) == getId(reader));
-  // TODO: implement me
-  skipElement(reader);
-}
-
-void PAGParser::parseStylesheet(const IWORKXMLReader &reader)
-{
-  assert((PAGToken::NS_URI_SL | PAGToken::stylesheet) == getId(reader));
-  // TODO: implement me
-  skipElement(reader);
-}
-
-void PAGParser::parseHeaders(const IWORKXMLReader &reader)
-{
-  assert((IWORKToken::NS_URI_SF | IWORKToken::headers) == getId(reader));
-  // TODO: implement me
-  skipElement(reader);
-}
-
-void PAGParser::parseFooters(const IWORKXMLReader &reader)
-{
-  assert((IWORKToken::NS_URI_SF | IWORKToken::footers) == getId(reader));
-  // TODO: implement me
-  skipElement(reader);
-}
-
-void PAGParser::parseTextStorage(const IWORKXMLReader &reader)
-{
-  assert((IWORKToken::NS_URI_SF | IWORKToken::text_storage) == getId(reader));
-
-  TextStorageKind kind = TEXT_STORAGE_KIND_UNKNOWN;
-
-  IWORKXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if ((IWORKToken::NS_URI_SF | IWORKToken::kind) == getId(attr))
-    {
-      switch (getValueId(attr))
-      {
-      case PAGToken::body :
-        kind = TEXT_STORAGE_KIND_BODY;
-        break;
-      case PAGToken::cell :
-        kind = TEXT_STORAGE_KIND_CELL;
-        break;
-      case PAGToken::footnote :
-        kind = TEXT_STORAGE_KIND_FOOTNOTE;
-        break;
-      case PAGToken::header :
-        kind = TEXT_STORAGE_KIND_HEADER;
-        break;
-      case PAGToken::note :
-        kind = TEXT_STORAGE_KIND_NOTE;
-        break;
-      case PAGToken::textbox :
-        kind = TEXT_STORAGE_KIND_TEXTBOX;
-        break;
-      default :
-        assert(!"unknown storage value");
-        break;
-      }
-    }
-  }
-
-  IWORKXMLReader::ElementIterator element(reader);
-  while (element.next())
-  {
-    switch (getId(element))
-    {
-    case IWORKToken::NS_URI_SF | IWORKToken::text_body :
-      parseTextBody(reader, kind);
-      break;
-    default :
-      skipElement(reader);
-      break;
-    }
-  }
-}
-
-void PAGParser::parseTextBody(const IWORKXMLReader &reader, const TextStorageKind kind)
-{
-  assert((IWORKToken::NS_URI_SF | IWORKToken::text_body) == getId(reader));
-
-  IWORKXMLReader::ElementIterator element(reader);
-  while (element.next())
-  {
-    switch (kind)
-    {
-    case TEXT_STORAGE_KIND_BODY :
-      if ((IWORKToken::NS_URI_SF | IWORKToken::section) == getId(element))
-        parseSection(element);
-      else
-        skipElement(reader);
-      break;
-    default :
-      skipElement(reader);
-      break;
-    }
-  }
-}
-
-void PAGParser::parseSection(const IWORKXMLReader &reader)
-{
-  assert((IWORKToken::NS_URI_SF | IWORKToken::section) == getId(reader));
-
-  IWORKXMLReader::ElementIterator element(reader);
-  while (element.next())
-  {
-    if ((IWORKToken::NS_URI_SF | IWORKToken::layout) == getId(element))
-      parseLayout(element);
-    else
-      skipElement(reader);
-  }
-}
-
-void PAGParser::parseLayout(const IWORKXMLReader &reader)
-{
-  assert((IWORKToken::NS_URI_SF | IWORKToken::layout) == getId(reader));
-
-  IWORKXMLReader::ElementIterator element(reader);
-  while (element.next())
-  {
-    if ((IWORKToken::NS_URI_SF | IWORKToken::p) == getId(element))
-      parseP(element);
-    else
-      skipElement(reader);
+  break;
   }
 }
 
-void PAGParser::parseP(const IWORKXMLReader &reader)
+IWORKXMLContextPtr_t DocumentContext::element(const int name)
 {
-  assert((IWORKToken::NS_URI_SF | IWORKToken::p) == getId(reader));
-
-  m_collector->startParagraph();
-
-  IWORKXMLReader::MixedIterator mixed(reader);
-  while (mixed.next())
+  switch (name)
   {
-    if (mixed.isElement())
-    {
-      switch (getId(mixed))
-      {
-      case IWORKToken::NS_URI_SF | IWORKToken::br :
-      case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
-        parseBr(mixed);
-        break;
-      case IWORKToken::NS_URI_SF | IWORKToken::span :
-        parseSpan(mixed);
-        break;
-      case IWORKToken::NS_URI_SF | IWORKToken::tab :
-        parseTab(mixed);
-        break;
-      default :
-        skipElement(reader);
-      }
-    }
-    else
-    {
-      m_collector->collectText(mixed.getText());
-    }
+  case IWORKToken::NS_URI_SF | IWORKToken::metadata :
+    return makeContext<MetadataContext>(getState());
+  case PAGToken::NS_URI_SL | PAGToken::section_prototypes :
+    return makeContext<SectionPrototypesContext>(getState());
+  case PAGToken::NS_URI_SL | PAGToken::stylesheet :
+    return makeContext<StylesheetContext>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::headers :
+    return makeContext<HeadersContext>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::footers :
+    return makeContext<FootersContext>(getState());
   }
 
-  m_collector->endParagraph();
+  return IWORKXMLContextPtr_t();
 }
 
-void PAGParser::parseSpan(const IWORKXMLReader &reader)
+void DocumentContext::endOfElement()
 {
-  assert((IWORKToken::NS_URI_SF | IWORKToken::span) == getId(reader));
-
-  m_collector->startSpan();
-
-  IWORKXMLReader::MixedIterator mixed(reader);
-  while (mixed.next())
-  {
-    if (mixed.isElement())
-    {
-      switch (getId(mixed))
-      {
-      case IWORKToken::NS_URI_SF | IWORKToken::br :
-      case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
-        parseBr(mixed);
-        break;
-      case IWORKToken::NS_URI_SF | IWORKToken::tab :
-        parseTab(mixed);
-        break;
-      default :
-        skipElement(reader);
-      }
-    }
-    else
-    {
-      m_collector->collectText(mixed.getText());
-    }
-  }
-
-  m_collector->endSpan();
 }
 
-void PAGParser::parseTab(const IWORKXMLReader &reader)
-{
-  assert((IWORKToken::NS_URI_SF | IWORKToken::tab) == getId(reader));
-
-  checkEmptyElement(reader);
-
-  m_collector->collectTab();
 }
 
-void PAGParser::parseBr(const IWORKXMLReader &reader)
+PAGParser::PAGParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGCollector *const /*collector*/, PAGDictionary *const dict)
+  : IWORKParser(input, package, 0)
+  , m_state(*this, *dict, getTokenizer())
+  , m_version(0)
 {
-  assert(((IWORKToken::NS_URI_SF | IWORKToken::br) == getId(reader))
-         || ((IWORKToken::NS_URI_SF | IWORKToken::lnbr) == getId(reader)));
+}
 
-  checkEmptyElement(reader);
+PAGParser::~PAGParser()
+{
+}
 
-  m_collector->collectLineBreak();
+IWORKXMLContextPtr_t PAGParser::createDocumentContext()
+{
+  return makeContext<DocumentContext>(m_state);
+}
+
+IWORKXMLReader::TokenizerFunction_t PAGParser::getTokenizer() const
+{
+  return IWORKXMLReader::ChainedTokenizer(PAGTokenizer(), IWORKTokenizer());
 }
 
 }
