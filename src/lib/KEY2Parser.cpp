@@ -23,7 +23,6 @@
 #include "IWORKToken.h"
 #include "IWORKTypes.h"
 #include "IWORKXMLContexts.h"
-#include "IWORKXMLReader.h"
 #include "KEY2ParserState.h"
 #include "KEY2StyleContext.h"
 #include "KEY2Token.h"
@@ -2311,6 +2310,36 @@ IWORKXMLContextPtr_t PresentationContext::element(const int name)
 
 }
 
+namespace
+{
+
+class DocumentContext : public KEY2XMLElementContextBase
+{
+public:
+  explicit DocumentContext(KEY2ParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+DocumentContext::DocumentContext(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t DocumentContext::element(const int name)
+{
+  switch (name)
+  {
+  case KEY2Token::NS_URI_KEY | KEY2Token::presentation :
+    return makeContext<PresentationContext>(m_state);
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
 KEY2Parser::KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector, KEYDictionary &dict)
   : IWORKParser(input, package, collector)
   , m_state(*this, dict, getTokenizer())
@@ -2324,12 +2353,12 @@ KEY2Parser::~KEY2Parser()
 
 IWORKXMLContextPtr_t KEY2Parser::createDocumentContext()
 {
-  return makeContext<PresentationContext>(m_state);
+  return makeContext<DocumentContext>(m_state);
 }
 
-IWORKXMLReader::TokenizerFunction_t KEY2Parser::getTokenizer() const
+TokenizerFunction_t KEY2Parser::getTokenizer() const
 {
-  return IWORKXMLReader::ChainedTokenizer(KEY2Tokenizer(), IWORKTokenizer());
+  return ChainedTokenizer(KEY2Tokenizer(), IWORKTokenizer());
 }
 
 }

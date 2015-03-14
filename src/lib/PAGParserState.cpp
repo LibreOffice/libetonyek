@@ -14,7 +14,7 @@
 namespace libetonyek
 {
 
-PAGParserState::PAGParserState(IWORKParser &parser, PAGDictionary &dict, const IWORKXMLReader::TokenizerFunction_t &tokenizer)
+PAGParserState::PAGParserState(IWORKParser &parser, PAGDictionary &dict, const TokenizerFunction_t &tokenizer)
   : IWORKXMLParserState(parser, dict, tokenizer)
   , m_dict(dict)
 {

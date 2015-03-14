@@ -15,7 +15,6 @@
 
 #include "libetonyek_xml.h"
 #include "IWORKToken.h"
-#include "IWORKXMLReader.h"
 #include "NUMCollector.h"
 #include "NUMToken.h"
 
@@ -31,8 +30,9 @@ NUMParser::NUMParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr
 
 bool NUMParser::parse() try
 {
-  const IWORKXMLReader reader(m_input.get(), IWORKXMLReader::ChainedTokenizer(NUMTokenizer(), IWORKTokenizer()));
-  parseDocument(reader);
+  // Todo
+  // const IWORKXMLReader reader(m_input.get(), IWORKXMLReader::ChainedTokenizer(NUMTokenizer(), IWORKTokenizer()));
+  // parseDocument(reader);
   return true;
 }
 catch (...)
@@ -40,25 +40,27 @@ catch (...)
   return false;
 }
 
-void NUMParser::parseDocument(const IWORKXMLReader &reader)
-{
-  // assert((NUMToken::NS_URI_LS | NUMToken::document) == getId(reader));
+// void NUMParser::parseDocument(const IWORKXMLReader &reader)
+// {
 
-  m_collector->startDocument();
+// Todo
+// assert((NUMToken::NS_URI_LS | NUMToken::document) == getId(reader));
 
-  IWORKXMLReader::ElementIterator element(reader);
-  while (element.next())
-  {
-    switch (getId(element))
-    {
-    default :
-      skipElement(element);
-      break;
-    }
-  }
+// m_collector->startDocument();
 
-  m_collector->endDocument();
-}
+// IWORKXMLReader::ElementIterator element(reader);
+// while (element.next())
+// {
+//   switch (getId(element))
+//   {
+//   default :
+//     skipElement(element);
+//     break;
+//   }
+// }
+
+// m_collector->endDocument();
+// }
 
 }
 
