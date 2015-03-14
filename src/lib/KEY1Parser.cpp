@@ -30,7 +30,7 @@ IWORKXMLContextPtr_t KEY1Parser::createDocumentContext()
   return IWORKXMLContextPtr_t();
 }
 
-IWORKXMLReader::TokenizerFunction_t KEY1Parser::getTokenizer() const
+TokenizerFunction_t KEY1Parser::getTokenizer() const
 {
   return KEY1Tokenizer();
 }
