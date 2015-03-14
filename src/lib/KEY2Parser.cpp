@@ -2260,15 +2260,16 @@ public:
 private:
   virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
 
 private:
   optional<IWORKSize> m_size;
+  bool m_pendingSize;
 };
 
 PresentationContext::PresentationContext(KEY2ParserState &state)
   : KEY2XMLElementContextBase(state)
   , m_size()
+  , m_pendingSize(false)
 {
 }
 
@@ -2290,6 +2291,12 @@ void PresentationContext::attribute(const int name, const char *const value)
 
 IWORKXMLContextPtr_t PresentationContext::element(const int name)
 {
+  if (m_pendingSize)
+  {
+    getCollector()->collectPresentation(m_size);
+    m_pendingSize = false;
+  }
+
   switch (name)
   {
   case KEY2Token::NS_URI_KEY | KEY2Token::metadata :
@@ -2299,15 +2306,11 @@ IWORKXMLContextPtr_t PresentationContext::element(const int name)
   case KEY2Token::NS_URI_KEY | KEY2Token::slide_list :
     return makeContext<SlideListContext>(getState());
   case KEY2Token::NS_URI_KEY | KEY2Token::size :
+    m_pendingSize = true;
     return makeContext<IWORKSizeContext>(getState(), m_size);
   }
 
   return IWORKXMLContextPtr_t();
-}
-
-void PresentationContext::endOfElement()
-{
-  getCollector()->collectPresentation(m_size);
 }
 
 }

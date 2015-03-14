@@ -97,16 +97,10 @@ libetonyek_internal_la_SOURCES = \
 	KEY2Token.h \
 	KEYCollector.cpp \
 	KEYCollector.h \
-	KEYCollectorBase.cpp \
-	KEYCollectorBase.h \
-	KEYContentCollector.cpp \
-	KEYContentCollector.h \
 	KEYDictionary.cpp \
 	KEYDictionary.h \
 	KEYStyles.cpp \
 	KEYStyles.h \
-	KEYThemeCollector.cpp \
-	KEYThemeCollector.h \
 	KEYTypes.cpp \
 	KEYTypes.h \
 	KEYTypes_fwd.h \

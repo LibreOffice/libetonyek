@@ -10,15 +10,23 @@
 #ifndef KEYCOLLECTOR_H_INCLUDED
 #define KEYCOLLECTOR_H_INCLUDED
 
+#include <deque>
+#include <stack>
 #include <string>
 
 #include <boost/optional.hpp>
 
 #include "libetonyek_utils.h"
+#include "IWORKObject.h"
 #include "IWORKPath_fwd.h"
+#include "IWORKStyle.h"
+#include "IWORKStyleStack.h"
 #include "IWORKStylesheet.h"
 #include "IWORKTable.h"
+#include "IWORKText_fwd.h"
+#include "IWORKTransformation.h"
 #include "IWORKTypes.h"
+#include "KEYTypes.h"
 #include "KEYTypes_fwd.h"
 
 namespace libetonyek
@@ -29,107 +37,155 @@ struct IWORKSize;
 
 class KEYCollector
 {
+  struct Level
+  {
+    IWORKGeometryPtr_t m_geometry;
+    IWORKStylePtr_t m_graphicStyle;
+    IWORKTransformation m_trafo;
+
+    Level();
+  };
+
 public:
-  virtual ~KEYCollector() = 0;
+  explicit KEYCollector(librevenge::RVNGPresentationInterface *painter);
+  ~KEYCollector();
 
   // collector functions
 
-  virtual void collectCellStyle(const IWORKStylePtr_t &style, bool anonymous) = 0;
-  virtual void collectCharacterStyle(const IWORKStylePtr_t &style, bool anonymous) = 0;
-  virtual void collectConnectionStyle(const IWORKStylePtr_t &style, bool anonymous) = 0;
-  virtual void collectGraphicStyle(const IWORKStylePtr_t &style, bool anonymous) = 0;
-  virtual void collectLayoutStyle(const IWORKStylePtr_t &style, bool anonymous) = 0;
-  virtual void collectListStyle(const IWORKStylePtr_t &style, bool anonymous) = 0;
-  virtual void collectParagraphStyle(const IWORKStylePtr_t &style, bool anonymous) = 0;
-  virtual void collectPlaceholderStyle(const IWORKStylePtr_t &style, bool anonymous) = 0;
-  virtual void collectSlideStyle(const IWORKStylePtr_t &style, bool anonymous) = 0;
-  virtual void collectTabularStyle(const IWORKStylePtr_t &style, bool anonymous) = 0;
-  virtual void collectVectorStyle(const IWORKStylePtr_t &style, bool anonymous) = 0;
+  void collectCellStyle(const IWORKStylePtr_t &style, bool anonymous);
+  void collectCharacterStyle(const IWORKStylePtr_t &style, bool anonymous);
+  void collectConnectionStyle(const IWORKStylePtr_t &style, bool anonymous);
+  void collectGraphicStyle(const IWORKStylePtr_t &style, bool anonymous);
+  void collectLayoutStyle(const IWORKStylePtr_t &style, bool anonymous);
+  void collectListStyle(const IWORKStylePtr_t &style, bool anonymous);
+  void collectParagraphStyle(const IWORKStylePtr_t &style, bool anonymous);
+  void collectPlaceholderStyle(const IWORKStylePtr_t &style, bool anonymous);
+  void collectSlideStyle(const IWORKStylePtr_t &style, bool anonymous);
+  void collectTabularStyle(const IWORKStylePtr_t &style, bool anonymous);
+  void collectVectorStyle(const IWORKStylePtr_t &style, bool anonymous);
 
-  virtual void collectGeometry(const IWORKGeometryPtr_t &geometry) = 0;
+  void collectGeometry(const IWORKGeometryPtr_t &geometry);
 
-  virtual void collectBezier(const IWORKPathPtr_t &path) = 0;
-  virtual void collectGroup(const IWORKGroupPtr_t &group) = 0;
-  virtual void collectImage(const IWORKImagePtr_t &image) = 0;
-  virtual void collectLine(const IWORKLinePtr_t &line) = 0;
-  virtual void collectShape() = 0;
+  void collectBezier(const IWORKPathPtr_t &path);
+  void collectGroup(const IWORKGroupPtr_t &group);
+  void collectImage(const IWORKImagePtr_t &image);
+  void collectLine(const IWORKLinePtr_t &line);
+  void collectShape();
 
-  virtual void collectBezierPath() = 0;
-  virtual void collectPolygonPath(const IWORKSize &size, unsigned edges) = 0;
-  virtual void collectRoundedRectanglePath(const IWORKSize &size, double radius) = 0;
-  virtual void collectArrowPath(const IWORKSize &size, double headWidth, double stemRelYPos, bool doubleSided) = 0;
-  virtual void collectStarPath(const IWORKSize &size, unsigned points, double innerRadius) = 0;
-  virtual void collectConnectionPath(const IWORKSize &size, double middleX, double middleY) = 0;
-  virtual void collectCalloutPath(const IWORKSize &size, double radius, double tailSize, double tailX, double tailY, bool quoteBubble) = 0;
+  void collectBezierPath();
+  void collectPolygonPath(const IWORKSize &size, unsigned edges);
+  void collectRoundedRectanglePath(const IWORKSize &size, double radius);
+  void collectArrowPath(const IWORKSize &size, double headWidth, double stemRelYPos, bool doubleSided);
+  void collectStarPath(const IWORKSize &size, unsigned points, double innerRadius);
+  void collectConnectionPath(const IWORKSize &size, double middleX, double middleY);
+  void collectCalloutPath(const IWORKSize &size, double radius, double tailSize, double tailX, double tailY, bool quoteBubble);
 
-  // TODO: assemble in parser
-  virtual void collectData(const IWORKDataPtr_t &data) = 0;
-  virtual IWORKMediaContentPtr_t collectUnfiltered(const boost::optional<IWORKSize> &size) = 0;
-  virtual void insertUnfiltered(const IWORKMediaContentPtr_t &content) = 0;
-  virtual void collectFiltered(const boost::optional<IWORKSize> &size) = 0;
-  virtual void collectLeveled(const boost::optional<IWORKSize> &size) = 0;
-  virtual IWORKMediaContentPtr_t collectFilteredImage() = 0;
-  virtual void insertFilteredImage(const IWORKMediaContentPtr_t &content) = 0;
-  virtual void collectMovieMedia() = 0;
-  virtual void collectMedia() = 0;
+  void collectData(const IWORKDataPtr_t &data);
+  IWORKMediaContentPtr_t collectUnfiltered(const boost::optional<IWORKSize> &size);
+  void insertUnfiltered(const IWORKMediaContentPtr_t &content);
+  void collectFiltered(const boost::optional<IWORKSize> &size);
+  void collectLeveled(const boost::optional<IWORKSize> &size);
+  IWORKMediaContentPtr_t collectFilteredImage();
+  void insertFilteredImage(const IWORKMediaContentPtr_t &content);
+  void collectMovieMedia();
+  void collectMedia();
 
-  virtual void collectPresentation(const boost::optional<IWORKSize> &size) = 0;
+  void collectPresentation(const boost::optional<IWORKSize> &size);
 
-  virtual KEYLayerPtr_t collectLayer() = 0;
-  virtual void insertLayer(const KEYLayerPtr_t &layer) = 0;
-  virtual void collectPage() = 0;
-  virtual IWORKStylesheetPtr_t collectStylesheet(const IWORKStylesheetPtr_t &parent) = 0;
+  KEYLayerPtr_t collectLayer();
+  void insertLayer(const KEYLayerPtr_t &layer);
+  void collectPage();
+  IWORKStylesheetPtr_t collectStylesheet(const IWORKStylesheetPtr_t &parent);
 
-  virtual void collectText(const IWORKStylePtr_t &style, const std::string &text) = 0;
-  virtual void collectTab() = 0;
-  virtual void collectLineBreak() = 0;
+  void collectText(const IWORKStylePtr_t &style, const std::string &text);
+  void collectTab();
+  void collectLineBreak();
 
-  virtual KEYPlaceholderPtr_t collectTextPlaceholder(const IWORKStylePtr_t &style, bool title) = 0;
-  virtual void insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder) = 0;
+  KEYPlaceholderPtr_t collectTextPlaceholder(const IWORKStylePtr_t &style, bool title);
+  void insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder);
 
-  virtual void collectTableSizes(const IWORKTable::RowSizes_t &rowSizes, const IWORKTable::ColumnSizes_t &columnSizes) = 0;
-  virtual void collectTableCell(unsigned row, unsigned column, const boost::optional<std::string> &content, unsigned rowSpan, unsigned columnSpan) = 0;
-  virtual void collectCoveredTableCell(unsigned row, unsigned column) = 0;
-  virtual void collectTableRow() = 0;
-  virtual void collectTable() = 0;
+  void collectTableSizes(const IWORKTable::RowSizes_t &rowSizes, const IWORKTable::ColumnSizes_t &columnSizes);
+  void collectTableCell(unsigned row, unsigned column, const boost::optional<std::string> &content, unsigned rowSpan, unsigned columnSpan);
+  void collectCoveredTableCell(unsigned row, unsigned column);
+  void collectTableRow();
+  void collectTable();
 
-  virtual void collectNote() = 0;
+  void collectNote();
 
-  virtual void collectStickyNote() = 0;
+  void collectStickyNote();
 
-  virtual void startPage() = 0;
-  virtual void endPage() = 0;
-  virtual void startLayer() = 0;
-  virtual void endLayer() = 0;
-  virtual void startGroup() = 0;
-  virtual void endGroup() = 0;
+  void startSlides();
+  void endSlides();
+  void startThemes();
+  void endThemes();
 
-  virtual void startParagraph(const IWORKStylePtr_t &style) = 0;
-  virtual void endParagraph() = 0;
+  void startPage();
+  void endPage();
+  void startLayer();
+  void endLayer();
+  void startGroup();
+  void endGroup();
 
-  /** Start of a block that can contain text.
-    *
-    * This can be:
-    * * a text shape
-    * * a sticky note
-    * * a placeholder
-    * * a note.
-    */
-  virtual void startText(bool object) = 0;
+  void startParagraph(const IWORKStylePtr_t &style);
+  void endParagraph();
+  void startText(bool object);
+  void endText();
 
-  /** End of a text block.
-    */
-  virtual void endText() = 0;
+  void startLevel();
+  void endLevel();
 
-  // helper functions
+  void pushStyle();
+  void popStyle();
 
-  virtual void startSlides() = 0;
-  virtual void endSlides() = 0;
-  virtual void startThemes() = 0;
-  virtual void endThemes() = 0;
+protected:
+  bool isCollecting() const;
+  void setCollecting(bool collecting);
 
-  virtual void startLevel() = 0;
-  virtual void endLevel() = 0;
+  const IWORKObjectList_t &getNotes() const;
+  const KEYStickyNotes_t &getStickyNotes() const;
+
+  const IWORKTransformation &getTransformation() const;
+
+private:
+  void pushStyle(const IWORKStylePtr_t &style);
+  void resolveStyle(IWORKStyle &style);
+
+  void drawNotes(const IWORKObjectList_t &notes);
+  void drawStickyNotes(const KEYStickyNotes_t &stickyNotes);
+
+private:
+  librevenge::RVNGPresentationInterface *m_painter;
+
+  std::stack<Level> m_levelStack;
+  IWORKStyleStack m_styleStack;
+  std::stack<IWORKObjectList_t> m_objectsStack;
+  IWORKPathPtr_t m_currentPath;
+
+  IWORKTextPtr_t m_currentText;
+
+  IWORKStylesheetPtr_t m_currentStylesheet;
+  std::deque<IWORKStylePtr_t> m_newStyles;
+
+  IWORKDataPtr_t m_currentData;
+  IWORKMediaContentPtr_t m_currentUnfiltered;
+  IWORKMediaContentPtr_t m_currentFiltered;
+  IWORKMediaContentPtr_t m_currentLeveled;
+  IWORKMediaContentPtr_t m_currentContent;
+
+  IWORKTable m_currentTable;
+
+  IWORKObjectList_t m_notes;
+
+  KEYStickyNotes_t m_stickyNotes;
+
+  IWORKSize m_size;
+
+  bool m_collecting;
+  bool m_paint;
+  bool m_pageOpened;
+  bool m_layerOpened;
+  int m_groupLevel;
+  int m_layerCount;
 };
 
 } // namespace libetonyek

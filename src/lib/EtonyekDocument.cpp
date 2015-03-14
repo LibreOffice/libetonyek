@@ -19,9 +19,8 @@
 #include "KEY1Parser.h"
 #include "KEY2Parser.h"
 #include "KEY2Token.h"
-#include "KEYContentCollector.h"
+#include "KEYCollector.h"
 #include "KEYDictionary.h"
-#include "KEYThemeCollector.h"
 #include "NUMCollector.h"
 #include "NUMParser.h"
 #include "NUMToken.h"
@@ -404,21 +403,11 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   assert(bool(info.input));
   assert(0 != info.version);
 
+  info.input->seek(0, librevenge::RVNG_SEEK_SET);
+
   KEYDictionary dict;
-  IWORKSize presentationSize;
-
-  info.input->seek(0, librevenge::RVNG_SEEK_SET);
-
-  KEYThemeCollector themeCollector(presentationSize);
-  shared_ptr<IWORKParser> parser = makeKeynoteParser(info.version, info.input, info.package, &themeCollector, dict);
-  if (!parser->parse())
-    return false;
-
-  info.input->seek(0, librevenge::RVNG_SEEK_SET);
-
-  dict.m_locked = true; // do not add refs again
-  KEYContentCollector contentCollector(generator, presentationSize);
-  parser = makeKeynoteParser(info.version, info.input, info.package, &contentCollector, dict);
+  KEYCollector collector(generator);
+  const shared_ptr<IWORKParser> parser = makeKeynoteParser(info.version, info.input, info.package, &collector, dict);
   return parser->parse();
 }
 catch (...)
