@@ -12,6 +12,8 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/logic/tribool.hpp>
+#include <libxml/xmlreader.h>
+#include <boost/optional.hpp>
 
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"
@@ -34,11 +36,49 @@ using boost::logic::indeterminate;
 using boost::logic::tribool;
 using boost::scoped_ptr;
 using boost::shared_ptr;
+using boost::optional;
+using std::string;
 
 using librevenge::RVNG_SEEK_SET;
 
 namespace libetonyek
 {
+
+namespace
+{
+
+extern "C" int readFromStream1(void *context, char *buffer, int len)
+{
+  try
+  {
+    librevenge::RVNGInputStream *const input = reinterpret_cast<librevenge::RVNGInputStream *>(context);
+
+    unsigned long bytesRead = 0;
+    const unsigned char *const bytes = input->read(len, bytesRead);
+
+    std::memcpy(buffer, bytes, static_cast<int>(bytesRead));
+    return static_cast<int>(bytesRead);
+  }
+  catch (...)
+  {
+  }
+
+  return -1;
+}
+
+extern "C" int closeStream1(void * /* context */)
+{
+  return 0;
+}
+
+}
+
+namespace
+{
+
+struct XMLException {};
+
+}
 
 namespace
 {
@@ -88,12 +128,42 @@ bool probeKeynote2XML(const RVNGInputStreamPtr_t &input, unsigned &version)
     return false;
 
   const KEY2Tokenizer tokenizer = KEY2Tokenizer();
-  IWORKXMLReader reader(input.get(), tokenizer);
+  const xmlTextReaderPtr reader = xmlReaderForIO(readFromStream1, closeStream1, input.get(), "", 0, 0);
+  if (!bool(reader))
+    throw XMLException();
 
-  if ((KEY2Token::NS_URI_KEY | KEY2Token::presentation) == getId(reader))
+  int ret = 0;
+  do
   {
-    const std::string v = readOnlyAttribute(reader, KEY2Token::version, KEY2Token::NS_URI_KEY);
+    ret = xmlTextReaderRead(reader);
+  }
+  while ((1 == ret) && (XML_READER_TYPE_ELEMENT != xmlTextReaderNodeType(reader)));
 
+  if (1 != ret)
+    throw XMLException();
+
+  const int name = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
+  const int ns = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) ? reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) : "");
+  assert((0 == ns) || (ns > name));
+
+  if ((KEY2Token::NS_URI_KEY | KEY2Token::presentation) == (name | ns))
+  {
+    optional<string> value;
+
+    if (xmlTextReaderHasAttributes(reader))
+    {
+      ret = xmlTextReaderMoveToFirstAttribute(reader);
+      while (1 == ret)
+      {
+        const int attributeName = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
+        const int attributeNameSpace = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)));
+        if ((attributeNameSpace == KEY2Token::NS_URI_KEY) && (attributeName == KEY2Token::version))
+          value = reinterpret_cast<const char *>(xmlTextReaderConstValue(reader));
+
+        ret = xmlTextReaderMoveToNextAttribute(reader);
+      }
+    }
+    const std::string v =  get(value);
     switch (tokenizer(v.c_str()))
     {
     case KEY2Token::VERSION_STR_2 :
@@ -130,11 +200,43 @@ bool probeNumbersXML(const RVNGInputStreamPtr_t &input, unsigned &version)
     return false;
 
   const NUMTokenizer tokenizer = NUMTokenizer();
-  IWORKXMLReader reader(input.get(), tokenizer);
 
-  if (NUMToken::NS_URI_LS == getId(reader))
+  const xmlTextReaderPtr reader = xmlReaderForIO(readFromStream1, closeStream1, input.get(), "", 0, 0);
+  if (!bool(reader))
+    throw XMLException();
+
+  int ret = 0;
+  do
   {
-    const std::string v = readOnlyAttribute(reader, NUMToken::version, NUMToken::NS_URI_LS);
+    ret = xmlTextReaderRead(reader);
+  }
+  while ((1 == ret) && (XML_READER_TYPE_ELEMENT != xmlTextReaderNodeType(reader)));
+
+  if (1 != ret)
+    throw XMLException();
+
+  const int name = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
+  const int ns = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) ? reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) : "");
+  assert((0 == ns) || (ns > name));
+
+  if (NUMToken::NS_URI_LS == ns)
+  {
+    optional<string> value;
+
+    if (xmlTextReaderHasAttributes(reader))
+    {
+      ret = xmlTextReaderMoveToFirstAttribute(reader);
+      while (1 == ret)
+      {
+        const int attributeName = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
+        const int attributeNameSpace = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)));
+        if ((attributeNameSpace == NUMToken::NS_URI_LS) && (attributeName == NUMToken::version))
+          value = reinterpret_cast<const char *>(xmlTextReaderConstValue(reader));
+
+        ret = xmlTextReaderMoveToNextAttribute(reader);
+      }
+    }
+    const std::string v =  get(value);
 
     switch (tokenizer(v.c_str()))
     {
@@ -153,11 +255,44 @@ bool probePagesXML(const RVNGInputStreamPtr_t &input, unsigned &version)
     return false;
 
   const PAGTokenizer tokenizer = PAGTokenizer();
-  IWORKXMLReader reader(input.get(), tokenizer);
 
-  if ((PAGToken::NS_URI_SL | PAGToken::document) == getId(reader))
+  const xmlTextReaderPtr reader = xmlReaderForIO(readFromStream1, closeStream1, input.get(), "", 0, 0);
+  if (!bool(reader))
+    throw XMLException();
+
+  int ret = 0;
+  do
   {
-    const std::string v = readOnlyAttribute(reader, PAGToken::version, PAGToken::NS_URI_SL);
+    ret = xmlTextReaderRead(reader);
+  }
+  while ((1 == ret) && (XML_READER_TYPE_ELEMENT != xmlTextReaderNodeType(reader)));
+
+  if (1 != ret)
+    throw XMLException();
+
+  const int name = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
+  const int ns = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) ? reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) : "");
+  assert((0 == ns) || (ns > name));
+
+  if ((PAGToken::NS_URI_SL | PAGToken::document) == (name | ns))
+  {
+
+    optional<string> value;
+
+    if (xmlTextReaderHasAttributes(reader))
+    {
+      ret = xmlTextReaderMoveToFirstAttribute(reader);
+      while (1 == ret)
+      {
+        const int attributeName = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
+        const int attributeNameSpace = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)));
+        if ((attributeNameSpace == PAGToken::NS_URI_SL) && (attributeName == PAGToken::version))
+          value = reinterpret_cast<const char *>(xmlTextReaderConstValue(reader));
+
+        ret = xmlTextReaderMoveToNextAttribute(reader);
+      }
+    }
+    const std::string v =  get(value);
 
     switch (tokenizer(v.c_str()))
     {
