@@ -12,19 +12,27 @@
 
 #include <string>
 
+#include "libetonyek_utils.h"
+
+extern "C" int readFromStream(void *context, char *buffer, int len);
+
+extern "C" int closeStream(void * /* context */);
+
 namespace libetonyek
 {
 
-class IWORKXMLReader;
+typedef boost::function<int(const char *)> TokenizerFunction_t;
 
-void skipElement(const IWORKXMLReader &reader);
+struct ChainedTokenizer
+{
+  ChainedTokenizer(const TokenizerFunction_t &tokenizer, const TokenizerFunction_t &next);
 
-bool checkElement(const IWORKXMLReader &reader, int name, int ns);
-bool checkEmptyElement(const IWORKXMLReader &reader);
-bool checkNoAttributes(const IWORKXMLReader &reader);
+  int operator()(const char *str) const;
 
-std::string readOnlyAttribute(const IWORKXMLReader &reader, int name, int ns);
-std::string readOnlyElementAttribute(const IWORKXMLReader &reader, int name, int ns);
+private:
+  const TokenizerFunction_t m_tokenizer;
+  const TokenizerFunction_t m_next;
+};
 
 /** Convert string value to bool.
   *
