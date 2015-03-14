@@ -137,18 +137,12 @@ public:
   void pushStyle();
   void popStyle();
 
-protected:
-  const IWORKObjectList_t &getNotes() const;
-  const KEYStickyNotes_t &getStickyNotes() const;
-
-  const IWORKTransformation &getTransformation() const;
-
 private:
   void pushStyle(const IWORKStylePtr_t &style);
   void resolveStyle(IWORKStyle &style);
 
-  void drawNotes(const IWORKObjectList_t &notes);
-  void drawStickyNotes(const KEYStickyNotes_t &stickyNotes);
+  void drawNotes();
+  void drawStickyNotes();
 
 private:
   librevenge::RVNGPresentationInterface *m_painter;

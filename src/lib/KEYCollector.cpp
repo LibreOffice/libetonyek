@@ -462,8 +462,8 @@ void KEYCollector::collectPage()
 
   if (m_paint)
   {
-    drawNotes(getNotes());
-    drawStickyNotes(getStickyNotes());
+    drawNotes();
+    drawStickyNotes();
   }
 }
 
@@ -761,23 +761,6 @@ void KEYCollector::endLevel()
   popStyle();
 }
 
-const IWORKObjectList_t &KEYCollector::getNotes() const
-{
-  return m_notes;
-}
-
-const KEYStickyNotes_t &KEYCollector::getStickyNotes() const
-{
-  return m_stickyNotes;
-}
-
-const IWORKTransformation &KEYCollector::getTransformation() const
-{
-  assert(!m_levelStack.empty());
-
-  return m_levelStack.top().m_trafo;
-}
-
 void KEYCollector::pushStyle()
 {
   m_styleStack.push();
@@ -794,23 +777,23 @@ void KEYCollector::resolveStyle(IWORKStyle &style)
   (void) style;
 }
 
-void KEYCollector::drawNotes(const IWORKObjectList_t &notes)
+void KEYCollector::drawNotes()
 {
-  if (notes.empty())
+  if (m_notes.empty())
     return;
 
   m_painter->startNotes(librevenge::RVNGPropertyList());
-  for (IWORKObjectList_t::const_iterator it = notes.begin(); notes.end() != it; ++it)
+  for (IWORKObjectList_t::const_iterator it = m_notes.begin(); m_notes.end() != it; ++it)
     (*it)->draw(m_painter);
   m_painter->endNotes();
 }
 
-void KEYCollector::drawStickyNotes(const KEYStickyNotes_t &stickyNotes)
+void KEYCollector::drawStickyNotes()
 {
-  if (stickyNotes.empty())
+  if (m_stickyNotes.empty())
     return;
 
-  for (KEYStickyNotes_t::const_iterator it = stickyNotes.begin(); stickyNotes.end() != it; ++it)
+  for (KEYStickyNotes_t::const_iterator it = m_stickyNotes.begin(); m_stickyNotes.end() != it; ++it)
   {
     librevenge::RVNGPropertyList props;
 
@@ -824,7 +807,7 @@ void KEYCollector::drawStickyNotes(const KEYStickyNotes_t &stickyNotes)
 
     m_painter->startComment(props);
     if (bool(it->m_text))
-      makeObject(it->m_text, getTransformation())->draw(m_painter);
+      makeObject(it->m_text, m_levelStack.top().m_trafo)->draw(m_painter);
     m_painter->endComment();
   }
 }
