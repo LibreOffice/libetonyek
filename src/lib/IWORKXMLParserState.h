@@ -33,7 +33,6 @@ public:
   IWORKDictionary &getDictionary();
   KEYCollector *getCollector() const;
   const IWORKXMLReader::TokenizerFunction_t &getTokenizer() const;
-  bool isDictLocked() const;
 
 private:
   IWORKParser &m_parser;

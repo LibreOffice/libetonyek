@@ -43,11 +43,6 @@ const IWORKXMLReader::TokenizerFunction_t &IWORKXMLParserState::getTokenizer() c
   return m_tokenizer;
 }
 
-bool IWORKXMLParserState::isDictLocked() const
-{
-  return m_dict.m_locked;
-}
-
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

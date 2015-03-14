@@ -331,7 +331,7 @@ void DataContext::endOfElement()
   data->m_displayName = m_displayName;
   data->m_type = m_type;
 
-  if (!getState().isDictLocked() && getId())
+  if (getId())
     getState().getDictionary().m_data[get(getId())] = data;
 
   getCollector()->collectData(data);
@@ -1018,7 +1018,7 @@ void BezierContext::attribute(const int name, const char *const value)
 
 void BezierContext::endOfAttributes()
 {
-  if (!getState().isDictLocked() && getId())
+  if (getId())
     getState().getDictionary().m_beziers[get(getId())] = m_path;
   getCollector()->collectBezier(m_path);
 }
@@ -1385,7 +1385,7 @@ IWORKXMLContextPtr_t ImageContext::element(const int name)
 
 void ImageContext::endOfElement()
 {
-  if (!getState().isDictLocked() && getId())
+  if (getId())
     getState().getDictionary().m_images[get(getId())] = m_image;
   getCollector()->collectImage(m_image);
   getCollector()->endLevel();

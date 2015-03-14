@@ -22,7 +22,6 @@ IWORKDictionary::IWORKDictionary()
   , m_unfiltereds()
   , m_filteredImages()
   , m_images()
-  , m_locked(false)
 {
 }
 
