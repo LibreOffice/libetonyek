@@ -18,7 +18,6 @@ test_SOURCES = \
 	IWORKStyleTest.cpp \
 	IWORKStyleStackTest.cpp \
 	IWORKTransformationTest.cpp \
-	IWORKXMLReaderTest.cpp \
 	KEY2TokenTest.cpp \
 	test.cpp
 

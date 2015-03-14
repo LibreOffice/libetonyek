@@ -24,7 +24,7 @@ class PAGParserState : public IWORKXMLParserState
   PAGParserState &operator=(const PAGParserState &);
 
 public:
-  PAGParserState(IWORKParser &parser, PAGDictionary &dict, const IWORKXMLReader::TokenizerFunction_t &tokenizer);
+  PAGParserState(IWORKParser &parser, PAGDictionary &dict, const TokenizerFunction_t &tokenizer);
 
   PAGDictionary &getDictionary();
 

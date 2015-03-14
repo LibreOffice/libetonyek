@@ -240,9 +240,9 @@ IWORKXMLContextPtr_t PAGParser::createDocumentContext()
   return makeContext<DocumentContext>(m_state);
 }
 
-IWORKXMLReader::TokenizerFunction_t PAGParser::getTokenizer() const
+TokenizerFunction_t PAGParser::getTokenizer() const
 {
-  return IWORKXMLReader::ChainedTokenizer(PAGTokenizer(), IWORKTokenizer());
+  return ChainedTokenizer(PAGTokenizer(), IWORKTokenizer());
 }
 
 }
