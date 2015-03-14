@@ -138,9 +138,6 @@ public:
   void popStyle();
 
 protected:
-  bool isCollecting() const;
-  void setCollecting(bool collecting);
-
   const IWORKObjectList_t &getNotes() const;
   const KEYStickyNotes_t &getStickyNotes() const;
 
@@ -180,7 +177,6 @@ private:
 
   IWORKSize m_size;
 
-  bool m_collecting;
   bool m_paint;
   bool m_pageOpened;
   bool m_layerOpened;
