@@ -2328,7 +2328,7 @@ IWORKXMLContextPtr_t KEY2Parser::createDocumentContext()
   return makeContext<PresentationContext>(m_state);
 }
 
-IWORKXMLReader::TokenizerFunction_t KEY2Parser::getTokenizer() const
+TokenizerFunction_t KEY2Parser::getTokenizer() const
 {
   return IWORKXMLReader::ChainedTokenizer(KEY2Tokenizer(), IWORKTokenizer());
 }

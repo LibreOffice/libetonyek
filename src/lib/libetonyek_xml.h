@@ -22,6 +22,21 @@
 namespace libetonyek
 {
 
+namespace
+{
+
+extern "C" int readFromStream(void *context, char *buffer, int len);
+
+extern "C" int closeStream(void * /* context */);
+}
+
+namespace
+{
+
+struct XMLException {};
+
+}
+
 class IWORKXMLReader;
 
 void skipElement(const IWORKXMLReader &reader);

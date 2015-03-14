@@ -11,6 +11,7 @@
 
 #include <boost/enable_shared_from_this.hpp>
 
+#include "libetonyek_xml.h"
 #include "IWORKXMLContextBase.h"
 #include "IWORKXMLParserState.h"
 #include "IWORKXMLReader.h"
@@ -63,31 +64,48 @@ void DiscardContext::endOfElement()
 namespace
 {
 
-void processElement(const IWORKXMLReader &reader, const IWORKXMLContextPtr_t &context)
+void processAttribute(xmlTextReaderPtr reader, const IWORKXMLContextPtr_t &context, const TokenizerFunction_t &tokenizer)
+{
+    int ret = xmlTextReaderMoveToFirstAttribute(reader);
+    while (1 == ret)
+    {
+      const int name = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
+      const int ns = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) ? reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) : "");
+      assert((0 == ns) || (ns > name));
+      const char* value = reinterpret_cast<const char *>(xmlTextReaderConstValue(reader));
+      context->attribute((name | ns), value);
+      ret = xmlTextReaderMoveToNextAttribute(reader);
+    }
+    context->endOfAttributes();
+}
+
+void processElement(xmlTextReaderPtr reader, const IWORKXMLContextPtr_t &context, const TokenizerFunction_t &tokenizer)
 {
   context->startOfElement();
-
-  IWORKXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-    context->attribute(getId(attr), attr.getValue());
-  context->endOfAttributes();
-
-  IWORKXMLReader::MixedIterator mixed(reader);
-  while (mixed.next())
+  switch (xmlTextReaderNodeType(reader))
   {
-    if (mixed.isElement())
-    {
-      IWORKXMLContextPtr_t subContext(context->element(getId(mixed)));
-      if (!subContext)
-        subContext.reset(new DiscardContext());
-      processElement(mixed, subContext);
-    }
-    else if (mixed.isText())
-    {
-      context->text(mixed.getText());
-    }
+  case XML_READER_TYPE_ELEMENT :
+  {  if (xmlTextReaderHasAttributes(reader))
+        processAttribute(reader, context, tokenizer);
+    break;
   }
-
+  case XML_READER_TYPE_ATTRIBUTE :
+  {
+    assert(false && "How did i ever got there?");
+    processAttribute(reader, context, tokenizer);
+    break;
+  }
+  case XML_READER_TYPE_TEXT :
+  {
+    xmlChar *const text = xmlTextReaderReadString(reader);
+    context->text(reinterpret_cast<char *>(text));
+    xmlFree(text);
+    break;
+  }
+  default :
+    // ignore other types of XML content
+    break;
+  }
   context->endOfElement();
 }
 
@@ -106,8 +124,20 @@ IWORKParser::~IWORKParser()
 
 bool IWORKParser::parse()
 {
-  IWORKXMLReader reader(m_input.get(), getTokenizer());
-  processElement(reader, createDocumentContext());
+  xmlTextReaderPtr reader(xmlReaderForIO(readFromStream, closeStream, m_input.get(), "", 0, 0));
+  if (!bool(reader))
+    return false;
+  int ret = 0;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+  }
+  while ((1 == ret) && (XML_READER_TYPE_ELEMENT != xmlTextReaderNodeType(reader)));
+
+  if (1 != ret)
+    return false;
+  // IWORKXMLReader reader(m_input.get(), getTokenizer());
+  processElement(reader, createDocumentContext(), getTokenizer());
 
   return true;
 }
