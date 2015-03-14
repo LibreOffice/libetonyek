@@ -15,44 +15,10 @@
 
 #include <libxml/xmlreader.h>
 
+#include "libetonyek_xml.h"
+
 namespace libetonyek
 {
-
-namespace
-{
-
-extern "C" int readFromStream(void *context, char *buffer, int len)
-{
-  try
-  {
-    librevenge::RVNGInputStream *const input = reinterpret_cast<librevenge::RVNGInputStream *>(context);
-
-    unsigned long bytesRead = 0;
-    const unsigned char *const bytes = input->read(len, bytesRead);
-
-    std::memcpy(buffer, bytes, static_cast<int>(bytesRead));
-    return static_cast<int>(bytesRead);
-  }
-  catch (...)
-  {
-  }
-
-  return -1;
-}
-
-extern "C" int closeStream(void * /* context */)
-{
-  return 0;
-}
-
-}
-
-namespace
-{
-
-struct XMLException {};
-
-}
 
 namespace
 {
