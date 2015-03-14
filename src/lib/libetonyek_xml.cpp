@@ -13,87 +13,38 @@
 #include <boost/optional.hpp>
 
 #include "IWORKToken.h"
-#include "IWORKXMLReader.h"
 
 using boost::lexical_cast;
 using boost::optional;
 
 using std::string;
 
+extern "C" int readFromStream(void *context, char *buffer, int len)
+{
+  try
+  {
+    librevenge::RVNGInputStream *const input = reinterpret_cast<librevenge::RVNGInputStream *>(context);
+
+    unsigned long bytesRead = 0;
+    const unsigned char *const bytes = input->read(len, bytesRead);
+
+    std::memcpy(buffer, bytes, static_cast<int>(bytesRead));
+    return static_cast<int>(bytesRead);
+  }
+  catch (...)
+  {
+  }
+
+  return -1;
+}
+
+extern "C" int closeStream(void * /* context */)
+{
+  return 0;
+}
+
 namespace libetonyek
 {
-
-namespace
-{
-
-struct XMLException {};
-
-}
-
-void skipElement(const IWORKXMLReader &reader)
-{
-  IWORKXMLReader::ElementIterator elements(reader);
-  while (elements.next())
-    skipElement(elements);
-}
-
-bool checkElement(const IWORKXMLReader &reader, const int name, const int ns)
-{
-  return (getNamespaceId(reader) == ns) && (getNameId(reader) == name);
-}
-
-bool checkEmptyElement(const IWORKXMLReader &reader)
-{
-  bool empty = true;
-
-  IWORKXMLReader::ElementIterator elements(reader);
-  while (elements.next())
-  {
-    empty = false;
-    skipElement(elements);
-  }
-
-  return empty;
-}
-
-bool checkNoAttributes(const IWORKXMLReader &reader)
-{
-  unsigned count = 0;
-
-  IWORKXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    ++count;
-  }
-
-  return 0 == count;
-}
-
-string readOnlyAttribute(const IWORKXMLReader &reader, const int name, const int ns)
-{
-  optional<string> value;
-
-  IWORKXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-  {
-    if ((getNamespaceId(attr) == ns) && (getNameId(attr) == name))
-      value = attr.getValue();
-  }
-
-  if (!value)
-    throw GenericException();
-
-  return get(value);
-}
-
-string readOnlyElementAttribute(const IWORKXMLReader &reader, const int name, const int ns)
-{
-  const string value = readOnlyAttribute(reader, name, ns);
-
-  checkEmptyElement(reader);
-
-  return value;
-}
 
 bool bool_cast(const char *value)
 {

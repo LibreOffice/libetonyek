@@ -10,8 +10,8 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "libetonyek_xml.h"
 #include "IWORKToken.h"
-#include "IWORKXMLReader.h"
 #include "KEY2Token.h"
 
 using namespace libetonyek;
@@ -22,7 +22,7 @@ namespace test
 namespace
 {
 
-void testTokenizer(const IWORKXMLReader::TokenizerFunction_t &tok)
+void testTokenizer(const TokenizerFunction_t &tok)
 {
   // known tokens
   CPPUNIT_ASSERT(KEY2Token::presentation == tok("presentation"));
@@ -75,7 +75,7 @@ void KEY2TokenTest::testSimpleTokenizer()
 
 void KEY2TokenTest::testChainedTokenizer()
 {
-  const IWORKXMLReader::ChainedTokenizer tok((KEY2Tokenizer()), IWORKTokenizer());
+  const ChainedTokenizer tok((KEY2Tokenizer()), IWORKTokenizer());
 
   testTokenizer(tok);
 

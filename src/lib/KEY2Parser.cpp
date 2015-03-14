@@ -23,7 +23,6 @@
 #include "IWORKToken.h"
 #include "IWORKTypes.h"
 #include "IWORKXMLContexts.h"
-#include "IWORKXMLReader.h"
 #include "KEY2ParserState.h"
 #include "KEY2StyleContext.h"
 #include "KEY2Token.h"
@@ -2328,9 +2327,9 @@ IWORKXMLContextPtr_t KEY2Parser::createDocumentContext()
   return makeContext<PresentationContext>(m_state);
 }
 
-IWORKXMLReader::TokenizerFunction_t KEY2Parser::getTokenizer() const
+TokenizerFunction_t KEY2Parser::getTokenizer() const
 {
-  return IWORKXMLReader::ChainedTokenizer(KEY2Tokenizer(), IWORKTokenizer());
+  return ChainedTokenizer(KEY2Tokenizer(), IWORKTokenizer());
 }
 
 }

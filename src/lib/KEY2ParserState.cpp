@@ -13,7 +13,7 @@
 namespace libetonyek
 {
 
-KEY2ParserState::KEY2ParserState(IWORKParser &parser, KEYDictionary &dict, const IWORKXMLReader::TokenizerFunction_t &tokenizer)
+KEY2ParserState::KEY2ParserState(IWORKParser &parser, KEYDictionary &dict, const TokenizerFunction_t &tokenizer)
   : IWORKXMLParserState(parser, dict, tokenizer)
   , m_dict(dict)
 {

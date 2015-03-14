@@ -13,6 +13,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/logic/tribool.hpp>
 
+#include <libxml/xmlreader.h>
+
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"
 #include "IWORKZlibStream.h"
@@ -34,6 +36,7 @@ using boost::logic::indeterminate;
 using boost::logic::tribool;
 using boost::scoped_ptr;
 using boost::shared_ptr;
+using std::string;
 
 using librevenge::RVNG_SEEK_SET;
 
@@ -72,27 +75,55 @@ DetectionInfo::DetectionInfo()
 {
 }
 
-typedef bool (*ProbeXMLFun_t)(const RVNGInputStreamPtr_t &, unsigned &);
+typedef bool (*ProbeXMLFun_t)(const RVNGInputStreamPtr_t &, unsigned &, xmlTextReaderPtr);
 
-bool probeKeynote1XML(const RVNGInputStreamPtr_t &input, unsigned &version)
+
+std::string queryAttribute(xmlTextReaderPtr reader, const int name, const int ns, const TokenizerFunction_t &tokenizer)
+{
+  std::string value;
+
+  if (xmlTextReaderHasAttributes(reader))
+  {
+    int ret = xmlTextReaderMoveToFirstAttribute(reader);
+    while (1 == ret)
+    {
+      const int attributeName = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
+      const int attributeNameSpace = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)));
+      if ((attributeNameSpace == ns) && (attributeName == name))
+        value = reinterpret_cast<const char *>(xmlTextReaderConstValue(reader));
+
+      ret = xmlTextReaderMoveToNextAttribute(reader);
+    }
+  }
+
+  return value;
+}
+
+
+bool probeKeynote1XML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlTextReaderPtr reader)
 {
   // TODO: implement me
   (void) input;
   (void) version;
+  (void) reader;
   return false;
 }
 
-bool probeKeynote2XML(const RVNGInputStreamPtr_t &input, unsigned &version)
+bool probeKeynote2XML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlTextReaderPtr reader)
 {
   if (input->isEnd())
     return false;
 
   const KEY2Tokenizer tokenizer = KEY2Tokenizer();
-  IWORKXMLReader reader(input.get(), tokenizer);
+  assert(reader);
 
-  if ((KEY2Token::NS_URI_KEY | KEY2Token::presentation) == getId(reader))
+  const int name = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
+  const int ns = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) ? reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) : "");
+  assert((0 == ns) || (ns > name));
+
+  if ((KEY2Token::NS_URI_KEY | KEY2Token::presentation) == (name | ns))
   {
-    const std::string v = readOnlyAttribute(reader, KEY2Token::version, KEY2Token::NS_URI_KEY);
+    const std::string v = queryAttribute(reader, KEY2Token::version, KEY2Token::NS_URI_KEY, tokenizer);
 
     switch (tokenizer(v.c_str()))
     {
@@ -114,27 +145,31 @@ bool probeKeynote2XML(const RVNGInputStreamPtr_t &input, unsigned &version)
   return false;
 }
 
-bool probeKeynoteXML(const RVNGInputStreamPtr_t &input, unsigned &version)
+bool probeKeynoteXML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlTextReaderPtr reader)
 {
-  if (probeKeynote2XML(input, version))
+  if (probeKeynote2XML(input, version, reader))
     return true;
 
   input->seek(0, RVNG_SEEK_SET);
 
-  return probeKeynote1XML(input, version);
+  return probeKeynote1XML(input, version, reader);
 }
 
-bool probeNumbersXML(const RVNGInputStreamPtr_t &input, unsigned &version)
+bool probeNumbersXML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlTextReaderPtr reader)
 {
   if (input->isEnd())
     return false;
 
   const NUMTokenizer tokenizer = NUMTokenizer();
-  IWORKXMLReader reader(input.get(), tokenizer);
+  assert(reader);
 
-  if (NUMToken::NS_URI_LS == getId(reader))
+  const int name = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
+  const int ns = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) ? reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) : "");
+  assert((0 == ns) || (ns > name));
+
+  if (NUMToken::NS_URI_LS == ns)
   {
-    const std::string v = readOnlyAttribute(reader, NUMToken::version, NUMToken::NS_URI_LS);
+    const std::string v = queryAttribute(reader, NUMToken::version, NUMToken::NS_URI_LS, tokenizer);
 
     switch (tokenizer(v.c_str()))
     {
@@ -147,17 +182,21 @@ bool probeNumbersXML(const RVNGInputStreamPtr_t &input, unsigned &version)
   return false;
 }
 
-bool probePagesXML(const RVNGInputStreamPtr_t &input, unsigned &version)
+bool probePagesXML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlTextReaderPtr reader)
 {
   if (input->isEnd())
     return false;
 
   const PAGTokenizer tokenizer = PAGTokenizer();
-  IWORKXMLReader reader(input.get(), tokenizer);
+  assert(reader);
 
-  if ((PAGToken::NS_URI_SL | PAGToken::document) == getId(reader))
+  const int name = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
+  const int ns = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) ? reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) : "");
+  assert((0 == ns) || (ns > name));
+
+  if ((PAGToken::NS_URI_SL | PAGToken::document) == (name | ns))
   {
-    const std::string v = readOnlyAttribute(reader, PAGToken::version, PAGToken::NS_URI_SL);
+    const std::string v = queryAttribute(reader, PAGToken::version, PAGToken::NS_URI_SL, tokenizer);
 
     switch (tokenizer(v.c_str()))
     {
@@ -172,7 +211,21 @@ bool probePagesXML(const RVNGInputStreamPtr_t &input, unsigned &version)
 
 bool probeXMLImpl(const RVNGInputStreamPtr_t &input, const ProbeXMLFun_t probe, const EtonyekDocument::Type type, DetectionInfo &info)
 {
-  if (probe(input, info.version))
+  const shared_ptr<xmlTextReader> reader(xmlReaderForIO(readFromStream, closeStream, input.get(), "", 0, 0), xmlFreeTextReader);
+  if (!reader)
+    return false;
+
+  int ret = 0;
+  do
+  {
+    ret = xmlTextReaderRead(reader.get());
+  }
+  while ((1 == ret) && (XML_READER_TYPE_ELEMENT != xmlTextReaderNodeType(reader.get())));
+
+  if (1 != ret)
+    return false;
+
+  if (probe(input, info.version, reader.get()))
   {
     info.type = type;
     return true;
@@ -219,7 +272,6 @@ bool probeXML(const ProbeXMLFun_t probe, const EtonyekDocument::Type type, tribo
 bool detect(const RVNGInputStreamPtr_t &input, unsigned checkTypes, DetectionInfo &info)
 {
   info.confidence = EtonyekDocument::CONFIDENCE_SUPPORTED_PART;
-
   bool isXML = true;
   tribool isGzipped = indeterminate;
   tribool isKeynote1 = indeterminate;

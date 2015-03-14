@@ -23,7 +23,7 @@ public:
 
 private:
   virtual IWORKXMLContextPtr_t createDocumentContext();
-  virtual IWORKXMLReader::TokenizerFunction_t getTokenizer() const;
+  virtual TokenizerFunction_t getTokenizer() const;
 };
 
 }
