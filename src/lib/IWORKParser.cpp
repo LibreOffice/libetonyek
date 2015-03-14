@@ -10,11 +10,18 @@
 #include "IWORKParser.h"
 
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/shared_ptr.hpp>
+
+#include <libxml/xmlreader.h>
+
+#include <stack>
 
 #include "IWORKXMLContextBase.h"
 #include "IWORKXMLParserState.h"
-#include "IWORKXMLReader.h"
 #include "KEYCollector.h"
+
+using boost::shared_ptr;
+using std::stack;
 
 namespace libetonyek
 {
@@ -63,32 +70,12 @@ void DiscardContext::endOfElement()
 namespace
 {
 
-void processElement(const IWORKXMLReader &reader, const IWORKXMLContextPtr_t &context)
+void processAttribute(xmlTextReaderPtr reader, IWORKXMLContextPtr_t context, const TokenizerFunction_t &tokenizer)
 {
-  context->startOfElement();
-
-  IWORKXMLReader::AttributeIterator attr(reader);
-  while (attr.next())
-    context->attribute(getId(attr), attr.getValue());
-  context->endOfAttributes();
-
-  IWORKXMLReader::MixedIterator mixed(reader);
-  while (mixed.next())
-  {
-    if (mixed.isElement())
-    {
-      IWORKXMLContextPtr_t subContext(context->element(getId(mixed)));
-      if (!subContext)
-        subContext.reset(new DiscardContext());
-      processElement(mixed, subContext);
-    }
-    else if (mixed.isText())
-    {
-      context->text(mixed.getText());
-    }
-  }
-
-  context->endOfElement();
+  const int name = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
+  const int ns = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) ? reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) : "");
+  const char *value = reinterpret_cast<const char *>(xmlTextReaderConstValue(reader));
+  context->attribute((name | ns), value);
 }
 
 }
@@ -106,8 +93,75 @@ IWORKParser::~IWORKParser()
 
 bool IWORKParser::parse()
 {
-  IWORKXMLReader reader(m_input.get(), getTokenizer());
-  processElement(reader, createDocumentContext());
+  const shared_ptr<xmlTextReader> sharedReader(xmlReaderForIO(readFromStream, closeStream, m_input.get(), "", 0, 0), xmlFreeTextReader);
+  if (!sharedReader)
+    return false;
+
+  xmlTextReaderPtr reader = sharedReader.get();
+  assert(reader);
+
+  TokenizerFunction_t tokenizer = getTokenizer();
+  stack <IWORKXMLContextPtr_t> contextStack;
+
+  int ret = xmlTextReaderRead(reader);
+  contextStack.push(createDocumentContext());
+
+  while ((1 == ret))
+  {
+    switch (xmlTextReaderNodeType(reader))
+    {
+    case XML_READER_TYPE_ELEMENT:
+    {
+      const int name = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
+      const int ns = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) ? reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) : "");
+
+      IWORKXMLContextPtr_t newContext = contextStack.top()->element((name | ns));
+
+      if (!newContext)
+        newContext.reset(new DiscardContext());
+
+      const bool isEmpty = xmlTextReaderIsEmptyElement(reader);
+
+      newContext->startOfElement();
+      if (xmlTextReaderHasAttributes(reader))
+      {
+        ret = xmlTextReaderMoveToFirstAttribute(reader);
+        while (1 == ret)
+        {
+          processAttribute(reader, newContext, tokenizer);
+          ret = xmlTextReaderMoveToNextAttribute(reader);
+        }
+      }
+      newContext->endOfAttributes();
+
+      if (isEmpty)
+        newContext->endOfElement();
+      else
+        contextStack.push(newContext);
+
+      break;
+    }
+    case XML_READER_TYPE_END_ELEMENT:
+    {
+      contextStack.top()->endOfElement();
+      contextStack.pop();
+      break;
+    }
+    case XML_READER_TYPE_TEXT :
+    {
+      xmlChar *const text = xmlTextReaderReadString(reader);
+      contextStack.top()->text(reinterpret_cast<char *>(text));
+      xmlFree(text);
+      break;
+    }
+    default:
+      break;
+    }
+
+    ret = xmlTextReaderRead(reader);
+
+  }
+  xmlTextReaderClose(reader);
 
   return true;
 }
