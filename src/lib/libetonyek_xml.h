@@ -19,19 +19,25 @@
 #define ETONYEK_DEBUG_XML_TODO_ELEMENT(element) ETONYEK_DEBUG_XML_TODO("element", (element).getName(), (element).getNamespace())
 #define ETONYEK_DEBUG_XML_TODO_ATTRIBUTE(attr) ETONYEK_DEBUG_XML_TODO("attribute", (attr).getName(), (attr).getNamespace())
 
+typedef boost::function<int(const char *)> TokenizerFunction_t;
+
+extern "C" int readFromStream(void *context, char *buffer, int len);
+
+extern "C" int closeStream(void * /* context */);
+
 namespace libetonyek
 {
 
-class IWORKXMLReader;
+struct ChainedTokenizer
+{
+  ChainedTokenizer(const TokenizerFunction_t &tokenizer, const TokenizerFunction_t &next);
 
-void skipElement(const IWORKXMLReader &reader);
+  int operator()(const char *str) const;
 
-bool checkElement(const IWORKXMLReader &reader, int name, int ns);
-bool checkEmptyElement(const IWORKXMLReader &reader);
-bool checkNoAttributes(const IWORKXMLReader &reader);
-
-std::string readOnlyAttribute(const IWORKXMLReader &reader, int name, int ns);
-std::string readOnlyElementAttribute(const IWORKXMLReader &reader, int name, int ns);
+private:
+  const TokenizerFunction_t m_tokenizer;
+  const TokenizerFunction_t m_next;
+};
 
 /** Convert string value to bool.
   *

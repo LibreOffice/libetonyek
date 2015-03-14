@@ -16,7 +16,7 @@
 namespace libetonyek
 {
 
-IWORKXMLParserState::IWORKXMLParserState(IWORKParser &parser, IWORKDictionary &dict, const IWORKXMLReader::TokenizerFunction_t &tokenizer)
+IWORKXMLParserState::IWORKXMLParserState(IWORKParser &parser, IWORKDictionary &dict, const TokenizerFunction_t &tokenizer)
   : m_parser(parser)
   , m_dict(dict)
   , m_tokenizer(tokenizer)
@@ -38,7 +38,7 @@ KEYCollector *IWORKXMLParserState::getCollector() const
   return m_parser.getCollector();
 }
 
-const IWORKXMLReader::TokenizerFunction_t &IWORKXMLParserState::getTokenizer() const
+const TokenizerFunction_t &IWORKXMLParserState::getTokenizer() const
 {
   return m_tokenizer;
 }

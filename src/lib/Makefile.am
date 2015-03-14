@@ -79,8 +79,6 @@ libetonyek_internal_la_SOURCES = \
 	IWORKXMLContextBase.h \
 	IWORKXMLParserState.cpp \
 	IWORKXMLParserState.h \
-	IWORKXMLReader.cpp \
-	IWORKXMLReader.h \
 	IWORKZlibStream.cpp \
 	IWORKZlibStream.h \
 	KEY1Parser.cpp \
