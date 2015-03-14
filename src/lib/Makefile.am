@@ -118,8 +118,12 @@ libetonyek_internal_la_SOURCES = \
 	NUMToken.h \
 	PAGCollector.cpp \
 	PAGCollector.h \
+	PAGDictionary.cpp \
+	PAGDictionary.h \
 	PAGParser.cpp \
 	PAGParser.h \
+	PAGParserState.cpp \
+	PAGParserState.h \
 	PAGToken.cpp \
 	PAGToken.h \
 	libetonyek_utils.cpp \
