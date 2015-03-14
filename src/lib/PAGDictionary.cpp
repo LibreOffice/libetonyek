@@ -7,27 +7,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEY1PARSER_H_INCLUDED
-#define KEY1PARSER_H_INCLUDED
-
-#include "IWORKParser.h"
+#include "PAGDictionary.h"
 
 namespace libetonyek
 {
 
-class KEY1Parser : public IWORKParser
+PAGDictionary::PAGDictionary()
+  : IWORKDictionary()
 {
-public:
-  KEY1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *collector);
-  virtual ~KEY1Parser();
-
-private:
-  virtual IWORKXMLContextPtr_t createDocumentContext();
-  virtual TokenizerFunction_t getTokenizer() const;
-};
-
 }
 
-#endif //  KEY1PARSER_H_INCLUDED
+}
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

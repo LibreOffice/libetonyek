@@ -79,8 +79,6 @@ libetonyek_internal_la_SOURCES = \
 	IWORKXMLContextBase.h \
 	IWORKXMLParserState.cpp \
 	IWORKXMLParserState.h \
-	IWORKXMLReader.cpp \
-	IWORKXMLReader.h \
 	IWORKZlibStream.cpp \
 	IWORKZlibStream.h \
 	KEY1Parser.cpp \
@@ -118,8 +116,12 @@ libetonyek_internal_la_SOURCES = \
 	NUMToken.h \
 	PAGCollector.cpp \
 	PAGCollector.h \
+	PAGDictionary.h \
+	PAGDictionary.cpp \
 	PAGParser.cpp \
 	PAGParser.h \
+	PAGParserState.h \
+	PAGParserState.cpp \
 	PAGToken.cpp \
 	PAGToken.h \
 	libetonyek_utils.cpp \
