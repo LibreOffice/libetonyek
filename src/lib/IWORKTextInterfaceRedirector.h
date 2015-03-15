@@ -32,11 +32,11 @@ public:
   virtual void openPageSpan(const librevenge::RVNGPropertyList &propList);
   virtual void closePageSpan();
 
-  virtual void startPage(const librevenge::RVNGPropertyList &propList);
-  virtual void endPage();
+  virtual void startSlide(const librevenge::RVNGPropertyList &propList);
+  virtual void endSlide();
 
-  virtual void startMasterPage(const librevenge::RVNGPropertyList &propList);
-  virtual void endMasterPage();
+  virtual void startMasterSlide(const librevenge::RVNGPropertyList &propList);
+  virtual void endMasterSlide();
 
   virtual void setStyle(const librevenge::RVNGPropertyList &propList);
 

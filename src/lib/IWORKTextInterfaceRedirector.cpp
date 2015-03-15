@@ -55,20 +55,20 @@ void IWORKTextInterfaceRedirector::closePageSpan()
   assert(0);
 }
 
-void IWORKTextInterfaceRedirector::startPage(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextInterfaceRedirector::startSlide(const librevenge::RVNGPropertyList &/*propList*/)
 {
   assert(0);
 }
-void IWORKTextInterfaceRedirector::endPage()
+void IWORKTextInterfaceRedirector::endSlide()
 {
   assert(0);
 }
 
-void IWORKTextInterfaceRedirector::startMasterPage(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextInterfaceRedirector::startMasterSlide(const librevenge::RVNGPropertyList &/*propList*/)
 {
   assert(0);
 }
-void IWORKTextInterfaceRedirector::endMasterPage()
+void IWORKTextInterfaceRedirector::endMasterSlide()
 {
   assert(0);
 }
