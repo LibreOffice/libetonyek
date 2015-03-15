@@ -16,6 +16,7 @@
 
 #include "libetonyek_utils.h"
 #include "IWORKDocumentInterface.h"
+#include "IWORKOutputElements.h"
 #include "IWORKShape.h"
 #include "IWORKText.h"
 #include "IWORKTransformation.h"
@@ -26,6 +27,33 @@ namespace libetonyek
 {
 
 using boost::optional;
+
+namespace
+{
+
+class OutputElementsObject : public IWORKObject
+{
+public:
+  explicit OutputElementsObject(const IWORKOutputElements &elements);
+
+private:
+  virtual void draw(IWORKDocumentInterface *document);
+
+private:
+  const IWORKOutputElements m_elements;
+};
+
+OutputElementsObject::OutputElementsObject(const IWORKOutputElements &elements)
+  : m_elements(elements)
+{
+}
+
+void OutputElementsObject::draw(IWORKDocumentInterface *const document)
+{
+  m_elements.write(document);
+}
+
+}
 
 KEYCollector::Level::Level()
   : m_geometry()
