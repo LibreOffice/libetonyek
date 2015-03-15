@@ -32,6 +32,8 @@ libetonyek_internal_la_SOURCES = \
 	IWORKMemoryStream.h \
 	IWORKObject.cpp \
 	IWORKObject.h \
+	IWORKOutputElementsRedirector.cpp \
+	IWORKOutputElementsRedirector.h \
 	IWORKOutputElements.cpp \
 	IWORKOutputElements.h \
 	IWORKParser.cpp \

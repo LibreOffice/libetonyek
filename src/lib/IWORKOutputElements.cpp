@@ -197,6 +197,63 @@ public:
   }
 };
 
+class DrawGraphicObjectElement : public IWORKOutputElement
+{
+public:
+  DrawGraphicObjectElement(const librevenge::RVNGPropertyList &propList) :
+    m_propList(propList) {}
+  ~DrawGraphicObjectElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+  IWORKOutputElement *clone()
+  {
+    return new DrawGraphicObjectElement(m_propList);
+  }
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
+class DrawPathElement : public IWORKOutputElement
+{
+public:
+  DrawPathElement(const librevenge::RVNGPropertyList &propList) :
+    m_propList(propList) {}
+  ~DrawPathElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+  IWORKOutputElement *clone()
+  {
+    return new DrawPathElement(m_propList);
+  }
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
+class DrawPolylineElement : public IWORKOutputElement
+{
+public:
+  DrawPolylineElement(const librevenge::RVNGPropertyList &propList) :
+    m_propList(propList) {}
+  ~DrawPolylineElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+  IWORKOutputElement *clone()
+  {
+    return new DrawPolylineElement(m_propList);
+  }
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
+class EndTextObjectElement : public IWORKOutputElement
+{
+public:
+  EndTextObjectElement() {}
+  ~EndTextObjectElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+  IWORKOutputElement *clone()
+  {
+    return new EndTextObjectElement();
+  }
+};
+
 class InsertBinaryObjectElement : public IWORKOutputElement
 {
 public:
@@ -476,6 +533,28 @@ private:
   librevenge::RVNGPropertyList m_propList;
 };
 
+class SetStyleElement : public IWORKOutputElement
+{
+public:
+  SetStyleElement(const librevenge::RVNGPropertyList &propList) :
+    m_propList(propList) {}
+  ~SetStyleElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
+class StartTextObjectElement : public IWORKOutputElement
+{
+public:
+  StartTextObjectElement(const librevenge::RVNGPropertyList &propList) :
+    m_propList(propList) {}
+  ~StartTextObjectElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
 void CloseEndnoteElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
@@ -570,6 +649,30 @@ void CloseUnorderedListLevelElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
     iface->closeUnorderedListLevel();
+}
+
+void DrawGraphicObjectElement::write(IWORKDocumentInterface *iface) const
+{
+  if (iface)
+    iface->drawGraphicObject(m_propList);
+}
+
+void DrawPathElement::write(IWORKDocumentInterface *iface) const
+{
+  if (iface)
+    iface->drawPath(m_propList);
+}
+
+void DrawPolylineElement::write(IWORKDocumentInterface *iface) const
+{
+  if (iface)
+    iface->drawPolyline(m_propList);
+}
+
+void EndTextObjectElement::write(IWORKDocumentInterface *iface) const
+{
+  if (iface)
+    iface->endTextObject();
 }
 
 void InsertBinaryObjectElement::write(IWORKDocumentInterface *iface) const
@@ -705,6 +808,18 @@ void OpenUnorderedListLevelElement::write(IWORKDocumentInterface *iface) const
     iface->openUnorderedListLevel(m_propList);
 }
 
+void SetStyleElement::write(IWORKDocumentInterface *iface) const
+{
+  if (iface)
+    iface->setStyle(m_propList);
+}
+
+void StartTextObjectElement::write(IWORKDocumentInterface *iface) const
+{
+  if (iface)
+    iface->startTextObject(m_propList);
+}
+
 }
 
 IWORKOutputElements::IWORKOutputElements()
@@ -802,6 +917,26 @@ void IWORKOutputElements::addCloseTableRow()
 void IWORKOutputElements::addCloseUnorderedListLevel()
 {
   m_elements.push_back(new CloseUnorderedListLevelElement());
+}
+
+void IWORKOutputElements::addDrawGraphicObject(const librevenge::RVNGPropertyList &propList)
+{
+  m_elements.push_back(new DrawGraphicObjectElement(propList));
+}
+
+void IWORKOutputElements::addDrawPath(const librevenge::RVNGPropertyList &propList)
+{
+  m_elements.push_back(new DrawPathElement(propList));
+}
+
+void IWORKOutputElements::addDrawPolyline(const librevenge::RVNGPropertyList &propList)
+{
+  m_elements.push_back(new DrawPolylineElement(propList));
+}
+
+void IWORKOutputElements::addEndTextObject()
+{
+  m_elements.push_back(new EndTextObjectElement());
 }
 
 void IWORKOutputElements::addInsertBinaryObject(const librevenge::RVNGPropertyList &propList)
@@ -912,6 +1047,16 @@ void IWORKOutputElements::addOpenTableRow(const librevenge::RVNGPropertyList &pr
 void IWORKOutputElements::addOpenUnorderedListLevel(const librevenge::RVNGPropertyList &propList)
 {
   m_elements.push_back(new OpenUnorderedListLevelElement(propList));
+}
+
+void IWORKOutputElements::addSetStyle(const librevenge::RVNGPropertyList &propList)
+{
+  m_elements.push_back(new SetStyleElement(propList));
+}
+
+void IWORKOutputElements::addStartTextObject(const librevenge::RVNGPropertyList &propList)
+{
+  m_elements.push_back(new StartTextObjectElement(propList));
 }
 
 }

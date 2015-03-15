@@ -50,6 +50,10 @@ public:
   void addCloseTableCell();
   void addCloseTableRow();
   void addCloseUnorderedListLevel();
+  void addDrawGraphicObject(const librevenge::RVNGPropertyList &propList);
+  void addDrawPath(const librevenge::RVNGPropertyList &propList);
+  void addDrawPolyline(const librevenge::RVNGPropertyList &propList);
+  void addEndTextObject();
   void addInsertBinaryObject(const librevenge::RVNGPropertyList &propList);
   void addInsertCoveredTableCell(const librevenge::RVNGPropertyList &propList);
   void addInsertLineBreak();
@@ -72,6 +76,8 @@ public:
   void addOpenTableCell(const librevenge::RVNGPropertyList &propList);
   void addOpenTableRow(const librevenge::RVNGPropertyList &propList);
   void addOpenUnorderedListLevel(const librevenge::RVNGPropertyList &propList);
+  void addSetStyle(const librevenge::RVNGPropertyList &propList);
+  void addStartTextObject(const librevenge::RVNGPropertyList &propList);
 
 private:
   ElementList_t m_elements;
