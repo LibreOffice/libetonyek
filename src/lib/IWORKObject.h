@@ -14,10 +14,10 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <librevenge/librevenge.h>
-
 namespace libetonyek
 {
+
+class IWORKDocumentInterface;
 
 /** An interface for saved presentation objects.
   *
@@ -34,11 +34,11 @@ class IWORKObject
 public:
   virtual ~IWORKObject() = 0;
 
-  /** Draw the object using @c painter.
+  /** Draw the object using @c document.
     *
-    * @arg[in] painter the painter to use
+    * @arg[in] document the document to use
     */
-  virtual void draw(librevenge::RVNGPresentationInterface *painter) = 0;
+  virtual void draw(IWORKDocumentInterface *document) = 0;
 };
 
 typedef boost::shared_ptr<IWORKObject> IWORKObjectPtr_t;
@@ -47,12 +47,12 @@ typedef boost::shared_ptr<IWORKObject> IWORKObjectPtr_t;
   */
 typedef std::deque<IWORKObjectPtr_t> IWORKObjectList_t;
 
-/** Draw all objects of list @list using @c painter.
+/** Draw all objects of list @list using @c document.
   *
   * @arg[in] list the object list
-  * @arg[in] painter the painter to use
+  * @arg[in] document the document to use
   */
-void drawAll(const IWORKObjectList_t &list, librevenge::RVNGPresentationInterface *painter);
+void drawAll(const IWORKObjectList_t &list, IWORKDocumentInterface *document);
 
 }
 

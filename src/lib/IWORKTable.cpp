@@ -11,9 +11,8 @@
 
 #include <boost/numeric/conversion/cast.hpp>
 
-#include <librevenge/librevenge.h>
-
 #include "libetonyek_utils.h"
+#include "IWORKDocumentInterface.h"
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 
@@ -74,7 +73,7 @@ void IWORKTable::setGeometry(const IWORKGeometryPtr_t &geometry)
   m_geometry = geometry;
 }
 
-void IWORKTable::draw(librevenge::RVNGPresentationInterface *const painter, const IWORKTransformation &trafo) const
+void IWORKTable::draw(IWORKDocumentInterface *const document, const IWORKTransformation &trafo) const
 {
   librevenge::RVNGPropertyList tableProps;
   tableProps.insert("table:align", "center");
@@ -106,7 +105,7 @@ void IWORKTable::draw(librevenge::RVNGPresentationInterface *const painter, cons
   }
   tableProps.insert("librevenge:table-columns", columnSizes);
 
-  painter->startTableObject(tableProps);
+  document->openTable(tableProps);
   for (std::size_t r = 0; m_table.size() != r; ++r)
   {
     const Row_t &row = m_table[r];
@@ -114,7 +113,7 @@ void IWORKTable::draw(librevenge::RVNGPresentationInterface *const painter, cons
     librevenge::RVNGPropertyList rowProps;
     rowProps.insert("style:row-height", pt2in(m_rowSizes[r]));
 
-    painter->openTableRow(rowProps);
+    document->openTableRow(rowProps);
     for (std::size_t c = 0; row.size() != c; ++c)
     {
       const Cell &cell = row[c];
@@ -126,7 +125,7 @@ void IWORKTable::draw(librevenge::RVNGPresentationInterface *const painter, cons
 
       if (cell.m_covered)
       {
-        painter->insertCoveredTableCell(cellProps);
+        document->insertCoveredTableCell(cellProps);
       }
       else
       {
@@ -135,15 +134,15 @@ void IWORKTable::draw(librevenge::RVNGPresentationInterface *const painter, cons
         if (1 < cell.m_rowSpan)
           cellProps.insert("table:number-rows-spanned", numeric_cast<int>(cell.m_rowSpan));
 
-        painter->openTableCell(cellProps);
+        document->openTableCell(cellProps);
         if (bool(cell.m_content))
-          cell.m_content->draw(painter);
-        painter->closeTableCell();
+          cell.m_content->draw(document);
+        document->closeTableCell();
       }
     }
-    painter->closeTableRow();
+    document->closeTableRow();
   }
-  painter->endTableObject();
+  document->closeTable();
 }
 
 namespace
@@ -154,7 +153,7 @@ class TableObject : public IWORKObject
 public:
   TableObject(const IWORKTable &table, const IWORKTransformation &trafo);
 
-  virtual void draw(librevenge::RVNGPresentationInterface *painter);
+  virtual void draw(IWORKDocumentInterface *document);
 
 private:
   const IWORKTable m_table;
@@ -167,9 +166,9 @@ TableObject::TableObject(const IWORKTable &table, const IWORKTransformation &tra
 {
 }
 
-void TableObject::draw(librevenge::RVNGPresentationInterface *const painter)
+void TableObject::draw(IWORKDocumentInterface *const document)
 {
-  m_table.draw(painter, m_trafo);
+  m_table.draw(document, m_trafo);
 }
 
 }

@@ -15,6 +15,7 @@
 #include <boost/bind.hpp>
 
 #include "libetonyek_utils.h"
+#include "IWORKDocumentInterface.h"
 #include "IWORKShape.h"
 #include "IWORKText.h"
 #include "IWORKTransformation.h"
@@ -33,8 +34,8 @@ KEYCollector::Level::Level()
 {
 }
 
-KEYCollector::KEYCollector(librevenge::RVNGPresentationInterface *const painter)
-  : m_painter(painter)
+KEYCollector::KEYCollector(IWORKDocumentInterface *const document)
+  : m_document(document)
   , m_levelStack()
   , m_objectsStack()
   , m_currentPath()
@@ -56,8 +57,8 @@ KEYCollector::KEYCollector(librevenge::RVNGPresentationInterface *const painter)
   , m_groupLevel(0)
   , m_layerCount(0)
 {
-  m_painter->startDocument(librevenge::RVNGPropertyList());
-  m_painter->setDocumentMetaData(librevenge::RVNGPropertyList());
+  m_document->startDocument(librevenge::RVNGPropertyList());
+  m_document->setDocumentMetaData(librevenge::RVNGPropertyList());
 
   assert(!m_paint);
 }
@@ -74,7 +75,7 @@ KEYCollector::~KEYCollector()
   assert(!m_currentPath);
   assert(!m_currentText);
 
-  m_painter->endDocument();
+  m_document->endDocument();
 }
 
 void KEYCollector::collectCellStyle(const IWORKStylePtr_t &style, const bool anonymous)
@@ -442,12 +443,12 @@ void KEYCollector::insertLayer(const KEYLayerPtr_t &layer)
       librevenge::RVNGPropertyList props;
       props.insert("svg:id", m_layerCount);
 
-      m_painter->startLayer(props);
+      m_document->startLayer(props);
 
       for (IWORKObjectList_t::const_iterator it = layer->m_objects.begin(); it != layer->m_objects.end(); ++it)
-        (*it)->draw(m_painter);
+        (*it)->draw(m_document);
 
-      m_painter->endLayer();
+      m_document->endLayer();
     }
   }
   else
@@ -645,7 +646,7 @@ void KEYCollector::startPage()
     props.insert("svg:width", pt2in(m_size.m_width));
     props.insert("svg:height", pt2in(m_size.m_height));
 
-    m_painter->startSlide(props);
+    m_document->startSlide(props);
   }
 }
 
@@ -661,7 +662,7 @@ void KEYCollector::endPage()
   m_pageOpened = false;
 
   if (m_paint)
-    m_painter->endSlide();
+    m_document->endSlide();
 }
 
 void KEYCollector::startLayer()
@@ -782,10 +783,10 @@ void KEYCollector::drawNotes()
   if (m_notes.empty())
     return;
 
-  m_painter->startNotes(librevenge::RVNGPropertyList());
+  m_document->startNotes(librevenge::RVNGPropertyList());
   for (IWORKObjectList_t::const_iterator it = m_notes.begin(); m_notes.end() != it; ++it)
-    (*it)->draw(m_painter);
-  m_painter->endNotes();
+    (*it)->draw(m_document);
+  m_document->endNotes();
 }
 
 void KEYCollector::drawStickyNotes()
@@ -805,10 +806,10 @@ void KEYCollector::drawStickyNotes()
       props.insert("svg:height", pt2in(it->m_geometry->m_naturalSize.m_height));
     }
 
-    m_painter->startComment(props);
+    m_document->openComment(props);
     if (bool(it->m_text))
-      makeObject(it->m_text, m_levelStack.top().m_trafo)->draw(m_painter);
-    m_painter->endComment();
+      makeObject(it->m_text, m_levelStack.top().m_trafo)->draw(m_document);
+    m_document->closeComment();
   }
 }
 

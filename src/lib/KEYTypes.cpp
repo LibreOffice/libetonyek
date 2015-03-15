@@ -12,6 +12,7 @@
 #include <librevenge/librevenge.h>
 
 #include "libetonyek_utils.h"
+#include "IWORKDocumentInterface.h"
 #include "IWORKText.h"
 #include "IWORKTransformation.h"
 #include "KEYStyles.h"
@@ -55,7 +56,7 @@ public:
   PlaceholderObject(const KEYPlaceholderPtr_t &body, const IWORKTransformation &trafo);
 
 private:
-  virtual void draw(librevenge::RVNGPresentationInterface *painter);
+  virtual void draw(IWORKDocumentInterface *document);
 
 private:
   const KEYPlaceholderPtr_t m_body;
@@ -68,10 +69,10 @@ PlaceholderObject::PlaceholderObject(const KEYPlaceholderPtr_t &body, const IWOR
 {
 }
 
-void PlaceholderObject::draw(librevenge::RVNGPresentationInterface *const painter)
+void PlaceholderObject::draw(IWORKDocumentInterface *const document)
 {
   if (bool(m_body) && bool(m_body->m_style) && bool(m_body->m_text))
-    makeObject(m_body->m_text, m_trafo)->draw(painter);
+    makeObject(m_body->m_text, m_trafo)->draw(document);
 }
 
 }

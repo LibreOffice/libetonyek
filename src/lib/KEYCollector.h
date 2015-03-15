@@ -32,6 +32,7 @@
 namespace libetonyek
 {
 
+class IWORKDocumentInterface;
 class IWORKPropertyMap;
 struct IWORKSize;
 
@@ -47,7 +48,7 @@ class KEYCollector
   };
 
 public:
-  explicit KEYCollector(librevenge::RVNGPresentationInterface *painter);
+  explicit KEYCollector(IWORKDocumentInterface *document);
   ~KEYCollector();
 
   // collector functions
@@ -145,8 +146,7 @@ private:
   void drawStickyNotes();
 
 private:
-  librevenge::RVNGPresentationInterface *m_painter;
-
+  IWORKDocumentInterface *m_document;
   std::stack<Level> m_levelStack;
   IWORKStyleStack m_styleStack;
   std::stack<IWORKObjectList_t> m_objectsStack;

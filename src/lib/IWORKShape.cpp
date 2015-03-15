@@ -13,6 +13,7 @@
 #include <cmath>
 #include <deque>
 
+#include "IWORKDocumentInterface.h"
 #include "IWORKPath.h"
 #include "IWORKText.h"
 #include "IWORKTransformation.h"
@@ -41,7 +42,7 @@ public:
   virtual ~ShapeObject();
 
 private:
-  virtual void draw(librevenge::RVNGPresentationInterface *painter);
+  virtual void draw(IWORKDocumentInterface *document);
 
 private:
   const IWORKShapePtr_t m_shape;
@@ -58,7 +59,7 @@ ShapeObject::~ShapeObject()
 {
 }
 
-void ShapeObject::draw(librevenge::RVNGPresentationInterface *const painter)
+void ShapeObject::draw(IWORKDocumentInterface *const document)
 {
   if (bool(m_shape) && bool(m_shape->m_path))
   {
@@ -69,11 +70,11 @@ void ShapeObject::draw(librevenge::RVNGPresentationInterface *const painter)
     librevenge::RVNGPropertyList props;
     props.insert("svg:d", path.toWPG());
 
-    painter->setStyle(librevenge::RVNGPropertyList());
-    painter->drawPath(props);
+    document->setStyle(librevenge::RVNGPropertyList());
+    document->drawPath(props);
 
     if (bool(m_shape->m_text))
-      makeObject(m_shape->m_text, m_trafo)->draw(painter);
+      makeObject(m_shape->m_text, m_trafo)->draw(document);
   }
 }
 

@@ -13,6 +13,7 @@
 
 #include <boost/optional.hpp>
 
+#include "IWORKDocumentInterface.h"
 #include "IWORKTransformation.h"
 
 namespace libetonyek
@@ -238,7 +239,7 @@ public:
   explicit GroupObject(const IWORKGroupPtr_t &group);
 
 private:
-  virtual void draw(librevenge::RVNGPresentationInterface *painter);
+  virtual void draw(IWORKDocumentInterface *document);
 
 private:
   const IWORKGroupPtr_t m_group;
@@ -250,9 +251,9 @@ GroupObject::GroupObject(const IWORKGroupPtr_t &group)
 {
 }
 
-void GroupObject::draw(librevenge::RVNGPresentationInterface *const painter)
+void GroupObject::draw(IWORKDocumentInterface *const document)
 {
-  drawAll(m_group->m_objects, painter);
+  drawAll(m_group->m_objects, document);
 }
 
 }
@@ -266,7 +267,7 @@ public:
   ImageObject(const IWORKImagePtr_t &image, const IWORKTransformation &trafo);
 
 private:
-  virtual void draw(librevenge::RVNGPresentationInterface *painter);
+  virtual void draw(IWORKDocumentInterface *document);
 
 private:
   const IWORKImagePtr_t m_image;
@@ -279,10 +280,10 @@ ImageObject::ImageObject(const IWORKImagePtr_t &image, const IWORKTransformation
 {
 }
 
-void ImageObject::draw(librevenge::RVNGPresentationInterface *const painter)
+void ImageObject::draw(IWORKDocumentInterface *const document)
 {
   // TODO: implement me
-  (void) painter;
+  (void) document;
 }
 
 }
@@ -296,7 +297,7 @@ public:
   LineObject(const IWORKLinePtr_t &line, const IWORKTransformation &trafo);
 
 private:
-  virtual void draw(librevenge::RVNGPresentationInterface *painter);
+  virtual void draw(IWORKDocumentInterface *document);
 
 private:
   const IWORKLinePtr_t m_line;
@@ -309,7 +310,7 @@ LineObject::LineObject(const IWORKLinePtr_t &line, const IWORKTransformation &tr
 {
 }
 
-void LineObject::draw(librevenge::RVNGPresentationInterface *const painter)
+void LineObject::draw(IWORKDocumentInterface *const document)
 {
   // TODO: transform the line
 
@@ -329,7 +330,7 @@ void LineObject::draw(librevenge::RVNGPresentationInterface *const painter)
       }
     }
 #endif
-    painter->setStyle(props);
+    document->setStyle(props);
 
     librevenge::RVNGPropertyListVector vertices;
     vertices.append(pointToWPG(get(m_line->m_x1), get(m_line->m_y1)));
@@ -338,7 +339,7 @@ void LineObject::draw(librevenge::RVNGPresentationInterface *const painter)
     librevenge::RVNGPropertyList points;
     points.insert("svg:points", vertices);
 
-    painter->drawPolyline(points);
+    document->drawPolyline(points);
   }
   else
   {
@@ -357,7 +358,7 @@ public:
   MediaObject(const IWORKMediaPtr_t &media, const IWORKTransformation &trafo);
 
 private:
-  virtual void draw(librevenge::RVNGPresentationInterface *painter);
+  virtual void draw(IWORKDocumentInterface *document);
 
 private:
   const IWORKMediaPtr_t m_media;
@@ -370,7 +371,7 @@ MediaObject::MediaObject(const IWORKMediaPtr_t &media, const IWORKTransformation
 {
 }
 
-void MediaObject::draw(librevenge::RVNGPresentationInterface *const painter)
+void MediaObject::draw(IWORKDocumentInterface *const document)
 {
   if (bool(m_media)
       && bool(m_media->m_geometry)
@@ -410,7 +411,7 @@ void MediaObject::draw(librevenge::RVNGPresentationInterface *const painter)
       props.insert("svg:width", pt2in(width));
       props.insert("svg:height", pt2in(height));
 
-      painter->drawGraphicObject(props);
+      document->drawGraphicObject(props);
     }
   }
 }

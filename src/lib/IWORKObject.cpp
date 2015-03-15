@@ -13,6 +13,8 @@
 
 #include <boost/bind.hpp>
 
+#include "IWORKDocumentInterface.h"
+
 namespace libetonyek
 {
 
@@ -20,9 +22,9 @@ IWORKObject::~IWORKObject()
 {
 }
 
-void drawAll(const IWORKObjectList_t &list, librevenge::RVNGPresentationInterface *const painter)
+void drawAll(const IWORKObjectList_t &list, IWORKDocumentInterface *const document)
 {
-  for_each(list.begin(), list.end(), boost::bind(&IWORKObject::draw, _1, painter));
+  for_each(list.begin(), list.end(), boost::bind(&IWORKObject::draw, _1, document));
 }
 
 }

@@ -48,7 +48,7 @@ public:
 
   void setGeometry(const IWORKGeometryPtr_t &geometry);
 
-  void draw(librevenge::RVNGPresentationInterface *painter, const IWORKTransformation &trafo) const;
+  void draw(IWORKDocumentInterface *document, const IWORKTransformation &trafo) const;
 
 private:
   Table_t m_table;

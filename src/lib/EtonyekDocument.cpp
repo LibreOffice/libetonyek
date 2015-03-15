@@ -15,6 +15,7 @@
 
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"
+#include "IWORKPresentationInterfaceRedirector.h"
 #include "IWORKZlibStream.h"
 #include "KEY1Parser.h"
 #include "KEY2Parser.h"
@@ -406,7 +407,8 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   info.input->seek(0, librevenge::RVNG_SEEK_SET);
 
   KEYDictionary dict;
-  KEYCollector collector(generator);
+  IWORKPresentationInterfaceRedirector redirector(generator);
+  KEYCollector collector(&redirector);
   const shared_ptr<IWORKParser> parser = makeKeynoteParser(info.version, info.input, info.package, &collector, dict);
   return parser->parse();
 }
