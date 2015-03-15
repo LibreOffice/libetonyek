@@ -11,8 +11,10 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstring>
 
 #include <boost/bind.hpp>
+#include <boost/make_shared.hpp>
 
 #include "libetonyek_utils.h"
 #include "IWORKDocumentInterface.h"
@@ -26,7 +28,11 @@
 namespace libetonyek
 {
 
+using boost::make_shared;
 using boost::optional;
+
+using std::memcmp;
+using std::string;
 
 namespace
 {
@@ -51,6 +57,117 @@ OutputElementsObject::OutputElementsObject(const IWORKOutputElements &elements)
 void OutputElementsObject::draw(IWORKDocumentInterface *const document)
 {
   m_elements.write(document);
+}
+
+}
+
+namespace
+{
+
+const unsigned char SIGNATURE_PDF[] = { '%', 'P', 'D', 'F' };
+const unsigned char SIGNATURE_PNG[] = { 0x89, 'P', 'N', 'G', 0x0d, 0x0a, 0x1a, 0x0a };
+const unsigned char SIGNATURE_JPEG[] = { 0xff, 0xd8 };
+const unsigned char SIGNATURE_QUICKTIME[] = { 'm', 'o', 'o', 'v' };
+const unsigned char SIGNATURE_TIFF_1[] = { 0x49, 0x49, 0x2a, 0x00 };
+const unsigned char SIGNATURE_TIFF_2[] = { 0x4d, 0x4d, 0x00, 0x2a };
+
+optional<string> detectMimetype(const RVNGInputStreamPtr_t &stream)
+{
+  stream->seek(0, librevenge::RVNG_SEEK_SET);
+
+  unsigned long numBytesRead = 0;
+  const unsigned char *const sig = stream->read(8, numBytesRead);
+
+  if (8 != numBytesRead)
+    // looks like the binary is broken anyway: just bail out
+    return optional<string>();
+
+  if (0 == memcmp(sig, SIGNATURE_PNG, ETONYEK_NUM_ELEMENTS(SIGNATURE_PNG)))
+    return string("image/png");
+
+  if (0 == memcmp(sig, SIGNATURE_PDF, ETONYEK_NUM_ELEMENTS(SIGNATURE_PDF)))
+    return string("application/pdf");
+
+  if ((0 == memcmp(sig, SIGNATURE_TIFF_1, ETONYEK_NUM_ELEMENTS(SIGNATURE_TIFF_1)))
+      || (0 == memcmp(sig, SIGNATURE_TIFF_2, ETONYEK_NUM_ELEMENTS(SIGNATURE_TIFF_2))))
+    return string("image/tiff");
+
+  if (0 == memcmp(sig + 4, SIGNATURE_QUICKTIME, ETONYEK_NUM_ELEMENTS(SIGNATURE_QUICKTIME)))
+    return string("video/quicktime");
+
+  if (0 == memcmp(sig, SIGNATURE_JPEG, ETONYEK_NUM_ELEMENTS(SIGNATURE_JPEG)))
+    return string("image/jpeg");
+
+  return optional<string>();
+}
+
+optional<string> getMimetype(const optional<int> &type, const RVNGInputStreamPtr_t &stream)
+{
+  if (type)
+  {
+    switch (get(type))
+    {
+    case 1246774599 :
+      return string("image/jpeg");
+    case 1299148630 :
+      return string("video/quicktime");
+    case 1346651680 :
+      return string("application/pdf");
+    case 1347307366 :
+      return string("image/png");
+    case 1414088262 :
+      return string("image/tiff");
+    default :
+      break;
+    }
+  }
+
+  return detectMimetype(stream);
+}
+
+void drawMedia(const IWORKMediaPtr_t &media, const IWORKTransformation &trafo, IWORKOutputElements &elements)
+{
+  if (bool(media)
+      && bool(media->m_geometry)
+      && bool(media->m_content)
+      && bool(media->m_content->m_data)
+      && bool(media->m_content->m_data->m_stream))
+  {
+    const RVNGInputStreamPtr_t input = media->m_content->m_data->m_stream;
+
+    const optional<string> mimetype = getMimetype(media->m_content->m_data->m_type, input);
+
+    if (mimetype)
+    {
+      input->seek(0, librevenge::RVNG_SEEK_END);
+      const unsigned long size = input->tell();
+      input->seek(0, librevenge::RVNG_SEEK_SET);
+
+      unsigned long readBytes = 0;
+      const unsigned char *const bytes = input->read(size, readBytes);
+      if (readBytes != size)
+        throw GenericException();
+
+      librevenge::RVNGPropertyList props;
+
+      props.insert("libwpg:mime-type", get(mimetype).c_str());
+      props.insert("office:binary-data", librevenge::RVNGBinaryData(bytes, size));
+
+      double x = 0;
+      double y = 0;
+      trafo(x, y);
+      props.insert("svg:x", pt2in(x));
+      props.insert("svg:y", pt2in(y));
+
+      double width = media->m_geometry->m_size.m_width;
+      double height = media->m_geometry->m_size.m_height;
+      trafo(width, height, true);
+      props.insert("svg:width", pt2in(width));
+      props.insert("svg:height", pt2in(height));
+
+      elements.addDrawGraphicObject(props);
+    }
+  }
 }
 
 }
@@ -436,7 +553,9 @@ void KEYCollector::collectMedia()
   m_levelStack.top().m_geometry.reset();
   m_levelStack.top().m_graphicStyle.reset();
 
-  m_objectsStack.top().push_back(makeObject(media, m_levelStack.top().m_trafo));
+  IWORKOutputElements elements;
+  drawMedia(media, m_levelStack.top().m_trafo, elements);
+  m_objectsStack.top().push_back(make_shared<OutputElementsObject>(elements));
 }
 
 void KEYCollector::collectPresentation(const boost::optional<IWORKSize> &size)

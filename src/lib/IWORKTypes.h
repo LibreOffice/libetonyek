@@ -167,7 +167,6 @@ struct IWORKGroup
 IWORKObjectPtr_t makeObject(const IWORKGroupPtr_t &group);
 IWORKObjectPtr_t makeObject(const IWORKImagePtr_t &image, const IWORKTransformation &trafo);
 IWORKObjectPtr_t makeObject(const IWORKLinePtr_t &line, const IWORKTransformation &trafo);
-IWORKObjectPtr_t makeObject(const IWORKMediaPtr_t &media, const IWORKTransformation &trafo);
 
 }
 
