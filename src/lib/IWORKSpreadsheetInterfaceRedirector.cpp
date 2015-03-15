@@ -1,7 +1,4 @@
-/* -*- Mode: C++
-{
-assert(0);
-} tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
  * This file is part of the libetonyek project.
  *
