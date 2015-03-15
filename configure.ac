@@ -86,7 +86,6 @@ AC_CHECK_HEADERS(
         boost/numeric/conversion/cast.hpp \
         boost/optional.hpp \
         boost/ref.hpp \
-        boost/ptr_container/ptr_deque.hpp \
         boost/scoped_ptr.hpp \
         boost/shared_ptr.hpp \
         boost/spirit/include/classic_core.hpp \

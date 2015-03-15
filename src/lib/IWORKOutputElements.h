@@ -10,7 +10,9 @@
 #ifndef IWORKOUTPUTELEMENTS_H_INCLUDED
 #define IWORKOUTPUTELEMENTS_H_INCLUDED
 
-#include <boost/ptr_container/ptr_deque.hpp>
+#include <deque>
+
+#include <boost/shared_ptr.hpp>
 
 #include <librevenge/librevenge.h>
 
@@ -22,10 +24,7 @@ class IWORKOutputElement;
 
 class IWORKOutputElements
 {
-  IWORKOutputElements(const IWORKOutputElements &);
-  IWORKOutputElements &operator=(const IWORKOutputElements &);
-
-  typedef boost::ptr_deque<IWORKOutputElement> ElementList_t;
+  typedef std::deque<boost::shared_ptr<IWORKOutputElement> > ElementList_t;
 
 public:
   IWORKOutputElements();

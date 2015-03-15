@@ -7,6 +7,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <algorithm>
+#include <iterator>
+
+#include <boost/make_shared.hpp>
+
 #include "IWORKOutputElements.h"
 
 #include "IWORKDocumentInterface.h"
@@ -14,8 +19,14 @@
 namespace libetonyek
 {
 
+using boost::make_shared;
+
 class IWORKOutputElement
 {
+  // disable copying
+  IWORKOutputElement(const IWORKOutputElement &);
+  IWORKOutputElement &operator=(const IWORKOutputElement &);
+
 public:
   IWORKOutputElement() {}
   virtual ~IWORKOutputElement() {}
@@ -827,11 +838,16 @@ IWORKOutputElements::IWORKOutputElements()
 {
 }
 
+void IWORKOutputElements::append(const IWORKOutputElements &elements)
+{
+  std::copy(elements.m_elements.begin(), elements.m_elements.end(), std::back_inserter(m_elements));
+}
+
 void IWORKOutputElements::write(IWORKDocumentInterface *iface) const
 {
   ElementList_t::const_iterator iter;
   for (iter = m_elements.begin(); iter != m_elements.end(); ++iter)
-    iter->write(iface);
+    (*iter)->write(iface);
 }
 
 bool IWORKOutputElements::empty() const
@@ -841,222 +857,222 @@ bool IWORKOutputElements::empty() const
 
 void IWORKOutputElements::addCloseEndnote()
 {
-  m_elements.push_back(new CloseEndnoteElement());
+  m_elements.push_back(make_shared<CloseEndnoteElement>());
 }
 
 void IWORKOutputElements::addCloseFooter()
 {
-  m_elements.push_back(new CloseFooterElement());
+  m_elements.push_back(make_shared<CloseFooterElement>());
 }
 
 void IWORKOutputElements::addCloseFootnote()
 {
-  m_elements.push_back(new CloseFootnoteElement());
+  m_elements.push_back(make_shared<CloseFootnoteElement>());
 }
 
 void IWORKOutputElements::addCloseFrame()
 {
-  m_elements.push_back(new CloseFrameElement());
+  m_elements.push_back(make_shared<CloseFrameElement>());
 }
 
 void IWORKOutputElements::addCloseHeader()
 {
-  m_elements.push_back(new CloseHeaderElement());
+  m_elements.push_back(make_shared<CloseHeaderElement>());
 }
 
 void IWORKOutputElements::addCloseLink()
 {
-  m_elements.push_back(new CloseLinkElement());
+  m_elements.push_back(make_shared<CloseLinkElement>());
 }
 
 void IWORKOutputElements::addCloseListElement()
 {
-  m_elements.push_back(new CloseListElementElement());
+  m_elements.push_back(make_shared<CloseListElementElement>());
 }
 
 void IWORKOutputElements::addCloseOrderedListLevel()
 {
-  m_elements.push_back(new CloseOrderedListLevelElement());
+  m_elements.push_back(make_shared<CloseOrderedListLevelElement>());
 }
 
 void IWORKOutputElements::addClosePageSpan()
 {
-  m_elements.push_back(new ClosePageSpanElement());
+  m_elements.push_back(make_shared<ClosePageSpanElement>());
 }
 
 void IWORKOutputElements::addCloseParagraph()
 {
-  m_elements.push_back(new CloseParagraphElement());
+  m_elements.push_back(make_shared<CloseParagraphElement>());
 }
 
 void IWORKOutputElements::addCloseSection()
 {
-  m_elements.push_back(new CloseSectionElement());
+  m_elements.push_back(make_shared<CloseSectionElement>());
 }
 
 void IWORKOutputElements::addCloseSpan()
 {
-  m_elements.push_back(new CloseSpanElement());
+  m_elements.push_back(make_shared<CloseSpanElement>());
 }
 
 void IWORKOutputElements::addCloseTable()
 {
-  m_elements.push_back(new CloseTableElement());
+  m_elements.push_back(make_shared<CloseTableElement>());
 }
 
 void IWORKOutputElements::addCloseTableCell()
 {
-  m_elements.push_back(new CloseTableCellElement());
+  m_elements.push_back(make_shared<CloseTableCellElement>());
 }
 
 void IWORKOutputElements::addCloseTableRow()
 {
-  m_elements.push_back(new CloseTableRowElement());
+  m_elements.push_back(make_shared<CloseTableRowElement>());
 }
 
 void IWORKOutputElements::addCloseUnorderedListLevel()
 {
-  m_elements.push_back(new CloseUnorderedListLevelElement());
+  m_elements.push_back(make_shared<CloseUnorderedListLevelElement>());
 }
 
 void IWORKOutputElements::addDrawGraphicObject(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new DrawGraphicObjectElement(propList));
+  m_elements.push_back(make_shared<DrawGraphicObjectElement>(propList));
 }
 
 void IWORKOutputElements::addDrawPath(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new DrawPathElement(propList));
+  m_elements.push_back(make_shared<DrawPathElement>(propList));
 }
 
 void IWORKOutputElements::addDrawPolyline(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new DrawPolylineElement(propList));
+  m_elements.push_back(make_shared<DrawPolylineElement>(propList));
 }
 
 void IWORKOutputElements::addEndTextObject()
 {
-  m_elements.push_back(new EndTextObjectElement());
+  m_elements.push_back(make_shared<EndTextObjectElement>());
 }
 
 void IWORKOutputElements::addInsertBinaryObject(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new InsertBinaryObjectElement(propList));
+  m_elements.push_back(make_shared<InsertBinaryObjectElement>(propList));
 }
 
 void IWORKOutputElements::addInsertCoveredTableCell(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new InsertCoveredTableCellElement(propList));
+  m_elements.push_back(make_shared<InsertCoveredTableCellElement>(propList));
 }
 
 void IWORKOutputElements::addInsertLineBreak()
 {
-  m_elements.push_back(new InsertLineBreakElement());
+  m_elements.push_back(make_shared<InsertLineBreakElement>());
 }
 
 void IWORKOutputElements::addInsertSpace()
 {
-  m_elements.push_back(new InsertSpaceElement());
+  m_elements.push_back(make_shared<InsertSpaceElement>());
 }
 
 void IWORKOutputElements::addInsertTab()
 {
-  m_elements.push_back(new InsertTabElement());
+  m_elements.push_back(make_shared<InsertTabElement>());
 }
 
 void IWORKOutputElements::addInsertText(const librevenge::RVNGString &text)
 {
-  m_elements.push_back(new InsertTextElement(text));
+  m_elements.push_back(make_shared<InsertTextElement>(text));
 }
 
 void IWORKOutputElements::addOpenEndnote(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new OpenEndnoteElement(propList));
+  m_elements.push_back(make_shared<OpenEndnoteElement>(propList));
 }
 
 void IWORKOutputElements::addOpenFooter(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new OpenFooterElement(propList));
+  m_elements.push_back(make_shared<OpenFooterElement>(propList));
 }
 
 void IWORKOutputElements::addOpenFootnote(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new OpenFootnoteElement(propList));
+  m_elements.push_back(make_shared<OpenFootnoteElement>(propList));
 }
 
 void IWORKOutputElements::addOpenFrame(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new OpenFrameElement(propList));
+  m_elements.push_back(make_shared<OpenFrameElement>(propList));
 }
 
 void IWORKOutputElements::addOpenHeader(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new OpenHeaderElement(propList));
+  m_elements.push_back(make_shared<OpenHeaderElement>(propList));
 }
 
 void IWORKOutputElements::addOpenLink(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new OpenLinkElement(propList));
+  m_elements.push_back(make_shared<OpenLinkElement>(propList));
 }
 
 void IWORKOutputElements::addOpenListElement(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new OpenListElementElement(propList));
+  m_elements.push_back(make_shared<OpenListElementElement>(propList));
 }
 
 void IWORKOutputElements::addOpenOrderedListLevel(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new OpenOrderedListLevelElement(propList));
+  m_elements.push_back(make_shared<OpenOrderedListLevelElement>(propList));
 }
 
 void IWORKOutputElements::addOpenPageSpan(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new OpenPageSpanElement(propList));
+  m_elements.push_back(make_shared<OpenPageSpanElement>(propList));
 }
 
 void IWORKOutputElements::addOpenParagraph(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new OpenParagraphElement(propList));
+  m_elements.push_back(make_shared<OpenParagraphElement>(propList));
 }
 
 void IWORKOutputElements::addOpenSection(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new OpenSectionElement(propList));
+  m_elements.push_back(make_shared<OpenSectionElement>(propList));
 }
 
 void IWORKOutputElements::addOpenSpan(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new OpenSpanElement(propList));
+  m_elements.push_back(make_shared<OpenSpanElement>(propList));
 }
 
 void IWORKOutputElements::addOpenTable(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new OpenTableElement(propList));
+  m_elements.push_back(make_shared<OpenTableElement>(propList));
 }
 
 void IWORKOutputElements::addOpenTableCell(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new OpenTableCellElement(propList));
+  m_elements.push_back(make_shared<OpenTableCellElement>(propList));
 }
 
 void IWORKOutputElements::addOpenTableRow(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new OpenTableRowElement(propList));
+  m_elements.push_back(make_shared<OpenTableRowElement>(propList));
 }
 
 void IWORKOutputElements::addOpenUnorderedListLevel(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new OpenUnorderedListLevelElement(propList));
+  m_elements.push_back(make_shared<OpenUnorderedListLevelElement>(propList));
 }
 
 void IWORKOutputElements::addSetStyle(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new SetStyleElement(propList));
+  m_elements.push_back(make_shared<SetStyleElement>(propList));
 }
 
 void IWORKOutputElements::addStartTextObject(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new StartTextObjectElement(propList));
+  m_elements.push_back(make_shared<StartTextObjectElement>(propList));
 }
 
 }
