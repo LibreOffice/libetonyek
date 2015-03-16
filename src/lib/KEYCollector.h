@@ -145,11 +145,13 @@ private:
   void drawNotes();
   void drawStickyNotes();
 
+  void pushZone();
+  void popZone();
+
 private:
   IWORKDocumentInterface *m_document;
   std::stack<Level> m_levelStack;
   IWORKStyleStack m_styleStack;
-  std::stack<IWORKObjectList_t> m_objectsStack;
   IWORKPathPtr_t m_currentPath;
 
   IWORKTextPtr_t m_currentText;
@@ -165,7 +167,10 @@ private:
 
   IWORKTable m_currentTable;
 
-  IWORKObjectList_t m_notes;
+  IWORKZoneList_t m_zoneList;
+  std::stack<IWORKZoneID_t> m_zoneStack;
+  IWORKOutputElements *m_currentZone;
+  IWORKOutputElements m_notes;
 
   KEYStickyNotes_t m_stickyNotes;
 

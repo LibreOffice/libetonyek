@@ -21,7 +21,7 @@
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle_fwd.h"
 #include "IWORKText_fwd.h"
-#include "IWORKTypes_fwd.h"
+#include "IWORKTypes.h"
 
 namespace libetonyek
 {
@@ -31,7 +31,7 @@ class IWORKTransformation;
 struct KEYLayer
 {
   boost::optional<std::string> m_type;
-  IWORKObjectList_t m_objects;
+  boost::optional<IWORKZoneID_t> m_zoneId;
 
   KEYLayer();
 };

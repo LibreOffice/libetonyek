@@ -19,6 +19,7 @@
 #include "libetonyek_utils.h"
 #include "IWORKDocumentInterface.h"
 #include "IWORKOutputElements.h"
+#include "IWORKOutputElementsRedirector.h"
 #include "IWORKShape.h"
 #include "IWORKText.h"
 #include "IWORKTransformation.h"
@@ -33,33 +34,6 @@ using boost::optional;
 
 using std::memcmp;
 using std::string;
-
-namespace
-{
-
-class OutputElementsObject : public IWORKObject
-{
-public:
-  explicit OutputElementsObject(const IWORKOutputElements &elements);
-
-private:
-  virtual void draw(IWORKDocumentInterface *document);
-
-private:
-  const IWORKOutputElements m_elements;
-};
-
-OutputElementsObject::OutputElementsObject(const IWORKOutputElements &elements)
-  : m_elements(elements)
-{
-}
-
-void OutputElementsObject::draw(IWORKDocumentInterface *const document)
-{
-  m_elements.write(document);
-}
-
-}
 
 namespace
 {
@@ -182,7 +156,6 @@ KEYCollector::Level::Level()
 KEYCollector::KEYCollector(IWORKDocumentInterface *const document)
   : m_document(document)
   , m_levelStack()
-  , m_objectsStack()
   , m_currentPath()
   , m_currentText()
   , m_currentStylesheet(new IWORKStylesheet())
@@ -193,6 +166,9 @@ KEYCollector::KEYCollector(IWORKDocumentInterface *const document)
   , m_currentLeveled()
   , m_currentContent()
   , m_currentTable()
+  , m_zoneList()
+  , m_zoneStack()
+  , m_currentZone(0)
   , m_notes()
   , m_stickyNotes()
   , m_size()
@@ -211,8 +187,8 @@ KEYCollector::KEYCollector(IWORKDocumentInterface *const document)
 KEYCollector::~KEYCollector()
 {
   assert(!m_paint);
-  assert(m_objectsStack.empty());
   assert(m_levelStack.empty());
+  assert(m_zoneStack.empty());
   assert(!m_pageOpened);
   assert(!m_layerOpened);
   assert(0 == m_groupLevel);
@@ -349,39 +325,37 @@ void KEYCollector::collectBezier(const IWORKPathPtr_t &path)
   m_currentPath = path;
 }
 
-void KEYCollector::collectGroup(const IWORKGroupPtr_t &group)
+void KEYCollector::collectGroup(const IWORKGroupPtr_t &)
 {
-  assert(!m_objectsStack.empty());
-
-  group->m_objects = m_objectsStack.top();
-  m_objectsStack.pop();
-  assert(!m_objectsStack.empty());
-  m_objectsStack.top().push_back(makeObject(group));
 }
 
 void KEYCollector::collectImage(const IWORKImagePtr_t &image)
 {
-  assert(!m_objectsStack.empty());
+  assert(m_currentZone);
   assert(!m_levelStack.empty());
 
   image->m_geometry = m_levelStack.top().m_geometry;
   m_levelStack.top().m_geometry.reset();
-  m_objectsStack.top().push_back(makeObject(image, m_levelStack.top().m_trafo));
+
+  IWORKOutputElementsRedirector redirector(*m_currentZone);
+  makeObject(image, m_levelStack.top().m_trafo)->draw(&redirector);
 }
 
 void KEYCollector::collectLine(const IWORKLinePtr_t &line)
 {
-  assert(!m_objectsStack.empty());
+  assert(m_currentZone);
   assert(!m_levelStack.empty());
 
   line->m_geometry = m_levelStack.top().m_geometry;
   m_levelStack.top().m_geometry.reset();
-  m_objectsStack.top().push_back(makeObject(line, m_levelStack.top().m_trafo));
+
+  IWORKOutputElementsRedirector redirector(*m_currentZone);
+  makeObject(line, m_levelStack.top().m_trafo)->draw(&redirector);
 }
 
 void KEYCollector::collectShape()
 {
-  assert(!m_objectsStack.empty());
+  assert(m_currentZone);
   assert(!m_levelStack.empty());
 
   const IWORKShapePtr_t shape(new IWORKShape());
@@ -406,7 +380,8 @@ void KEYCollector::collectShape()
   shape->m_style = m_levelStack.top().m_graphicStyle;
   m_levelStack.top().m_graphicStyle.reset();
 
-  m_objectsStack.top().push_back(makeObject(shape, m_levelStack.top().m_trafo));
+  IWORKOutputElementsRedirector redirector(*m_currentZone);
+  makeObject(shape, m_levelStack.top().m_trafo)->draw(&redirector);
 }
 
 void KEYCollector::collectBezierPath()
@@ -541,8 +516,8 @@ void KEYCollector::collectMovieMedia()
 
 void KEYCollector::collectMedia()
 {
-  assert(!m_objectsStack.empty());
   assert(!m_levelStack.empty());
+  assert(m_currentZone);
 
   const IWORKMediaPtr_t media(new IWORKMedia());
   media->m_geometry = m_levelStack.top().m_geometry;
@@ -553,9 +528,7 @@ void KEYCollector::collectMedia()
   m_levelStack.top().m_geometry.reset();
   m_levelStack.top().m_graphicStyle.reset();
 
-  IWORKOutputElements elements;
-  drawMedia(media, m_levelStack.top().m_trafo, elements);
-  m_objectsStack.top().push_back(make_shared<OutputElementsObject>(elements));
+  drawMedia(media, m_levelStack.top().m_trafo, *m_currentZone);
 }
 
 void KEYCollector::collectPresentation(const boost::optional<IWORKSize> &size)
@@ -567,12 +540,11 @@ void KEYCollector::collectPresentation(const boost::optional<IWORKSize> &size)
 KEYLayerPtr_t KEYCollector::collectLayer()
 {
   assert(m_layerOpened);
-  assert(!m_objectsStack.empty());
+  assert(!m_zoneStack.empty());
 
   KEYLayerPtr_t layer(new KEYLayer());
 
-  layer->m_objects = m_objectsStack.top();
-  m_objectsStack.pop();
+  layer->m_zoneId = m_zoneStack.top();
 
   return layer;
 }
@@ -591,10 +563,8 @@ void KEYCollector::insertLayer(const KEYLayerPtr_t &layer)
       props.insert("svg:id", m_layerCount);
 
       m_document->startLayer(props);
-
-      for (IWORKObjectList_t::const_iterator it = layer->m_objects.begin(); it != layer->m_objects.end(); ++it)
-        (*it)->draw(m_document);
-
+      if (layer->m_zoneId && (m_zoneList.size() > get(layer->m_zoneId)))
+        m_zoneList[get(layer->m_zoneId)].write(m_document);
       m_document->endLayer();
     }
   }
@@ -677,14 +647,16 @@ KEYPlaceholderPtr_t KEYCollector::collectTextPlaceholder(const IWORKStylePtr_t &
 
 void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
 {
-  assert(!m_objectsStack.empty());
+  assert(m_currentZone);
 
   if (bool(placeholder))
   {
     IWORKTransformation trafo;
     if (bool(placeholder->m_geometry))
       trafo = makeTransformation(*placeholder->m_geometry);
-    m_objectsStack.top().push_back(makeObject(placeholder, trafo * m_levelStack.top().m_trafo));
+
+    IWORKOutputElementsRedirector redirector(*m_currentZone);
+    makeObject(placeholder, trafo * m_levelStack.top().m_trafo)->draw(&redirector);
   }
   else
   {
@@ -734,18 +706,21 @@ void KEYCollector::collectTableRow()
 void KEYCollector::collectTable()
 {
   assert(!m_levelStack.empty());
-  assert(!m_objectsStack.empty());
+  assert(m_currentZone);
 
   m_currentTable.setGeometry(m_levelStack.top().m_geometry);
   m_levelStack.top().m_geometry.reset();
 
-  m_objectsStack.top().push_back(makeObject(m_currentTable, m_levelStack.top().m_trafo));
+  IWORKOutputElementsRedirector redirector(*m_currentZone);
+  makeObject(m_currentTable, m_levelStack.top().m_trafo)->draw(&redirector);
+
   m_currentTable = IWORKTable();
 }
 
 void KEYCollector::collectNote()
 {
-  m_notes.push_back(makeObject(m_currentText, m_levelStack.top().m_trafo));
+  IWORKOutputElementsRedirector redirector(m_notes);
+  makeObject(m_currentText, m_levelStack.top().m_trafo)->draw(&redirector);
   m_currentText.reset();
 }
 
@@ -816,47 +791,47 @@ void KEYCollector::startLayer()
 {
   assert(m_pageOpened);
   assert(!m_layerOpened);
-  assert(m_objectsStack.empty());
+  assert(m_zoneStack.empty());
+  assert(!m_currentZone);
 
-  m_objectsStack.push(IWORKObjectList_t());
+  pushZone();
   m_layerOpened = true;
 
   startLevel();
 
-  assert(!m_objectsStack.empty());
+  assert(!m_zoneStack.empty());
+  assert(m_currentZone);
 }
 
 void KEYCollector::endLayer()
 {
   assert(m_pageOpened);
   assert(m_layerOpened);
-  // object stack is already cleared by collectLayer()
-  assert(m_objectsStack.empty());
+  assert(!m_zoneStack.empty());
+  assert(m_currentZone);
 
   endLevel();
+  popZone();
 
   m_layerOpened = false;
 
-  assert(m_objectsStack.empty());
+  assert(m_zoneStack.empty());
+  assert(!m_currentZone);
 }
 
 void KEYCollector::startGroup()
 {
   assert(m_layerOpened);
-  assert(!m_objectsStack.empty());
 
-  m_objectsStack.push(IWORKObjectList_t());
   ++m_groupLevel;
 }
 
 void KEYCollector::endGroup()
 {
   assert(m_layerOpened);
-  assert(!m_objectsStack.empty());
   assert(m_groupLevel > 0);
 
   --m_groupLevel;
-  // stack is popped in collectGroup already
 }
 
 void KEYCollector::startParagraph(const IWORKStylePtr_t &style)
@@ -931,8 +906,7 @@ void KEYCollector::drawNotes()
     return;
 
   m_document->startNotes(librevenge::RVNGPropertyList());
-  for (IWORKObjectList_t::const_iterator it = m_notes.begin(); m_notes.end() != it; ++it)
-    (*it)->draw(m_document);
+  m_notes.write(m_document);
   m_document->endNotes();
 }
 
@@ -958,6 +932,19 @@ void KEYCollector::drawStickyNotes()
       makeObject(it->m_text, m_levelStack.top().m_trafo)->draw(m_document);
     m_document->closeComment();
   }
+}
+
+void KEYCollector::pushZone()
+{
+  m_zoneList.push_back(IWORKOutputElements());
+  m_zoneStack.push(m_zoneList.size() - 1);
+  m_currentZone = &m_zoneList.back();
+}
+
+void KEYCollector::popZone()
+{
+  m_zoneStack.pop();
+  m_currentZone = m_zoneStack.empty() ? 0 :&m_zoneList[m_zoneStack.top()];
 }
 
 }

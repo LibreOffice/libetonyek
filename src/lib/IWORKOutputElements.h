@@ -31,6 +31,7 @@ public:
 
   void append(const IWORKOutputElements &elements);
   void write(IWORKDocumentInterface *iface) const;
+  void clear();
   bool empty() const;
 
   void addCloseEndnote();

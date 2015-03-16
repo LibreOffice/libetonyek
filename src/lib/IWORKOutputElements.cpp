@@ -850,6 +850,11 @@ void IWORKOutputElements::write(IWORKDocumentInterface *iface) const
     (*iter)->write(iface);
 }
 
+void IWORKOutputElements::clear()
+{
+  m_elements.clear();
+}
+
 bool IWORKOutputElements::empty() const
 {
   return m_elements.empty();
