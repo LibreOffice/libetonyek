@@ -161,14 +161,6 @@ struct IWORKWrap
   IWORKWrap();
 };
 
-struct IWORKGroup
-{
-  IWORKObjectList_t m_objects;
-
-  IWORKGroup();
-};
-
-IWORKObjectPtr_t makeObject(const IWORKGroupPtr_t &group);
 IWORKObjectPtr_t makeObject(const IWORKImagePtr_t &image, const IWORKTransformation &trafo);
 IWORKObjectPtr_t makeObject(const IWORKLinePtr_t &line, const IWORKTransformation &trafo);
 

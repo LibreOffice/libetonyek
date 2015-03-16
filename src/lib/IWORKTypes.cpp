@@ -135,11 +135,6 @@ IWORKWrap::IWORKWrap()
 {
 }
 
-IWORKGroup::IWORKGroup()
-  : m_objects()
-{
-}
-
 namespace
 {
 
@@ -151,34 +146,6 @@ librevenge::RVNGPropertyList pointToWPG(const double x, const double y)
   props.insert("svg:y", pt2in(y));
 
   return props;
-}
-
-}
-
-namespace
-{
-
-class GroupObject : public IWORKObject
-{
-public:
-  explicit GroupObject(const IWORKGroupPtr_t &group);
-
-private:
-  virtual void draw(IWORKDocumentInterface *document);
-
-private:
-  const IWORKGroupPtr_t m_group;
-  const IWORKTransformation m_trafo;
-};
-
-GroupObject::GroupObject(const IWORKGroupPtr_t &group)
-  : m_group(group)
-{
-}
-
-void GroupObject::draw(IWORKDocumentInterface *const document)
-{
-  drawAll(m_group->m_objects, document);
 }
 
 }
@@ -272,12 +239,6 @@ void LineObject::draw(IWORKDocumentInterface *const document)
   }
 }
 
-}
-
-IWORKObjectPtr_t makeObject(const IWORKGroupPtr_t &group)
-{
-  const IWORKObjectPtr_t object(new GroupObject(group));
-  return object;
 }
 
 IWORKObjectPtr_t makeObject(const IWORKImagePtr_t &image, const IWORKTransformation &trafo)

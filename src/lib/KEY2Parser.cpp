@@ -1503,8 +1503,6 @@ IWORKXMLContextPtr_t GroupContext::element(const int name)
 
 void GroupContext::endOfElement()
 {
-  IWORKGroupPtr_t group(new IWORKGroup());
-  getCollector()->collectGroup(group);
   getCollector()->endGroup();
   getCollector()->endLevel();
 }

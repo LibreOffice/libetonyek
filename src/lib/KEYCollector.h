@@ -68,7 +68,6 @@ public:
   void collectGeometry(const IWORKGeometryPtr_t &geometry);
 
   void collectBezier(const IWORKPathPtr_t &path);
-  void collectGroup(const IWORKGroupPtr_t &group);
   void collectImage(const IWORKImagePtr_t &image);
   void collectLine(const IWORKLinePtr_t &line);
   void collectShape();

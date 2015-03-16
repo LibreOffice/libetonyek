@@ -325,10 +325,6 @@ void KEYCollector::collectBezier(const IWORKPathPtr_t &path)
   m_currentPath = path;
 }
 
-void KEYCollector::collectGroup(const IWORKGroupPtr_t &)
-{
-}
-
 void KEYCollector::collectImage(const IWORKImagePtr_t &image)
 {
   assert(m_currentZone);
