@@ -7,7 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "PAGToken.h"
+#include "PAG1Token.h"
 
 #include <cstring>
 
@@ -18,7 +18,7 @@ namespace libetonyek
 namespace
 {
 
-#include "PAGToken.inc"
+#include "PAG1Token.inc"
 
 }
 }
@@ -26,7 +26,7 @@ namespace
 namespace libetonyek
 {
 
-int PAGTokenizer::operator()(const char *const str) const
+int PAG1Tokenizer::operator()(const char *const str) const
 {
   if (!str)
     return INVALID_TOKEN;

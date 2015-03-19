@@ -1,4 +1,4 @@
-BUILT_SOURCES = IWORKToken.inc KEY1Token.inc KEY2Token.inc NUMToken.inc PAGToken.inc
+BUILT_SOURCES = IWORKToken.inc KEY1Token.inc KEY2Token.inc NUMToken.inc PAG1Token.inc
 GPERFFLAGS = --compare-strncmp --enum --null-strings --readonly-tables
 
 if PLATFORM_WIN32
@@ -114,12 +114,12 @@ libetonyek_internal_la_SOURCES = \
 	PAGCollector.h \
 	PAGDictionary.cpp \
 	PAGDictionary.h \
-	PAGParser.cpp \
-	PAGParser.h \
-	PAGParserState.cpp \
-	PAGParserState.h \
-	PAGToken.cpp \
-	PAGToken.h \
+	PAG1Parser.cpp \
+	PAG1Parser.h \
+	PAG1ParserState.cpp \
+	PAG1ParserState.h \
+	PAG1Token.cpp \
+	PAG1Token.h \
 	libetonyek_utils.cpp \
 	libetonyek_utils.h \
 	libetonyek_xml.cpp \
@@ -141,7 +141,7 @@ EXTRA_DIST = \
 	KEY1Token.gperf \
 	KEY2Token.gperf \
 	NUMToken.gperf \
-	PAGToken.gperf \
+	PAG1Token.gperf \
 	libetonyek.rc.in
 
 # These may be in the builddir too
@@ -152,7 +152,7 @@ IWORKToken.cpp : IWORKToken.inc
 KEY1Token.cpp : KEY1Token.inc
 KEY2Token.cpp : KEY2Token.inc
 NUMToken.cpp : NUMToken.inc
-PAGToken.cpp : PAGToken.inc
+PAG1Token.cpp : PAG1Token.inc
 
 %.inc : %.gperf
 	if $(GPERF) $(GPERFFLAGS) --language C++ $< > $@.tmp; then \

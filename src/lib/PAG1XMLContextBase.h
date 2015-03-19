@@ -7,20 +7,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYXMLCONTEXTBASE_H_INCLUDED
-#define KEYXMLCONTEXTBASE_H_INCLUDED
+#ifndef PAG1XMLCONTEXTBASE_H_INCLUDED
+#define PAG1XMLCONTEXTBASE_H_INCLUDED
 
 #include "IWORKXMLContextBase.h"
 
 namespace libetonyek
 {
 
-class PAGParserState;
+class PAG1ParserState;
 
-typedef IWORKXMLContextBase<IWORKXMLContextElement, PAGParserState> PAGXMLElementContextBase;
+typedef IWORKXMLContextBase<IWORKXMLContextElement, PAG1ParserState> PAG1XMLElementContextBase;
 
 }
 
-#endif // KEYXMLCONTEXTBASE_H_INCLUDED
+#endif // PAG1XMLCONTEXTBASE_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

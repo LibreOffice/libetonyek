@@ -12,7 +12,7 @@
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #endif
 
-using namespace PAGToken;
+using namespace PAG1Token;
 %}
 %struct-type
 struct Token
