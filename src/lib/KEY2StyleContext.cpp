@@ -184,7 +184,7 @@ void AlignmentContext::endOfElement()
       prop = IWORK_ALIGNMENT_JUSTIFY;
       break;
     default :
-      ETONYEK_DEBUG_MSG(("unknown alignment %d\n", get(alignment)));
+      ETONYEK_DEBUG_MSG(("unknown alignment %d\n", get(m_value)));
     }
   }
 
