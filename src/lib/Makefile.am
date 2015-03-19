@@ -106,8 +106,12 @@ libetonyek_internal_la_SOURCES = \
 	KEYTypes_fwd.h \
 	NUMCollector.cpp \
 	NUMCollector.h \
+	NUMDictionary.cpp \
+	NUMDictionary.h \
 	NUM1Parser.cpp \
 	NUM1Parser.h \
+	NUM1ParserState.cpp \
+	NUM1ParserState.h \
 	NUM1Token.cpp \
 	NUM1Token.h \
 	PAGCollector.cpp \

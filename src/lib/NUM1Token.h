@@ -29,6 +29,7 @@ enum
   ls,
 
   // elements
+  document,
   page_info,
   stylesheet,
   workspace,
