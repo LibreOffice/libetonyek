@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef NUMTOKEN_H_INCLUDED
-#define NUMTOKEN_H_INCLUDED
+#ifndef NUM1TOKEN_H_INCLUDED
+#define NUM1TOKEN_H_INCLUDED
 
 #include <boost/static_assert.hpp>
 
@@ -17,13 +17,13 @@
 namespace libetonyek
 {
 
-namespace NUMToken
+namespace NUM1Token
 {
 
 enum
 {
   INVALID_TOKEN = 0,
-  FIRST_TOKEN = IWORKTokenInfo<NUMParser>::first,
+  FIRST_TOKEN = IWORKTokenInfo<NUM1Parser>::first,
 
   // namespace prefixes
   ls,
@@ -43,7 +43,7 @@ enum
   LAST_TOKEN
 };
 
-BOOST_STATIC_ASSERT(IWORKTokenInfo<NUMParser>::last >= LAST_TOKEN);
+BOOST_STATIC_ASSERT(IWORKTokenInfo<NUM1Parser>::last >= LAST_TOKEN);
 
 enum Namespace
 {
@@ -52,13 +52,13 @@ enum Namespace
 
 }
 
-struct NUMTokenizer
+struct NUM1Tokenizer
 {
   int operator()(const char *str) const;
 };
 
 }
 
-#endif // NUMTOKEN_H_INCLUDED
+#endif // NUM1TOKEN_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

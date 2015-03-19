@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef NUMPARSER_H_INCLUDED
-#define NUMPARSER_H_INCLUDED
+#ifndef NUM1PARSER_H_INCLUDED
+#define NUM1PARSER_H_INCLUDED
 
 #include "libetonyek_utils.h"
 
@@ -17,14 +17,14 @@ namespace libetonyek
 
 class NUMCollector;
 
-class NUMParser
+class NUM1Parser
 {
   // disable copying
-  NUMParser(const NUMParser &);
-  NUMParser &operator=(const NUMParser &);
+  NUM1Parser(const NUM1Parser &);
+  NUM1Parser &operator=(const NUM1Parser &);
 
 public:
-  NUMParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector *collector);
+  NUM1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector *collector);
 
   bool parse();
 
@@ -39,6 +39,6 @@ private:
 
 } // namespace libetonyek
 
-#endif //  NUMPARSER_H_INCLUDED
+#endif //  NUM1PARSER_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
