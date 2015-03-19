@@ -64,7 +64,6 @@ typedef __int64 int64_t;
 // debug message includes source file and line number
 //#define VERBOSE_DEBUG 1
 
-#undef DEBUG
 // do nothing with debug messages in a release compile
 #ifdef DEBUG
 #ifdef VERBOSE_DEBUG
