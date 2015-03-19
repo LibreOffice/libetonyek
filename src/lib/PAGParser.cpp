@@ -224,6 +224,36 @@ void DocumentContext::endOfElement()
 
 }
 
+namespace
+{
+
+class XMLDocumentContext : public PAGXMLElementContextBase
+{
+public:
+  explicit XMLDocumentContext(PAGParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+XMLDocumentContext::XMLDocumentContext(PAGParserState &state)
+  : PAGXMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t XMLDocumentContext::element(const int name)
+{
+  switch (name)
+  {
+  case PAGToken::NS_URI_SL | PAGToken::document :
+    return makeContext<DocumentContext>(m_state);
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
 PAGParser::PAGParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGCollector *const /*collector*/, PAGDictionary *const dict)
   : IWORKParser(input, package, 0)
   , m_state(*this, *dict, getTokenizer())
@@ -237,7 +267,7 @@ PAGParser::~PAGParser()
 
 IWORKXMLContextPtr_t PAGParser::createDocumentContext()
 {
-  return makeContext<DocumentContext>(m_state);
+  return makeContext<XMLDocumentContext>(m_state);
 }
 
 TokenizerFunction_t PAGParser::getTokenizer() const
