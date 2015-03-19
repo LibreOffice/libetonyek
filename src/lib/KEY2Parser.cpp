@@ -315,10 +315,8 @@ void DataContext::attribute(const int name, const char *const value)
     m_stream.reset(getState().getParser().getPackage()->getSubStreamByName(value));
     break;
   case IWORKToken::NS_URI_SFA | IWORKToken::ID :
-  {
-    ETONYEK_DEBUG_XML_TODO_ATTRIBUTE(attr);
+    // TODO: handle
     break;
-  }
   default :
     break;
   }
@@ -405,7 +403,7 @@ IWORKXMLContextPtr_t LeveledContext::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::data :
     return makeContext<DataContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::size :
-    ETONYEK_DEBUG_XML_TODO_ELEMENT(element);
+    // TODO: handle
     break;
   }
 

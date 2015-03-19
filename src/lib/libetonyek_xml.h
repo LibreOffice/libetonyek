@@ -12,13 +12,6 @@
 
 #include <string>
 
-#include "libetonyek_utils.h"
-
-#define ETONYEK_DEBUG_XML_TODO(type, name, ns) ETONYEK_DEBUG_MSG(("TODO: unprocessed %s %s%s%s%s\n", type, ns ? "{" : "", ns, ns ? "}" : "", name))
-
-#define ETONYEK_DEBUG_XML_TODO_ELEMENT(element) ETONYEK_DEBUG_XML_TODO("element", (element).getName(), (element).getNamespace())
-#define ETONYEK_DEBUG_XML_TODO_ATTRIBUTE(attr) ETONYEK_DEBUG_XML_TODO("attribute", (attr).getName(), (attr).getNamespace())
-
 namespace libetonyek
 {
 

@@ -12,6 +12,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
 
+#include "libetonyek_utils.h"
 #include "IWORKToken.h"
 #include "IWORKXMLReader.h"
 
