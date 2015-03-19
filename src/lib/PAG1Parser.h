@@ -7,11 +7,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef PAGPARSER_H_INCLUDED
-#define PAGPARSER_H_INCLUDED
+#ifndef PAG1PARSER_H_INCLUDED
+#define PAG1PARSER_H_INCLUDED
 
 #include "IWORKParser.h"
-#include "PAGParserState.h"
+#include "PAG1ParserState.h"
 
 namespace libetonyek
 {
@@ -19,23 +19,23 @@ namespace libetonyek
 class PAGCollector;
 class PAGDictionary;
 
-class PAGParser: public IWORKParser
+class PAG1Parser: public IWORKParser
 {
 public:
-  PAGParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGCollector *collector, PAGDictionary *dict);
-  virtual ~PAGParser();
+  PAG1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGCollector *collector, PAGDictionary *dict);
+  virtual ~PAG1Parser();
 
 private:
   virtual IWORKXMLContextPtr_t createDocumentContext();
   virtual TokenizerFunction_t getTokenizer() const;
 
 private:
-  PAGParserState m_state;
+  PAG1ParserState m_state;
   unsigned m_version;
 };
 
 } // namespace libetonyek
 
-#endif //  PAGPARSER_H_INCLUDED
+#endif //  PAG1PARSER_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

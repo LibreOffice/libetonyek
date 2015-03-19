@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef PAGPARSERSTATE_H_INCLUDED
-#define PAGPARSERSTATE_H_INCLUDED
+#ifndef PAG1PARSERSTATE_H_INCLUDED
+#define PAG1PARSERSTATE_H_INCLUDED
 
 #include "IWORKXMLParserState.h"
 
@@ -17,14 +17,14 @@ namespace libetonyek
 
 struct PAGDictionary;
 
-class PAGParserState : public IWORKXMLParserState
+class PAG1ParserState : public IWORKXMLParserState
 {
   // not copyable
-  PAGParserState(const PAGParserState &);
-  PAGParserState &operator=(const PAGParserState &);
+  PAG1ParserState(const PAG1ParserState &);
+  PAG1ParserState &operator=(const PAG1ParserState &);
 
 public:
-  PAGParserState(IWORKParser &parser, PAGDictionary &dict, const TokenizerFunction_t &tokenizer);
+  PAG1ParserState(IWORKParser &parser, PAGDictionary &dict, const TokenizerFunction_t &tokenizer);
 
   PAGDictionary &getDictionary();
 
@@ -34,6 +34,6 @@ private:
 
 }
 
-#endif // PAGPARSERSTATE_H_INCLUDED
+#endif // PAG1PARSERSTATE_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
