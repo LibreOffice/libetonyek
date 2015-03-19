@@ -7,20 +7,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "PAGParserState.h"
+#include "PAG1ParserState.h"
 
 #include "PAGDictionary.h"
 
 namespace libetonyek
 {
 
-PAGParserState::PAGParserState(IWORKParser &parser, PAGDictionary &dict, const TokenizerFunction_t &tokenizer)
+PAG1ParserState::PAG1ParserState(IWORKParser &parser, PAGDictionary &dict, const TokenizerFunction_t &tokenizer)
   : IWORKXMLParserState(parser, dict, tokenizer)
   , m_dict(dict)
 {
 }
 
-PAGDictionary &PAGParserState::getDictionary()
+PAGDictionary &PAG1ParserState::getDictionary()
 {
   return m_dict;
 }

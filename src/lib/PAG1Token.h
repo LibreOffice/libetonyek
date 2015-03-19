@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef PAGTOKEN_H_INCLUDED
-#define PAGTOKEN_H_INCLUDED
+#ifndef PAG1Token_H_INCLUDED
+#define PAG1Token_H_INCLUDED
 
 #include <boost/static_assert.hpp>
 
@@ -17,13 +17,13 @@
 namespace libetonyek
 {
 
-namespace PAGToken
+namespace PAG1Token
 {
 
 enum
 {
   INVALID_TOKEN = 0,
-  FIRST_TOKEN = IWORKTokenInfo<PAGParser>::first,
+  FIRST_TOKEN = IWORKTokenInfo<PAG1Parser>::first,
 
   // namespace prefixes
   sl,
@@ -50,7 +50,7 @@ enum
   LAST_TOKEN
 };
 
-BOOST_STATIC_ASSERT(IWORKTokenInfo<PAGParser>::last >= LAST_TOKEN);
+BOOST_STATIC_ASSERT(IWORKTokenInfo<PAG1Parser>::last >= LAST_TOKEN);
 
 enum Namespace
 {
@@ -59,13 +59,13 @@ enum Namespace
 
 }
 
-struct PAGTokenizer
+struct PAG1Tokenizer
 {
   int operator()(const char *str) const;
 };
 
 }
 
-#endif // PAGTOKEN_H_INCLUDED
+#endif // PAG1Token_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

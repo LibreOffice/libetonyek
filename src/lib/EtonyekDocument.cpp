@@ -28,8 +28,8 @@
 #include "NUMParser.h"
 #include "NUMToken.h"
 #include "PAGCollector.h"
-#include "PAGParser.h"
-#include "PAGToken.h"
+#include "PAG1Parser.h"
+#include "PAG1Token.h"
 #include "PAGDictionary.h"
 
 using boost::logic::indeterminate;
@@ -187,20 +187,20 @@ bool probePagesXML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlText
   if (input->isEnd())
     return false;
 
-  const PAGTokenizer tokenizer = PAGTokenizer();
+  const PAG1Tokenizer tokenizer = PAG1Tokenizer();
   assert(reader);
 
   const int name = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
   const int ns = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) ? reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) : "");
   assert((0 == ns) || (ns > name));
 
-  if ((PAGToken::NS_URI_SL | PAGToken::document) == (name | ns))
+  if ((PAG1Token::NS_URI_SL | PAG1Token::document) == (name | ns))
   {
-    const std::string v = queryAttribute(reader, PAGToken::version, PAGToken::NS_URI_SL, tokenizer);
+    const std::string v = queryAttribute(reader, PAG1Token::version, PAG1Token::NS_URI_SL, tokenizer);
 
     switch (tokenizer(v.c_str()))
     {
-    case PAGToken::VERSION_STR_4 :
+    case PAG1Token::VERSION_STR_4 :
       version = 4;
       return true;
     }
@@ -514,7 +514,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   PAGCollector collector(document);
   PAGDictionary dict;
-  PAGParser parser(info.input, info.package, &collector, &dict);
+  PAG1Parser parser(info.input, info.package, &collector, &dict);
   return parser.parse();
 }
 catch (...)

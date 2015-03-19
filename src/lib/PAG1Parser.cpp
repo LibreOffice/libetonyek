@@ -7,12 +7,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "PAGParser.h"
+#include "PAG1Parser.h"
 #include "IWORKXMLContexts.h"
 #include "IWORKToken.h"
 #include "PAGCollector.h"
-#include "PAGToken.h"
-#include "PAGXMLContextBase.h"
+#include "PAG1Token.h"
+#include "PAG1XMLContextBase.h"
 
 using boost::optional;
 
@@ -26,7 +26,7 @@ unsigned getVersion(const int token)
 {
   switch (token)
   {
-  case PAGToken::VERSION_STR_4 :
+  case PAG1Token::VERSION_STR_4 :
     return 4;
   }
 
@@ -38,17 +38,17 @@ unsigned getVersion(const int token)
 namespace
 {
 
-class FootersContext : public PAGXMLElementContextBase
+class FootersContext : public PAG1XMLElementContextBase
 {
 public:
-  explicit FootersContext(PAGParserState &state);
+  explicit FootersContext(PAG1ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-FootersContext::FootersContext(PAGParserState &state)
-  : PAGXMLElementContextBase(state)
+FootersContext::FootersContext(PAG1ParserState &state)
+  : PAG1XMLElementContextBase(state)
 {
 }
 
@@ -63,17 +63,17 @@ IWORKXMLContextPtr_t FootersContext::element(int)
 namespace
 {
 
-class HeadersContext : public PAGXMLElementContextBase
+class HeadersContext : public PAG1XMLElementContextBase
 {
 public:
-  explicit HeadersContext(PAGParserState &state);
+  explicit HeadersContext(PAG1ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-HeadersContext::HeadersContext(PAGParserState &state)
-  : PAGXMLElementContextBase(state)
+HeadersContext::HeadersContext(PAG1ParserState &state)
+  : PAG1XMLElementContextBase(state)
 {
 }
 
@@ -88,17 +88,17 @@ IWORKXMLContextPtr_t HeadersContext::element(int)
 namespace
 {
 
-class StylesheetContext : public PAGXMLElementContextBase
+class StylesheetContext : public PAG1XMLElementContextBase
 {
 public:
-  explicit StylesheetContext(PAGParserState &state);
+  explicit StylesheetContext(PAG1ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-StylesheetContext::StylesheetContext(PAGParserState &state)
-  : PAGXMLElementContextBase(state)
+StylesheetContext::StylesheetContext(PAG1ParserState &state)
+  : PAG1XMLElementContextBase(state)
 {
 }
 
@@ -113,17 +113,17 @@ IWORKXMLContextPtr_t StylesheetContext::element(int)
 namespace
 {
 
-class SectionPrototypesContext : public PAGXMLElementContextBase
+class SectionPrototypesContext : public PAG1XMLElementContextBase
 {
 public:
-  explicit SectionPrototypesContext(PAGParserState &state);
+  explicit SectionPrototypesContext(PAG1ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-SectionPrototypesContext::SectionPrototypesContext(PAGParserState &state)
-  : PAGXMLElementContextBase(state)
+SectionPrototypesContext::SectionPrototypesContext(PAG1ParserState &state)
+  : PAG1XMLElementContextBase(state)
 {
 }
 
@@ -138,17 +138,17 @@ IWORKXMLContextPtr_t SectionPrototypesContext::element(int)
 namespace
 {
 
-class MetadataContext : public PAGXMLElementContextBase
+class MetadataContext : public PAG1XMLElementContextBase
 {
 public:
-  explicit MetadataContext(PAGParserState &state);
+  explicit MetadataContext(PAG1ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-MetadataContext::MetadataContext(PAGParserState &state)
-  : PAGXMLElementContextBase(state)
+MetadataContext::MetadataContext(PAG1ParserState &state)
+  : PAG1XMLElementContextBase(state)
 {
 }
 
@@ -163,10 +163,10 @@ IWORKXMLContextPtr_t MetadataContext::element(int)
 namespace
 {
 
-class DocumentContext : public PAGXMLElementContextBase
+class DocumentContext : public PAG1XMLElementContextBase
 {
 public:
-  explicit DocumentContext(PAGParserState &state);
+  explicit DocumentContext(PAG1ParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -177,8 +177,8 @@ private:
   optional<IWORKSize> m_size;
 };
 
-DocumentContext::DocumentContext(PAGParserState &state)
-  : PAGXMLElementContextBase(state)
+DocumentContext::DocumentContext(PAG1ParserState &state)
+  : PAG1XMLElementContextBase(state)
   , m_size()
 {
 }
@@ -187,7 +187,7 @@ void DocumentContext::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case PAGToken::NS_URI_SL | PAGToken::version :
+  case PAG1Token::NS_URI_SL | PAG1Token::version :
   {
     const unsigned version = getVersion(getToken(value));
     if (0 == version)
@@ -205,9 +205,9 @@ IWORKXMLContextPtr_t DocumentContext::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::metadata :
     return makeContext<MetadataContext>(getState());
-  case PAGToken::NS_URI_SL | PAGToken::section_prototypes :
+  case PAG1Token::NS_URI_SL | PAG1Token::section_prototypes :
     return makeContext<SectionPrototypesContext>(getState());
-  case PAGToken::NS_URI_SL | PAGToken::stylesheet :
+  case PAG1Token::NS_URI_SL | PAG1Token::stylesheet :
     return makeContext<StylesheetContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::headers :
     return makeContext<HeadersContext>(getState());
@@ -227,17 +227,17 @@ void DocumentContext::endOfElement()
 namespace
 {
 
-class XMLDocumentContext : public PAGXMLElementContextBase
+class XMLDocumentContext : public PAG1XMLElementContextBase
 {
 public:
-  explicit XMLDocumentContext(PAGParserState &state);
+  explicit XMLDocumentContext(PAG1ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-XMLDocumentContext::XMLDocumentContext(PAGParserState &state)
-  : PAGXMLElementContextBase(state)
+XMLDocumentContext::XMLDocumentContext(PAG1ParserState &state)
+  : PAG1XMLElementContextBase(state)
 {
 }
 
@@ -245,7 +245,7 @@ IWORKXMLContextPtr_t XMLDocumentContext::element(const int name)
 {
   switch (name)
   {
-  case PAGToken::NS_URI_SL | PAGToken::document :
+  case PAG1Token::NS_URI_SL | PAG1Token::document :
     return makeContext<DocumentContext>(m_state);
   }
 
@@ -254,25 +254,25 @@ IWORKXMLContextPtr_t XMLDocumentContext::element(const int name)
 
 }
 
-PAGParser::PAGParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGCollector *const /*collector*/, PAGDictionary *const dict)
+PAG1Parser::PAG1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGCollector *const /*collector*/, PAGDictionary *const dict)
   : IWORKParser(input, package, 0)
   , m_state(*this, *dict, getTokenizer())
   , m_version(0)
 {
 }
 
-PAGParser::~PAGParser()
+PAG1Parser::~PAG1Parser()
 {
 }
 
-IWORKXMLContextPtr_t PAGParser::createDocumentContext()
+IWORKXMLContextPtr_t PAG1Parser::createDocumentContext()
 {
   return makeContext<XMLDocumentContext>(m_state);
 }
 
-TokenizerFunction_t PAGParser::getTokenizer() const
+TokenizerFunction_t PAG1Parser::getTokenizer() const
 {
-  return ChainedTokenizer(PAGTokenizer(), IWORKTokenizer());
+  return ChainedTokenizer(PAG1Tokenizer(), IWORKTokenizer());
 }
 
 }
