@@ -7,7 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "NUMParser.h"
+#include "NUM1Parser.h"
 
 #include <cassert>
 
@@ -16,22 +16,22 @@
 #include "libetonyek_xml.h"
 #include "IWORKToken.h"
 #include "NUMCollector.h"
-#include "NUMToken.h"
+#include "NUM1Token.h"
 
 namespace libetonyek
 {
 
-NUMParser::NUMParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector *const collector)
+NUM1Parser::NUM1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector *const collector)
   : m_input(input)
   , m_package(package)
   , m_collector(collector)
 {
 }
 
-bool NUMParser::parse() try
+bool NUM1Parser::parse() try
 {
   // Todo
-  // const IWORKXMLReader reader(m_input.get(), IWORKXMLReader::ChainedTokenizer(NUMTokenizer(), IWORKTokenizer()));
+  // const IWORKXMLReader reader(m_input.get(), IWORKXMLReader::ChainedTokenizer(NUM1Tokenizer(), IWORKTokenizer()));
   // parseDocument(reader);
   return true;
 }
@@ -40,11 +40,11 @@ catch (...)
   return false;
 }
 
-// void NUMParser::parseDocument(const IWORKXMLReader &reader)
+// void NUM1Parser::parseDocument(const IWORKXMLReader &reader)
 // {
 
 // Todo
-// assert((NUMToken::NS_URI_LS | NUMToken::document) == getId(reader));
+// assert((NUM1Token::NS_URI_LS | NUM1Token::document) == getId(reader));
 
 // m_collector->startDocument();
 

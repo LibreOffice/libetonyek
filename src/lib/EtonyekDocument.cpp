@@ -25,8 +25,8 @@
 #include "KEYCollector.h"
 #include "KEYDictionary.h"
 #include "NUMCollector.h"
-#include "NUMParser.h"
-#include "NUMToken.h"
+#include "NUM1Parser.h"
+#include "NUM1Token.h"
 #include "PAGCollector.h"
 #include "PAG1Parser.h"
 #include "PAG1Token.h"
@@ -160,20 +160,20 @@ bool probeNumbersXML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlTe
   if (input->isEnd())
     return false;
 
-  const NUMTokenizer tokenizer = NUMTokenizer();
+  const NUM1Tokenizer tokenizer = NUM1Tokenizer();
   assert(reader);
 
   const int name = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
   const int ns = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) ? reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) : "");
   assert((0 == ns) || (ns > name));
 
-  if (NUMToken::NS_URI_LS == ns)
+  if (NUM1Token::NS_URI_LS == ns)
   {
-    const std::string v = queryAttribute(reader, NUMToken::version, NUMToken::NS_URI_LS, tokenizer);
+    const std::string v = queryAttribute(reader, NUM1Token::version, NUM1Token::NS_URI_LS, tokenizer);
 
     switch (tokenizer(v.c_str()))
     {
-    case NUMToken::VERSION_STR_2 :
+    case NUM1Token::VERSION_STR_2 :
       version = 2;
       return true;
     }
@@ -487,7 +487,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   info.input->seek(0, librevenge::RVNG_SEEK_SET);
 
   NUMCollector collector(document);
-  NUMParser parser(info.input, info.package, &collector);
+  NUM1Parser parser(info.input, info.package, &collector);
   return parser.parse();
 }
 catch (...)

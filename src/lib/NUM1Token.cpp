@@ -7,7 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "NUMToken.h"
+#include "NUM1Token.h"
 
 #include <cstring>
 
@@ -18,7 +18,7 @@ namespace libetonyek
 namespace
 {
 
-#include "NUMToken.inc"
+#include "NUM1Token.inc"
 
 }
 }
@@ -26,7 +26,7 @@ namespace
 namespace libetonyek
 {
 
-int NUMTokenizer::operator()(const char *const str) const
+int NUM1Tokenizer::operator()(const char *const str) const
 {
   if (!str)
     return INVALID_TOKEN;

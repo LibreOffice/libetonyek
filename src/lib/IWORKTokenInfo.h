@@ -21,7 +21,7 @@ struct IWORKTokenInfo
 class IWORKParser;
 class KEY1Parser;
 class KEY2Parser;
-class NUMParser;
+class NUM1Parser;
 class PAG1Parser;
 
 template<>
@@ -46,7 +46,7 @@ struct IWORKTokenInfo<KEY2Parser>
 };
 
 template<>
-struct IWORKTokenInfo<NUMParser>
+struct IWORKTokenInfo<NUM1Parser>
 {
   static const int first = IWORKTokenInfo<KEY2Parser>::last + 1;
   static const int last = first + 1000;
@@ -55,7 +55,7 @@ struct IWORKTokenInfo<NUMParser>
 template<>
 struct IWORKTokenInfo<PAG1Parser>
 {
-  static const int first = IWORKTokenInfo<NUMParser>::last + 1;
+  static const int first = IWORKTokenInfo<NUM1Parser>::last + 1;
   static const int last = first + 1000;
 };
 
