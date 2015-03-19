@@ -2313,21 +2313,21 @@ IWORKXMLContextPtr_t PresentationContext::element(const int name)
 namespace
 {
 
-class DocumentContext : public KEY2XMLElementContextBase
+class XMLDocumentContext : public KEY2XMLElementContextBase
 {
 public:
-  explicit DocumentContext(KEY2ParserState &state);
+  explicit XMLDocumentContext(KEY2ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-DocumentContext::DocumentContext(KEY2ParserState &state)
+XMLDocumentContext::XMLDocumentContext(KEY2ParserState &state)
   : KEY2XMLElementContextBase(state)
 {
 }
 
-IWORKXMLContextPtr_t DocumentContext::element(const int name)
+IWORKXMLContextPtr_t XMLDocumentContext::element(const int name)
 {
   switch (name)
   {
@@ -2353,7 +2353,7 @@ KEY2Parser::~KEY2Parser()
 
 IWORKXMLContextPtr_t KEY2Parser::createDocumentContext()
 {
-  return makeContext<DocumentContext>(m_state);
+  return makeContext<XMLDocumentContext>(m_state);
 }
 
 TokenizerFunction_t KEY2Parser::getTokenizer() const
