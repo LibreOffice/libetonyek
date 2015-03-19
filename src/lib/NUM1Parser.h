@@ -10,31 +10,28 @@
 #ifndef NUM1PARSER_H_INCLUDED
 #define NUM1PARSER_H_INCLUDED
 
-#include "libetonyek_utils.h"
+#include "IWORKParser.h"
+#include "NUM1ParserState.h"
 
 namespace libetonyek
 {
 
 class NUMCollector;
+class NUMDictionary;
 
-class NUM1Parser
+class NUM1Parser: public IWORKParser
 {
-  // disable copying
-  NUM1Parser(const NUM1Parser &);
-  NUM1Parser &operator=(const NUM1Parser &);
-
 public:
-  NUM1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector *collector);
-
-  bool parse();
-
-private:
-  // void parseDocument(const IWORKXMLReader &reader);
+  NUM1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector *collector, NUMDictionary *dict);
+  virtual ~NUM1Parser();
 
 private:
-  RVNGInputStreamPtr_t m_input;
-  RVNGInputStreamPtr_t m_package;
-  NUMCollector *m_collector;
+  virtual IWORKXMLContextPtr_t createDocumentContext();
+  virtual TokenizerFunction_t getTokenizer() const;
+
+private:
+  NUM1ParserState m_state;
+  unsigned m_version;
 };
 
 } // namespace libetonyek
