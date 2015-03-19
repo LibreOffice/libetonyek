@@ -25,6 +25,7 @@
 #include "KEYCollector.h"
 #include "KEYDictionary.h"
 #include "NUMCollector.h"
+#include "NUMDictionary.h"
 #include "NUM1Parser.h"
 #include "NUM1Token.h"
 #include "PAGCollector.h"
@@ -487,7 +488,8 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   info.input->seek(0, librevenge::RVNG_SEEK_SET);
 
   NUMCollector collector(document);
-  NUM1Parser parser(info.input, info.package, &collector);
+  NUMDictionary dict;
+  NUM1Parser parser(info.input, info.package, &collector, &dict);
   return parser.parse();
 }
 catch (...)

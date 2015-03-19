@@ -23,6 +23,7 @@ struct Token
 %%
 92008102400,VERSION_STR_2
 http://developer.apple.com/namespaces/ls,NS_URI_LS
+document,document
 page-info,page_info
 stylesheet,stylesheet
 workspace,workspace
