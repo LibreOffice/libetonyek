@@ -13,6 +13,7 @@
 
 #include "libetonyek_utils.h"
 #include "IWORKDocumentInterface.h"
+#include "IWORKOutputElementsRedirector.h"
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 
@@ -73,7 +74,7 @@ void IWORKTable::setGeometry(const IWORKGeometryPtr_t &geometry)
   m_geometry = geometry;
 }
 
-void IWORKTable::draw(IWORKDocumentInterface *const document, const IWORKTransformation &trafo) const
+void IWORKTable::draw(const IWORKTransformation &trafo, IWORKOutputElements &elements) const
 {
   librevenge::RVNGPropertyList tableProps;
   tableProps.insert("table:align", "center");
@@ -105,7 +106,7 @@ void IWORKTable::draw(IWORKDocumentInterface *const document, const IWORKTransfo
   }
   tableProps.insert("librevenge:table-columns", columnSizes);
 
-  document->openTable(tableProps);
+  elements.addOpenTable(tableProps);
   for (std::size_t r = 0; m_table.size() != r; ++r)
   {
     const Row_t &row = m_table[r];
@@ -113,7 +114,7 @@ void IWORKTable::draw(IWORKDocumentInterface *const document, const IWORKTransfo
     librevenge::RVNGPropertyList rowProps;
     rowProps.insert("style:row-height", pt2in(m_rowSizes[r]));
 
-    document->openTableRow(rowProps);
+    elements.addOpenTableRow(rowProps);
     for (std::size_t c = 0; row.size() != c; ++c)
     {
       const Cell &cell = row[c];
@@ -125,7 +126,7 @@ void IWORKTable::draw(IWORKDocumentInterface *const document, const IWORKTransfo
 
       if (cell.m_covered)
       {
-        document->insertCoveredTableCell(cellProps);
+        elements.addInsertCoveredTableCell(cellProps);
       }
       else
       {
@@ -134,49 +135,19 @@ void IWORKTable::draw(IWORKDocumentInterface *const document, const IWORKTransfo
         if (1 < cell.m_rowSpan)
           cellProps.insert("table:number-rows-spanned", numeric_cast<int>(cell.m_rowSpan));
 
-        document->openTableCell(cellProps);
+        elements.addOpenTableCell(cellProps);
+
         if (bool(cell.m_content))
-          cell.m_content->draw(document);
-        document->closeTableCell();
+        {
+          IWORKOutputElementsRedirector redirector(elements);
+          cell.m_content->draw(&redirector);
+        }
+        elements.addCloseTableCell();
       }
     }
-    document->closeTableRow();
+    elements.addCloseTableRow();
   }
-  document->closeTable();
-}
-
-namespace
-{
-
-class TableObject : public IWORKObject
-{
-public:
-  TableObject(const IWORKTable &table, const IWORKTransformation &trafo);
-
-  virtual void draw(IWORKDocumentInterface *document);
-
-private:
-  const IWORKTable m_table;
-  const IWORKTransformation m_trafo;
-};
-
-TableObject::TableObject(const IWORKTable &table, const IWORKTransformation &trafo)
-  : m_table(table)
-  , m_trafo(trafo)
-{
-}
-
-void TableObject::draw(IWORKDocumentInterface *const document)
-{
-  m_table.draw(document, m_trafo);
-}
-
-}
-
-IWORKObjectPtr_t makeObject(const IWORKTable &table, const IWORKTransformation &trafo)
-{
-  const IWORKObjectPtr_t object(new TableObject(table, trafo));
-  return object;
+  elements.addCloseTable();
 }
 
 }
