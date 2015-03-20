@@ -167,10 +167,17 @@ void drawShape(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo, I
     elements.addSetStyle(librevenge::RVNGPropertyList());
     elements.addDrawPath(props);
 
-    // TODO: shape with text
-    // if (bool(shape->m_text))
-    //   makeObject(shape->m_text, trafo)->draw(document);
+    if (bool(shape->m_text))
+    {
+      IWORKOutputElementsRedirector redirector(elements);
+      makeObject(shape->m_text, trafo)->draw(&redirector);
+    }
   }
+}
+
+void drawTable(const IWORKTable &table, const IWORKTransformation &trafo, IWORKOutputElements &elements)
+{
+  table.draw(trafo, elements);
 }
 
 }
@@ -734,10 +741,7 @@ void KEYCollector::collectTable()
   m_currentTable.setGeometry(m_levelStack.top().m_geometry);
   m_levelStack.top().m_geometry.reset();
 
-  IWORKOutputElementsRedirector redirector(*m_currentZone);
-  makeObject(m_currentTable, m_levelStack.top().m_trafo)->draw(&redirector);
-
-  m_currentTable = IWORKTable();
+  drawTable(m_currentTable, m_levelStack.top().m_trafo, *m_currentZone);
 }
 
 void KEYCollector::collectNote()

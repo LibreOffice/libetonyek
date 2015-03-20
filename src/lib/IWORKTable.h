@@ -14,6 +14,7 @@
 
 #include "IWORKObject.h"
 #include "IWORKTypes_fwd.h"
+#include "IWORKOutputElements.h"
 
 namespace libetonyek
 {
@@ -48,7 +49,7 @@ public:
 
   void setGeometry(const IWORKGeometryPtr_t &geometry);
 
-  void draw(IWORKDocumentInterface *document, const IWORKTransformation &trafo) const;
+  void draw(const IWORKTransformation &trafo, IWORKOutputElements &elements) const;
 
 private:
   Table_t m_table;
