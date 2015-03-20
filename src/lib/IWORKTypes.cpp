@@ -153,36 +153,6 @@ librevenge::RVNGPropertyList pointToWPG(const double x, const double y)
 namespace
 {
 
-class ImageObject : public IWORKObject
-{
-public:
-  ImageObject(const IWORKImagePtr_t &image, const IWORKTransformation &trafo);
-
-private:
-  virtual void draw(IWORKDocumentInterface *document);
-
-private:
-  const IWORKImagePtr_t m_image;
-  const IWORKTransformation m_trafo;
-};
-
-ImageObject::ImageObject(const IWORKImagePtr_t &image, const IWORKTransformation &trafo)
-  : m_image(image)
-  , m_trafo(trafo)
-{
-}
-
-void ImageObject::draw(IWORKDocumentInterface *const document)
-{
-  // TODO: implement me
-  (void) document;
-}
-
-}
-
-namespace
-{
-
 class LineObject : public IWORKObject
 {
 public:
@@ -241,11 +211,6 @@ void LineObject::draw(IWORKDocumentInterface *const document)
 
 }
 
-IWORKObjectPtr_t makeObject(const IWORKImagePtr_t &image, const IWORKTransformation &trafo)
-{
-  const IWORKObjectPtr_t object(new ImageObject(image, trafo));
-  return object;
-}
 
 IWORKObjectPtr_t makeObject(const IWORKLinePtr_t &line, const IWORKTransformation &trafo)
 {

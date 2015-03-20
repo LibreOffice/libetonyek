@@ -161,7 +161,6 @@ struct IWORKWrap
   IWORKWrap();
 };
 
-IWORKObjectPtr_t makeObject(const IWORKImagePtr_t &image, const IWORKTransformation &trafo);
 IWORKObjectPtr_t makeObject(const IWORKLinePtr_t &line, const IWORKTransformation &trafo);
 
 }

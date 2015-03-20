@@ -144,6 +144,15 @@ void drawMedia(const IWORKMediaPtr_t &media, const IWORKTransformation &trafo, I
   }
 }
 
+void drawImage(const IWORKImagePtr_t &image, const IWORKTransformation &trafo, IWORKOutputElements &elements)
+{
+  // TODO: implement me
+  (void) image;
+  (void) trafo;
+  (void) elements;
+
+}
+
 }
 
 KEYCollector::Level::Level()
@@ -333,8 +342,7 @@ void KEYCollector::collectImage(const IWORKImagePtr_t &image)
   image->m_geometry = m_levelStack.top().m_geometry;
   m_levelStack.top().m_geometry.reset();
 
-  IWORKOutputElementsRedirector redirector(*m_currentZone);
-  makeObject(image, m_levelStack.top().m_trafo)->draw(&redirector);
+  drawImage(image, m_levelStack.top().m_trafo, *m_currentZone);
 }
 
 void KEYCollector::collectLine(const IWORKLinePtr_t &line)
