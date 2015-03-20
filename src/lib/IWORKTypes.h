@@ -161,8 +161,6 @@ struct IWORKWrap
   IWORKWrap();
 };
 
-IWORKObjectPtr_t makeObject(const IWORKLinePtr_t &line, const IWORKTransformation &trafo);
-
 }
 
 #endif //  IWORKTYPES_H_INCLUDED
