@@ -201,6 +201,28 @@ void drawLine(const IWORKLinePtr_t &line, const IWORKTransformation &trafo, IWOR
   }
 }
 
+void drawShape(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo, IWORKOutputElements &elements)
+{
+  if (bool(shape) && bool(shape->m_path))
+  {
+    // TODO: make style
+
+    const IWORKPath path = *shape->m_path * trafo;
+
+    librevenge::RVNGPropertyList props;
+    props.insert("svg:d", path.toWPG());
+
+    elements.addSetStyle(librevenge::RVNGPropertyList());
+    elements.addDrawPath(props);
+
+    if (bool(shape->m_text))
+    {
+      IWORKOutputElementsRedirector redirector(elements);
+      makeObject(shape->m_text, trafo)->draw(&redirector);
+    }
+  }
+}
+
 }
 
 KEYCollector::Level::Level()
@@ -431,8 +453,7 @@ void KEYCollector::collectShape()
   shape->m_style = m_levelStack.top().m_graphicStyle;
   m_levelStack.top().m_graphicStyle.reset();
 
-  IWORKOutputElementsRedirector redirector(*m_currentZone);
-  makeObject(shape, m_levelStack.top().m_trafo)->draw(&redirector);
+  drawShape(shape, m_levelStack.top().m_trafo, *m_currentZone);
 }
 
 void KEYCollector::collectBezierPath()

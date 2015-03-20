@@ -35,60 +35,6 @@ IWORKShape::IWORKShape()
 namespace
 {
 
-class ShapeObject : public IWORKObject
-{
-public:
-  ShapeObject(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo);
-  virtual ~ShapeObject();
-
-private:
-  virtual void draw(IWORKDocumentInterface *document);
-
-private:
-  const IWORKShapePtr_t m_shape;
-  const IWORKTransformation m_trafo;
-};
-
-ShapeObject::ShapeObject(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo)
-  : m_shape(shape)
-  , m_trafo(trafo)
-{
-}
-
-ShapeObject::~ShapeObject()
-{
-}
-
-void ShapeObject::draw(IWORKDocumentInterface *const document)
-{
-  if (bool(m_shape) && bool(m_shape->m_path))
-  {
-    // TODO: make style
-
-    const IWORKPath path = *m_shape->m_path * m_trafo;
-
-    librevenge::RVNGPropertyList props;
-    props.insert("svg:d", path.toWPG());
-
-    document->setStyle(librevenge::RVNGPropertyList());
-    document->drawPath(props);
-
-    if (bool(m_shape->m_text))
-      makeObject(m_shape->m_text, m_trafo)->draw(document);
-  }
-}
-
-}
-
-IWORKObjectPtr_t makeObject(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo)
-{
-  const IWORKObjectPtr_t object(new ShapeObject(shape, trafo));
-  return object;
-}
-
-namespace
-{
-
 struct Point
 {
   double x;
