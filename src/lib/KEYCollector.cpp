@@ -99,6 +99,16 @@ optional<string> getMimetype(const optional<int> &type, const RVNGInputStreamPtr
   return detectMimetype(stream);
 }
 
+librevenge::RVNGPropertyList pointToWPG(const double x, const double y)
+{
+  librevenge::RVNGPropertyList props;
+
+  props.insert("svg:x", pt2in(x));
+  props.insert("svg:y", pt2in(y));
+
+  return props;
+}
+
 void drawMedia(const IWORKMediaPtr_t &media, const IWORKTransformation &trafo, IWORKOutputElements &elements)
 {
   if (bool(media)
@@ -151,6 +161,44 @@ void drawImage(const IWORKImagePtr_t &image, const IWORKTransformation &trafo, I
   (void) trafo;
   (void) elements;
 
+}
+
+void drawLine(const IWORKLinePtr_t &line, const IWORKTransformation &trafo, IWORKOutputElements &elements)
+{
+  // TODO: transform the line
+  (void) trafo;
+
+  if (line->m_x1 && line->m_y1 && line->m_x2 && line->m_y2)
+  {
+    librevenge::RVNGPropertyList props;
+#if 0
+    if (line->style)
+    {
+      // TODO: is it graphic style?
+      const IWORKStyleMap_t::const_iterator styleIt = dict.graphicStyles.find(get(line->style));
+      if (dict.graphicStyles.end() != styleIt)
+      {
+        IWORKStyle style = *styleIt->second;
+        resolveStyle(style, dict.graphicStyles);
+        props = makeLineStyle(style);
+      }
+    }
+#endif
+    elements.addSetStyle(props);
+
+    librevenge::RVNGPropertyListVector vertices;
+    vertices.append(pointToWPG(get(line->m_x1), get(line->m_y1)));
+    vertices.append(pointToWPG(get(line->m_x2), get(line->m_y2)));
+
+    librevenge::RVNGPropertyList points;
+    points.insert("svg:points", vertices);
+
+    elements.addDrawPolyline(points);
+  }
+  else
+  {
+    ETONYEK_DEBUG_MSG(("line is missing head or tail point\n"));
+  }
 }
 
 }
@@ -353,8 +401,7 @@ void KEYCollector::collectLine(const IWORKLinePtr_t &line)
   line->m_geometry = m_levelStack.top().m_geometry;
   m_levelStack.top().m_geometry.reset();
 
-  IWORKOutputElementsRedirector redirector(*m_currentZone);
-  makeObject(line, m_levelStack.top().m_trafo)->draw(&redirector);
+  drawLine(line, m_levelStack.top().m_trafo, *m_currentZone);
 }
 
 void KEYCollector::collectShape()
