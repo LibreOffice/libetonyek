@@ -45,6 +45,8 @@ public:
     */
   IWORKStyleStack();
 
+  ~IWORKStyleStack();
+
   /** Push a style onto the active styles stack.
     *
     * The previous top style becomes a dynamic parent @c style.

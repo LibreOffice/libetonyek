@@ -21,6 +21,12 @@ IWORKStyleStack::IWORKStyleStack()
 {
 }
 
+IWORKStyleStack::~IWORKStyleStack()
+{
+  // FIXME: investigate
+  // assert(m_stack.empty());
+}
+
 void IWORKStyleStack::push()
 {
   m_stack.push_front(IWORKStylePtr_t());
