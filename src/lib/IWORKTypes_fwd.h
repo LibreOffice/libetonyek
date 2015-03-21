@@ -19,6 +19,8 @@ namespace libetonyek
 
 typedef std::string ID_t;
 
+typedef unsigned IWORKZoneID_t;
+
 struct IWORKSize;
 struct IWORKPosition;
 

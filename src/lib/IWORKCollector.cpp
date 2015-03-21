@@ -241,9 +241,6 @@ IWORKCollector::IWORKCollector(IWORKDocumentInterface *const document)
   , m_levelStack()
   , m_currentStylesheet(new IWORKStylesheet())
   , m_newStyles()
-  , m_zoneList()
-  , m_zoneStack()
-  , m_currentZone(0)
   , m_currentText()
   , m_currentPath()
   , m_currentTable()
@@ -256,7 +253,6 @@ IWORKCollector::IWORKCollector(IWORKDocumentInterface *const document)
 IWORKCollector::~IWORKCollector()
 {
   assert(m_levelStack.empty());
-  assert(m_zoneStack.empty());
   assert(0 == m_groupLevel);
 
   assert(!m_currentPath);
@@ -372,29 +368,29 @@ void IWORKCollector::collectBezier(const IWORKPathPtr_t &path)
 
 void IWORKCollector::collectImage(const IWORKImagePtr_t &image)
 {
-  assert(m_currentZone);
+  assert(m_zoneManager.active());
   assert(!m_levelStack.empty());
 
   image->m_geometry = m_levelStack.top().m_geometry;
   m_levelStack.top().m_geometry.reset();
 
-  drawImage(image, m_levelStack.top().m_trafo, *m_currentZone);
+  drawImage(image, m_levelStack.top().m_trafo, m_zoneManager.getCurrent());
 }
 
 void IWORKCollector::collectLine(const IWORKLinePtr_t &line)
 {
-  assert(m_currentZone);
+  assert(m_zoneManager.active());
   assert(!m_levelStack.empty());
 
   line->m_geometry = m_levelStack.top().m_geometry;
   m_levelStack.top().m_geometry.reset();
 
-  drawLine(line, m_levelStack.top().m_trafo, *m_currentZone);
+  drawLine(line, m_levelStack.top().m_trafo, m_zoneManager.getCurrent());
 }
 
 void IWORKCollector::collectShape()
 {
-  assert(m_currentZone);
+  assert(m_zoneManager.active());
   assert(!m_levelStack.empty());
 
   const IWORKShapePtr_t shape(new IWORKShape());
@@ -419,7 +415,7 @@ void IWORKCollector::collectShape()
   shape->m_style = m_levelStack.top().m_graphicStyle;
   m_levelStack.top().m_graphicStyle.reset();
 
-  drawShape(shape, m_levelStack.top().m_trafo, *m_currentZone);
+  drawShape(shape, m_levelStack.top().m_trafo, m_zoneManager.getCurrent());
 }
 
 void IWORKCollector::collectBezierPath()
@@ -466,7 +462,7 @@ void IWORKCollector::collectCalloutPath(const IWORKSize &size, const double radi
 void IWORKCollector::collectMedia(const IWORKMediaContentPtr_t &content)
 {
   assert(!m_levelStack.empty());
-  assert(m_currentZone);
+  assert(m_zoneManager.active());
 
   const IWORKMediaPtr_t media(new IWORKMedia());
   media->m_geometry = m_levelStack.top().m_geometry;
@@ -476,7 +472,7 @@ void IWORKCollector::collectMedia(const IWORKMediaContentPtr_t &content)
   m_levelStack.top().m_geometry.reset();
   m_levelStack.top().m_graphicStyle.reset();
 
-  drawMedia(media, m_levelStack.top().m_trafo, *m_currentZone);
+  drawMedia(media, m_levelStack.top().m_trafo, m_zoneManager.getCurrent());
 }
 
 IWORKStylesheetPtr_t IWORKCollector::collectStylesheet(const IWORKStylesheetPtr_t &parent)
@@ -558,12 +554,12 @@ void IWORKCollector::collectTableRow()
 void IWORKCollector::collectTable()
 {
   assert(!m_levelStack.empty());
-  assert(m_currentZone);
+  assert(m_zoneManager.active());
 
   m_currentTable.setGeometry(m_levelStack.top().m_geometry);
   m_levelStack.top().m_geometry.reset();
 
-  drawTable(m_currentTable, m_levelStack.top().m_trafo, *m_currentZone);
+  drawTable(m_currentTable, m_levelStack.top().m_trafo, m_zoneManager.getCurrent());
 }
 
 void IWORKCollector::startGroup()
@@ -644,17 +640,9 @@ void IWORKCollector::resolveStyle(IWORKStyle &style)
   (void) style;
 }
 
-void IWORKCollector::pushZone()
+IWORKZoneManager &IWORKCollector::getZoneManager()
 {
-  m_zoneList.push_back(IWORKOutputElements());
-  m_zoneStack.push(m_zoneList.size() - 1);
-  m_currentZone = &m_zoneList.back();
-}
-
-void IWORKCollector::popZone()
-{
-  m_zoneStack.pop();
-  m_currentZone = m_zoneStack.empty() ? 0 :&m_zoneList[m_zoneStack.top()];
+  return m_zoneManager;
 }
 
 } // namespace libetonyek

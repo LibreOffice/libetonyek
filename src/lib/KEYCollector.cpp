@@ -66,11 +66,11 @@ void KEYCollector::collectPresentation(const boost::optional<IWORKSize> &size)
 KEYLayerPtr_t KEYCollector::collectLayer()
 {
   assert(m_layerOpened);
-  assert(!m_zoneStack.empty());
+  assert(getZoneManager().active());
 
   KEYLayerPtr_t layer(new KEYLayer());
 
-  layer->m_zoneId = m_zoneStack.top();
+  layer->m_zoneId = getZoneManager().getCurrentId();
 
   return layer;
 }
@@ -89,8 +89,8 @@ void KEYCollector::insertLayer(const KEYLayerPtr_t &layer)
       props.insert("svg:id", m_layerCount);
 
       m_document->startLayer(props);
-      if (layer->m_zoneId && (m_zoneList.size() > get(layer->m_zoneId)))
-        m_zoneList[get(layer->m_zoneId)].write(m_document);
+      if (layer->m_zoneId && getZoneManager().exists(get(layer->m_zoneId)))
+        getZoneManager().get(get(layer->m_zoneId)).write(m_document);
       m_document->endLayer();
     }
   }
@@ -136,7 +136,7 @@ KEYPlaceholderPtr_t KEYCollector::collectTextPlaceholder(const IWORKStylePtr_t &
 
 void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
 {
-  assert(m_currentZone);
+  assert(getZoneManager().active());
 
   if (bool(placeholder))
   {
@@ -144,7 +144,7 @@ void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
     if (bool(placeholder->m_geometry))
       trafo = makeTransformation(*placeholder->m_geometry);
 
-    IWORKOutputElementsRedirector redirector(*m_currentZone);
+    IWORKOutputElementsRedirector redirector(getZoneManager().getCurrent());
     makeObject(placeholder, trafo * m_levelStack.top().m_trafo)->draw(&redirector);
   }
   else
@@ -227,32 +227,28 @@ void KEYCollector::startLayer()
 {
   assert(m_pageOpened);
   assert(!m_layerOpened);
-  assert(m_zoneStack.empty());
-  assert(!m_currentZone);
+  assert(!getZoneManager().active());
 
-  pushZone();
+  getZoneManager().open();
   m_layerOpened = true;
 
   startLevel();
 
-  assert(!m_zoneStack.empty());
-  assert(m_currentZone);
+  assert(getZoneManager().active());
 }
 
 void KEYCollector::endLayer()
 {
   assert(m_pageOpened);
   assert(m_layerOpened);
-  assert(!m_zoneStack.empty());
-  assert(m_currentZone);
+  assert(getZoneManager().active());
 
   endLevel();
-  popZone();
+  getZoneManager().close();
 
   m_layerOpened = false;
 
-  assert(m_zoneStack.empty());
-  assert(!m_currentZone);
+  assert(!getZoneManager().active());
 }
 
 void KEYCollector::drawNotes()

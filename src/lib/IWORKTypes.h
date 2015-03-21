@@ -18,7 +18,6 @@
 
 #include "libetonyek_utils.h"
 #include "IWORKObject.h"
-#include "IWORKOutputElements.h"
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle_fwd.h"
 
@@ -26,9 +25,6 @@ namespace libetonyek
 {
 
 class IWORKTransformation;
-
-typedef std::deque<IWORKOutputElements> IWORKZoneList_t;
-typedef IWORKZoneList_t::size_type IWORKZoneID_t;
 
 struct IWORKSize
 {
