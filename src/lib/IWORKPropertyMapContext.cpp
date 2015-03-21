@@ -38,7 +38,7 @@ class PropertyContextBase : public IWORKXMLElementContextBase
 protected:
   PropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
-  void insert(const char *name, const any &value);
+  void insert(const string &name, const any &value);
 
 private:
   IWORKPropertyMap &m_propMap;
@@ -50,10 +50,9 @@ PropertyContextBase::PropertyContextBase(IWORKXMLParserState &state, IWORKProper
 {
 }
 
-void PropertyContextBase::insert(const char *const name, const any &value)
+void PropertyContextBase::insert(const string &name, const any &value)
 {
-  assert(name);
-  assert(name[0]);
+  assert(!name.empty());
 
   if (!value.empty())
     m_propMap.set(name, value);
@@ -133,6 +132,98 @@ void NumberContext<T>::attribute(const int name, const char *const value)
 namespace
 {
 
+template<class ContextT, class ValueT>
+class DirectPropertyContextBase : public PropertyContextBase
+{
+public:
+  DirectPropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap, int propId, const string &propName);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  const string m_propName;
+  const int m_propId;
+  ValueT m_value;
+};
+
+template<class ContextT, class ValueT>
+DirectPropertyContextBase<ContextT, ValueT>::DirectPropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap, const int propId, const string &propName)
+  : PropertyContextBase(state, propMap)
+  , m_propName(propName)
+  , m_propId(propId)
+  , m_value()
+{
+}
+
+template<class ContextT, class ValueT>
+IWORKXMLContextPtr_t DirectPropertyContextBase<ContextT, ValueT>::element(const int name)
+{
+  if (m_propId == name)
+    return makeContext<ContextT>(getState(), m_value);
+
+  return IWORKXMLContextPtr_t();
+}
+
+template<class ContextT, class ValueT>
+void DirectPropertyContextBase<ContextT, ValueT>::endOfElement()
+{
+  if (bool(m_value))
+    insert(m_propName, m_value);
+}
+
+}
+
+namespace
+{
+
+template<class ContextT, class ValueT>
+class ValuePropertyContextBase : public PropertyContextBase
+{
+public:
+  ValuePropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap, int propId, const string &propName);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  const string m_propName;
+  const int m_propId;
+  optional<ValueT> m_value;
+};
+
+template<class ContextT, class ValueT>
+ValuePropertyContextBase<ContextT, ValueT>::ValuePropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap, const int propId, const string &propName)
+  : PropertyContextBase(state, propMap)
+  , m_propName(propName)
+  , m_propId(propId)
+  , m_value()
+{
+}
+
+template<class ContextT, class ValueT>
+IWORKXMLContextPtr_t ValuePropertyContextBase<ContextT, ValueT>::element(const int name)
+{
+  if (m_propId == name)
+    return makeContext<ContextT>(getState(), m_value);
+
+  return IWORKXMLContextPtr_t();
+}
+
+template<class ContextT, class ValueT>
+void ValuePropertyContextBase<ContextT, ValueT>::endOfElement()
+{
+  if (bool(m_value))
+    insert(m_propName, get(m_value));
+}
+
+}
+
+namespace
+{
+
 class AlignmentContext : public PropertyContextBase
 {
 public:
@@ -195,36 +286,15 @@ void AlignmentContext::endOfElement()
 namespace
 {
 
-class FontColorContext : public PropertyContextBase
+class FontColorContext : public ValuePropertyContextBase<IWORKColorContext, IWORKColor>
 {
 public:
   FontColorContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  optional<IWORKColor> m_color;
 };
 
 FontColorContext::FontColorContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : PropertyContextBase(state, propMap)
+  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::color, "fontColor")
 {
-}
-
-IWORKXMLContextPtr_t FontColorContext::element(const int name)
-{
-  if ((IWORKToken::NS_URI_SF | IWORKToken::color) == name)
-    return makeContext<IWORKColorContext>(getState(), m_color);
-
-  return IWORKXMLContextPtr_t();
-}
-
-void FontColorContext::endOfElement()
-{
-  if (m_color)
-    insert("fontColor", get(m_color));
 }
 
 }
@@ -232,35 +302,15 @@ void FontColorContext::endOfElement()
 namespace
 {
 
-class GeometryContext : public PropertyContextBase
+class GeometryContext : public DirectPropertyContextBase<IWORKGeometryContext, IWORKGeometryPtr_t>
 {
 public:
   GeometryContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  IWORKGeometryPtr_t m_geometry;
 };
 
 GeometryContext::GeometryContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : PropertyContextBase(state, propMap)
+  : DirectPropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::geometry, "geometry")
 {
-}
-
-IWORKXMLContextPtr_t GeometryContext::element(const int name)
-{
-  if ((IWORKToken::NS_URI_SF | IWORKToken::geometry) == name)
-    return makeContext<IWORKGeometryContext>(getState(), m_geometry);
-
-  return IWORKXMLContextPtr_t();
-}
-
-void GeometryContext::endOfElement()
-{
-  insert("geometry", m_geometry);
 }
 
 }
@@ -268,36 +318,15 @@ void GeometryContext::endOfElement()
 namespace
 {
 
-class BoldContext : public PropertyContextBase
+class BoldContext : public ValuePropertyContextBase<NumberContext<bool>, bool>
 {
 public:
   BoldContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  optional<bool> m_bold;
 };
 
 BoldContext::BoldContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : PropertyContextBase(state, propMap)
+  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number, "bold")
 {
-}
-
-IWORKXMLContextPtr_t BoldContext::element(const int name)
-{
-  if ((IWORKToken::NS_URI_SF | IWORKToken::number) == name)
-    return makeContext<NumberContext<bool> >(getState(), m_bold);
-
-  return IWORKXMLContextPtr_t();
-}
-
-void BoldContext::endOfElement()
-{
-  if (m_bold)
-    insert("bold", get(m_bold));
 }
 
 }
@@ -392,36 +421,15 @@ void StringContext::attribute(const int name, const char *const value)
 namespace
 {
 
-class FontNameContext : public PropertyContextBase
+class FontNameContext : public ValuePropertyContextBase<StringContext, string>
 {
 public:
   FontNameContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  optional<string> m_fontName;
 };
 
 FontNameContext::FontNameContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : PropertyContextBase(state, propMap)
+  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::string, "fontName")
 {
-}
-
-IWORKXMLContextPtr_t FontNameContext::element(const int name)
-{
-  if ((IWORKToken::NS_URI_SF | IWORKToken::string) == name)
-    return makeContext<StringContext>(getState(), m_fontName);
-
-  return IWORKXMLContextPtr_t();
-}
-
-void FontNameContext::endOfElement()
-{
-  if (m_fontName)
-    insert("fontName", get(m_fontName));
 }
 
 }
