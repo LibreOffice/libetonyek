@@ -7,56 +7,56 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEY2STYLECONTEXT_H_INCLUDED
-#define KEY2STYLECONTEXT_H_INCLUDED
+#ifndef IWORKSTYLECONTEXT_H_INCLUDED
+#define IWORKSTYLECONTEXT_H_INCLUDED
 
 #include <string>
 
 #include <boost/optional.hpp>
 
 #include "IWORKPropertyMap.h"
-#include "IWORKStyleContext.h"
-#include "KEY2XMLContextBase.h"
+#include "IWORKXMLContextBase.h"
 
 namespace libetonyek
 {
 
-struct KEYDictionary;
+struct IWORKDictionary;
 
-class KEY2StyleContext : public KEY2XMLElementContextBase
+class IWORKStyleContext : public IWORKXMLElementContextBase
 {
 public:
-  KEY2StyleContext(KEY2ParserState &state, int id, bool nested = false);
+  IWORKStyleContext(IWORKXMLParserState &state, int id, bool nested = false);
+  IWORKStyleContext(IWORKXMLParserState &state, int id, IWORKPropertyMap &props, bool nested = false);
 
-private:
   virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
-  KEYDictionary &getDictionary();
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+
+  IWORKDictionary &getDictionary();
 
 private:
-  IWORKPropertyMap m_props;
-  IWORKStyleContext m_base;
   const int m_id;
   const bool m_nested;
+  IWORKPropertyMap m_ownProps;
+  IWORKPropertyMap &m_props;
   boost::optional<std::string> m_ident;
   boost::optional<std::string> m_parentIdent;
 };
 
-class KEY2StyleRefContext : public KEY2XMLEmptyContextBase
+class IWORKStyleRefContext : public IWORKXMLEmptyContextBase
 {
 public:
-  KEY2StyleRefContext(KEY2ParserState &state, int id, bool nested = false, bool anonymous = false);
+  IWORKStyleRefContext(IWORKXMLParserState &state, int id, bool nested = false, bool anonymous = false);
 
-private:
   virtual void attribute(int name, const char *value);
   virtual void endOfElement();
 
-  KEYDictionary &getDictionary();
+private:
+  IWORKDictionary &getDictionary();
 
 private:
-  IWORKStyleRefContext m_base;
   const int m_id;
   const bool m_nested;
   const bool m_anonymous;
@@ -64,6 +64,6 @@ private:
 
 }
 
-#endif // KEY2STYLECONTEXT_H_INCLUDED
+#endif // IWORKSTYLECONTEXT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
