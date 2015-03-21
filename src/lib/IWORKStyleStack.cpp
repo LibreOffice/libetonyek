@@ -33,7 +33,8 @@ void IWORKStyleStack::pop()
 
 void IWORKStyleStack::set(const IWORKStylePtr_t &style)
 {
-  assert(!m_stack.front());
+  // FIXME: investigate
+  // assert(!m_stack.front());
 
   m_stack.front() = style;
 }
