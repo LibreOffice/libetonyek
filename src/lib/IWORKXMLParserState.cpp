@@ -9,9 +9,9 @@
 
 #include "IWORKXMLParserState.h"
 
+#include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKParser.h"
-#include "KEYCollector.h"
 
 namespace libetonyek
 {
@@ -33,7 +33,7 @@ IWORKDictionary &IWORKXMLParserState::getDictionary()
   return m_dict;
 }
 
-KEYCollector *IWORKXMLParserState::getCollector() const
+IWORKCollector *IWORKXMLParserState::getCollector() const
 {
   return m_parser.getCollector();
 }

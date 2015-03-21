@@ -1008,11 +1008,11 @@ void KEY2StyleContext::endOfElement()
     const IWORKStylePtr_t style(new IWORKStyle(m_props, m_ident, m_parentIdent));
     if (getId())
       static_cast<KEYDictionary &>(getDictionary()).m_placeholderStyles[get(getId())] = style;
-    getCollector()->collectPlaceholderStyle(style, m_nested);
+    static_cast<KEYCollector *>(getCollector())->collectPlaceholderStyle(style, m_nested);
     break;
   }
   case IWORKToken::NS_URI_SF | IWORKToken::slide_style :
-    getCollector()->collectSlideStyle(IWORKStylePtr_t(), m_nested);
+    static_cast<KEYCollector *>(getCollector())->collectSlideStyle(IWORKStylePtr_t(), m_nested);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_style :
     getCollector()->collectTabularStyle(IWORKStylePtr_t(), m_nested);
@@ -1100,7 +1100,7 @@ void KEY2StyleRefContext::endOfElement()
       if (dict.m_placeholderStyles.end() != it)
         style = it->second;
     }
-    getCollector()->collectPlaceholderStyle(style, m_anonymous);
+    static_cast<KEYCollector *>(getCollector())->collectPlaceholderStyle(style, m_anonymous);
     break;
   }
   case IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref :

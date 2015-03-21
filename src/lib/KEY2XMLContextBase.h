@@ -16,11 +16,12 @@ namespace libetonyek
 {
 
 class KEY2ParserState;
+class KEYCollector;
 
-typedef IWORKXMLContextBase<IWORKXMLContextElement, KEY2ParserState> KEY2XMLElementContextBase;
-typedef IWORKXMLContextBase<IWORKXMLContextText, KEY2ParserState> KEY2XMLTextContextBase;
-typedef IWORKXMLContextBase<IWORKXMLContextMixed, KEY2ParserState> KEYM2XMLixedContextBase;
-typedef IWORKXMLContextBase<IWORKXMLContextEmpty, KEY2ParserState> KEY2XMLEmptyContextBase;
+typedef IWORKXMLContextBase<IWORKXMLContextElement, KEY2ParserState, KEYCollector> KEY2XMLElementContextBase;
+typedef IWORKXMLContextBase<IWORKXMLContextText, KEY2ParserState, KEYCollector> KEY2XMLTextContextBase;
+typedef IWORKXMLContextBase<IWORKXMLContextMixed, KEY2ParserState, KEYCollector> KEYM2XMLixedContextBase;
+typedef IWORKXMLContextBase<IWORKXMLContextEmpty, KEY2ParserState, KEYCollector> KEY2XMLEmptyContextBase;
 
 }
 

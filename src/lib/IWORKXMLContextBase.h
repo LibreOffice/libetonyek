@@ -21,9 +21,9 @@ namespace libetonyek
 
 class IWORKXMLParserState;
 
-class KEYCollector;
+class IWORKCollector;
 
-template<class Base, class State>
+template<class Base, class State, class Collector = IWORKCollector>
 class IWORKXMLContextBase : public Base
 {
 public:
@@ -39,7 +39,7 @@ public:
   }
 
 protected:
-  KEYCollector *getCollector() const
+  Collector *getCollector() const
   {
     return m_state.getCollector();
   }

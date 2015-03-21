@@ -16,9 +16,9 @@
 namespace libetonyek
 {
 
+class IWORKCollector;
 class IWORKDictionary;
 class IWORKParser;
-class KEYCollector;
 
 class IWORKXMLParserState
 {
@@ -31,7 +31,7 @@ public:
 
   IWORKParser &getParser();
   IWORKDictionary &getDictionary();
-  KEYCollector *getCollector() const;
+  IWORKCollector *getCollector() const;
   const TokenizerFunction_t &getTokenizer() const;
 
 private:

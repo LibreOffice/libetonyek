@@ -7,21 +7,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "KEY2Parser.h"
 #include "KEY2ParserState.h"
+#include "KEYCollector.h"
 #include "KEYDictionary.h"
 
 namespace libetonyek
 {
 
-KEY2ParserState::KEY2ParserState(IWORKParser &parser, KEYDictionary &dict, const TokenizerFunction_t &tokenizer)
+KEY2ParserState::KEY2ParserState(KEY2Parser &parser, KEYDictionary &dict, const TokenizerFunction_t &tokenizer)
   : IWORKXMLParserState(parser, dict, tokenizer)
   , m_dict(dict)
+  , m_collector(parser.getCollector())
 {
 }
 
 KEYDictionary &KEY2ParserState::getDictionary()
 {
   return m_dict;
+}
+
+KEYCollector *KEY2ParserState::getCollector()
+{
+  return m_collector;
 }
 
 }

@@ -11,10 +11,10 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include "IWORKCollector.h"
 #include "IWORKToken.h"
 #include "IWORKXMLContexts.h"
 #include "IWORKXMLParserState.h"
-#include "KEYCollector.h"
 
 namespace libetonyek
 {

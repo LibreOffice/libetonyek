@@ -15,6 +15,8 @@
 namespace libetonyek
 {
 
+class KEYCollector;
+
 class KEY1Parser : public IWORKParser
 {
 public:
@@ -24,6 +26,11 @@ public:
 private:
   virtual IWORKXMLContextPtr_t createDocumentContext();
   virtual TokenizerFunction_t getTokenizer() const;
+
+  KEYCollector *getCollector();
+
+private:
+  KEYCollector *const m_collector;
 };
 
 }
