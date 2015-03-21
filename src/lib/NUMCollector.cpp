@@ -9,13 +9,13 @@
 
 #include "NUMCollector.h"
 
-#include <librevenge/librevenge.h>
+#include "IWORKDocumentInterface.h"
 
 namespace libetonyek
 {
 
-NUMCollector::NUMCollector(librevenge::RVNGSpreadsheetInterface *const document)
-  : m_document(document)
+NUMCollector::NUMCollector(IWORKDocumentInterface *const document)
+  : IWORKCollector(document)
 {
 }
 

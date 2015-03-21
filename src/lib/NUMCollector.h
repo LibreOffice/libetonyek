@@ -10,24 +10,23 @@
 #ifndef NUMCOLLECTOR_H_INCLUDED
 #define NUMCOLLECTOR_H_INCLUDED
 
-#include <librevenge/librevenge.h>
+#include "IWORKCollector.h"
 
 namespace libetonyek
 {
 
-class NUMCollector
+class IWORKDocumentInterface;
+
+class NUMCollector : public IWORKCollector
 {
 public:
-  explicit NUMCollector(librevenge::RVNGSpreadsheetInterface *document);
+  explicit NUMCollector(IWORKDocumentInterface *document);
 
   // collector functions
 
   // helper functions
   void startDocument();
   void endDocument();
-
-private:
-  librevenge::RVNGSpreadsheetInterface *m_document;
 };
 
 } // namespace libetonyek

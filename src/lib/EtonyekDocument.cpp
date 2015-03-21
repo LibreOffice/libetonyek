@@ -18,6 +18,7 @@
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"
 #include "IWORKPresentationInterfaceRedirector.h"
+#include "IWORKSpreadsheetInterfaceRedirector.h"
 #include "IWORKTextInterfaceRedirector.h"
 #include "IWORKZlibStream.h"
 #include "KEY1Parser.h"
@@ -488,7 +489,8 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   info.input->seek(0, librevenge::RVNG_SEEK_SET);
 
-  NUMCollector collector(document);
+  IWORKSpreadsheetInterfaceRedirector redirector(document);
+  NUMCollector collector(&redirector);
   NUMDictionary dict;
   NUM1Parser parser(info.input, info.package, &collector, &dict);
   return parser.parse();

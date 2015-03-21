@@ -9,15 +9,23 @@
 
 #include "NUM1ParserState.h"
 
+#include "NUM1Parser.h"
+#include "NUMCollector.h"
 #include "NUMDictionary.h"
 
 namespace libetonyek
 {
 
-NUM1ParserState::NUM1ParserState(IWORKParser &parser, NUMDictionary &dict, const TokenizerFunction_t &tokenizer)
+NUM1ParserState::NUM1ParserState(NUM1Parser &parser, NUMCollector *const collector, NUMDictionary &dict, const TokenizerFunction_t &tokenizer)
   : IWORKXMLParserState(parser, dict, tokenizer)
+  , m_collector(collector)
   , m_dict(dict)
 {
+}
+
+NUMCollector *NUM1ParserState::getCollector()
+{
+  return m_collector;
 }
 
 NUMDictionary &NUM1ParserState::getDictionary()
