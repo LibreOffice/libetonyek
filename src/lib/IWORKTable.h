@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYTABLE_H_INCLUDED
-#define KEYTABLE_H_INCLUDED
+#ifndef IWORKTABLE_H_INCLUDED
+#define IWORKTABLE_H_INCLUDED
 
 #include <deque>
 
@@ -62,6 +62,6 @@ IWORKObjectPtr_t makeObject(const IWORKTable &table, const IWORKTransformation &
 
 }
 
-#endif //  KEYTABLE_H_INCLUDED
+#endif // IWORKTABLE_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
