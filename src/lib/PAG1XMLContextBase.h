@@ -16,8 +16,9 @@ namespace libetonyek
 {
 
 class PAG1ParserState;
+class PAGCollector;
 
-typedef IWORKXMLContextBase<IWORKXMLContextElement, PAG1ParserState> PAG1XMLElementContextBase;
+typedef IWORKXMLContextBase<IWORKXMLContextElement, PAG1ParserState, PAGCollector> PAG1XMLElementContextBase;
 
 }
 

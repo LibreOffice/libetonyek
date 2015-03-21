@@ -10,37 +10,21 @@
 #ifndef PAGCOLLECTOR_H_INCLUDED
 #define PAGCOLLECTOR_H_INCLUDED
 
-#include <librevenge/librevenge.h>
+#include "IWORKCollector.h"
 
 namespace libetonyek
 {
 
-class PAGCollector
+class IWORKDocumentInterface;
+
+class PAGCollector : public IWORKCollector
 {
 public:
-  explicit PAGCollector(librevenge::RVNGTextInterface *document);
-
-  // collector functions
-  void collectText(const char *text);
-  void collectLineBreak();
-  void collectTab();
+  explicit PAGCollector(IWORKDocumentInterface *document);
 
   // helper functions
   void startDocument();
   void endDocument();
-
-  void startParagraph();
-  void endParagraph();
-  void startSpan();
-  void endSpan();
-
-private:
-  void ensureSpan();
-
-private:
-  librevenge::RVNGTextInterface *m_document;
-
-  bool m_spanOpened;
 };
 
 } // namespace libetonyek

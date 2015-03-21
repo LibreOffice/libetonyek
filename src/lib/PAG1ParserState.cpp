@@ -9,15 +9,23 @@
 
 #include "PAG1ParserState.h"
 
+#include "PAG1Parser.h"
+#include "PAGCollector.h"
 #include "PAGDictionary.h"
 
 namespace libetonyek
 {
 
-PAG1ParserState::PAG1ParserState(IWORKParser &parser, PAGDictionary &dict, const TokenizerFunction_t &tokenizer)
+PAG1ParserState::PAG1ParserState(PAG1Parser &parser, PAGCollector *const collector, PAGDictionary &dict, const TokenizerFunction_t &tokenizer)
   : IWORKXMLParserState(parser, dict, tokenizer)
+  , m_collector(collector)
   , m_dict(dict)
 {
+}
+
+PAGCollector *PAG1ParserState::getCollector()
+{
+  return m_collector;
 }
 
 PAGDictionary &PAG1ParserState::getDictionary()
