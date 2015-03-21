@@ -43,16 +43,16 @@ libetonyek_internal_la_SOURCES = \
 	IWORKPath.cpp \
 	IWORKPath.h \
 	IWORKPath_fwd.h \
-	IWORKPresentationInterfaceRedirector.cpp \
-	IWORKPresentationInterfaceRedirector.h \
+	IWORKPresentationRedirector.cpp \
+	IWORKPresentationRedirector.h \
 	IWORKPropertyMap.cpp \
 	IWORKPropertyMap.h \
 	IWORKPropertyMapContext.cpp \
 	IWORKPropertyMapContext.h \
 	IWORKShape.cpp \
 	IWORKShape.h \
-	IWORKSpreadsheetInterfaceRedirector.cpp \
-	IWORKSpreadsheetInterfaceRedirector.h \
+	IWORKSpreadsheetRedirector.cpp \
+	IWORKSpreadsheetRedirector.h \
 	IWORKStyle.cpp \
 	IWORKStyle.h \
 	IWORKStyleContext.cpp \
@@ -70,8 +70,8 @@ libetonyek_internal_la_SOURCES = \
 	IWORKText.cpp \
 	IWORKText.h \
 	IWORKText_fwd.h \
-	IWORKTextInterfaceRedirector.cpp \
-	IWORKTextInterfaceRedirector.h \
+	IWORKTextRedirector.cpp \
+	IWORKTextRedirector.h \
 	IWORKTransformation.cpp \
 	IWORKTransformation.h \
 	IWORKToken.cpp \

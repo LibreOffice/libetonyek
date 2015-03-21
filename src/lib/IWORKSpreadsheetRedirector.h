@@ -7,18 +7,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef IWORKTEXTINTERFACEREDIRECTOR_H_INCLUDED
-#define IWORKTEXTINTERFACEREDIRECTOR_H_INCLUDED
+#ifndef IWORKSPREADSHEETREDIRECTOR_H_INCLUDED
+#define IWORKSPREADSHEETREDIRECTOR_H_INCLUDED
 
 #include "IWORKDocumentInterface.h"
 
 namespace libetonyek
 {
 
-class IWORKTextInterfaceRedirector : public IWORKDocumentInterface
+class IWORKSpreadsheetRedirector : public IWORKDocumentInterface
 {
 public:
-  explicit IWORKTextInterfaceRedirector(librevenge::RVNGTextInterface *iface);
+  explicit IWORKSpreadsheetRedirector(librevenge::RVNGSpreadsheetInterface *iface);
 
   virtual void setDocumentMetaData(const librevenge::RVNGPropertyList &propList);
 
@@ -157,11 +157,11 @@ public:
   virtual void insertEffect(const librevenge::RVNGPropertyList &propList);
 
 private:
-  librevenge::RVNGTextInterface *const m_iface;
+  librevenge::RVNGSpreadsheetInterface *const m_iface;
 };
 
 }
 
-#endif // IWORKTEXTINTERFACEREDIRECTOR_H_INCLUDED
+#endif // IWORKSPREADSHEETREDIRECTOR_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
