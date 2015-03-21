@@ -26,11 +26,6 @@ public:
 private:
   virtual IWORKXMLContextPtr_t createDocumentContext();
   virtual TokenizerFunction_t getTokenizer() const;
-
-  KEYCollector *getCollector();
-
-private:
-  KEYCollector *const m_collector;
 };
 
 }

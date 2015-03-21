@@ -15,9 +15,8 @@
 namespace libetonyek
 {
 
-KEY1Parser::KEY1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector)
-  : IWORKParser(input, package, collector)
-  , m_collector(collector)
+KEY1Parser::KEY1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const /*collector*/)
+  : IWORKParser(input, package)
 {
 }
 
@@ -34,11 +33,6 @@ IWORKXMLContextPtr_t KEY1Parser::createDocumentContext()
 TokenizerFunction_t KEY1Parser::getTokenizer() const
 {
   return KEY1Tokenizer();
-}
-
-KEYCollector *KEY1Parser::getCollector()
-{
-  return m_collector;
 }
 
 }

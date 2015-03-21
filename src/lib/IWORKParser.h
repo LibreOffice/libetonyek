@@ -17,7 +17,6 @@
 namespace libetonyek
 {
 
-class IWORKCollector;
 class IWORKDictionary;
 class IWORKXMLParserState;
 
@@ -28,7 +27,7 @@ class IWORKParser
   IWORKParser &operator=(const IWORKParser &);
 
 public:
-  IWORKParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, IWORKCollector *collector);
+  IWORKParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package);
   virtual ~IWORKParser() = 0;
   bool parse();
 
@@ -37,8 +36,6 @@ public:
   RVNGInputStreamPtr_t &getPackage();
   RVNGInputStreamPtr_t getPackage() const;
 
-  IWORKCollector *getCollector() const;
-
 private:
   virtual IWORKXMLContextPtr_t createDocumentContext() = 0;
   virtual TokenizerFunction_t getTokenizer() const = 0;
@@ -46,7 +43,6 @@ private:
 private:
   RVNGInputStreamPtr_t m_input;
   RVNGInputStreamPtr_t m_package;
-  IWORKCollector *m_collector;
 };
 
 } // namespace libetonyek

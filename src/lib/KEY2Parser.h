@@ -25,14 +25,11 @@ public:
   KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *collector, KEYDictionary &dict);
   virtual ~KEY2Parser();
 
-  KEYCollector *getCollector();
-
 private:
   virtual IWORKXMLContextPtr_t createDocumentContext();
   virtual TokenizerFunction_t getTokenizer() const;
 
 private:
-  KEYCollector *const m_collector;
   KEY2ParserState m_state;
   unsigned m_version;
 };

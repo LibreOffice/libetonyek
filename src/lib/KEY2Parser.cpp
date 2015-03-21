@@ -2352,9 +2352,8 @@ IWORKXMLContextPtr_t XMLDocumentContext::element(const int name)
 }
 
 KEY2Parser::KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector, KEYDictionary &dict)
-  : IWORKParser(input, package, collector)
-  , m_collector(collector)
-  , m_state(*this, dict, getTokenizer())
+  : IWORKParser(input, package)
+  , m_state(*this, collector, dict, getTokenizer())
   , m_version(0)
 {
 }
@@ -2371,11 +2370,6 @@ IWORKXMLContextPtr_t KEY2Parser::createDocumentContext()
 TokenizerFunction_t KEY2Parser::getTokenizer() const
 {
   return ChainedTokenizer(KEY2Tokenizer(), IWORKTokenizer());
-}
-
-KEYCollector *KEY2Parser::getCollector()
-{
-  return m_collector;
 }
 
 }

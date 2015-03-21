@@ -27,7 +27,7 @@ class IWORKXMLParserState
   IWORKXMLParserState &operator=(const IWORKXMLParserState &);
 
 public:
-  IWORKXMLParserState(IWORKParser &parser, IWORKDictionary &dict, const TokenizerFunction_t &tokenizer);
+  IWORKXMLParserState(IWORKParser &parser, IWORKCollector *collector, IWORKDictionary &dict, const TokenizerFunction_t &tokenizer);
 
   IWORKParser &getParser();
   IWORKDictionary &getDictionary();
@@ -36,6 +36,7 @@ public:
 
 private:
   IWORKParser &m_parser;
+  IWORKCollector *const m_collector;
   IWORKDictionary &m_dict;
   const TokenizerFunction_t m_tokenizer;
 };

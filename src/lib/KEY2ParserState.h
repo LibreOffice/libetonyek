@@ -26,7 +26,7 @@ class KEY2ParserState : public IWORKXMLParserState
   KEY2ParserState &operator=(const KEY2ParserState &);
 
 public:
-  KEY2ParserState(KEY2Parser &parser, KEYDictionary &dict, const TokenizerFunction_t &tokenizer);
+  KEY2ParserState(KEY2Parser &parser, KEYCollector *collector, KEYDictionary &dict, const TokenizerFunction_t &tokenizer);
 
   KEYDictionary &getDictionary();
   KEYCollector *getCollector();

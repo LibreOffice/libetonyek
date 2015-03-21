@@ -18,7 +18,6 @@
 
 #include "IWORKXMLContextBase.h"
 #include "IWORKXMLParserState.h"
-#include "IWORKCollector.h"
 
 using boost::shared_ptr;
 using std::stack;
@@ -80,10 +79,9 @@ void processAttribute(xmlTextReaderPtr reader, IWORKXMLContextPtr_t context, con
 
 }
 
-IWORKParser::IWORKParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, IWORKCollector *const collector)
+IWORKParser::IWORKParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package)
   : m_input(input)
   , m_package(package)
-  , m_collector(collector)
 {
 }
 
@@ -184,11 +182,6 @@ RVNGInputStreamPtr_t &IWORKParser::getPackage()
 RVNGInputStreamPtr_t IWORKParser::getPackage() const
 {
   return m_package;
-}
-
-IWORKCollector *IWORKParser::getCollector() const
-{
-  return m_collector;
 }
 
 }
