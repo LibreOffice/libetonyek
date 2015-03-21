@@ -246,11 +246,6 @@ IWORKCollector::IWORKCollector(IWORKDocumentInterface *const document)
   , m_currentZone(0)
   , m_currentText()
   , m_currentPath()
-  , m_currentData()
-  , m_currentUnfiltered()
-  , m_currentFiltered()
-  , m_currentLeveled()
-  , m_currentContent()
   , m_currentTable()
   , m_groupLevel(0)
 {
@@ -468,96 +463,7 @@ void IWORKCollector::collectCalloutPath(const IWORKSize &size, const double radi
     m_currentPath = makeCalloutPath(size, radius, tailSize, tailX, tailY);
 }
 
-void IWORKCollector::collectData(const IWORKDataPtr_t &data)
-{
-  m_currentData = data;
-}
-
-IWORKMediaContentPtr_t IWORKCollector::collectUnfiltered(const boost::optional<IWORKSize> &size)
-{
-  IWORKMediaContentPtr_t newUnfiltered(new IWORKMediaContent());
-  newUnfiltered->m_size = size;
-  newUnfiltered->m_data = m_currentData;
-
-  m_currentData.reset();
-
-  return newUnfiltered;
-}
-
-void IWORKCollector::insertUnfiltered(const IWORKMediaContentPtr_t &content)
-{
-  assert(!m_currentUnfiltered);
-
-  m_currentUnfiltered = content;
-}
-
-void IWORKCollector::collectFiltered(const boost::optional<IWORKSize> &size)
-{
-  const IWORKMediaContentPtr_t newFiltered(new IWORKMediaContent());
-  newFiltered->m_size = size;
-  newFiltered->m_data = m_currentData;
-
-  m_currentData.reset();
-
-  assert(!m_currentFiltered);
-  m_currentFiltered = newFiltered;
-}
-
-void IWORKCollector::collectLeveled(const boost::optional<IWORKSize> &size)
-{
-  const IWORKMediaContentPtr_t newLeveled(new IWORKMediaContent());
-  newLeveled->m_size = size;
-  newLeveled->m_data = m_currentData;
-
-  m_currentData.reset();
-
-  assert(!m_currentLeveled);
-  m_currentLeveled = newLeveled;
-}
-
-IWORKMediaContentPtr_t IWORKCollector::collectFilteredImage()
-{
-  IWORKMediaContentPtr_t newFilteredImage;
-
-  // If a filter is applied to an image, the new image is saved next
-  // to the original. So all we need is to pick the right one. We
-  // can happily ignore the whole filter-properties section :-)
-  // NOTE: Leveled is apparently used to save the result of using
-  // the "Enhance" button.
-  if (bool(m_currentFiltered))
-    newFilteredImage = m_currentFiltered;
-  else if (bool(m_currentLeveled))
-    newFilteredImage = m_currentLeveled;
-  else
-    newFilteredImage = m_currentUnfiltered;
-
-  m_currentFiltered.reset();
-  m_currentLeveled.reset();
-  m_currentUnfiltered.reset();
-
-  return newFilteredImage;
-}
-
-void IWORKCollector::insertFilteredImage(const IWORKMediaContentPtr_t &content)
-{
-  assert(!m_currentContent);
-
-  m_currentContent = content;
-}
-
-void IWORKCollector::collectMovieMedia()
-{
-  assert(m_currentData);
-
-  const IWORKMediaContentPtr_t newContent(new IWORKMediaContent());
-  newContent->m_data = m_currentData;
-  m_currentData.reset();
-
-  assert(!m_currentContent);
-  m_currentContent = newContent;
-}
-
-void IWORKCollector::collectMedia()
+void IWORKCollector::collectMedia(const IWORKMediaContentPtr_t &content)
 {
   assert(!m_levelStack.empty());
   assert(m_currentZone);
@@ -565,9 +471,8 @@ void IWORKCollector::collectMedia()
   const IWORKMediaPtr_t media(new IWORKMedia());
   media->m_geometry = m_levelStack.top().m_geometry;
   media->m_style = m_levelStack.top().m_graphicStyle;
-  media->m_content = m_currentContent;
+  media->m_content = content;
 
-  m_currentContent.reset();
   m_levelStack.top().m_geometry.reset();
   m_levelStack.top().m_graphicStyle.reset();
 

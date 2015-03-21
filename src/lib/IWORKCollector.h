@@ -76,15 +76,7 @@ public:
   void collectConnectionPath(const IWORKSize &size, double middleX, double middleY);
   void collectCalloutPath(const IWORKSize &size, double radius, double tailSize, double tailX, double tailY, bool quoteBubble);
 
-  void collectData(const IWORKDataPtr_t &data);
-  IWORKMediaContentPtr_t collectUnfiltered(const boost::optional<IWORKSize> &size);
-  void insertUnfiltered(const IWORKMediaContentPtr_t &content);
-  void collectFiltered(const boost::optional<IWORKSize> &size);
-  void collectLeveled(const boost::optional<IWORKSize> &size);
-  IWORKMediaContentPtr_t collectFilteredImage();
-  void insertFilteredImage(const IWORKMediaContentPtr_t &content);
-  void collectMovieMedia();
-  void collectMedia();
+  void collectMedia(const IWORKMediaContentPtr_t &content);
 
   IWORKStylesheetPtr_t collectStylesheet(const IWORKStylesheetPtr_t &parent);
 
