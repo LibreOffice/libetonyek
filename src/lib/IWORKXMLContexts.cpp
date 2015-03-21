@@ -15,11 +15,11 @@
 
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"
+#include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKPropertyMap.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
-#include "KEYCollector.h"
 
 namespace libetonyek
 {
