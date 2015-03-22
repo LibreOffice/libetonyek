@@ -183,17 +183,22 @@ public:
 
 private:
   virtual void attribute(int name, const char *value);
-  virtual void endOfAttributes();
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
   virtual void text(const char *value);
 
 private:
+  void ensureOpened();
+
+private:
   IWORKStylePtr_t m_style;
+  bool m_opened;
 };
 
 PElement::PElement(IWORKXMLParserState &state)
   : IWORKXMLMixedContextBase(state)
+  , m_style()
+  , m_opened(false)
 {
 }
 
@@ -211,13 +216,10 @@ void PElement::attribute(const int name, const char *const value)
   }
 }
 
-void PElement::endOfAttributes()
-{
-  getCollector()->startParagraph(m_style);
-}
-
 IWORKXMLContextPtr_t PElement::element(const int name)
 {
+  ensureOpened();
+
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::br :
@@ -238,12 +240,23 @@ IWORKXMLContextPtr_t PElement::element(const int name)
 
 void PElement::text(const char *const value)
 {
+  ensureOpened();
   getCollector()->collectText(m_style, value);
 }
 
 void PElement::endOfElement()
 {
+  ensureOpened();
   getCollector()->endParagraph();
+}
+
+void PElement::ensureOpened()
+{
+  if (!m_opened)
+  {
+    getCollector()->startParagraph(m_style);
+    m_opened = true;
+  }
 }
 
 }

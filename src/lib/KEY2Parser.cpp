@@ -503,7 +503,7 @@ public:
 
 private:
   virtual void attribute(int name, const char *value);
-  virtual void endOfAttributes();
+  virtual void endOfElement();
 
 private:
   IWORKPathPtr_t m_path;
@@ -528,7 +528,7 @@ void BezierElement::attribute(const int name, const char *const value)
   }
 }
 
-void BezierElement::endOfAttributes()
+void BezierElement::endOfElement()
 {
   if (getId())
     getState().getDictionary().m_beziers[get(getId())] = m_path;

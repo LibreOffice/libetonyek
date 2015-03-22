@@ -37,10 +37,6 @@ public:
     */
   virtual void attribute(int name, const char *value) = 0;
 
-  /** Signalize the end of attributes.
-    */
-  virtual void endOfAttributes() = 0;
-
   /** Create a context for parsing a child element.
     *
     * @return A new context or an empty pointer if the child element cannot

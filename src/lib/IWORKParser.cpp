@@ -33,7 +33,6 @@ class DiscardContext : public IWORKXMLContext, public boost::enable_shared_from_
 private:
   virtual void startOfElement();
   void attribute(int name, const char *value);
-  virtual void endOfAttributes();
   IWORKXMLContextPtr_t element(int name);
   void text(const char *value);
   virtual void endOfElement();
@@ -44,10 +43,6 @@ void DiscardContext::startOfElement()
 }
 
 void DiscardContext::attribute(int, const char *)
-{
-}
-
-void DiscardContext::endOfAttributes()
 {
 }
 
@@ -130,7 +125,6 @@ bool IWORKParser::parse()
           ret = xmlTextReaderMoveToNextAttribute(reader);
         }
       }
-      newContext->endOfAttributes();
 
       if (isEmpty)
         newContext->endOfElement();
