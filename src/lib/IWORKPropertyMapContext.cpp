@@ -97,10 +97,10 @@ struct NumberConverter<double>
 };
 
 template<typename T>
-class NumberContext : public IWORKXMLEmptyContextBase
+class NumberElement : public IWORKXMLEmptyContextBase
 {
 public:
-  NumberContext(IWORKXMLParserState &state, optional<T> &value);
+  NumberElement(IWORKXMLParserState &state, optional<T> &value);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -110,14 +110,14 @@ private:
 };
 
 template<typename T>
-NumberContext<T>::NumberContext(IWORKXMLParserState &state, optional<T> &value)
+NumberElement<T>::NumberElement(IWORKXMLParserState &state, optional<T> &value)
   : IWORKXMLEmptyContextBase(state)
   , m_value(value)
 {
 }
 
 template<typename T>
-void NumberContext<T>::attribute(const int name, const char *const value)
+void NumberElement<T>::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -224,10 +224,10 @@ void ValuePropertyContextBase<ContextT, ValueT>::endOfElement()
 namespace
 {
 
-class AlignmentContext : public PropertyContextBase
+class AlignmentElement : public PropertyContextBase
 {
 public:
-  AlignmentContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+  AlignmentElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -237,23 +237,23 @@ private:
   optional<int> m_value;
 };
 
-AlignmentContext::AlignmentContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+AlignmentElement::AlignmentElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : PropertyContextBase(state, propMap)
 {
 }
 
-IWORKXMLContextPtr_t AlignmentContext::element(const int name)
+IWORKXMLContextPtr_t AlignmentElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::number :
-    return makeContext<NumberContext<int> >(getState(), m_value);
+    return makeContext<NumberElement<int> >(getState(), m_value);
   }
 
   return IWORKXMLContextPtr_t();
 }
 
-void AlignmentContext::endOfElement()
+void AlignmentElement::endOfElement()
 {
   any prop;
 
@@ -286,13 +286,13 @@ void AlignmentContext::endOfElement()
 namespace
 {
 
-class FontColorContext : public ValuePropertyContextBase<IWORKColorContext, IWORKColor>
+class FontColorElement : public ValuePropertyContextBase<IWORKColorElement, IWORKColor>
 {
 public:
-  FontColorContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+  FontColorElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
-FontColorContext::FontColorContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+FontColorElement::FontColorElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::color, "fontColor")
 {
 }
@@ -302,13 +302,13 @@ FontColorContext::FontColorContext(IWORKXMLParserState &state, IWORKPropertyMap 
 namespace
 {
 
-class GeometryContext : public DirectPropertyContextBase<IWORKGeometryContext, IWORKGeometryPtr_t>
+class GeometryElement : public DirectPropertyContextBase<IWORKGeometryElement, IWORKGeometryPtr_t>
 {
 public:
-  GeometryContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+  GeometryElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
-GeometryContext::GeometryContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+GeometryElement::GeometryElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : DirectPropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::geometry, "geometry")
 {
 }
@@ -318,13 +318,13 @@ GeometryContext::GeometryContext(IWORKXMLParserState &state, IWORKPropertyMap &p
 namespace
 {
 
-class BoldContext : public ValuePropertyContextBase<NumberContext<bool>, bool>
+class BoldElement : public ValuePropertyContextBase<NumberElement<bool>, bool>
 {
 public:
-  BoldContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+  BoldElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
-BoldContext::BoldContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+BoldElement::BoldElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number, "bold")
 {
 }
@@ -334,10 +334,10 @@ BoldContext::BoldContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
 namespace
 {
 
-class CapitalizationContext : public PropertyContextBase
+class CapitalizationElement : public PropertyContextBase
 {
 public:
-  CapitalizationContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+  CapitalizationElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -347,20 +347,20 @@ private:
   optional<int> m_capitalization;
 };
 
-CapitalizationContext::CapitalizationContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+CapitalizationElement::CapitalizationElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : PropertyContextBase(state, propMap)
 {
 }
 
-IWORKXMLContextPtr_t CapitalizationContext::element(const int name)
+IWORKXMLContextPtr_t CapitalizationElement::element(const int name)
 {
   if ((IWORKToken::NS_URI_SF | IWORKToken::number) == name)
-    return makeContext<NumberContext<int> >(getState(), m_capitalization);
+    return makeContext<NumberElement<int> >(getState(), m_capitalization);
 
   return IWORKXMLContextPtr_t();
 }
 
-void CapitalizationContext::endOfElement()
+void CapitalizationElement::endOfElement()
 {
   if (m_capitalization)
   {
@@ -392,10 +392,10 @@ void CapitalizationContext::endOfElement()
 namespace
 {
 
-class StringContext : public IWORKXMLEmptyContextBase
+class StringElement : public IWORKXMLEmptyContextBase
 {
 public:
-  StringContext(IWORKXMLParserState &state, optional<string> &str);
+  StringElement(IWORKXMLParserState &state, optional<string> &str);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -404,13 +404,13 @@ private:
   optional<string> &m_string;
 };
 
-StringContext::StringContext(IWORKXMLParserState &state, optional<string> &str)
+StringElement::StringElement(IWORKXMLParserState &state, optional<string> &str)
   : IWORKXMLEmptyContextBase(state)
   , m_string(str)
 {
 }
 
-void StringContext::attribute(const int name, const char *const value)
+void StringElement::attribute(const int name, const char *const value)
 {
   if ((IWORKToken::NS_URI_SFA | IWORKToken::string) == name)
     m_string = value;
@@ -421,13 +421,13 @@ void StringContext::attribute(const int name, const char *const value)
 namespace
 {
 
-class FontNameContext : public ValuePropertyContextBase<StringContext, string>
+class FontNameElement : public ValuePropertyContextBase<StringElement, string>
 {
 public:
-  FontNameContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+  FontNameElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
-FontNameContext::FontNameContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+FontNameElement::FontNameElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::string, "fontName")
 {
 }
@@ -437,10 +437,10 @@ FontNameContext::FontNameContext(IWORKXMLParserState &state, IWORKPropertyMap &p
 namespace
 {
 
-class FontSizeContext : public PropertyContextBase
+class FontSizeElement : public PropertyContextBase
 {
 public:
-  FontSizeContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+  FontSizeElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -450,20 +450,20 @@ private:
   optional<double> m_fontSize;
 };
 
-FontSizeContext::FontSizeContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+FontSizeElement::FontSizeElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : PropertyContextBase(state, propMap)
 {
 }
 
-IWORKXMLContextPtr_t FontSizeContext::element(const int name)
+IWORKXMLContextPtr_t FontSizeElement::element(const int name)
 {
   if ((IWORKToken::NS_URI_SF | IWORKToken::number) == name)
-    return makeContext<NumberContext<double> >(getState(), m_fontSize);
+    return makeContext<NumberElement<double> >(getState(), m_fontSize);
 
   return IWORKXMLContextPtr_t();
 }
 
-void FontSizeContext::endOfElement()
+void FontSizeElement::endOfElement()
 {
   if (m_fontSize)
     insert("fontSize", get(m_fontSize));
@@ -474,10 +474,10 @@ void FontSizeContext::endOfElement()
 namespace
 {
 
-class ItalicContext : public PropertyContextBase
+class ItalicElement : public PropertyContextBase
 {
 public:
-  ItalicContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+  ItalicElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -487,20 +487,20 @@ private:
   optional<bool> m_italic;
 };
 
-ItalicContext::ItalicContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+ItalicElement::ItalicElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : PropertyContextBase(state, propMap)
 {
 }
 
-IWORKXMLContextPtr_t ItalicContext::element(const int name)
+IWORKXMLContextPtr_t ItalicElement::element(const int name)
 {
   if ((IWORKToken::NS_URI_SF | IWORKToken::number) == name)
-    return makeContext<NumberContext<bool> >(getState(), m_italic);
+    return makeContext<NumberElement<bool> >(getState(), m_italic);
 
   return IWORKXMLContextPtr_t();
 }
 
-void ItalicContext::endOfElement()
+void ItalicElement::endOfElement()
 {
   if (m_italic)
     insert("italic", get(m_italic));
@@ -511,10 +511,10 @@ void ItalicContext::endOfElement()
 namespace
 {
 
-class OutlineContext : public PropertyContextBase
+class OutlineElement : public PropertyContextBase
 {
 public:
-  OutlineContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+  OutlineElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -524,20 +524,20 @@ private:
   optional<bool> m_outline;
 };
 
-OutlineContext::OutlineContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+OutlineElement::OutlineElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : PropertyContextBase(state, propMap)
 {
 }
 
-IWORKXMLContextPtr_t OutlineContext::element(const int name)
+IWORKXMLContextPtr_t OutlineElement::element(const int name)
 {
   if ((IWORKToken::NS_URI_SF | IWORKToken::number) == name)
-    return makeContext<NumberContext<bool> >(getState(), m_outline);
+    return makeContext<NumberElement<bool> >(getState(), m_outline);
 
   return IWORKXMLContextPtr_t();
 }
 
-void OutlineContext::endOfElement()
+void OutlineElement::endOfElement()
 {
   if (m_outline)
     insert("outline", get(m_outline));
@@ -548,10 +548,10 @@ void OutlineContext::endOfElement()
 namespace
 {
 
-class StrikethruContext : public PropertyContextBase
+class StrikethruElement : public PropertyContextBase
 {
 public:
-  StrikethruContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+  StrikethruElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -561,20 +561,20 @@ private:
   optional<bool> m_strikethru;
 };
 
-StrikethruContext::StrikethruContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+StrikethruElement::StrikethruElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : PropertyContextBase(state, propMap)
 {
 }
 
-IWORKXMLContextPtr_t StrikethruContext::element(const int name)
+IWORKXMLContextPtr_t StrikethruElement::element(const int name)
 {
   if ((IWORKToken::NS_URI_SF | IWORKToken::number) == name)
-    return makeContext<NumberContext<bool> >(getState(), m_strikethru);
+    return makeContext<NumberElement<bool> >(getState(), m_strikethru);
 
   return IWORKXMLContextPtr_t();
 }
 
-void StrikethruContext::endOfElement()
+void StrikethruElement::endOfElement()
 {
   if (m_strikethru)
     insert("strikethru", get(m_strikethru));
@@ -585,10 +585,10 @@ void StrikethruContext::endOfElement()
 namespace
 {
 
-class SuperscriptContext : public PropertyContextBase
+class SuperscriptElement : public PropertyContextBase
 {
 public:
-  SuperscriptContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+  SuperscriptElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -598,20 +598,20 @@ private:
   optional<int> m_superscript;
 };
 
-SuperscriptContext::SuperscriptContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+SuperscriptElement::SuperscriptElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : PropertyContextBase(state, propMap)
 {
 }
 
-IWORKXMLContextPtr_t SuperscriptContext::element(const int name)
+IWORKXMLContextPtr_t SuperscriptElement::element(const int name)
 {
   if ((IWORKToken::NS_URI_SF | IWORKToken::number) == name)
-    return makeContext<NumberContext<int> >(getState(), m_superscript);
+    return makeContext<NumberElement<int> >(getState(), m_superscript);
 
   return IWORKXMLContextPtr_t();
 }
 
-void SuperscriptContext::endOfElement()
+void SuperscriptElement::endOfElement()
 {
   if (m_superscript)
   {
@@ -638,10 +638,10 @@ void SuperscriptContext::endOfElement()
 namespace
 {
 
-class TabstopContext : public IWORKXMLEmptyContextBase
+class TabstopElement : public IWORKXMLEmptyContextBase
 {
 public:
-  TabstopContext(IWORKXMLParserState &state, optional<double> &pos);
+  TabstopElement(IWORKXMLParserState &state, optional<double> &pos);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -650,13 +650,13 @@ private:
   optional<double> &m_pos;
 };
 
-TabstopContext::TabstopContext(IWORKXMLParserState &state, optional<double> &pos)
+TabstopElement::TabstopElement(IWORKXMLParserState &state, optional<double> &pos)
   : IWORKXMLEmptyContextBase(state)
   , m_pos(pos)
 {
 }
 
-void TabstopContext::attribute(const int name, const char *const value)
+void TabstopElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -676,10 +676,10 @@ void TabstopContext::attribute(const int name, const char *const value)
 namespace
 {
 
-class TabsContext : public PropertyContextBase
+class TabsElement : public PropertyContextBase
 {
 public:
-  TabsContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+  TabsElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -690,12 +690,12 @@ private:
   optional<double> m_current;
 };
 
-TabsContext::TabsContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+TabsElement::TabsElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : PropertyContextBase(state, propMap)
 {
 }
 
-IWORKXMLContextPtr_t TabsContext::element(const int name)
+IWORKXMLContextPtr_t TabsElement::element(const int name)
 {
   if (m_current)
   {
@@ -704,12 +704,12 @@ IWORKXMLContextPtr_t TabsContext::element(const int name)
   }
 
   if ((IWORKToken::NS_URI_SF | IWORKToken::tabstop) == name)
-    return makeContext<TabstopContext>(getState(), m_current);
+    return makeContext<TabstopElement>(getState(), m_current);
 
   return IWORKXMLContextPtr_t();
 }
 
-void TabsContext::endOfElement()
+void TabsElement::endOfElement()
 {
   if (m_current)
     m_tabs.push_back(IWORKTabStop(get(m_current)));
@@ -723,10 +723,10 @@ void TabsContext::endOfElement()
 namespace
 {
 
-class UnderlineContext : public PropertyContextBase
+class UnderlineElement : public PropertyContextBase
 {
 public:
-  UnderlineContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+  UnderlineElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -736,20 +736,20 @@ private:
   optional<bool> m_underline;
 };
 
-UnderlineContext::UnderlineContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+UnderlineElement::UnderlineElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : PropertyContextBase(state, propMap)
 {
 }
 
-IWORKXMLContextPtr_t UnderlineContext::element(const int name)
+IWORKXMLContextPtr_t UnderlineElement::element(const int name)
 {
   if ((IWORKToken::NS_URI_SF | IWORKToken::number) == name)
-    return makeContext<NumberContext<bool> >(getState(), m_underline);
+    return makeContext<NumberElement<bool> >(getState(), m_underline);
 
   return IWORKXMLContextPtr_t();
 }
 
-void UnderlineContext::endOfElement()
+void UnderlineElement::endOfElement()
 {
   if (m_underline)
     insert("underline", get(m_underline));
@@ -760,10 +760,10 @@ void UnderlineContext::endOfElement()
 namespace
 {
 
-class BaselineShiftContext : public PropertyContextBase
+class BaselineShiftElement : public PropertyContextBase
 {
 public:
-  BaselineShiftContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+  BaselineShiftElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -773,20 +773,20 @@ private:
   optional<double> m_baselineShift;
 };
 
-BaselineShiftContext::BaselineShiftContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+BaselineShiftElement::BaselineShiftElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : PropertyContextBase(state, propMap)
 {
 }
 
-IWORKXMLContextPtr_t BaselineShiftContext::element(const int name)
+IWORKXMLContextPtr_t BaselineShiftElement::element(const int name)
 {
   if ((IWORKToken::NS_URI_SF | IWORKToken::number) == name)
-    return makeContext<NumberContext<double> >(getState(), m_baselineShift);
+    return makeContext<NumberElement<double> >(getState(), m_baselineShift);
 
   return IWORKXMLContextPtr_t();
 }
 
-void BaselineShiftContext::endOfElement()
+void BaselineShiftElement::endOfElement()
 {
   if (m_baselineShift)
     insert("baselineShift", m_baselineShift);
@@ -797,10 +797,10 @@ void BaselineShiftContext::endOfElement()
 namespace
 {
 
-class StylePropertyContext : public PropertyContextBase
+class StylePropertyElement : public PropertyContextBase
 {
 public:
-  StylePropertyContext(IWORKXMLParserState &state, int id, IWORKPropertyMap &propMap);
+  StylePropertyElement(IWORKXMLParserState &state, int id, IWORKPropertyMap &propMap);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -810,13 +810,13 @@ private:
   const int m_id;
 };
 
-StylePropertyContext::StylePropertyContext(IWORKXMLParserState &state, const int id, IWORKPropertyMap &propMap)
+StylePropertyElement::StylePropertyElement(IWORKXMLParserState &state, const int id, IWORKPropertyMap &propMap)
   : PropertyContextBase(state, propMap)
   , m_id(id)
 {
 }
 
-IWORKXMLContextPtr_t StylePropertyContext::element(const int name)
+IWORKXMLContextPtr_t StylePropertyElement::element(const int name)
 {
   switch (name)
   {
@@ -835,19 +835,19 @@ IWORKXMLContextPtr_t StylePropertyContext::element(const int name)
   return IWORKXMLContextPtr_t();
 }
 
-void StylePropertyContext::endOfElement()
+void StylePropertyElement::endOfElement()
 {
 }
 
 }
 
-IWORKPropertyMapContext::IWORKPropertyMapContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+IWORKPropertyMapElement::IWORKPropertyMapElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : IWORKXMLElementContextBase(state)
   , m_propMap(propMap)
 {
 }
 
-IWORKXMLContextPtr_t IWORKPropertyMapContext::element(const int name)
+IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
 {
   switch (name)
   {
@@ -875,36 +875,36 @@ IWORKXMLContextPtr_t IWORKPropertyMapContext::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::layoutStyle :
   case IWORKToken::NS_URI_SF | IWORKToken::listStyle :
   case IWORKToken::NS_URI_SF | IWORKToken::tocStyle :
-    return makeContext<StylePropertyContext>(getState(), name, m_propMap);
+    return makeContext<StylePropertyElement>(getState(), name, m_propMap);
 
   case IWORKToken::NS_URI_SF | IWORKToken::alignment :
-    return makeContext<AlignmentContext>(getState(), m_propMap);
+    return makeContext<AlignmentElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::baselineShift :
-    return makeContext<BaselineShiftContext>(getState(), m_propMap);
+    return makeContext<BaselineShiftElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::bold :
-    return makeContext<BoldContext>(getState(), m_propMap);
+    return makeContext<BoldElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::capitalization :
-    return makeContext<CapitalizationContext>(getState(), m_propMap);
+    return makeContext<CapitalizationElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::fontColor :
-    return makeContext<FontColorContext>(getState(), m_propMap);
+    return makeContext<FontColorElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::fontName :
-    return makeContext<FontNameContext>(getState(), m_propMap);
+    return makeContext<FontNameElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::fontSize :
-    return makeContext<FontSizeContext>(getState(), m_propMap);
+    return makeContext<FontSizeElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::geometry :
-    return makeContext<GeometryContext>(getState(), m_propMap);
+    return makeContext<GeometryElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::italic :
-    return makeContext<ItalicContext>(getState(), m_propMap);
+    return makeContext<ItalicElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::outline :
-    return makeContext<OutlineContext>(getState(), m_propMap);
+    return makeContext<OutlineElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::strikethru :
-    return makeContext<StrikethruContext>(getState(), m_propMap);
+    return makeContext<StrikethruElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::superscript :
-    return makeContext<SuperscriptContext>(getState(), m_propMap);
+    return makeContext<SuperscriptElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::tabs :
-    return makeContext<TabsContext>(getState(), m_propMap);
+    return makeContext<TabsElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::underline :
-    return makeContext<UnderlineContext>(getState(), m_propMap);
+    return makeContext<UnderlineElement>(getState(), m_propMap);
   }
 
   return IWORKXMLContextPtr_t();

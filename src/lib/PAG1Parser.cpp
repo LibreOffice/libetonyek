@@ -38,21 +38,21 @@ unsigned getVersion(const int token)
 namespace
 {
 
-class FootersContext : public PAG1XMLElementContextBase
+class FootersElement : public PAG1XMLElementContextBase
 {
 public:
-  explicit FootersContext(PAG1ParserState &state);
+  explicit FootersElement(PAG1ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-FootersContext::FootersContext(PAG1ParserState &state)
+FootersElement::FootersElement(PAG1ParserState &state)
   : PAG1XMLElementContextBase(state)
 {
 }
 
-IWORKXMLContextPtr_t FootersContext::element(int)
+IWORKXMLContextPtr_t FootersElement::element(int)
 {
   // TODO: parse
   return IWORKXMLContextPtr_t();
@@ -63,21 +63,21 @@ IWORKXMLContextPtr_t FootersContext::element(int)
 namespace
 {
 
-class HeadersContext : public PAG1XMLElementContextBase
+class HeadersElement : public PAG1XMLElementContextBase
 {
 public:
-  explicit HeadersContext(PAG1ParserState &state);
+  explicit HeadersElement(PAG1ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-HeadersContext::HeadersContext(PAG1ParserState &state)
+HeadersElement::HeadersElement(PAG1ParserState &state)
   : PAG1XMLElementContextBase(state)
 {
 }
 
-IWORKXMLContextPtr_t HeadersContext::element(int)
+IWORKXMLContextPtr_t HeadersElement::element(int)
 {
   // TODO: parse
   return IWORKXMLContextPtr_t();
@@ -88,21 +88,21 @@ IWORKXMLContextPtr_t HeadersContext::element(int)
 namespace
 {
 
-class StylesheetContext : public PAG1XMLElementContextBase
+class StylesheetElement : public PAG1XMLElementContextBase
 {
 public:
-  explicit StylesheetContext(PAG1ParserState &state);
+  explicit StylesheetElement(PAG1ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-StylesheetContext::StylesheetContext(PAG1ParserState &state)
+StylesheetElement::StylesheetElement(PAG1ParserState &state)
   : PAG1XMLElementContextBase(state)
 {
 }
 
-IWORKXMLContextPtr_t StylesheetContext::element(int)
+IWORKXMLContextPtr_t StylesheetElement::element(int)
 {
   // TODO: parse
   return IWORKXMLContextPtr_t();
@@ -113,21 +113,21 @@ IWORKXMLContextPtr_t StylesheetContext::element(int)
 namespace
 {
 
-class SectionPrototypesContext : public PAG1XMLElementContextBase
+class SectionPrototypesElement : public PAG1XMLElementContextBase
 {
 public:
-  explicit SectionPrototypesContext(PAG1ParserState &state);
+  explicit SectionPrototypesElement(PAG1ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-SectionPrototypesContext::SectionPrototypesContext(PAG1ParserState &state)
+SectionPrototypesElement::SectionPrototypesElement(PAG1ParserState &state)
   : PAG1XMLElementContextBase(state)
 {
 }
 
-IWORKXMLContextPtr_t SectionPrototypesContext::element(int)
+IWORKXMLContextPtr_t SectionPrototypesElement::element(int)
 {
   // TODO: parse
   return IWORKXMLContextPtr_t();
@@ -138,21 +138,21 @@ IWORKXMLContextPtr_t SectionPrototypesContext::element(int)
 namespace
 {
 
-class MetadataContext : public PAG1XMLElementContextBase
+class MetadataElement : public PAG1XMLElementContextBase
 {
 public:
-  explicit MetadataContext(PAG1ParserState &state);
+  explicit MetadataElement(PAG1ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-MetadataContext::MetadataContext(PAG1ParserState &state)
+MetadataElement::MetadataElement(PAG1ParserState &state)
   : PAG1XMLElementContextBase(state)
 {
 }
 
-IWORKXMLContextPtr_t MetadataContext::element(int)
+IWORKXMLContextPtr_t MetadataElement::element(int)
 {
   // TODO: parse
   return IWORKXMLContextPtr_t();
@@ -163,10 +163,10 @@ IWORKXMLContextPtr_t MetadataContext::element(int)
 namespace
 {
 
-class DocumentContext : public PAG1XMLElementContextBase
+class DocumentElement : public PAG1XMLElementContextBase
 {
 public:
-  explicit DocumentContext(PAG1ParserState &state);
+  explicit DocumentElement(PAG1ParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -177,13 +177,13 @@ private:
   optional<IWORKSize> m_size;
 };
 
-DocumentContext::DocumentContext(PAG1ParserState &state)
+DocumentElement::DocumentElement(PAG1ParserState &state)
   : PAG1XMLElementContextBase(state)
   , m_size()
 {
 }
 
-void DocumentContext::attribute(const int name, const char *const value)
+void DocumentElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -199,26 +199,26 @@ void DocumentContext::attribute(const int name, const char *const value)
   }
 }
 
-IWORKXMLContextPtr_t DocumentContext::element(const int name)
+IWORKXMLContextPtr_t DocumentElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::metadata :
-    return makeContext<MetadataContext>(getState());
+    return makeContext<MetadataElement>(getState());
   case PAG1Token::NS_URI_SL | PAG1Token::section_prototypes :
-    return makeContext<SectionPrototypesContext>(getState());
+    return makeContext<SectionPrototypesElement>(getState());
   case PAG1Token::NS_URI_SL | PAG1Token::stylesheet :
-    return makeContext<StylesheetContext>(getState());
+    return makeContext<StylesheetElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::headers :
-    return makeContext<HeadersContext>(getState());
+    return makeContext<HeadersElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::footers :
-    return makeContext<FootersContext>(getState());
+    return makeContext<FootersElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
 }
 
-void DocumentContext::endOfElement()
+void DocumentElement::endOfElement()
 {
 }
 
@@ -227,26 +227,26 @@ void DocumentContext::endOfElement()
 namespace
 {
 
-class XMLDocumentContext : public PAG1XMLElementContextBase
+class XMLDocument : public PAG1XMLElementContextBase
 {
 public:
-  explicit XMLDocumentContext(PAG1ParserState &state);
+  explicit XMLDocument(PAG1ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-XMLDocumentContext::XMLDocumentContext(PAG1ParserState &state)
+XMLDocument::XMLDocument(PAG1ParserState &state)
   : PAG1XMLElementContextBase(state)
 {
 }
 
-IWORKXMLContextPtr_t XMLDocumentContext::element(const int name)
+IWORKXMLContextPtr_t XMLDocument::element(const int name)
 {
   switch (name)
   {
   case PAG1Token::NS_URI_SL | PAG1Token::document :
-    return makeContext<DocumentContext>(m_state);
+    return makeContext<DocumentElement>(m_state);
   }
 
   return IWORKXMLContextPtr_t();
@@ -267,7 +267,7 @@ PAG1Parser::~PAG1Parser()
 
 IWORKXMLContextPtr_t PAG1Parser::createDocumentContext()
 {
-  return makeContext<XMLDocumentContext>(m_state);
+  return makeContext<XMLDocument>(m_state);
 }
 
 TokenizerFunction_t PAG1Parser::getTokenizer() const

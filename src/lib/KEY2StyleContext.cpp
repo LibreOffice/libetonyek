@@ -23,32 +23,32 @@ namespace libetonyek
 namespace
 {
 
-class PropertyMapContext : public KEY2XMLElementContextBase
+class PropertyMapElement : public KEY2XMLElementContextBase
 {
 public:
-  PropertyMapContext(KEY2ParserState &state, IWORKPropertyMap &propMap);
+  PropertyMapElement(KEY2ParserState &state, IWORKPropertyMap &propMap);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 
 private:
-  IWORKPropertyMapContext m_base;
+  IWORKPropertyMapElement m_base;
   IWORKPropertyMap &m_propMap;
 };
 
-PropertyMapContext::PropertyMapContext(KEY2ParserState &state, IWORKPropertyMap &propMap)
+PropertyMapElement::PropertyMapElement(KEY2ParserState &state, IWORKPropertyMap &propMap)
   : KEY2XMLElementContextBase(state)
   , m_base(state, propMap)
   , m_propMap(propMap)
 {
 }
 
-IWORKXMLContextPtr_t PropertyMapContext::element(const int name)
+IWORKXMLContextPtr_t PropertyMapElement::element(const int name)
 {
   // switch (name)
   // {
   // case KEY2Token::NS_URI_KEY | KEY2Token::headlineParagraphStyle :
-  // return makeContext<StylePropertyContext>(getState(), name, m_propMap);
+  // return makeContext<StylePropertyElement>(getState(), name, m_propMap);
   // }
 
   return m_base.element(name);
@@ -88,7 +88,7 @@ IWORKXMLContextPtr_t KEY2StyleContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::property_map :
-    return makeContext<PropertyMapContext>(getState(), m_props);
+    return makeContext<PropertyMapElement>(getState(), m_props);
   }
 
   return IWORKXMLContextPtr_t();

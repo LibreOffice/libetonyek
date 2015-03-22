@@ -17,12 +17,12 @@
 namespace libetonyek
 {
 
-class IWORKTabularInfoContext : public IWORKXMLElementContextBase
+class IWORKTabularInfoElement : public IWORKXMLElementContextBase
 {
   struct Impl;
 
 public:
-  explicit IWORKTabularInfoContext(IWORKXMLParserState &state);
+  explicit IWORKTabularInfoElement(IWORKXMLParserState &state);
 
 private:
   virtual void startOfElement();

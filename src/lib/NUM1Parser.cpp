@@ -37,10 +37,10 @@ unsigned getVersion(const int token)
 namespace
 {
 
-class DocumentContext : public NUM1XMLElementContextBase
+class DocumentElement : public NUM1XMLElementContextBase
 {
 public:
-  explicit DocumentContext(NUM1ParserState &state);
+  explicit DocumentElement(NUM1ParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -49,12 +49,12 @@ private:
 
 };
 
-DocumentContext::DocumentContext(NUM1ParserState &state)
+DocumentElement::DocumentElement(NUM1ParserState &state)
   : NUM1XMLElementContextBase(state)
 {
 }
 
-void DocumentContext::attribute(const int name, const char *const value)
+void DocumentElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -70,13 +70,13 @@ void DocumentContext::attribute(const int name, const char *const value)
   }
 }
 
-IWORKXMLContextPtr_t DocumentContext::element(const int /*name*/)
+IWORKXMLContextPtr_t DocumentElement::element(const int /*name*/)
 {
 
   return IWORKXMLContextPtr_t();
 }
 
-void DocumentContext::endOfElement()
+void DocumentElement::endOfElement()
 {
 }
 
@@ -85,26 +85,26 @@ void DocumentContext::endOfElement()
 namespace
 {
 
-class XMLDocumentContext : public NUM1XMLElementContextBase
+class XMLDocument : public NUM1XMLElementContextBase
 {
 public:
-  explicit XMLDocumentContext(NUM1ParserState &state);
+  explicit XMLDocument(NUM1ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-XMLDocumentContext::XMLDocumentContext(NUM1ParserState &state)
+XMLDocument::XMLDocument(NUM1ParserState &state)
   : NUM1XMLElementContextBase(state)
 {
 }
 
-IWORKXMLContextPtr_t XMLDocumentContext::element(const int name)
+IWORKXMLContextPtr_t XMLDocument::element(const int name)
 {
   switch (name)
   {
   case NUM1Token::NS_URI_LS | NUM1Token::document :
-    return makeContext<DocumentContext>(m_state);
+    return makeContext<DocumentElement>(m_state);
   }
 
   return IWORKXMLContextPtr_t();
@@ -125,7 +125,7 @@ NUM1Parser::~NUM1Parser()
 
 IWORKXMLContextPtr_t NUM1Parser::createDocumentContext()
 {
-  return makeContext<XMLDocumentContext>(m_state);
+  return makeContext<XMLDocument>(m_state);
 }
 
 TokenizerFunction_t NUM1Parser::getTokenizer() const

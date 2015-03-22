@@ -18,10 +18,10 @@
 namespace libetonyek
 {
 
-class IWORKColorContext : public IWORKXMLEmptyContextBase
+class IWORKColorElement : public IWORKXMLEmptyContextBase
 {
 public:
-  IWORKColorContext(IWORKXMLParserState &state, boost::optional<IWORKColor> &color);
+  IWORKColorElement(IWORKXMLParserState &state, boost::optional<IWORKColor> &color);
 
 protected:
   virtual void attribute(int name, const char *value);
@@ -35,11 +35,11 @@ private:
   double m_a;
 };
 
-class IWORKGeometryContext : public IWORKXMLElementContextBase
+class IWORKGeometryElement : public IWORKXMLElementContextBase
 {
 public:
-  explicit IWORKGeometryContext(IWORKXMLParserState &state);
-  IWORKGeometryContext(IWORKXMLParserState &state, IWORKGeometryPtr_t &geometry);
+  explicit IWORKGeometryElement(IWORKXMLParserState &state);
+  IWORKGeometryElement(IWORKXMLParserState &state, IWORKGeometryPtr_t &geometry);
 
 protected:
   virtual void attribute(int name, const char *value);
@@ -60,10 +60,10 @@ private:
   boost::optional<bool> m_verticalFlip;
 };
 
-class IWORKMediaContext : public IWORKXMLElementContextBase
+class IWORKMediaElement : public IWORKXMLElementContextBase
 {
 public:
-  explicit IWORKMediaContext(IWORKXMLParserState &state);
+  explicit IWORKMediaElement(IWORKXMLParserState &state);
 
 private:
   virtual void startOfElement();
@@ -74,10 +74,10 @@ private:
   IWORKMediaContentPtr_t m_content;
 };
 
-class IWORKPositionContext : public IWORKXMLEmptyContextBase
+class IWORKPositionElement : public IWORKXMLEmptyContextBase
 {
 public:
-  IWORKPositionContext(IWORKXMLParserState &state, boost::optional<IWORKPosition> &position);
+  IWORKPositionElement(IWORKXMLParserState &state, boost::optional<IWORKPosition> &position);
 
 protected:
   virtual void attribute(int name, const char *value);
@@ -101,10 +101,10 @@ private:
   boost::optional<ID_t> &m_ref;
 };
 
-class IWORKSizeContext : public IWORKXMLEmptyContextBase
+class IWORKSizeElement : public IWORKXMLEmptyContextBase
 {
 public:
-  IWORKSizeContext(IWORKXMLParserState &state, boost::optional<IWORKSize> &size);
+  IWORKSizeElement(IWORKXMLParserState &state, boost::optional<IWORKSize> &size);
 
 protected:
   virtual void attribute(int name, const char *value);
@@ -116,10 +116,10 @@ private:
   boost::optional<double> m_height;
 };
 
-class IWORKTextBodyContext : public IWORKXMLElementContextBase
+class IWORKTextBodyElement : public IWORKXMLElementContextBase
 {
 public:
-  explicit IWORKTextBodyContext(IWORKXMLParserState &state);
+  explicit IWORKTextBodyElement(IWORKXMLParserState &state);
 
 protected:
   virtual IWORKXMLContextPtr_t element(int name);

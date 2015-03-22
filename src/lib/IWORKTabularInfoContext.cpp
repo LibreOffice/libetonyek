@@ -211,21 +211,21 @@ void CellContextBase::emitCell(const bool covered)
 namespace
 {
 
-class GridColumnContext : public TableContextBase<IWORKXMLEmptyContextBase>
+class GridColumnElement : public TableContextBase<IWORKXMLEmptyContextBase>
 {
 public:
-  explicit GridColumnContext(TableParserState &state);
+  explicit GridColumnElement(TableParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
 };
 
-GridColumnContext::GridColumnContext(TableParserState &state)
+GridColumnElement::GridColumnElement(TableParserState &state)
   : TableContextBase<IWORKXMLEmptyContextBase>(state)
 {
 }
 
-void GridColumnContext::attribute(const int name, const char *const value)
+void GridColumnElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -242,27 +242,27 @@ void GridColumnContext::attribute(const int name, const char *const value)
 namespace
 {
 
-class ColumnsContext : public TableContextBase<IWORKXMLElementContextBase>
+class ColumnsElement : public TableContextBase<IWORKXMLElementContextBase>
 {
 public:
-  explicit ColumnsContext(TableParserState &state);
+  explicit ColumnsElement(TableParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-ColumnsContext::ColumnsContext(TableParserState &state)
+ColumnsElement::ColumnsElement(TableParserState &state)
   : TableContextBase<IWORKXMLElementContextBase>(state)
 {
   assert(getData().m_columnSizes.empty());
 }
 
-IWORKXMLContextPtr_t ColumnsContext::element(const int name)
+IWORKXMLContextPtr_t ColumnsElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::grid_column | IWORKToken::NS_URI_SF :
-    return makeContext<GridColumnContext>(getState());
+    return makeContext<GridColumnElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
@@ -273,13 +273,13 @@ IWORKXMLContextPtr_t ColumnsContext::element(const int name)
 namespace
 {
 
-class DContext : public CellContextBase
+class DElement : public CellContextBase
 {
 public:
-  explicit DContext(TableParserState &state);
+  explicit DElement(TableParserState &state);
 };
 
-DContext::DContext(TableParserState &state)
+DElement::DElement(TableParserState &state)
   : CellContextBase(state)
 {
 }
@@ -289,13 +289,13 @@ DContext::DContext(TableParserState &state)
 namespace
 {
 
-class DuContext : public CellContextBase
+class DuElement : public CellContextBase
 {
 public:
-  explicit DuContext(TableParserState &state);
+  explicit DuElement(TableParserState &state);
 };
 
-DuContext::DuContext(TableParserState &state)
+DuElement::DuElement(TableParserState &state)
   : CellContextBase(state)
 {
 }
@@ -305,21 +305,21 @@ DuContext::DuContext(TableParserState &state)
 namespace
 {
 
-class FContext : public CellContextBase
+class FElement : public CellContextBase
 {
 public:
-  explicit FContext(TableParserState &state);
+  explicit FElement(TableParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-FContext::FContext(TableParserState &state)
+FElement::FElement(TableParserState &state)
   : CellContextBase(state)
 {
 }
 
-IWORKXMLContextPtr_t FContext::element(int)
+IWORKXMLContextPtr_t FElement::element(int)
 {
   return IWORKXMLContextPtr_t();
 }
@@ -329,13 +329,13 @@ IWORKXMLContextPtr_t FContext::element(int)
 namespace
 {
 
-class GContext : public CellContextBase
+class GElement : public CellContextBase
 {
 public:
-  explicit GContext(TableParserState &state);
+  explicit GElement(TableParserState &state);
 };
 
-GContext::GContext(TableParserState &state)
+GElement::GElement(TableParserState &state)
   : CellContextBase(state)
 {
 }
@@ -345,21 +345,21 @@ GContext::GContext(TableParserState &state)
 namespace
 {
 
-class NContext : public CellContextBase
+class NElement : public CellContextBase
 {
 public:
-  explicit NContext(TableParserState &state);
+  explicit NElement(TableParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
 };
 
-NContext::NContext(TableParserState &state)
+NElement::NElement(TableParserState &state)
   : CellContextBase(state)
 {
 }
 
-void NContext::attribute(const int name, const char *const value)
+void NElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -376,22 +376,22 @@ void NContext::attribute(const int name, const char *const value)
 namespace
 {
 
-class SContext : public CellContextBase
+class SElement : public CellContextBase
 {
 public:
-  explicit SContext(TableParserState &state);
+  explicit SElement(TableParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
   virtual void endOfElement();
 };
 
-SContext::SContext(TableParserState &state)
+SElement::SElement(TableParserState &state)
   : CellContextBase(state)
 {
 }
 
-void SContext::attribute(const int name, const char *const value)
+void SElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -403,7 +403,7 @@ void SContext::attribute(const int name, const char *const value)
   }
 }
 
-void SContext::endOfElement()
+void SElement::endOfElement()
 {
   emitCell(true);
 }
@@ -413,26 +413,26 @@ void SContext::endOfElement()
 namespace
 {
 
-class SoContext : public TableContextBase<IWORKXMLElementContextBase>
+class SoElement : public TableContextBase<IWORKXMLElementContextBase>
 {
 public:
-  explicit SoContext(TableParserState &state);
+  explicit SoElement(TableParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-SoContext::SoContext(TableParserState &state)
+SoElement::SoElement(TableParserState &state)
   : TableContextBase<IWORKXMLElementContextBase>(state)
 {
 }
 
-IWORKXMLContextPtr_t SoContext::element(const int name)
+IWORKXMLContextPtr_t SoElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::text_body | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKTextBodyContext>(getState().getState());
+    return makeContext<IWORKTextBodyElement>(getState().getState());
   }
 
   return IWORKXMLContextPtr_t();
@@ -443,22 +443,22 @@ IWORKXMLContextPtr_t SoContext::element(const int name)
 namespace
 {
 
-class CtContext : public TableContextBase<IWORKXMLElementContextBase>
+class CtElement : public TableContextBase<IWORKXMLElementContextBase>
 {
 public:
-  explicit CtContext(TableParserState &state);
+  explicit CtElement(TableParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-CtContext::CtContext(TableParserState &state)
+CtElement::CtElement(TableParserState &state)
   : TableContextBase<IWORKXMLElementContextBase>(state)
 {
 }
 
-void CtContext::attribute(const int name, const char *const value)
+void CtElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -470,7 +470,7 @@ void CtContext::attribute(const int name, const char *const value)
   }
 }
 
-IWORKXMLContextPtr_t CtContext::element(const int name)
+IWORKXMLContextPtr_t CtElement::element(const int name)
 {
   switch (name)
   {
@@ -479,7 +479,7 @@ IWORKXMLContextPtr_t CtContext::element(const int name)
     {
       ETONYEK_DEBUG_MSG(("found a text cell with both simple and formatted content\n"));
     }
-    return makeContext<SoContext>(getState());
+    return makeContext<SoElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
@@ -490,10 +490,10 @@ IWORKXMLContextPtr_t CtContext::element(const int name)
 namespace
 {
 
-class TContext : public CellContextBase
+class TElement : public CellContextBase
 {
 public:
-  explicit TContext(TableParserState &state);
+  explicit TElement(TableParserState &state);
 
 private:
   virtual void startOfElement();
@@ -501,28 +501,28 @@ private:
   virtual void endOfElement();
 };
 
-TContext::TContext(TableParserState &state)
+TElement::TElement(TableParserState &state)
   : CellContextBase(state)
 {
 }
 
-void TContext::startOfElement()
+void TElement::startOfElement()
 {
   getCollector()->startText(false);
 }
 
-IWORKXMLContextPtr_t TContext::element(const int name)
+IWORKXMLContextPtr_t TElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::ct | IWORKToken::NS_URI_SF :
-    return makeContext<CtContext>(getState());
+    return makeContext<CtElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
 }
 
-void TContext::endOfElement()
+void TElement::endOfElement()
 {
   emitCell();
 
@@ -534,17 +534,17 @@ void TContext::endOfElement()
 namespace
 {
 
-class DatasourceContext : public TableContextBase<IWORKXMLElementContextBase>
+class DatasourceElement : public TableContextBase<IWORKXMLElementContextBase>
 {
 public:
-  explicit DatasourceContext(TableParserState &state);
+  explicit DatasourceElement(TableParserState &state);
 
 private:
   virtual void startOfElement();
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-DatasourceContext::DatasourceContext(TableParserState &state)
+DatasourceElement::DatasourceElement(TableParserState &state)
   : TableContextBase<IWORKXMLElementContextBase>(state)
 {
   // these must be defined before datasource, otherwise we have a problem
@@ -552,29 +552,29 @@ DatasourceContext::DatasourceContext(TableParserState &state)
   assert(!getData().m_rowSizes.empty());
 }
 
-void DatasourceContext::startOfElement()
+void DatasourceElement::startOfElement()
 {
   getCollector()->collectTableSizes(getData().m_rowSizes, getData().m_columnSizes);
 }
 
-IWORKXMLContextPtr_t DatasourceContext::element(const int name)
+IWORKXMLContextPtr_t DatasourceElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::d | IWORKToken::NS_URI_SF :
-    return makeContext<DContext>(getState());
+    return makeContext<DElement>(getState());
   case IWORKToken::du | IWORKToken::NS_URI_SF :
-    return makeContext<DuContext>(getState());
+    return makeContext<DuElement>(getState());
   case IWORKToken::f | IWORKToken::NS_URI_SF :
-    return makeContext<FContext>(getState());
+    return makeContext<FElement>(getState());
   case IWORKToken::g | IWORKToken::NS_URI_SF :
-    return makeContext<GContext>(getState());
+    return makeContext<GElement>(getState());
   case IWORKToken::n | IWORKToken::NS_URI_SF :
-    return makeContext<NContext>(getState());
+    return makeContext<NElement>(getState());
   case IWORKToken::s | IWORKToken::NS_URI_SF :
-    return makeContext<SContext>(getState());
+    return makeContext<SElement>(getState());
   case IWORKToken::t | IWORKToken::NS_URI_SF :
-    return makeContext<TContext>(getState());
+    return makeContext<TElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
@@ -585,21 +585,21 @@ IWORKXMLContextPtr_t DatasourceContext::element(const int name)
 namespace
 {
 
-class GridRowContext : public TableContextBase<IWORKXMLEmptyContextBase>
+class GridRowElement : public TableContextBase<IWORKXMLEmptyContextBase>
 {
 public:
-  explicit GridRowContext(TableParserState &state);
+  explicit GridRowElement(TableParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
 };
 
-GridRowContext::GridRowContext(TableParserState &state)
+GridRowElement::GridRowElement(TableParserState &state)
   : TableContextBase<IWORKXMLEmptyContextBase>(state)
 {
 }
 
-void GridRowContext::attribute(const int name, const char *const value)
+void GridRowElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -616,27 +616,27 @@ void GridRowContext::attribute(const int name, const char *const value)
 namespace
 {
 
-class RowsContext : public TableContextBase<IWORKXMLElementContextBase>
+class RowsElement : public TableContextBase<IWORKXMLElementContextBase>
 {
 public:
-  explicit RowsContext(TableParserState &state);
+  explicit RowsElement(TableParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-RowsContext::RowsContext(TableParserState &state)
+RowsElement::RowsElement(TableParserState &state)
   : TableContextBase<IWORKXMLElementContextBase>(state)
 {
   assert(getData().m_rowSizes.empty());
 }
 
-IWORKXMLContextPtr_t RowsContext::element(const int name)
+IWORKXMLContextPtr_t RowsElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::grid_row | IWORKToken::NS_URI_SF :
-    return makeContext<GridRowContext>(getState());
+    return makeContext<GridRowElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
@@ -647,30 +647,30 @@ IWORKXMLContextPtr_t RowsContext::element(const int name)
 namespace
 {
 
-class GridContext : public TableContextBase<IWORKXMLElementContextBase>
+class GridElement : public TableContextBase<IWORKXMLElementContextBase>
 {
 public:
-  explicit GridContext(TableParserState &state);
+  explicit GridElement(TableParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-GridContext::GridContext(TableParserState &state)
+GridElement::GridElement(TableParserState &state)
   : TableContextBase<IWORKXMLElementContextBase>(state)
 {
 }
 
-IWORKXMLContextPtr_t GridContext::element(const int name)
+IWORKXMLContextPtr_t GridElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::columns | IWORKToken::NS_URI_SF :
-    return makeContext<ColumnsContext>(getState());
+    return makeContext<ColumnsElement>(getState());
   case IWORKToken::datasource | IWORKToken::NS_URI_SF :
-    return makeContext<DatasourceContext>(getState());
+    return makeContext<DatasourceElement>(getState());
   case IWORKToken::rows | IWORKToken::NS_URI_SF :
-    return makeContext<RowsContext>(getState());
+    return makeContext<RowsElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
@@ -681,26 +681,26 @@ IWORKXMLContextPtr_t GridContext::element(const int name)
 namespace
 {
 
-class TabularModelContext : public TableContextBase<IWORKXMLElementContextBase>
+class TabularModelElement : public TableContextBase<IWORKXMLElementContextBase>
 {
 public:
-  explicit TabularModelContext(TableParserState &state);
+  explicit TabularModelElement(TableParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-TabularModelContext::TabularModelContext(TableParserState &state)
+TabularModelElement::TabularModelElement(TableParserState &state)
   : TableContextBase<IWORKXMLElementContextBase>(state)
 {
 }
 
-IWORKXMLContextPtr_t TabularModelContext::element(const int name)
+IWORKXMLContextPtr_t TabularModelElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::grid | IWORKToken::NS_URI_SF :
-    return makeContext<GridContext>(getState());
+    return makeContext<GridElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
@@ -708,7 +708,7 @@ IWORKXMLContextPtr_t TabularModelContext::element(const int name)
 
 }
 
-struct IWORKTabularInfoContext::Impl
+struct IWORKTabularInfoElement::Impl
 {
   explicit Impl(IWORKXMLParserState &state);
 
@@ -716,38 +716,38 @@ struct IWORKTabularInfoContext::Impl
   TableParserState m_state;
 };
 
-IWORKTabularInfoContext::Impl::Impl(IWORKXMLParserState &state)
+IWORKTabularInfoElement::Impl::Impl(IWORKXMLParserState &state)
   : m_data()
   , m_state(state, m_data)
 {
 }
 
-IWORKTabularInfoContext::IWORKTabularInfoContext(IWORKXMLParserState &state)
+IWORKTabularInfoElement::IWORKTabularInfoElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_impl(new Impl(state))
 {
 }
 
-void IWORKTabularInfoContext::startOfElement()
+void IWORKTabularInfoElement::startOfElement()
 {
   getCollector()->startLevel();
 }
 
-IWORKXMLContextPtr_t IWORKTabularInfoContext::element(const int name)
+IWORKXMLContextPtr_t IWORKTabularInfoElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::geometry | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKGeometryContext>(getState());
+    return makeContext<IWORKGeometryElement>(getState());
     break;
   case IWORKToken::tabular_model | IWORKToken::NS_URI_SF :
-    return makeContext<TabularModelContext>(m_impl->m_state);
+    return makeContext<TabularModelElement>(m_impl->m_state);
   }
 
   return IWORKXMLContextPtr_t();
 }
 
-void IWORKTabularInfoContext::endOfElement()
+void IWORKTabularInfoElement::endOfElement()
 {
   getCollector()->collectTable();
 

@@ -57,21 +57,21 @@ void BrContext::endOfElement()
 namespace
 {
 
-class TabContext : public IWORKXMLEmptyContextBase
+class TabElement : public IWORKXMLEmptyContextBase
 {
 public:
-  explicit TabContext(IWORKXMLParserState &state);
+  explicit TabElement(IWORKXMLParserState &state);
 
 private:
   virtual void endOfElement();
 };
 
-TabContext::TabContext(IWORKXMLParserState &state)
+TabElement::TabElement(IWORKXMLParserState &state)
   : IWORKXMLEmptyContextBase(state)
 {
 }
 
-void TabContext::endOfElement()
+void TabElement::endOfElement()
 {
   getCollector()->collectTab();
 }
@@ -81,10 +81,10 @@ void TabContext::endOfElement()
 namespace
 {
 
-class SpanContext : public IWORKXMLElementContextBase
+class SpanElement : public IWORKXMLElementContextBase
 {
 public:
-  explicit SpanContext(IWORKXMLParserState &state);
+  explicit SpanElement(IWORKXMLParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -95,12 +95,12 @@ private:
   optional<ID_t> m_style;
 };
 
-SpanContext::SpanContext(IWORKXMLParserState &state)
+SpanElement::SpanElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
 {
 }
 
-void SpanContext::attribute(const int name, const char *const value)
+void SpanElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -110,7 +110,7 @@ void SpanContext::attribute(const int name, const char *const value)
   }
 }
 
-IWORKXMLContextPtr_t SpanContext::element(const int name)
+IWORKXMLContextPtr_t SpanElement::element(const int name)
 {
   switch (name)
   {
@@ -120,13 +120,13 @@ IWORKXMLContextPtr_t SpanContext::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
     return makeContext<BrContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tab :
-    return makeContext<TabContext>(getState());
+    return makeContext<TabElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
 }
 
-void SpanContext::text(const char *const value)
+void SpanElement::text(const char *const value)
 {
   IWORKStylePtr_t style;
   if (m_style)
@@ -143,10 +143,10 @@ void SpanContext::text(const char *const value)
 namespace
 {
 
-class LinkContext : public IWORKXMLMixedContextBase
+class LinkElement : public IWORKXMLMixedContextBase
 {
 public:
-  explicit LinkContext(IWORKXMLParserState &state);
+  explicit LinkElement(IWORKXMLParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -154,29 +154,29 @@ private:
   virtual void text(const char *value);
 };
 
-LinkContext::LinkContext(IWORKXMLParserState &state)
+LinkElement::LinkElement(IWORKXMLParserState &state)
   : IWORKXMLMixedContextBase(state)
 {
 }
 
-void LinkContext::attribute(int, const char *)
+void LinkElement::attribute(int, const char *)
 {
 }
 
-IWORKXMLContextPtr_t LinkContext::element(const int name)
+IWORKXMLContextPtr_t LinkElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::br :
     return makeContext<BrContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::span :
-    return makeContext<SpanContext>(getState());
+    return makeContext<SpanElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
 }
 
-void LinkContext::text(const char *const value)
+void LinkElement::text(const char *const value)
 {
   getCollector()->collectText(IWORKStylePtr_t(), value);
 }
@@ -186,10 +186,10 @@ void LinkContext::text(const char *const value)
 namespace
 {
 
-class PContext : public IWORKXMLMixedContextBase
+class PElement : public IWORKXMLMixedContextBase
 {
 public:
-  explicit PContext(IWORKXMLParserState &state);
+  explicit PElement(IWORKXMLParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -202,12 +202,12 @@ private:
   IWORKStylePtr_t m_style;
 };
 
-PContext::PContext(IWORKXMLParserState &state)
+PElement::PElement(IWORKXMLParserState &state)
   : IWORKXMLMixedContextBase(state)
 {
 }
 
-void PContext::attribute(const int name, const char *const value)
+void PElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -221,12 +221,12 @@ void PContext::attribute(const int name, const char *const value)
   }
 }
 
-void PContext::endOfAttributes()
+void PElement::endOfAttributes()
 {
   getCollector()->startParagraph(m_style);
 }
 
-IWORKXMLContextPtr_t PContext::element(const int name)
+IWORKXMLContextPtr_t PElement::element(const int name)
 {
   switch (name)
   {
@@ -236,22 +236,22 @@ IWORKXMLContextPtr_t PContext::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
     return makeContext<BrContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::span :
-    return makeContext<SpanContext>(getState());
+    return makeContext<SpanElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tab :
-    return makeContext<TabContext>(getState());
+    return makeContext<TabElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::link :
-    return makeContext<LinkContext>(getState());
+    return makeContext<LinkElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
 }
 
-void PContext::text(const char *const value)
+void PElement::text(const char *const value)
 {
   getCollector()->collectText(m_style, value);
 }
 
-void PContext::endOfElement()
+void PElement::endOfElement()
 {
   getCollector()->endParagraph();
 }
@@ -261,31 +261,31 @@ void PContext::endOfElement()
 namespace
 {
 
-class LayoutContext : public IWORKXMLElementContextBase
+class LayoutElement : public IWORKXMLElementContextBase
 {
 public:
-  explicit LayoutContext(IWORKXMLParserState &state);
+  explicit LayoutElement(IWORKXMLParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-LayoutContext::LayoutContext(IWORKXMLParserState &state)
+LayoutElement::LayoutElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
 {
 }
 
-void LayoutContext::attribute(const int name, const char *)
+void LayoutElement::attribute(const int name, const char *)
 {
   if ((IWORKToken::NS_URI_SF | IWORKToken::style) == name)
     getCollector()->collectLayoutStyle(IWORKStylePtr_t(), false);
 }
 
-IWORKXMLContextPtr_t LayoutContext::element(const int name)
+IWORKXMLContextPtr_t LayoutElement::element(const int name)
 {
   if ((IWORKToken::NS_URI_SF | IWORKToken::p) == name)
-    return makeContext<PContext>(getState());
+    return makeContext<PElement>(getState());
 
   return IWORKXMLContextPtr_t();
 }
@@ -295,10 +295,10 @@ IWORKXMLContextPtr_t LayoutContext::element(const int name)
 namespace
 {
 
-class DataContext : public IWORKXMLEmptyContextBase
+class DataElement : public IWORKXMLEmptyContextBase
 {
 public:
-  DataContext(IWORKXMLParserState &state, IWORKDataPtr_t &data);
+  DataElement(IWORKXMLParserState &state, IWORKDataPtr_t &data);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -311,13 +311,13 @@ private:
   optional<unsigned> m_type;
 };
 
-DataContext::DataContext(IWORKXMLParserState &state, IWORKDataPtr_t &data)
+DataElement::DataElement(IWORKXMLParserState &state, IWORKDataPtr_t &data)
   : IWORKXMLEmptyContextBase(state)
   , m_data(data)
 {
 }
 
-void DataContext::attribute(const int name, const char *const value)
+void DataElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -338,7 +338,7 @@ void DataContext::attribute(const int name, const char *const value)
   }
 }
 
-void DataContext::endOfElement()
+void DataElement::endOfElement()
 {
   if (bool(m_stream))
   {
@@ -357,10 +357,10 @@ void DataContext::endOfElement()
 namespace
 {
 
-class ImageContextBase : public IWORKXMLElementContextBase
+class ImageContext : public IWORKXMLElementContextBase
 {
 public:
-  ImageContextBase(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
+  ImageContext(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
 
 protected:
   virtual void endOfElement();
@@ -374,7 +374,7 @@ private:
   optional<IWORKSize> m_size;
 };
 
-ImageContextBase::ImageContextBase(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
+ImageContext::ImageContext(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
   : IWORKXMLElementContextBase(state)
   , m_content(content)
   , m_data()
@@ -382,20 +382,20 @@ ImageContextBase::ImageContextBase(IWORKXMLParserState &state, IWORKMediaContent
 {
 }
 
-IWORKXMLContextPtr_t ImageContextBase::element(const int name)
+IWORKXMLContextPtr_t ImageContext::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::data :
-    return makeContext<DataContext>(getState(), m_data);
+    return makeContext<DataElement>(getState(), m_data);
   case IWORKToken::NS_URI_SF | IWORKToken::size :
-    return makeContext<IWORKSizeContext>(getState(), m_size);
+    return makeContext<IWORKSizeElement>(getState(), m_size);
   }
 
   return IWORKXMLContextPtr_t();
 }
 
-void ImageContextBase::endOfElement()
+void ImageContext::endOfElement()
 {
   m_content.reset(new IWORKMediaContent());
   m_content->m_size = m_size;
@@ -407,10 +407,10 @@ void ImageContextBase::endOfElement()
 namespace
 {
 
-class UnfilteredContext : public ImageContextBase
+class UnfilteredElement : public ImageContext
 {
 public:
-  UnfilteredContext(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
+  UnfilteredElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
 
 private:
   virtual void endOfElement();
@@ -419,15 +419,15 @@ private:
   IWORKMediaContentPtr_t &m_content;
 };
 
-UnfilteredContext::UnfilteredContext(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
-  : ImageContextBase(state, content)
+UnfilteredElement::UnfilteredElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
+  : ImageContext(state, content)
   , m_content(content)
 {
 }
 
-void UnfilteredContext::endOfElement()
+void UnfilteredElement::endOfElement()
 {
-  ImageContextBase::endOfElement();
+  ImageContext::endOfElement();
 
   if (bool(m_content) && getId())
     getState().getDictionary().m_unfiltereds[get(getId())] = m_content;
@@ -438,18 +438,18 @@ void UnfilteredContext::endOfElement()
 namespace
 {
 
-typedef ImageContextBase FilteredContext;
-typedef ImageContextBase LeveledContext;
+typedef ImageContext FilteredElement;
+typedef ImageContext LeveledElement;
 
 }
 
 namespace
 {
 
-class FilteredImageContext : public IWORKXMLElementContextBase
+class FilteredImageElement : public IWORKXMLElementContextBase
 {
 public:
-  FilteredImageContext(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
+  FilteredImageElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -463,7 +463,7 @@ private:
   IWORKMediaContentPtr_t m_leveled;
 };
 
-FilteredImageContext::FilteredImageContext(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
+FilteredImageElement::FilteredImageElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
   : IWORKXMLElementContextBase(state)
   , m_content(content)
   , m_unfilteredId()
@@ -473,24 +473,24 @@ FilteredImageContext::FilteredImageContext(IWORKXMLParserState &state, IWORKMedi
 {
 }
 
-IWORKXMLContextPtr_t FilteredImageContext::element(const int name)
+IWORKXMLContextPtr_t FilteredImageElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::unfiltered_ref :
     return makeContext<IWORKRefContext>(getState(), m_unfilteredId);
   case IWORKToken::NS_URI_SF | IWORKToken::unfiltered :
-    return makeContext<UnfilteredContext>(getState(), m_unfiltered);
+    return makeContext<UnfilteredElement>(getState(), m_unfiltered);
   case IWORKToken::NS_URI_SF | IWORKToken::filtered :
-    return makeContext<FilteredContext>(getState(), m_filtered);
+    return makeContext<FilteredElement>(getState(), m_filtered);
   case IWORKToken::NS_URI_SF | IWORKToken::leveled :
-    return makeContext<LeveledContext>(getState(), m_leveled);
+    return makeContext<LeveledElement>(getState(), m_leveled);
   }
 
   return IWORKXMLContextPtr_t();
 }
 
-void FilteredImageContext::endOfElement()
+void FilteredImageElement::endOfElement()
 {
   if (m_unfilteredId && !m_unfiltered)
   {
@@ -520,10 +520,10 @@ void FilteredImageContext::endOfElement()
 namespace
 {
 
-class ImageMediaContext : public IWORKXMLElementContextBase
+class ImageMediaElement : public IWORKXMLElementContextBase
 {
 public:
-  ImageMediaContext(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
+  ImageMediaElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -532,18 +532,18 @@ private:
   IWORKMediaContentPtr_t &m_content;
 };
 
-ImageMediaContext::ImageMediaContext(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
+ImageMediaElement::ImageMediaElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
   : IWORKXMLElementContextBase(state)
   , m_content(content)
 {
 }
 
-IWORKXMLContextPtr_t ImageMediaContext::element(const int name)
+IWORKXMLContextPtr_t ImageMediaElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::filtered_image :
-    return makeContext<FilteredImageContext>(getState(), m_content);
+    return makeContext<FilteredImageElement>(getState(), m_content);
   }
 
   return IWORKXMLContextPtr_t();
@@ -554,10 +554,10 @@ IWORKXMLContextPtr_t ImageMediaContext::element(const int name)
 namespace
 {
 
-class OtherDatasContext : public IWORKXMLElementContextBase
+class OtherDatasElement : public IWORKXMLElementContextBase
 {
 public:
-  OtherDatasContext(IWORKXMLParserState &state, IWORKDataPtr_t &data);
+  OtherDatasElement(IWORKXMLParserState &state, IWORKDataPtr_t &data);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -568,19 +568,19 @@ private:
   optional<ID_t> m_dataRef;
 };
 
-OtherDatasContext::OtherDatasContext(IWORKXMLParserState &state, IWORKDataPtr_t &data)
+OtherDatasElement::OtherDatasElement(IWORKXMLParserState &state, IWORKDataPtr_t &data)
   : IWORKXMLElementContextBase(state)
   , m_data(data)
   , m_dataRef()
 {
 }
 
-IWORKXMLContextPtr_t OtherDatasContext::element(const int name)
+IWORKXMLContextPtr_t OtherDatasElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::data :
-    return makeContext<DataContext>(getState(), m_data);
+    return makeContext<DataElement>(getState(), m_data);
   case IWORKToken::NS_URI_SF | IWORKToken::data_ref :
     return makeContext<IWORKRefContext>(getState(), m_dataRef);
   }
@@ -588,7 +588,7 @@ IWORKXMLContextPtr_t OtherDatasContext::element(const int name)
   return IWORKXMLContextPtr_t();
 }
 
-void OtherDatasContext::endOfElement()
+void OtherDatasElement::endOfElement()
 {
   if (m_dataRef && !m_data)
   {
@@ -603,10 +603,10 @@ void OtherDatasContext::endOfElement()
 namespace
 {
 
-class SelfContainedMovieContext : public IWORKXMLElementContextBase
+class SelfContainedMovieElement : public IWORKXMLElementContextBase
 {
 public:
-  SelfContainedMovieContext(IWORKXMLParserState &state, IWORKDataPtr_t &data);
+  SelfContainedMovieElement(IWORKXMLParserState &state, IWORKDataPtr_t &data);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -615,18 +615,18 @@ private:
   IWORKDataPtr_t &m_data;
 };
 
-SelfContainedMovieContext::SelfContainedMovieContext(IWORKXMLParserState &state, IWORKDataPtr_t &data)
+SelfContainedMovieElement::SelfContainedMovieElement(IWORKXMLParserState &state, IWORKDataPtr_t &data)
   : IWORKXMLElementContextBase(state)
   , m_data(data)
 {
 }
 
-IWORKXMLContextPtr_t SelfContainedMovieContext::element(const int name)
+IWORKXMLContextPtr_t SelfContainedMovieElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::other_datas :
-    return makeContext<OtherDatasContext>(getState(), m_data);
+    return makeContext<OtherDatasElement>(getState(), m_data);
   }
 
   return IWORKXMLContextPtr_t();
@@ -637,10 +637,10 @@ IWORKXMLContextPtr_t SelfContainedMovieContext::element(const int name)
 namespace
 {
 
-class MovieMediaContext : public IWORKXMLElementContextBase
+class MovieMediaElement : public IWORKXMLElementContextBase
 {
 public:
-  MovieMediaContext(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
+  MovieMediaElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -651,25 +651,25 @@ private:
   IWORKDataPtr_t m_data;
 };
 
-MovieMediaContext::MovieMediaContext(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
+MovieMediaElement::MovieMediaElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
   : IWORKXMLElementContextBase(state)
   , m_content(content)
   , m_data()
 {
 }
 
-IWORKXMLContextPtr_t MovieMediaContext::element(const int name)
+IWORKXMLContextPtr_t MovieMediaElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::self_contained_movie :
-    return makeContext<SelfContainedMovieContext>(getState(), m_data);
+    return makeContext<SelfContainedMovieElement>(getState(), m_data);
   }
 
   return IWORKXMLContextPtr_t();
 }
 
-void MovieMediaContext::endOfElement()
+void MovieMediaElement::endOfElement()
 {
   m_content.reset(new IWORKMediaContent());
   m_content->m_data = m_data;
@@ -680,10 +680,10 @@ void MovieMediaContext::endOfElement()
 namespace
 {
 
-class ContentContext : public IWORKXMLElementContextBase
+class ContentElement : public IWORKXMLElementContextBase
 {
 public:
-  ContentContext(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
+  ContentElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -692,13 +692,13 @@ private:
   IWORKMediaContentPtr_t &m_content;
 };
 
-ContentContext::ContentContext(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
+ContentElement::ContentElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
   : IWORKXMLElementContextBase(state)
   , m_content(content)
 {
 }
 
-IWORKXMLContextPtr_t ContentContext::element(const int name)
+IWORKXMLContextPtr_t ContentElement::element(const int name)
 {
   if (bool(m_content))
   {
@@ -708,9 +708,9 @@ IWORKXMLContextPtr_t ContentContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::image_media :
-    return makeContext<ImageMediaContext>(getState(), m_content);
+    return makeContext<ImageMediaElement>(getState(), m_content);
   case IWORKToken::NS_URI_SF | IWORKToken::movie_media :
-    return makeContext<MovieMediaContext>(getState(), m_content);
+    return makeContext<MovieMediaElement>(getState(), m_content);
   }
 
   return IWORKXMLContextPtr_t();
@@ -718,7 +718,7 @@ IWORKXMLContextPtr_t ContentContext::element(const int name)
 
 }
 
-IWORKColorContext::IWORKColorContext(IWORKXMLParserState &state, boost::optional<IWORKColor> &color)
+IWORKColorElement::IWORKColorElement(IWORKXMLParserState &state, boost::optional<IWORKColor> &color)
   : IWORKXMLEmptyContextBase(state)
   , m_color(color)
   , m_r(0)
@@ -728,7 +728,7 @@ IWORKColorContext::IWORKColorContext(IWORKXMLParserState &state, boost::optional
 {
 }
 
-void IWORKColorContext::attribute(const int name, const char *const value)
+void IWORKColorElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -748,24 +748,24 @@ void IWORKColorContext::attribute(const int name, const char *const value)
   }
 }
 
-void IWORKColorContext::endOfElement()
+void IWORKColorElement::endOfElement()
 {
   m_color = IWORKColor(m_r, m_g, m_b, m_a);
 }
 
-IWORKGeometryContext::IWORKGeometryContext(IWORKXMLParserState &state)
+IWORKGeometryElement::IWORKGeometryElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_geometry(0)
 {
 }
 
-IWORKGeometryContext::IWORKGeometryContext(IWORKXMLParserState &state, IWORKGeometryPtr_t &geometry)
+IWORKGeometryElement::IWORKGeometryElement(IWORKXMLParserState &state, IWORKGeometryPtr_t &geometry)
   : IWORKXMLElementContextBase(state)
   , m_geometry(&geometry)
 {
 }
 
-void IWORKGeometryContext::attribute(const int name, const char *const value)
+void IWORKGeometryElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -796,22 +796,22 @@ void IWORKGeometryContext::attribute(const int name, const char *const value)
   }
 }
 
-IWORKXMLContextPtr_t IWORKGeometryContext::element(const int name)
+IWORKXMLContextPtr_t IWORKGeometryElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::naturalSize :
-    return makeContext<IWORKSizeContext>(getState(), m_naturalSize);
+    return makeContext<IWORKSizeElement>(getState(), m_naturalSize);
   case IWORKToken::NS_URI_SF | IWORKToken::position :
-    return makeContext<IWORKPositionContext>(getState(), m_pos);
+    return makeContext<IWORKPositionElement>(getState(), m_pos);
   case IWORKToken::NS_URI_SF | IWORKToken::size :
-    return makeContext<IWORKSizeContext>(getState(), m_size);
+    return makeContext<IWORKSizeElement>(getState(), m_size);
   }
 
   return IWORKXMLContextPtr_t();
 }
 
-void IWORKGeometryContext::endOfElement()
+void IWORKGeometryElement::endOfElement()
 {
   IWORKGeometryPtr_t geometry(new IWORKGeometry());
   geometry->m_naturalSize = get(m_naturalSize);
@@ -831,13 +831,13 @@ void IWORKGeometryContext::endOfElement()
     getCollector()->collectGeometry(geometry);
 }
 
-IWORKPositionContext::IWORKPositionContext(IWORKXMLParserState &state, optional<IWORKPosition> &position)
+IWORKPositionElement::IWORKPositionElement(IWORKXMLParserState &state, optional<IWORKPosition> &position)
   : IWORKXMLEmptyContextBase(state)
   , m_position(position)
 {
 }
 
-void IWORKPositionContext::attribute(const int name, const char *const value)
+void IWORKPositionElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -850,13 +850,13 @@ void IWORKPositionContext::attribute(const int name, const char *const value)
   }
 }
 
-void IWORKPositionContext::endOfElement()
+void IWORKPositionElement::endOfElement()
 {
   if (m_x && m_y)
     m_position = IWORKPosition(get(m_x), get(m_y));
 }
 
-IWORKSizeContext::IWORKSizeContext(IWORKXMLParserState &state, boost::optional<IWORKSize> &size)
+IWORKSizeElement::IWORKSizeElement(IWORKXMLParserState &state, boost::optional<IWORKSize> &size)
   : IWORKXMLEmptyContextBase(state)
   , m_size(size)
   , m_width()
@@ -864,7 +864,7 @@ IWORKSizeContext::IWORKSizeContext(IWORKXMLParserState &state, boost::optional<I
 {
 }
 
-void IWORKSizeContext::attribute(const int name, const char *const value)
+void IWORKSizeElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -877,20 +877,20 @@ void IWORKSizeContext::attribute(const int name, const char *const value)
   }
 }
 
-void IWORKSizeContext::endOfElement()
+void IWORKSizeElement::endOfElement()
 {
   if (m_width && m_height)
     m_size = IWORKSize(get(m_width), get(m_height));
 }
 
-IWORKTextBodyContext::IWORKTextBodyContext(IWORKXMLParserState &state)
+IWORKTextBodyElement::IWORKTextBodyElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_layout(false)
   , m_para(false)
 {
 }
 
-IWORKXMLContextPtr_t IWORKTextBodyContext::element(const int name)
+IWORKXMLContextPtr_t IWORKTextBodyElement::element(const int name)
 {
   switch (name)
   {
@@ -902,7 +902,7 @@ IWORKXMLContextPtr_t IWORKTextBodyContext::element(const int name)
     else
     {
       m_layout = true;
-      return makeContext<LayoutContext>(getState());
+      return makeContext<LayoutElement>(getState());
     }
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::p :
@@ -912,12 +912,12 @@ IWORKXMLContextPtr_t IWORKTextBodyContext::element(const int name)
     }
     else if (m_para)
     {
-      return makeContext<PContext>(getState());
+      return makeContext<PElement>(getState());
     }
     else
     {
       m_para = true;
-      return makeContext<PContext>(getState());
+      return makeContext<PElement>(getState());
     }
     break;
   }
@@ -925,30 +925,30 @@ IWORKXMLContextPtr_t IWORKTextBodyContext::element(const int name)
   return IWORKXMLContextPtr_t();
 }
 
-IWORKMediaContext::IWORKMediaContext(IWORKXMLParserState &state)
+IWORKMediaElement::IWORKMediaElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
 {
 }
 
-void IWORKMediaContext::startOfElement()
+void IWORKMediaElement::startOfElement()
 {
   getCollector()->startLevel();
 }
 
-IWORKXMLContextPtr_t IWORKMediaContext::element(const int name)
+IWORKXMLContextPtr_t IWORKMediaElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::geometry :
-    return makeContext<IWORKGeometryContext>(getState());
+    return makeContext<IWORKGeometryElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::content :
-    return makeContext<ContentContext>(getState(), m_content);
+    return makeContext<ContentElement>(getState(), m_content);
   }
 
   return IWORKXMLContextPtr_t();
 }
 
-void IWORKMediaContext::endOfElement()
+void IWORKMediaElement::endOfElement()
 {
   getCollector()->collectMedia(m_content);
   getCollector()->endLevel();
