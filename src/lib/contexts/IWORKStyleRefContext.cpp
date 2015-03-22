@@ -39,7 +39,7 @@ void IWORKStyleRefContext::endOfElement()
   switch (m_id)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref :
-    getCollector()->collectCellStyle(IWORKStylePtr_t(), m_anonymous);
+    getCollector()->collectStyle(IWORKStylePtr_t(), m_anonymous);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::characterstyle_ref :
   {
@@ -50,11 +50,11 @@ void IWORKStyleRefContext::endOfElement()
       if (getDictionary().m_characterStyles.end() != it)
         style = it->second;
     }
-    getCollector()->collectCharacterStyle(style, m_anonymous);
+    getCollector()->collectStyle(style, m_anonymous);
     break;
   }
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
-    getCollector()->collectListStyle(IWORKStylePtr_t(), m_anonymous);
+    getCollector()->collectStyle(IWORKStylePtr_t(), m_anonymous);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref :
   {
@@ -65,11 +65,11 @@ void IWORKStyleRefContext::endOfElement()
       if (getDictionary().m_paragraphStyles.end() != it)
         style = it->second;
     }
-    getCollector()->collectParagraphStyle(style, m_anonymous);
+    getCollector()->collectStyle(style, m_anonymous);
     break;
   }
   case IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref :
-    getCollector()->collectVectorStyle(IWORKStylePtr_t(), m_anonymous);
+    getCollector()->collectStyle(IWORKStylePtr_t(), m_anonymous);
     break;
   default :
     break;

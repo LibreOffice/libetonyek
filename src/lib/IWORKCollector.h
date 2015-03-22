@@ -52,15 +52,10 @@ public:
 
   // collector functions
 
-  void collectCellStyle(const IWORKStylePtr_t &style, bool anonymous);
-  void collectCharacterStyle(const IWORKStylePtr_t &style, bool anonymous);
-  void collectConnectionStyle(const IWORKStylePtr_t &style, bool anonymous);
-  void collectGraphicStyle(const IWORKStylePtr_t &style, bool anonymous);
-  void collectLayoutStyle(const IWORKStylePtr_t &style, bool anonymous);
-  void collectListStyle(const IWORKStylePtr_t &style, bool anonymous);
-  void collectParagraphStyle(const IWORKStylePtr_t &style, bool anonymous);
-  void collectTabularStyle(const IWORKStylePtr_t &style, bool anonymous);
-  void collectVectorStyle(const IWORKStylePtr_t &style, bool anonymous);
+  void collectStyle(const IWORKStylePtr_t &style, bool anonymous);
+
+  void setGraphicStyle(const IWORKStylePtr_t &style);
+  void setLayoutStyle(const IWORKStylePtr_t &style);
 
   void collectGeometry(const IWORKGeometryPtr_t &geometry);
 

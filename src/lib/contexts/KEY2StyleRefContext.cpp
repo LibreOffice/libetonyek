@@ -51,7 +51,9 @@ void KEY2StyleRefContext::endOfElement()
       if (dict.m_layoutStyles.end() != it)
         style = it->second;
     }
-    getCollector()->collectLayoutStyle(style, m_anonymous);
+    getCollector()->collectStyle(style, m_anonymous);
+    // TODO: this call is in the wrong place
+    getCollector()->setLayoutStyle(style);
     break;
   }
   case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style_ref :

@@ -70,43 +70,45 @@ void IWORKStyleContext::endOfElement()
   switch (m_id)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::cell_style :
-    getCollector()->collectCellStyle(IWORKStylePtr_t(), m_nested);
+    getCollector()->collectStyle(IWORKStylePtr_t(), m_nested);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::characterstyle :
   {
     const IWORKStylePtr_t style(new IWORKStyle(m_props, m_ident, m_parentIdent));
     if (getId())
       getDictionary().m_characterStyles[get(getId())] = style;
-    getCollector()->collectCharacterStyle(style, m_nested);
+    getCollector()->collectStyle(style, m_nested);
     break;
   }
   case IWORKToken::NS_URI_SF | IWORKToken::connection_style :
-    getCollector()->collectConnectionStyle(IWORKStylePtr_t(), m_nested);
+    getCollector()->collectStyle(IWORKStylePtr_t(), m_nested);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::graphic_style :
   {
     const IWORKStylePtr_t style(new IWORKStyle(m_props, m_ident, m_parentIdent));
     if (getId())
       getDictionary().m_graphicStyles[get(getId())] = style;
-    getCollector()->collectGraphicStyle(style, m_nested);
+    getCollector()->collectStyle(style, m_nested);
+    // TODO: this call is in the wrong place
+    getCollector()->setGraphicStyle(style);
     break;
   }
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
-    getCollector()->collectListStyle(IWORKStylePtr_t(), m_nested);
+    getCollector()->collectStyle(IWORKStylePtr_t(), m_nested);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
   {
     const IWORKStylePtr_t style(new IWORKStyle(m_props, m_ident, m_parentIdent));
     if (getId())
       getDictionary().m_paragraphStyles[get(getId())] = style;
-    getCollector()->collectParagraphStyle(style, m_nested);
+    getCollector()->collectStyle(style, m_nested);
     break;
   }
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_style :
-    getCollector()->collectTabularStyle(IWORKStylePtr_t(), m_nested);
+    getCollector()->collectStyle(IWORKStylePtr_t(), m_nested);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::vector_style :
-    getCollector()->collectVectorStyle(IWORKStylePtr_t(), m_nested);
+    getCollector()->collectStyle(IWORKStylePtr_t(), m_nested);
     break;
   default :
     ETONYEK_DEBUG_MSG(("unhandled style %d\n", m_id));

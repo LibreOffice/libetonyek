@@ -103,7 +103,9 @@ void KEY2StyleContext::endOfElement()
     const IWORKStylePtr_t style(new IWORKStyle(m_props, m_ident, m_parentIdent));
     if (getId())
       getDictionary().m_layoutStyles[get(getId())] = style;
-    getCollector()->collectLayoutStyle(style, m_nested);
+    getCollector()->collectStyle(style, m_nested);
+    // TODO: this call is in the wrong place
+    getCollector()->setLayoutStyle(style);
     break;
   }
   case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style :
@@ -111,11 +113,11 @@ void KEY2StyleContext::endOfElement()
     const IWORKStylePtr_t style(new IWORKStyle(m_props, m_ident, m_parentIdent));
     if (getId())
       getDictionary().m_placeholderStyles[get(getId())] = style;
-    getCollector()->collectPlaceholderStyle(style, m_nested);
+    getCollector()->collectStyle(style, m_nested);
     break;
   }
   case IWORKToken::NS_URI_SF | IWORKToken::slide_style :
-    getCollector()->collectSlideStyle(IWORKStylePtr_t(), m_nested);
+    getCollector()->collectStyle(IWORKStylePtr_t(), m_nested);
     break;
   default :
     m_base.endOfElement();

@@ -282,7 +282,11 @@ LayoutElement::LayoutElement(IWORKXMLParserState &state)
 void LayoutElement::attribute(const int name, const char *)
 {
   if ((IWORKToken::NS_URI_SF | IWORKToken::style) == name)
-    getCollector()->collectLayoutStyle(IWORKStylePtr_t(), false);
+  {
+    // TODO: fetch the style
+    getCollector()->collectStyle(IWORKStylePtr_t(), false);
+    getCollector()->setLayoutStyle(IWORKStylePtr_t());
+  }
 }
 
 IWORKXMLContextPtr_t LayoutElement::element(const int name)

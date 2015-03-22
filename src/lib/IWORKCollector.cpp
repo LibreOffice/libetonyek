@@ -261,14 +261,7 @@ IWORKCollector::~IWORKCollector()
   m_document->endDocument();
 }
 
-void IWORKCollector::collectCellStyle(const IWORKStylePtr_t &style, const bool anonymous)
-{
-  // TODO: implement me
-  (void) style;
-  (void) anonymous;
-}
-
-void IWORKCollector::collectCharacterStyle(const IWORKStylePtr_t &style, const bool anonymous)
+void IWORKCollector::collectStyle(const IWORKStylePtr_t &style, const bool anonymous)
 {
   assert(m_currentStylesheet);
 
@@ -280,24 +273,8 @@ void IWORKCollector::collectCharacterStyle(const IWORKStylePtr_t &style, const b
   }
 }
 
-void IWORKCollector::collectConnectionStyle(const IWORKStylePtr_t &style, const bool anonymous)
+void IWORKCollector::setGraphicStyle(const IWORKStylePtr_t &style)
 {
-  // TODO: implement me
-  (void) style;
-  (void) anonymous;
-}
-
-void IWORKCollector::collectGraphicStyle(const IWORKStylePtr_t &style, const bool anonymous)
-{
-  assert(m_currentStylesheet);
-
-  if (bool(style))
-  {
-    if (style->getIdent() && !anonymous)
-      m_currentStylesheet->m_styles[get(style->getIdent())] = style;
-    m_newStyles.push_back(style);
-  }
-
   if (!m_levelStack.empty())
   {
     m_levelStack.top().m_graphicStyle = style;
@@ -305,52 +282,10 @@ void IWORKCollector::collectGraphicStyle(const IWORKStylePtr_t &style, const boo
   }
 }
 
-void IWORKCollector::collectLayoutStyle(const IWORKStylePtr_t &style, const bool anonymous)
+void IWORKCollector::setLayoutStyle(const IWORKStylePtr_t &style)
 {
-  assert(m_currentStylesheet);
-
-  if (bool(style))
-  {
-    if (style->getIdent() && !anonymous)
-      m_currentStylesheet->m_styles[get(style->getIdent())] = style;
-    m_newStyles.push_back(style);
-
-    if (bool(m_currentText))
-      m_currentText->setLayoutStyle(style);
-  }
-}
-
-void IWORKCollector::collectListStyle(const IWORKStylePtr_t &style, const bool anonymous)
-{
-  // TODO: implement me
-  (void) style;
-  (void) anonymous;
-}
-
-void IWORKCollector::collectParagraphStyle(const IWORKStylePtr_t &style, const bool anonymous)
-{
-  assert(m_currentStylesheet);
-
-  if (bool(style))
-  {
-    if (style->getIdent() && !anonymous)
-      m_currentStylesheet->m_styles[get(style->getIdent())] = style;
-    m_newStyles.push_back(style);
-  }
-}
-
-void IWORKCollector::collectTabularStyle(const IWORKStylePtr_t &style, const bool anonymous)
-{
-  // TODO: implement me
-  (void) style;
-  (void) anonymous;
-}
-
-void IWORKCollector::collectVectorStyle(const IWORKStylePtr_t &style, const bool anonymous)
-{
-  // TODO: implement me
-  (void) style;
-  (void) anonymous;
+  if (bool(m_currentText))
+    m_currentText->setLayoutStyle(style);
 }
 
 void IWORKCollector::collectGeometry(const IWORKGeometryPtr_t &geometry)
