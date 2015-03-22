@@ -60,6 +60,20 @@ private:
   boost::optional<bool> m_verticalFlip;
 };
 
+class IWORKMediaContext : public IWORKXMLElementContextBase
+{
+public:
+  explicit IWORKMediaContext(IWORKXMLParserState &state);
+
+private:
+  virtual void startOfElement();
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  IWORKMediaContentPtr_t m_content;
+};
+
 class IWORKPositionContext : public IWORKXMLEmptyContextBase
 {
 public:
@@ -73,6 +87,18 @@ private:
   boost::optional<IWORKPosition> &m_position;
   boost::optional<double> m_x;
   boost::optional<double> m_y;
+};
+
+class IWORKRefContext : public IWORKXMLEmptyContextBase
+{
+public:
+  IWORKRefContext(IWORKXMLParserState &state, boost::optional<ID_t> &ref);
+
+private:
+  virtual void endOfElement();
+
+private:
+  boost::optional<ID_t> &m_ref;
 };
 
 class IWORKSizeContext : public IWORKXMLEmptyContextBase
