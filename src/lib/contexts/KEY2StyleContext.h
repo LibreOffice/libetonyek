@@ -44,24 +44,6 @@ private:
   boost::optional<std::string> m_parentIdent;
 };
 
-class KEY2StyleRefContext : public KEY2XMLEmptyContextBase
-{
-public:
-  KEY2StyleRefContext(KEY2ParserState &state, int id, bool nested = false, bool anonymous = false);
-
-private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
-
-  KEYDictionary &getDictionary();
-
-private:
-  IWORKStyleRefContext m_base;
-  const int m_id;
-  const bool m_nested;
-  const bool m_anonymous;
-};
-
 }
 
 #endif // KEY2STYLECONTEXT_H_INCLUDED

@@ -10,7 +10,7 @@
 #include "KEY2StyleContext.h"
 
 #include "libetonyek_xml.h"
-#include "IWORKPropertyMapContext.h"
+#include "IWORKPropertyMapElement.h"
 #include "KEY2ParserState.h"
 #include "KEY2Token.h"
 #include "KEYCollector.h"
@@ -124,66 +124,6 @@ void KEY2StyleContext::endOfElement()
 }
 
 KEYDictionary &KEY2StyleContext::getDictionary()
-{
-  return getState().getDictionary();
-}
-
-KEY2StyleRefContext::KEY2StyleRefContext(KEY2ParserState &state, const int id, const bool nested, const bool anonymous)
-  : KEY2XMLEmptyContextBase(state)
-  , m_base(state, id, nested)
-  , m_id(id)
-  , m_nested(nested)
-  , m_anonymous(anonymous)
-{
-}
-
-void KEY2StyleRefContext::attribute(const int name, const char *const value)
-{
-  KEY2XMLEmptyContextBase::attribute(name, value);
-  m_base.attribute(name, value);
-}
-
-void KEY2StyleRefContext::endOfElement()
-{
-  const boost::optional<std::string> dummyIdent;
-  const boost::optional<IWORKPropertyMap> dummyProps;
-
-  // TODO: need to get the style
-  switch (m_id)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
-  {
-    IWORKStylePtr_t style;
-    if (getRef())
-    {
-      KEYDictionary &dict = getDictionary();
-      const IWORKStyleMap_t::const_iterator it = dict.m_layoutStyles.find(get(getRef()));
-      if (dict.m_layoutStyles.end() != it)
-        style = it->second;
-    }
-    getCollector()->collectLayoutStyle(style, m_anonymous);
-    break;
-  }
-  case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style_ref :
-  {
-    IWORKStylePtr_t style;
-    if (getRef())
-    {
-      KEYDictionary &dict = getDictionary();
-      const IWORKStyleMap_t::const_iterator it = dict.m_placeholderStyles.find(get(getRef()));
-      if (dict.m_placeholderStyles.end() != it)
-        style = it->second;
-    }
-    getCollector()->collectPlaceholderStyle(style, m_anonymous);
-    break;
-  }
-  default :
-    m_base.endOfElement();
-    break;
-  }
-}
-
-KEYDictionary &KEY2StyleRefContext::getDictionary()
 {
   return getState().getDictionary();
 }

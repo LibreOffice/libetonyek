@@ -7,31 +7,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "IWORKXMLContexts.h"
+#ifndef IWORKREFCONTEXT_H_INCLUDED
+#define IWORKREFCONTEXT_H_INCLUDED
 
-#include <string>
+#include <boost/optional.hpp>
 
-#include <boost/lexical_cast.hpp>
-
-#include "libetonyek_utils.h"
-#include "libetonyek_xml.h"
-#include "IWORKCollector.h"
-#include "IWORKDictionary.h"
-#include "IWORKParser.h"
-#include "IWORKPropertyMap.h"
-#include "IWORKToken.h"
-#include "IWORKXMLParserState.h"
+#include "IWORKTypes_fwd.h"
+#include "IWORKXMLContextBase.h"
 
 namespace libetonyek
 {
 
-using boost::lexical_cast;
-using boost::optional;
+class IWORKRefContext : public IWORKXMLEmptyContextBase
+{
+public:
+  IWORKRefContext(IWORKXMLParserState &state, boost::optional<ID_t> &ref);
 
-using std::string;
+private:
+  virtual void endOfElement();
 
-
+private:
+  boost::optional<ID_t> &m_ref;
+};
 
 }
+
+#endif // IWORKREFCONTEXT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

@@ -7,31 +7,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "IWORKXMLContexts.h"
+#ifndef IWORKTEXTBODYELEMENT_H_INCLUDED
+#define IWORKTEXTBODYELEMENT_H_INCLUDED
 
-#include <string>
-
-#include <boost/lexical_cast.hpp>
-
-#include "libetonyek_utils.h"
-#include "libetonyek_xml.h"
-#include "IWORKCollector.h"
-#include "IWORKDictionary.h"
-#include "IWORKParser.h"
-#include "IWORKPropertyMap.h"
-#include "IWORKToken.h"
-#include "IWORKXMLParserState.h"
+#include "IWORKXMLContextBase.h"
 
 namespace libetonyek
 {
 
-using boost::lexical_cast;
-using boost::optional;
+class IWORKTextBodyElement : public IWORKXMLElementContextBase
+{
+public:
+  explicit IWORKTextBodyElement(IWORKXMLParserState &state);
 
-using std::string;
+protected:
+  virtual IWORKXMLContextPtr_t element(int name);
 
-
+private:
+  bool m_layout;
+  bool m_para;
+};
 
 }
+
+#endif // IWORKTEXTBODYELEMENT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

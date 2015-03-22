@@ -7,30 +7,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef IWORKPROPERTYMAPCONTEXT_H_INCLUDED
-#define IWORKPROPERTYMAPCONTEXT_H_INCLUDED
+#ifndef IWORKMEDIAELEMENT_H_INCLUDED
+#define IWORKMEDIAELEMENT_H_INCLUDED
 
+#include "IWORKTypes_fwd.h"
 #include "IWORKXMLContextBase.h"
 
 namespace libetonyek
 {
 
-class IWORKPropertyMap;
-class IWORKXMLParserState;
-
-class IWORKPropertyMapElement : public IWORKXMLElementContextBase
+class IWORKMediaElement : public IWORKXMLElementContextBase
 {
 public:
-  IWORKPropertyMapElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-
-  virtual IWORKXMLContextPtr_t element(int name);
+  explicit IWORKMediaElement(IWORKXMLParserState &state);
 
 private:
-  IWORKPropertyMap &m_propMap;
+  virtual void startOfElement();
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  IWORKMediaContentPtr_t m_content;
 };
 
 }
 
-#endif // IWORKPROPERTYMAPCONTEXT_H_INCLUDED
+#endif // IWORKMEDIAELEMENT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

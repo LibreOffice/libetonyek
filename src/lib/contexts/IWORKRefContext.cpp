@@ -7,30 +7,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "IWORKXMLContexts.h"
+#include "IWORKRefContext.h"
 
-#include <string>
-
-#include <boost/lexical_cast.hpp>
-
-#include "libetonyek_utils.h"
-#include "libetonyek_xml.h"
-#include "IWORKCollector.h"
-#include "IWORKDictionary.h"
-#include "IWORKParser.h"
-#include "IWORKPropertyMap.h"
-#include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
 {
 
-using boost::lexical_cast;
-using boost::optional;
+IWORKRefContext::IWORKRefContext(IWORKXMLParserState &state, boost::optional<ID_t> &ref)
+  : IWORKXMLEmptyContextBase(state)
+  , m_ref(ref)
+{
+}
 
-using std::string;
-
-
+void IWORKRefContext::endOfElement()
+{
+  m_ref = getRef();
+}
 
 }
 

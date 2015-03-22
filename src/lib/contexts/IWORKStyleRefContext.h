@@ -7,43 +7,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef IWORKSTYLECONTEXT_H_INCLUDED
-#define IWORKSTYLECONTEXT_H_INCLUDED
+#ifndef IWORKSTYLEREFCONTEXT_H_INCLUDED
+#define IWORKSTYLEREFCONTEXT_H_INCLUDED
 
-#include <string>
-
-#include <boost/optional.hpp>
-
-#include "IWORKPropertyMap.h"
 #include "IWORKXMLContextBase.h"
 
 namespace libetonyek
 {
 
 struct IWORKDictionary;
-
-class IWORKStyleContext : public IWORKXMLElementContextBase
-{
-public:
-  IWORKStyleContext(IWORKXMLParserState &state, int id, bool nested = false);
-  IWORKStyleContext(IWORKXMLParserState &state, int id, IWORKPropertyMap &props, bool nested = false);
-
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-
-  IWORKDictionary &getDictionary();
-
-private:
-  const int m_id;
-  const bool m_nested;
-  IWORKPropertyMap m_ownProps;
-  IWORKPropertyMap &m_props;
-  boost::optional<std::string> m_ident;
-  boost::optional<std::string> m_parentIdent;
-};
 
 class IWORKStyleRefContext : public IWORKXMLEmptyContextBase
 {
@@ -64,6 +36,6 @@ private:
 
 }
 
-#endif // IWORKSTYLECONTEXT_H_INCLUDED
+#endif // IWORKSTYLEREFCONTEXT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

@@ -7,34 +7,34 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef IWORKTABULARINFOCONTEXT_H_INCLUDED
-#define IWORKTABULARINFOCONTEXT_H_INCLUDED
+#ifndef IWORKPOSITIONELEMENT_H_INCLUDED
+#define IWORKPOSITIONELEMENT_H_INCLUDED
 
-#include <boost/shared_ptr.hpp>
+#include <boost/optional.hpp>
 
+#include "IWORKTypes_fwd.h"
 #include "IWORKXMLContextBase.h"
 
 namespace libetonyek
 {
 
-class IWORKTabularInfoElement : public IWORKXMLElementContextBase
+class IWORKPositionElement : public IWORKXMLEmptyContextBase
 {
-  struct Impl;
-
 public:
-  explicit IWORKTabularInfoElement(IWORKXMLParserState &state);
+  IWORKPositionElement(IWORKXMLParserState &state, boost::optional<IWORKPosition> &position);
 
-private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
+protected:
+  virtual void attribute(int name, const char *value);
   virtual void endOfElement();
 
 private:
-  boost::shared_ptr<Impl> m_impl;
+  boost::optional<IWORKPosition> &m_position;
+  boost::optional<double> m_x;
+  boost::optional<double> m_y;
 };
 
 }
 
-#endif // IWORKTABULARINFOCONTEXT_H_INCLUDED
+#endif // IWORKPOSITIONELEMENT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

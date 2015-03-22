@@ -14,7 +14,7 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_include_HEADERS = \
 	$(top_srcdir)/inc/libetonyek/libetonyek.h \
 	$(top_srcdir)/inc/libetonyek/EtonyekDocument.h
 
-AM_CXXFLAGS = -I$(top_srcdir)/inc $(REVENGE_CFLAGS) $(XML_CFLAGS) $(ZLIB_CFLAGS) $(BOOST_CFLAGS) $(DEBUG_CXXFLAGS) -DLIBETONYEK_BUILD
+AM_CXXFLAGS = -I$(top_srcdir)/inc -Icontexts $(REVENGE_CFLAGS) $(XML_CFLAGS) $(ZLIB_CFLAGS) $(BOOST_CFLAGS) $(DEBUG_CXXFLAGS) -DLIBETONYEK_BUILD
 
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_LIBADD  = libetonyek_internal.la $(REVENGE_LIBS) $(XML_LIBS) $(ZLIB_LIBS) @LIBETONYEK_WIN32_RESOURCE@
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_DEPENDENCIES = libetonyek_internal.la @LIBETONYEK_WIN32_RESOURCE@
@@ -47,16 +47,12 @@ libetonyek_internal_la_SOURCES = \
 	IWORKPresentationRedirector.h \
 	IWORKPropertyMap.cpp \
 	IWORKPropertyMap.h \
-	IWORKPropertyMapContext.cpp \
-	IWORKPropertyMapContext.h \
 	IWORKShape.cpp \
 	IWORKShape.h \
 	IWORKSpreadsheetRedirector.cpp \
 	IWORKSpreadsheetRedirector.h \
 	IWORKStyle.cpp \
 	IWORKStyle.h \
-	IWORKStyleContext.cpp \
-	IWORKStyleContext.h \
 	IWORKStyles.cpp \
 	IWORKStyles.h \
 	IWORKStylesheet.cpp \
@@ -65,8 +61,6 @@ libetonyek_internal_la_SOURCES = \
 	IWORKStyleStack.h \
 	IWORKTable.cpp \
 	IWORKTable.h \
-	IWORKTabularInfoContext.cpp \
-	IWORKTabularInfoContext.h \
 	IWORKText.cpp \
 	IWORKText.h \
 	IWORKText_fwd.h \
@@ -81,8 +75,6 @@ libetonyek_internal_la_SOURCES = \
 	IWORKTypes_fwd.h \
 	IWORKXMLContext.cpp \
 	IWORKXMLContext.h \
-	IWORKXMLContexts.cpp \
-	IWORKXMLContexts.h \
 	IWORKXMLContextBase.cpp \
 	IWORKXMLContextBase.h \
 	IWORKXMLParserState.cpp \
@@ -99,8 +91,6 @@ libetonyek_internal_la_SOURCES = \
 	KEY2Parser.h \
 	KEY2ParserState.cpp \
 	KEY2ParserState.h \
-	KEY2StyleContext.cpp \
-	KEY2StyleContext.h \
 	KEY2Token.cpp \
 	KEY2Token.h \
 	KEYCollector.cpp \
@@ -132,6 +122,32 @@ libetonyek_internal_la_SOURCES = \
 	PAG1ParserState.h \
 	PAG1Token.cpp \
 	PAG1Token.h \
+	contexts/IWORKColorElement.cpp \
+	contexts/IWORKColorElement.h \
+	contexts/IWORKGeometryElement.cpp \
+	contexts/IWORKGeometryElement.h \
+	contexts/IWORKMediaElement.cpp \
+	contexts/IWORKMediaElement.h \
+	contexts/IWORKPositionElement.cpp \
+	contexts/IWORKPositionElement.h \
+	contexts/IWORKPropertyMapElement.cpp \
+	contexts/IWORKPropertyMapElement.h \
+	contexts/IWORKRefContext.cpp \
+	contexts/IWORKRefContext.h \
+	contexts/IWORKSizeElement.cpp \
+	contexts/IWORKSizeElement.h \
+	contexts/IWORKStyleContext.cpp \
+	contexts/IWORKStyleContext.h \
+	contexts/IWORKStyleRefContext.cpp \
+	contexts/IWORKStyleRefContext.h \
+	contexts/IWORKTabularInfoElement.cpp \
+	contexts/IWORKTabularInfoElement.h \
+	contexts/IWORKTextBodyElement.cpp \
+	contexts/IWORKTextBodyElement.h \
+	contexts/KEY2StyleContext.cpp \
+	contexts/KEY2StyleContext.h \
+	contexts/KEY2StyleRefContext.cpp \
+	contexts/KEY2StyleRefContext.h \
 	libetonyek_utils.cpp \
 	libetonyek_utils.h \
 	libetonyek_xml.cpp \

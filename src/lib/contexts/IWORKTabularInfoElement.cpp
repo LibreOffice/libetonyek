@@ -7,7 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "IWORKTabularInfoContext.h"
+#include "IWORKTabularInfoElement.h"
 
 #include <boost/lexical_cast.hpp>
 

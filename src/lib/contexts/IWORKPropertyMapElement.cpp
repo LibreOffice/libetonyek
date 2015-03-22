@@ -7,17 +7,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "IWORKPropertyMapContext.h"
+#include "IWORKPropertyMapElement.h"
 
 #include <boost/lexical_cast.hpp>
 
 #include "libetonyek_xml.h"
 #include "IWORKCollector.h"
+#include "IWORKColorElement.h"
 #include "IWORKDictionary.h"
+#include "IWORKGeometryElement.h"
 #include "IWORKStyleContext.h"
 #include "IWORKStyles.h"
+#include "IWORKStyleRefContext.h"
 #include "IWORKToken.h"
-#include "IWORKXMLContexts.h"
 #include "IWORKXMLParserState.h"
 #include "IWORKToken.h"
 
