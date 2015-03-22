@@ -15,7 +15,6 @@ namespace libetonyek
 IWORKZoneManager::IWORKZoneManager()
   : m_zoneList()
   , m_activeZones()
-  , m_activeZonesTransiency()
   , m_current(0)
   , m_counter(0)
 {
@@ -24,27 +23,34 @@ IWORKZoneManager::IWORKZoneManager()
 IWORKZoneManager::~IWORKZoneManager()
 {
   assert(m_activeZones.empty());
-  assert(m_activeZonesTransiency.empty());
 }
 
 IWORKZoneID_t IWORKZoneManager::open()
 {
-  return doOpen(false);
+  const IWORKZoneID_t currentId = m_counter;
+
+  m_current = &m_zoneList.insert(ZoneList_t::value_type(m_counter++, IWORKOutputElements())).first->second;
+  m_activeZones.push(currentId);
+
+  return currentId;
 }
 
 void IWORKZoneManager::close()
 {
-  doClose(false);
-}
+  assert(!m_activeZones.empty());
 
-IWORKZoneID_t IWORKZoneManager::openTransient()
-{
-  return doOpen(true);
-}
+  m_activeZones.pop();
 
-void IWORKZoneManager::closeTransient()
-{
-  doClose(true);
+  if (m_activeZones.empty())
+  {
+    m_current = 0;
+  }
+  else
+  {
+    const ZoneList_t::iterator it = m_zoneList.find(m_activeZones.top());
+    assert(m_zoneList.end() != it);
+    m_current = &it->second;
+  }
 }
 
 bool IWORKZoneManager::active() const
@@ -84,45 +90,6 @@ IWORKZoneID_t IWORKZoneManager::getCurrentId() const
 {
   assert(!m_activeZones.empty());
   return m_activeZones.top();
-}
-
-IWORKZoneID_t IWORKZoneManager::doOpen(const bool transient)
-{
-  const IWORKZoneID_t currentId = m_counter;
-
-  m_current = &m_zoneList.insert(ZoneList_t::value_type(m_counter++, IWORKOutputElements())).first->second;
-  m_activeZones.push(currentId);
-  m_activeZonesTransiency.push(transient);
-
-  return currentId;
-}
-
-void IWORKZoneManager::doClose(const bool transient)
-{
-  assert(!m_activeZones.empty());
-  assert(!m_activeZonesTransiency.empty());
-  assert(m_activeZonesTransiency.top() == transient);
-
-  if (m_activeZonesTransiency.top())
-  {
-    const ZoneList_t::iterator it = m_zoneList.find(m_activeZones.top());
-    assert(m_zoneList.end() != it);
-    m_zoneList.erase(it);
-  }
-
-  m_activeZones.pop();
-  m_activeZonesTransiency.pop();
-
-  if (m_activeZones.empty())
-  {
-    m_current = 0;
-  }
-  else
-  {
-    const ZoneList_t::iterator it = m_zoneList.find(m_activeZones.top());
-    assert(m_zoneList.end() != it);
-    m_current = &it->second;
-  }
 }
 
 }

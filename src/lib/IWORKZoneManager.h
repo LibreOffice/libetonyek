@@ -34,8 +34,7 @@ public:
   IWORKZoneID_t open();
   void close();
 
-  IWORKZoneID_t openTransient();
-  void closeTransient();
+  void remove(IWORKZoneID_t id);
 
   bool active() const;
   bool exists(IWORKZoneID_t id) const;
@@ -49,13 +48,8 @@ public:
   IWORKZoneID_t getCurrentId() const;
 
 private:
-  IWORKZoneID_t doOpen(bool transient);
-  void doClose(bool transient);
-
-private:
   ZoneList_t m_zoneList;
   std::stack<IWORKZoneID_t> m_activeZones;
-  std::stack<bool> m_activeZonesTransiency;
   IWORKOutputElements *m_current;
   unsigned m_counter;
 };
