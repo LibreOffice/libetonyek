@@ -2299,7 +2299,7 @@ IWORKXMLContextPtr_t PresentationContext::element(const int name)
 {
   if (m_pendingSize)
   {
-    getCollector()->collectPresentation(m_size);
+    getCollector()->collectPresentationSize(m_size);
     m_pendingSize = false;
   }
 
