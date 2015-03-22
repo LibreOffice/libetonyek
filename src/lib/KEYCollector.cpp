@@ -57,10 +57,9 @@ void KEYCollector::collectSlideStyle(const IWORKStylePtr_t &style, const bool an
   (void) anonymous;
 }
 
-void KEYCollector::collectPresentationSize(const boost::optional<IWORKSize> &size)
+void KEYCollector::collectPresentationSize(const IWORKSize &size)
 {
-  if (size)
-    m_size = get(size);
+  m_size = size;
 }
 
 KEYLayerPtr_t KEYCollector::collectLayer()

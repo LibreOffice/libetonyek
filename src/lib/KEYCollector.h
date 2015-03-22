@@ -29,7 +29,7 @@ public:
   void collectPlaceholderStyle(const IWORKStylePtr_t &style, bool anonymous);
   void collectSlideStyle(const IWORKStylePtr_t &style, bool anonymous);
 
-  void collectPresentationSize(const boost::optional<IWORKSize> &size);
+  void collectPresentationSize(const IWORKSize &size);
 
   KEYLayerPtr_t collectLayer();
   void insertLayer(const KEYLayerPtr_t &layer);
