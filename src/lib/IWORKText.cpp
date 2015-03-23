@@ -151,6 +151,52 @@ librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, cons
 
 }
 
+void IWORKText::draw(const IWORKTransformation &trafo, IWORKOutputElements &elements) const
+{
+  librevenge::RVNGPropertyList props;
+
+  double x = 0;
+  double y = 0;
+  trafo(x, y);
+  props.insert("svg:x", pt2in(x));
+  props.insert("svg:y", pt2in(y));
+
+  if (bool(m_boundingBox))
+  {
+    double w = m_boundingBox->m_naturalSize.m_width;
+    double h = m_boundingBox->m_naturalSize.m_height;
+    trafo(w, h, true);
+
+    props.insert("svg:width", pt2in(w));
+    props.insert("svg:height", pt2in(h));
+  }
+
+  IWORKPath path;
+  path.appendMoveTo(0, 0);
+  path.appendLineTo(0, 1);
+  path.appendLineTo(1, 1);
+  path.appendLineTo(1, 0);
+  path.appendClose();
+  path *= trafo;
+
+  props.insert("svg:d", path.toWPG());
+
+  if (m_object)
+    elements.addStartTextObject(props);
+
+  for (IWORKText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
+  {
+    const librevenge::RVNGPropertyList paraProps(makeParaPropList((*it)->style, (*it)->m_styleStack));
+    elements.addOpenParagraph(paraProps);
+    // drawAll((*it)->objects, document);
+    elements.addCloseParagraph();
+  }
+
+  if (m_object)
+    elements.addEndTextObject();
+}
+
+
 namespace
 {
 
@@ -228,79 +274,6 @@ void LineBreakObject::draw(IWORKDocumentInterface *const document)
   document->closeParagraph();
   const librevenge::RVNGPropertyList props(makeParaPropList(IWORKStylePtr_t(), m_styleStack));
   document->openParagraph(props);
-}
-
-}
-
-namespace
-{
-
-class TextObject : public IWORKObject
-{
-public:
-  TextObject(const IWORKGeometryPtr_t &boundingBox, const IWORKText::ParagraphList_t &paragraphs, bool object, const IWORKTransformation &trafo);
-
-private:
-  virtual void draw(IWORKDocumentInterface *document);
-
-private:
-  const IWORKGeometryPtr_t m_boundingBox;
-  const IWORKText::ParagraphList_t m_paragraphs;
-  const bool m_object;
-  const IWORKTransformation m_trafo;
-};
-
-TextObject::TextObject(const IWORKGeometryPtr_t &boundingBox, const IWORKText::ParagraphList_t &paragraphs, const bool object, const IWORKTransformation &trafo)
-  : m_boundingBox(boundingBox)
-  , m_paragraphs(paragraphs)
-  , m_object(object)
-  , m_trafo(trafo)
-{
-}
-
-void TextObject::draw(IWORKDocumentInterface *const document)
-{
-  librevenge::RVNGPropertyList props;
-
-  double x = 0;
-  double y = 0;
-  m_trafo(x, y);
-  props.insert("svg:x", pt2in(x));
-  props.insert("svg:y", pt2in(y));
-
-  if (bool(m_boundingBox))
-  {
-    double w = m_boundingBox->m_naturalSize.m_width;
-    double h = m_boundingBox->m_naturalSize.m_height;
-    m_trafo(w, h, true);
-
-    props.insert("svg:width", pt2in(w));
-    props.insert("svg:height", pt2in(h));
-  }
-
-  IWORKPath path;
-  path.appendMoveTo(0, 0);
-  path.appendLineTo(0, 1);
-  path.appendLineTo(1, 1);
-  path.appendLineTo(1, 0);
-  path.appendClose();
-  path *= m_trafo;
-
-  props.insert("svg:d", path.toWPG());
-
-  if (m_object)
-    document->startTextObject(props);
-
-  for (IWORKText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
-  {
-    const librevenge::RVNGPropertyList paraProps(makeParaPropList((*it)->style, (*it)->m_styleStack));
-    document->openParagraph(paraProps);
-    drawAll((*it)->objects, document);
-    document->closeParagraph();
-  }
-
-  if (m_object)
-    document->endTextObject();
 }
 
 }
@@ -414,12 +387,6 @@ void IWORKText::insertDeferredLineBreaks()
 bool IWORKText::empty() const
 {
   return m_paragraphs.empty();
-}
-
-IWORKObjectPtr_t makeObject(const IWORKTextPtr_t &text, const IWORKTransformation &trafo)
-{
-  const IWORKObjectPtr_t object(new TextObject(text->getBoundingBox(), text->getParagraphs(), text->isObject(), trafo));
-  return object;
 }
 
 }

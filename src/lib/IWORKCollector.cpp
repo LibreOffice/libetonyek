@@ -162,6 +162,11 @@ void drawImage(const IWORKImagePtr_t &image, const IWORKTransformation &trafo, I
 
 }
 
+void drawText(const IWORKTextPtr_t &text, const IWORKTransformation &trafo, IWORKOutputElements &elements)
+{
+  text->draw(trafo, elements);
+}
+
 void drawLine(const IWORKLinePtr_t &line, const IWORKTransformation &trafo, IWORKOutputElements &elements)
 {
   // TODO: transform the line
@@ -215,10 +220,7 @@ void drawShape(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo, I
     elements.addDrawPath(props);
 
     if (bool(shape->m_text))
-    {
-      IWORKOutputElementsRedirector redirector(elements);
-      makeObject(shape->m_text, trafo)->draw(&redirector);
-    }
+      drawText(shape->m_text,trafo,elements);
   }
 }
 
@@ -431,6 +433,8 @@ void IWORKCollector::collectText(const IWORKStylePtr_t &style, const std::string
   assert(bool(m_currentText));
 
   m_currentText->insertText(text, style);
+  drawText(m_currentText, m_levelStack.top().m_trafo, m_zoneManager.getCurrent());
+
 }
 
 void IWORKCollector::collectTab()
@@ -465,6 +469,7 @@ void IWORKCollector::collectTableCell(const unsigned row, const unsigned column,
     text->insertText(get(content), IWORKStylePtr_t());
     text->closeParagraph();
 
+    //Stuck
     textObject = makeObject(text, m_levelStack.top().m_trafo);
   }
   else if (bool(m_currentText))
