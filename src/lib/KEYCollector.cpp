@@ -122,11 +122,9 @@ KEYPlaceholderPtr_t KEYCollector::collectTextPlaceholder(const IWORKStylePtr_t &
     const KEYPlaceholderStyle placeholderStyle(placeholder->m_style, m_styleStack);
     placeholder->m_geometry = placeholderStyle.getGeometry();
   }
-  if (!m_currentText->empty())
-  {
-    m_currentText->setBoundingBox(placeholder->m_geometry);
-    placeholder->m_text = m_currentText;
-  }
+
+  m_currentText->setBoundingBox(placeholder->m_geometry);
+  placeholder->m_text = m_currentText;
 
   m_currentText.reset();
 
@@ -154,8 +152,7 @@ void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
 
 void KEYCollector::collectNote()
 {
-  IWORKOutputElementsRedirector redirector(m_notes);
-  makeObject(m_currentText, m_levelStack.top().m_trafo)->draw(&redirector);
+  m_currentText->draw(m_levelStack.top().m_trafo, m_notes);
   m_currentText.reset();
 }
 
@@ -279,7 +276,7 @@ void KEYCollector::drawStickyNotes()
 
     m_document->openComment(props);
     if (bool(it->m_text))
-      makeObject(it->m_text, m_levelStack.top().m_trafo)->draw(m_document);
+      (it->m_text)->draw(m_levelStack.top().m_trafo, m_zoneManager.getCurrent());
     m_document->closeComment();
   }
 }
