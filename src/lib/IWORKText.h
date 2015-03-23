@@ -17,6 +17,7 @@
 #include "IWORKObject.h"
 #include "IWORKStyle_fwd.h"
 #include "IWORKStyleStack.h"
+#include "IWORKOutputElements.h"
 
 namespace libetonyek
 {
@@ -25,11 +26,6 @@ class IWORKTransformation;
 
 class IWORKText
 {
-  struct Paragraph;
-  typedef boost::shared_ptr<Paragraph> ParagraphPtr_t;
-
-public:
-  typedef std::deque<ParagraphPtr_t> ParagraphList_t;
 
 public:
   explicit IWORKText(bool object = true);
@@ -47,26 +43,21 @@ public:
   void insertLineBreak();
 
   const IWORKStylePtr_t &getLayoutStyle() const;
-  const ParagraphList_t &getParagraphs() const;
   bool isObject() const;
 
   bool empty() const;
 
-private:
-  void insertDeferredLineBreaks();
+  void draw(const IWORKTransformation &trafo, IWORKOutputElements &elements);
 
 private:
   IWORKStyleStack m_styleStack;
   IWORKStylePtr_t m_layoutStyle;
-  ParagraphList_t m_paragraphs;
-  ParagraphPtr_t m_currentParagraph;
   int m_lineBreaks;
   const bool m_object;
 
   IWORKGeometryPtr_t m_boundingBox;
+  IWORKOutputElements m_elements;
 };
-
-IWORKObjectPtr_t makeObject(const IWORKTextPtr_t &text, const IWORKTransformation &trafo);
 
 }
 
