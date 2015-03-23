@@ -37,6 +37,34 @@ using std::string;
 namespace
 {
 
+class OutputElementsObject : public IWORKObject
+{
+public:
+  explicit OutputElementsObject(const IWORKOutputElements &elements);
+
+private:
+  virtual void draw(IWORKDocumentInterface *document);
+
+private:
+  const IWORKOutputElements m_elements;
+};
+
+OutputElementsObject::OutputElementsObject(const IWORKOutputElements &elements)
+  : m_elements(elements)
+{
+}
+
+void OutputElementsObject::draw(IWORKDocumentInterface *const document)
+{
+  m_elements.write(document);
+}
+
+}
+
+
+namespace
+{
+
 const unsigned char SIGNATURE_PDF[] = { '%', 'P', 'D', 'F' };
 const unsigned char SIGNATURE_PNG[] = { 0x89, 'P', 'N', 'G', 0x0d, 0x0a, 0x1a, 0x0a };
 const unsigned char SIGNATURE_JPEG[] = { 0xff, 0xd8 };
@@ -162,6 +190,11 @@ void drawImage(const IWORKImagePtr_t &image, const IWORKTransformation &trafo, I
 
 }
 
+void drawText(const IWORKTextPtr_t &text, const IWORKTransformation &trafo, IWORKOutputElements &elements)
+{
+  text->draw(trafo, elements);
+}
+
 void drawLine(const IWORKLinePtr_t &line, const IWORKTransformation &trafo, IWORKOutputElements &elements)
 {
   // TODO: transform the line
@@ -215,10 +248,7 @@ void drawShape(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo, I
     elements.addDrawPath(props);
 
     if (bool(shape->m_text))
-    {
-      IWORKOutputElementsRedirector redirector(elements);
-      makeObject(shape->m_text, trafo)->draw(&redirector);
-    }
+      drawText(shape->m_text,trafo,elements);
   }
 }
 
@@ -454,22 +484,26 @@ void IWORKCollector::collectTableSizes(const IWORKTable::RowSizes_t &rowSizes, c
 
 void IWORKCollector::collectTableCell(const unsigned row, const unsigned column, const boost::optional<std::string> &content, const unsigned rowSpan, const unsigned columnSpan)
 {
+  IWORKOutputElements elements;
   IWORKObjectPtr_t textObject;
 
   if (bool(content))
   {
     assert(!m_currentText || m_currentText->empty());
 
-    IWORKTextPtr_t text(new IWORKText(false));
-    text->openParagraph(IWORKStylePtr_t());
-    text->insertText(get(content), IWORKStylePtr_t());
-    text->closeParagraph();
+    librevenge::RVNGPropertyList props;
+    elements.addOpenParagraph(props);
+    elements.addOpenSpan(props);
+    elements.addInsertText(librevenge::RVNGString(get(content).c_str()));
+    elements.addCloseSpan();
+    elements.addCloseParagraph();
 
-    textObject = makeObject(text, m_levelStack.top().m_trafo);
+    textObject = IWORKObjectPtr_t(new OutputElementsObject(elements));
   }
   else if (bool(m_currentText))
   {
-    textObject = makeObject(m_currentText, m_levelStack.top().m_trafo);
+    m_currentText->draw(m_levelStack.top().m_trafo, elements);
+    textObject = IWORKObjectPtr_t(new OutputElementsObject(elements));
     m_currentText.reset();
   }
 
