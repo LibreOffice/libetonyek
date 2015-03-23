@@ -37,6 +37,10 @@ struct IWORKShape
 
 typedef boost::shared_ptr<IWORKShape> IWORKShapePtr_t;
 
+/** Object creator function for shape.
+ */
+IWORKObjectPtr_t makeObject(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo);
+
 /** Path creator functions for stock shapes.
  */
 IWORKPathPtr_t makePolygonPath(const IWORKSize &size, unsigned edges);
@@ -46,7 +50,7 @@ IWORKPathPtr_t makeArrowPath(const IWORKSize &size, double headWidth, double ste
 IWORKPathPtr_t makeDoubleArrowPath(const IWORKSize &size, double headWidth, double stemThickness);
 IWORKPathPtr_t makeStarPath(const IWORKSize &size, unsigned points, double innerRadius);
 IWORKPathPtr_t makeConnectionPath(const IWORKSize &size, double middleX, double middleY);
-
+IWORKPathPtr_t makeCircle(const IWORKSize &size,const double centreX,const double centreY, const double radius);
 IWORKPathPtr_t makeCalloutPath(const IWORKSize &size, double radius, double tailSize, double tailX, double tailY);
 IWORKPathPtr_t makeQuoteBubblePath(const IWORKSize &size, double radius, double tailSize, double tailX, double tailY);
 
