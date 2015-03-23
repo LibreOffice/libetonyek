@@ -16,7 +16,7 @@ m4_define([libetonyek_version],[libetonyek_version_major.libetonyek_version_mino
 AC_INIT([libetonyek],[libetonyek_version])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADER([config.h])
-AM_INIT_AUTOMAKE([1.11 foreign dist-xz dist-bzip2])
+AM_INIT_AUTOMAKE([1.11 foreign dist-xz dist-bzip2 subdir-objects])
 AM_SILENT_RULES([yes])
 AC_LANG([C++])
 
