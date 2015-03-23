@@ -17,6 +17,7 @@
 #include "IWORKObject.h"
 #include "IWORKStyle_fwd.h"
 #include "IWORKStyleStack.h"
+#include "IWORKOutputElements.h"
 
 namespace libetonyek
 {
@@ -52,6 +53,8 @@ public:
 
   bool empty() const;
 
+  void draw(const IWORKTransformation &trafo, IWORKOutputElements &elements);
+
 private:
   void insertDeferredLineBreaks();
 
@@ -64,9 +67,8 @@ private:
   const bool m_object;
 
   IWORKGeometryPtr_t m_boundingBox;
+  IWORKOutputElements m_elements;
 };
-
-IWORKObjectPtr_t makeObject(const IWORKTextPtr_t &text, const IWORKTransformation &trafo);
 
 }
 

@@ -34,7 +34,7 @@ struct IWORKText::Paragraph
   IWORKStyleStack m_styleStack;
   IWORKStylePtr_t style;
   IWORKObjectList_t objects;
-
+  IWORKOutputElements m_elements;
   explicit Paragraph(const IWORKStyleStack &styleStack);
 };
 
@@ -151,120 +151,13 @@ librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, cons
 
 }
 
-namespace
-{
-
-class TextSpanObject : public IWORKObject
-{
-public:
-  TextSpanObject(const IWORKStylePtr_t &style, const IWORKStyleStack &styleStack, const string &text);
-
-private:
-  virtual void draw(IWORKDocumentInterface *document);
-
-private:
-  const IWORKStylePtr_t m_style;
-  const IWORKStyleStack m_styleStack;
-  const string m_text;
-};
-
-TextSpanObject::TextSpanObject(const IWORKStylePtr_t &style, const IWORKStyleStack &styleStack, const string &text)
-  : m_style(style)
-  , m_styleStack(styleStack)
-  , m_text(text)
-{
-}
-
-void TextSpanObject::draw(IWORKDocumentInterface *const document)
-{
-  const librevenge::RVNGPropertyList props(makeCharPropList(m_style, m_styleStack));
-  document->openSpan(props);
-  document->insertText(librevenge::RVNGString(m_text.c_str()));
-  document->closeSpan();
-}
-
-}
-
-namespace
-{
-
-class TabObject : public IWORKObject
-{
-private:
-  virtual void draw(IWORKDocumentInterface *document);
-};
-
-void TabObject::draw(IWORKDocumentInterface *const document)
-{
-  document->openSpan(librevenge::RVNGPropertyList());
-  document->insertTab();
-  document->closeSpan();
-}
-
-}
-
-namespace
-{
-
-class LineBreakObject : public IWORKObject
-{
-public:
-  explicit LineBreakObject(const IWORKStyleStack &styleStack);
-
-private:
-  virtual void draw(IWORKDocumentInterface *document);
-
-private:
-  const IWORKStyleStack m_styleStack;
-};
-
-LineBreakObject::LineBreakObject(const IWORKStyleStack &styleStack)
-  : m_styleStack(styleStack)
-{
-}
-
-void LineBreakObject::draw(IWORKDocumentInterface *const document)
-{
-  document->closeParagraph();
-  const librevenge::RVNGPropertyList props(makeParaPropList(IWORKStylePtr_t(), m_styleStack));
-  document->openParagraph(props);
-}
-
-}
-
-namespace
-{
-
-class TextObject : public IWORKObject
-{
-public:
-  TextObject(const IWORKGeometryPtr_t &boundingBox, const IWORKText::ParagraphList_t &paragraphs, bool object, const IWORKTransformation &trafo);
-
-private:
-  virtual void draw(IWORKDocumentInterface *document);
-
-private:
-  const IWORKGeometryPtr_t m_boundingBox;
-  const IWORKText::ParagraphList_t m_paragraphs;
-  const bool m_object;
-  const IWORKTransformation m_trafo;
-};
-
-TextObject::TextObject(const IWORKGeometryPtr_t &boundingBox, const IWORKText::ParagraphList_t &paragraphs, const bool object, const IWORKTransformation &trafo)
-  : m_boundingBox(boundingBox)
-  , m_paragraphs(paragraphs)
-  , m_object(object)
-  , m_trafo(trafo)
-{
-}
-
-void TextObject::draw(IWORKDocumentInterface *const document)
+void IWORKText::draw(const IWORKTransformation &trafo, IWORKOutputElements &elements)
 {
   librevenge::RVNGPropertyList props;
 
   double x = 0;
   double y = 0;
-  m_trafo(x, y);
+  trafo(x, y);
   props.insert("svg:x", pt2in(x));
   props.insert("svg:y", pt2in(y));
 
@@ -272,7 +165,7 @@ void TextObject::draw(IWORKDocumentInterface *const document)
   {
     double w = m_boundingBox->m_naturalSize.m_width;
     double h = m_boundingBox->m_naturalSize.m_height;
-    m_trafo(w, h, true);
+    trafo(w, h, true);
 
     props.insert("svg:width", pt2in(w));
     props.insert("svg:height", pt2in(h));
@@ -284,25 +177,28 @@ void TextObject::draw(IWORKDocumentInterface *const document)
   path.appendLineTo(1, 1);
   path.appendLineTo(1, 0);
   path.appendClose();
-  path *= m_trafo;
+  path *= trafo;
 
   props.insert("svg:d", path.toWPG());
 
   if (m_object)
-    document->startTextObject(props);
+    m_elements.addStartTextObject(props);
 
   for (IWORKText::ParagraphList_t::const_iterator it = m_paragraphs.begin(); m_paragraphs.end() != it; ++it)
   {
-    const librevenge::RVNGPropertyList paraProps(makeParaPropList((*it)->style, (*it)->m_styleStack));
-    document->openParagraph(paraProps);
-    drawAll((*it)->objects, document);
-    document->closeParagraph();
+    if (m_object)
+    {
+      const librevenge::RVNGPropertyList paraProps(makeParaPropList((*it)->style, (*it)->m_styleStack));
+      m_elements.addOpenParagraph(paraProps);
+      m_elements.append((*it)->m_elements);
+      m_elements.addCloseParagraph();
+    }
   }
 
   if (m_object)
-    document->endTextObject();
-}
+    m_elements.addEndTextObject();
 
+  elements.append(m_elements);
 }
 
 IWORKText::IWORKText(const bool object)
@@ -313,6 +209,7 @@ IWORKText::IWORKText(const bool object)
   , m_lineBreaks(0)
   , m_object(object)
   , m_boundingBox()
+  , m_elements()
 {
 }
 
@@ -320,6 +217,7 @@ IWORKText::Paragraph::Paragraph(const IWORKStyleStack &styleStack)
   : m_styleStack(styleStack)
   , style()
   , objects()
+  , m_elements()
 {
 }
 
@@ -365,16 +263,21 @@ void IWORKText::insertText(const std::string &text, const IWORKStylePtr_t &style
 {
   assert(bool(m_currentParagraph));
 
-  const IWORKObjectPtr_t object(new TextSpanObject(style, m_styleStack, text));
-  m_currentParagraph->objects.push_back(object);
+  // const IWORKObjectPtr_t object(new TextSpanObject(style, m_styleStack, text));
+  // m_currentParagraph->objects.push_back(object);
+  const librevenge::RVNGPropertyList props(makeCharPropList(style, m_styleStack));
+  m_currentParagraph->m_elements.addOpenSpan(props);
+  m_currentParagraph->m_elements.addInsertText(librevenge::RVNGString(text.c_str()));
+  m_currentParagraph->m_elements.addCloseSpan();
 }
 
 void IWORKText::insertTab()
 {
   assert(bool(m_currentParagraph));
 
-  const IWORKObjectPtr_t object(new TabObject());
-  m_currentParagraph->objects.push_back(object);
+  m_currentParagraph->m_elements.addOpenSpan(librevenge::RVNGPropertyList());
+  m_currentParagraph->m_elements.addInsertTab();
+  m_currentParagraph->m_elements.addCloseSpan();
 }
 
 void IWORKText::insertLineBreak()
@@ -405,8 +308,12 @@ void IWORKText::insertDeferredLineBreaks()
 
   if (0 < m_lineBreaks)
   {
-    const IWORKObjectPtr_t object(new LineBreakObject(m_currentParagraph->m_styleStack));
-    m_currentParagraph->objects.insert(m_currentParagraph->objects.end(), m_lineBreaks, object);
+    for (int i = 0; i < m_lineBreaks; ++i)
+    {
+      m_elements.addCloseParagraph();
+      const librevenge::RVNGPropertyList props(makeParaPropList(IWORKStylePtr_t(), m_styleStack));
+      m_elements.addOpenParagraph(props);
+    }
     m_lineBreaks = 0;
   }
 }
@@ -414,12 +321,6 @@ void IWORKText::insertDeferredLineBreaks()
 bool IWORKText::empty() const
 {
   return m_paragraphs.empty();
-}
-
-IWORKObjectPtr_t makeObject(const IWORKTextPtr_t &text, const IWORKTransformation &trafo)
-{
-  const IWORKObjectPtr_t object(new TextObject(text->getBoundingBox(), text->getParagraphs(), text->isObject(), trafo));
-  return object;
 }
 
 }
