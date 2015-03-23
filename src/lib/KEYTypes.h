@@ -17,7 +17,6 @@
 #include <boost/optional.hpp>
 
 #include "libetonyek_utils.h"
-#include "IWORKObject.h"
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle_fwd.h"
 #include "IWORKText_fwd.h"
@@ -57,8 +56,6 @@ struct KEYStickyNote
 };
 
 typedef std::deque<KEYStickyNote> KEYStickyNotes_t;
-
-IWORKObjectPtr_t makeObject(const KEYPlaceholderPtr_t &placeholder, const IWORKTransformation &trafo);
 
 }
 
