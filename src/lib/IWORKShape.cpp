@@ -365,10 +365,7 @@ IWORKPathPtr_t makeCircle(const IWORKSize &size,const double centreX,const doubl
 
 IWORKPathPtr_t makeConnectionPath(const IWORKSize &size, const double middleX, const double middleY)
 {
-  // TODO: implement me
-  (void) size;
-  (void) middleX;
-  (void) middleY;
+  
   deque<Point> points;
   points.push_back(Point(-1,-1));
   points.push_back(Point(middleX,middleY));
@@ -381,12 +378,6 @@ IWORKPathPtr_t makeConnectionPath(const IWORKSize &size, const double middleX, c
 IWORKPathPtr_t makeCalloutPath(const IWORKSize &size, const double radius, const double tailSize, const double tailX, const double tailY)
 {
   // user space canvas: [-1:1] x [-1:1]
-
-  // TODO: draw correctly instead of just approximating
-  (void) radius;
-  (void) tailSize;
-  (void) tailX;
-  (void) tailY;
 
   deque<Point> points;
   const double angle = etonyek_two_pi / 8;
