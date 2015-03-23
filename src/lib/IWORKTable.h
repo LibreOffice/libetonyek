@@ -58,8 +58,6 @@ private:
   IWORKGeometryPtr_t m_geometry;
 };
 
-IWORKObjectPtr_t makeObject(const IWORKTable &table, const IWORKTransformation &trafo);
-
 }
 
 #endif // IWORKTABLE_H_INCLUDED

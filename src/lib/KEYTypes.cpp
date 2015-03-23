@@ -71,8 +71,8 @@ PlaceholderObject::PlaceholderObject(const KEYPlaceholderPtr_t &body, const IWOR
 
 void PlaceholderObject::draw(IWORKDocumentInterface *const document)
 {
-  if (bool(m_body) && bool(m_body->m_style) && bool(m_body->m_text))
-    makeObject(m_body->m_text, m_trafo)->draw(document);
+  // if (bool(m_body) && bool(m_body->m_style) && bool(m_body->m_text))
+  //   makeObject(m_body->m_text, m_trafo)->draw(document);
 }
 
 }
