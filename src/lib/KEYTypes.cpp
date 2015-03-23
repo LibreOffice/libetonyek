@@ -47,42 +47,6 @@ KEYStickyNote::KEYStickyNote(const IWORKGeometryPtr_t &geometry_, const IWORKTex
 {
 }
 
-namespace
-{
-
-class PlaceholderObject : public IWORKObject
-{
-public:
-  PlaceholderObject(const KEYPlaceholderPtr_t &body, const IWORKTransformation &trafo);
-
-private:
-  virtual void draw(IWORKDocumentInterface *document);
-
-private:
-  const KEYPlaceholderPtr_t m_body;
-  const IWORKTransformation m_trafo;
-};
-
-PlaceholderObject::PlaceholderObject(const KEYPlaceholderPtr_t &body, const IWORKTransformation &trafo)
-  : m_body(body)
-  , m_trafo(trafo)
-{
-}
-
-void PlaceholderObject::draw(IWORKDocumentInterface *const document)
-{
-  if (bool(m_body) && bool(m_body->m_style) && bool(m_body->m_text))
-    makeObject(m_body->m_text, m_trafo)->draw(document);
-}
-
-}
-
-IWORKObjectPtr_t makeObject(const KEYPlaceholderPtr_t &body, const IWORKTransformation &trafo)
-{
-  const IWORKObjectPtr_t object(new PlaceholderObject(body, trafo));
-  return object;
-}
-
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

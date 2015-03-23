@@ -133,6 +133,12 @@ KEYPlaceholderPtr_t KEYCollector::collectTextPlaceholder(const IWORKStylePtr_t &
   return placeholder;
 }
 
+void drawPlaceholder(const KEYPlaceholderPtr_t &placeholder, const IWORKTransformation &trafo, IWORKOutputElements &elements)
+{
+  if (bool(placeholder) && bool(placeholder->m_style) && bool(placeholder->m_text))
+    (placeholder->m_text)->draw(trafo, elements);
+}
+
 void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
 {
   assert(getZoneManager().active());
@@ -143,8 +149,7 @@ void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
     if (bool(placeholder->m_geometry))
       trafo = makeTransformation(*placeholder->m_geometry);
 
-    IWORKOutputElementsRedirector redirector(getZoneManager().getCurrent());
-    makeObject(placeholder, trafo * m_levelStack.top().m_trafo)->draw(&redirector);
+    drawPlaceholder(placeholder, trafo * m_levelStack.top().m_trafo, getZoneManager().getCurrent());
   }
   else
   {
@@ -154,8 +159,7 @@ void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
 
 void KEYCollector::collectNote()
 {
-  IWORKOutputElementsRedirector redirector(m_notes);
-  makeObject(m_currentText, m_levelStack.top().m_trafo)->draw(&redirector);
+  m_currentText->draw(m_levelStack.top().m_trafo, m_notes);
   m_currentText.reset();
 }
 
@@ -279,7 +283,11 @@ void KEYCollector::drawStickyNotes()
 
     m_document->openComment(props);
     if (bool(it->m_text))
-      makeObject(it->m_text, m_levelStack.top().m_trafo)->draw(m_document);
+    {
+      IWORKOutputElements elements;
+      (it->m_text)->draw(m_levelStack.top().m_trafo, elements);
+      elements.write(m_document);
+    }
     m_document->closeComment();
   }
 }
