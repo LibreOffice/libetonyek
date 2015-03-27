@@ -12,7 +12,6 @@
 
 #include <deque>
 
-#include "IWORKObject.h"
 #include "IWORKTypes_fwd.h"
 #include "IWORKOutputElements.h"
 
@@ -25,7 +24,7 @@ class IWORKTable
 {
   struct Cell
   {
-    IWORKObjectPtr_t m_content;
+    IWORKOutputElements m_content;
     unsigned m_columnSpan;
     unsigned m_rowSpan;
     bool m_covered;
@@ -44,7 +43,7 @@ public:
   IWORKTable();
 
   void setSizes(const ColumnSizes_t &columnSizes, const RowSizes_t &rowSizes);
-  void insertCell(unsigned column, unsigned row, const IWORKObjectPtr_t &content = IWORKObjectPtr_t(), unsigned columnSpan = 1, unsigned rowSpan = 1);
+  void insertCell(unsigned column, unsigned row, const IWORKOutputElements &content = IWORKOutputElements(), unsigned columnSpan = 1, unsigned rowSpan = 1);
   void insertCoveredCell(unsigned column, unsigned row);
 
   void setGeometry(const IWORKGeometryPtr_t &geometry);

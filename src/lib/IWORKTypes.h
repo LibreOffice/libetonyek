@@ -17,7 +17,6 @@
 #include <boost/optional.hpp>
 
 #include "libetonyek_utils.h"
-#include "IWORKObject.h"
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle_fwd.h"
 
