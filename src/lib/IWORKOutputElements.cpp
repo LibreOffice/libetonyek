@@ -7,12 +7,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "IWORKOutputElements.h"
+
 #include <algorithm>
 #include <iterator>
 
 #include <boost/make_shared.hpp>
-
-#include "IWORKOutputElements.h"
 
 #include "IWORKDocumentInterface.h"
 
