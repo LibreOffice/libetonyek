@@ -10,7 +10,6 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "IWORKObject.h"
 #include "IWORKPath.h"
 #include "IWORKTypes.h"
 #include "IWORKShape.h"

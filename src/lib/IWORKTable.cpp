@@ -13,7 +13,6 @@
 
 #include "libetonyek_utils.h"
 #include "IWORKDocumentInterface.h"
-#include "IWORKOutputElementsRedirector.h"
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 
@@ -47,7 +46,7 @@ void IWORKTable::setSizes(const ColumnSizes_t &columnSizes, const RowSizes_t &ro
   m_table = Table_t(m_rowSizes.size(), Row_t(m_columnSizes.size()));
 }
 
-void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWORKObjectPtr_t &content, const unsigned columnSpan, const unsigned rowSpan)
+void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWORKOutputElements &content, const unsigned columnSpan, const unsigned rowSpan)
 {
   if ((m_rowSizes.size() <= row) || (m_columnSizes.size() <= column))
     return;
@@ -137,11 +136,9 @@ void IWORKTable::draw(const IWORKTransformation &trafo, IWORKOutputElements &ele
 
         elements.addOpenTableCell(cellProps);
 
-        if (bool(cell.m_content))
-        {
-          IWORKOutputElementsRedirector redirector(elements);
-          cell.m_content->draw(&redirector);
-        }
+        if (!cell.m_content.empty())
+          elements.append(cell.m_content);
+
         elements.addCloseTableCell();
       }
     }

@@ -12,7 +12,6 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include "IWORKObject.h"
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle.h"
 #include "IWORKText_fwd.h"
