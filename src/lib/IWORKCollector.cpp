@@ -18,7 +18,6 @@
 
 #include "IWORKDocumentInterface.h"
 #include "IWORKOutputElements.h"
-#include "IWORKOutputElementsRedirector.h"
 #include "IWORKPath.h"
 #include "IWORKShape.h"
 #include "IWORKStyles.h"
@@ -33,34 +32,6 @@ using boost::optional;
 
 using std::memcmp;
 using std::string;
-
-namespace
-{
-
-class OutputElementsObject : public IWORKObject
-{
-public:
-  explicit OutputElementsObject(const IWORKOutputElements &elements);
-
-private:
-  virtual void draw(IWORKDocumentInterface *document);
-
-private:
-  const IWORKOutputElements m_elements;
-};
-
-OutputElementsObject::OutputElementsObject(const IWORKOutputElements &elements)
-  : m_elements(elements)
-{
-}
-
-void OutputElementsObject::draw(IWORKDocumentInterface *const document)
-{
-  m_elements.write(document);
-}
-
-}
-
 
 namespace
 {
@@ -485,7 +456,6 @@ void IWORKCollector::collectTableSizes(const IWORKTable::RowSizes_t &rowSizes, c
 void IWORKCollector::collectTableCell(const unsigned row, const unsigned column, const boost::optional<std::string> &content, const unsigned rowSpan, const unsigned columnSpan)
 {
   IWORKOutputElements elements;
-  IWORKObjectPtr_t textObject;
 
   if (bool(content))
   {
@@ -497,17 +467,14 @@ void IWORKCollector::collectTableCell(const unsigned row, const unsigned column,
     elements.addInsertText(librevenge::RVNGString(get(content).c_str()));
     elements.addCloseSpan();
     elements.addCloseParagraph();
-
-    textObject = IWORKObjectPtr_t(new OutputElementsObject(elements));
   }
   else if (bool(m_currentText))
   {
     m_currentText->draw(m_levelStack.top().m_trafo, elements);
-    textObject = IWORKObjectPtr_t(new OutputElementsObject(elements));
     m_currentText.reset();
   }
 
-  m_currentTable.insertCell(column, row, textObject, columnSpan, rowSpan);
+  m_currentTable.insertCell(column, row, elements, columnSpan, rowSpan);
 }
 
 void IWORKCollector::collectCoveredTableCell(const unsigned row, const unsigned column)

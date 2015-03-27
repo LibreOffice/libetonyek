@@ -14,7 +14,6 @@
 
 #include <deque>
 
-#include "IWORKObject.h"
 #include "IWORKStyle_fwd.h"
 #include "IWORKStyleStack.h"
 #include "IWORKOutputElements.h"

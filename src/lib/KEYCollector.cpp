@@ -12,7 +12,6 @@
 #include "libetonyek_utils.h"
 #include "IWORKDocumentInterface.h"
 #include "IWORKOutputElements.h"
-#include "IWORKOutputElementsRedirector.h"
 #include "IWORKText.h"
 #include "KEYDictionary.h"
 #include "KEYStyles.h"
