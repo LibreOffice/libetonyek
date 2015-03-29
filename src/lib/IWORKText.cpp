@@ -241,7 +241,9 @@ void IWORKText::insertTab()
 
 void IWORKText::insertLineBreak()
 {
-  // TODO: implement me
+  m_elements.addOpenSpan(librevenge::RVNGPropertyList());
+  m_elements.addInsertLineBreak();
+  m_elements.addCloseSpan();
 }
 
 const IWORKStylePtr_t &IWORKText::getLayoutStyle() const
