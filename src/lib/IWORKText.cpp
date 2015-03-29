@@ -241,7 +241,7 @@ void IWORKText::insertTab()
 
 void IWORKText::insertLineBreak()
 {
-  // TODO: implement me
+  m_elements.addInsertLineBreak();
 }
 
 const IWORKStylePtr_t &IWORKText::getLayoutStyle() const
