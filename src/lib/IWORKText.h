@@ -49,12 +49,17 @@ public:
   void draw(const IWORKTransformation &trafo, IWORKOutputElements &elements);
 
 private:
+  void flushLineBreak();
+
+private:
   IWORKStyleStack m_styleStack;
   IWORKStylePtr_t m_layoutStyle;
   const bool m_object;
 
   IWORKGeometryPtr_t m_boundingBox;
   IWORKOutputElements m_elements;
+
+  bool m_pendingLineBreak;
 };
 
 }
