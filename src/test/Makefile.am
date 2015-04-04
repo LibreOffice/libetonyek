@@ -12,13 +12,14 @@ test_LDADD = \
 	$(XML_LIBS)
 
 test_SOURCES = \
+	IWORKChainedTokenizerTest.cpp \
 	IWORKPathTest.cpp \
 	IWORKPropertyMapTest.cpp \
 	IWORKShapeTest.cpp \
 	IWORKStyleTest.cpp \
 	IWORKStyleStackTest.cpp \
+	IWORKTokenizerBaseTest.cpp \
 	IWORKTransformationTest.cpp \
-	KEY2TokenTest.cpp \
 	test.cpp
 
 TESTS = $(target_test)
