@@ -70,10 +70,9 @@ namespace
 
 void processAttribute(xmlTextReaderPtr reader, IWORKXMLContextPtr_t context, const IWORKTokenizer &tokenizer)
 {
-  const int name = tokenizer.getId(char_cast(xmlTextReaderConstLocalName(reader)));
-  const int ns = tokenizer.getId(char_cast(xmlTextReaderConstNamespaceUri(reader)) ? char_cast(xmlTextReaderConstNamespaceUri(reader)) : "");
+  const int id = tokenizer.getQualifiedId(char_cast(xmlTextReaderConstLocalName(reader)), char_cast(xmlTextReaderConstNamespaceUri(reader)));
   const char *value = char_cast(xmlTextReaderConstValue(reader));
-  context->attribute((name | ns), value);
+  context->attribute(id, value);
 }
 
 }
@@ -109,10 +108,9 @@ bool IWORKParser::parse()
     {
     case XML_READER_TYPE_ELEMENT:
     {
-      const int name = tokenizer.getId(char_cast(xmlTextReaderConstLocalName(reader)));
-      const int ns = tokenizer.getId(char_cast(xmlTextReaderConstNamespaceUri(reader)) ? char_cast(xmlTextReaderConstNamespaceUri(reader)) : "");
+      const int id = tokenizer.getQualifiedId(char_cast(xmlTextReaderConstLocalName(reader)), char_cast(xmlTextReaderConstNamespaceUri(reader)));
 
-      IWORKXMLContextPtr_t newContext = contextStack.top()->element((name | ns));
+      IWORKXMLContextPtr_t newContext = contextStack.top()->element(id);
 
       if (!newContext)
         newContext.reset(new DiscardContext());

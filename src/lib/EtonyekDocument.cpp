@@ -91,9 +91,8 @@ std::string queryAttribute(xmlTextReaderPtr reader, const int name, const int ns
     int ret = xmlTextReaderMoveToFirstAttribute(reader);
     while (1 == ret)
     {
-      const int attributeName = tokenizer.getId(char_cast(xmlTextReaderConstLocalName(reader)));
-      const int attributeNameSpace = tokenizer.getId(char_cast(xmlTextReaderConstNamespaceUri(reader)));
-      if ((attributeNameSpace == ns) && (attributeName == name))
+      const int id = tokenizer.getQualifiedId(char_cast(xmlTextReaderConstLocalName(reader)), char_cast(xmlTextReaderConstNamespaceUri(reader)));
+      if ((ns | name) == id)
         value = char_cast(xmlTextReaderConstValue(reader));
 
       ret = xmlTextReaderMoveToNextAttribute(reader);
@@ -121,11 +120,9 @@ bool probeKeynote2XML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlT
   const IWORKTokenizer &tokenizer(KEY2Token::getTokenizer());
   assert(reader);
 
-  const int name = tokenizer.getId(char_cast(xmlTextReaderConstLocalName(reader)));
-  const int ns = tokenizer.getId(char_cast(xmlTextReaderConstNamespaceUri(reader)) ? char_cast(xmlTextReaderConstNamespaceUri(reader)) : "");
-  assert((0 == ns) || (ns > name));
+  const int id = tokenizer.getQualifiedId(char_cast(xmlTextReaderConstLocalName(reader)), char_cast(xmlTextReaderConstNamespaceUri(reader)));
 
-  if ((KEY2Token::NS_URI_KEY | KEY2Token::presentation) == (name | ns))
+  if ((KEY2Token::NS_URI_KEY | KEY2Token::presentation) == id)
   {
     const std::string v = queryAttribute(reader, KEY2Token::version, KEY2Token::NS_URI_KEY, tokenizer);
 
@@ -167,11 +164,9 @@ bool probeNumbersXML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlTe
   const IWORKTokenizer &tokenizer(NUM1Token::getTokenizer());
   assert(reader);
 
-  const int name = tokenizer.getId(char_cast(xmlTextReaderConstLocalName(reader)));
-  const int ns = tokenizer.getId(char_cast(xmlTextReaderConstNamespaceUri(reader)) ? char_cast(xmlTextReaderConstNamespaceUri(reader)) : "");
-  assert((0 == ns) || (ns > name));
+  const int id = tokenizer.getQualifiedId(char_cast(xmlTextReaderConstLocalName(reader)), char_cast(xmlTextReaderConstNamespaceUri(reader)));
 
-  if (NUM1Token::NS_URI_LS == ns)
+  if ((NUM1Token::NS_URI_LS | NUM1Token::document) == id)
   {
     const std::string v = queryAttribute(reader, NUM1Token::version, NUM1Token::NS_URI_LS, tokenizer);
 
@@ -194,11 +189,9 @@ bool probePagesXML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlText
   const IWORKTokenizer &tokenizer(PAG1Token::getTokenizer());
   assert(reader);
 
-  const int name = tokenizer.getId(char_cast(xmlTextReaderConstLocalName(reader)));
-  const int ns = tokenizer.getId(char_cast(xmlTextReaderConstNamespaceUri(reader)) ? char_cast(xmlTextReaderConstNamespaceUri(reader)) : "");
-  assert((0 == ns) || (ns > name));
+  const int id = tokenizer.getQualifiedId(char_cast(xmlTextReaderConstLocalName(reader)), char_cast(xmlTextReaderConstNamespaceUri(reader)));
 
-  if ((PAG1Token::NS_URI_SL | PAG1Token::document) == (name | ns))
+  if ((PAG1Token::NS_URI_SL | PAG1Token::document) == id)
   {
     const std::string v = queryAttribute(reader, PAG1Token::version, PAG1Token::NS_URI_SL, tokenizer);
 
