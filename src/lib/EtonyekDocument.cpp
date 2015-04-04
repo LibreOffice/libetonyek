@@ -84,8 +84,6 @@ typedef bool (*ProbeXMLFun_t)(const RVNGInputStreamPtr_t &, unsigned &, xmlTextR
 
 std::string queryAttribute(xmlTextReaderPtr reader, const int name, const int ns, const IWORKTokenizer &tokenizer)
 {
-  std::string value;
-
   if (xmlTextReaderHasAttributes(reader))
   {
     int ret = xmlTextReaderMoveToFirstAttribute(reader);
@@ -93,13 +91,13 @@ std::string queryAttribute(xmlTextReaderPtr reader, const int name, const int ns
     {
       const int id = tokenizer.getQualifiedId(char_cast(xmlTextReaderConstLocalName(reader)), char_cast(xmlTextReaderConstNamespaceUri(reader)));
       if ((ns | name) == id)
-        value = char_cast(xmlTextReaderConstValue(reader));
+        return char_cast(xmlTextReaderConstValue(reader));
 
       ret = xmlTextReaderMoveToNextAttribute(reader);
     }
   }
 
-  return value;
+  return "";
 }
 
 
