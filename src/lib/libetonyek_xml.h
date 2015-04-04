@@ -30,6 +30,10 @@ bool bool_cast(const char *value);
 double double_cast(const char *value);
 int int_cast(const char *value);
 
+const char *char_cast(const char *c);
+const char *char_cast(const signed char *c);
+const char *char_cast(const unsigned char *c);
+
 }
 
 #endif // LIBETONYEK_XML_H_INCLUDED

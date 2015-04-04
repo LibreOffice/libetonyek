@@ -70,9 +70,9 @@ namespace
 
 void processAttribute(xmlTextReaderPtr reader, IWORKXMLContextPtr_t context, const IWORKTokenizer &tokenizer)
 {
-  const int name = tokenizer.getId(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
-  const int ns = tokenizer.getId(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) ? reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) : "");
-  const char *value = reinterpret_cast<const char *>(xmlTextReaderConstValue(reader));
+  const int name = tokenizer.getId(char_cast(xmlTextReaderConstLocalName(reader)));
+  const int ns = tokenizer.getId(char_cast(xmlTextReaderConstNamespaceUri(reader)) ? char_cast(xmlTextReaderConstNamespaceUri(reader)) : "");
+  const char *value = char_cast(xmlTextReaderConstValue(reader));
   context->attribute((name | ns), value);
 }
 
@@ -109,8 +109,8 @@ bool IWORKParser::parse()
     {
     case XML_READER_TYPE_ELEMENT:
     {
-      const int name = tokenizer.getId(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
-      const int ns = tokenizer.getId(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) ? reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) : "");
+      const int name = tokenizer.getId(char_cast(xmlTextReaderConstLocalName(reader)));
+      const int ns = tokenizer.getId(char_cast(xmlTextReaderConstNamespaceUri(reader)) ? char_cast(xmlTextReaderConstNamespaceUri(reader)) : "");
 
       IWORKXMLContextPtr_t newContext = contextStack.top()->element((name | ns));
 
@@ -146,7 +146,7 @@ bool IWORKParser::parse()
     case XML_READER_TYPE_TEXT :
     {
       xmlChar *const text = xmlTextReaderReadString(reader);
-      contextStack.top()->text(reinterpret_cast<char *>(text));
+      contextStack.top()->text(char_cast(text));
       xmlFree(text);
       break;
     }

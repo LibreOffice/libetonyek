@@ -78,6 +78,21 @@ int int_cast(const char *value)
   return lexical_cast<int, const char *>(value);
 }
 
+const char *char_cast(const char *const c)
+{
+  return c;
+}
+
+const char *char_cast(const signed char *const c)
+{
+  return reinterpret_cast<const char *>(c);
+}
+
+const char *char_cast(const unsigned char *const c)
+{
+  return reinterpret_cast<const char *>(c);
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
