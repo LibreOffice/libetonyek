@@ -11,7 +11,9 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "libetonyek_xml.h"
+#include "IWORKChainedTokenizer.h"
 #include "IWORKToken.h"
+#include "IWORKTokenizer.h"
 #include "KEY2Token.h"
 
 using namespace libetonyek;
@@ -22,19 +24,30 @@ namespace test
 namespace
 {
 
-void testTokenizer(const TokenizerFunction_t &tok)
+const char *const KEY_NS = "http://developer.apple.com/namespaces/keynote2";
+const char *const SF_NS = "http://developer.apple.com/namespaces/sf";
+
+void testTokenizer(const IWORKTokenizer &tok)
 {
   // known tokens
-  CPPUNIT_ASSERT(KEY2Token::presentation == tok("presentation"));
-  CPPUNIT_ASSERT(KEY2Token::version == tok("version"));
-  CPPUNIT_ASSERT(KEY2Token::double_ == tok("double"));
+  CPPUNIT_ASSERT(KEY2Token::presentation == tok.getId("presentation"));
+  CPPUNIT_ASSERT(KEY2Token::version == tok.getId("version"));
+  CPPUNIT_ASSERT(KEY2Token::double_ == tok.getId("double"));
 
   // unknown tokens
-  CPPUNIT_ASSERT(KEY2Token::INVALID_TOKEN == tok("bflmpsvz"));
-  CPPUNIT_ASSERT(KEY2Token::INVALID_TOKEN == tok("abcdefghijklmnopqrstuvwxyz"));
+  CPPUNIT_ASSERT(KEY2Token::INVALID_TOKEN == tok.getId("bflmpsvz"));
+  CPPUNIT_ASSERT(KEY2Token::INVALID_TOKEN == tok.getId("abcdefghijklmnopqrstuvwxyz"));
 
   // empty token - maps to empty namespace
-  CPPUNIT_ASSERT(0 == tok(""));
+  CPPUNIT_ASSERT(0 == tok.getId(""));
+
+  // known name + namespace combinations
+  CPPUNIT_ASSERT((KEY2Token::NS_URI_KEY | KEY2Token::presentation) == tok.getQualifiedId("presentation", KEY_NS));
+  CPPUNIT_ASSERT((KEY2Token::NS_URI_KEY | KEY2Token::version) == tok.getQualifiedId("version", KEY_NS));
+
+  // unknown name + namespace combinations
+  CPPUNIT_ASSERT(KEY2Token::INVALID_TOKEN == tok.getQualifiedId("presentation", SF_NS));
+  CPPUNIT_ASSERT(KEY2Token::INVALID_TOKEN == tok.getQualifiedId("double", SF_NS));
 }
 
 }
@@ -66,20 +79,20 @@ void KEY2TokenTest::tearDown()
 
 void KEY2TokenTest::testSimpleTokenizer()
 {
-  const KEY2Tokenizer tok;
+  const IWORKTokenizer &tok(KEY2Token::getTokenizer());
 
   testTokenizer(tok);
 
-  CPPUNIT_ASSERT(KEY2Token::INVALID_TOKEN == tok("style"));
+  CPPUNIT_ASSERT(KEY2Token::INVALID_TOKEN == tok.getId("style"));
 }
 
 void KEY2TokenTest::testChainedTokenizer()
 {
-  const ChainedTokenizer tok((KEY2Tokenizer()), IWORKTokenizer());
+  const IWORKChainedTokenizer tok(KEY2Token::getTokenizer(), IWORKToken::getTokenizer());
 
   testTokenizer(tok);
 
-  CPPUNIT_ASSERT(IWORKToken::style == tok("style"));
+  CPPUNIT_ASSERT(IWORKToken::style == tok.getId("style"));
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(KEY2TokenTest);

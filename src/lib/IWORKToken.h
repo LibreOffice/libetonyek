@@ -17,6 +17,8 @@
 namespace libetonyek
 {
 
+class IWORKTokenizer;
+
 namespace IWORKToken
 {
 
@@ -227,12 +229,9 @@ enum Namespace
   NS_URI_SFA = sfa << 16
 };
 
-}
+const IWORKTokenizer &getTokenizer();
 
-struct IWORKTokenizer
-{
-  int operator()(const char *str) const;
-};
+}
 
 }
 

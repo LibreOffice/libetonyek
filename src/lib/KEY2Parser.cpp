@@ -17,6 +17,7 @@
 
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"
+#include "IWORKChainedTokenizer.h"
 #include "IWORKGeometryElement.h"
 #include "IWORKMediaElement.h"
 #include "IWORKPath.h"
@@ -1860,7 +1861,7 @@ IWORKXMLContextPtr_t XMLDocument::element(const int name)
 
 KEY2Parser::KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector, KEYDictionary &dict)
   : IWORKParser(input, package)
-  , m_state(*this, collector, dict, getTokenizer())
+  , m_state(*this, collector, dict)
   , m_version(0)
 {
 }
@@ -1874,9 +1875,10 @@ IWORKXMLContextPtr_t KEY2Parser::createDocumentContext()
   return makeContext<XMLDocument>(m_state);
 }
 
-TokenizerFunction_t KEY2Parser::getTokenizer() const
+const IWORKTokenizer &KEY2Parser::getTokenizer() const
 {
-  return ChainedTokenizer(KEY2Tokenizer(), IWORKTokenizer());
+  static IWORKChainedTokenizer tokenizer(KEY2Token::getTokenizer(), IWORKToken::getTokenizer());
+  return tokenizer;
 }
 
 }

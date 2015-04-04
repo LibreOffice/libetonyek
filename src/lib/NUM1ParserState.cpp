@@ -16,8 +16,8 @@
 namespace libetonyek
 {
 
-NUM1ParserState::NUM1ParserState(NUM1Parser &parser, NUMCollector *const collector, NUMDictionary &dict, const TokenizerFunction_t &tokenizer)
-  : IWORKXMLParserState(parser, collector, dict, tokenizer)
+NUM1ParserState::NUM1ParserState(NUM1Parser &parser, NUMCollector *const collector, NUMDictionary &dict)
+  : IWORKXMLParserState(parser, collector, dict)
   , m_collector(collector)
   , m_dict(dict)
 {

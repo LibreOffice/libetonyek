@@ -9,11 +9,15 @@
 
 #include "libetonyek_xml.h"
 
+#include <cassert>
+
 #include <boost/lexical_cast.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/optional.hpp>
 
 #include "libetonyek_utils.h"
 #include "IWORKToken.h"
+#include "IWORKTokenizer.h"
 
 using boost::lexical_cast;
 using boost::optional;
@@ -47,25 +51,10 @@ extern "C" int closeStream(void * /* context */)
 namespace libetonyek
 {
 
-ChainedTokenizer::ChainedTokenizer(const TokenizerFunction_t &tokenizer, const TokenizerFunction_t &next)
-  : m_tokenizer(tokenizer)
-  , m_next(next)
-{
-  assert(m_tokenizer);
-  assert(m_next);
-}
-
-int ChainedTokenizer::operator()(const char *const str) const
-{
-  const int token = m_tokenizer(str);
-  return token ? token : m_next(str);
-}
-
-
 bool bool_cast(const char *value)
 {
-  IWORKTokenizer tok;
-  switch (tok(value))
+  const IWORKTokenizer &tok(IWORKToken::getTokenizer());
+  switch (tok.getId(value))
   {
   case IWORKToken::_1 :
   case IWORKToken::true_ :

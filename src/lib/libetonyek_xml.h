@@ -21,19 +21,6 @@ extern "C" int closeStream(void * /* context */);
 namespace libetonyek
 {
 
-typedef boost::function<int(const char *)> TokenizerFunction_t;
-
-struct ChainedTokenizer
-{
-  ChainedTokenizer(const TokenizerFunction_t &tokenizer, const TokenizerFunction_t &next);
-
-  int operator()(const char *str) const;
-
-private:
-  const TokenizerFunction_t m_tokenizer;
-  const TokenizerFunction_t m_next;
-};
-
 /** Convert string value to bool.
   *
   * @arg value the string

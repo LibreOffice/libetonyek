@@ -17,6 +17,8 @@
 namespace libetonyek
 {
 
+class IWORKTokenizer;
+
 namespace KEY1Token
 {
 
@@ -187,12 +189,9 @@ enum
 
 BOOST_STATIC_ASSERT(IWORKTokenInfo<KEY1Parser>::last >= LAST_TOKEN);
 
-}
+const IWORKTokenizer &getTokenizer();
 
-struct KEY1Tokenizer
-{
-  int operator()(const char *str) const;
-};
+}
 
 }
 

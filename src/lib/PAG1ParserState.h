@@ -26,7 +26,7 @@ class PAG1ParserState : public IWORKXMLParserState
   PAG1ParserState &operator=(const PAG1ParserState &);
 
 public:
-  PAG1ParserState(PAG1Parser &parser, PAGCollector *collector, PAGDictionary &dict, const TokenizerFunction_t &tokenizer);
+  PAG1ParserState(PAG1Parser &parser, PAGCollector *collector, PAGDictionary &dict);
 
   PAGCollector *getCollector();
   PAGDictionary &getDictionary();

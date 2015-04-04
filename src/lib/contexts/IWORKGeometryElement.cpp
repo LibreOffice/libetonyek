@@ -11,7 +11,7 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include "libetonyek_utils.h"
+#include "libetonyek_xml.h"
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKPositionElement.h"

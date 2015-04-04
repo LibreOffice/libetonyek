@@ -9,7 +9,12 @@
 
 #include "NUM1Token.h"
 
+#include <cassert>
 #include <cstring>
+
+#include <boost/make_shared.hpp>
+
+#include "IWORKTokenizerBase.h"
 
 using std::strlen;
 
@@ -26,18 +31,36 @@ namespace
 namespace libetonyek
 {
 
-int NUM1Tokenizer::operator()(const char *const str) const
+namespace
 {
-  if (!str)
-    return INVALID_TOKEN;
 
-  const size_t length = strlen(str);
+class Tokenizer : public IWORKTokenizerBase
+{
+  virtual int queryId(const char *name) const;
+};
 
-  if (0 == length)
-    return 0;
+int Tokenizer::queryId(const char *const name) const
+{
+  assert(name);
 
-  const Token *const token = Perfect_Hash::in_word_set(str, length);
-  return token ? token->id : INVALID_TOKEN;
+  const size_t length = strlen(name);
+  assert(0 < length);
+
+  const Token *const token = Perfect_Hash::in_word_set(name, length);
+  return token ? token->id : 0;
+}
+
+}
+
+namespace NUM1Token
+{
+
+const IWORKTokenizer &getTokenizer()
+{
+  static Tokenizer tokenizer;
+  return tokenizer;
+}
+
 }
 
 }

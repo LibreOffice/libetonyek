@@ -7,29 +7,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEY1PARSER_H_INCLUDED
-#define KEY1PARSER_H_INCLUDED
-
-#include "IWORKParser.h"
+#ifndef IWORKTOKENIZER_H_INCLUDED
+#define IWORKTOKENIZER_H_INCLUDED
 
 namespace libetonyek
 {
 
-class KEYCollector;
-
-class KEY1Parser : public IWORKParser
+class IWORKTokenizer
 {
-public:
-  KEY1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *collector);
-  virtual ~KEY1Parser();
+  // disable copying
+  IWORKTokenizer(const IWORKTokenizer &);
+  IWORKTokenizer &operator=(const IWORKTokenizer &);
 
-private:
-  virtual IWORKXMLContextPtr_t createDocumentContext();
-  virtual const IWORKTokenizer &getTokenizer() const;
+public:
+  virtual ~IWORKTokenizer() = 0;
+
+  virtual int getId(const char *name) const = 0;
+  virtual int getQualifiedId(const char *name, const char *ns) const = 0;
+
+protected:
+  IWORKTokenizer();
 };
 
 }
 
-#endif //  KEY1PARSER_H_INCLUDED
+#endif // IWORKTOKENIZER_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

@@ -9,6 +9,8 @@
 
 #include "NUM1Parser.h"
 
+#include "libetonyek_xml.h"
+#include "IWORKChainedTokenizer.h"
 #include "IWORKXMLContexts.h"
 #include "IWORKToken.h"
 #include "NUMCollector.h"
@@ -114,7 +116,7 @@ IWORKXMLContextPtr_t XMLDocument::element(const int name)
 
 NUM1Parser::NUM1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector *const collector, NUMDictionary *const dict)
   : IWORKParser(input, package)
-  , m_state(*this, collector, *dict, getTokenizer())
+  , m_state(*this, collector, *dict)
   , m_version(0)
 {
 }
@@ -128,9 +130,10 @@ IWORKXMLContextPtr_t NUM1Parser::createDocumentContext()
   return makeContext<XMLDocument>(m_state);
 }
 
-TokenizerFunction_t NUM1Parser::getTokenizer() const
+const IWORKTokenizer &NUM1Parser::getTokenizer() const
 {
-  return ChainedTokenizer(NUM1Tokenizer(), IWORKTokenizer());
+  static IWORKChainedTokenizer tokenizer(NUM1Token::getTokenizer(), IWORKToken::getTokenizer());
+  return tokenizer;
 }
 
 }

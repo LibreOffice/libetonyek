@@ -10,15 +10,13 @@
 #ifndef IWORKXMLPARSERSTATE_H_INCLUDED
 #define IWORKXMLPARSERSTATE_H_INCLUDED
 
-#include "libetonyek_xml.h"
-#include "libetonyek_utils.h"
-
 namespace libetonyek
 {
 
 class IWORKCollector;
 class IWORKDictionary;
 class IWORKParser;
+class IWORKTokenizer;
 
 class IWORKXMLParserState
 {
@@ -27,18 +25,17 @@ class IWORKXMLParserState
   IWORKXMLParserState &operator=(const IWORKXMLParserState &);
 
 public:
-  IWORKXMLParserState(IWORKParser &parser, IWORKCollector *collector, IWORKDictionary &dict, const TokenizerFunction_t &tokenizer);
+  IWORKXMLParserState(IWORKParser &parser, IWORKCollector *collector, IWORKDictionary &dict);
 
   IWORKParser &getParser();
   IWORKDictionary &getDictionary();
   IWORKCollector *getCollector() const;
-  const TokenizerFunction_t &getTokenizer() const;
+  const IWORKTokenizer &getTokenizer() const;
 
 private:
   IWORKParser &m_parser;
   IWORKCollector *const m_collector;
   IWORKDictionary &m_dict;
-  const TokenizerFunction_t m_tokenizer;
 };
 
 }

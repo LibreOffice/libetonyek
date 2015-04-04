@@ -9,6 +9,8 @@
 
 #include "IWORKParser.h"
 
+#include <cassert>
+
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -16,6 +18,8 @@
 
 #include <stack>
 
+#include "libetonyek_xml.h"
+#include "IWORKTokenizer.h"
 #include "IWORKXMLContextBase.h"
 #include "IWORKXMLParserState.h"
 
@@ -64,10 +68,10 @@ void DiscardContext::endOfElement()
 namespace
 {
 
-void processAttribute(xmlTextReaderPtr reader, IWORKXMLContextPtr_t context, const TokenizerFunction_t &tokenizer)
+void processAttribute(xmlTextReaderPtr reader, IWORKXMLContextPtr_t context, const IWORKTokenizer &tokenizer)
 {
-  const int name = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
-  const int ns = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) ? reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) : "");
+  const int name = tokenizer.getId(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
+  const int ns = tokenizer.getId(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) ? reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) : "");
   const char *value = reinterpret_cast<const char *>(xmlTextReaderConstValue(reader));
   context->attribute((name | ns), value);
 }
@@ -93,7 +97,7 @@ bool IWORKParser::parse()
   xmlTextReaderPtr reader = sharedReader.get();
   assert(reader);
 
-  TokenizerFunction_t tokenizer = getTokenizer();
+  const IWORKTokenizer &tokenizer = getTokenizer();
   stack <IWORKXMLContextPtr_t> contextStack;
 
   int ret = xmlTextReaderRead(reader);
@@ -105,8 +109,8 @@ bool IWORKParser::parse()
     {
     case XML_READER_TYPE_ELEMENT:
     {
-      const int name = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
-      const int ns = tokenizer(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) ? reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) : "");
+      const int name = tokenizer.getId(reinterpret_cast<const char *>(xmlTextReaderConstLocalName(reader)));
+      const int ns = tokenizer.getId(reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) ? reinterpret_cast<const char *>(xmlTextReaderConstNamespaceUri(reader)) : "");
 
       IWORKXMLContextPtr_t newContext = contextStack.top()->element((name | ns));
 

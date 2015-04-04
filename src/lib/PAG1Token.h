@@ -17,6 +17,8 @@
 namespace libetonyek
 {
 
+class IWORKTokenizer;
+
 namespace PAG1Token
 {
 
@@ -57,12 +59,9 @@ enum Namespace
   NS_URI_SL = sl << 16
 };
 
-}
+const IWORKTokenizer &getTokenizer();
 
-struct PAG1Tokenizer
-{
-  int operator()(const char *str) const;
-};
+}
 
 }
 

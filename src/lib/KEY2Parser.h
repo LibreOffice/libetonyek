@@ -27,7 +27,7 @@ public:
 
 private:
   virtual IWORKXMLContextPtr_t createDocumentContext();
-  virtual TokenizerFunction_t getTokenizer() const;
+  virtual const IWORKTokenizer &getTokenizer() const;
 
 private:
   KEY2ParserState m_state;

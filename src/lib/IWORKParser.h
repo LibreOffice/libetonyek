@@ -10,7 +10,6 @@
 #ifndef IWORKPARSER_H_INCLUDED
 #define IWORKPARSER_H_INCLUDED
 
-#include "libetonyek_xml.h"
 #include "libetonyek_utils.h"
 #include "IWORKXMLContext.h"
 
@@ -18,6 +17,7 @@ namespace libetonyek
 {
 
 class IWORKDictionary;
+class IWORKTokenizer;
 class IWORKXMLParserState;
 
 class IWORKParser
@@ -36,9 +36,10 @@ public:
   RVNGInputStreamPtr_t &getPackage();
   RVNGInputStreamPtr_t getPackage() const;
 
+  virtual const IWORKTokenizer &getTokenizer() const = 0;
+
 private:
   virtual IWORKXMLContextPtr_t createDocumentContext() = 0;
-  virtual TokenizerFunction_t getTokenizer() const = 0;
 
 private:
   RVNGInputStreamPtr_t m_input;

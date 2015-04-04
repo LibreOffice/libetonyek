@@ -46,7 +46,7 @@ protected:
 
   int getToken(const char *const value) const
   {
-    return m_state.getTokenizer()(value);
+    return m_state.getTokenizer().getId(value);
   }
 
 protected:

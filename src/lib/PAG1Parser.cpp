@@ -8,6 +8,9 @@
  */
 
 #include "PAG1Parser.h"
+
+#include "libetonyek_xml.h"
+#include "IWORKChainedTokenizer.h"
 #include "IWORKXMLContexts.h"
 #include "IWORKToken.h"
 #include "PAGCollector.h"
@@ -256,7 +259,7 @@ IWORKXMLContextPtr_t XMLDocument::element(const int name)
 
 PAG1Parser::PAG1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGCollector *const collector, PAGDictionary *const dict)
   : IWORKParser(input, package)
-  , m_state(*this, collector, *dict, getTokenizer())
+  , m_state(*this, collector, *dict)
   , m_version(0)
 {
 }
@@ -270,9 +273,10 @@ IWORKXMLContextPtr_t PAG1Parser::createDocumentContext()
   return makeContext<XMLDocument>(m_state);
 }
 
-TokenizerFunction_t PAG1Parser::getTokenizer() const
+const IWORKTokenizer &PAG1Parser::getTokenizer() const
 {
-  return ChainedTokenizer(PAG1Tokenizer(), IWORKTokenizer());
+  static IWORKChainedTokenizer tokenizer(PAG1Token::getTokenizer(), IWORKToken::getTokenizer());
+  return tokenizer;
 }
 
 }

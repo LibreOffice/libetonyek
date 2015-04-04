@@ -18,6 +18,8 @@
 namespace libetonyek
 {
 
+class IWORKTokenizer;
+
 namespace KEY2Token
 {
 
@@ -75,12 +77,9 @@ enum Namespace
   NS_URI_KEY = key << 16
 };
 
-}
+const IWORKTokenizer &getTokenizer();
 
-struct KEY2Tokenizer
-{
-  int operator()(const char *str) const;
-};
+}
 
 }
 

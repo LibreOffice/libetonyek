@@ -23,6 +23,8 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
 	EtonyekDocument.cpp
 
 libetonyek_internal_la_SOURCES = \
+	IWORKChainedTokenizer.cpp \
+	IWORKChainedTokenizer.h \
 	IWORKCollector.cpp \
 	IWORKCollector.h \
 	IWORKDictionary.cpp \
@@ -66,6 +68,10 @@ libetonyek_internal_la_SOURCES = \
 	IWORKTransformation.h \
 	IWORKToken.cpp \
 	IWORKToken.h \
+	IWORKTokenizer.cpp \
+	IWORKTokenizer.h \
+	IWORKTokenizerBase.cpp \
+	IWORKTokenizerBase.h \
 	IWORKTypes.cpp \
 	IWORKTypes.h \
 	IWORKTypes_fwd.h \

@@ -26,7 +26,7 @@ class NUM1ParserState : public IWORKXMLParserState
   NUM1ParserState &operator=(const NUM1ParserState &);
 
 public:
-  NUM1ParserState(NUM1Parser &parser, NUMCollector *collector, NUMDictionary &dict, const TokenizerFunction_t &tokenizer);
+  NUM1ParserState(NUM1Parser &parser, NUMCollector *collector, NUMDictionary &dict);
 
   NUMCollector *getCollector();
   NUMDictionary &getDictionary();
