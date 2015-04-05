@@ -13,12 +13,15 @@
 #include "IWORKStyle.h"
 #include "IWORKStyleStack.h"
 
+#include "TestProperties.h"
+
 namespace test
 {
 
 using boost::any_cast;
 using boost::optional;
 
+using libetonyek::property::Answer;
 using libetonyek::IWORKStyle;
 using libetonyek::IWORKStylePtr_t;
 using libetonyek::IWORKStyleStack;
@@ -67,49 +70,49 @@ void IWORKStyleStackTest::testLookup()
   IWORKStyleStack context;
 
   // lookup in empty context finds nothing
-  CPPUNIT_ASSERT(context.find("answer").empty());
+  CPPUNIT_ASSERT(!context.has<Answer>());
 
   IWORKPropertyMap props;
-  props.set("answer", 42);
+  props.put<Answer>(42);
 
   // lookup works after we push a style
   context.push();
   context.set(makeStyle(props));
-  CPPUNIT_ASSERT(!context.find("answer").empty());
-  CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(context.find("answer")));
+  CPPUNIT_ASSERT(context.has<Answer>());
+  CPPUNIT_ASSERT_EQUAL(42, context.get<Answer>());
 
   // and stops working after we pop it again
   context.pop();
-  CPPUNIT_ASSERT(context.find("answer").empty());
+  CPPUNIT_ASSERT(!context.has<Answer>());
 
   // the styles are arranged in a stack -- a property is found in
   // the last pushed one
   IWORKPropertyMap props2;
-  props2.set("answer", 1);
+  props2.put<Answer>(1);
   context.push();
   context.set(makeStyle(props2));
   context.push();
   context.set(makeStyle(props));
-  CPPUNIT_ASSERT(!context.find("answer").empty());
-  CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(context.find("answer")));
+  CPPUNIT_ASSERT(context.has<Answer>());
+  CPPUNIT_ASSERT_EQUAL(42, context.get<Answer>());
 
   context.pop();
   context.pop();
-  CPPUNIT_ASSERT(context.find("answer").empty());
+  CPPUNIT_ASSERT(!context.has<Answer>());
 
   // lookup works recursively through more levels
   context.push();
   context.set(makeStyle(props));
   context.push();
   context.set(makeStyle(IWORKPropertyMap()));
-  CPPUNIT_ASSERT(!context.find("answer").empty());
-  CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(context.find("answer")));
+  CPPUNIT_ASSERT(context.has<Answer>());
+  CPPUNIT_ASSERT_EQUAL(42, context.get<Answer>());
 
   // yet another one...
   context.push();
   context.set(makeStyle(IWORKPropertyMap()));
-  CPPUNIT_ASSERT(!context.find("answer").empty());
-  CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(context.find("answer")));
+  CPPUNIT_ASSERT(context.has<Answer>());
+  CPPUNIT_ASSERT_EQUAL(42, context.get<Answer>());
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(IWORKStyleStackTest);

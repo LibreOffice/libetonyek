@@ -49,23 +49,6 @@ void IWORKPropertyMap::setParent(const IWORKPropertyMap *const parent)
   m_parent = parent;
 }
 
-boost::any IWORKPropertyMap::get(const std::string &key, const bool lookInParent) const
-{
-  const Map_t::const_iterator it = m_map.find(key);
-  if (m_map.end() != it)
-    return it->second;
-
-  if (lookInParent && m_parent)
-    return m_parent->get(key, lookInParent);
-
-  return boost::any();
-}
-
-void IWORKPropertyMap::set(const std::string &key, const boost::any &value)
-{
-  m_map[key] = value;
-}
-
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

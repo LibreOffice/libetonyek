@@ -43,6 +43,9 @@ libetonyek_internal_la_SOURCES = \
 	IWORKPath_fwd.h \
 	IWORKPresentationRedirector.cpp \
 	IWORKPresentationRedirector.h \
+	IWORKProperties.cpp \
+	IWORKProperties.h \
+	IWORKPropertyInfo.h \
 	IWORKPropertyMap.cpp \
 	IWORKPropertyMap.h \
 	IWORKShape.cpp \
@@ -51,8 +54,6 @@ libetonyek_internal_la_SOURCES = \
 	IWORKSpreadsheetRedirector.h \
 	IWORKStyle.cpp \
 	IWORKStyle.h \
-	IWORKStyles.cpp \
-	IWORKStyles.h \
 	IWORKStylesheet.cpp \
 	IWORKStylesheet.h \
 	IWORKStyleStack.cpp \
@@ -99,8 +100,6 @@ libetonyek_internal_la_SOURCES = \
 	KEYCollector.h \
 	KEYDictionary.cpp \
 	KEYDictionary.h \
-	KEYStyles.cpp \
-	KEYStyles.h \
 	KEYTypes.cpp \
 	KEYTypes.h \
 	KEYTypes_fwd.h \

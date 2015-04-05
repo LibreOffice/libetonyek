@@ -10,26 +10,28 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "IWORKPropertyInfo.h"
+#include "IWORKPropertyMap.h"
 #include "IWORKStyle.h"
-#include "IWORKStyleStack.h"
+
+#include "TestProperties.h"
 
 namespace test
 {
 
-using boost::any;
-using boost::any_cast;
-using boost::get;
 using boost::optional;
 using boost::shared_ptr;
 using boost::unordered_map;
 
+using libetonyek::property::Answer;
+using libetonyek::property::Antwort;
 using libetonyek::ID_t;
+using libetonyek::IWORKPropertyInfo;
 using libetonyek::IWORKPropertyMap;
 using libetonyek::IWORKStyle;
 using libetonyek::IWORKStylePtr_t;
 using libetonyek::IWORKStylesheet;
 using libetonyek::IWORKStylesheetPtr_t;
-using libetonyek::IWORKStyleStack;
 
 using std::string;
 
@@ -44,20 +46,16 @@ IWORKStylePtr_t makeStyle(const IWORKPropertyMap &props,
   return style;
 }
 
-optional<int> getAnswer(const IWORKStyle &style, const IWORKStyleStack &stack = IWORKStyleStack())
+template<class Property>
+bool hasProperty(const IWORKStyle &style, const bool lookInParent)
 {
-  optional<int> value;
-
-  any prop = style.lookup("answer", stack);
-  if (!prop.empty())
-    value = any_cast<int>(prop);
-
-  return value;
+  return style.getPropertyMap().has<Property>(lookInParent);
 }
 
-any get(const IWORKStyle &style, const char *const prop, const bool lookInParent)
+template<class Property>
+const typename IWORKPropertyInfo<Property>::ValueType &getProperty(const IWORKStyle &style, const bool lookInParent)
 {
-  return style.getPropertyMap().get(prop, lookInParent);
+  return style.getPropertyMap().get<Property>(lookInParent);
 }
 
 }
@@ -96,14 +94,14 @@ void IWORKStyleTest::testLink()
 
   {
     IWORKPropertyMap props;
-    props.set("answer", 2);
+    props.put<Answer>(2);
 
     stylesheet->m_styles["wrong"] = makeStyle(props, string("wrong"));
   }
 
   {
     IWORKPropertyMap props;
-    props.set("answer", 42);
+    props.put<Answer>(42);
 
     parent = stylesheet->m_styles["parent"] = makeStyle(props, string("parent"), string("grandparent"));
     CPPUNIT_ASSERT(bool(parent));
@@ -111,7 +109,7 @@ void IWORKStyleTest::testLink()
 
   {
     IWORKPropertyMap props;
-    props.set("antwort", 42);
+    props.put<Antwort>(42);
 
     stylesheet->m_styles["grandparent"] = makeStyle(props, string("grandparent"));
   }
@@ -121,50 +119,50 @@ void IWORKStyleTest::testLink()
   // without parent
   {
     IWORKStyle style(IWORKPropertyMap(), dummyIdent, dummyIdent);
-    CPPUNIT_ASSERT(get(style, "answer", false).empty());
-    CPPUNIT_ASSERT(get(style, "answer", true).empty());
+    CPPUNIT_ASSERT(!hasProperty<Answer>(style, false));
+    CPPUNIT_ASSERT(!hasProperty<Answer>(style, true));
 
     style.link(stylesheet);
-    CPPUNIT_ASSERT(get(style, "answer", false).empty());
-    CPPUNIT_ASSERT(get(style, "answer", true).empty());
+    CPPUNIT_ASSERT(!hasProperty<Answer>(style, false));
+    CPPUNIT_ASSERT(!hasProperty<Answer>(style, true));
   }
 
   // the style's props remain unchanged
   {
     IWORKPropertyMap props;
-    props.set("answer", 8);
+    props.put<Answer>(8);
 
     IWORKStyle style(props, dummyIdent, dummyIdent);
-    CPPUNIT_ASSERT(!get(style, "answer", false).empty());
+    CPPUNIT_ASSERT(hasProperty<Answer>(style, false));
 
     style.link(stylesheet);
-    CPPUNIT_ASSERT(!get(style, "answer", false).empty());
-    CPPUNIT_ASSERT_EQUAL(8, any_cast<int>(get(style, "answer", false)));
+    CPPUNIT_ASSERT(hasProperty<Answer>(style, false));
+    CPPUNIT_ASSERT_EQUAL(8, getProperty<Answer>(style, false));
   }
 
   // with parent in the same stylesheet
   {
     IWORKStyle style(IWORKPropertyMap(), string("test"), string("parent"));
-    CPPUNIT_ASSERT(get(style, "answer", false).empty());
-    CPPUNIT_ASSERT(get(style, "answer", true).empty());
+    CPPUNIT_ASSERT(!hasProperty<Answer>(style, false));
+    CPPUNIT_ASSERT(!hasProperty<Answer>(style, true));
 
     style.link(stylesheet);
-    CPPUNIT_ASSERT(get(style, "answer", false).empty());
-    CPPUNIT_ASSERT(!get(style, "answer", true).empty());
-    CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(get(style, "answer", true)));
+    CPPUNIT_ASSERT(!hasProperty<Answer>(style, false));
+    CPPUNIT_ASSERT(hasProperty<Answer>(style, true));
+    CPPUNIT_ASSERT_EQUAL(42, getProperty<Answer>(style, true));
   }
 
   // linking through more styles
   {
     IWORKStyle style(IWORKPropertyMap(), string("test"), string("parent"));
-    CPPUNIT_ASSERT(get(style, "antwort", false).empty());
-    CPPUNIT_ASSERT(get(style, "antwort", true).empty());
+    CPPUNIT_ASSERT(!hasProperty<Antwort>(style, false));
+    CPPUNIT_ASSERT(!hasProperty<Antwort>(style, true));
 
     style.link(stylesheet);
     parent->link(stylesheet);
-    CPPUNIT_ASSERT(get(style, "antwort", false).empty());
-    CPPUNIT_ASSERT(!get(style, "antwort", true).empty());
-    CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(get(style, "antwort", true)));
+    CPPUNIT_ASSERT(!hasProperty<Antwort>(style, false));
+    CPPUNIT_ASSERT(hasProperty<Antwort>(style, true));
+    CPPUNIT_ASSERT_EQUAL(42, getProperty<Antwort>(style, true));
   }
 }
 
@@ -177,43 +175,12 @@ void IWORKStyleTest::testLookup()
 {
   optional<ID_t> dummyIdent;
 
-  // without stack
-  {
-    IWORKPropertyMap props;
-    props.set("answer", 42);
+  IWORKPropertyMap props;
+  props.put<Answer>(42);
 
-    IWORKStyle style(props, dummyIdent, dummyIdent);
-    CPPUNIT_ASSERT(getAnswer(style));
-    CPPUNIT_ASSERT_EQUAL(42, get(getAnswer(style)));
-  }
-
-  // with stack
-  {
-    IWORKStyleStack stack;
-
-    IWORKPropertyMap ctxtProps;
-    ctxtProps.set("answer", 2);
-
-    stack.push();
-    stack.set(makeStyle(ctxtProps));
-
-    // lookup through stack only
-    {
-      const IWORKStyle style(IWORKPropertyMap(), dummyIdent, dummyIdent);
-      CPPUNIT_ASSERT(getAnswer(style, stack));
-      CPPUNIT_ASSERT_EQUAL(2, get(getAnswer(style, stack)));
-    }
-
-    IWORKPropertyMap props;
-    props.set("answer", 42);
-
-    // lookup in own prop. set
-    {
-      const IWORKStyle style(props, dummyIdent, dummyIdent);
-      CPPUNIT_ASSERT(getAnswer(style, stack));
-      CPPUNIT_ASSERT_EQUAL(42, get(getAnswer(style, stack)));
-    }
-  }
+  IWORKStyle style(props, dummyIdent, dummyIdent);
+  CPPUNIT_ASSERT(style.has<Answer>());
+  CPPUNIT_ASSERT_EQUAL(42, style.get<Answer>());
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(IWORKStyleTest);

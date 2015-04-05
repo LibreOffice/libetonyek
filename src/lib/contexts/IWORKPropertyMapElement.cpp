@@ -16,8 +16,8 @@
 #include "IWORKColorElement.h"
 #include "IWORKDictionary.h"
 #include "IWORKGeometryElement.h"
+#include "IWORKProperties.h"
 #include "IWORKStyleContext.h"
-#include "IWORKStyles.h"
 #include "IWORKStyleRefContext.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
@@ -40,9 +40,7 @@ class PropertyContextBase : public IWORKXMLElementContextBase
 protected:
   PropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
-  void insert(const string &name, const any &value);
-
-private:
+protected:
   IWORKPropertyMap &m_propMap;
 };
 
@@ -50,14 +48,6 @@ PropertyContextBase::PropertyContextBase(IWORKXMLParserState &state, IWORKProper
   : IWORKXMLElementContextBase(state)
   , m_propMap(propMap)
 {
-}
-
-void PropertyContextBase::insert(const string &name, const any &value)
-{
-  assert(!name.empty());
-
-  if (!value.empty())
-    m_propMap.set(name, value);
 }
 
 }
@@ -134,33 +124,31 @@ void NumberElement<T>::attribute(const int name, const char *const value)
 namespace
 {
 
-template<class ContextT, class ValueT>
+template<class ContextT, class PropertyT>
 class DirectPropertyContextBase : public PropertyContextBase
 {
 public:
-  DirectPropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap, int propId, const string &propName);
+  DirectPropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap, int propId);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
 private:
-  const string m_propName;
   const int m_propId;
-  ValueT m_value;
+  typename IWORKPropertyInfo<PropertyT>::ValueType m_value;
 };
 
-template<class ContextT, class ValueT>
-DirectPropertyContextBase<ContextT, ValueT>::DirectPropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap, const int propId, const string &propName)
+template<class ContextT, class PropertyT>
+DirectPropertyContextBase<ContextT, PropertyT>::DirectPropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap, const int propId)
   : PropertyContextBase(state, propMap)
-  , m_propName(propName)
   , m_propId(propId)
   , m_value()
 {
 }
 
-template<class ContextT, class ValueT>
-IWORKXMLContextPtr_t DirectPropertyContextBase<ContextT, ValueT>::element(const int name)
+template<class ContextT, class PropertyT>
+IWORKXMLContextPtr_t DirectPropertyContextBase<ContextT, PropertyT>::element(const int name)
 {
   if (m_propId == name)
     return makeContext<ContextT>(getState(), m_value);
@@ -168,11 +156,11 @@ IWORKXMLContextPtr_t DirectPropertyContextBase<ContextT, ValueT>::element(const 
   return IWORKXMLContextPtr_t();
 }
 
-template<class ContextT, class ValueT>
-void DirectPropertyContextBase<ContextT, ValueT>::endOfElement()
+template<class ContextT, class PropertyT>
+void DirectPropertyContextBase<ContextT, PropertyT>::endOfElement()
 {
   if (bool(m_value))
-    insert(m_propName, m_value);
+    m_propMap.put<PropertyT>(m_value);
 }
 
 }
@@ -180,33 +168,31 @@ void DirectPropertyContextBase<ContextT, ValueT>::endOfElement()
 namespace
 {
 
-template<class ContextT, class ValueT>
+template<class ContextT, class PropertyT>
 class ValuePropertyContextBase : public PropertyContextBase
 {
 public:
-  ValuePropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap, int propId, const string &propName);
+  ValuePropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap, int propId);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
 private:
-  const string m_propName;
   const int m_propId;
-  optional<ValueT> m_value;
+  optional<typename IWORKPropertyInfo<PropertyT>::ValueType> m_value;
 };
 
-template<class ContextT, class ValueT>
-ValuePropertyContextBase<ContextT, ValueT>::ValuePropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap, const int propId, const string &propName)
+template<class ContextT, class PropertyT>
+ValuePropertyContextBase<ContextT, PropertyT>::ValuePropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap, const int propId)
   : PropertyContextBase(state, propMap)
-  , m_propName(propName)
   , m_propId(propId)
   , m_value()
 {
 }
 
-template<class ContextT, class ValueT>
-IWORKXMLContextPtr_t ValuePropertyContextBase<ContextT, ValueT>::element(const int name)
+template<class ContextT, class PropertyT>
+IWORKXMLContextPtr_t ValuePropertyContextBase<ContextT, PropertyT>::element(const int name)
 {
   if (m_propId == name)
     return makeContext<ContextT>(getState(), m_value);
@@ -214,11 +200,11 @@ IWORKXMLContextPtr_t ValuePropertyContextBase<ContextT, ValueT>::element(const i
   return IWORKXMLContextPtr_t();
 }
 
-template<class ContextT, class ValueT>
-void ValuePropertyContextBase<ContextT, ValueT>::endOfElement()
+template<class ContextT, class PropertyT>
+void ValuePropertyContextBase<ContextT, PropertyT>::endOfElement()
 {
   if (bool(m_value))
-    insert(m_propName, get(m_value));
+    m_propMap.put<PropertyT>(get(m_value));
 }
 
 }
@@ -257,7 +243,7 @@ IWORKXMLContextPtr_t AlignmentElement::element(const int name)
 
 void AlignmentElement::endOfElement()
 {
-  any prop;
+  IWORKAlignment prop;
 
   if (m_value)
   {
@@ -280,7 +266,7 @@ void AlignmentElement::endOfElement()
     }
   }
 
-  insert("alignment", prop);
+  m_propMap.put<property::Alignment>(prop);
 }
 
 }
@@ -288,14 +274,14 @@ void AlignmentElement::endOfElement()
 namespace
 {
 
-class FontColorElement : public ValuePropertyContextBase<IWORKColorElement, IWORKColor>
+class FontColorElement : public ValuePropertyContextBase<IWORKColorElement, property::FontColor>
 {
 public:
   FontColorElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
 FontColorElement::FontColorElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::color, "fontColor")
+  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::color)
 {
 }
 
@@ -304,14 +290,14 @@ FontColorElement::FontColorElement(IWORKXMLParserState &state, IWORKPropertyMap 
 namespace
 {
 
-class GeometryElement : public DirectPropertyContextBase<IWORKGeometryElement, IWORKGeometryPtr_t>
+class GeometryElement : public DirectPropertyContextBase<IWORKGeometryElement, property::Geometry>
 {
 public:
   GeometryElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
 GeometryElement::GeometryElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : DirectPropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::geometry, "geometry")
+  : DirectPropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::geometry)
 {
 }
 
@@ -320,14 +306,14 @@ GeometryElement::GeometryElement(IWORKXMLParserState &state, IWORKPropertyMap &p
 namespace
 {
 
-class BoldElement : public ValuePropertyContextBase<NumberElement<bool>, bool>
+class BoldElement : public ValuePropertyContextBase<NumberElement<bool>, property::Bold>
 {
 public:
   BoldElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
 BoldElement::BoldElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number, "bold")
+  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number)
 {
 }
 
@@ -366,7 +352,7 @@ void CapitalizationElement::endOfElement()
 {
   if (m_capitalization)
   {
-    any prop;
+    IWORKCapitalization prop;
     switch (get(m_capitalization))
     {
     case 0 :
@@ -385,7 +371,7 @@ void CapitalizationElement::endOfElement()
       ETONYEK_DEBUG_MSG(("unknown capitalization %d\n", get(m_capitalization)));
     }
 
-    insert("capitalization", prop);
+    m_propMap.put<property::Capitalization>(prop);
   }
 }
 
@@ -423,14 +409,14 @@ void StringElement::attribute(const int name, const char *const value)
 namespace
 {
 
-class FontNameElement : public ValuePropertyContextBase<StringElement, string>
+class FontNameElement : public ValuePropertyContextBase<StringElement, property::FontName>
 {
 public:
   FontNameElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
 FontNameElement::FontNameElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::string, "fontName")
+  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::string)
 {
 }
 
@@ -468,7 +454,7 @@ IWORKXMLContextPtr_t FontSizeElement::element(const int name)
 void FontSizeElement::endOfElement()
 {
   if (m_fontSize)
-    insert("fontSize", get(m_fontSize));
+    m_propMap.put<property::FontSize>(get(m_fontSize));
 }
 
 }
@@ -505,7 +491,7 @@ IWORKXMLContextPtr_t ItalicElement::element(const int name)
 void ItalicElement::endOfElement()
 {
   if (m_italic)
-    insert("italic", get(m_italic));
+    m_propMap.put<property::Italic>(get(m_italic));
 }
 
 }
@@ -542,7 +528,7 @@ IWORKXMLContextPtr_t OutlineElement::element(const int name)
 void OutlineElement::endOfElement()
 {
   if (m_outline)
-    insert("outline", get(m_outline));
+    m_propMap.put<property::Outline>(get(m_outline));
 }
 
 }
@@ -579,7 +565,7 @@ IWORKXMLContextPtr_t StrikethruElement::element(const int name)
 void StrikethruElement::endOfElement()
 {
   if (m_strikethru)
-    insert("strikethru", get(m_strikethru));
+    m_propMap.put<property::Strikethru>(get(m_strikethru));
 }
 
 }
@@ -617,7 +603,7 @@ void SuperscriptElement::endOfElement()
 {
   if (m_superscript)
   {
-    any prop;
+    IWORKBaseline prop;
     switch (get(m_superscript))
     {
     case 1 :
@@ -630,8 +616,7 @@ void SuperscriptElement::endOfElement()
       ETONYEK_DEBUG_MSG(("unknown superscript %d\n", get(m_superscript)));
     }
 
-    if (!prop.empty())
-      insert("superscript", prop);
+    m_propMap.put<property::Baseline>(prop);
   }
 }
 
@@ -717,7 +702,7 @@ void TabsElement::endOfElement()
     m_tabs.push_back(IWORKTabStop(get(m_current)));
 
   if (!m_tabs.empty())
-    insert("tabs", m_tabs);
+    m_propMap.put<property::Tabs>(m_tabs);
 }
 
 }
@@ -754,7 +739,7 @@ IWORKXMLContextPtr_t UnderlineElement::element(const int name)
 void UnderlineElement::endOfElement()
 {
   if (m_underline)
-    insert("underline", get(m_underline));
+    m_propMap.put<property::Underline>(get(m_underline));
 }
 
 }
@@ -791,7 +776,7 @@ IWORKXMLContextPtr_t BaselineShiftElement::element(const int name)
 void BaselineShiftElement::endOfElement()
 {
   if (m_baselineShift)
-    insert("baselineShift", m_baselineShift);
+    m_propMap.put<property::BaselineShift>(get(m_baselineShift));
 }
 
 }

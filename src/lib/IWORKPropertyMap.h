@@ -13,6 +13,8 @@
 #include <boost/any.hpp>
 #include <boost/unordered_map.hpp>
 
+#include "IWORKPropertyInfo.h"
+
 namespace libetonyek
 {
 
@@ -20,7 +22,11 @@ namespace libetonyek
   */
 class IWORKPropertyMap
 {
-  typedef boost::unordered_map<std::string, boost::any> Map_t;
+public:
+  class NotFoundException {};
+
+private:
+  typedef boost::unordered_map<IWORKPropertyID_t, boost::any> Map_t;
 
 public:
   /** Construct an empty map.
@@ -58,24 +64,59 @@ public:
     */
   void setParent(const IWORKPropertyMap *parent);
 
-  /** Retrieve value associated with @c key.
+  /** Check for the presence of a property.
     *
-    * If the value is not found in this map and @c lookInParent is @c
+    * If the property is not found in this map and @c lookInParent is @c
     * true, the parent map is searched (transitively).
     *
-    * @arg[in] key the search key
     * @arg[in] lookInParent should the parent map be searched if the
-    * key is not found in this map?
-    * @returns the found value or empty value
+    * property is not found in this map?
+    * @returns true if the property is present
     */
-  boost::any get(const std::string &key, bool lookInParent = false) const;
+  template<class Property>
+  bool has(bool lookInParent = false) const
+  {
+    const Map_t::const_iterator it = m_map.find(IWORKPropertyInfo<Property>::id);
+    if (m_map.end() != it)
+      return true;
 
-  /** Set a new value for key @key.
+    if (lookInParent && m_parent)
+      return m_parent->has<Property>(lookInParent);
+
+    return false;
+  }
+
+  /** Retrieve the value of a property.
     *
-    * @arg[in] key the key
-    * @arg[in] value the value to set
+    * If the property is not found in this map and @c lookInParent is @c
+    * true, the parent map is searched (transitively).
+    *
+    * @arg[in] lookInParent should the parent map be searched if the
+    * property is not found in this map?
+    * @returns the found value
     */
-  void set(const std::string &key, const boost::any &value);
+  template<class Property>
+  const typename IWORKPropertyInfo<Property>::ValueType &get(bool lookInParent = false) const
+  {
+    const Map_t::const_iterator it = m_map.find(IWORKPropertyInfo<Property>::id);
+    if (m_map.end() != it)
+      return boost::any_cast<const typename IWORKPropertyInfo<Property>::ValueType &>(it->second);
+
+    if (lookInParent && m_parent)
+      return m_parent->get<Property>(lookInParent);
+
+    throw NotFoundException();
+  }
+
+  /** Insert a new value for key @key.
+    *
+    * @arg[in] value the value to insert
+    */
+  template<class Property>
+  void put(const typename IWORKPropertyInfo<Property>::ValueType &value)
+  {
+    m_map[IWORKPropertyInfo<Property>::id] = value;
+  }
 
 private:
   Map_t m_map;

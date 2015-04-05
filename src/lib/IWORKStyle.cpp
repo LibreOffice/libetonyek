@@ -38,7 +38,7 @@ bool IWORKStyle::link(const IWORKStylesheetPtr_t &stylesheet)
   if (!currentStylesheet)
     return false;
 
-  const IWORKStyleMap_t::const_iterator it = currentStylesheet->m_styles.find(get(m_parentIdent));
+  const IWORKStyleMap_t::const_iterator it = currentStylesheet->m_styles.find(m_parentIdent.get());
   if (currentStylesheet->m_styles.end() != it)
     m_parent = it->second;
 
@@ -56,15 +56,6 @@ void IWORKStyle::flatten()
 const IWORKPropertyMap &IWORKStyle::getPropertyMap() const
 {
   return m_props;
-}
-
-boost::any IWORKStyle::lookup(const char *property, const IWORKStyleStack &stack) const
-{
-  boost::any value = getPropertyMap().get(property, true);
-  if (value.empty())
-    value = stack.find(property, true);
-
-  return value;
 }
 
 const boost::optional<std::string> &IWORKStyle::getIdent() const

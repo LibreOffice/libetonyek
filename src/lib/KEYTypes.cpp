@@ -15,7 +15,6 @@
 #include "IWORKDocumentInterface.h"
 #include "IWORKText.h"
 #include "IWORKTransformation.h"
-#include "KEYStyles.h"
 
 namespace libetonyek
 {

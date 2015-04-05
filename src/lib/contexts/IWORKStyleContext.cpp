@@ -13,7 +13,6 @@
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKPropertyMapElement.h"
-#include "IWORKStyles.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 

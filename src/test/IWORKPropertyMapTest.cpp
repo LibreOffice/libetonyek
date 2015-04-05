@@ -10,14 +10,17 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "IWORKPropertyInfo.h"
 #include "IWORKPropertyMap.h"
+
+#include "TestProperties.h"
 
 namespace test
 {
 
-using boost::any;
-using boost::any_cast;
-
+using libetonyek::property::Answer;
+using libetonyek::property::Antwort;
+using libetonyek::IWORKPropertyInfo;
 using libetonyek::IWORKPropertyMap;
 
 class IWORKPropertyMapTest : public CPPUNIT_NS::TestFixture
@@ -50,15 +53,18 @@ void IWORKPropertyMapTest::testLookup()
   IWORKPropertyMap props;
 
   // empty map
-  CPPUNIT_ASSERT(props.get("answer").empty());
+  CPPUNIT_ASSERT(!props.has<Answer>());
+  CPPUNIT_ASSERT_THROW(props.get<Answer>(), IWORKPropertyMap::NotFoundException);
 
-  // known key
-  props.set("answer", 42);
-  CPPUNIT_ASSERT(!props.get("answer").empty());
-  CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(props.get("answer")));
+  // existing value
+  props.put<Answer>(42);
+  CPPUNIT_ASSERT(props.has<Answer>());
+  CPPUNIT_ASSERT_NO_THROW(props.get<Answer>());
+  CPPUNIT_ASSERT_EQUAL(42, props.get<Answer>());
 
-  // unknown key
-  CPPUNIT_ASSERT(props.get("antwort").empty());
+  // non-existing value
+  CPPUNIT_ASSERT(!props.has<Antwort>());
+  CPPUNIT_ASSERT_THROW(props.get<Antwort>(), IWORKPropertyMap::NotFoundException);
 }
 
 void IWORKPropertyMapTest::testLookupWithParent()
@@ -66,55 +72,56 @@ void IWORKPropertyMapTest::testLookupWithParent()
   // simple recursive lookup test
   {
     IWORKPropertyMap parent;
-    parent.set("answer", 42);
+    parent.put<Answer>(42);
 
     IWORKPropertyMap props;
     props.setParent(&parent);
 
-    CPPUNIT_ASSERT(!props.get("answer", true).empty());
-    CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(props.get("answer", true)));
+    CPPUNIT_ASSERT(!props.has<Answer>());
+    CPPUNIT_ASSERT(props.has<Answer>(true));
+    CPPUNIT_ASSERT_EQUAL(42, props.get<Answer>(true));
 
     // rewrite key in props
-    props.set("answer", 3);
-    CPPUNIT_ASSERT(!props.get("answer", true).empty());
-    CPPUNIT_ASSERT_EQUAL(3, any_cast<int>(props.get("answer", true)));
+    props.put<Answer>(3);
+    CPPUNIT_ASSERT(props.has<Answer>(true));
+    CPPUNIT_ASSERT_EQUAL(3, props.get<Answer>(true));
 
-    // unknown key
-    CPPUNIT_ASSERT(props.get("antwort", true).empty());
+    // nonexisting value
+    CPPUNIT_ASSERT(!props.has<Antwort>(true));
 
     IWORKPropertyMap grandparent;
-    grandparent.set("antwort", 17);
+    grandparent.put<Antwort>(17);
 
     // recursive lookup through more parents
     parent.setParent(&grandparent);
-    CPPUNIT_ASSERT(!props.get("antwort", true).empty());
-    CPPUNIT_ASSERT_EQUAL(17, any_cast<int>(props.get("antwort", true)));
+    CPPUNIT_ASSERT(props.has<Antwort>(true));
+    CPPUNIT_ASSERT_EQUAL(17, props.get<Antwort>(true));
   }
 
   // switching of parents
   {
     IWORKPropertyMap parent1;
-    parent1.set("answer", 42);
+    parent1.put<Answer>(42);
 
     IWORKPropertyMap parent2;
-    parent2.set("antwort", 13);
+    parent2.put<Antwort>(13);
 
     IWORKPropertyMap props;
 
     props.setParent(&parent1);
-    CPPUNIT_ASSERT(!props.get("answer", true).empty());
-    CPPUNIT_ASSERT_EQUAL(42, any_cast<int>(props.get("answer", true)));
+    CPPUNIT_ASSERT(props.has<Answer>(true));
+    CPPUNIT_ASSERT_EQUAL(42, props.get<Answer>(true));
 
     // switch parent
     props.setParent(&parent2);
-    CPPUNIT_ASSERT(props.get("answer", true).empty());
-    CPPUNIT_ASSERT(!props.get("antwort", true).empty());
-    CPPUNIT_ASSERT_EQUAL(13, any_cast<int>(props.get("antwort", true)));
+    CPPUNIT_ASSERT(!props.has<Answer>(true));
+    CPPUNIT_ASSERT(props.has<Antwort>(true));
+    CPPUNIT_ASSERT_EQUAL(13, props.get<Antwort>(true));
 
     // disable parent
     props.setParent(0);
-    CPPUNIT_ASSERT(props.get("answer", true).empty());
-    CPPUNIT_ASSERT(props.get("antwort", true).empty());
+    CPPUNIT_ASSERT(!props.has<Answer>(true));
+    CPPUNIT_ASSERT(!props.has<Antwort>(true));
   }
 }
 

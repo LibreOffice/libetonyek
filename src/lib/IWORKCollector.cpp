@@ -20,7 +20,6 @@
 #include "IWORKOutputElements.h"
 #include "IWORKPath.h"
 #include "IWORKShape.h"
-#include "IWORKStyles.h"
 #include "IWORKText.h"
 #include "IWORKTransformation.h"
 

@@ -18,7 +18,7 @@
 
 #include "IWORKDocumentInterface.h"
 #include "IWORKPath.h"
-#include "IWORKStyles.h"
+#include "IWORKProperties.h"
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 
@@ -46,37 +46,36 @@ librevenge::RVNGString makeColor(const IWORKColor &color)
   return str;
 }
 
-void fillCharPropList(librevenge::RVNGPropertyList &props, const IWORKCharacterStyle &style)
+void fillCharPropList(librevenge::RVNGPropertyList &props, const IWORKStyleStack &style)
 {
-  if (style.getItalic())
+  using namespace property;
+
+  if (style.has<Italic>() && style.get<Italic>())
     props.insert("fo:font-style", "italic");
-  if (style.getBold())
+  if (style.has<Bold>() && style.get<Bold>())
     props.insert("fo:font-weight", "bold");
-  if (style.getUnderline())
+  if (style.has<Underline>() && style.get<Underline>())
     props.insert("style:text-underline-type", "single");
-  if (style.getStrikethru())
+  if (style.has<Strikethru>() && style.get<Strikethru>())
     props.insert("style:text-line-through-type", "single");
-  if (style.getOutline())
+  if (style.has<Outline>() && style.get<Outline>())
     props.insert("style:text-outline", true);
 
-  const optional<IWORKCapitalization> capitalization = style.getCapitalization();
-  if (capitalization)
+  if (style.has<Capitalization>())
   {
-    if (IWORK_CAPITALIZATION_SMALL_CAPS == get(capitalization))
+    const IWORKCapitalization &capitalization = style.get<Capitalization>();
+    if (IWORK_CAPITALIZATION_SMALL_CAPS == capitalization)
       props.insert("fo:font-variant", "small-caps");
   }
 
-  const optional<string> fontName = style.getFontName();
-  if (fontName)
-    props.insert("style:font-name", librevenge::RVNGString(get(fontName).c_str()));
+  if (style.has<FontName>())
+    props.insert("style:font-name", librevenge::RVNGString(style.get<FontName>().c_str()));
 
-  const optional<double> fontSize = style.getFontSize();
-  if (fontSize)
-    props.insert("fo:font-size", pt2in(get(fontSize)));
+  if (style.has<FontSize>())
+    props.insert("fo:font-size", pt2in(style.get<FontSize>()));
 
-  const optional<IWORKColor> fontColor = style.getFontColor();
-  if (fontColor)
-    props.insert("fo:color", makeColor(get(fontColor)));
+  if (style.has<FontColor>())
+    props.insert("fo:color", makeColor(style.get<FontColor>()));
 }
 
 IWORKStylePtr_t makeEmptyStyle()
@@ -89,26 +88,31 @@ librevenge::RVNGPropertyList makeCharPropList(const IWORKStylePtr_t &style, cons
 {
   librevenge::RVNGPropertyList props;
 
-  // Even if there is no character style for the span, there might still
-  // be attributes inherited from the paragraph style through context.
-  // We use an empty style so these can be picked up.
-  fillCharPropList(props, IWORKCharacterStyle(bool(style) ? style : makeEmptyStyle(), context));
+  IWORKStyleStack styleStack(context);
+  styleStack.push();
+  styleStack.set(style);
+
+  fillCharPropList(props, styleStack);
 
   return props;
 }
 
 librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, const IWORKStyleStack &context)
 {
+  using namespace property;
+
   librevenge::RVNGPropertyList props;
 
   if (bool(style))
   {
-    const IWORKParagraphStyle paraStyle(style, context);
+    IWORKStyleStack styleStack(context);
+    styleStack.push();
+    styleStack.set(style);
 
-    const optional<IWORKAlignment> alignment(paraStyle.getAlignment());
-    if (bool(alignment))
+    if (styleStack.has<Alignment>())
     {
-      switch (get(alignment))
+      const IWORKAlignment &alignment(styleStack.get<Alignment>());
+      switch (alignment)
       {
       case IWORK_ALIGNMENT_LEFT :
         props.insert("fo:text-align", "left");
@@ -125,10 +129,10 @@ librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, cons
       }
     }
 
-    const optional<IWORKTabStops_t> &tabStops = paraStyle.getTabs();
-    if (bool(tabStops))
+    if (styleStack.has<Tabs>())
     {
-      for (IWORKTabStops_t::const_iterator it = get(tabStops).begin(); get(tabStops).end() != it; ++it)
+      const IWORKTabStops_t &tabStops = styleStack.get<Tabs>();
+      for (IWORKTabStops_t::const_iterator it = tabStops.begin(); tabStops.end() != it; ++it)
       {
         librevenge::RVNGPropertyList tab;
         tab.insert("style:position", pt2in(it->m_pos));

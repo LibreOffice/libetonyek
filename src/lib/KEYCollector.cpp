@@ -12,9 +12,9 @@
 #include "libetonyek_utils.h"
 #include "IWORKDocumentInterface.h"
 #include "IWORKOutputElements.h"
+#include "IWORKProperties.h"
 #include "IWORKText.h"
 #include "KEYDictionary.h"
-#include "KEYStyles.h"
 
 namespace libetonyek
 {
@@ -118,8 +118,13 @@ KEYPlaceholderPtr_t KEYCollector::collectTextPlaceholder(const IWORKStylePtr_t &
   placeholder->m_style = style;
   if (bool(placeholder->m_style))
   {
-    const KEYPlaceholderStyle placeholderStyle(placeholder->m_style, m_styleStack);
-    placeholder->m_geometry = placeholderStyle.getGeometry();
+    m_styleStack.push();
+    m_styleStack.set(placeholder->m_style);
+
+    if (m_styleStack.has<property::Geometry>())
+      placeholder->m_geometry = m_styleStack.get<property::Geometry>();
+
+    m_styleStack.pop();
   }
   if (!m_currentText->empty())
   {

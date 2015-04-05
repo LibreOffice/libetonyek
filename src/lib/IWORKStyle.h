@@ -47,13 +47,25 @@ public:
     */
   const IWORKPropertyMap &getPropertyMap() const;
 
-  /** Look up a property in this style.
+  /** Check for the presence of a property.
     *
-    * @arg[in] property the property to look up
-    * @arg[in] context the context for dynamic lookup
-    * @returns the found property or empty boost::any
+    * @returns true if the property is present
     */
-  boost::any lookup(const char *property, const IWORKStyleStack &stack) const;
+  template<class Property>
+  bool has() const
+  {
+    return m_props.has<Property>(true);
+  }
+
+  /** Retrieve the value of a property.
+    *
+    * @returns the found value
+    */
+  template<class Property>
+  const typename IWORKPropertyInfo<Property>::ValueType &get() const
+  {
+    return m_props.get<Property>(true);
+  }
 
   const boost::optional<std::string> &getIdent() const;
 

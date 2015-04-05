@@ -59,20 +59,27 @@ public:
 
   void set(const IWORKStylePtr_t &style);
 
-  /** Find the current value of property @c property.
-    *
-    * The search traverses the stack of active styles from top to
-    * bottom. The search ends if @c property is found or if bottom is
-    * reached.
-    *
-    * @arg[in] property the property to look for
-    * @arg[in] lookInParent should the parent styles of the active
-    *   styles be included in the search too?
-    * @returns the found value or empty value
-    *
-    * @seealso IWORKPropertyMap::get
-    */
-  boost::any find(const std::string &property, bool lookInParent = false) const;
+  template<class Property>
+  bool has(const bool lookInParent = true) const
+  {
+    for (Stack_t::const_iterator it = m_stack.begin(); m_stack.end() != it; ++it)
+    {
+      if (*it && (*it)->getPropertyMap().has<Property>(lookInParent))
+        return true;
+    }
+    return false;
+  }
+
+  template<class Property>
+  const typename IWORKPropertyInfo<Property>::ValueType &get(const bool lookInParent = true) const
+  {
+    for (Stack_t::const_iterator it = m_stack.begin(); m_stack.end() != it; ++it)
+    {
+      if (*it && (*it)->getPropertyMap().has<Property>(lookInParent))
+        return (*it)->getPropertyMap().get<Property>(lookInParent);
+    }
+    throw IWORKPropertyMap::NotFoundException();
+  }
 
 private:
   Stack_t m_stack;

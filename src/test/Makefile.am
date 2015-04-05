@@ -20,6 +20,8 @@ test_SOURCES = \
 	IWORKStyleStackTest.cpp \
 	IWORKTokenizerBaseTest.cpp \
 	IWORKTransformationTest.cpp \
+	TestProperties.cpp \
+	TestProperties.h \
 	test.cpp
 
 TESTS = $(target_test)
