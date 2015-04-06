@@ -277,12 +277,6 @@ void IWORKCollector::setGraphicStyle(const IWORKStylePtr_t &style)
   }
 }
 
-void IWORKCollector::setLayoutStyle(const IWORKStylePtr_t &style)
-{
-  if (bool(m_currentText))
-    m_currentText->setLayoutStyle(style);
-}
-
 void IWORKCollector::collectGeometry(const IWORKGeometryPtr_t &geometry)
 {
   assert(!m_levelStack.empty());

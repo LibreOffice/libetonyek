@@ -54,7 +54,6 @@ public:
   void collectStyle(const IWORKStylePtr_t &style, bool anonymous);
 
   void setGraphicStyle(const IWORKStylePtr_t &style);
-  void setLayoutStyle(const IWORKStylePtr_t &style);
 
   void collectGeometry(const IWORKGeometryPtr_t &geometry);
 

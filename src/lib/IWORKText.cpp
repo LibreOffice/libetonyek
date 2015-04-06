@@ -189,19 +189,9 @@ void IWORKText::draw(const IWORKTransformation &trafo, const IWORKGeometryPtr_t 
 
 IWORKText::IWORKText()
   : m_styleStack()
-  , m_layoutStyle()
   , m_elements()
   , m_pendingLineBreak(false)
 {
-}
-
-void IWORKText::setLayoutStyle(const IWORKStylePtr_t &style)
-{
-  assert(!m_layoutStyle);
-
-  m_layoutStyle = style;
-  m_styleStack.push();
-  m_styleStack.set(style);
 }
 
 void IWORKText::openParagraph(const IWORKStylePtr_t &style)
@@ -255,11 +245,6 @@ void IWORKText::flushLineBreak()
 
     m_pendingLineBreak = false;
   }
-}
-
-const IWORKStylePtr_t &IWORKText::getLayoutStyle() const
-{
-  return m_layoutStyle;
 }
 
 bool IWORKText::empty() const

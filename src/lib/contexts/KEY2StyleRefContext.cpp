@@ -52,8 +52,6 @@ void KEY2StyleRefContext::endOfElement()
         style = it->second;
     }
     getCollector()->collectStyle(style, m_anonymous);
-    // TODO: this call is in the wrong place
-    getCollector()->setLayoutStyle(style);
     break;
   }
   case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style_ref :

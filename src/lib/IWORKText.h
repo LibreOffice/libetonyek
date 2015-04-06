@@ -29,16 +29,12 @@ class IWORKText
 public:
   IWORKText();
 
-  void setLayoutStyle(const IWORKStylePtr_t &style);
-
   void openParagraph(const IWORKStylePtr_t &style);
   void closeParagraph();
 
   void insertText(const std::string &text, const IWORKStylePtr_t &style);
   void insertTab();
   void insertLineBreak();
-
-  const IWORKStylePtr_t &getLayoutStyle() const;
 
   bool empty() const;
 
@@ -50,7 +46,6 @@ private:
 
 private:
   IWORKStyleStack m_styleStack;
-  IWORKStylePtr_t m_layoutStyle;
 
   IWORKOutputElements m_elements;
 

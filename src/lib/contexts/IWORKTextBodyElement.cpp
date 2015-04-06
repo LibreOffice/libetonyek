@@ -285,7 +285,6 @@ void LayoutElement::attribute(const int name, const char *)
   {
     // TODO: fetch the style
     getCollector()->collectStyle(IWORKStylePtr_t(), false);
-    getCollector()->setLayoutStyle(IWORKStylePtr_t());
   }
 }
 

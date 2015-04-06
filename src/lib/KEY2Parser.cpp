@@ -776,9 +776,8 @@ void TextElement::attribute(const int name, const char *)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
+    // TODO: handle
     getCollector()->collectStyle(IWORKStylePtr_t(), false);
-    // TODO: this call is in the wrong place
-    getCollector()->setLayoutStyle(IWORKStylePtr_t());
     break;
   }
 }

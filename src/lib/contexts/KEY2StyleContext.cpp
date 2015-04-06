@@ -104,8 +104,6 @@ void KEY2StyleContext::endOfElement()
     if (getId())
       getDictionary().m_layoutStyles[get(getId())] = style;
     getCollector()->collectStyle(style, m_nested);
-    // TODO: this call is in the wrong place
-    getCollector()->setLayoutStyle(style);
     break;
   }
   case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style :
