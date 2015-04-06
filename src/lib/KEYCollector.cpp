@@ -37,25 +37,6 @@ KEYCollector::~KEYCollector()
   assert(!m_paint);
 }
 
-void KEYCollector::collectPlaceholderStyle(const IWORKStylePtr_t &style, const bool anonymous)
-{
-  assert(m_currentStylesheet);
-
-  if (bool(style))
-  {
-    if (style->getIdent() && !anonymous)
-      m_currentStylesheet->m_styles[get(style->getIdent())] = style;
-    m_newStyles.push_back(style);
-  }
-}
-
-void KEYCollector::collectSlideStyle(const IWORKStylePtr_t &style, const bool anonymous)
-{
-  // TODO: implement me
-  (void) style;
-  (void) anonymous;
-}
-
 void KEYCollector::collectPresentationSize(const IWORKSize &size)
 {
   m_size = size;

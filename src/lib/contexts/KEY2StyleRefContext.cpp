@@ -66,7 +66,7 @@ void KEY2StyleRefContext::endOfElement()
       if (dict.m_placeholderStyles.end() != it)
         style = it->second;
     }
-    getCollector()->collectPlaceholderStyle(style, m_anonymous);
+    getCollector()->collectStyle(style, m_anonymous);
     break;
   }
   default :

@@ -26,9 +26,6 @@ public:
 
   // collector functions
 
-  void collectPlaceholderStyle(const IWORKStylePtr_t &style, bool anonymous);
-  void collectSlideStyle(const IWORKStylePtr_t &style, bool anonymous);
-
   void collectPresentationSize(const IWORKSize &size);
 
   KEYLayerPtr_t collectLayer();
