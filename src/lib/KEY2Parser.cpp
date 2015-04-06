@@ -818,7 +818,7 @@ ShapeElement::ShapeElement(KEY2ParserState &state)
 void ShapeElement::startOfElement()
 {
   getCollector()->startLevel();
-  getCollector()->startText(true);
+  getCollector()->startText();
 }
 
 IWORKXMLContextPtr_t ShapeElement::element(const int name)
@@ -1118,7 +1118,7 @@ StickyNoteElement::StickyNoteElement(KEY2ParserState &state)
 
 void StickyNoteElement::startOfElement()
 {
-  getCollector()->startText(false);
+  getCollector()->startText();
   getCollector()->startLevel();
 }
 
@@ -1392,7 +1392,7 @@ PlaceholderContext::PlaceholderContext(KEY2ParserState &state, const bool title)
 
 void PlaceholderContext::startOfElement()
 {
-  getCollector()->startText(true);
+  getCollector()->startText();
 }
 
 IWORKXMLContextPtr_t PlaceholderContext::element(const int name)
@@ -1615,7 +1615,7 @@ NotesElement::NotesElement(KEY2ParserState &state)
 
 void NotesElement::startOfElement()
 {
-  getCollector()->startText(false);
+  getCollector()->startText();
 }
 
 IWORKXMLContextPtr_t NotesElement::element(const int name)

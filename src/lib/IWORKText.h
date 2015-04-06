@@ -27,12 +27,9 @@ class IWORKText
 {
 
 public:
-  explicit IWORKText(bool object = true);
+  IWORKText();
 
   void setLayoutStyle(const IWORKStylePtr_t &style);
-
-  const IWORKGeometryPtr_t &getBoundingBox() const;
-  void setBoundingBox(const IWORKGeometryPtr_t &boundingBox);
 
   void openParagraph(const IWORKStylePtr_t &style);
   void closeParagraph();
@@ -42,11 +39,11 @@ public:
   void insertLineBreak();
 
   const IWORKStylePtr_t &getLayoutStyle() const;
-  bool isObject() const;
 
   bool empty() const;
 
-  void draw(const IWORKTransformation &trafo, IWORKOutputElements &elements);
+  void draw(IWORKOutputElements &elements);
+  void draw(const IWORKTransformation &trafo, const IWORKGeometryPtr_t &boundingBox, IWORKOutputElements &elements);
 
 private:
   void flushLineBreak();
@@ -54,9 +51,7 @@ private:
 private:
   IWORKStyleStack m_styleStack;
   IWORKStylePtr_t m_layoutStyle;
-  const bool m_object;
 
-  IWORKGeometryPtr_t m_boundingBox;
   IWORKOutputElements m_elements;
 
   bool m_pendingLineBreak;

@@ -127,10 +127,7 @@ KEYPlaceholderPtr_t KEYCollector::collectTextPlaceholder(const IWORKStylePtr_t &
     m_styleStack.pop();
   }
   if (!m_currentText->empty())
-  {
-    m_currentText->setBoundingBox(placeholder->m_geometry);
     placeholder->m_text = m_currentText;
-  }
 
   m_currentText.reset();
 
@@ -140,7 +137,7 @@ KEYPlaceholderPtr_t KEYCollector::collectTextPlaceholder(const IWORKStylePtr_t &
 void drawPlaceholder(const KEYPlaceholderPtr_t &placeholder, const IWORKTransformation &trafo, IWORKOutputElements &elements)
 {
   if (bool(placeholder) && bool(placeholder->m_style) && bool(placeholder->m_text))
-    (placeholder->m_text)->draw(trafo, elements);
+    (placeholder->m_text)->draw(trafo, placeholder->m_geometry, elements);
 }
 
 void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
@@ -163,7 +160,7 @@ void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
 
 void KEYCollector::collectNote()
 {
-  m_currentText->draw(m_levelStack.top().m_trafo, m_notes);
+  m_currentText->draw(m_notes);
   m_currentText.reset();
 }
 
@@ -289,7 +286,7 @@ void KEYCollector::drawStickyNotes()
     if (bool(it->m_text))
     {
       IWORKOutputElements elements;
-      (it->m_text)->draw(m_levelStack.top().m_trafo, elements);
+      (it->m_text)->draw(elements);
       elements.write(m_document);
     }
     m_document->closeComment();

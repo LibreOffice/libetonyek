@@ -146,7 +146,12 @@ librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, cons
 
 }
 
-void IWORKText::draw(const IWORKTransformation &trafo, IWORKOutputElements &elements)
+void IWORKText::draw(IWORKOutputElements &elements)
+{
+  elements.append(m_elements);
+}
+
+void IWORKText::draw(const IWORKTransformation &trafo, const IWORKGeometryPtr_t &boundingBox, IWORKOutputElements &elements)
 {
   librevenge::RVNGPropertyList props;
 
@@ -156,10 +161,10 @@ void IWORKText::draw(const IWORKTransformation &trafo, IWORKOutputElements &elem
   props.insert("svg:x", pt2in(x));
   props.insert("svg:y", pt2in(y));
 
-  if (bool(m_boundingBox))
+  if (bool(boundingBox))
   {
-    double w = m_boundingBox->m_naturalSize.m_width;
-    double h = m_boundingBox->m_naturalSize.m_height;
+    double w = boundingBox->m_naturalSize.m_width;
+    double h = boundingBox->m_naturalSize.m_height;
     trafo(w, h, true);
 
     props.insert("svg:width", pt2in(w));
@@ -176,21 +181,15 @@ void IWORKText::draw(const IWORKTransformation &trafo, IWORKOutputElements &elem
 
   props.insert("svg:d", path.toWPG());
 
-  if (m_object)
-    elements.addStartTextObject(props);
-
-  elements.append(m_elements);
-
-  if (m_object)
-    elements.addEndTextObject();
+  elements.addStartTextObject(props);
+  draw(elements);
+  elements.addEndTextObject();
 
 }
 
-IWORKText::IWORKText(const bool object)
+IWORKText::IWORKText()
   : m_styleStack()
   , m_layoutStyle()
-  , m_object(object)
-  , m_boundingBox()
   , m_elements()
   , m_pendingLineBreak(false)
 {
@@ -203,16 +202,6 @@ void IWORKText::setLayoutStyle(const IWORKStylePtr_t &style)
   m_layoutStyle = style;
   m_styleStack.push();
   m_styleStack.set(style);
-}
-
-const IWORKGeometryPtr_t &IWORKText::getBoundingBox() const
-{
-  return m_boundingBox;
-}
-
-void IWORKText::setBoundingBox(const IWORKGeometryPtr_t &boundingBox)
-{
-  m_boundingBox = boundingBox;
 }
 
 void IWORKText::openParagraph(const IWORKStylePtr_t &style)
@@ -271,11 +260,6 @@ void IWORKText::flushLineBreak()
 const IWORKStylePtr_t &IWORKText::getLayoutStyle() const
 {
   return m_layoutStyle;
-}
-
-bool IWORKText::isObject() const
-{
-  return m_object;
 }
 
 bool IWORKText::empty() const

@@ -90,7 +90,7 @@ public:
 
   void startParagraph(const IWORKStylePtr_t &style);
   void endParagraph();
-  void startText(bool object);
+  void startText();
   void endText();
 
   void startLevel();

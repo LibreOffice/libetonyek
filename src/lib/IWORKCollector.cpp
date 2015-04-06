@@ -160,11 +160,6 @@ void drawImage(const IWORKImagePtr_t &image, const IWORKTransformation &trafo, I
 
 }
 
-void drawText(const IWORKTextPtr_t &text, const IWORKTransformation &trafo, IWORKOutputElements &elements)
-{
-  text->draw(trafo, elements);
-}
-
 void drawLine(const IWORKLinePtr_t &line, const IWORKTransformation &trafo, IWORKOutputElements &elements)
 {
   // TODO: transform the line
@@ -218,7 +213,7 @@ void drawShape(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo, I
     elements.addDrawPath(props);
 
     if (bool(shape->m_text))
-      drawText(shape->m_text,trafo,elements);
+      shape->m_text->draw(trafo, shape->m_geometry, elements);
   }
 }
 
@@ -342,7 +337,6 @@ void IWORKCollector::collectShape()
 
   if (bool(m_currentText))
   {
-    m_currentText->setBoundingBox(shape->m_geometry);
     shape->m_text = m_currentText;
     m_currentText.reset();
   }
@@ -469,7 +463,7 @@ void IWORKCollector::collectTableCell(const unsigned row, const unsigned column,
   }
   else if (bool(m_currentText))
   {
-    m_currentText->draw(m_levelStack.top().m_trafo, elements);
+    m_currentText->draw(elements);
     m_currentText.reset();
   }
 
@@ -523,11 +517,11 @@ void IWORKCollector::endParagraph()
   m_currentText->closeParagraph();
 }
 
-void IWORKCollector::startText(const bool object)
+void IWORKCollector::startText()
 {
   assert(!m_currentText);
 
-  m_currentText.reset(new IWORKText(object));
+  m_currentText.reset(new IWORKText());
 
   assert(m_currentText->empty());
 }

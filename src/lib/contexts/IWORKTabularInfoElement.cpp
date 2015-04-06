@@ -508,7 +508,7 @@ TElement::TElement(TableParserState &state)
 
 void TElement::startOfElement()
 {
-  getCollector()->startText(false);
+  getCollector()->startText();
 }
 
 IWORKXMLContextPtr_t TElement::element(const int name)
