@@ -9,9 +9,6 @@
 
 #include "IWORKOutputElements.h"
 
-#include <algorithm>
-#include <iterator>
-
 #include <boost/make_shared.hpp>
 
 #include "IWORKDocumentInterface.h"
@@ -840,7 +837,7 @@ IWORKOutputElements::IWORKOutputElements()
 
 void IWORKOutputElements::append(const IWORKOutputElements &elements)
 {
-  std::copy(elements.m_elements.begin(), elements.m_elements.end(), std::back_inserter(m_elements));
+  m_elements.insert(m_elements.end(), elements.m_elements.begin(), elements.m_elements.end());
 }
 
 void IWORKOutputElements::write(IWORKDocumentInterface *iface) const
