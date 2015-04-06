@@ -13,61 +13,40 @@ namespace libetonyek
 {
 
 IWORKZoneManager::IWORKZoneManager()
-  : m_zoneList()
-  , m_activeZones()
-  , m_current(0)
-  , m_counter(0)
+  : m_active()
+  , m_saved()
 {
+  push();
 }
 
 IWORKZoneManager::~IWORKZoneManager()
 {
-  assert(m_activeZones.empty());
+  pop();
+  assert(m_active.empty());
 }
 
-IWORKZoneID_t IWORKZoneManager::open()
+void IWORKZoneManager::push()
 {
-  const IWORKZoneID_t currentId = m_counter;
-
-  m_current = &m_zoneList.insert(ZoneList_t::value_type(m_counter++, IWORKOutputElements())).first->second;
-  m_activeZones.push(currentId);
-
-  return currentId;
+  m_active.push(IWORKOutputElements());
 }
 
-void IWORKZoneManager::close()
+void IWORKZoneManager::pop()
 {
-  assert(!m_activeZones.empty());
-
-  m_activeZones.pop();
-
-  if (m_activeZones.empty())
-  {
-    m_current = 0;
-  }
-  else
-  {
-    const ZoneList_t::iterator it = m_zoneList.find(m_activeZones.top());
-    assert(m_zoneList.end() != it);
-    m_current = &it->second;
-  }
+  assert(!m_active.empty());
+  m_active.pop();
 }
 
-bool IWORKZoneManager::active() const
+IWORKZoneID_t IWORKZoneManager::save()
 {
-  return !m_activeZones.empty();
-}
-
-bool IWORKZoneManager::exists(IWORKZoneID_t id) const
-{
-  return m_zoneList.find(id) != m_zoneList.end();
+  assert(!m_active.empty());
+  m_saved.push_back(m_active.top());
+  return m_saved.size() - 1;
 }
 
 IWORKOutputElements &IWORKZoneManager::get(IWORKZoneID_t id)
 {
-  ZoneList_t::iterator it = m_zoneList.find(id);
-  assert(m_zoneList.end() != it);
-  return it->second;
+  assert(m_saved.size() > id);
+  return m_saved.at(id);
 }
 
 const IWORKOutputElements &IWORKZoneManager::get(IWORKZoneID_t id) const
@@ -77,19 +56,13 @@ const IWORKOutputElements &IWORKZoneManager::get(IWORKZoneID_t id) const
 
 IWORKOutputElements &IWORKZoneManager::getCurrent()
 {
-  assert(m_current);
-  return *m_current;
+  assert(!m_active.empty());
+  return m_active.top();
 }
 
 const IWORKOutputElements &IWORKZoneManager::getCurrent() const
 {
   return const_cast<IWORKZoneManager *>(this)->getCurrent();
-}
-
-IWORKZoneID_t IWORKZoneManager::getCurrentId() const
-{
-  assert(!m_activeZones.empty());
-  return m_activeZones.top();
 }
 
 }

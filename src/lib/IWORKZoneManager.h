@@ -10,7 +10,7 @@
 #ifndef IWORKZONEMANAGER_H_INCLUDED
 #define IWORKZONEMANAGER_H_INCLUDED
 
-#include <map>
+#include <deque>
 #include <stack>
 
 #include "IWORKOutputElements.h"
@@ -19,39 +19,63 @@
 namespace libetonyek
 {
 
+/** A manager for output zones.
+  *
+  * It keeps a stack of currently opened zones and a list of saved
+  * zones.
+  *
+  * There is always at least one zone on the stack.
+  */
 class IWORKZoneManager
 {
   // disable copying
   IWORKZoneManager(const IWORKZoneManager &);
   IWORKZoneManager &operator=(const IWORKZoneManager &);
 
-  typedef std::map<IWORKZoneID_t, IWORKOutputElements> ZoneList_t;
+  typedef std::deque<IWORKOutputElements> ZoneList_t;
+  typedef std::stack<IWORKOutputElements> ZoneStack_t;
 
 public:
   IWORKZoneManager();
   ~IWORKZoneManager();
 
-  IWORKZoneID_t open();
-  void close();
+  /** Push a new zone onto the stack.
+    */
+  void push();
 
-  void remove(IWORKZoneID_t id);
+  /** Pop a zone from the stack
+    */
+  void pop();
 
-  bool active() const;
-  bool exists(IWORKZoneID_t id) const;
+  /** Save the current zone.
+    *
+    * It remains on the stack.
+    *
+    * @return The ID of the saved zone.
+    */
+  IWORKZoneID_t save();
 
+  /** Get zone with ID @c id.
+    *
+    * @arg[in] id ID of the zone to get.
+    */
   IWORKOutputElements &get(IWORKZoneID_t id);
+  /** Get zone with ID @c id.
+    *
+    * @arg[in] id ID of the zone to get.
+    */
   const IWORKOutputElements &get(IWORKZoneID_t id) const;
 
+  /** Get the current zone.
+    */
   IWORKOutputElements &getCurrent();
+  /** Get the current zone.
+    */
   const IWORKOutputElements &getCurrent() const;
 
-  IWORKZoneID_t getCurrentId() const;
-
 private:
-  ZoneList_t m_zoneList;
-  std::stack<IWORKZoneID_t> m_activeZones;
-  IWORKOutputElements *m_current;
-  unsigned m_counter;
+  ZoneStack_t m_active;
+  ZoneList_t m_saved;
 };
 
 }

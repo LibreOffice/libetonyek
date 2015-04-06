@@ -64,11 +64,10 @@ void KEYCollector::collectPresentationSize(const IWORKSize &size)
 KEYLayerPtr_t KEYCollector::collectLayer()
 {
   assert(m_layerOpened);
-  assert(getZoneManager().active());
 
   KEYLayerPtr_t layer(new KEYLayer());
 
-  layer->m_zoneId = getZoneManager().getCurrentId();
+  layer->m_zoneId = getZoneManager().save();
 
   return layer;
 }
@@ -87,7 +86,7 @@ void KEYCollector::insertLayer(const KEYLayerPtr_t &layer)
       props.insert("svg:id", m_layerCount);
 
       m_document->startLayer(props);
-      if (layer->m_zoneId && getZoneManager().exists(get(layer->m_zoneId)))
+      if (layer->m_zoneId)
         getZoneManager().get(get(layer->m_zoneId)).write(m_document);
       m_document->endLayer();
     }
@@ -142,8 +141,6 @@ void drawPlaceholder(const KEYPlaceholderPtr_t &placeholder, const IWORKTransfor
 
 void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
 {
-  assert(getZoneManager().active());
-
   if (bool(placeholder))
   {
     IWORKTransformation trafo;
@@ -231,28 +228,22 @@ void KEYCollector::startLayer()
 {
   assert(m_pageOpened);
   assert(!m_layerOpened);
-  assert(!getZoneManager().active());
 
-  getZoneManager().open();
+  getZoneManager().push();
   m_layerOpened = true;
 
   startLevel();
-
-  assert(getZoneManager().active());
 }
 
 void KEYCollector::endLayer()
 {
   assert(m_pageOpened);
   assert(m_layerOpened);
-  assert(getZoneManager().active());
 
   endLevel();
-  getZoneManager().close();
+  getZoneManager().pop();
 
   m_layerOpened = false;
-
-  assert(!getZoneManager().active());
 }
 
 void KEYCollector::drawNotes()

@@ -298,7 +298,6 @@ void IWORKCollector::collectBezier(const IWORKPathPtr_t &path)
 
 void IWORKCollector::collectImage(const IWORKImagePtr_t &image)
 {
-  assert(m_zoneManager.active());
   assert(!m_levelStack.empty());
 
   image->m_geometry = m_levelStack.top().m_geometry;
@@ -309,7 +308,6 @@ void IWORKCollector::collectImage(const IWORKImagePtr_t &image)
 
 void IWORKCollector::collectLine(const IWORKLinePtr_t &line)
 {
-  assert(m_zoneManager.active());
   assert(!m_levelStack.empty());
 
   line->m_geometry = m_levelStack.top().m_geometry;
@@ -320,7 +318,6 @@ void IWORKCollector::collectLine(const IWORKLinePtr_t &line)
 
 void IWORKCollector::collectShape()
 {
-  assert(m_zoneManager.active());
   assert(!m_levelStack.empty());
 
   const IWORKShapePtr_t shape(new IWORKShape());
@@ -391,7 +388,6 @@ void IWORKCollector::collectCalloutPath(const IWORKSize &size, const double radi
 void IWORKCollector::collectMedia(const IWORKMediaContentPtr_t &content)
 {
   assert(!m_levelStack.empty());
-  assert(m_zoneManager.active());
 
   const IWORKMediaPtr_t media(new IWORKMedia());
   media->m_geometry = m_levelStack.top().m_geometry;
@@ -483,7 +479,6 @@ void IWORKCollector::collectTableRow()
 void IWORKCollector::collectTable()
 {
   assert(!m_levelStack.empty());
-  assert(m_zoneManager.active());
 
   m_currentTable.setGeometry(m_levelStack.top().m_geometry);
   m_levelStack.top().m_geometry.reset();
