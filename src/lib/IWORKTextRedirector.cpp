@@ -19,37 +19,37 @@ IWORKTextRedirector::IWORKTextRedirector(librevenge::RVNGTextInterface *const if
 {
 }
 
-void IWORKTextRedirector::setDocumentMetaData(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::setDocumentMetaData(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->setDocumentMetaData(propList);
 }
 
-void IWORKTextRedirector::startDocument(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::startDocument(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->startDocument(propList);
 }
 void IWORKTextRedirector::endDocument()
 {
-  assert(0);
+  m_iface->endDocument();
 }
 
-void IWORKTextRedirector::definePageStyle(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::definePageStyle(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->definePageStyle(propList);
 }
 
-void IWORKTextRedirector::defineEmbeddedFont(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::defineEmbeddedFont(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->defineEmbeddedFont(propList);
 }
 
-void IWORKTextRedirector::openPageSpan(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openPageSpan(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openPageSpan(propList);
 }
 void IWORKTextRedirector::closePageSpan()
 {
-  assert(0);
+  m_iface->closePageSpan();
 }
 
 void IWORKTextRedirector::startSlide(const librevenge::RVNGPropertyList &/*propList*/)
@@ -84,156 +84,156 @@ void IWORKTextRedirector::endLayer()
   assert(0);
 }
 
-void IWORKTextRedirector::openHeader(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openHeader(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openHeader(propList);
 }
 void IWORKTextRedirector::closeHeader()
 {
-  assert(0);
+  m_iface->closeHeader();
 }
 
-void IWORKTextRedirector::openFooter(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openFooter(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openFooter(propList);
 }
 void IWORKTextRedirector::closeFooter()
 {
-  assert(0);
+  m_iface->closeFooter();
 }
 
-void IWORKTextRedirector::defineParagraphStyle(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::defineParagraphStyle(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->defineParagraphStyle(propList);
 }
 
-void IWORKTextRedirector::openParagraph(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openParagraph(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openParagraph(propList);
 }
 void IWORKTextRedirector::closeParagraph()
 {
-  assert(0);
+  m_iface->closeParagraph();
 }
 
-void IWORKTextRedirector::defineCharacterStyle(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::defineCharacterStyle(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->defineCharacterStyle(propList);
 }
 
-void IWORKTextRedirector::openSpan(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openSpan(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openSpan(propList);
 }
 void IWORKTextRedirector::closeSpan()
 {
-  assert(0);
+  m_iface->closeSpan();
 }
 
-void IWORKTextRedirector::openLink(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openLink(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openLink(propList);
 }
 void IWORKTextRedirector::closeLink()
 {
-  assert(0);
+  m_iface->closeLink();
 }
 
-void IWORKTextRedirector::defineSectionStyle(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::defineSectionStyle(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->defineSectionStyle(propList);
 }
 
-void IWORKTextRedirector::openSection(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openSection(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openSection(propList);
 }
 void IWORKTextRedirector::closeSection()
 {
-  assert(0);
+  m_iface->closeSection();
 }
 
 void IWORKTextRedirector::insertTab()
 {
-  assert(0);
+  m_iface->insertTab();
 }
 void IWORKTextRedirector::insertSpace()
 {
-  assert(0);
+  m_iface->insertSpace();
 }
-void IWORKTextRedirector::insertText(const librevenge::RVNGString &/*text*/)
+void IWORKTextRedirector::insertText(const librevenge::RVNGString &text)
 {
-  assert(0);
+  m_iface->insertText(text);
 }
 void IWORKTextRedirector::insertLineBreak()
 {
-  assert(0);
+  m_iface->insertLineBreak();
 }
 
-void IWORKTextRedirector::insertField(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::insertField(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->insertField(propList);
 }
 
-void IWORKTextRedirector::openOrderedListLevel(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openOrderedListLevel(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openOrderedListLevel(propList);
 }
-void IWORKTextRedirector::openUnorderedListLevel(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openUnorderedListLevel(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openUnorderedListLevel(propList);
 }
 void IWORKTextRedirector::closeOrderedListLevel()
 {
-  assert(0);
+  m_iface->closeOrderedListLevel();
 }
 void IWORKTextRedirector::closeUnorderedListLevel()
 {
-  assert(0);
+  m_iface->closeUnorderedListLevel();
 }
-void IWORKTextRedirector::openListElement(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openListElement(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openListElement(propList);
 }
 void IWORKTextRedirector::closeListElement()
 {
-  assert(0);
+  m_iface->closeListElement();
 }
 
-void IWORKTextRedirector::openFootnote(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openFootnote(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openFootnote(propList);
 }
 void IWORKTextRedirector::closeFootnote()
 {
-  assert(0);
+  m_iface->closeFootnote();
 }
 
-void IWORKTextRedirector::openEndnote(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openEndnote(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openEndnote(propList);
 }
 void IWORKTextRedirector::closeEndnote()
 {
-  assert(0);
+  m_iface->closeEndnote();
 }
 
-void IWORKTextRedirector::openComment(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openComment(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openComment(propList);
 }
 void IWORKTextRedirector::closeComment()
 {
-  assert(0);
+  m_iface->closeComment();
 }
 
-void IWORKTextRedirector::openTextBox(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openTextBox(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openTextBox(propList);
 }
 void IWORKTextRedirector::closeTextBox()
 {
-  assert(0);
+  m_iface->closeTextBox();
 }
 
 void IWORKTextRedirector::defineSheetNumberingStyle(const librevenge::RVNGPropertyList &/*propList*/)
@@ -241,84 +241,84 @@ void IWORKTextRedirector::defineSheetNumberingStyle(const librevenge::RVNGProper
   assert(0);
 }
 
-void IWORKTextRedirector::openTable(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openTable(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openTable(propList);
 }
-void IWORKTextRedirector::openTableRow(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openTableRow(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openTableRow(propList);
 }
 void IWORKTextRedirector::closeTableRow()
 {
-  assert(0);
+  m_iface->closeTableRow();
 }
-void IWORKTextRedirector::openTableCell(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openTableCell(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openTableCell(propList);
 }
 void IWORKTextRedirector::closeTableCell()
 {
-  assert(0);
+  m_iface->closeTableCell();
 }
-void IWORKTextRedirector::insertCoveredTableCell(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::insertCoveredTableCell(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->insertCoveredTableCell(propList);
 }
 void IWORKTextRedirector::closeTable()
 {
-  assert(0);
+  m_iface->closeTable();
 }
-void IWORKTextRedirector::openFrame(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openFrame(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openFrame(propList);
 }
 void IWORKTextRedirector::closeFrame()
 {
-  assert(0);
+  m_iface->closeFrame();
 }
-void IWORKTextRedirector::insertBinaryObject(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::insertBinaryObject(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->insertBinaryObject(propList);
 }
-void IWORKTextRedirector::insertEquation(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::insertEquation(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->insertEquation(propList);
 }
 
-void IWORKTextRedirector::openGroup(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::openGroup(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openGroup(propList);
 }
 void IWORKTextRedirector::closeGroup()
 {
-  assert(0);
+  m_iface->closeGroup();
 }
 
-void IWORKTextRedirector::defineGraphicStyle(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::defineGraphicStyle(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->defineGraphicStyle(propList);
 }
 
-void IWORKTextRedirector::drawRectangle(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::drawRectangle(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->drawRectangle(propList);
 }
-void IWORKTextRedirector::drawEllipse(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::drawEllipse(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->drawEllipse(propList);
 }
-void IWORKTextRedirector::drawPolygon(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::drawPolygon(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->drawPolygon(propList);
 }
-void IWORKTextRedirector::drawPolyline(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::drawPolyline(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->drawPolyline(propList);
 }
-void IWORKTextRedirector::drawPath(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::drawPath(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->drawPath(propList);
 }
 
 void IWORKTextRedirector::drawGraphicObject(const librevenge::RVNGPropertyList &/*propList*/)
@@ -326,9 +326,9 @@ void IWORKTextRedirector::drawGraphicObject(const librevenge::RVNGPropertyList &
   assert(0);
 }
 
-void IWORKTextRedirector::drawConnector(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::drawConnector(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->drawConnector(propList);
 }
 
 void IWORKTextRedirector::startTextObject(const librevenge::RVNGPropertyList &/*propList*/)
