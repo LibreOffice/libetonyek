@@ -78,12 +78,6 @@ void fillCharPropList(librevenge::RVNGPropertyList &props, const IWORKStyleStack
     props.insert("fo:color", makeColor(style.get<FontColor>()));
 }
 
-IWORKStylePtr_t makeEmptyStyle()
-{
-  optional<string> dummy;
-  return boost::make_shared<IWORKStyle>(IWORKPropertyMap(), dummy, dummy);
-}
-
 librevenge::RVNGPropertyList makeCharPropList(const IWORKStylePtr_t &style, const IWORKStyleStack &context)
 {
   librevenge::RVNGPropertyList props;
