@@ -80,13 +80,19 @@ private:
   virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void text(const char *value);
+  virtual void endOfElement();
+
+  void ensureOpened();
 
 private:
-  boost::optional<ID_t> m_style;
+  IWORKStylePtr_t m_style;
+  bool m_opened;
 };
 
 SpanElement::SpanElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
+  , m_style()
+  , m_opened(false)
 {
 }
 
@@ -95,13 +101,19 @@ void SpanElement::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::style :
-    m_style = value;
+  {
+    const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_characterStyles.find(value);
+    if (getState().getDictionary().m_characterStyles.end() != it)
+      m_style = it->second;
     break;
+  }
   }
 }
 
 IWORKXMLContextPtr_t SpanElement::element(const int name)
 {
+  ensureOpened();
+
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::br :
@@ -118,14 +130,23 @@ IWORKXMLContextPtr_t SpanElement::element(const int name)
 
 void SpanElement::text(const char *const value)
 {
-  IWORKStylePtr_t style;
-  if (m_style)
+  ensureOpened();
+  getCollector()->collectText(value);
+}
+
+void SpanElement::endOfElement()
+{
+  if (m_opened)
+    getCollector()->closeSpan();
+}
+
+void SpanElement::ensureOpened()
+{
+  if (!m_opened)
   {
-    const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_characterStyles.find(get(m_style));
-    if (getState().getDictionary().m_characterStyles.end() != it)
-      style = it->second;
+    getCollector()->openSpan(m_style);
+    m_opened = true;
   }
-  getCollector()->collectText(style, value);
 }
 
 }
@@ -168,7 +189,7 @@ IWORKXMLContextPtr_t LinkElement::element(const int name)
 
 void LinkElement::text(const char *const value)
 {
-  getCollector()->collectText(IWORKStylePtr_t(), value);
+  getCollector()->collectText(value);
 }
 
 }
@@ -241,7 +262,7 @@ IWORKXMLContextPtr_t PElement::element(const int name)
 void PElement::text(const char *const value)
 {
   ensureOpened();
-  getCollector()->collectText(m_style, value);
+  getCollector()->collectText(value);
 }
 
 void PElement::endOfElement()

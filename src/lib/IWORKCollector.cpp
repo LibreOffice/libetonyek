@@ -410,11 +410,11 @@ IWORKStylesheetPtr_t IWORKCollector::collectStylesheet(const IWORKStylesheetPtr_
   return stylesheet;
 }
 
-void IWORKCollector::collectText(const IWORKStylePtr_t &style, const std::string &text)
+void IWORKCollector::collectText(const std::string &text)
 {
   assert(bool(m_currentText));
 
-  m_currentText->insertText(text, style);
+  m_currentText->insertText(text);
 }
 
 void IWORKCollector::collectTab()
@@ -504,6 +504,20 @@ void IWORKCollector::endParagraph()
   assert(bool(m_currentText));
 
   m_currentText->closeParagraph();
+}
+
+void IWORKCollector::openSpan(const IWORKStylePtr_t &style)
+{
+  assert(bool(m_currentText));
+
+  m_currentText->openSpan(style);
+}
+
+void IWORKCollector::closeSpan()
+{
+  assert(bool(m_currentText));
+
+  m_currentText->closeSpan();
 }
 
 void IWORKCollector::startText()

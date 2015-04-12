@@ -184,7 +184,7 @@ void IWORKText::draw(const IWORKTransformation &trafo, const IWORKGeometryPtr_t 
 IWORKText::IWORKText()
   : m_styleStack()
   , m_elements()
-  , m_pendingLineBreak(false)
+  , m_spanOpened(false)
 {
 }
 
@@ -198,47 +198,48 @@ void IWORKText::openParagraph(const IWORKStylePtr_t &style)
 
 void IWORKText::closeParagraph()
 {
+  if (m_spanOpened)
+    closeSpan();
+
   m_elements.addCloseParagraph();
   m_styleStack.pop();
-  // Keynote inserts a line break at the end of paragraph -- ignore
-  m_pendingLineBreak = false;
 }
 
-void IWORKText::insertText(const std::string &text, const IWORKStylePtr_t &style)
+void IWORKText::openSpan(const IWORKStylePtr_t &style)
 {
-  flushLineBreak();
+  if (m_spanOpened) // implicitly opened span
+    closeSpan();
 
   const librevenge::RVNGPropertyList props(makeCharPropList(style, m_styleStack));
   m_elements.addOpenSpan(props);
-  m_elements.addInsertText(librevenge::RVNGString(text.c_str()));
+  m_spanOpened = true;
+}
+
+void IWORKText::closeSpan()
+{
   m_elements.addCloseSpan();
+  m_spanOpened = false;
+}
+
+void IWORKText::insertText(const std::string &text)
+{
+  if (!m_spanOpened)
+    openSpan(IWORKStylePtr_t());
+  m_elements.addInsertText(librevenge::RVNGString(text.c_str()));
 }
 
 void IWORKText::insertTab()
 {
-  flushLineBreak();
-
-  m_elements.addOpenSpan(librevenge::RVNGPropertyList());
+  if (!m_spanOpened)
+    openSpan(IWORKStylePtr_t());
   m_elements.addInsertTab();
-  m_elements.addCloseSpan();
 }
 
 void IWORKText::insertLineBreak()
 {
-  flushLineBreak();
-  m_pendingLineBreak = true;
-}
-
-void IWORKText::flushLineBreak()
-{
-  if (m_pendingLineBreak)
-  {
-    m_elements.addOpenSpan(librevenge::RVNGPropertyList());
-    m_elements.addInsertLineBreak();
-    m_elements.addCloseSpan();
-
-    m_pendingLineBreak = false;
-  }
+  if (!m_spanOpened)
+    openSpan(IWORKStylePtr_t());
+  m_elements.addInsertLineBreak();
 }
 
 bool IWORKText::empty() const

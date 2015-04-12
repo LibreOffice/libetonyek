@@ -32,7 +32,10 @@ public:
   void openParagraph(const IWORKStylePtr_t &style);
   void closeParagraph();
 
-  void insertText(const std::string &text, const IWORKStylePtr_t &style);
+  void openSpan(const IWORKStylePtr_t &style);
+  void closeSpan();
+
+  void insertText(const std::string &text);
   void insertTab();
   void insertLineBreak();
 
@@ -42,14 +45,11 @@ public:
   void draw(const IWORKTransformation &trafo, const IWORKGeometryPtr_t &boundingBox, IWORKOutputElements &elements);
 
 private:
-  void flushLineBreak();
-
-private:
   IWORKStyleStack m_styleStack;
 
   IWORKOutputElements m_elements;
 
-  bool m_pendingLineBreak;
+  bool m_spanOpened;
 };
 
 }

@@ -74,7 +74,7 @@ public:
 
   IWORKStylesheetPtr_t collectStylesheet(const IWORKStylesheetPtr_t &parent);
 
-  void collectText(const IWORKStylePtr_t &style, const std::string &text);
+  void collectText(const std::string &text);
   void collectTab();
   void collectLineBreak();
 
@@ -89,6 +89,8 @@ public:
 
   void startParagraph(const IWORKStylePtr_t &style);
   void endParagraph();
+  void openSpan(const IWORKStylePtr_t &style);
+  void closeSpan();
   void startText();
   void endText();
 
