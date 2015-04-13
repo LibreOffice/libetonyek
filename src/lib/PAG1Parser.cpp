@@ -206,16 +206,16 @@ IWORKXMLContextPtr_t DocumentElement::element(const int name)
 {
   switch (name)
   {
+  case IWORKToken::NS_URI_SF | IWORKToken::headers :
+    return makeContext<HeadersElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::footers :
+    return makeContext<FootersElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::metadata :
     return makeContext<MetadataElement>(getState());
   case PAG1Token::NS_URI_SL | PAG1Token::section_prototypes :
     return makeContext<SectionPrototypesElement>(getState());
   case PAG1Token::NS_URI_SL | PAG1Token::stylesheet :
     return makeContext<StylesheetElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::headers :
-    return makeContext<HeadersElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::footers :
-    return makeContext<FootersElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
