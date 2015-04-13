@@ -22,7 +22,6 @@ class IWORKTextStorageElement : public IWORKXMLElementContextBase
 public:
   explicit IWORKTextStorageElement(IWORKXMLParserState &state);
 
-protected:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 

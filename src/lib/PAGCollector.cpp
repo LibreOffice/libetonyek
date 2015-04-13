@@ -10,6 +10,8 @@
 #include "PAGCollector.h"
 
 #include "IWORKDocumentInterface.h"
+#include "IWORKOutputElements.h"
+#include "IWORKText.h"
 
 namespace libetonyek
 {
@@ -17,6 +19,16 @@ namespace libetonyek
 PAGCollector::PAGCollector(IWORKDocumentInterface *const document)
   : IWORKCollector(document)
 {
+}
+
+void PAGCollector::collectTextBody()
+{
+  assert(bool(m_currentText));
+
+  IWORKOutputElements text;
+  m_currentText->draw(text);
+  m_currentText.reset();
+  text.write(m_document);
 }
 
 void PAGCollector::startDocument()

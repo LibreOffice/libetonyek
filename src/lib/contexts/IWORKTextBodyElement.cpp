@@ -319,6 +319,33 @@ IWORKXMLContextPtr_t LayoutElement::element(const int name)
 
 }
 
+namespace
+{
+
+class SectionElement : public IWORKXMLElementContextBase
+{
+public:
+  explicit SectionElement(IWORKXMLParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+SectionElement::SectionElement(IWORKXMLParserState &state)
+  : IWORKXMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t SectionElement::element(const int name)
+{
+  if ((IWORKToken::NS_URI_SF | IWORKToken::layout) == name)
+    return makeContext<LayoutElement>(getState());
+
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
 IWORKTextBodyElement::IWORKTextBodyElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_layout(false)
@@ -356,6 +383,8 @@ IWORKXMLContextPtr_t IWORKTextBodyElement::element(const int name)
       return makeContext<PElement>(getState());
     }
     break;
+  case IWORKToken::NS_URI_SF | IWORKToken::section :
+    return makeContext<SectionElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();

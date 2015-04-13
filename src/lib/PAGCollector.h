@@ -22,6 +22,10 @@ class PAGCollector : public IWORKCollector
 public:
   explicit PAGCollector(IWORKDocumentInterface *document);
 
+  // collector functions
+
+  void collectTextBody();
+
   // helper functions
   void startDocument();
   void endDocument();

@@ -11,6 +11,7 @@
 
 #include "libetonyek_xml.h"
 #include "IWORKChainedTokenizer.h"
+#include "IWORKTextStorageElement.h"
 #include "IWORKXMLContexts.h"
 #include "IWORKToken.h"
 #include "PAGCollector.h"
@@ -166,6 +167,49 @@ IWORKXMLContextPtr_t MetadataElement::element(int)
 namespace
 {
 
+class TextStorageElement : public PAG1XMLElementContextBase
+{
+public:
+  explicit TextStorageElement(PAG1ParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  IWORKTextStorageElement m_delegate;
+  bool m_firstSubElement;
+};
+
+TextStorageElement::TextStorageElement(PAG1ParserState &state)
+  : PAG1XMLElementContextBase(state)
+  , m_delegate(state)
+  , m_firstSubElement(true)
+{
+}
+
+IWORKXMLContextPtr_t TextStorageElement::element(const int name)
+{
+  if (m_firstSubElement)
+  {
+    getCollector()->startText();
+    m_firstSubElement = false;
+  }
+
+  return m_delegate.element(name);
+}
+
+void TextStorageElement::endOfElement()
+{
+  getCollector()->collectTextBody();
+  getCollector()->endText();
+}
+
+}
+
+namespace
+{
+
 class DocumentElement : public PAG1XMLElementContextBase
 {
 public:
@@ -212,6 +256,8 @@ IWORKXMLContextPtr_t DocumentElement::element(const int name)
     return makeContext<FootersElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::metadata :
     return makeContext<MetadataElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::text_storage :
+    return makeContext<TextStorageElement>(getState());
   case PAG1Token::NS_URI_SL | PAG1Token::section_prototypes :
     return makeContext<SectionPrototypesElement>(getState());
   case PAG1Token::NS_URI_SL | PAG1Token::stylesheet :
