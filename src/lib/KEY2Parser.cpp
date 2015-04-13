@@ -27,6 +27,7 @@
 #include "IWORKSizeElement.h"
 #include "IWORKTabularInfoElement.h"
 #include "IWORKTextBodyElement.h"
+#include "IWORKTextStorageElement.h"
 #include "IWORKToken.h"
 #include "IWORKTypes.h"
 #include "KEY2ParserState.h"
@@ -723,37 +724,6 @@ IWORKXMLContextPtr_t PathElement::element(const int name)
 namespace
 {
 
-class TextStorageElement : public KEY2XMLElementContextBase
-{
-public:
-  explicit TextStorageElement(KEY2ParserState &state);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-};
-
-TextStorageElement::TextStorageElement(KEY2ParserState &state)
-  : KEY2XMLElementContextBase(state)
-{
-}
-
-IWORKXMLContextPtr_t TextStorageElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::text_body :
-    return makeContext<IWORKTextBodyElement>(getState());
-    break;
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-}
-
-namespace
-{
-
 // NOTE: isn't it wonderful that there are two text elements in two
 // different namespaces, but with the same schema?
 class TextElement : public KEY2XMLElementContextBase
@@ -787,7 +757,7 @@ IWORKXMLContextPtr_t TextElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::text_storage :
-    return makeContext<TextStorageElement>(getState());
+    return makeContext<IWORKTextStorageElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
@@ -1622,7 +1592,7 @@ IWORKXMLContextPtr_t NotesElement::element(const int name)
   switch (name)
   {
   case IWORKToken::text_storage | IWORKToken::NS_URI_SF :
-    return makeContext<TextStorageElement>(getState());
+    return makeContext<IWORKTextStorageElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();

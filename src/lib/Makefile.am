@@ -145,6 +145,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKTabularInfoElement.h \
 	contexts/IWORKTextBodyElement.cpp \
 	contexts/IWORKTextBodyElement.h \
+	contexts/IWORKTextStorageElement.cpp \
+	contexts/IWORKTextStorageElement.h \
 	contexts/KEY2StyleContext.cpp \
 	contexts/KEY2StyleContext.h \
 	contexts/KEY2StyleRefContext.cpp \
