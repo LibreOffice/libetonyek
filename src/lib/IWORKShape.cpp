@@ -13,11 +13,13 @@
 #include <cmath>
 #include <deque>
 
+#include <glm/glm.hpp>
+
 #include "IWORKDocumentInterface.h"
 #include "IWORKPath.h"
 #include "IWORKText.h"
-#include "IWORKTransformation.h"
 #include "IWORKTypes.h"
+#include "IWORKTransformation.h"
 
 using std::deque;
 
@@ -85,8 +87,10 @@ deque<Point> rotatePoint(const Point &point, const unsigned n)
   for (unsigned i = 1; i < n; ++i)
   {
     Point pt(point);
-    const IWORKTransformation rot(rotate(i * angle));
-    rot(pt.x, pt.y);
+    const glm::dmat3 rot(rotate(i * angle));
+    glm::dvec3 vec = rot * glm::dvec3(pt.x, pt.y, 1);
+    pt.x = vec[0];
+    pt.y = vec[1];
     points.push_back(pt);
   }
 
@@ -149,21 +153,23 @@ IWORKPathPtr_t makePolyLine(const deque<Point> inputPoints, bool close = true)
 
 struct TransformPoint
 {
-  TransformPoint(const IWORKTransformation &tr)
+  TransformPoint(const glm::dmat3 &tr)
     : m_tr(tr)
   {
   }
 
   void operator()(Point &point) const
   {
-    m_tr(point.x, point.y);
+    glm::dvec3 vec = m_tr * glm::dvec3(point.x, point.y, 1);
+    point.x = vec[0];
+    point.y = vec[1];
   }
 
 private:
-  const IWORKTransformation &m_tr;
+  const glm::dmat3 &m_tr;
 };
 
-void transform(deque<Point> &points, const IWORKTransformation &tr)
+void transform(deque<Point> &points, const glm::dmat3 &tr)
 {
   for_each(points.begin(), points.end(), TransformPoint(tr));
 }
@@ -178,7 +184,7 @@ IWORKPathPtr_t makePolygonPath(const IWORKSize &size, const unsigned edges)
 
   // FIXME: the shape should probably be scaled to whole width/height.
   // Check.
-  transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.m_width, size.m_height));
+  transform(points, scale(size.m_width, size.m_height) * scale(0.5, 0.5) * translate(1, 1));
   const IWORKPathPtr_t path = makePolyLine(points);
 
   return path;
@@ -193,7 +199,7 @@ IWORKPathPtr_t makeRoundedRectanglePath(const IWORKSize &size, const double radi
 
   deque<Point> points = rotatePoint(Point(1, 1), 4);
 
-  transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.m_width, size.m_height));
+  transform(points, scale(size.m_width, size.m_height) * scale(0.5, 0.5) * translate(1, 1));
   const IWORKPathPtr_t path = makePolyLine(points);
 
   return path;
@@ -211,7 +217,7 @@ IWORKPathPtr_t makeArrowPath(const IWORKSize &size, const double headWidth, cons
   copy(mirroredPoints.rbegin(), mirroredPoints.rend(), back_inserter(points));
 
   // transform and create path
-  transform(points, translate(0, 1) * scale(1, 0.5) * scale(size.m_width, size.m_height));
+  transform(points, scale(size.m_width, size.m_height) * scale(1, 0.5) * translate(0, 1));
   const IWORKPathPtr_t path = makePolyLine(points);
   return path;
 }
@@ -236,7 +242,7 @@ IWORKPathPtr_t makeDoubleArrowPath(const IWORKSize &size, const double headWidth
     copy(mirroredPoints.rbegin(), mirroredPoints.rend(), back_inserter(points));
   }
 
-  transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.m_width, size.m_height));
+  transform(points, scale(size.m_width, size.m_height) * scale(0.5, 0.5) * translate(1, 1));
   const IWORKPathPtr_t path = makePolyLine(points);
   return path;
 }
@@ -251,7 +257,7 @@ IWORKPathPtr_t makeStarPath(const IWORKSize &size, const unsigned points, const 
   // create inner points
   const double angle = etonyek_two_pi / points;
   deque<Point> innerPoints(outerPoints);
-  transform(innerPoints, rotate(angle / 2) * scale(innerRadius, innerRadius));
+  transform(innerPoints, scale(innerRadius, innerRadius) * rotate(angle / 2));
 
   // merge them together
   deque<Point> pathPoints;
@@ -265,7 +271,7 @@ IWORKPathPtr_t makeStarPath(const IWORKSize &size, const unsigned points, const 
   }
 
   // create the path
-  transform(pathPoints, translate(1, 1) * scale(0.5, 0.5) * scale(size.m_width, size.m_height));
+  transform(pathPoints, scale(size.m_width, size.m_height) * scale(0.5, 0.5) * translate(1, 1));
   const IWORKPathPtr_t path = makePolyLine(pathPoints);
 
   return path;
@@ -296,7 +302,7 @@ IWORKPathPtr_t makeCalloutPath(const IWORKSize &size, const double radius, const
   points.push_back(Point(-1, -0.5));
 
   // create the path
-  transform(points, translate(1, 1) * scale(0.5, 0.5) * scale(size.m_width, size.m_height));
+  transform(points, scale(size.m_width, size.m_height) * scale(0.5, 0.5) * translate(1, 1));
   const IWORKPathPtr_t path = makePolyLine(points);
 
   return path;
