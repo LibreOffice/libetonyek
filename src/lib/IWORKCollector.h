@@ -16,6 +16,8 @@
 
 #include <boost/optional.hpp>
 
+#include <glm/glm.hpp>
+
 #include "libetonyek_utils.h"
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle.h"
@@ -40,7 +42,7 @@ class IWORKCollector
   {
     IWORKGeometryPtr_t m_geometry;
     IWORKStylePtr_t m_graphicStyle;
-    IWORKTransformation m_trafo;
+    glm::dmat3 m_trafo;
 
     Level();
   };

@@ -111,6 +111,19 @@ uint64_t readU64(const RVNGInputStreamPtr_t &input, bool bigEndian=false);
   */
 bool approxEqual(double x, double y, double eps = ETONYEK_EPSILON);
 
+template<class T>
+bool approxEqual(const T &left, const T &right, const double eps = ETONYEK_EPSILON)
+{
+  assert(left.length() == right.length());
+
+  for (int i = 0; i != left.length(); ++i)
+  {
+    if (!approxEqual(left[i], right[i], eps))
+      return false;
+  }
+  return true;
+}
+
 /** Convert a length from points to inches.
   *
   * @arg[in] d length in points

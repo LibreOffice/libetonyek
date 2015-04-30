@@ -21,7 +21,6 @@
 #include "IWORKPath.h"
 #include "IWORKShape.h"
 #include "IWORKText.h"
-#include "IWORKTransformation.h"
 
 namespace libetonyek
 {
@@ -106,7 +105,7 @@ librevenge::RVNGPropertyList pointToWPG(const double x, const double y)
   return props;
 }
 
-void drawMedia(const IWORKMediaPtr_t &media, const IWORKTransformation &trafo, IWORKOutputElements &elements)
+void drawMedia(const IWORKMediaPtr_t &media, const glm::dmat3 &trafo, IWORKOutputElements &elements)
 {
   if (bool(media)
       && bool(media->m_geometry)
@@ -134,24 +133,22 @@ void drawMedia(const IWORKMediaPtr_t &media, const IWORKTransformation &trafo, I
       props.insert("libwpg:mime-type", get(mimetype).c_str());
       props.insert("office:binary-data", librevenge::RVNGBinaryData(bytes, size));
 
-      double x = 0;
-      double y = 0;
-      trafo(x, y);
-      props.insert("svg:x", pt2in(x));
-      props.insert("svg:y", pt2in(y));
+      glm::dvec3 vec = trafo * glm::dvec3(0, 0, 1);
+      props.insert("svg:x", pt2in(vec[0]));
+      props.insert("svg:y", pt2in(vec[1]));
 
       double width = media->m_geometry->m_size.m_width;
       double height = media->m_geometry->m_size.m_height;
-      trafo(width, height, true);
-      props.insert("svg:width", pt2in(width));
-      props.insert("svg:height", pt2in(height));
+      vec = trafo * glm::dvec3(width, height, 0);
+      props.insert("svg:width", pt2in(vec[0]));
+      props.insert("svg:height", pt2in(vec[1]));
 
       elements.addDrawGraphicObject(props);
     }
   }
 }
 
-void drawImage(const IWORKImagePtr_t &image, const IWORKTransformation &trafo, IWORKOutputElements &elements)
+void drawImage(const IWORKImagePtr_t &image, const glm::dmat3 &trafo, IWORKOutputElements &elements)
 {
   // TODO: implement me
   (void) image;
@@ -160,7 +157,7 @@ void drawImage(const IWORKImagePtr_t &image, const IWORKTransformation &trafo, I
 
 }
 
-void drawLine(const IWORKLinePtr_t &line, const IWORKTransformation &trafo, IWORKOutputElements &elements)
+void drawLine(const IWORKLinePtr_t &line, const glm::dmat3 &trafo, IWORKOutputElements &elements)
 {
   // TODO: transform the line
   (void) trafo;
@@ -198,7 +195,7 @@ void drawLine(const IWORKLinePtr_t &line, const IWORKTransformation &trafo, IWOR
   }
 }
 
-void drawShape(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo, IWORKOutputElements &elements)
+void drawShape(const IWORKShapePtr_t &shape, const glm::dmat3 &trafo, IWORKOutputElements &elements)
 {
   if (bool(shape) && bool(shape->m_path))
   {
@@ -217,7 +214,7 @@ void drawShape(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo, I
   }
 }
 
-void drawTable(const IWORKTable &table, const IWORKTransformation &trafo, IWORKOutputElements &elements)
+void drawTable(const IWORKTable &table, const glm::dmat3 &trafo, IWORKOutputElements &elements)
 {
   table.draw(trafo, elements);
 }
@@ -282,7 +279,7 @@ void IWORKCollector::collectGeometry(const IWORKGeometryPtr_t &geometry)
   assert(!m_levelStack.empty());
 
   m_levelStack.top().m_geometry = geometry;
-  m_levelStack.top().m_trafo = makeTransformation(*geometry) * m_levelStack.top().m_trafo;
+  m_levelStack.top().m_trafo *= makeTransformation(*geometry);
 }
 
 void IWORKCollector::collectBezier(const IWORKPathPtr_t &path)
@@ -553,7 +550,7 @@ void IWORKCollector::endText()
 
 void IWORKCollector::startLevel()
 {
-  IWORKTransformation currentTrafo;
+  glm::dmat3 currentTrafo;
   if (!m_levelStack.empty())
     currentTrafo = m_levelStack.top().m_trafo;
   m_levelStack.push(Level());

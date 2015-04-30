@@ -14,14 +14,14 @@
 
 #include <deque>
 
+#include <glm/glm.hpp>
+
 #include "IWORKStyle_fwd.h"
 #include "IWORKStyleStack.h"
 #include "IWORKOutputElements.h"
 
 namespace libetonyek
 {
-
-class IWORKTransformation;
 
 class IWORKText
 {
@@ -45,7 +45,7 @@ public:
   bool empty() const;
 
   void draw(IWORKOutputElements &elements);
-  void draw(const IWORKTransformation &trafo, const IWORKGeometryPtr_t &boundingBox, IWORKOutputElements &elements);
+  void draw(const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox, IWORKOutputElements &elements);
 
 private:
   void doOpenSpan();

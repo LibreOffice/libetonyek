@@ -14,7 +14,6 @@
 #include "libetonyek_utils.h"
 #include "IWORKDocumentInterface.h"
 #include "IWORKText.h"
-#include "IWORKTransformation.h"
 
 namespace libetonyek
 {
