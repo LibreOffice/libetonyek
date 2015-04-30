@@ -97,6 +97,20 @@ AC_CHECK_HEADERS(
 CPPFLAGS="${saved_CPPFLAGS}"
 AC_SUBST([BOOST_CFLAGS])
 
+# ================
+# Find glm headers
+# ================
+saved_CPPFLAGS="${CPPFLAGS}"
+CPPFLAGS="${GLM_CFLAGS} ${CPPFLAGS}"
+AC_CHECK_HEADERS(
+        glm/glm.hpp,
+    [],
+    [AC_MSG_ERROR([Required boost headers not found.])],
+    []
+)
+CPPFLAGS="${saved_CPPFLAGS}"
+AC_SUBST([GLM_CFLAGS])
+
 # =================================
 # Libtool/Version Makefile settings
 # =================================

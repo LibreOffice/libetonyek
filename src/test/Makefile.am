@@ -2,7 +2,7 @@ target_test = test
 
 check_PROGRAMS = $(target_test)
 
-AM_CXXFLAGS = -I$(top_srcdir)/inc -I$(top_srcdir)/src/lib $(REVENGE_CFLAGS) $(CPPUNIT_CFLAGS) $(XML_CFLAGS) $(DEBUG_CXXFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/inc -I$(top_srcdir)/src/lib $(REVENGE_CFLAGS) $(CPPUNIT_CFLAGS) $(XML_CFLAGS) $(GLM_CFLAGS) $(DEBUG_CXXFLAGS)
 
 test_LDFLAGS = -L$(top_builddir)/src/lib
 test_LDADD = \
@@ -19,7 +19,7 @@ test_SOURCES = \
 	IWORKStyleTest.cpp \
 	IWORKStyleStackTest.cpp \
 	IWORKTokenizerBaseTest.cpp \
-	IWORKTransformationTest.cpp \
+	IWORKTransfromationTest.cpp \
 	TestProperties.cpp \
 	TestProperties.h \
 	test.cpp

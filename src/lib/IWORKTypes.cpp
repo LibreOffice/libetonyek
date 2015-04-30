@@ -10,7 +10,6 @@
 #include "IWORKTypes.h"
 
 #include "IWORKDocumentInterface.h"
-#include "IWORKTransformation.h"
 
 namespace libetonyek
 {
