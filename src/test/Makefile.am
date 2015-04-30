@@ -19,7 +19,6 @@ test_SOURCES = \
 	IWORKStyleTest.cpp \
 	IWORKStyleStackTest.cpp \
 	IWORKTokenizerBaseTest.cpp \
-	IWORKTransformationTest.cpp \
 	TestProperties.cpp \
 	TestProperties.h \
 	test.cpp

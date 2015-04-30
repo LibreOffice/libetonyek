@@ -13,7 +13,6 @@
 
 #include "libetonyek_utils.h"
 #include "IWORKDocumentInterface.h"
-#include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 
 using boost::numeric_cast;
@@ -73,26 +72,25 @@ void IWORKTable::setGeometry(const IWORKGeometryPtr_t &geometry)
   m_geometry = geometry;
 }
 
-void IWORKTable::draw(const IWORKTransformation &trafo, IWORKOutputElements &elements) const
+void IWORKTable::draw(const glm::mat3 &trafo, IWORKOutputElements &elements) const
 {
   librevenge::RVNGPropertyList tableProps;
   tableProps.insert("table:align", "center");
 
-  double x = 0;
-  double y = 0;
-  trafo(x, y);
-  tableProps.insert("svg:x", pt2in(x));
-  tableProps.insert("svg:y", pt2in(y));
+  glm::vec3 vec = trafo * glm::vec3(0, 0, 1);
+
+  tableProps.insert("svg:x", pt2in(vec[0]));
+  tableProps.insert("svg:y", pt2in(vec[1]));
 
   if (m_geometry)
   {
     double w = m_geometry->m_naturalSize.m_width;
     double h = m_geometry->m_naturalSize.m_height;
 
-    trafo(w, h, true);
+    vec = trafo * glm::vec3(w, h, 0);
 
-    tableProps.insert("svg:width", pt2in(w));
-    tableProps.insert("svg:height", pt2in(h));
+    tableProps.insert("svg:width", pt2in(vec[0]));
+    tableProps.insert("svg:height", pt2in(vec[1]));
   }
 
   librevenge::RVNGPropertyListVector columnSizes;

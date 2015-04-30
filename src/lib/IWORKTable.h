@@ -12,13 +12,13 @@
 
 #include <deque>
 
+#include <glm/glm.hpp>
+
 #include "IWORKTypes_fwd.h"
 #include "IWORKOutputElements.h"
 
 namespace libetonyek
 {
-
-class IWORKTransformation;
 
 class IWORKTable
 {
@@ -48,7 +48,7 @@ public:
 
   void setGeometry(const IWORKGeometryPtr_t &geometry);
 
-  void draw(const IWORKTransformation &trafo, IWORKOutputElements &elements) const;
+  void draw(const glm::mat3 &trafo, IWORKOutputElements &elements) const;
 
 private:
   Table_t m_table;

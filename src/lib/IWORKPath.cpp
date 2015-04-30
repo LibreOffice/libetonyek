@@ -17,8 +17,8 @@
 #include <boost/spirit/include/classic_core.hpp>
 
 #include "libetonyek_utils.h"
-#include "IWORKTransformation.h"
 #include "IWORKTypes.h"
+
 
 using boost::bind;
 using boost::cref;
@@ -53,7 +53,7 @@ public:
     *
     * @arg[in] tr the transformation
     */
-  virtual void transform(const IWORKTransformation &tr) = 0;
+  virtual void transform(const glm::mat3 &tr) = 0;
 
   /** Create WPG representation of this path element.
    */
@@ -72,7 +72,7 @@ public:
 
   virtual bool approxEqualsTo(const Element *other, double eps) const;
 
-  virtual void transform(const IWORKTransformation &tr);
+  virtual void transform(const glm::mat3 &tr);
 
   virtual librevenge::RVNGPropertyList toWPG() const;
 
@@ -102,9 +102,13 @@ bool MoveTo::approxEqualsTo(const Element *other, const double eps) const
   return false;
 }
 
-void MoveTo::transform(const IWORKTransformation &tr)
+void MoveTo::transform(const glm::mat3 &tr)
 {
-  tr(m_x, m_y);
+  glm::vec3 vec = tr * glm::vec3(m_x, m_y, 1);
+
+  m_x = vec[0];
+  m_y = vec[1];
+
 }
 
 librevenge::RVNGPropertyList MoveTo::toWPG() const
@@ -132,7 +136,7 @@ public:
 
   virtual bool approxEqualsTo(const Element *other, double eps) const;
 
-  virtual void transform(const IWORKTransformation &tr);
+  virtual void transform(const glm::mat3 &tr);
 
   virtual librevenge::RVNGPropertyList toWPG() const;
 
@@ -162,9 +166,12 @@ bool LineTo::approxEqualsTo(const Element *other, const double eps) const
   return false;
 }
 
-void LineTo::transform(const IWORKTransformation &tr)
+void LineTo::transform(const glm::mat3 &tr)
 {
-  tr(m_x, m_y);
+  glm::vec3 vec = tr * glm::vec3(m_x, m_y, 1);
+
+  m_x = vec[0];
+  m_y = vec[1];
 }
 
 librevenge::RVNGPropertyList LineTo::toWPG() const
@@ -192,7 +199,7 @@ public:
 
   virtual bool approxEqualsTo(const Element *other, double eps) const;
 
-  virtual void transform(const IWORKTransformation &tr);
+  virtual void transform(const glm::mat3 &tr);
 
   virtual librevenge::RVNGPropertyList toWPG() const;
 
@@ -233,11 +240,23 @@ bool CurveTo::approxEqualsTo(const Element *other, const double eps) const
   return false;
 }
 
-void CurveTo::transform(const IWORKTransformation &tr)
+void CurveTo::transform(const glm::mat3 &tr)
 {
-  tr(m_x, m_y);
-  tr(m_x1, m_y1);
-  tr(m_x2, m_y2);
+  glm::vec3 vec = tr * glm::vec3(m_x, m_y, 1);
+
+  m_x = vec[0];
+  m_y = vec[1];
+
+  vec = tr * glm::vec3(m_x1, m_y1, 1);
+
+  m_x1 = vec[0];
+  m_y1 = vec[1];
+
+  vec = tr * glm::vec3(m_x2, m_y2, 1);
+
+  m_x2 = vec[0];
+  m_y2 = vec[1];
+
 }
 
 librevenge::RVNGPropertyList CurveTo::toWPG() const
@@ -361,7 +380,7 @@ void IWORKPath::appendClose()
   m_closed = true;
 }
 
-void IWORKPath::operator*=(const IWORKTransformation &tr)
+void IWORKPath::operator*=(const glm::mat3 &tr)
 {
   for_each(m_elements.begin(), m_elements.end(), bind(&Element::transform, _1, cref(tr)));
 }
@@ -401,7 +420,7 @@ bool operator!=(const IWORKPath &left, const IWORKPath &right)
   return !(left == right);
 }
 
-IWORKPath operator*(const IWORKPath &path, const IWORKTransformation &tr)
+IWORKPath operator*(const IWORKPath &path, const glm::mat3 &tr)
 {
   IWORKPath newPath(path);
   newPath *= tr;
