@@ -23,8 +23,6 @@
 namespace libetonyek
 {
 
-class IWORKTransformation;
-
 struct IWORKSize
 {
   double m_width;

@@ -25,8 +25,6 @@
 namespace libetonyek
 {
 
-class IWORKTransformation;
-
 struct KEYLayer
 {
   boost::optional<std::string> m_type;

@@ -19,7 +19,6 @@
 #include "IWORKDocumentInterface.h"
 #include "IWORKPath.h"
 #include "IWORKProperties.h"
-#include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 
 using boost::optional;
@@ -145,24 +144,23 @@ void IWORKText::draw(IWORKOutputElements &elements)
   elements.append(m_elements);
 }
 
-void IWORKText::draw(const IWORKTransformation &trafo, const IWORKGeometryPtr_t &boundingBox, IWORKOutputElements &elements)
+void IWORKText::draw(const glm::mat3 &trafo, const IWORKGeometryPtr_t &boundingBox, IWORKOutputElements &elements)
 {
   librevenge::RVNGPropertyList props;
 
-  double x = 0;
-  double y = 0;
-  trafo(x, y);
-  props.insert("svg:x", pt2in(x));
-  props.insert("svg:y", pt2in(y));
+  glm::vec3 vec = trafo * glm::vec3(0, 0, 1);
+
+  props.insert("svg:x", pt2in(vec[0]));
+  props.insert("svg:y", pt2in(vec[1]));
 
   if (bool(boundingBox))
   {
     double w = boundingBox->m_naturalSize.m_width;
     double h = boundingBox->m_naturalSize.m_height;
-    trafo(w, h, true);
+    vec = trafo * glm::vec3(w, h, 0);
 
-    props.insert("svg:width", pt2in(w));
-    props.insert("svg:height", pt2in(h));
+    props.insert("svg:width", pt2in(vec[0]));
+    props.insert("svg:height", pt2in(vec[1]));
   }
 
   IWORKPath path;
