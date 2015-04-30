@@ -20,7 +20,6 @@ namespace libetonyek
 {
 
 struct IWORKSize;
-class IWORKTransformation;
 
 /** Representation of a shape.
  */

@@ -9,6 +9,8 @@
 
 #include "KEYCollector.h"
 
+#include <glm/glm.hpp>
+
 #include "libetonyek_utils.h"
 #include "IWORKDocumentInterface.h"
 #include "IWORKOutputElements.h"
@@ -114,7 +116,7 @@ KEYPlaceholderPtr_t KEYCollector::collectTextPlaceholder(const IWORKStylePtr_t &
   return placeholder;
 }
 
-void drawPlaceholder(const KEYPlaceholderPtr_t &placeholder, const IWORKTransformation &trafo, IWORKOutputElements &elements)
+void drawPlaceholder(const KEYPlaceholderPtr_t &placeholder, const glm::dmat3 &trafo, IWORKOutputElements &elements)
 {
   if (bool(placeholder) && bool(placeholder->m_style) && bool(placeholder->m_text))
     (placeholder->m_text)->draw(trafo, placeholder->m_geometry, elements);
@@ -124,7 +126,7 @@ void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
 {
   if (bool(placeholder))
   {
-    IWORKTransformation trafo;
+    glm::dmat3 trafo;
     if (bool(placeholder->m_geometry))
       trafo = makeTransformation(*placeholder->m_geometry);
 
