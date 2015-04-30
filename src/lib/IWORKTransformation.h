@@ -11,6 +11,7 @@
 #define IWORKTRANSFORMATION_H_INCLUDED
 
 #include "libetonyek_utils.h"
+#include <glm/glm.hpp>
 
 namespace libetonyek
 {
@@ -66,12 +67,7 @@ public:
 
 private:
   // transformation matrix
-  double m_xx;
-  double m_yx;
-  double m_xy;
-  double m_yy;
-  double m_x0;
-  double m_y0;
+  glm::mat3 m_mat;
 };
 
 /** Create a new transformation as a composition of two transformations.

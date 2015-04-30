@@ -17,54 +17,25 @@ namespace libetonyek
 {
 
 IWORKTransformation::IWORKTransformation()
-  : m_xx(1)
-  , m_yx(0)
-  , m_xy(0)
-  , m_yy(1)
-  , m_x0(0)
-  , m_y0(0)
+  : m_mat(glm::mat3(1))
 {
 }
 
 IWORKTransformation::IWORKTransformation(const double xx, const double yx, const double xy, const double yy, const double x0, const double y0)
-  : m_xx(xx)
-  , m_yx(yx)
-  , m_xy(xy)
-  , m_yy(yy)
-  , m_x0(x0)
-  , m_y0(y0)
+  : m_mat(glm::mat3(xx, yx, 0, xy, yy, 0, x0, y0, 1))
 {
 }
 
 IWORKTransformation &IWORKTransformation::operator*=(const IWORKTransformation &tr)
 {
-  const double xx = m_xx * tr.m_xx + m_yx * tr.m_xy;
-  const double yx = m_xx * tr.m_yx + m_yx * tr.m_yy;
-  const double xy = m_xy * tr.m_xx + m_yy * tr.m_xy;
-  const double yy = m_xy * tr.m_yx + m_yy * tr.m_yy;
-  const double x0 = m_x0 * tr.m_xx + m_y0 * tr.m_xy + tr.m_x0;
-  const double y0 = m_x0 * tr.m_yx + m_y0 * tr.m_yy + tr.m_y0;
-
-  m_xx = xx;
-  m_yx = yx;
-  m_xy = xy;
-  m_yy = yy;
-  m_x0 = x0;
-  m_y0 = y0;
-
+  m_mat *= tr.m_mat;
   return *this;
 }
 
 bool IWORKTransformation::approxEqual(const IWORKTransformation &other, const double eps) const
 {
   using libetonyek::approxEqual;
-  return approxEqual(m_xx, other.m_xx, eps)
-         && approxEqual(m_yx, other.m_yx, eps)
-         && approxEqual(m_xy, other.m_xy, eps)
-         && approxEqual(m_yy, other.m_yy, eps)
-         && approxEqual(m_x0, other.m_x0, eps)
-         && approxEqual(m_y0, other.m_y0, eps)
-         ;
+  return m_mat == other.m_mat;
 }
 
 IWORKTransformation operator*(const IWORKTransformation &left, const IWORKTransformation &right)
@@ -75,16 +46,10 @@ IWORKTransformation operator*(const IWORKTransformation &left, const IWORKTransf
 
 void IWORKTransformation::operator()(double &x, double &y, const bool distance) const
 {
-  double x_new = m_xx * x + m_xy * y;
-  double y_new = m_yx * x + m_yy * y;
-  if (!distance)
-  {
-    x_new += m_x0;
-    y_new += m_y0;
-  }
+  glm::vec3 vec_new = m_mat * glm::vec3(x, y, !distance);
 
-  x = x_new;
-  y = y_new;
+  x = vec_new[0];
+  y = vec_new[1];
 }
 
 bool operator==(const IWORKTransformation &left, const IWORKTransformation &right)
