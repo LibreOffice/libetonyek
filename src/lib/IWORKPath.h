@@ -15,14 +15,14 @@
 #include <deque>
 #include <string>
 
+#include <glm/glm.hpp>
+
 #include <librevenge/librevenge.h>
 
 #include "libetonyek_utils.h"
 
 namespace libetonyek
 {
-
-class IWORKTransformation;
 
 class IWORKPath
 {
@@ -51,7 +51,7 @@ public:
     *
     * @arg[in] tr the transformation
     */
-  void operator*=(const IWORKTransformation &tr);
+  void operator*=(const glm::mat3 &tr);
 
   /** Create WPG representation of this path.
     */
@@ -72,7 +72,7 @@ bool operator!=(const IWORKPath &left, const IWORKPath &right);
   * @arg[in] tr the transformation
   * @returns the transformed path
   */
-IWORKPath operator*(const IWORKPath &path, const IWORKTransformation &tr);
+IWORKPath operator*(const IWORKPath &path, const glm::mat3 &tr);
 
 }
 

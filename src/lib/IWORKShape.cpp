@@ -13,11 +13,13 @@
 #include <cmath>
 #include <deque>
 
+#include <glm/glm.hpp>
+
 #include "IWORKDocumentInterface.h"
 #include "IWORKPath.h"
 #include "IWORKText.h"
-#include "IWORKTransformation.h"
 #include "IWORKTypes.h"
+#include "IWORKTransformation.h"
 
 using std::deque;
 
@@ -85,8 +87,10 @@ deque<Point> rotatePoint(const Point &point, const unsigned n)
   for (unsigned i = 1; i < n; ++i)
   {
     Point pt(point);
-    const IWORKTransformation rot(rotate(i * angle));
-    rot(pt.x, pt.y);
+    const glm::mat3 rot(rotate(i * angle));
+    glm::vec3 vec = rot * glm::vec3(pt.x, pt.y, 1);
+    pt.x = vec[0];
+    pt.y = vec[1];
     points.push_back(pt);
   }
 
@@ -149,21 +153,23 @@ IWORKPathPtr_t makePolyLine(const deque<Point> inputPoints, bool close = true)
 
 struct TransformPoint
 {
-  TransformPoint(const IWORKTransformation &tr)
+  TransformPoint(const glm::mat3 &tr)
     : m_tr(tr)
   {
   }
 
   void operator()(Point &point) const
   {
-    m_tr(point.x, point.y);
+    glm::vec3 vec = m_tr * glm::vec3(point.x, point.y, 1);
+    point.x = vec[0];
+    point.y = vec[1];
   }
 
 private:
-  const IWORKTransformation &m_tr;
+  const glm::mat3 &m_tr;
 };
 
-void transform(deque<Point> &points, const IWORKTransformation &tr)
+void transform(deque<Point> &points, const glm::mat3 &tr)
 {
   for_each(points.begin(), points.end(), TransformPoint(tr));
 }
