@@ -112,16 +112,15 @@ void SpanElement::attribute(const int name, const char *const value)
 
 IWORKXMLContextPtr_t SpanElement::element(const int name)
 {
-  ensureOpened();
-
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::br :
   case IWORKToken::NS_URI_SF | IWORKToken::crbr :
   case IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
   case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
+    ensureOpened();
     return makeContext<BrContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tab :
+    ensureOpened();
     return makeContext<TabElement>(getState());
   }
 
@@ -178,8 +177,6 @@ IWORKXMLContextPtr_t LinkElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::br :
-    return makeContext<BrContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::span :
     return makeContext<SpanElement>(getState());
   }
@@ -243,7 +240,6 @@ IWORKXMLContextPtr_t PElement::element(const int name)
 
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::br :
   case IWORKToken::NS_URI_SF | IWORKToken::crbr :
   case IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
   case IWORKToken::NS_URI_SF | IWORKToken::lnbr :

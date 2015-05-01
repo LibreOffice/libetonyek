@@ -57,7 +57,6 @@ enum
   bezier_ref,
   body_placeholder_ref,
   bold,
-  br,
   bulletListStyle,
   calc_engine,
   callout2_path,
