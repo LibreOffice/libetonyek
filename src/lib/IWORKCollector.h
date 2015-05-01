@@ -72,7 +72,7 @@ public:
 
   void collectMedia(const IWORKMediaContentPtr_t &content);
 
-  IWORKStylesheetPtr_t collectStylesheet(const IWORKStylesheetPtr_t &parent);
+  IWORKStylesheetPtr_t collectStylesheet(const IWORKStylesheetPtr_t &parent = IWORKStylesheetPtr_t());
 
   void collectText(const std::string &text);
   void collectTab();

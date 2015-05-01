@@ -137,6 +137,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKRefContext.h \
 	contexts/IWORKSizeElement.cpp \
 	contexts/IWORKSizeElement.h \
+	contexts/IWORKStylesContext.cpp \
+	contexts/IWORKStylesContext.h \
 	contexts/IWORKStyleContext.cpp \
 	contexts/IWORKStyleContext.h \
 	contexts/IWORKStyleRefContext.cpp \

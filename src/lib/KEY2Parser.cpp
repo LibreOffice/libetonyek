@@ -25,6 +25,7 @@
 #include "IWORKRefContext.h"
 #include "IWORKStyle.h"
 #include "IWORKSizeElement.h"
+#include "IWORKStylesContext.h"
 #include "IWORKTabularInfoElement.h"
 #include "IWORKTextBodyElement.h"
 #include "IWORKTextStorageElement.h"
@@ -100,58 +101,46 @@ IWORKXMLContextPtr_t MetadataElement::element(int)
 namespace
 {
 
-class StylesElement : public KEY2XMLElementContextBase
+class StylesContext : public KEY2XMLElementContextBase
 {
 public:
-  StylesElement(KEY2ParserState &state, bool anonymous);
+  StylesContext(KEY2ParserState &state, bool anonymous);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
 private:
+  IWORKStylesContext m_base;
   const bool m_anonymous;
 };
 
-StylesElement::StylesElement(KEY2ParserState &state, const bool anonymous)
+StylesContext::StylesContext(KEY2ParserState &state, const bool anonymous)
   : KEY2XMLElementContextBase(state)
+  , m_base(state, anonymous)
   , m_anonymous(anonymous)
 {
 }
 
-IWORKXMLContextPtr_t StylesElement::element(const int name)
+IWORKXMLContextPtr_t StylesContext::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::cell_style :
-  case IWORKToken::NS_URI_SF | IWORKToken::characterstyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::connection_style :
-  case IWORKToken::NS_URI_SF | IWORKToken::graphic_style :
-  case IWORKToken::NS_URI_SF | IWORKToken::headline_style :
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
   case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style :
-  case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::slide_style :
-  case IWORKToken::NS_URI_SF | IWORKToken::tabular_style :
-  case IWORKToken::NS_URI_SF | IWORKToken::vector_style :
     return makeContext<KEY2StyleContext>(getState(), name);
 
-  case IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref :
-  case IWORKToken::NS_URI_SF | IWORKToken::characterstyle_ref :
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
-  case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
-  case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref :
-  case IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref :
     break;
     return makeContext<KEY2StyleRefContext>(getState(), name, false, m_anonymous);
   }
 
-  return IWORKXMLContextPtr_t();
+  return m_base.element(name);
 }
 
-void StylesElement::endOfElement()
+void StylesContext::endOfElement()
 {
+  m_base.endOfElement();
 }
 
 }
@@ -182,9 +171,9 @@ IWORKXMLContextPtr_t StylesheetElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::styles :
-    return makeContext<StylesElement>(getState(), false);
+    return makeContext<StylesContext>(getState(), false);
   case IWORKToken::NS_URI_SF | IWORKToken::anon_styles :
-    return makeContext<StylesElement>(getState(), false);
+    return makeContext<StylesContext>(getState(), false);
   case IWORKToken::NS_URI_SF | IWORKToken::parent_ref :
     return makeContext<IWORKRefContext>(getState(), m_parent);
   }

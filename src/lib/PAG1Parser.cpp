@@ -11,6 +11,7 @@
 
 #include "libetonyek_xml.h"
 #include "IWORKChainedTokenizer.h"
+#include "IWORKStylesContext.h"
 #include "IWORKTextStorageElement.h"
 #include "IWORKXMLContexts.h"
 #include "IWORKToken.h"
@@ -99,6 +100,7 @@ public:
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
 };
 
 StylesheetElement::StylesheetElement(PAG1ParserState &state)
@@ -106,10 +108,22 @@ StylesheetElement::StylesheetElement(PAG1ParserState &state)
 {
 }
 
-IWORKXMLContextPtr_t StylesheetElement::element(int)
+IWORKXMLContextPtr_t StylesheetElement::element(const int name)
 {
-  // TODO: parse
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::anon_styles :
+    return makeContext<IWORKStylesContext>(getState(), true);
+  case IWORKToken::NS_URI_SF | IWORKToken::styles :
+    return makeContext<IWORKStylesContext>(getState(), false);
+  }
+
   return IWORKXMLContextPtr_t();
+}
+
+void StylesheetElement::endOfElement()
+{
+  getCollector()->collectStylesheet();
 }
 
 }
