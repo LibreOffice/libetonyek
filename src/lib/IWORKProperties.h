@@ -33,6 +33,7 @@ struct Italic {};
 struct Outline {};
 struct Strikethru {};
 struct Tabs {};
+struct TextBackground {};
 struct Underline {};
 
 }
@@ -125,6 +126,13 @@ template<>
 struct IWORKPropertyInfo<property::Tabs>
 {
   typedef IWORKTabStops_t ValueType;
+  static const IWORKPropertyID_t id;
+};
+
+template<>
+struct IWORKPropertyInfo<property::TextBackground>
+{
+  typedef IWORKColor ValueType;
   static const IWORKPropertyID_t id;
 };
 

@@ -61,11 +61,38 @@ void fillCharPropList(librevenge::RVNGPropertyList &props, const IWORKStyleStack
   if (style.has<Outline>() && style.get<Outline>())
     props.insert("style:text-outline", true);
 
+  // TODO: handle baseline shift as well. It does interact with sub/superscript.
+  if (style.has<Baseline>())
+  {
+    switch (style.get<Baseline>())
+    {
+    case IWORK_BASELINE_SUB :
+      props.insert("style:text-position", "sub");
+      break;
+    case IWORK_BASELINE_SUPER :
+      props.insert("style:text-position", "super");
+      break;
+    default :
+      break;
+    }
+  }
+
   if (style.has<Capitalization>())
   {
-    const IWORKCapitalization &capitalization = style.get<Capitalization>();
-    if (IWORK_CAPITALIZATION_SMALL_CAPS == capitalization)
+    switch (style.get<Capitalization>())
+    {
+    case IWORK_CAPITALIZATION_ALL_CAPS :
+      props.insert("fo:text-transform", "uppercase");
+      break;
+    case IWORK_CAPITALIZATION_SMALL_CAPS :
       props.insert("fo:font-variant", "small-caps");
+      break;
+    case IWORK_CAPITALIZATION_TITLE :
+      props.insert("fo:text-transform", "capitalize");
+      break;
+    default :
+      break;
+    }
   }
 
   if (style.has<FontName>())
@@ -76,6 +103,8 @@ void fillCharPropList(librevenge::RVNGPropertyList &props, const IWORKStyleStack
 
   if (style.has<FontColor>())
     props.insert("fo:color", makeColor(style.get<FontColor>()));
+  if (style.has<TextBackground>())
+    props.insert("fo:background-color", makeColor(style.get<TextBackground>()));
 }
 
 librevenge::RVNGPropertyList makeCharPropList(const IWORKStylePtr_t &style, const IWORKStyleStack &context)

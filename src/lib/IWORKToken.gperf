@@ -188,6 +188,7 @@ tailPositionX,tailPositionX
 tailPositionY,tailPositionY
 tailSize,tailSize
 text,text
+textBackground,textBackground
 text-body,text_body
 text-storage,text_storage
 title-placeholder-ref,title_placeholder_ref

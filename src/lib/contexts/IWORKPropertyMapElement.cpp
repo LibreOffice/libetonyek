@@ -828,6 +828,22 @@ void StylePropertyElement::endOfElement()
 
 }
 
+namespace
+{
+
+class TextBackgroundElement : public ValuePropertyContextBase<IWORKColorElement, property::TextBackground>
+{
+public:
+  TextBackgroundElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+};
+
+TextBackgroundElement::TextBackgroundElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::color)
+{
+}
+
+}
+
 IWORKPropertyMapElement::IWORKPropertyMapElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : IWORKXMLElementContextBase(state)
   , m_propMap(propMap)
@@ -890,6 +906,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<SuperscriptElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::tabs :
     return makeContext<TabsElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::textBackground :
+    return makeContext<TextBackgroundElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::underline :
     return makeContext<UnderlineElement>(getState(), m_propMap);
   }

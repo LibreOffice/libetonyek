@@ -164,6 +164,7 @@ enum
   tabular_style,
   tail,
   text,
+  textBackground,
   text_body,
   text_storage,
   title_placeholder_ref,
