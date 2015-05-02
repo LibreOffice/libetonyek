@@ -164,6 +164,13 @@ librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, cons
     if (styleStack.has<ParagraphFill>())
       props.insert("fo:background-color", makeColor(styleStack.get<ParagraphFill>()));
 
+    if (styleStack.has<LeftIndent>())
+      props.insert("fo:padding-left", pt2in(styleStack.get<LeftIndent>()));
+    if (styleStack.has<RightIndent>())
+      props.insert("fo:padding-right", pt2in(styleStack.get<RightIndent>()));
+    if (styleStack.has<FirstLineIndent>())
+      props.insert("fo:text-indent", pt2in(styleStack.get<FirstLineIndent>()));
+
     if (styleStack.has<SpaceBefore>())
       props.insert("fo:padding-top", styleStack.get<SpaceBefore>());
     if (styleStack.has<SpaceAfter>())

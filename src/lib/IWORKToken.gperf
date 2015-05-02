@@ -86,6 +86,7 @@ f,f
 false,false_
 filtered,filtered
 filtered-image,filtered_image
+firstLineIndent,firstLineIndent
 followingLayoutStyle,followingLayoutStyle
 followingParagraphStyle,followingParagraphStyle
 fontColor,fontColor
@@ -122,6 +123,7 @@ layoutParagraphStyle,layoutParagraphStyle
 layoutStyle,layoutStyle
 layoutstyle,layoutstyle
 layoutstyle-ref,layoutstyle_ref
+leftIndent,leftIndent
 leveled,leveled
 line,line
 lineSpacing,lineSpacing
@@ -158,6 +160,7 @@ property-map,property_map
 proxy-master-layer,proxy_master_layer
 r,r
 relative,relative
+rightIndent,rightIndent
 row-span,row_span
 rows,rows
 s,s

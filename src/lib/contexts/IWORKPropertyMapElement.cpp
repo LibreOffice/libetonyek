@@ -955,6 +955,54 @@ SpaceBeforeElement::SpaceBeforeElement(IWORKXMLParserState &state, IWORKProperty
 
 }
 
+namespace
+{
+
+class LeftIndentElement : public ValuePropertyContextBase<NumberElement<double>, property::LeftIndent>
+{
+public:
+  LeftIndentElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+};
+
+LeftIndentElement::LeftIndentElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number)
+{
+}
+
+}
+
+namespace
+{
+
+class RightIndentElement : public ValuePropertyContextBase<NumberElement<double>, property::RightIndent>
+{
+public:
+  RightIndentElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+};
+
+RightIndentElement::RightIndentElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number)
+{
+}
+
+}
+
+namespace
+{
+
+class FirstLineIndentElement : public ValuePropertyContextBase<NumberElement<double>, property::FirstLineIndent>
+{
+public:
+  FirstLineIndentElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+};
+
+FirstLineIndentElement::FirstLineIndentElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number)
+{
+}
+
+}
+
 IWORKPropertyMapElement::IWORKPropertyMapElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : IWORKXMLElementContextBase(state)
   , m_propMap(propMap)
@@ -999,6 +1047,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<BoldElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::capitalization :
     return makeContext<CapitalizationElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::firstLineIndent :
+    return makeContext<FirstLineIndentElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::fontColor :
     return makeContext<FontColorElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::fontName :
@@ -1009,12 +1059,16 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<GeometryElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::italic :
     return makeContext<ItalicElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::leftIndent :
+    return makeContext<LeftIndentElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::lineSpacing :
     return makeContext<LineSpacingElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::outline :
     return makeContext<OutlineElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphFill :
     return makeContext<ParagraphFillElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::rightIndent :
+    return makeContext<RightIndentElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceAfter :
     return makeContext<SpaceAfterElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceBefore :

@@ -25,14 +25,17 @@ struct Baseline {};
 struct BaselineShift {};
 struct Bold {};
 struct Capitalization {};
+struct FirstLineIndent {};
 struct FontColor {};
 struct FontName {};
 struct FontSize {};
 struct Geometry {};
 struct Italic {};
+struct LeftIndent {};
 struct LineSpacing {};
 struct Outline {};
 struct ParagraphFill {};
+struct RightIndent {};
 struct SpaceAfter {};
 struct SpaceBefore {};
 struct Strikethru {};
@@ -78,6 +81,13 @@ struct IWORKPropertyInfo<property::Capitalization>
 };
 
 template<>
+struct IWORKPropertyInfo<property::FirstLineIndent>
+{
+  typedef double ValueType;
+  static const IWORKPropertyID_t id;
+};
+
+template<>
 struct IWORKPropertyInfo<property::FontColor>
 {
   typedef IWORKColor ValueType;
@@ -113,6 +123,13 @@ struct IWORKPropertyInfo<property::Italic>
 };
 
 template<>
+struct IWORKPropertyInfo<property::LeftIndent>
+{
+  typedef double ValueType;
+  static const IWORKPropertyID_t id;
+};
+
+template<>
 struct IWORKPropertyInfo<property::LineSpacing>
 {
   typedef IWORKLineSpacing ValueType;
@@ -130,6 +147,13 @@ template<>
 struct IWORKPropertyInfo<property::ParagraphFill>
 {
   typedef IWORKColor ValueType;
+  static const IWORKPropertyID_t id;
+};
+
+template<>
+struct IWORKPropertyInfo<property::RightIndent>
+{
+  typedef double ValueType;
   static const IWORKPropertyID_t id;
 };
 
