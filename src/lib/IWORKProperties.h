@@ -33,6 +33,7 @@ IWORK_DECLARE_PROPERTY(KeepWithNext, bool);
 IWORK_DECLARE_PROPERTY(LeftIndent, double);
 IWORK_DECLARE_PROPERTY(LineSpacing, IWORKLineSpacing);
 IWORK_DECLARE_PROPERTY(Outline, bool);
+IWORK_DECLARE_PROPERTY(ParagraphBorderType, IWORKBorderType);
 IWORK_DECLARE_PROPERTY(ParagraphFill, IWORKColor);
 IWORK_DECLARE_PROPERTY(RightIndent, double);
 IWORK_DECLARE_PROPERTY(SpaceAfter, double);

@@ -1002,6 +1002,38 @@ ParagraphFillElement::ParagraphFillElement(IWORKXMLParserState &state, IWORKProp
 namespace
 {
 
+template<>
+struct NumberConverter<IWORKBorderType>
+{
+  static IWORKBorderType convert(const char *const value)
+  {
+    IWORKBorderType border = IWORK_BORDER_TYPE_NONE;
+
+    switch (int_cast(value))
+    {
+    case 1 :
+      border = IWORK_BORDER_TYPE_TOP;
+      break;
+    case 2 :
+      border = IWORK_BORDER_TYPE_BOTTOM;
+      break;
+    case 3 :
+      border = IWORK_BORDER_TYPE_TOP_AND_BOTTOM;
+      break;
+    case 4 :
+      border = IWORK_BORDER_TYPE_ALL;
+      break;
+    }
+
+    return border;
+  }
+};
+
+}
+
+namespace
+{
+
 typedef NumericPropertyBase<double, property::FirstLineIndent> FirstLineIndentElement;
 typedef NumericPropertyBase<double, property::LeftIndent> LeftIndentElement;
 typedef NumericPropertyBase<double, property::RightIndent> RightIndentElement;
@@ -1010,6 +1042,7 @@ typedef NumericPropertyBase<double, property::SpaceBefore> SpaceBeforeElement;
 typedef NumericPropertyBase<bool, property::KeepLinesTogether> KeepLinesTogetherElement;
 typedef NumericPropertyBase<bool, property::KeepWithNext> KeepWithNextElement;
 typedef NumericPropertyBase<bool, property::WidowControl> WidowControlElement;
+typedef NumericPropertyBase<IWORKBorderType, property::ParagraphBorderType> ParagraphBorderTypeElement;
 
 }
 
@@ -1079,6 +1112,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<LineSpacingElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::outline :
     return makeContext<OutlineElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::paragraphBorderType :
+    return makeContext<ParagraphBorderTypeElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphFill :
     return makeContext<ParagraphFillElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::rightIndent :

@@ -200,6 +200,30 @@ librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, cons
 
       props.insert("librevenge:tab-stops", tabs);
     }
+
+    if (styleStack.has<ParagraphBorderType>())
+    {
+      props.insert("style:border-line-width", pt2in(1));
+
+      switch (styleStack.get<ParagraphBorderType>())
+      {
+      case IWORK_BORDER_TYPE_TOP :
+        props.insert("fo:border-top", "solid");
+        break;
+      case IWORK_BORDER_TYPE_BOTTOM :
+        props.insert("fo:border-bottom", "solid");
+        break;
+      case IWORK_BORDER_TYPE_TOP_AND_BOTTOM :
+        props.insert("fo:border-top", "solid");
+        props.insert("fo:border-bottom", "solid");
+        break;
+      case IWORK_BORDER_TYPE_ALL :
+        props.insert("fo:border", "solid");
+        break;
+      default :
+        break;
+      }
+    }
   }
 
   return props;

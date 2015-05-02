@@ -146,6 +146,7 @@ number,number
 other-datas,other_datas
 outline,outline
 p,p
+paragraphBorderType,paragraphBorderType
 paragraphFill,paragraphFill
 paragraphstyle,paragraphstyle
 paragraphstyle-ref,paragraphstyle_ref

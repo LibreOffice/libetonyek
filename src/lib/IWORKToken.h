@@ -133,6 +133,7 @@ enum
   other_datas,
   outline,
   p,
+  paragraphBorderType,
   paragraphFill,
   paragraphstyle,
   paragraphstyle_ref,
