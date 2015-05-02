@@ -1034,6 +1034,45 @@ struct NumberConverter<IWORKBorderType>
 namespace
 {
 
+class LanguageElement : public PropertyContextBase
+{
+public:
+  LanguageElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  optional<string> m_lang;
+};
+
+LanguageElement::LanguageElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : PropertyContextBase(state, propMap)
+{
+}
+
+IWORKXMLContextPtr_t LanguageElement::element(const int name)
+{
+  if ((IWORKToken::NS_URI_SF | IWORKToken::string) == name)
+    return makeContext<StringElement>(getState(), m_lang);
+  return IWORKXMLContextPtr_t();
+}
+
+void LanguageElement::endOfElement()
+{
+  if (m_lang)
+  {
+    if (IWORKToken::__multilingual != getToken(get(m_lang).c_str()))
+      m_propMap.put<property::Language>(get(m_lang));
+  }
+}
+
+}
+
+namespace
+{
+
 typedef NumericPropertyBase<double, property::FirstLineIndent> FirstLineIndentElement;
 typedef NumericPropertyBase<double, property::LeftIndent> LeftIndentElement;
 typedef NumericPropertyBase<double, property::RightIndent> RightIndentElement;
@@ -1106,6 +1145,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<KeepLinesTogetherElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::keepWithNext :
     return makeContext<KeepWithNextElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::language :
+    return makeContext<LanguageElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::leftIndent :
     return makeContext<LeftIndentElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::lineSpacing :

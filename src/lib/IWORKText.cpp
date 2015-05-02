@@ -10,7 +10,11 @@
 #include "IWORKText.h"
 
 #include <cassert>
+#include <string>
 
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/optional.hpp>
 
@@ -105,6 +109,25 @@ void fillCharPropList(librevenge::RVNGPropertyList &props, const IWORKStyleStack
     props.insert("fo:color", makeColor(style.get<FontColor>()));
   if (style.has<TextBackground>())
     props.insert("fo:background-color", makeColor(style.get<TextBackground>()));
+
+  if (style.has<Language>())
+  {
+    const string &lang = style.get<Language>();
+
+    std::vector<string> components;
+    components.reserve(2);
+    boost::split(components, lang, boost::is_any_of("_"));
+
+    if (2 != components.size())
+    {
+      ETONYEK_DEBUG_MSG(("irregular lang specifier '%s'", lang.c_str()));
+    }
+
+    if ((1 <= components.size()) && (2 <= components[0].size()) && (3 >= components[0].size()) && boost::all(components[0], boost::is_lower()))
+      props.insert("fo:language", components[0].c_str());
+    if ((2 <= components.size()) && (2 == components[1].size()) && boost::all(components[1], boost::is_upper()))
+      props.insert("fo:country", components[1].c_str());
+  }
 }
 
 librevenge::RVNGPropertyList makeCharPropList(const IWORKStylePtr_t &style, const IWORKStyleStack &context)

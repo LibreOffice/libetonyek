@@ -106,6 +106,7 @@ enum
   italic,
   keepLinesTogether,
   keepWithNext,
+  language,
   layer,
   layer_ref,
   layers,
@@ -228,6 +229,7 @@ enum
   y,
 
   // attribute values
+  __multilingual,
   _0,
   _1,
   false_,

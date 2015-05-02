@@ -77,6 +77,9 @@ AC_SUBST(ZLIB_LIBS)
 saved_CPPFLAGS="${CPPFLAGS}"
 CPPFLAGS="${BOOST_CFLAGS} ${CPPFLAGS}"
 AC_CHECK_HEADERS(
+        boost/algorithm/string/classification.hpp \
+        boost/algorithm/string/predicate.hpp \
+        boost/algorithm/string/split.hpp \
         boost/any.hpp \
         boost/bind.hpp \
         boost/function.hpp \

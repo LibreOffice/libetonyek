@@ -21,6 +21,7 @@ struct Token
   int id;
 };
 %%
+__multilingual,__multilingual
 0,_0
 1,_1
 ID,ID
@@ -117,6 +118,7 @@ italic,italic
 keepLinesTogether,keepLinesTogether
 keepWithNext,keepWithNext
 kind,kind
+language,language
 layer,layer
 layer-ref,layer_ref
 layers,layers
