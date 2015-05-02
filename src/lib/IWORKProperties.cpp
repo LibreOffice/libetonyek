@@ -12,31 +12,31 @@
 namespace libetonyek
 {
 
-const IWORKPropertyID_t IWORKPropertyInfo<property::Alignment>::id = "Alignment";
-const IWORKPropertyID_t IWORKPropertyInfo<property::Baseline>::id = "Baseline";
-const IWORKPropertyID_t IWORKPropertyInfo<property::BaselineShift>::id = "BaselineShift";
-const IWORKPropertyID_t IWORKPropertyInfo<property::Bold>::id = "Bold";
-const IWORKPropertyID_t IWORKPropertyInfo<property::Capitalization>::id = "Capitalization";
-const IWORKPropertyID_t IWORKPropertyInfo<property::FirstLineIndent>::id = "FirstLineIndent";
-const IWORKPropertyID_t IWORKPropertyInfo<property::FontColor>::id = "FontColor";
-const IWORKPropertyID_t IWORKPropertyInfo<property::FontName>::id = "FontName";
-const IWORKPropertyID_t IWORKPropertyInfo<property::FontSize>::id = "FontSize";
-const IWORKPropertyID_t IWORKPropertyInfo<property::Geometry>::id = "Geometry";
-const IWORKPropertyID_t IWORKPropertyInfo<property::Italic>::id = "Italic";
-const IWORKPropertyID_t IWORKPropertyInfo<property::KeepLinesTogether>::id = "KeepLinesTogether";
-const IWORKPropertyID_t IWORKPropertyInfo<property::KeepWithNext>::id = "KeepWithNext";
-const IWORKPropertyID_t IWORKPropertyInfo<property::LeftIndent>::id = "LeftIndent";
-const IWORKPropertyID_t IWORKPropertyInfo<property::LineSpacing>::id = "LineSpacing";
-const IWORKPropertyID_t IWORKPropertyInfo<property::Outline>::id = "Outline";
-const IWORKPropertyID_t IWORKPropertyInfo<property::ParagraphFill>::id = "ParagraphFill";
-const IWORKPropertyID_t IWORKPropertyInfo<property::RightIndent>::id = "RightIndent";
-const IWORKPropertyID_t IWORKPropertyInfo<property::SpaceAfter>::id = "SpaceAfter";
-const IWORKPropertyID_t IWORKPropertyInfo<property::SpaceBefore>::id = "SpaceBefore";
-const IWORKPropertyID_t IWORKPropertyInfo<property::Strikethru>::id = "Strikethru";
-const IWORKPropertyID_t IWORKPropertyInfo<property::Tabs>::id = "Tabs";
-const IWORKPropertyID_t IWORKPropertyInfo<property::TextBackground>::id = "TextBackground";
-const IWORKPropertyID_t IWORKPropertyInfo<property::Underline>::id = "Underline";
-const IWORKPropertyID_t IWORKPropertyInfo<property::WidowControl>::id = "WidowControl";
+IWORK_IMPLEMENT_PROPERTY(Alignment);
+IWORK_IMPLEMENT_PROPERTY(Baseline);
+IWORK_IMPLEMENT_PROPERTY(BaselineShift);
+IWORK_IMPLEMENT_PROPERTY(Bold);
+IWORK_IMPLEMENT_PROPERTY(Capitalization);
+IWORK_IMPLEMENT_PROPERTY(FirstLineIndent);
+IWORK_IMPLEMENT_PROPERTY(FontColor);
+IWORK_IMPLEMENT_PROPERTY(FontName);
+IWORK_IMPLEMENT_PROPERTY(FontSize);
+IWORK_IMPLEMENT_PROPERTY(Geometry);
+IWORK_IMPLEMENT_PROPERTY(Italic);
+IWORK_IMPLEMENT_PROPERTY(KeepLinesTogether);
+IWORK_IMPLEMENT_PROPERTY(KeepWithNext);
+IWORK_IMPLEMENT_PROPERTY(LeftIndent);
+IWORK_IMPLEMENT_PROPERTY(LineSpacing);
+IWORK_IMPLEMENT_PROPERTY(Outline);
+IWORK_IMPLEMENT_PROPERTY(ParagraphFill);
+IWORK_IMPLEMENT_PROPERTY(RightIndent);
+IWORK_IMPLEMENT_PROPERTY(SpaceAfter);
+IWORK_IMPLEMENT_PROPERTY(SpaceBefore);
+IWORK_IMPLEMENT_PROPERTY(Strikethru);
+IWORK_IMPLEMENT_PROPERTY(Tabs);
+IWORK_IMPLEMENT_PROPERTY(TextBackground);
+IWORK_IMPLEMENT_PROPERTY(Underline);
+IWORK_IMPLEMENT_PROPERTY(WidowControl);
 
 }
 

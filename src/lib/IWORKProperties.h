@@ -17,211 +17,31 @@
 namespace libetonyek
 {
 
-namespace property
-{
-
-struct Alignment {};
-struct Baseline {};
-struct BaselineShift {};
-struct Bold {};
-struct Capitalization {};
-struct FirstLineIndent {};
-struct FontColor {};
-struct FontName {};
-struct FontSize {};
-struct Geometry {};
-struct Italic {};
-struct KeepLinesTogether {};
-struct KeepWithNext {};
-struct LeftIndent {};
-struct LineSpacing {};
-struct Outline {};
-struct ParagraphFill {};
-struct RightIndent {};
-struct SpaceAfter {};
-struct SpaceBefore {};
-struct Strikethru {};
-struct Tabs {};
-struct TextBackground {};
-struct Underline {};
-struct WidowControl {};
-
-}
-
-template<>
-struct IWORKPropertyInfo<property::Alignment>
-{
-  typedef IWORKAlignment ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::Baseline>
-{
-  typedef IWORKBaseline ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::BaselineShift>
-{
-  typedef double ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::Bold>
-{
-  typedef bool ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::Capitalization>
-{
-  typedef IWORKCapitalization ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::FirstLineIndent>
-{
-  typedef double ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::FontColor>
-{
-  typedef IWORKColor ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::FontName>
-{
-  typedef std::string ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::FontSize>
-{
-  typedef double ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::Geometry>
-{
-  typedef IWORKGeometryPtr_t ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::Italic>
-{
-  typedef bool ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::KeepLinesTogether>
-{
-  typedef bool ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::KeepWithNext>
-{
-  typedef bool ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::LeftIndent>
-{
-  typedef double ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::LineSpacing>
-{
-  typedef IWORKLineSpacing ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::Outline>
-{
-  typedef bool ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::ParagraphFill>
-{
-  typedef IWORKColor ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::RightIndent>
-{
-  typedef double ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::SpaceAfter>
-{
-  typedef double ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::SpaceBefore>
-{
-  typedef double ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::Strikethru>
-{
-  typedef bool ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::Tabs>
-{
-  typedef IWORKTabStops_t ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::TextBackground>
-{
-  typedef IWORKColor ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::Underline>
-{
-  typedef bool ValueType;
-  static const IWORKPropertyID_t id;
-};
-
-template<>
-struct IWORKPropertyInfo<property::WidowControl>
-{
-  typedef bool ValueType;
-  static const IWORKPropertyID_t id;
-};
+IWORK_DECLARE_PROPERTY(Alignment, IWORKAlignment);
+IWORK_DECLARE_PROPERTY(Baseline, IWORKBaseline);
+IWORK_DECLARE_PROPERTY(BaselineShift, double);
+IWORK_DECLARE_PROPERTY(Bold, bool);
+IWORK_DECLARE_PROPERTY(Capitalization, IWORKCapitalization);
+IWORK_DECLARE_PROPERTY(FirstLineIndent, double);
+IWORK_DECLARE_PROPERTY(FontColor, IWORKColor);
+IWORK_DECLARE_PROPERTY(FontName, std::string);
+IWORK_DECLARE_PROPERTY(FontSize, double);
+IWORK_DECLARE_PROPERTY(Geometry, IWORKGeometryPtr_t);
+IWORK_DECLARE_PROPERTY(Italic, bool);
+IWORK_DECLARE_PROPERTY(KeepLinesTogether, bool);
+IWORK_DECLARE_PROPERTY(KeepWithNext, bool);
+IWORK_DECLARE_PROPERTY(LeftIndent, double);
+IWORK_DECLARE_PROPERTY(LineSpacing, IWORKLineSpacing);
+IWORK_DECLARE_PROPERTY(Outline, bool);
+IWORK_DECLARE_PROPERTY(ParagraphFill, IWORKColor);
+IWORK_DECLARE_PROPERTY(RightIndent, double);
+IWORK_DECLARE_PROPERTY(SpaceAfter, double);
+IWORK_DECLARE_PROPERTY(SpaceBefore, double);
+IWORK_DECLARE_PROPERTY(Strikethru, bool);
+IWORK_DECLARE_PROPERTY(Tabs, IWORKTabStops_t);
+IWORK_DECLARE_PROPERTY(TextBackground, IWORKColor);
+IWORK_DECLARE_PROPERTY(Underline, bool);
+IWORK_DECLARE_PROPERTY(WidowControl, bool);
 
 }
 

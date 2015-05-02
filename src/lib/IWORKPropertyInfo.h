@@ -24,6 +24,21 @@ struct IWORKPropertyInfo
   // static const IWORKPropertyID_t id;
 };
 
+#define IWORK_DECLARE_PROPERTY(name, type) \
+namespace property { \
+  struct name {}; \
+} \
+\
+template<> \
+struct IWORKPropertyInfo<property::name> \
+{ \
+  typedef type ValueType; \
+  static const IWORKPropertyID_t id; \
+}
+
+#define IWORK_IMPLEMENT_PROPERTY(name) \
+const IWORKPropertyID_t IWORKPropertyInfo<property::name>::id = #name
+
 }
 
 #endif // IWORKPROPERTYINFO_H_INCLUDED
