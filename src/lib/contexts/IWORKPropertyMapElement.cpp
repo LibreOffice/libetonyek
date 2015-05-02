@@ -212,6 +212,26 @@ void ValuePropertyContextBase<ContextT, PropertyT>::endOfElement()
 namespace
 {
 
+template<typename ValueT, class PropertyT>
+class NumericPropertyBase : public ValuePropertyContextBase<NumberElement<ValueT>, PropertyT>
+{
+  typedef ValuePropertyContextBase<NumberElement<ValueT>, PropertyT> Parent_t;
+
+public:
+  NumericPropertyBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+};
+
+  template<typename ValueT, class PropertyT>
+NumericPropertyBase<ValueT, PropertyT>::NumericPropertyBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+: Parent_t(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number)
+{
+}
+
+}
+
+namespace
+{
+
 class AlignmentElement : public PropertyContextBase
 {
 public:
@@ -926,80 +946,11 @@ ParagraphFillElement::ParagraphFillElement(IWORKXMLParserState &state, IWORKProp
 namespace
 {
 
-class SpaceAfterElement : public ValuePropertyContextBase<NumberElement<double>, property::SpaceAfter>
-{
-public:
-  SpaceAfterElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
-
-SpaceAfterElement::SpaceAfterElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number)
-{
-}
-
-}
-
-namespace
-{
-
-class SpaceBeforeElement : public ValuePropertyContextBase<NumberElement<double>, property::SpaceBefore>
-{
-public:
-  SpaceBeforeElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
-
-SpaceBeforeElement::SpaceBeforeElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number)
-{
-}
-
-}
-
-namespace
-{
-
-class LeftIndentElement : public ValuePropertyContextBase<NumberElement<double>, property::LeftIndent>
-{
-public:
-  LeftIndentElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
-
-LeftIndentElement::LeftIndentElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number)
-{
-}
-
-}
-
-namespace
-{
-
-class RightIndentElement : public ValuePropertyContextBase<NumberElement<double>, property::RightIndent>
-{
-public:
-  RightIndentElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
-
-RightIndentElement::RightIndentElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number)
-{
-}
-
-}
-
-namespace
-{
-
-class FirstLineIndentElement : public ValuePropertyContextBase<NumberElement<double>, property::FirstLineIndent>
-{
-public:
-  FirstLineIndentElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
-
-FirstLineIndentElement::FirstLineIndentElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number)
-{
-}
+typedef NumericPropertyBase<double, property::FirstLineIndent> FirstLineIndentElement;
+typedef NumericPropertyBase<double, property::LeftIndent> LeftIndentElement;
+typedef NumericPropertyBase<double, property::RightIndent> RightIndentElement;
+typedef NumericPropertyBase<double, property::SpaceAfter> SpaceAfterElement;
+typedef NumericPropertyBase<double, property::SpaceBefore> SpaceBeforeElement;
 
 }
 
