@@ -33,6 +33,8 @@ struct Italic {};
 struct LineSpacing {};
 struct Outline {};
 struct ParagraphFill {};
+struct SpaceAfter {};
+struct SpaceBefore {};
 struct Strikethru {};
 struct Tabs {};
 struct TextBackground {};
@@ -128,6 +130,20 @@ template<>
 struct IWORKPropertyInfo<property::ParagraphFill>
 {
   typedef IWORKColor ValueType;
+  static const IWORKPropertyID_t id;
+};
+
+template<>
+struct IWORKPropertyInfo<property::SpaceAfter>
+{
+  typedef double ValueType;
+  static const IWORKPropertyID_t id;
+};
+
+template<>
+struct IWORKPropertyInfo<property::SpaceBefore>
+{
+  typedef double ValueType;
   static const IWORKPropertyID_t id;
 };
 

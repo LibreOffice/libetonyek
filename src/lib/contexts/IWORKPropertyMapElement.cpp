@@ -923,6 +923,38 @@ ParagraphFillElement::ParagraphFillElement(IWORKXMLParserState &state, IWORKProp
 
 }
 
+namespace
+{
+
+class SpaceAfterElement : public ValuePropertyContextBase<NumberElement<double>, property::SpaceAfter>
+{
+public:
+  SpaceAfterElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+};
+
+SpaceAfterElement::SpaceAfterElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number)
+{
+}
+
+}
+
+namespace
+{
+
+class SpaceBeforeElement : public ValuePropertyContextBase<NumberElement<double>, property::SpaceBefore>
+{
+public:
+  SpaceBeforeElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+};
+
+SpaceBeforeElement::SpaceBeforeElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number)
+{
+}
+
+}
+
 IWORKPropertyMapElement::IWORKPropertyMapElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : IWORKXMLElementContextBase(state)
   , m_propMap(propMap)
@@ -983,6 +1015,10 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<OutlineElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphFill :
     return makeContext<ParagraphFillElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::spaceAfter :
+    return makeContext<SpaceAfterElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::spaceBefore :
+    return makeContext<SpaceBeforeElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::strikethru :
     return makeContext<StrikethruElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::superscript :

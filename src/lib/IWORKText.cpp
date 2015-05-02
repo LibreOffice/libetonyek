@@ -164,6 +164,11 @@ librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, cons
     if (styleStack.has<ParagraphFill>())
       props.insert("fo:background-color", makeColor(styleStack.get<ParagraphFill>()));
 
+    if (styleStack.has<SpaceBefore>())
+      props.insert("fo:padding-top", styleStack.get<SpaceBefore>());
+    if (styleStack.has<SpaceAfter>())
+      props.insert("fo:padding-bottom", styleStack.get<SpaceAfter>());
+
     if (styleStack.has<Tabs>())
     {
       const IWORKTabStops_t &tabStops = styleStack.get<Tabs>();

@@ -151,6 +151,8 @@ enum
   size,
   slide_style,
   so,
+  spaceAfter,
+  spaceBefore,
   span,
   sticky_note,
   strikethru,
