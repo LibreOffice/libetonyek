@@ -187,13 +187,18 @@ librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, cons
 
     if (styleStack.has<Tabs>())
     {
+      librevenge::RVNGPropertyListVector tabs;
+
       const IWORKTabStops_t &tabStops = styleStack.get<Tabs>();
       for (IWORKTabStops_t::const_iterator it = tabStops.begin(); tabStops.end() != it; ++it)
       {
         librevenge::RVNGPropertyList tab;
         tab.insert("style:position", pt2in(it->m_pos));
         tab.insert("style:type", "left");
+        tabs.append(tab);
       }
+
+      props.insert("librevenge:tab-stops", tabs);
     }
   }
 

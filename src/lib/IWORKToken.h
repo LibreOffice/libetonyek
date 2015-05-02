@@ -168,6 +168,7 @@ enum
   t,
   tab,
   tabs,
+  tabs_ref,
   tabstop,
   tabular_info,
   tabular_model,

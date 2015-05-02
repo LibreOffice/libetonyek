@@ -17,6 +17,7 @@
 #include "IWORKDictionary.h"
 #include "IWORKGeometryElement.h"
 #include "IWORKProperties.h"
+#include "IWORKRefContext.h"
 #include "IWORKStyleContext.h"
 #include "IWORKStyleRefContext.h"
 #include "IWORKToken.h"
@@ -683,22 +684,24 @@ void TabstopElement::attribute(const int name, const char *const value)
 namespace
 {
 
-class TabsElement : public PropertyContextBase
+class TabsElement : public IWORKXMLElementContextBase
 {
 public:
-  TabsElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+  TabsElement(IWORKXMLParserState &state, IWORKTabStops_t &tabs);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
 private:
-  IWORKTabStops_t m_tabs;
+  IWORKTabStops_t &m_tabs;
   optional<double> m_current;
 };
 
-TabsElement::TabsElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : PropertyContextBase(state, propMap)
+TabsElement::TabsElement(IWORKXMLParserState &state, IWORKTabStops_t &tabs)
+  : IWORKXMLElementContextBase(state)
+  , m_tabs(tabs)
+  , m_current()
 {
 }
 
@@ -721,8 +724,61 @@ void TabsElement::endOfElement()
   if (m_current)
     m_tabs.push_back(IWORKTabStop(get(m_current)));
 
+  if (getId())
+    getState().getDictionary().m_tabs[get(getId())] = m_tabs;
+}
+
+}
+
+namespace
+{
+
+class TabsProperty : public PropertyContextBase
+{
+public:
+  TabsProperty(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  IWORKTabStops_t m_tabs;
+  optional<ID_t> m_ref;
+};
+
+TabsProperty::TabsProperty(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : PropertyContextBase(state, propMap)
+  , m_tabs()
+  , m_ref()
+{
+}
+
+IWORKXMLContextPtr_t TabsProperty::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::tabs :
+    return makeContext<TabsElement>(getState(), m_tabs);
+  case IWORKToken::NS_URI_SF | IWORKToken::tabs_ref :
+    return makeContext<IWORKRefContext>(getState(), m_ref);
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void TabsProperty::endOfElement()
+{
   if (!m_tabs.empty())
+  {
     m_propMap.put<property::Tabs>(m_tabs);
+  }
+  else if (m_ref)
+  {
+    IWORKTabStopsMap_t::const_iterator it = getState().getDictionary().m_tabs.find(get(m_ref));
+    if (getState().getDictionary().m_tabs.end() != it)
+      m_propMap.put<property::Tabs>(it->second);
+  }
 }
 
 }
@@ -1036,7 +1092,7 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::superscript :
     return makeContext<SuperscriptElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::tabs :
-    return makeContext<TabsElement>(getState(), m_propMap);
+    return makeContext<TabsProperty>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::textBackground :
     return makeContext<TextBackgroundElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::underline :

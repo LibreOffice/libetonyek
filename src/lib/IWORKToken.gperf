@@ -191,6 +191,7 @@ superscript,superscript
 t,t
 tab,tab
 tabs,tabs
+tabs-ref,tabs_ref
 tabstop,tabstop
 tabular-info,tabular_info
 tabular-model,tabular_model

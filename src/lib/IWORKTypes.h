@@ -88,6 +88,7 @@ struct IWORKTabStop
 };
 
 typedef std::deque<IWORKTabStop> IWORKTabStops_t;
+typedef boost::unordered_map<ID_t, IWORKTabStops_t> IWORKTabStopsMap_t;
 
 struct IWORKLine
 {
