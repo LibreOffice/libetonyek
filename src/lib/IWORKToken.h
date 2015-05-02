@@ -104,6 +104,8 @@ enum
   image_media,
   intratopicbr,
   italic,
+  keepLinesTogether,
+  keepWithNext,
   layer,
   layer_ref,
   layers,
@@ -183,6 +185,7 @@ enum
   unfiltered_ref,
   vector_style,
   vector_style_ref,
+  widowControl,
 
   // attributes
   ID,

@@ -31,6 +31,8 @@ struct FontName {};
 struct FontSize {};
 struct Geometry {};
 struct Italic {};
+struct KeepLinesTogether {};
+struct KeepWithNext {};
 struct LeftIndent {};
 struct LineSpacing {};
 struct Outline {};
@@ -42,6 +44,7 @@ struct Strikethru {};
 struct Tabs {};
 struct TextBackground {};
 struct Underline {};
+struct WidowControl {};
 
 }
 
@@ -123,6 +126,20 @@ struct IWORKPropertyInfo<property::Italic>
 };
 
 template<>
+struct IWORKPropertyInfo<property::KeepLinesTogether>
+{
+  typedef bool ValueType;
+  static const IWORKPropertyID_t id;
+};
+
+template<>
+struct IWORKPropertyInfo<property::KeepWithNext>
+{
+  typedef bool ValueType;
+  static const IWORKPropertyID_t id;
+};
+
+template<>
 struct IWORKPropertyInfo<property::LeftIndent>
 {
   typedef double ValueType;
@@ -194,6 +211,13 @@ struct IWORKPropertyInfo<property::TextBackground>
 
 template<>
 struct IWORKPropertyInfo<property::Underline>
+{
+  typedef bool ValueType;
+  static const IWORKPropertyID_t id;
+};
+
+template<>
+struct IWORKPropertyInfo<property::WidowControl>
 {
   typedef bool ValueType;
   static const IWORKPropertyID_t id;

@@ -176,6 +176,15 @@ librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, cons
     if (styleStack.has<SpaceAfter>())
       props.insert("fo:padding-bottom", styleStack.get<SpaceAfter>());
 
+    if (styleStack.has<KeepLinesTogether>() && styleStack.get<KeepLinesTogether>())
+      props.insert("fo:keep-together", "always");
+    if (styleStack.has<KeepWithNext>() && styleStack.get<KeepWithNext>())
+      props.insert("fo:keep-with-next", "always");
+    // Orphans and widows are covered by a single setting. The number of lines is not adjustable.
+    const bool enableWidows = styleStack.has<WidowControl>() && !styleStack.get<WidowControl>();
+    props.insert("orphans", enableWidows ? "0" : "2");
+    props.insert("widows", enableWidows ? "0" : "2");
+
     if (styleStack.has<Tabs>())
     {
       const IWORKTabStops_t &tabStops = styleStack.get<Tabs>();

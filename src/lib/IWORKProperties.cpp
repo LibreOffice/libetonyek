@@ -23,6 +23,8 @@ const IWORKPropertyID_t IWORKPropertyInfo<property::FontName>::id = "FontName";
 const IWORKPropertyID_t IWORKPropertyInfo<property::FontSize>::id = "FontSize";
 const IWORKPropertyID_t IWORKPropertyInfo<property::Geometry>::id = "Geometry";
 const IWORKPropertyID_t IWORKPropertyInfo<property::Italic>::id = "Italic";
+const IWORKPropertyID_t IWORKPropertyInfo<property::KeepLinesTogether>::id = "KeepLinesTogether";
+const IWORKPropertyID_t IWORKPropertyInfo<property::KeepWithNext>::id = "KeepWithNext";
 const IWORKPropertyID_t IWORKPropertyInfo<property::LeftIndent>::id = "LeftIndent";
 const IWORKPropertyID_t IWORKPropertyInfo<property::LineSpacing>::id = "LineSpacing";
 const IWORKPropertyID_t IWORKPropertyInfo<property::Outline>::id = "Outline";
@@ -34,6 +36,7 @@ const IWORKPropertyID_t IWORKPropertyInfo<property::Strikethru>::id = "Strikethr
 const IWORKPropertyID_t IWORKPropertyInfo<property::Tabs>::id = "Tabs";
 const IWORKPropertyID_t IWORKPropertyInfo<property::TextBackground>::id = "TextBackground";
 const IWORKPropertyID_t IWORKPropertyInfo<property::Underline>::id = "Underline";
+const IWORKPropertyID_t IWORKPropertyInfo<property::WidowControl>::id = "WidowControl";
 
 }
 

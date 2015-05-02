@@ -114,6 +114,8 @@ image,image
 image-media,image_media
 intratopicbr,intratopicbr
 italic,italic
+keepLinesTogether,keepLinesTogether
+keepWithNext,keepWithNext
 kind,kind
 layer,layer
 layer-ref,layer_ref
@@ -214,6 +216,7 @@ vector-style,vector_style
 vector-style-ref,vector_style_ref
 verticalFlip,verticalFlip
 w,w
+widowControl,widowControl
 width,width
 x,x
 y,y

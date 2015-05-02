@@ -221,9 +221,9 @@ public:
   NumericPropertyBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
-  template<typename ValueT, class PropertyT>
+template<typename ValueT, class PropertyT>
 NumericPropertyBase<ValueT, PropertyT>::NumericPropertyBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-: Parent_t(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number)
+  : Parent_t(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number)
 {
 }
 
@@ -951,6 +951,9 @@ typedef NumericPropertyBase<double, property::LeftIndent> LeftIndentElement;
 typedef NumericPropertyBase<double, property::RightIndent> RightIndentElement;
 typedef NumericPropertyBase<double, property::SpaceAfter> SpaceAfterElement;
 typedef NumericPropertyBase<double, property::SpaceBefore> SpaceBeforeElement;
+typedef NumericPropertyBase<bool, property::KeepLinesTogether> KeepLinesTogetherElement;
+typedef NumericPropertyBase<bool, property::KeepWithNext> KeepWithNextElement;
+typedef NumericPropertyBase<bool, property::WidowControl> WidowControlElement;
 
 }
 
@@ -1010,6 +1013,10 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<GeometryElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::italic :
     return makeContext<ItalicElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::keepLinesTogether :
+    return makeContext<KeepLinesTogetherElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::keepWithNext :
+    return makeContext<KeepWithNextElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::leftIndent :
     return makeContext<LeftIndentElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::lineSpacing :
@@ -1034,6 +1041,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<TextBackgroundElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::underline :
     return makeContext<UnderlineElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::widowControl :
+    return makeContext<WidowControlElement>(getState(), m_propMap);
   }
 
   return IWORKXMLContextPtr_t();
