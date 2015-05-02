@@ -172,9 +172,9 @@ librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, cons
       props.insert("fo:text-indent", pt2in(styleStack.get<FirstLineIndent>()));
 
     if (styleStack.has<SpaceBefore>())
-      props.insert("fo:padding-top", styleStack.get<SpaceBefore>());
+      props.insert("fo:padding-top", pt2in(styleStack.get<SpaceBefore>()));
     if (styleStack.has<SpaceAfter>())
-      props.insert("fo:padding-bottom", styleStack.get<SpaceAfter>());
+      props.insert("fo:padding-bottom", pt2in(styleStack.get<SpaceAfter>()));
 
     if (styleStack.has<KeepLinesTogether>() && styleStack.get<KeepLinesTogether>())
       props.insert("fo:keep-together", "always");
