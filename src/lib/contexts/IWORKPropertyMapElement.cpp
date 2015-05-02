@@ -20,8 +20,8 @@
 #include "IWORKStyleContext.h"
 #include "IWORKStyleRefContext.h"
 #include "IWORKToken.h"
+#include "IWORKTokenizer.h"
 #include "IWORKXMLParserState.h"
-#include "IWORKToken.h"
 
 namespace libetonyek
 {
@@ -844,6 +844,69 @@ TextBackgroundElement::TextBackgroundElement(IWORKXMLParserState &state, IWORKPr
 
 }
 
+namespace
+{
+
+class LinespacingElement : public IWORKXMLEmptyContextBase
+{
+public:
+  LinespacingElement(IWORKXMLParserState &state, optional<IWORKLineSpacing> &value);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual void endOfElement();
+
+private:
+  optional<IWORKLineSpacing> &m_value;
+  optional<double> m_amount;
+  optional<bool> m_relative;
+};
+
+LinespacingElement::LinespacingElement(IWORKXMLParserState &state, optional<IWORKLineSpacing> &value)
+  : IWORKXMLEmptyContextBase(state)
+  , m_value(value)
+  , m_amount()
+  , m_relative()
+{
+}
+
+void LinespacingElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::amt :
+    m_amount = double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::mode :
+    m_relative = IWORKToken::relative == getToken(value);
+    break;
+  }
+}
+
+void LinespacingElement::endOfElement()
+{
+  if (m_amount)
+    m_value = IWORKLineSpacing(get(m_amount), get_optional_value_or(m_relative, false));
+}
+
+}
+
+namespace
+{
+
+class LineSpacingElement : public ValuePropertyContextBase<LinespacingElement, property::LineSpacing>
+{
+public:
+  LineSpacingElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+};
+
+LineSpacingElement::LineSpacingElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::linespacing)
+{
+}
+
+}
+
 IWORKPropertyMapElement::IWORKPropertyMapElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : IWORKXMLElementContextBase(state)
   , m_propMap(propMap)
@@ -898,6 +961,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<GeometryElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::italic :
     return makeContext<ItalicElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::lineSpacing :
+    return makeContext<LineSpacingElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::outline :
     return makeContext<OutlineElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::strikethru :

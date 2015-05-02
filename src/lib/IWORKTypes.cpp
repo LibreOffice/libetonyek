@@ -135,6 +135,12 @@ IWORKWrap::IWORKWrap()
 {
 }
 
+IWORKLineSpacing::IWORKLineSpacing(const double value, const bool relative)
+  : m_value(value)
+  , m_relative(relative)
+{
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

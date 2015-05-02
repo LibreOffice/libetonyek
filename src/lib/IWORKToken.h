@@ -113,6 +113,8 @@ enum
   layoutstyle_ref,
   leveled,
   line,
+  lineSpacing,
+  linespacing,
   link,
   listStyle,
   liststyle,
@@ -181,6 +183,7 @@ enum
   IDREF,
   a,
   align,
+  amt,
   angle,
   aspectRatioLocked,
   b,
@@ -194,6 +197,7 @@ enum
   ident,
   kind,
   locked,
+  mode,
   parent_ident,
   pos,
   row_span,
@@ -216,6 +220,7 @@ enum
   _0,
   _1,
   false_,
+  relative,
   true_,
 
   LAST_TOKEN

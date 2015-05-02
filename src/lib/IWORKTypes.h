@@ -156,6 +156,14 @@ struct IWORKWrap
   IWORKWrap();
 };
 
+struct IWORKLineSpacing
+{
+  IWORKLineSpacing(double value, bool relative);
+
+  double m_value;
+  bool m_relative;
+};
+
 }
 
 #endif //  IWORKTYPES_H_INCLUDED

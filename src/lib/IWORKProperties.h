@@ -30,6 +30,7 @@ struct FontName {};
 struct FontSize {};
 struct Geometry {};
 struct Italic {};
+struct LineSpacing {};
 struct Outline {};
 struct Strikethru {};
 struct Tabs {};
@@ -105,6 +106,13 @@ template<>
 struct IWORKPropertyInfo<property::Italic>
 {
   typedef bool ValueType;
+  static const IWORKPropertyID_t id;
+};
+
+template<>
+struct IWORKPropertyInfo<property::LineSpacing>
+{
+  typedef IWORKLineSpacing ValueType;
   static const IWORKPropertyID_t id;
 };
 

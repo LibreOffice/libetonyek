@@ -152,6 +152,15 @@ librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, cons
       }
     }
 
+    if (styleStack.has<LineSpacing>())
+    {
+      const IWORKLineSpacing &spacing = styleStack.get<LineSpacing>();
+      if (spacing.m_relative)
+        props.insert("fo:line-height", spacing.m_value, librevenge::RVNG_PERCENT);
+      else
+        props.insert("fo:line-height", pt2in(spacing.m_value));
+    }
+
     if (styleStack.has<Tabs>())
     {
       const IWORKTabStops_t &tabStops = styleStack.get<Tabs>();

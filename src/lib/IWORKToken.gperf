@@ -45,6 +45,7 @@ TableCellStylePropertyFormatNegativeStyle,TableCellStylePropertyFormatNegativeSt
 a,a
 align,align
 alignment,alignment
+amt,amt
 angle,angle
 anon-styles,anon_styles
 aspectRatioLocked,aspectRatioLocked
@@ -123,6 +124,8 @@ layoutstyle,layoutstyle
 layoutstyle-ref,layoutstyle_ref
 leveled,leveled
 line,line
+lineSpacing,lineSpacing
+linespacing,linespacing
 link,link
 listStyle,listStyle
 liststyle,liststyle
@@ -131,6 +134,7 @@ lnbr,lnbr
 locked,locked
 media,media
 metadata,metadata
+mode,mode
 movie-media,movie_media
 n,n
 naturalSize,naturalSize
@@ -152,6 +156,7 @@ position,position
 property-map,property_map
 proxy-master-layer,proxy_master_layer
 r,r
+relative,relative
 row-span,row_span
 rows,rows
 s,s
