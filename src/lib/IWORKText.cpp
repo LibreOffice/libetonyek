@@ -161,6 +161,9 @@ librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, cons
         props.insert("fo:line-height", pt2in(spacing.m_value));
     }
 
+    if (styleStack.has<ParagraphFill>())
+      props.insert("fo:background-color", makeColor(styleStack.get<ParagraphFill>()));
+
     if (styleStack.has<Tabs>())
     {
       const IWORKTabStops_t &tabStops = styleStack.get<Tabs>();

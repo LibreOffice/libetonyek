@@ -32,6 +32,7 @@ struct Geometry {};
 struct Italic {};
 struct LineSpacing {};
 struct Outline {};
+struct ParagraphFill {};
 struct Strikethru {};
 struct Tabs {};
 struct TextBackground {};
@@ -120,6 +121,13 @@ template<>
 struct IWORKPropertyInfo<property::Outline>
 {
   typedef bool ValueType;
+  static const IWORKPropertyID_t id;
+};
+
+template<>
+struct IWORKPropertyInfo<property::ParagraphFill>
+{
+  typedef IWORKColor ValueType;
   static const IWORKPropertyID_t id;
 };
 

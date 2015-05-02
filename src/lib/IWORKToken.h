@@ -129,6 +129,7 @@ enum
   other_datas,
   outline,
   p,
+  paragraphFill,
   paragraphstyle,
   paragraphstyle_ref,
   parent_ref,

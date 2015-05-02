@@ -24,6 +24,7 @@ const IWORKPropertyID_t IWORKPropertyInfo<property::Geometry>::id = "Geometry";
 const IWORKPropertyID_t IWORKPropertyInfo<property::Italic>::id = "Italic";
 const IWORKPropertyID_t IWORKPropertyInfo<property::LineSpacing>::id = "LineSpacing";
 const IWORKPropertyID_t IWORKPropertyInfo<property::Outline>::id = "Outline";
+const IWORKPropertyID_t IWORKPropertyInfo<property::ParagraphFill>::id = "ParagraphFill";
 const IWORKPropertyID_t IWORKPropertyInfo<property::Strikethru>::id = "Strikethru";
 const IWORKPropertyID_t IWORKPropertyInfo<property::Tabs>::id = "Tabs";
 const IWORKPropertyID_t IWORKPropertyInfo<property::TextBackground>::id = "TextBackground";

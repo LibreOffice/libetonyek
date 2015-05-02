@@ -907,6 +907,22 @@ LineSpacingElement::LineSpacingElement(IWORKXMLParserState &state, IWORKProperty
 
 }
 
+namespace
+{
+
+class ParagraphFillElement : public ValuePropertyContextBase<IWORKColorElement, property::ParagraphFill>
+{
+public:
+  ParagraphFillElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+};
+
+ParagraphFillElement::ParagraphFillElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::color)
+{
+}
+
+}
+
 IWORKPropertyMapElement::IWORKPropertyMapElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : IWORKXMLElementContextBase(state)
   , m_propMap(propMap)
@@ -965,6 +981,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<LineSpacingElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::outline :
     return makeContext<OutlineElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::paragraphFill :
+    return makeContext<ParagraphFillElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::strikethru :
     return makeContext<StrikethruElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::superscript :
