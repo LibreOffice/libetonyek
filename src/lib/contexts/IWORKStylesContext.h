@@ -23,7 +23,7 @@ public:
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
-private:
+protected:
   const bool m_anonymous;
 };
 

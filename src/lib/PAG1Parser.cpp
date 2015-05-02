@@ -181,7 +181,7 @@ IWORKXMLContextPtr_t MetadataElement::element(int)
 namespace
 {
 
-class TextStorageElement : public PAG1XMLElementContextBase
+class TextStorageElement : public PAG1XMLContextBase<IWORKTextStorageElement>
 {
 public:
   explicit TextStorageElement(PAG1ParserState &state);
@@ -191,13 +191,11 @@ private:
   virtual void endOfElement();
 
 private:
-  IWORKTextStorageElement m_delegate;
   bool m_firstSubElement;
 };
 
 TextStorageElement::TextStorageElement(PAG1ParserState &state)
-  : PAG1XMLElementContextBase(state)
-  , m_delegate(state)
+  : PAG1XMLContextBase<IWORKTextStorageElement>(state)
   , m_firstSubElement(true)
 {
 }
@@ -210,7 +208,7 @@ IWORKXMLContextPtr_t TextStorageElement::element(const int name)
     m_firstSubElement = false;
   }
 
-  return m_delegate.element(name);
+  return PAG1XMLContextBase<IWORKTextStorageElement>::element(name);
 }
 
 void TextStorageElement::endOfElement()

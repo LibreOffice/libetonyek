@@ -18,10 +18,28 @@ namespace libetonyek
 class KEY2ParserState;
 class KEYCollector;
 
-typedef IWORKXMLContextBase<IWORKXMLContextElement, KEY2ParserState, KEYCollector> KEY2XMLElementContextBase;
-typedef IWORKXMLContextBase<IWORKXMLContextText, KEY2ParserState, KEYCollector> KEY2XMLTextContextBase;
-typedef IWORKXMLContextBase<IWORKXMLContextMixed, KEY2ParserState, KEYCollector> KEYM2XMLixedContextBase;
-typedef IWORKXMLContextBase<IWORKXMLContextEmpty, KEY2ParserState, KEYCollector> KEY2XMLEmptyContextBase;
+template<class Base>
+class KEY2XMLContextBase : public IWORKXMLContextBase<Base, KEY2ParserState, KEYCollector>
+{
+  typedef IWORKXMLContextBase<Base, KEY2ParserState, KEYCollector> Parent_t;
+
+public:
+  explicit KEY2XMLContextBase(KEY2ParserState &state)
+    : Parent_t(state)
+  {
+  }
+
+  template<typename T>
+  KEY2XMLContextBase(KEY2ParserState &state, const T &a)
+    : Parent_t(state, a)
+  {
+  }
+};
+
+typedef KEY2XMLContextBase<IWORKXMLContextElement> KEY2XMLElementContextBase;
+typedef KEY2XMLContextBase<IWORKXMLContextText> KEY2XMLTextContextBase;
+typedef KEY2XMLContextBase<IWORKXMLContextMixed> KEYM2XMLixedContextBase;
+typedef KEY2XMLContextBase<IWORKXMLContextEmpty> KEY2XMLEmptyContextBase;
 
 }
 

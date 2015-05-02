@@ -18,7 +18,22 @@ namespace libetonyek
 class NUM1ParserState;
 class NUMCollector;
 
-typedef IWORKXMLContextBase<IWORKXMLContextElement, NUM1ParserState, NUMCollector> NUM1XMLElementContextBase;
+template<class Base>
+class NUM1XMLContextBase : public IWORKXMLContextBase<Base, NUM1ParserState, NUMCollector>
+{
+  typedef IWORKXMLContextBase<Base, NUM1ParserState, NUMCollector> Parent_t;
+
+public:
+  explicit NUM1XMLContextBase(NUM1ParserState &state)
+    : Parent_t(state)
+  {
+  }
+};
+
+typedef NUM1XMLContextBase<IWORKXMLContextElement> NUM1XMLElementContextBase;
+typedef NUM1XMLContextBase<IWORKXMLContextText> NUM1XMLTextContextBase;
+typedef NUM1XMLContextBase<IWORKXMLContextMixed> NUM1XMLixedContextBase;
+typedef NUM1XMLContextBase<IWORKXMLContextEmpty> NUM1XMLEmptyContextBase;
 
 }
 

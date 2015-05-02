@@ -18,7 +18,22 @@ namespace libetonyek
 class PAG1ParserState;
 class PAGCollector;
 
-typedef IWORKXMLContextBase<IWORKXMLContextElement, PAG1ParserState, PAGCollector> PAG1XMLElementContextBase;
+template<class Base>
+class PAG1XMLContextBase : public IWORKXMLContextBase<Base, PAG1ParserState, PAGCollector>
+{
+  typedef IWORKXMLContextBase<Base, PAG1ParserState, PAGCollector> Parent_t;
+
+public:
+  explicit PAG1XMLContextBase(PAG1ParserState &state)
+    : Parent_t(state)
+  {
+  }
+};
+
+typedef PAG1XMLContextBase<IWORKXMLContextElement> PAG1XMLElementContextBase;
+typedef PAG1XMLContextBase<IWORKXMLContextText> PAG1XMLTextContextBase;
+typedef PAG1XMLContextBase<IWORKXMLContextMixed> PAG1XMLixedContextBase;
+typedef PAG1XMLContextBase<IWORKXMLContextEmpty> PAG1XMLEmptyContextBase;
 
 }
 

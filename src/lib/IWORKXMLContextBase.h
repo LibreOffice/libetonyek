@@ -28,7 +28,14 @@ class IWORKXMLContextBase : public Base
 {
 public:
   explicit IWORKXMLContextBase(State &state)
-    : Base()
+    : Base(state)
+    , m_state(state)
+  {
+  }
+
+  template<typename T>
+  IWORKXMLContextBase(State &state, const T &a)
+    : Base(state, a)
     , m_state(state)
   {
   }
@@ -66,7 +73,7 @@ protected:
 class IWORKXMLContextElement : public IWORKXMLContextMinimal, public boost::enable_shared_from_this<IWORKXMLContextElement>
 {
 protected:
-  IWORKXMLContextElement();
+  explicit IWORKXMLContextElement(IWORKXMLParserState &);
 
   virtual void attribute(int name, const char *value);
   virtual void text(const char *value);
@@ -80,7 +87,7 @@ private:
 class IWORKXMLContextText : public IWORKXMLContextMinimal
 {
 protected:
-  IWORKXMLContextText();
+  explicit IWORKXMLContextText(IWORKXMLParserState &);
 
   virtual IWORKXMLContextPtr_t element(int token);
 };
@@ -88,13 +95,13 @@ protected:
 class IWORKXMLContextMixed : public IWORKXMLContextMinimal, public boost::enable_shared_from_this<IWORKXMLContextMixed>
 {
 protected:
-  IWORKXMLContextMixed();
+  explicit IWORKXMLContextMixed(IWORKXMLParserState &);
 };
 
 class IWORKXMLContextEmpty : public IWORKXMLContextMinimal
 {
 protected:
-  IWORKXMLContextEmpty();
+  explicit IWORKXMLContextEmpty(IWORKXMLParserState &);
 
   virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int token);

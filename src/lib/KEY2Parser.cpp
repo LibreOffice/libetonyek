@@ -101,24 +101,17 @@ IWORKXMLContextPtr_t MetadataElement::element(int)
 namespace
 {
 
-class StylesContext : public KEY2XMLElementContextBase
+class StylesContext : public KEY2XMLContextBase<IWORKStylesContext>
 {
 public:
   StylesContext(KEY2ParserState &state, bool anonymous);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  IWORKStylesContext m_base;
-  const bool m_anonymous;
 };
 
 StylesContext::StylesContext(KEY2ParserState &state, const bool anonymous)
-  : KEY2XMLElementContextBase(state)
-  , m_base(state, anonymous)
-  , m_anonymous(anonymous)
+  : KEY2XMLContextBase<IWORKStylesContext>(state, anonymous)
 {
 }
 
@@ -135,12 +128,7 @@ IWORKXMLContextPtr_t StylesContext::element(const int name)
     return makeContext<KEY2StyleRefContext>(getState(), name, false, m_anonymous);
   }
 
-  return m_base.element(name);
-}
-
-void StylesContext::endOfElement()
-{
-  m_base.endOfElement();
+  return KEY2XMLContextBase<IWORKStylesContext>::element(name);
 }
 
 }

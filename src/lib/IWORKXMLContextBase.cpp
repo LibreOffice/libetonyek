@@ -32,7 +32,7 @@ void IWORKXMLContextMinimal::endOfElement()
 {
 }
 
-IWORKXMLContextElement::IWORKXMLContextElement()
+IWORKXMLContextElement::IWORKXMLContextElement(IWORKXMLParserState &)
   : IWORKXMLContextMinimal()
 {
 }
@@ -53,7 +53,7 @@ const boost::optional<ID_t> &IWORKXMLContextElement::getId() const
   return m_id;
 }
 
-IWORKXMLContextText::IWORKXMLContextText()
+IWORKXMLContextText::IWORKXMLContextText(IWORKXMLParserState &)
   : IWORKXMLContextMinimal()
 {
 }
@@ -64,12 +64,12 @@ IWORKXMLContextPtr_t IWORKXMLContextText::element(int)
   return IWORKXMLContextPtr_t();
 }
 
-IWORKXMLContextMixed::IWORKXMLContextMixed()
+IWORKXMLContextMixed::IWORKXMLContextMixed(IWORKXMLParserState &)
   : IWORKXMLContextMinimal()
 {
 }
 
-IWORKXMLContextEmpty::IWORKXMLContextEmpty()
+IWORKXMLContextEmpty::IWORKXMLContextEmpty(IWORKXMLParserState &)
   : IWORKXMLContextMinimal()
 {
 }
