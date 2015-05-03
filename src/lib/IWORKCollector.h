@@ -91,6 +91,8 @@ public:
   void endParagraph();
   void openSpan(const IWORKStylePtr_t &style);
   void closeSpan();
+  void openLink(const std::string &url);
+  void closeLink();
   void startText();
   void endText();
 

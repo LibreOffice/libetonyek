@@ -162,15 +162,25 @@ private:
   virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void text(const char *value);
+  virtual void endOfElement();
+
+private:
+  bool m_opened;
 };
 
 LinkElement::LinkElement(IWORKXMLParserState &state)
   : IWORKXMLMixedContextBase(state)
+  , m_opened(false)
 {
 }
 
-void LinkElement::attribute(int, const char *)
+void LinkElement::attribute(const int name, const char *const value)
 {
+  if (IWORKToken::href == name)
+  {
+    getCollector()->openLink(value);
+    m_opened = true;
+  }
 }
 
 IWORKXMLContextPtr_t LinkElement::element(const int name)
@@ -187,6 +197,12 @@ IWORKXMLContextPtr_t LinkElement::element(const int name)
 void LinkElement::text(const char *const value)
 {
   getCollector()->collectText(value);
+}
+
+void LinkElement::endOfElement()
+{
+  if (m_opened)
+    getCollector()->closeLink();
 }
 
 }

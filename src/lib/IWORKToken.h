@@ -100,6 +100,7 @@ enum
   head,
   headers,
   headline_style,
+  href,
   image,
   image_media,
   intratopicbr,

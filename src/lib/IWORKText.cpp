@@ -299,6 +299,8 @@ IWORKText::IWORKText()
   : m_styleStack()
   , m_elements()
   , m_spanOpened(false)
+  , m_pendingSpanClose(false)
+  , m_inSpan(false)
 {
 }
 
@@ -313,7 +315,7 @@ void IWORKText::openParagraph(const IWORKStylePtr_t &style)
 void IWORKText::closeParagraph()
 {
   if (m_spanOpened)
-    closeSpan();
+    doCloseSpan();
 
   m_elements.addCloseParagraph();
   m_styleStack.pop();
@@ -321,44 +323,88 @@ void IWORKText::closeParagraph()
 
 void IWORKText::openSpan(const IWORKStylePtr_t &style)
 {
-  if (m_spanOpened) // implicitly opened span
-    closeSpan();
-
-  const librevenge::RVNGPropertyList props(makeCharPropList(style, m_styleStack));
-  m_elements.addOpenSpan(props);
-  m_spanOpened = true;
+  if (m_inSpan) // there was an implicit span
+    m_pendingSpanClose = true;
+  m_currentSpanStyle = style;
 }
 
 void IWORKText::closeSpan()
 {
-  m_elements.addCloseSpan();
-  m_spanOpened = false;
+  m_currentSpanStyle.reset();
+  m_pendingSpanClose = true;
+}
+
+void IWORKText::openLink(const std::string &url)
+{
+  if (m_spanOpened)
+    doCloseSpan();
+
+  librevenge::RVNGPropertyList props;
+  props.insert("xlink:type", "simple");
+  props.insert("xlink:href", url.c_str());
+  m_elements.addOpenLink(props);
+}
+
+void IWORKText::closeLink()
+{
+  if (m_spanOpened)
+    doCloseSpan();
+
+  m_elements.addCloseLink();
 }
 
 void IWORKText::insertText(const std::string &text)
 {
-  if (!m_spanOpened)
-    openSpan(IWORKStylePtr_t());
+  flushSpan();
   m_elements.addInsertText(librevenge::RVNGString(text.c_str()));
+  m_inSpan = true;
 }
 
 void IWORKText::insertTab()
 {
-  if (!m_spanOpened)
-    openSpan(IWORKStylePtr_t());
+  flushSpan();
   m_elements.addInsertTab();
+  m_inSpan = true;
 }
 
 void IWORKText::insertLineBreak()
 {
-  if (!m_spanOpened)
-    openSpan(IWORKStylePtr_t());
+  flushSpan();
   m_elements.addInsertLineBreak();
+  m_inSpan = true;
 }
 
 bool IWORKText::empty() const
 {
   return m_elements.empty();
+}
+
+void IWORKText::doOpenSpan()
+{
+  assert(!m_pendingSpanClose);
+
+  const librevenge::RVNGPropertyList props(makeCharPropList(m_currentSpanStyle, m_styleStack));
+  m_elements.addOpenSpan(props);
+  m_spanOpened = true;
+}
+
+void IWORKText::doCloseSpan()
+{
+  if (m_spanOpened)
+  {
+    m_elements.addCloseSpan();
+    m_spanOpened = false;
+  }
+  m_pendingSpanClose = false;
+  m_inSpan = false;
+}
+
+void IWORKText::flushSpan()
+{
+  if (m_pendingSpanClose)
+    doCloseSpan();
+  if (!m_spanOpened)
+    doOpenSpan();
 }
 
 }

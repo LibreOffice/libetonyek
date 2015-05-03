@@ -35,6 +35,9 @@ public:
   void openSpan(const IWORKStylePtr_t &style);
   void closeSpan();
 
+  void openLink(const std::string &url);
+  void closeLink();
+
   void insertText(const std::string &text);
   void insertTab();
   void insertLineBreak();
@@ -45,11 +48,20 @@ public:
   void draw(const IWORKTransformation &trafo, const IWORKGeometryPtr_t &boundingBox, IWORKOutputElements &elements);
 
 private:
+  void doOpenSpan();
+  void doCloseSpan();
+
+  void flushSpan();
+
+private:
   IWORKStyleStack m_styleStack;
 
   IWORKOutputElements m_elements;
 
+  IWORKStylePtr_t m_currentSpanStyle;
   bool m_spanOpened;
+  bool m_pendingSpanClose;
+  bool m_inSpan;
 };
 
 }

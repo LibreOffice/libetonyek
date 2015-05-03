@@ -520,6 +520,20 @@ void IWORKCollector::closeSpan()
   m_currentText->closeSpan();
 }
 
+void IWORKCollector::openLink(const std::string &url)
+{
+  assert(bool(m_currentText));
+
+  m_currentText->openLink(url);
+}
+
+void IWORKCollector::closeLink()
+{
+  assert(bool(m_currentText));
+
+  m_currentText->closeLink();
+}
+
 void IWORKCollector::startText()
 {
   assert(!m_currentText);

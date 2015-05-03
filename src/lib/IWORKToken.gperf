@@ -108,6 +108,7 @@ headline-style,headline_style
 height,height
 hfs-type,hfs_type
 horizontalFlip,horizontalFlip
+href,href
 http://developer.apple.com/namespaces/sf,NS_URI_SF
 http://developer.apple.com/namespaces/sfa,NS_URI_SFA
 ident,ident
