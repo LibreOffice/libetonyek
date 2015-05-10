@@ -7,23 +7,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef PAGDICTIONARY_H_INCLUDED
-#define PAGDICTIONARY_H_INCLUDED
+#ifndef IWORKLAYOUTELEMENT_H_INCLUDED
+#define IWORKLAYOUTELEMENT_H_INCLUDED
 
-#include "IWORKDictionary.h"
+#include "IWORKXMLContextBase.h"
 
 namespace libetonyek
 {
 
-struct PAGDictionary : public IWORKDictionary
+class IWORKLayoutElement : public IWORKXMLElementContextBase
 {
-  PAGDictionary();
+public:
+  explicit IWORKLayoutElement(IWORKXMLParserState &state);
 
-  IWORKZoneMap_t m_attachments;
+protected:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
 };
 
 }
 
-#endif //  PAGDICTIONARY_H_INCLUDED
+#endif // IWORKLAYOUTELEMENT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

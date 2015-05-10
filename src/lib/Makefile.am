@@ -127,8 +127,12 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKColorElement.h \
 	contexts/IWORKGeometryElement.cpp \
 	contexts/IWORKGeometryElement.h \
+	contexts/IWORKLayoutElement.cpp \
+	contexts/IWORKLayoutElement.h \
 	contexts/IWORKMediaElement.cpp \
 	contexts/IWORKMediaElement.h \
+	contexts/IWORKPElement.cpp \
+	contexts/IWORKPElement.h \
 	contexts/IWORKPositionElement.cpp \
 	contexts/IWORKPositionElement.h \
 	contexts/IWORKPropertyMapElement.cpp \

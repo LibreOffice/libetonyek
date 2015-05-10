@@ -25,6 +25,7 @@ public:
   // collector functions
 
   void collectTextBody();
+  void collectAttachment(const IWORKZoneID_t &id);
 
   // helper functions
   void startDocument();

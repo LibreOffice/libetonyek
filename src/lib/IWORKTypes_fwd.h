@@ -21,6 +21,8 @@ typedef std::string ID_t;
 
 typedef unsigned IWORKZoneID_t;
 
+typedef boost::unordered_map<ID_t, IWORKZoneID_t> IWORKZoneMap_t;
+
 struct IWORKSize;
 struct IWORKPosition;
 

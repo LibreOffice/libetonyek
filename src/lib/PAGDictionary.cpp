@@ -14,6 +14,7 @@ namespace libetonyek
 
 PAGDictionary::PAGDictionary()
   : IWORKDictionary()
+  , m_attachments()
 {
 }
 

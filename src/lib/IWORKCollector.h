@@ -104,7 +104,6 @@ public:
   void pushStyle();
   void popStyle();
 
-protected:
   IWORKZoneManager &getZoneManager();
 
 private:

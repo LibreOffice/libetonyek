@@ -50,6 +50,9 @@ amt,amt
 angle,angle
 anon-styles,anon_styles
 aspectRatioLocked,aspectRatioLocked
+attachment,attachment
+attachment-ref,attachment_ref
+attachments,attachments
 b,b
 baselineShift,baselineShift
 bezier,bezier

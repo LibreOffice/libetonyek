@@ -9,354 +9,15 @@
 
 #include "IWORKTextBodyElement.h"
 
-#include <boost/optional.hpp>
-
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
-#include "IWORKStyle.h"
+#include "IWORKLayoutElement.h"
+#include "IWORKPElement.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
 {
-
-namespace
-{
-
-class BrContext : public IWORKXMLEmptyContextBase
-{
-public:
-  explicit BrContext(IWORKXMLParserState &state);
-
-private:
-  virtual void endOfElement();
-};
-
-BrContext::BrContext(IWORKXMLParserState &state)
-  : IWORKXMLEmptyContextBase(state)
-{
-}
-
-void BrContext::endOfElement()
-{
-  getCollector()->collectLineBreak();
-}
-
-}
-
-namespace
-{
-
-class TabElement : public IWORKXMLEmptyContextBase
-{
-public:
-  explicit TabElement(IWORKXMLParserState &state);
-
-private:
-  virtual void endOfElement();
-};
-
-TabElement::TabElement(IWORKXMLParserState &state)
-  : IWORKXMLEmptyContextBase(state)
-{
-}
-
-void TabElement::endOfElement()
-{
-  getCollector()->collectTab();
-}
-
-}
-
-namespace
-{
-
-class SpanElement : public IWORKXMLElementContextBase
-{
-public:
-  explicit SpanElement(IWORKXMLParserState &state);
-
-private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void text(const char *value);
-  virtual void endOfElement();
-
-  void ensureOpened();
-
-private:
-  IWORKStylePtr_t m_style;
-  bool m_opened;
-};
-
-SpanElement::SpanElement(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
-  , m_style()
-  , m_opened(false)
-{
-}
-
-void SpanElement::attribute(const int name, const char *const value)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::style :
-  {
-    const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_characterStyles.find(value);
-    if (getState().getDictionary().m_characterStyles.end() != it)
-      m_style = it->second;
-    break;
-  }
-  }
-}
-
-IWORKXMLContextPtr_t SpanElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::crbr :
-  case IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
-  case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
-    ensureOpened();
-    return makeContext<BrContext>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::tab :
-    ensureOpened();
-    return makeContext<TabElement>(getState());
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-void SpanElement::text(const char *const value)
-{
-  ensureOpened();
-  getCollector()->collectText(value);
-}
-
-void SpanElement::endOfElement()
-{
-  if (m_opened)
-    getCollector()->closeSpan();
-}
-
-void SpanElement::ensureOpened()
-{
-  if (!m_opened)
-  {
-    getCollector()->openSpan(m_style);
-    m_opened = true;
-  }
-}
-
-}
-
-namespace
-{
-
-class LinkElement : public IWORKXMLMixedContextBase
-{
-public:
-  explicit LinkElement(IWORKXMLParserState &state);
-
-private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void text(const char *value);
-  virtual void endOfElement();
-
-private:
-  bool m_opened;
-};
-
-LinkElement::LinkElement(IWORKXMLParserState &state)
-  : IWORKXMLMixedContextBase(state)
-  , m_opened(false)
-{
-}
-
-void LinkElement::attribute(const int name, const char *const value)
-{
-  if (IWORKToken::href == name)
-  {
-    getCollector()->openLink(value);
-    m_opened = true;
-  }
-}
-
-IWORKXMLContextPtr_t LinkElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::span :
-    return makeContext<SpanElement>(getState());
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-void LinkElement::text(const char *const value)
-{
-  getCollector()->collectText(value);
-}
-
-void LinkElement::endOfElement()
-{
-  if (m_opened)
-    getCollector()->closeLink();
-}
-
-}
-
-namespace
-{
-
-class PElement : public IWORKXMLMixedContextBase
-{
-public:
-  explicit PElement(IWORKXMLParserState &state);
-
-private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-  virtual void text(const char *value);
-
-private:
-  void ensureOpened();
-
-private:
-  IWORKStylePtr_t m_style;
-  bool m_opened;
-};
-
-PElement::PElement(IWORKXMLParserState &state)
-  : IWORKXMLMixedContextBase(state)
-  , m_style()
-  , m_opened(false)
-{
-}
-
-void PElement::attribute(const int name, const char *const value)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::style :
-  {
-    const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_paragraphStyles.find(value);
-    if (getState().getDictionary().m_paragraphStyles.end() != it)
-      m_style = it->second;
-    break;
-  }
-  }
-}
-
-IWORKXMLContextPtr_t PElement::element(const int name)
-{
-  ensureOpened();
-
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::crbr :
-  case IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
-  case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
-    return makeContext<BrContext>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::span :
-    return makeContext<SpanElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::tab :
-    return makeContext<TabElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::link :
-    return makeContext<LinkElement>(getState());
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-void PElement::text(const char *const value)
-{
-  ensureOpened();
-  getCollector()->collectText(value);
-}
-
-void PElement::endOfElement()
-{
-  ensureOpened();
-  getCollector()->endParagraph();
-}
-
-void PElement::ensureOpened()
-{
-  if (!m_opened)
-  {
-    getCollector()->startParagraph(m_style);
-    m_opened = true;
-  }
-}
-
-}
-
-namespace
-{
-
-class LayoutElement : public IWORKXMLElementContextBase
-{
-public:
-  explicit LayoutElement(IWORKXMLParserState &state);
-
-private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-};
-
-LayoutElement::LayoutElement(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
-{
-}
-
-void LayoutElement::attribute(const int name, const char *)
-{
-  if ((IWORKToken::NS_URI_SF | IWORKToken::style) == name)
-  {
-    // TODO: fetch the style
-    getCollector()->collectStyle(IWORKStylePtr_t(), false);
-  }
-}
-
-IWORKXMLContextPtr_t LayoutElement::element(const int name)
-{
-  if ((IWORKToken::NS_URI_SF | IWORKToken::p) == name)
-    return makeContext<PElement>(getState());
-
-  return IWORKXMLContextPtr_t();
-}
-
-}
-
-namespace
-{
-
-class SectionElement : public IWORKXMLElementContextBase
-{
-public:
-  explicit SectionElement(IWORKXMLParserState &state);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-};
-
-SectionElement::SectionElement(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
-{
-}
-
-IWORKXMLContextPtr_t SectionElement::element(const int name)
-{
-  if ((IWORKToken::NS_URI_SF | IWORKToken::layout) == name)
-    return makeContext<LayoutElement>(getState());
-
-  return IWORKXMLContextPtr_t();
-}
-
-}
 
 IWORKTextBodyElement::IWORKTextBodyElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
@@ -377,7 +38,7 @@ IWORKXMLContextPtr_t IWORKTextBodyElement::element(const int name)
     else
     {
       m_layout = true;
-      return makeContext<LayoutElement>(getState());
+      return makeContext<IWORKLayoutElement>(getState());
     }
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::p :
@@ -387,16 +48,14 @@ IWORKXMLContextPtr_t IWORKTextBodyElement::element(const int name)
     }
     else if (m_para)
     {
-      return makeContext<PElement>(getState());
+      return makeContext<IWORKPElement>(getState());
     }
     else
     {
       m_para = true;
-      return makeContext<PElement>(getState());
+      return makeContext<IWORKPElement>(getState());
     }
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::section :
-    return makeContext<SectionElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();

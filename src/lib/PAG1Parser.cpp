@@ -11,11 +11,15 @@
 
 #include "libetonyek_xml.h"
 #include "IWORKChainedTokenizer.h"
+#include "IWORKLayoutElement.h"
+#include "IWORKPElement.h"
 #include "IWORKStylesContext.h"
+#include "IWORKTabularInfoElement.h"
 #include "IWORKTextStorageElement.h"
 #include "IWORKXMLContexts.h"
 #include "IWORKToken.h"
 #include "PAGCollector.h"
+#include "PAGDictionary.h"
 #include "PAG1Token.h"
 #include "PAG1XMLContextBase.h"
 
@@ -181,6 +185,208 @@ IWORKXMLContextPtr_t MetadataElement::element(int)
 namespace
 {
 
+class AttachmentElement : public PAG1XMLElementContextBase
+{
+public:
+  explicit AttachmentElement(PAG1ParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  bool m_known;
+};
+
+AttachmentElement::AttachmentElement(PAG1ParserState &state)
+  : PAG1XMLElementContextBase(state)
+  , m_known(false)
+{
+}
+
+IWORKXMLContextPtr_t AttachmentElement::element(const int name)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::tabular_info))
+  {
+    m_known = true;
+    getCollector()->getZoneManager().push();
+    return makeContext<IWORKTabularInfoElement>(getState());
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void AttachmentElement::endOfElement()
+{
+  if (m_known)
+  {
+    if (getId())
+      getState().getDictionary().m_attachments[get(getId())] = getCollector()->getZoneManager().save();
+    getCollector()->getZoneManager().pop();
+  }
+}
+
+}
+
+namespace
+{
+
+class AttachmentsElement : public PAG1XMLElementContextBase
+{
+public:
+  explicit AttachmentsElement(PAG1ParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+AttachmentsElement::AttachmentsElement(PAG1ParserState &state)
+  : PAG1XMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t AttachmentsElement::element(const int name)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::attachment))
+    return makeContext<AttachmentElement>(getState());
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
+class PElement : public PAG1XMLContextBase<IWORKPElement>
+{
+public:
+  explicit PElement(PAG1ParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  optional<ID_t> m_ref;
+};
+
+PElement::PElement(PAG1ParserState &state)
+  : PAG1XMLContextBase<IWORKPElement>(state)
+  , m_ref()
+{
+}
+
+IWORKXMLContextPtr_t PElement::element(const int name)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::attachment_ref))
+  {
+    // It is possible that there can be 2 or more attachments in the same para.
+    // In that case the code would have to be adapted to handle that.
+    assert(!m_ref);
+    return makeContext<IWORKRefContext>(getState(), m_ref);
+  }
+
+  return IWORKPElement::element(name);
+}
+
+void PElement::endOfElement()
+{
+  if (m_ref)
+  {
+    const IWORKZoneMap_t::const_iterator it = getState().getDictionary().m_attachments.find(get(m_ref));
+    if (it != getState().getDictionary().m_attachments.end())
+      getCollector()->collectAttachment(it->second);
+  }
+
+  IWORKPElement::endOfElement();
+}
+
+}
+
+namespace
+{
+
+class LayoutElement : public PAG1XMLContextBase<IWORKLayoutElement>
+{
+public:
+  explicit LayoutElement(PAG1ParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+LayoutElement::LayoutElement(PAG1ParserState &state)
+  : PAG1XMLContextBase<IWORKLayoutElement>(state)
+{
+}
+
+IWORKXMLContextPtr_t LayoutElement::element(const int name)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::p))
+    return makeContext<PElement>(getState());
+
+  return IWORKLayoutElement::element(name);
+}
+
+}
+
+namespace
+{
+
+class SectionElement : public PAG1XMLElementContextBase
+{
+public:
+  explicit SectionElement(PAG1ParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+SectionElement::SectionElement(PAG1ParserState &state)
+  : PAG1XMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t SectionElement::element(const int name)
+{
+  if ((IWORKToken::NS_URI_SF | IWORKToken::layout) == name)
+    return makeContext<LayoutElement>(getState());
+
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
+class TextBodyElement : public PAG1XMLContextBase<IWORKTextBodyElement>
+{
+public:
+  explicit TextBodyElement(PAG1ParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+TextBodyElement::TextBodyElement(PAG1ParserState &state)
+  : PAG1XMLContextBase<IWORKTextBodyElement>(state)
+{
+}
+
+IWORKXMLContextPtr_t TextBodyElement::element(const int name)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::section))
+    return makeContext<SectionElement>(getState());
+
+  return IWORKTextBodyElement::element(name);
+}
+
+}
+
+namespace
+{
+
 class TextStorageElement : public PAG1XMLContextBase<IWORKTextStorageElement>
 {
 public:
@@ -191,21 +397,28 @@ private:
   virtual void endOfElement();
 
 private:
-  bool m_firstSubElement;
+  bool m_textOpened;
 };
 
 TextStorageElement::TextStorageElement(PAG1ParserState &state)
   : PAG1XMLContextBase<IWORKTextStorageElement>(state)
-  , m_firstSubElement(true)
+  , m_textOpened(false)
 {
 }
 
 IWORKXMLContextPtr_t TextStorageElement::element(const int name)
 {
-  if (m_firstSubElement)
+  switch (name)
   {
-    getCollector()->startText();
-    m_firstSubElement = false;
+  case IWORKToken::NS_URI_SF | IWORKToken::attachments :
+    return makeContext<AttachmentsElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::text_body :
+    if (!m_textOpened)
+    {
+      getCollector()->startText();
+      m_textOpened = true;
+    }
+    return makeContext<TextBodyElement>(getState());
   }
 
   return PAG1XMLContextBase<IWORKTextStorageElement>::element(name);
@@ -213,8 +426,13 @@ IWORKXMLContextPtr_t TextStorageElement::element(const int name)
 
 void TextStorageElement::endOfElement()
 {
-  getCollector()->collectTextBody();
-  getCollector()->endText();
+  IWORKTextStorageElement::endOfElement();
+
+  if (m_textOpened)
+  {
+    getCollector()->collectTextBody();
+    getCollector()->endText();
+  }
 }
 
 }

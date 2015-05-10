@@ -372,6 +372,11 @@ void IWORKText::insertLineBreak()
   m_inSpan = true;
 }
 
+void IWORKText::append(const IWORKOutputElements &elements)
+{
+  m_elements.append(elements);
+}
+
 bool IWORKText::empty() const
 {
   return m_elements.empty();

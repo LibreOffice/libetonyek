@@ -42,6 +42,8 @@ public:
   void insertTab();
   void insertLineBreak();
 
+  void append(const IWORKOutputElements &elements);
+
   bool empty() const;
 
   void draw(IWORKOutputElements &elements);

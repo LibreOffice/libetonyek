@@ -31,6 +31,15 @@ void PAGCollector::collectTextBody()
   text.write(m_document);
 }
 
+void PAGCollector::collectAttachment(const IWORKZoneID_t &id)
+{
+  assert(bool(m_currentText));
+
+  // FIXME: this will currently place the attachment (table) outside of
+  // any paragraph and insert an empty paragraph after it.
+  m_currentText->append(getZoneManager().get(id));
+}
+
 void PAGCollector::startDocument()
 {
   m_document->startDocument(librevenge::RVNGPropertyList());
