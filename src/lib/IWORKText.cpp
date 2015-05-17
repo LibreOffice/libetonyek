@@ -296,6 +296,10 @@ void IWORKText::draw(const glm::dmat3 &trafo, const IWORKGeometryPtr_t &bounding
 IWORKText::IWORKText()
   : m_styleStack()
   , m_elements()
+  , m_currentParaStyle()
+  , m_paraOpened(false)
+  , m_ignoreEmptyPara(false)
+  , m_currentSpanStyle()
   , m_spanOpened(false)
   , m_pendingSpanClose(false)
   , m_inSpan(false)
@@ -304,19 +308,20 @@ IWORKText::IWORKText()
 
 void IWORKText::openParagraph(const IWORKStylePtr_t &style)
 {
-  const librevenge::RVNGPropertyList paraProps(makeParaPropList(style, m_styleStack));
-  m_elements.addOpenParagraph(paraProps);
-  m_styleStack.push();
-  m_styleStack.set(style);
+  assert(!m_paraOpened);
+
+  // A paragraph might have to be closed an then opened again, if there
+  // is a block content in it. That is why we only open them when needed.
+  m_currentParaStyle = style;
 }
 
 void IWORKText::closeParagraph()
 {
-  if (m_spanOpened)
-    doCloseSpan();
-
-  m_elements.addCloseParagraph();
-  m_styleStack.pop();
+  if (!m_paraOpened && !m_ignoreEmptyPara)
+    doOpenPara(); // empty paragraphs are allowed, contrary to empty spans
+  if (m_paraOpened)
+    doClosePara();
+  m_ignoreEmptyPara = false;
 }
 
 void IWORKText::openSpan(const IWORKStylePtr_t &style)
@@ -334,8 +339,10 @@ void IWORKText::closeSpan()
 
 void IWORKText::openLink(const std::string &url)
 {
+  if (!m_paraOpened)
+    doOpenPara();
   if (m_spanOpened)
-    doCloseSpan();
+    doCloseSpan(); // A link is always outside of a span
 
   librevenge::RVNGPropertyList props;
   props.insert("xlink:type", "simple");
@@ -372,9 +379,19 @@ void IWORKText::insertLineBreak()
   m_inSpan = true;
 }
 
-void IWORKText::append(const IWORKOutputElements &elements)
+void IWORKText::insertInlineContent(const IWORKOutputElements &elements)
 {
+  flushSpan();
   m_elements.append(elements);
+  m_inSpan = true;
+}
+
+void IWORKText::insertBlockContent(const IWORKOutputElements &elements)
+{
+  if (m_paraOpened)
+    doClosePara();
+  m_elements.append(elements);
+  m_ignoreEmptyPara = true;
 }
 
 bool IWORKText::empty() const
@@ -382,9 +399,36 @@ bool IWORKText::empty() const
   return m_elements.empty();
 }
 
+void IWORKText::doOpenPara()
+{
+  assert(!m_paraOpened);
+
+  const librevenge::RVNGPropertyList paraProps(makeParaPropList(m_currentParaStyle, m_styleStack));
+  m_elements.addOpenParagraph(paraProps);
+  m_paraOpened = true;
+  m_styleStack.push();
+  m_styleStack.set(m_currentParaStyle);
+}
+
+void IWORKText::doClosePara()
+{
+  assert(m_paraOpened);
+
+  if (m_spanOpened)
+    doCloseSpan();
+
+  m_elements.addCloseParagraph();
+  m_paraOpened = false;
+  m_styleStack.pop();
+}
+
 void IWORKText::doOpenSpan()
 {
   assert(!m_pendingSpanClose);
+
+  if (!m_paraOpened)
+    doOpenPara();
+  assert(m_paraOpened);
 
   const librevenge::RVNGPropertyList props(makeCharPropList(m_currentSpanStyle, m_styleStack));
   m_elements.addOpenSpan(props);
@@ -393,6 +437,8 @@ void IWORKText::doOpenSpan()
 
 void IWORKText::doCloseSpan()
 {
+  assert(m_paraOpened);
+
   if (m_spanOpened)
   {
     m_elements.addCloseSpan();

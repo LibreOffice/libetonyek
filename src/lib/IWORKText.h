@@ -42,7 +42,8 @@ public:
   void insertTab();
   void insertLineBreak();
 
-  void append(const IWORKOutputElements &elements);
+  void insertInlineContent(const IWORKOutputElements &elements);
+  void insertBlockContent(const IWORKOutputElements &elements);
 
   bool empty() const;
 
@@ -50,6 +51,9 @@ public:
   void draw(const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox, IWORKOutputElements &elements);
 
 private:
+  void doOpenPara();
+  void doClosePara();
+
   void doOpenSpan();
   void doCloseSpan();
 
@@ -59,6 +63,10 @@ private:
   IWORKStyleStack m_styleStack;
 
   IWORKOutputElements m_elements;
+
+  IWORKStylePtr_t m_currentParaStyle;
+  bool m_paraOpened;
+  bool m_ignoreEmptyPara;
 
   IWORKStylePtr_t m_currentSpanStyle;
   bool m_spanOpened;
