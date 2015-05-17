@@ -19,6 +19,18 @@ class IWORKDocumentInterface;
 
 class PAGCollector : public IWORKCollector
 {
+  struct Section
+  {
+    Section();
+
+    void clear();
+
+    boost::optional<double> m_width;
+    boost::optional<double> m_height;
+    boost::optional<double> m_horizontalMargin;
+    boost::optional<double> m_verticalMargin;
+  };
+
 public:
   explicit PAGCollector(IWORKDocumentInterface *document);
 
@@ -30,6 +42,12 @@ public:
   // helper functions
   void startDocument();
   void endDocument();
+
+  void openSection(double width, double height, double horizontalMargin, double verticalMargin);
+  void closeSection();
+
+private:
+  Section m_currentSection;
 };
 
 } // namespace libetonyek

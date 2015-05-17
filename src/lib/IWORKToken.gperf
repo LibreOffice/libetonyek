@@ -74,6 +74,7 @@ columns,columns
 connection-line,connection_line
 connection-path,connection_path
 connection-style,connection_style
+container-hint,container_hint
 content,content
 cornerRadius,cornerRadius
 crbr,crbr
@@ -97,6 +98,10 @@ fontColor,fontColor
 fontName,fontName
 fontSize,fontSize
 footers,footers
+frame-h,frame_h
+frame-w,frame_w
+frame-x,frame_x
+frame-y,frame_y
 g,g
 geometry,geometry
 graphic-style,graphic_style
