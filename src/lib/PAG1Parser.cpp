@@ -627,7 +627,6 @@ IWORKXMLContextPtr_t XMLDocument::element(const int name)
 PAG1Parser::PAG1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGCollector *const collector, PAGDictionary *const dict)
   : IWORKParser(input, package)
   , m_state(*this, collector, *dict)
-  , m_version(0)
 {
 }
 

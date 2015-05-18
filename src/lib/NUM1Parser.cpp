@@ -117,7 +117,6 @@ IWORKXMLContextPtr_t XMLDocument::element(const int name)
 NUM1Parser::NUM1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector *const collector, NUMDictionary *const dict)
   : IWORKParser(input, package)
   , m_state(*this, collector, *dict)
-  , m_version(0)
 {
 }
 

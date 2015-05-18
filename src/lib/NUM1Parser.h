@@ -31,7 +31,6 @@ private:
 
 private:
   NUM1ParserState m_state;
-  unsigned m_version;
 };
 
 } // namespace libetonyek

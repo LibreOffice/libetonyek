@@ -31,7 +31,6 @@ private:
 
 private:
   KEY2ParserState m_state;
-  unsigned m_version;
 };
 
 }

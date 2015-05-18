@@ -1808,7 +1808,6 @@ IWORKXMLContextPtr_t XMLDocument::element(const int name)
 KEY2Parser::KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector, KEYDictionary &dict)
   : IWORKParser(input, package)
   , m_state(*this, collector, dict)
-  , m_version(0)
 {
 }
 
