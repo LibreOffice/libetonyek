@@ -28,9 +28,16 @@ const int TOKEN_NS = 1 << 8;
 
 class TestTokenizer : public IWORKTokenizerBase
 {
+public:
+  TestTokenizer();
+
 private:
   virtual int queryId(const char *name) const;
 };
+
+TestTokenizer::TestTokenizer()
+{
+}
 
 int TestTokenizer::queryId(const char *const name) const
 {

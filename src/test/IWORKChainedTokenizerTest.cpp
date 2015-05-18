@@ -32,9 +32,16 @@ const int TOKEN_NS_B = 2 << 8;
 
 class TokenizerA : public IWORKTokenizerBase
 {
+public:
+  TokenizerA();
+
 private:
   virtual int queryId(const char *name) const;
 };
+
+TokenizerA::TokenizerA()
+{
+}
 
 int TokenizerA::queryId(const char *const name) const
 {
@@ -56,9 +63,16 @@ int TokenizerA::queryId(const char *const name) const
 
 class TokenizerB : public IWORKTokenizerBase
 {
+public:
+  TokenizerB();
+
 private:
   virtual int queryId(const char *name) const;
 };
+
+TokenizerB::TokenizerB()
+{
+}
 
 int TokenizerB::queryId(const char *const name) const
 {
