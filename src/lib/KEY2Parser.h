@@ -17,7 +17,7 @@ namespace libetonyek
 {
 
 class KEYCollector;
-class KEYDictionary;
+struct KEYDictionary;
 
 class KEY2Parser : public IWORKParser
 {

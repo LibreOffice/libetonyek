@@ -17,7 +17,7 @@ namespace libetonyek
 
 class PAG1Parser;
 class PAGCollector;
-class PAGDictionary;
+struct PAGDictionary;
 
 class PAG1ParserState : public IWORKXMLParserState
 {

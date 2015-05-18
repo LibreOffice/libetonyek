@@ -16,7 +16,7 @@
 namespace libetonyek
 {
 
-class IWORKDictionary;
+struct IWORKDictionary;
 class IWORKTokenizer;
 class IWORKXMLParserState;
 

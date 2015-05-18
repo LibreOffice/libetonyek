@@ -17,7 +17,7 @@ namespace libetonyek
 {
 
 class NUMCollector;
-class NUMDictionary;
+struct NUMDictionary;
 
 class NUM1Parser: public IWORKParser
 {

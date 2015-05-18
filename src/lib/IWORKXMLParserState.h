@@ -14,7 +14,7 @@ namespace libetonyek
 {
 
 class IWORKCollector;
-class IWORKDictionary;
+struct IWORKDictionary;
 class IWORKParser;
 class IWORKTokenizer;
 
