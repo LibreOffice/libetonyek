@@ -29,6 +29,11 @@ void NUMCollector::endDocument()
   m_document->endDocument();
 }
 
+void NUMCollector::endWorkSpaceArray()
+{
+  getZoneManager().getCurrent().write(m_document);
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

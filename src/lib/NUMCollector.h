@@ -27,6 +27,7 @@ public:
   // helper functions
   void startDocument();
   void endDocument();
+  void endWorkSpaceArray();
 };
 
 } // namespace libetonyek
