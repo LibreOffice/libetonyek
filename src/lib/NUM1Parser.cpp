@@ -12,6 +12,7 @@
 #include "libetonyek_xml.h"
 #include "IWORKChainedTokenizer.h"
 #include "IWORKXMLContexts.h"
+#include "IWORKTabularInfoElement.h"
 #include "IWORKToken.h"
 #include "NUMCollector.h"
 #include "NUM1Token.h"
@@ -32,6 +33,263 @@ unsigned getVersion(const int token)
   }
 
   return 0;
+}
+
+}
+
+namespace
+{
+
+class DrawablesElement : public NUM1XMLElementContextBase
+{
+public:
+  explicit DrawablesElement(NUM1ParserState &state);
+
+private:
+  virtual void startOfElement();
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+};
+
+DrawablesElement::DrawablesElement(NUM1ParserState &state)
+  : NUM1XMLElementContextBase(state)
+{
+}
+
+void DrawablesElement::startOfElement()
+{
+  getCollector()->startLevel();
+}
+
+void DrawablesElement::attribute(int, const char *)
+{
+}
+
+IWORKXMLContextPtr_t DrawablesElement::element(const int name)
+{
+  switch (name)
+  {
+  // case IWORKToken::NS_URI_SF | IWORKToken::body_placeholder_ref :
+  //   return makeContext<PlaceholderRefContext>(getState(), false);
+  // case IWORKToken::NS_URI_SF | IWORKToken::connection_line :
+  //   return makeContext<ConnectionLineElement>(getState());
+  // case IWORKToken::NS_URI_SF | IWORKToken::group :
+  //   return makeContext<GroupElement>(getState());
+  // case IWORKToken::NS_URI_SF | IWORKToken::image :
+  //   return makeContext<ImageElement>(getState());
+  // case IWORKToken::NS_URI_SF | IWORKToken::line :
+  //   return makeContext<LineElement>(getState());
+  // case IWORKToken::NS_URI_SF | IWORKToken::media :
+  //   return makeContext<IWORKMediaElement>(getState());
+  // case IWORKToken::NS_URI_SF | IWORKToken::shape :
+  //   return makeContext<ShapeElement>(getState());
+  // case IWORKToken::NS_URI_SF | IWORKToken::sticky_note :
+  //   return makeContext<StickyNoteElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
+    return makeContext<IWORKTabularInfoElement>(getState());
+    // case IWORKToken::NS_URI_SF | IWORKToken::title_placeholder_ref :
+    //   return makeContext<PlaceholderRefContext>(getState(), true);
+
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void DrawablesElement::endOfElement()
+{
+  getCollector()->endLevel();
+}
+
+}
+
+namespace
+{
+
+class LayerElement : public NUM1XMLElementContextBase
+{
+public:
+  explicit LayerElement(NUM1ParserState &state);
+
+private:
+  virtual void startOfElement();
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+};
+
+LayerElement::LayerElement(NUM1ParserState &state)
+  : NUM1XMLElementContextBase(state)
+{
+}
+
+void LayerElement::startOfElement()
+{
+}
+
+IWORKXMLContextPtr_t LayerElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::drawables :
+    return makeContext<DrawablesElement>(getState());
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void LayerElement::endOfElement()
+{
+}
+
+}
+
+namespace
+{
+
+class LayersElement : public NUM1XMLElementContextBase
+{
+public:
+  explicit LayersElement(NUM1ParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+LayersElement::LayersElement(NUM1ParserState &state)
+  : NUM1XMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t LayersElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::layer :
+    return makeContext<LayerElement>(getState());
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
+class PageInfoElement : public NUM1XMLElementContextBase
+{
+public:
+  explicit PageInfoElement(NUM1ParserState &state);
+
+private:
+  virtual void startOfElement();
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+};
+
+PageInfoElement::PageInfoElement(NUM1ParserState &state)
+  : NUM1XMLElementContextBase(state)
+{
+}
+
+void PageInfoElement::startOfElement()
+{
+}
+
+IWORKXMLContextPtr_t PageInfoElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::layers :
+    return makeContext<LayersElement>(getState());
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void PageInfoElement::endOfElement()
+{
+}
+
+}
+
+namespace
+{
+
+class WorkSpaceElement : public NUM1XMLElementContextBase
+{
+public:
+  explicit WorkSpaceElement(NUM1ParserState &state);
+
+private:
+  virtual void startOfElement();
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+};
+
+WorkSpaceElement::WorkSpaceElement(NUM1ParserState &state)
+  : NUM1XMLElementContextBase(state)
+{
+}
+
+void WorkSpaceElement::startOfElement()
+{
+}
+
+IWORKXMLContextPtr_t WorkSpaceElement::element(const int name)
+{
+  switch (name)
+  {
+  case NUM1Token::NS_URI_LS | NUM1Token::page_info:
+    return makeContext<PageInfoElement>(getState());
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void WorkSpaceElement::endOfElement()
+{
+}
+
+}
+
+namespace
+{
+
+class WorkSpaceArrayElement : public NUM1XMLElementContextBase
+{
+public:
+  explicit WorkSpaceArrayElement(NUM1ParserState &state);
+
+private:
+  virtual void startOfElement();
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+};
+
+WorkSpaceArrayElement::WorkSpaceArrayElement(NUM1ParserState &state)
+  : NUM1XMLElementContextBase(state)
+{
+}
+
+void WorkSpaceArrayElement::startOfElement()
+{
+}
+
+IWORKXMLContextPtr_t WorkSpaceArrayElement::element(const int name)
+{
+  switch (name)
+  {
+  case NUM1Token::NS_URI_LS | NUM1Token::workspace:
+    return makeContext<WorkSpaceElement>(getState());
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void WorkSpaceArrayElement::endOfElement()
+{
+  getCollector()->endWorkSpaceArray();
 }
 
 }
@@ -72,8 +330,14 @@ void DocumentElement::attribute(const int name, const char *const value)
   }
 }
 
-IWORKXMLContextPtr_t DocumentElement::element(const int /*name*/)
+IWORKXMLContextPtr_t DocumentElement::element(const int name)
 {
+
+  switch (name)
+  {
+  case NUM1Token::NS_URI_LS | NUM1Token::workspace_array :
+    return makeContext<WorkSpaceArrayElement>(getState());
+  }
 
   return IWORKXMLContextPtr_t();
 }
