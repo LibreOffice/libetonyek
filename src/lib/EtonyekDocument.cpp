@@ -9,6 +9,8 @@
 
 #include <libetonyek/libetonyek.h>
 
+#include <cassert>
+
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/logic/tribool.hpp>
