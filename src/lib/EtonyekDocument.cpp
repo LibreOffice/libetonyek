@@ -259,7 +259,7 @@ bool probeXML(const ProbeXMLFun_t probe, const EtonyekDocument::Type type, tribo
     info.input->seek(0, RVNG_SEEK_SET);
   }
 
-  assert(!isGzipped);
+  assert(isGzipped == false);
 
   return probeXMLImpl(info.input, probe, type, info);
 }
