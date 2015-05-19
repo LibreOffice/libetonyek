@@ -11,6 +11,7 @@
 
 #include <cassert>
 #include <string>
+#include <vector>
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/predicate.hpp>
