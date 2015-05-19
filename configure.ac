@@ -108,7 +108,7 @@ CPPFLAGS="${GLM_CFLAGS} ${CPPFLAGS}"
 AC_CHECK_HEADERS(
         glm/glm.hpp,
     [],
-    [AC_MSG_ERROR([Required boost headers not found.])],
+    [AC_MSG_ERROR([Required glm headers not found.])],
     []
 )
 CPPFLAGS="${saved_CPPFLAGS}"
