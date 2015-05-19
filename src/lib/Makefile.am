@@ -54,6 +54,7 @@ libetonyek_internal_la_SOURCES = \
 	IWORKSpreadsheetRedirector.h \
 	IWORKStyle.cpp \
 	IWORKStyle.h \
+	IWORKStyle_fwd.h \
 	IWORKStylesheet.cpp \
 	IWORKStylesheet.h \
 	IWORKStyleStack.cpp \
@@ -69,6 +70,7 @@ libetonyek_internal_la_SOURCES = \
 	IWORKTransformation.h \
 	IWORKToken.cpp \
 	IWORKToken.h \
+	IWORKTokenInfo.h \
 	IWORKTokenizer.cpp \
 	IWORKTokenizer.h \
 	IWORKTokenizerBase.cpp \
@@ -96,6 +98,7 @@ libetonyek_internal_la_SOURCES = \
 	KEY2ParserState.h \
 	KEY2Token.cpp \
 	KEY2Token.h \
+	KEY2XMLContextBase.h \
 	KEYCollector.cpp \
 	KEYCollector.h \
 	KEYDictionary.cpp \
@@ -113,6 +116,7 @@ libetonyek_internal_la_SOURCES = \
 	NUM1ParserState.h \
 	NUM1Token.cpp \
 	NUM1Token.h \
+	NUM1XMLContextBase.h \
 	PAGCollector.cpp \
 	PAGCollector.h \
 	PAGDictionary.cpp \
@@ -123,6 +127,7 @@ libetonyek_internal_la_SOURCES = \
 	PAG1ParserState.h \
 	PAG1Token.cpp \
 	PAG1Token.h \
+	PAG1XMLContextBase.h \
 	contexts/IWORKColorElement.cpp \
 	contexts/IWORKColorElement.h \
 	contexts/IWORKGeometryElement.cpp \
