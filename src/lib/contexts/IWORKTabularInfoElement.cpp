@@ -462,7 +462,7 @@ void CtElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::s | IWORKToken::NS_URI_SF :
+  case IWORKToken::s | IWORKToken::NS_URI_SFA :
     getData().m_content = value;
     break;
   default :
