@@ -11,7 +11,6 @@
 
 #include "libetonyek_xml.h"
 #include "IWORKChainedTokenizer.h"
-#include "IWORKXMLContexts.h"
 #include "IWORKTabularInfoElement.h"
 #include "IWORKToken.h"
 #include "NUMCollector.h"
