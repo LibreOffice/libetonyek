@@ -209,7 +209,7 @@ void IWORKTransformationTest::testIdentities()
   CPPUNIT_ASSERT(origin(100, 50) == translate(-50, -25));
   CPPUNIT_ASSERT((flip(true, false) * flip(false, true)) == flip(true, true));
   CPPUNIT_ASSERT((flip(false, true) * flip(true, false)) == flip(true, true));
-  CPPUNIT_ASSERT((rotate(etonyek_half_pi) * rotate(etonyek_third_pi)) == (rotate(etonyek_third_pi) * rotate(etonyek_half_pi)));
+  CPPUNIT_ASSERT(approxEqual(rotate(etonyek_half_pi) * rotate(etonyek_third_pi), rotate(etonyek_third_pi) * rotate(etonyek_half_pi)));
   CPPUNIT_ASSERT(scale(-1, -1) == flip(true, true));
   CPPUNIT_ASSERT((translate(80, 40) * translate(10, 20)) == (translate(10, 20) * translate(80, 40)));
   CPPUNIT_ASSERT((scale(2, 2) * translate(1, 2) == (translate(2, 4) * scale(2, 2))));
