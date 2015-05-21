@@ -33,6 +33,14 @@ public:
 namespace
 {
 
+class CloseCommentElement : public IWORKOutputElement
+{
+public:
+  CloseCommentElement() {}
+  ~CloseCommentElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+};
+
 class CloseEndnoteElement : public IWORKOutputElement
 {
 public:
@@ -343,6 +351,21 @@ private:
   librevenge::RVNGString m_text;
 };
 
+class OpenCommentElement : public IWORKOutputElement
+{
+public:
+  OpenCommentElement(const librevenge::RVNGPropertyList &propList) :
+    m_propList(propList) {}
+  ~OpenCommentElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+  IWORKOutputElement *clone()
+  {
+    return new OpenCommentElement(m_propList);
+  }
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
 class OpenEndnoteElement : public IWORKOutputElement
 {
 public:
@@ -563,6 +586,12 @@ private:
   librevenge::RVNGPropertyList m_propList;
 };
 
+void CloseCommentElement::write(IWORKDocumentInterface *iface) const
+{
+  if (iface)
+    iface->closeComment();
+}
+
 void CloseEndnoteElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
@@ -719,6 +748,12 @@ void InsertTextElement::write(IWORKDocumentInterface *iface) const
     iface->insertText(m_text);
 }
 
+void OpenCommentElement::write(IWORKDocumentInterface *iface) const
+{
+  if (iface)
+    iface->openComment(m_propList);
+}
+
 void OpenEndnoteElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
@@ -857,6 +892,11 @@ bool IWORKOutputElements::empty() const
   return m_elements.empty();
 }
 
+void IWORKOutputElements::addCloseComment()
+{
+  m_elements.push_back(make_shared<CloseCommentElement>());
+}
+
 void IWORKOutputElements::addCloseEndnote()
 {
   m_elements.push_back(make_shared<CloseEndnoteElement>());
@@ -985,6 +1025,11 @@ void IWORKOutputElements::addInsertTab()
 void IWORKOutputElements::addInsertText(const librevenge::RVNGString &text)
 {
   m_elements.push_back(make_shared<InsertTextElement>(text));
+}
+
+void IWORKOutputElements::addOpenComment(const librevenge::RVNGPropertyList &propList)
+{
+  m_elements.push_back(make_shared<OpenCommentElement>(propList));
 }
 
 void IWORKOutputElements::addOpenEndnote(const librevenge::RVNGPropertyList &propList)
