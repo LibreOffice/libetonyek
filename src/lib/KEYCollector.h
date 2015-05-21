@@ -57,7 +57,7 @@ private:
   IWORKSize m_size;
 
   IWORKOutputElements m_notes;
-  KEYStickyNotes_t m_stickyNotes;
+  IWORKOutputElements m_stickyNotes;
 
   bool m_pageOpened;
   bool m_layerOpened;

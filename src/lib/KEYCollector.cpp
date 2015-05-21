@@ -148,7 +148,23 @@ void KEYCollector::collectStickyNote()
 {
   assert(!m_levelStack.empty());
 
-  m_stickyNotes.push_back(KEYStickyNote(m_levelStack.top().m_geometry, m_currentText));
+  librevenge::RVNGPropertyList props;
+
+  if (bool(m_levelStack.top().m_geometry))
+  {
+    props.insert("svg:x", pt2in(m_levelStack.top().m_geometry->m_position.m_x));
+    props.insert("svg:y", pt2in(m_levelStack.top().m_geometry->m_position.m_y));
+    props.insert("svg:width", pt2in(m_levelStack.top().m_geometry->m_naturalSize.m_width));
+    props.insert("svg:height", pt2in(m_levelStack.top().m_geometry->m_naturalSize.m_height));
+  }
+
+  if (bool(m_currentText))
+  {
+    m_stickyNotes.addOpenComment(props);
+    m_currentText->draw(m_stickyNotes);
+    m_stickyNotes.addCloseComment();
+  }
+
   m_levelStack.top().m_geometry.reset();
   m_currentText.reset();
 }
@@ -244,27 +260,7 @@ void KEYCollector::drawStickyNotes()
   if (m_stickyNotes.empty())
     return;
 
-  for (KEYStickyNotes_t::const_iterator it = m_stickyNotes.begin(); m_stickyNotes.end() != it; ++it)
-  {
-    librevenge::RVNGPropertyList props;
-
-    if (bool(it->m_geometry))
-    {
-      props.insert("svg:x", pt2in(it->m_geometry->m_position.m_x));
-      props.insert("svg:y", pt2in(it->m_geometry->m_position.m_y));
-      props.insert("svg:width", pt2in(it->m_geometry->m_naturalSize.m_width));
-      props.insert("svg:height", pt2in(it->m_geometry->m_naturalSize.m_height));
-    }
-
-    m_document->openComment(props);
-    if (bool(it->m_text))
-    {
-      IWORKOutputElements elements;
-      (it->m_text)->draw(elements);
-      elements.write(m_document);
-    }
-    m_document->closeComment();
-  }
+  m_stickyNotes.write(m_document);
 }
 
 }
