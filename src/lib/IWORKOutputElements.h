@@ -34,6 +34,7 @@ public:
   void clear();
   bool empty() const;
 
+  void addCloseComment();
   void addCloseEndnote();
   void addCloseFooter();
   void addCloseFootnote();
@@ -60,6 +61,7 @@ public:
   void addInsertSpace();
   void addInsertTab();
   void addInsertText(const librevenge::RVNGString &text);
+  void addOpenComment(const librevenge::RVNGPropertyList &propList);
   void addOpenEndnote(const librevenge::RVNGPropertyList &propList);
   void addOpenFooter(const librevenge::RVNGPropertyList &propList);
   void addOpenFootnote(const librevenge::RVNGPropertyList &propList);
