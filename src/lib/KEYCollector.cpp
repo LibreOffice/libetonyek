@@ -148,8 +148,14 @@ void KEYCollector::collectStickyNote()
 {
   assert(!m_levelStack.empty());
 
-  m_stickyNotes.push_back(KEYStickyNote(m_levelStack.top().m_geometry, m_currentText));
+  m_stickyNotes.push_back(KEYStickyNote());
+
+  if (bool(m_levelStack.top().m_geometry))
+    m_stickyNotes.back().m_geometry = m_levelStack.top().m_geometry;
   m_levelStack.top().m_geometry.reset();
+
+  if (bool(m_currentText))
+    m_stickyNotes.back().m_text = m_currentText;
   m_currentText.reset();
 }
 

@@ -39,12 +39,6 @@ KEYStickyNote::KEYStickyNote()
 {
 }
 
-KEYStickyNote::KEYStickyNote(const IWORKGeometryPtr_t &geometry_, const IWORKTextPtr_t &text_)
-  : m_geometry(geometry_)
-  , m_text(text_)
-{
-}
-
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
