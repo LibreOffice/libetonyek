@@ -44,17 +44,6 @@ struct KEYPlaceholder
   KEYPlaceholder();
 };
 
-struct KEYStickyNote
-{
-  IWORKGeometryPtr_t m_geometry;
-  IWORKTextPtr_t m_text;
-
-  KEYStickyNote();
-  KEYStickyNote(const IWORKGeometryPtr_t &geometry, const IWORKTextPtr_t &text);
-};
-
-typedef std::deque<KEYStickyNote> KEYStickyNotes_t;
-
 }
 
 #endif //  KEYTYPES_H_INCLUDED

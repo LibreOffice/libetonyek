@@ -57,7 +57,9 @@ private:
   IWORKSize m_size;
 
   IWORKOutputElements m_notes;
-  KEYStickyNotes_t m_stickyNotes;
+  IWORKOutputElements m_stickyNotes;
+  librevenge::RVNGPropertyList m_stickyNotesProps;
+
 
   bool m_pageOpened;
   bool m_layerOpened;
