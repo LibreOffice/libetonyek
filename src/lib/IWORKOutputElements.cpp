@@ -87,10 +87,6 @@ public:
   CloseLinkElement() {}
   ~CloseLinkElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new CloseLinkElement();
-  }
 };
 
 class CloseListElementElement : public IWORKOutputElement
@@ -99,10 +95,6 @@ public:
   CloseListElementElement() {}
   ~CloseListElementElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new CloseListElementElement();
-  }
 };
 
 class CloseOrderedListLevelElement : public IWORKOutputElement
@@ -111,10 +103,6 @@ public:
   CloseOrderedListLevelElement() {}
   ~CloseOrderedListLevelElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new CloseOrderedListLevelElement();
-  }
 };
 
 class ClosePageSpanElement : public IWORKOutputElement
@@ -123,10 +111,6 @@ public:
   ClosePageSpanElement() {}
   ~ClosePageSpanElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new ClosePageSpanElement();
-  }
 };
 
 class CloseParagraphElement : public IWORKOutputElement
@@ -135,10 +119,6 @@ public:
   CloseParagraphElement() {}
   ~CloseParagraphElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new CloseParagraphElement();
-  }
 };
 
 class CloseSectionElement : public IWORKOutputElement
@@ -147,10 +127,6 @@ public:
   CloseSectionElement() {}
   ~CloseSectionElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new CloseSectionElement();
-  }
 };
 
 class CloseSpanElement : public IWORKOutputElement
@@ -159,10 +135,6 @@ public:
   CloseSpanElement() {}
   ~CloseSpanElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new CloseSpanElement();
-  }
 };
 
 class CloseTableElement : public IWORKOutputElement
@@ -171,10 +143,6 @@ public:
   CloseTableElement() {}
   ~CloseTableElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new CloseTableElement();
-  }
 };
 
 class CloseTableCellElement : public IWORKOutputElement
@@ -183,10 +151,6 @@ public:
   CloseTableCellElement() {}
   ~CloseTableCellElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new CloseTableCellElement();
-  }
 };
 
 class CloseTableRowElement : public IWORKOutputElement
@@ -195,10 +159,6 @@ public:
   CloseTableRowElement() {}
   ~CloseTableRowElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new CloseTableRowElement();
-  }
 };
 
 class CloseUnorderedListLevelElement : public IWORKOutputElement
@@ -207,10 +167,6 @@ public:
   CloseUnorderedListLevelElement() {}
   ~CloseUnorderedListLevelElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new CloseUnorderedListLevelElement();
-  }
 };
 
 class DrawGraphicObjectElement : public IWORKOutputElement
@@ -220,10 +176,6 @@ public:
     m_propList(propList) {}
   ~DrawGraphicObjectElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new DrawGraphicObjectElement(m_propList);
-  }
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -235,10 +187,6 @@ public:
     m_propList(propList) {}
   ~DrawPathElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new DrawPathElement(m_propList);
-  }
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -250,10 +198,6 @@ public:
     m_propList(propList) {}
   ~DrawPolylineElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new DrawPolylineElement(m_propList);
-  }
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -264,10 +208,6 @@ public:
   EndTextObjectElement() {}
   ~EndTextObjectElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new EndTextObjectElement();
-  }
 };
 
 class InsertBinaryObjectElement : public IWORKOutputElement
@@ -277,10 +217,6 @@ public:
     m_propList(propList) {}
   ~InsertBinaryObjectElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new InsertBinaryObjectElement(m_propList);
-  }
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -292,10 +228,6 @@ public:
     m_propList(propList) {}
   ~InsertCoveredTableCellElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new InsertCoveredTableCellElement(m_propList);
-  }
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -306,10 +238,6 @@ public:
   InsertLineBreakElement() {}
   ~InsertLineBreakElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new InsertLineBreakElement();
-  }
 };
 
 class InsertSpaceElement : public IWORKOutputElement
@@ -318,10 +246,6 @@ public:
   InsertSpaceElement() {}
   ~InsertSpaceElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new InsertSpaceElement();
-  }
 };
 
 class InsertTabElement : public IWORKOutputElement
@@ -330,10 +254,6 @@ public:
   InsertTabElement() {}
   ~InsertTabElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new InsertTabElement();
-  }
 };
 
 class InsertTextElement : public IWORKOutputElement
@@ -343,10 +263,6 @@ public:
     m_text(text) {}
   ~InsertTextElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new InsertTextElement(m_text);
-  }
 private:
   librevenge::RVNGString m_text;
 };
@@ -369,10 +285,6 @@ public:
     m_propList(propList) {}
   ~OpenEndnoteElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new OpenEndnoteElement(m_propList);
-  }
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -384,10 +296,6 @@ public:
     m_propList(propList) {}
   ~OpenFooterElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new OpenFooterElement(m_propList);
-  }
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -399,10 +307,6 @@ public:
     m_propList(propList) {}
   ~OpenFootnoteElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new OpenFootnoteElement(m_propList);
-  }
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -414,10 +318,6 @@ public:
     m_propList(propList) {}
   ~OpenFrameElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new OpenFrameElement(m_propList);
-  }
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -429,10 +329,6 @@ public:
     m_propList(propList) {}
   ~OpenHeaderElement() {}
   void write(IWORKDocumentInterface *iface) const;
-  IWORKOutputElement *clone()
-  {
-    return new OpenHeaderElement(m_propList);
-  }
 private:
   librevenge::RVNGPropertyList m_propList;
 };
