@@ -31,7 +31,7 @@ void NUMCollector::endDocument()
 
 void NUMCollector::endWorkSpaceArray()
 {
-  getZoneManager().getCurrent().write(m_document);
+  getOutputManager().getCurrent().write(m_document);
 }
 
 }

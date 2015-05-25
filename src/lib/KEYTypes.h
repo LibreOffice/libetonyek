@@ -28,7 +28,7 @@ namespace libetonyek
 struct KEYLayer
 {
   boost::optional<std::string> m_type;
-  boost::optional<IWORKZoneID_t> m_zoneId;
+  boost::optional<IWORKOutputID_t> m_outputId;
 
   KEYLayer();
 };

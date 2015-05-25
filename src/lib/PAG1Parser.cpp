@@ -228,7 +228,7 @@ IWORKXMLContextPtr_t AttachmentElement::element(const int name)
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::tabular_info))
   {
     m_known = true;
-    getCollector()->getZoneManager().push();
+    getCollector()->getOutputManager().push();
     return makeContext<IWORKTabularInfoElement>(getState());
   }
 
@@ -240,8 +240,8 @@ void AttachmentElement::endOfElement()
   if (m_known)
   {
     if (getId())
-      getState().getDictionary().m_attachments[get(getId())] = getCollector()->getZoneManager().save();
-    getCollector()->getZoneManager().pop();
+      getState().getDictionary().m_attachments[get(getId())] = getCollector()->getOutputManager().save();
+    getCollector()->getOutputManager().pop();
   }
 }
 
@@ -312,7 +312,7 @@ void PElement::endOfElement()
 {
   if (m_ref)
   {
-    const IWORKZoneMap_t::const_iterator it = getState().getDictionary().m_attachments.find(get(m_ref));
+    const IWORKOutputMap_t::const_iterator it = getState().getDictionary().m_attachments.find(get(m_ref));
     if (it != getState().getDictionary().m_attachments.end())
       getCollector()->collectAttachment(it->second);
   }

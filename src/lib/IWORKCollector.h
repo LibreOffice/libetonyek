@@ -27,7 +27,7 @@
 #include "IWORKText_fwd.h"
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
-#include "IWORKZoneManager.h"
+#include "IWORKOutputManager.h"
 
 namespace libetonyek
 {
@@ -104,7 +104,7 @@ public:
   void pushStyle();
   void popStyle();
 
-  IWORKZoneManager &getZoneManager();
+  IWORKOutputManager &getOutputManager();
 
 private:
   void pushStyle(const IWORKStylePtr_t &style);
@@ -115,7 +115,7 @@ protected:
 
   std::stack<Level> m_levelStack;
   IWORKStyleStack m_styleStack;
-  IWORKZoneManager m_zoneManager;
+  IWORKOutputManager m_outputManager;
 
   IWORKStylesheetPtr_t m_currentStylesheet;
   std::deque<IWORKStylePtr_t> m_newStyles;

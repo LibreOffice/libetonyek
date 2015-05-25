@@ -19,7 +19,7 @@ struct PAGDictionary : public IWORKDictionary
 {
   PAGDictionary();
 
-  IWORKZoneMap_t m_attachments;
+  IWORKOutputMap_t m_attachments;
 };
 
 }

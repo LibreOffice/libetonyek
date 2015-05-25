@@ -19,9 +19,9 @@ namespace libetonyek
 
 typedef std::string ID_t;
 
-typedef unsigned IWORKZoneID_t;
+typedef unsigned IWORKOutputID_t;
 
-typedef boost::unordered_map<ID_t, IWORKZoneID_t> IWORKZoneMap_t;
+typedef boost::unordered_map<ID_t, IWORKOutputID_t> IWORKOutputMap_t;
 
 struct IWORKSize;
 struct IWORKPosition;

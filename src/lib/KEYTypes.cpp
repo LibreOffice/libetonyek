@@ -20,7 +20,7 @@ namespace libetonyek
 
 KEYLayer::KEYLayer()
   : m_type()
-  , m_zoneId()
+  , m_outputId()
 {
 }
 
