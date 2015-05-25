@@ -50,10 +50,6 @@ public:
   void endLayer();
 
 private:
-  void drawNotes();
-  void drawStickyNotes();
-
-private:
   IWORKSize m_size;
 
   IWORKOutputElements m_notes;

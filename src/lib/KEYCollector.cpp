@@ -86,8 +86,13 @@ void KEYCollector::collectPage()
 
   if (m_paint)
   {
-    drawNotes();
-    drawStickyNotes();
+    if (!m_notes.empty())
+    {
+      m_document->startNotes(librevenge::RVNGPropertyList());
+      m_notes.write(m_document);
+      m_document->endNotes();
+    }
+    m_stickyNotes.write(m_document);
   }
 }
 
@@ -243,22 +248,6 @@ void KEYCollector::endLayer()
   getOutputManager().pop();
 
   m_layerOpened = false;
-}
-
-void KEYCollector::drawNotes()
-{
-  if (m_notes.empty())
-    return;
-
-  m_document->startNotes(librevenge::RVNGPropertyList());
-  m_notes.write(m_document);
-  m_document->endNotes();
-}
-
-void KEYCollector::drawStickyNotes()
-{
-  if (!m_stickyNotes.empty())
-    m_stickyNotes.write(m_document);
 }
 
 }
