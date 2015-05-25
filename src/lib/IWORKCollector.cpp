@@ -294,7 +294,7 @@ void IWORKCollector::collectImage(const IWORKImagePtr_t &image)
   image->m_geometry = m_levelStack.top().m_geometry;
   m_levelStack.top().m_geometry.reset();
 
-  drawImage(image, m_levelStack.top().m_trafo, m_zoneManager.getCurrent());
+  drawImage(image, m_levelStack.top().m_trafo, m_outputManager.getCurrent());
 }
 
 void IWORKCollector::collectLine(const IWORKLinePtr_t &line)
@@ -304,7 +304,7 @@ void IWORKCollector::collectLine(const IWORKLinePtr_t &line)
   line->m_geometry = m_levelStack.top().m_geometry;
   m_levelStack.top().m_geometry.reset();
 
-  drawLine(line, m_levelStack.top().m_trafo, m_zoneManager.getCurrent());
+  drawLine(line, m_levelStack.top().m_trafo, m_outputManager.getCurrent());
 }
 
 void IWORKCollector::collectShape()
@@ -332,7 +332,7 @@ void IWORKCollector::collectShape()
   shape->m_style = m_levelStack.top().m_graphicStyle;
   m_levelStack.top().m_graphicStyle.reset();
 
-  drawShape(shape, m_levelStack.top().m_trafo, m_zoneManager.getCurrent());
+  drawShape(shape, m_levelStack.top().m_trafo, m_outputManager.getCurrent());
 }
 
 void IWORKCollector::collectBezierPath()
@@ -388,7 +388,7 @@ void IWORKCollector::collectMedia(const IWORKMediaContentPtr_t &content)
   m_levelStack.top().m_geometry.reset();
   m_levelStack.top().m_graphicStyle.reset();
 
-  drawMedia(media, m_levelStack.top().m_trafo, m_zoneManager.getCurrent());
+  drawMedia(media, m_levelStack.top().m_trafo, m_outputManager.getCurrent());
 }
 
 IWORKStylesheetPtr_t IWORKCollector::collectStylesheet(const IWORKStylesheetPtr_t &parent)
@@ -474,7 +474,7 @@ void IWORKCollector::collectTable()
   m_currentTable.setGeometry(m_levelStack.top().m_geometry);
   m_levelStack.top().m_geometry.reset();
 
-  drawTable(m_currentTable, m_levelStack.top().m_trafo, m_zoneManager.getCurrent());
+  drawTable(m_currentTable, m_levelStack.top().m_trafo, m_outputManager.getCurrent());
 }
 
 void IWORKCollector::startGroup()
@@ -583,9 +583,9 @@ void IWORKCollector::resolveStyle(IWORKStyle &style)
   (void) style;
 }
 
-IWORKZoneManager &IWORKCollector::getZoneManager()
+IWORKOutputManager &IWORKCollector::getOutputManager()
 {
-  return m_zoneManager;
+  return m_outputManager;
 }
 
 } // namespace libetonyek

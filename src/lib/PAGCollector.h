@@ -37,7 +37,7 @@ public:
   // collector functions
 
   void collectTextBody();
-  void collectAttachment(const IWORKZoneID_t &id);
+  void collectAttachment(const IWORKOutputID_t &id);
 
   // helper functions
   void startDocument();

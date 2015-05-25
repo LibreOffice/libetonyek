@@ -60,10 +60,10 @@ void PAGCollector::collectTextBody()
   }
 }
 
-void PAGCollector::collectAttachment(const IWORKZoneID_t &id)
+void PAGCollector::collectAttachment(const IWORKOutputID_t &id)
 {
   assert(bool(m_currentText));
-  m_currentText->insertBlockContent(getZoneManager().get(id));
+  m_currentText->insertBlockContent(getOutputManager().get(id));
 }
 
 void PAGCollector::startDocument()

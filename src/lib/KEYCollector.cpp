@@ -50,7 +50,7 @@ KEYLayerPtr_t KEYCollector::collectLayer()
 
   KEYLayerPtr_t layer(new KEYLayer());
 
-  layer->m_zoneId = getZoneManager().save();
+  layer->m_outputId = getOutputManager().save();
 
   return layer;
 }
@@ -69,8 +69,8 @@ void KEYCollector::insertLayer(const KEYLayerPtr_t &layer)
       props.insert("svg:id", m_layerCount);
 
       m_document->startLayer(props);
-      if (layer->m_zoneId)
-        getZoneManager().get(get(layer->m_zoneId)).write(m_document);
+      if (layer->m_outputId)
+        getOutputManager().get(get(layer->m_outputId)).write(m_document);
       m_document->endLayer();
     }
   }
@@ -130,7 +130,7 @@ void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
     if (bool(placeholder->m_geometry))
       trafo = makeTransformation(*placeholder->m_geometry);
 
-    drawPlaceholder(placeholder, trafo * m_levelStack.top().m_trafo, getZoneManager().getCurrent());
+    drawPlaceholder(placeholder, trafo * m_levelStack.top().m_trafo, getOutputManager().getCurrent());
   }
   else
   {
@@ -212,7 +212,7 @@ void KEYCollector::startLayer()
   assert(m_pageOpened);
   assert(!m_layerOpened);
 
-  getZoneManager().push();
+  getOutputManager().push();
   m_layerOpened = true;
 
   startLevel();
@@ -224,7 +224,7 @@ void KEYCollector::endLayer()
   assert(m_layerOpened);
 
   endLevel();
-  getZoneManager().pop();
+  getOutputManager().pop();
 
   m_layerOpened = false;
 }
