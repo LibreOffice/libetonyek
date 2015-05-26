@@ -140,6 +140,18 @@ IWORKLineSpacing::IWORKLineSpacing(const double value, const bool relative)
 {
 }
 
+IWORKTableData::IWORKTableData()
+  : m_columnSizes()
+  , m_rowSizes()
+  , m_column(0)
+  , m_row(0)
+  , m_columnSpan()
+  , m_rowSpan()
+  , m_cellMove()
+  , m_content()
+{
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

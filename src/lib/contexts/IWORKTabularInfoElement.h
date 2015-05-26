@@ -19,7 +19,6 @@ namespace libetonyek
 
 class IWORKTabularInfoElement : public IWORKXMLElementContextBase
 {
-  struct Impl;
 
 public:
   explicit IWORKTabularInfoElement(IWORKXMLParserState &state);
@@ -29,8 +28,6 @@ private:
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
-private:
-  boost::shared_ptr<Impl> m_impl;
 };
 
 }

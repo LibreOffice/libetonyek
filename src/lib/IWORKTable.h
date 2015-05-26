@@ -10,6 +10,8 @@
 #ifndef IWORKTABLE_H_INCLUDED
 #define IWORKTABLE_H_INCLUDED
 
+#include <boost/optional.hpp>
+
 #include <deque>
 
 #include <glm/glm.hpp>
@@ -34,10 +36,6 @@ class IWORKTable
 
   typedef std::deque<Cell> Row_t;
   typedef std::deque<Row_t> Table_t;
-
-public:
-  typedef std::deque<double> ColumnSizes_t;
-  typedef std::deque<double> RowSizes_t;
 
 public:
   IWORKTable();
