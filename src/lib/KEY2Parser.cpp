@@ -124,7 +124,6 @@ IWORKXMLContextPtr_t StylesContext::element(const int name)
     return makeContext<KEY2StyleContext>(getState(), name);
 
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
-    break;
     return makeContext<KEY2StyleRefContext>(getState(), name, false, m_anonymous);
   }
 

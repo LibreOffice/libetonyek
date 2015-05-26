@@ -43,7 +43,6 @@ IWORKXMLContextPtr_t IWORKStylesContext::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref :
   case IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref :
-    break;
     return makeContext<IWORKStyleRefContext>(getState(), name, false, m_anonymous);
   }
 
