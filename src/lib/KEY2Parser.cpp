@@ -261,8 +261,10 @@ void PointElement::attribute(const int name, const char *const value)
   {
   case IWORKToken::NS_URI_SFA | IWORKToken::x :
     m_point.first = lexical_cast<double>(value);
+    break;
   case IWORKToken::NS_URI_SFA | IWORKToken::y :
     m_point.second = lexical_cast<double>(value);
+    break;
   }
 }
 
@@ -358,6 +360,7 @@ void PointPathElement::attribute(const int name, const char *const value)
       ETONYEK_DEBUG_MSG(("unknown point path type: %s\n", value));
       break;
     }
+    break;
   }
   default :
     KEY2XMLElementContextBase::attribute(name, value);
