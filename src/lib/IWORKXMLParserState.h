@@ -17,25 +17,29 @@ class IWORKCollector;
 struct IWORKDictionary;
 class IWORKParser;
 class IWORKTokenizer;
+struct TableData;
 
 class IWORKXMLParserState
 {
   // not copyable
-  IWORKXMLParserState(const IWORKXMLParserState &);
-  IWORKXMLParserState &operator=(const IWORKXMLParserState &);
+
 
 public:
+  IWORKXMLParserState(const IWORKXMLParserState &);
+  IWORKXMLParserState &operator=(const IWORKXMLParserState &);
   IWORKXMLParserState(IWORKParser &parser, IWORKCollector *collector, IWORKDictionary &dict);
 
   IWORKParser &getParser();
   IWORKDictionary &getDictionary();
   IWORKCollector *getCollector() const;
   const IWORKTokenizer &getTokenizer() const;
+  TableData &getData();
 
 private:
   IWORKParser &m_parser;
   IWORKCollector *const m_collector;
   IWORKDictionary &m_dict;
+  // TableData &m_data;
 };
 
 }
