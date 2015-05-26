@@ -163,6 +163,22 @@ struct IWORKLineSpacing
   bool m_relative;
 };
 
+struct IWORKTableData
+{
+  IWORKTableData();
+
+  IWORKColumnSizes_t m_columnSizes;
+  IWORKRowSizes_t m_rowSizes;
+
+  unsigned m_column;
+  unsigned m_row;
+
+  boost::optional<unsigned> m_columnSpan;
+  boost::optional<unsigned> m_rowSpan;
+  boost::optional<unsigned> m_cellMove;
+  boost::optional<std::string> m_content;
+};
+
 }
 
 #endif //  IWORKTYPES_H_INCLUDED

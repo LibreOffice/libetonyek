@@ -10,6 +10,8 @@
 #ifndef IWORKTABLE_H_INCLUDED
 #define IWORKTABLE_H_INCLUDED
 
+#include <boost/optional.hpp>
+
 #include <deque>
 
 #include <glm/glm.hpp>
@@ -36,13 +38,9 @@ class IWORKTable
   typedef std::deque<Row_t> Table_t;
 
 public:
-  typedef std::deque<double> ColumnSizes_t;
-  typedef std::deque<double> RowSizes_t;
-
-public:
   IWORKTable();
 
-  void setSizes(const ColumnSizes_t &columnSizes, const RowSizes_t &rowSizes);
+  void setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowSizes_t &rowSizes);
   void insertCell(unsigned column, unsigned row, const IWORKOutputElements &content = IWORKOutputElements(), unsigned columnSpan = 1, unsigned rowSpan = 1);
   void insertCoveredCell(unsigned column, unsigned row);
 
@@ -52,8 +50,8 @@ public:
 
 private:
   Table_t m_table;
-  ColumnSizes_t m_columnSizes;
-  RowSizes_t m_rowSizes;
+  IWORKColumnSizes_t m_columnSizes;
+  IWORKRowSizes_t m_rowSizes;
   IWORKGeometryPtr_t m_geometry;
 };
 

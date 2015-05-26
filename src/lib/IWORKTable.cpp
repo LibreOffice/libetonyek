@@ -36,7 +36,7 @@ IWORKTable::IWORKTable()
 {
 }
 
-void IWORKTable::setSizes(const ColumnSizes_t &columnSizes, const RowSizes_t &rowSizes)
+void IWORKTable::setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowSizes_t &rowSizes)
 {
   m_columnSizes = columnSizes;
   m_rowSizes = rowSizes;
@@ -95,7 +95,7 @@ void IWORKTable::draw(const glm::dmat3 &trafo, IWORKOutputElements &elements) co
 
   librevenge::RVNGPropertyListVector columnSizes;
 
-  for (ColumnSizes_t::const_iterator it = m_columnSizes.begin(); m_columnSizes.end() != it; ++it)
+  for (IWORKColumnSizes_t::const_iterator it = m_columnSizes.begin(); m_columnSizes.end() != it; ++it)
   {
     librevenge::RVNGPropertyList column;
     column.insert("style:column-width", pt2in(*it));

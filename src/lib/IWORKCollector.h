@@ -80,7 +80,7 @@ public:
   void collectTab();
   void collectLineBreak();
 
-  void collectTableSizes(const IWORKTable::RowSizes_t &rowSizes, const IWORKTable::ColumnSizes_t &columnSizes);
+  void collectTableSizes(const IWORKRowSizes_t &rowSizes, const IWORKColumnSizes_t &columnSizes);
   void collectTableCell(unsigned row, unsigned column, const boost::optional<std::string> &content, unsigned rowSpan, unsigned columnSpan);
   void collectCoveredTableCell(unsigned row, unsigned column);
   void collectTableRow();

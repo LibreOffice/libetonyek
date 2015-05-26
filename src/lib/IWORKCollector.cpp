@@ -428,7 +428,7 @@ void IWORKCollector::collectLineBreak()
   m_currentText->insertLineBreak();
 }
 
-void IWORKCollector::collectTableSizes(const IWORKTable::RowSizes_t &rowSizes, const IWORKTable::ColumnSizes_t &columnSizes)
+void IWORKCollector::collectTableSizes(const IWORKRowSizes_t &rowSizes, const IWORKColumnSizes_t &columnSizes)
 {
   m_currentTable.setSizes(columnSizes, rowSizes);
 }
