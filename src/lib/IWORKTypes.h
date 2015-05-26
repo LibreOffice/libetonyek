@@ -19,6 +19,7 @@
 #include "libetonyek_utils.h"
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle_fwd.h"
+#include "IWORKTable.h"
 
 namespace libetonyek
 {
@@ -161,6 +162,22 @@ struct IWORKLineSpacing
 
   double m_value;
   bool m_relative;
+};
+
+struct IWORKTableData
+{
+  IWORKTableData();
+
+  IWORKTable::ColumnSizes_t m_columnSizes;
+  IWORKTable::RowSizes_t m_rowSizes;
+
+  unsigned m_column;
+  unsigned m_row;
+
+  boost::optional<unsigned> m_columnSpan;
+  boost::optional<unsigned> m_rowSpan;
+  boost::optional<unsigned> m_cellMove;
+  boost::optional<std::string> m_content;
 };
 
 }

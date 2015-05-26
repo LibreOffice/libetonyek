@@ -10,6 +10,8 @@
 #ifndef IWORKXMLPARSERSTATE_H_INCLUDED
 #define IWORKXMLPARSERSTATE_H_INCLUDED
 
+#include <boost/shared_ptr.hpp>
+
 namespace libetonyek
 {
 
@@ -17,6 +19,8 @@ class IWORKCollector;
 struct IWORKDictionary;
 class IWORKParser;
 class IWORKTokenizer;
+struct IWORKTableData;
+typedef boost::shared_ptr<IWORKTableData> IWORKTableDataPtr_t;
 
 class IWORKXMLParserState
 {
@@ -31,11 +35,13 @@ public:
   IWORKDictionary &getDictionary();
   IWORKCollector *getCollector() const;
   const IWORKTokenizer &getTokenizer() const;
+  IWORKTableDataPtr_t getData();
 
 private:
   IWORKParser &m_parser;
   IWORKCollector *const m_collector;
   IWORKDictionary &m_dict;
+  IWORKTableDataPtr_t m_data;
 };
 
 }

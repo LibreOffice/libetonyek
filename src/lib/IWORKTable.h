@@ -10,6 +10,8 @@
 #ifndef IWORKTABLE_H_INCLUDED
 #define IWORKTABLE_H_INCLUDED
 
+#include <boost/optional.hpp>
+
 #include <deque>
 
 #include <glm/glm.hpp>

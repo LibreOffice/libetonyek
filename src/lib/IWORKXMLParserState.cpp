@@ -12,6 +12,7 @@
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKParser.h"
+#include "IWORKTypes.h"
 
 namespace libetonyek
 {
@@ -20,6 +21,7 @@ IWORKXMLParserState::IWORKXMLParserState(IWORKParser &parser, IWORKCollector *co
   : m_parser(parser)
   , m_collector(collector)
   , m_dict(dict)
+  , m_data(new IWORKTableData())
 {
 }
 
@@ -41,6 +43,11 @@ IWORKCollector *IWORKXMLParserState::getCollector() const
 const IWORKTokenizer &IWORKXMLParserState::getTokenizer() const
 {
   return m_parser.getTokenizer();
+}
+
+IWORKTableDataPtr_t IWORKXMLParserState::getData()
+{
+  return m_data;
 }
 
 }

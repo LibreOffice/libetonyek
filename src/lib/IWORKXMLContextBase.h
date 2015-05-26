@@ -22,6 +22,7 @@ namespace libetonyek
 class IWORKXMLParserState;
 
 class IWORKCollector;
+struct IWORKTableData;
 
 template<class Base, class State, class Collector = IWORKCollector>
 class IWORKXMLContextBase : public Base
@@ -43,6 +44,11 @@ public:
   State &getState()
   {
     return m_state;
+  }
+
+  IWORKTableData &getData()
+  {
+    return *(m_state.getData()).get();
   }
 
 protected:
