@@ -16,6 +16,7 @@
 
 #include "IWORKPropertyMap.h"
 #include "IWORKXMLContextBase.h"
+#include "IWORKStyle_fwd.h"
 
 namespace libetonyek
 {
@@ -25,8 +26,8 @@ struct IWORKDictionary;
 class IWORKStyleContext : public IWORKXMLElementContextBase
 {
 public:
-  IWORKStyleContext(IWORKXMLParserState &state, int id, bool nested = false);
-  IWORKStyleContext(IWORKXMLParserState &state, int id, IWORKPropertyMap &props, bool nested = false);
+  IWORKStyleContext(IWORKXMLParserState &state, IWORKStyleMap_t *style, bool nested = false);
+  IWORKStyleContext(IWORKXMLParserState &state, IWORKStyleMap_t *style, IWORKPropertyMap &props, bool nested = false);
 
   virtual void attribute(int name, const char *value);
   virtual void endOfElement();
@@ -37,7 +38,7 @@ private:
   IWORKDictionary &getDictionary();
 
 private:
-  const int m_id;
+  IWORKStyleMap_t *m_style;
   const bool m_nested;
   IWORKPropertyMap m_ownProps;
   IWORKPropertyMap &m_props;

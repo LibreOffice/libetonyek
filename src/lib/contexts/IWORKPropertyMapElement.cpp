@@ -863,19 +863,19 @@ namespace
 class StylePropertyElement : public PropertyContextBase
 {
 public:
-  StylePropertyElement(IWORKXMLParserState &state, int id, IWORKPropertyMap &propMap);
+  StylePropertyElement(IWORKXMLParserState &state, IWORKStyleMap_t *style, IWORKPropertyMap &propMap);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
 private:
-  const int m_id;
+  IWORKStyleMap_t *m_style;
 };
 
-StylePropertyElement::StylePropertyElement(IWORKXMLParserState &state, const int id, IWORKPropertyMap &propMap)
+StylePropertyElement::StylePropertyElement(IWORKXMLParserState &state, IWORKStyleMap_t *style, IWORKPropertyMap &propMap)
   : PropertyContextBase(state, propMap)
-  , m_id(id)
+  , m_style(style)
 {
 }
 
@@ -885,9 +885,9 @@ IWORKXMLContextPtr_t StylePropertyElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
   case IWORKToken::NS_URI_SF | IWORKToken::vector_style :
-    return makeContext<IWORKStyleContext>(getState(), name, true);
+  case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
+    return makeContext<IWORKStyleContext>(getState(), m_style, true);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref :
@@ -1096,7 +1096,6 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyLayoutStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyParagraphStyle :
   case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyBorderVectorStyle :
   case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyCellLayoutStyle :
   case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyCellParagraphStyle :
@@ -1119,7 +1118,9 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::layoutStyle :
   case IWORKToken::NS_URI_SF | IWORKToken::listStyle :
   case IWORKToken::NS_URI_SF | IWORKToken::tocStyle :
-    return makeContext<StylePropertyElement>(getState(), name, m_propMap);
+    return IWORKXMLContextPtr_t();
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyParagraphStyle :
+    return makeContext<StylePropertyElement>(getState(), &getState().getDictionary().m_paragraphStyles, m_propMap);
 
   case IWORKToken::NS_URI_SF | IWORKToken::alignment :
     return makeContext<AlignmentElement>(getState(), m_propMap);
