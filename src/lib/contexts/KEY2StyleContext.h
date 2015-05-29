@@ -26,19 +26,17 @@ struct KEYDictionary;
 class KEY2StyleContext : public KEY2XMLElementContextBase
 {
 public:
-  KEY2StyleContext(KEY2ParserState &state, int id, bool nested = false);
+  KEY2StyleContext(KEY2ParserState &state, IWORKStyleMap_t *styleMap, bool nested = false);
 
 private:
   virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
-  KEYDictionary &getDictionary();
-
 private:
   IWORKPropertyMap m_props;
   IWORKStyleContext m_base;
-  const int m_id;
+  IWORKStyleMap_t *const m_styleMap;
   const bool m_nested;
   boost::optional<std::string> m_ident;
   boost::optional<std::string> m_parentIdent;
