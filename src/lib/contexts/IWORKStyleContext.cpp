@@ -19,18 +19,18 @@
 namespace libetonyek
 {
 
-IWORKStyleContext::IWORKStyleContext(IWORKXMLParserState &state, const int id, const bool nested)
+IWORKStyleContext::IWORKStyleContext(IWORKXMLParserState &state, IWORKStyleMap_t *styleMap, const bool nested)
   : IWORKXMLElementContextBase(state)
-  , m_id(id)
+  , m_styleMap(styleMap)
   , m_nested(nested)
   , m_ownProps()
   , m_props(m_ownProps)
 {
 }
 
-IWORKStyleContext::IWORKStyleContext(IWORKXMLParserState &state, const int id, IWORKPropertyMap &props, const bool nested)
+IWORKStyleContext::IWORKStyleContext(IWORKXMLParserState &state, IWORKStyleMap_t *styleMap, IWORKPropertyMap &props, const bool nested)
   : IWORKXMLElementContextBase(state)
-  , m_id(id)
+  , m_styleMap(styleMap)
   , m_nested(nested)
   , m_ownProps()
   , m_props(props)
@@ -66,58 +66,10 @@ IWORKXMLContextPtr_t IWORKStyleContext::element(const int name)
 
 void IWORKStyleContext::endOfElement()
 {
-  switch (m_id)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::cell_style :
-    getCollector()->collectStyle(IWORKStylePtr_t(), m_nested);
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::characterstyle :
-  {
-    const IWORKStylePtr_t style(new IWORKStyle(m_props, m_ident, m_parentIdent));
-    if (getId())
-      getDictionary().m_characterStyles[get(getId())] = style;
-    getCollector()->collectStyle(style, m_nested);
-    break;
-  }
-  case IWORKToken::NS_URI_SF | IWORKToken::connection_style :
-    getCollector()->collectStyle(IWORKStylePtr_t(), m_nested);
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::graphic_style :
-  {
-    const IWORKStylePtr_t style(new IWORKStyle(m_props, m_ident, m_parentIdent));
-    if (getId())
-      getDictionary().m_graphicStyles[get(getId())] = style;
-    getCollector()->collectStyle(style, m_nested);
-    // TODO: this call is in the wrong place
-    getCollector()->setGraphicStyle(style);
-    break;
-  }
-  case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
-    getCollector()->collectStyle(IWORKStylePtr_t(), m_nested);
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
-  {
-    const IWORKStylePtr_t style(new IWORKStyle(m_props, m_ident, m_parentIdent));
-    if (getId())
-      getDictionary().m_paragraphStyles[get(getId())] = style;
-    getCollector()->collectStyle(style, m_nested);
-    break;
-  }
-  case IWORKToken::NS_URI_SF | IWORKToken::tabular_style :
-    getCollector()->collectStyle(IWORKStylePtr_t(), m_nested);
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::vector_style :
-    getCollector()->collectStyle(IWORKStylePtr_t(), m_nested);
-    break;
-  default :
-    ETONYEK_DEBUG_MSG(("unhandled style %d\n", m_id));
-    break;
-  }
-}
-
-IWORKDictionary &IWORKStyleContext::getDictionary()
-{
-  return getState().getDictionary();
+  const IWORKStylePtr_t style(new IWORKStyle(m_props, m_ident, m_parentIdent));
+  if (getId() && bool(m_styleMap))
+    (*m_styleMap)[get(getId())] = style;
+  getCollector()->collectStyle(style, m_nested);
 }
 
 }
