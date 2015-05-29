@@ -10,7 +10,9 @@
 #ifndef IWORKSTYLESCONTEXT_H_INCLUDED
 #define IWORKSTYLESCONTEXT_H_INCLUDED
 
+#include "IWORKDictionary.h"
 #include "IWORKXMLContextBase.h"
+#include "IWORKXMLParserState.h"
 
 namespace libetonyek
 {
