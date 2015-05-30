@@ -14,8 +14,6 @@
 
 #include <deque>
 
-#include <glm/glm.hpp>
-
 #include "IWORKTypes_fwd.h"
 #include "IWORKOutputElements.h"
 
@@ -44,15 +42,12 @@ public:
   void insertCell(unsigned column, unsigned row, const IWORKOutputElements &content = IWORKOutputElements(), unsigned columnSpan = 1, unsigned rowSpan = 1);
   void insertCoveredCell(unsigned column, unsigned row);
 
-  void setGeometry(const IWORKGeometryPtr_t &geometry);
-
-  void draw(const glm::dmat3 &trafo, IWORKOutputElements &elements) const;
+  void draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements) const;
 
 private:
   Table_t m_table;
   IWORKColumnSizes_t m_columnSizes;
   IWORKRowSizes_t m_rowSizes;
-  IWORKGeometryPtr_t m_geometry;
 };
 
 }

@@ -110,6 +110,8 @@ private:
   void pushStyle(const IWORKStylePtr_t &style);
   void resolveStyle(IWORKStyle &style);
 
+  virtual void drawTable() = 0;
+
 protected:
   IWORKDocumentInterface *m_document;
 
@@ -121,6 +123,7 @@ protected:
   std::deque<IWORKStylePtr_t> m_newStyles;
 
   IWORKTextPtr_t m_currentText;
+  IWORKTable m_currentTable;
 
 private:
   IWORKPathPtr_t m_currentPath;
@@ -129,7 +132,6 @@ private:
   IWORKMediaContentPtr_t m_currentFiltered;
   IWORKMediaContentPtr_t m_currentLeveled;
   IWORKMediaContentPtr_t m_currentContent;
-  IWORKTable m_currentTable;
 
   int m_groupLevel;
 };

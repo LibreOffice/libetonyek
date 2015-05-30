@@ -11,6 +11,8 @@
 
 #include <boost/numeric/conversion/cast.hpp>
 
+#include <glm/glm.hpp>
+
 #include "libetonyek_utils.h"
 #include "IWORKDocumentInterface.h"
 #include "IWORKTypes.h"
@@ -32,7 +34,6 @@ IWORKTable::IWORKTable()
   : m_table()
   , m_columnSizes()
   , m_rowSizes()
-  , m_geometry()
 {
 }
 
@@ -67,32 +68,8 @@ void IWORKTable::insertCoveredCell(const unsigned column, const unsigned row)
   m_table[row][column] = cell;
 }
 
-void IWORKTable::setGeometry(const IWORKGeometryPtr_t &geometry)
+void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements) const
 {
-  m_geometry = geometry;
-}
-
-void IWORKTable::draw(const glm::dmat3 &trafo, IWORKOutputElements &elements) const
-{
-  librevenge::RVNGPropertyList tableProps;
-  tableProps.insert("table:align", "center");
-
-  glm::dvec3 vec = trafo * glm::dvec3(0, 0, 1);
-
-  tableProps.insert("svg:x", pt2in(vec[0]));
-  tableProps.insert("svg:y", pt2in(vec[1]));
-
-  if (m_geometry)
-  {
-    double w = m_geometry->m_naturalSize.m_width;
-    double h = m_geometry->m_naturalSize.m_height;
-
-    vec = trafo * glm::dvec3(w, h, 0);
-
-    tableProps.insert("svg:width", pt2in(vec[0]));
-    tableProps.insert("svg:height", pt2in(vec[1]));
-  }
-
   librevenge::RVNGPropertyListVector columnSizes;
 
   for (IWORKColumnSizes_t::const_iterator it = m_columnSizes.begin(); m_columnSizes.end() != it; ++it)
@@ -101,9 +78,11 @@ void IWORKTable::draw(const glm::dmat3 &trafo, IWORKOutputElements &elements) co
     column.insert("style:column-width", pt2in(*it));
     columnSizes.append(column);
   }
-  tableProps.insert("librevenge:table-columns", columnSizes);
 
-  elements.addOpenTable(tableProps);
+  librevenge::RVNGPropertyList allTableProps(tableProps);
+  allTableProps.insert("librevenge:table-columns", columnSizes);
+
+  elements.addOpenTable(allTableProps);
   for (std::size_t r = 0; m_table.size() != r; ++r)
   {
     const Row_t &row = m_table[r];

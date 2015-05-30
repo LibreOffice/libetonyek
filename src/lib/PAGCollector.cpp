@@ -117,6 +117,25 @@ void PAGCollector::closeSection()
   m_document->closePageSpan();
 }
 
+void PAGCollector::drawTable()
+{
+  assert(!m_levelStack.empty());
+
+  librevenge::RVNGPropertyList props;
+
+  // TODO: I am not sure this is the default for Pages...
+  props.insert("table:align", "center");
+
+  const IWORKGeometryPtr_t geometry(m_levelStack.top().m_geometry);
+  if (geometry)
+  {
+    const glm::dvec3 dim(m_levelStack.top().m_trafo * glm::dvec3(geometry->m_naturalSize.m_width, 0, 0));
+    props.insert("style:width", pt2in(dim[0]));
+  }
+
+  m_currentTable.draw(props, m_outputManager.getCurrent());
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

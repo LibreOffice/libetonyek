@@ -34,6 +34,12 @@ void NUMCollector::endWorkSpaceArray()
   getOutputManager().getCurrent().write(m_document);
 }
 
+void NUMCollector::drawTable()
+{
+  librevenge::RVNGPropertyList props;
+  m_currentTable.draw(props, m_outputManager.getCurrent());
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

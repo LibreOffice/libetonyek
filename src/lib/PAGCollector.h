@@ -47,6 +47,9 @@ public:
   void closeSection();
 
 private:
+  virtual void drawTable();
+
+private:
   Section m_currentSection;
 };
 

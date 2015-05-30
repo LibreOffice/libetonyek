@@ -214,11 +214,6 @@ void drawShape(const IWORKShapePtr_t &shape, const glm::dmat3 &trafo, IWORKOutpu
   }
 }
 
-void drawTable(const IWORKTable &table, const glm::dmat3 &trafo, IWORKOutputElements &elements)
-{
-  table.draw(trafo, elements);
-}
-
 }
 
 IWORKCollector::Level::Level()
@@ -234,8 +229,8 @@ IWORKCollector::IWORKCollector(IWORKDocumentInterface *const document)
   , m_currentStylesheet(new IWORKStylesheet())
   , m_newStyles()
   , m_currentText()
-  , m_currentPath()
   , m_currentTable()
+  , m_currentPath()
   , m_groupLevel(0)
 {
   m_document->startDocument(librevenge::RVNGPropertyList());
@@ -469,12 +464,7 @@ void IWORKCollector::collectTableRow()
 
 void IWORKCollector::collectTable()
 {
-  assert(!m_levelStack.empty());
-
-  m_currentTable.setGeometry(m_levelStack.top().m_geometry);
-  m_levelStack.top().m_geometry.reset();
-
-  drawTable(m_currentTable, m_levelStack.top().m_trafo, m_outputManager.getCurrent());
+  drawTable();
 }
 
 void IWORKCollector::startGroup()

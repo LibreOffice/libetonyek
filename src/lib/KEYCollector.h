@@ -50,6 +50,9 @@ public:
   void endLayer();
 
 private:
+  virtual void drawTable();
+
+private:
   IWORKSize m_size;
 
   IWORKOutputElements m_notes;

@@ -250,6 +250,34 @@ void KEYCollector::endLayer()
   m_layerOpened = false;
 }
 
+void KEYCollector::drawTable()
+{
+  assert(!m_levelStack.empty());
+
+  librevenge::RVNGPropertyList tableProps;
+
+  tableProps.insert("table:align", "center");
+
+  glm::dvec3 vec = m_levelStack.top().m_trafo * glm::dvec3(0, 0, 1);
+
+  tableProps.insert("svg:x", pt2in(vec[0]));
+  tableProps.insert("svg:y", pt2in(vec[1]));
+
+  const IWORKGeometryPtr_t geometry(m_levelStack.top().m_geometry);
+  if (geometry)
+  {
+    double w = geometry->m_naturalSize.m_width;
+    double h = geometry->m_naturalSize.m_height;
+
+    vec = m_levelStack.top().m_trafo * glm::dvec3(w, h, 0);
+
+    tableProps.insert("svg:width", pt2in(vec[0]));
+    tableProps.insert("svg:height", pt2in(vec[1]));
+  }
+
+  m_currentTable.draw(tableProps, m_outputManager.getCurrent());
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
