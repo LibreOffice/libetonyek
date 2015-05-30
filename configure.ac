@@ -85,6 +85,7 @@ AC_CHECK_HEADERS(
         boost/lexical_cast.hpp \
         boost/logic/tribool.hpp \
         boost/make_shared.hpp \
+        boost/none.hpp \
         boost/numeric/conversion/cast.hpp \
         boost/optional.hpp \
         boost/ref.hpp \

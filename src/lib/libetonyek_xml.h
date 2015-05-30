@@ -12,6 +12,8 @@
 
 #include <string>
 
+#include <boost/optional.hpp>
+
 #include "libetonyek_utils.h"
 
 extern "C" int readFromStream(void *context, char *buffer, int len);
@@ -27,8 +29,13 @@ namespace libetonyek
   * @returns the boolean value of the string
   */
 bool bool_cast(const char *value);
+boost::optional<bool> try_bool_cast(const char *value);
+
 double double_cast(const char *value);
+boost::optional<double> try_double_cast(const char *value);
+
 int int_cast(const char *value);
+boost::optional<int> try_int_cast(const char *value);
 
 const char *char_cast(const char *c);
 const char *char_cast(const signed char *c);

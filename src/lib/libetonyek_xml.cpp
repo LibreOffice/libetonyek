@@ -13,13 +13,16 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/none.hpp>
 #include <boost/optional.hpp>
 
 #include "libetonyek_utils.h"
 #include "IWORKToken.h"
 #include "IWORKTokenizer.h"
 
+using boost::bad_lexical_cast;
 using boost::lexical_cast;
+using boost::none;
 using boost::optional;
 
 using std::string;
@@ -53,6 +56,11 @@ namespace libetonyek
 
 bool bool_cast(const char *value)
 {
+  return get(try_bool_cast(value));
+}
+
+boost::optional<bool> try_bool_cast(const char *value)
+{
   const IWORKTokenizer &tok(IWORKToken::getTokenizer());
   switch (tok.getId(value))
   {
@@ -61,11 +69,10 @@ bool bool_cast(const char *value)
     return true;
   case IWORKToken::_0 :
   case IWORKToken::false_ :
-  default :
     return false;
   }
 
-  return false;
+  return none;
 }
 
 double double_cast(const char *value)
@@ -73,9 +80,29 @@ double double_cast(const char *value)
   return lexical_cast<double, const char *>(value);
 }
 
+boost::optional<double> try_double_cast(const char *value) try
+{
+  return double_cast(value);
+}
+catch (const bad_lexical_cast &)
+{
+  ETONYEK_DEBUG_MSG(("'%s' is not a valid double\n", value));
+  return none;
+}
+
 int int_cast(const char *value)
 {
   return lexical_cast<int, const char *>(value);
+}
+
+boost::optional<int> try_int_cast(const char *value) try
+{
+  return int_cast(value);
+}
+catch (const bad_lexical_cast &)
+{
+  ETONYEK_DEBUG_MSG(("'%s' is not a valid integer\n", value));
+  return none;
 }
 
 const char *char_cast(const char *const c)

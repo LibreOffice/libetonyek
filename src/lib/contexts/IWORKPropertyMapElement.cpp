@@ -65,27 +65,27 @@ struct NumberConverter
 template<>
 struct NumberConverter<bool>
 {
-  static bool convert(const char *const value)
+  static optional<bool> convert(const char *const value)
   {
-    return bool_cast(value);
+    return try_bool_cast(value);
   }
 };
 
 template<>
 struct NumberConverter<int>
 {
-  static int convert(const char *const value)
+  static optional<int> convert(const char *const value)
   {
-    return int_cast(value);
+    return try_int_cast(value);
   }
 };
 
 template<>
 struct NumberConverter<double>
 {
-  static double convert(const char *const value)
+  static optional<double> convert(const char *const value)
   {
-    return double_cast(value);
+    return try_double_cast(value);
   }
 };
 
@@ -1003,27 +1003,20 @@ namespace
 template<>
 struct NumberConverter<IWORKBorderType>
 {
-  static IWORKBorderType convert(const char *const value)
+  static optional<IWORKBorderType> convert(const char *const value)
   {
-    IWORKBorderType border = IWORK_BORDER_TYPE_NONE;
-
     switch (int_cast(value))
     {
     case 1 :
-      border = IWORK_BORDER_TYPE_TOP;
-      break;
+      return IWORK_BORDER_TYPE_TOP;
     case 2 :
-      border = IWORK_BORDER_TYPE_BOTTOM;
-      break;
+      return IWORK_BORDER_TYPE_BOTTOM;
     case 3 :
-      border = IWORK_BORDER_TYPE_TOP_AND_BOTTOM;
-      break;
+      return IWORK_BORDER_TYPE_TOP_AND_BOTTOM;
     case 4 :
-      border = IWORK_BORDER_TYPE_ALL;
-      break;
+      return IWORK_BORDER_TYPE_ALL;
     }
-
-    return border;
+    return optional<IWORKBorderType>();
   }
 };
 
