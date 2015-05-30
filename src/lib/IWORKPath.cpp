@@ -14,13 +14,12 @@
 
 #include <boost/bind.hpp>
 #include <boost/ref.hpp>
-#include <boost/spirit/include/classic_core.hpp>
+#include <boost/spirit/include/phoenix.hpp>
+#include <boost/spirit/include/qi.hpp>
 
 #include "libetonyek_utils.h"
 #include "IWORKTypes.h"
 
-
-using boost::bind;
 using boost::cref;
 
 using std::string;
@@ -276,6 +275,18 @@ librevenge::RVNGPropertyList CurveTo::toWPG() const
 
 }
 
+namespace
+{
+
+void doAppendCurveTo(IWORKPath *const path, const std::vector<double> &points)
+{
+  assert(path);
+  assert(points.size() == 6);
+  path->appendCurveTo(points[0], points[1], points[2], points[3], points[4], points[5]);
+}
+
+}
+
 IWORKPath::Element::~Element()
 {
 }
@@ -290,28 +301,26 @@ IWORKPath::IWORKPath(const std::string &path)
   : m_elements()
   , m_closed(false)
 {
-  using namespace boost::spirit::classic;
+  namespace ascii = boost::spirit::ascii;
+  namespace qi = boost::spirit::qi;
 
-  double x = 0;
-  double y = 0;
-  double x1 = 0;
-  double y1 = 0;
-  double x2 = 0;
-  double y2 = 0;
+  using boost::phoenix::at_c;
+  using boost::phoenix::bind;
+  using qi::double_;
 
-  const rule<> r =
+  const qi::rule<string::const_iterator, ascii::space_type> rule =
     +(
-      (
-        ('C' && space_p && real_p[assign_a(x)] && space_p && real_p[assign_a(y)] && space_p && real_p[assign_a(x1)] && space_p && real_p[assign_a(y1)] && space_p && real_p[assign_a(x2)] && space_p && real_p[assign_a(y2)])[bind(&IWORKPath::appendCurveTo, this, cref(x), cref(y), cref(x1), cref(y1), cref(x2), cref(y2))]
-        | ('L' && space_p && real_p[assign_a(x)] && space_p && real_p[assign_a(y)])[bind(&IWORKPath::appendLineTo, this, cref(x), cref(y))]
-        | ('M' && space_p && real_p[assign_a(x)] && space_p && real_p[assign_a(y)])[bind(&IWORKPath::appendMoveTo, this, cref(x), cref(y))]
-        | ch_p('Z')[bind(&IWORKPath::appendClose, this)]
-      )
-      && *space_p
+      ('C' >> qi::repeat(6)[double_])[bind(&doAppendCurveTo, this, qi::_1)]
+      | ('M' >> double_ >> double_)[bind(&IWORKPath::appendMoveTo, this, qi::_1, qi::_2)]
+      | ('L' >> double_ >> double_)[bind(&IWORKPath::appendLineTo, this, qi::_1, qi::_2)]
+      | qi::char_('Z')[bind(&IWORKPath::appendClose, this)]
     )
     ;
 
-  if (!parse(path.c_str(), r).full)
+  string::const_iterator it = path.begin();
+  const bool r = qi::phrase_parse(it, path.end(), rule, ascii::space);
+
+  if (!r || (path.end() != it))
   {
     ETONYEK_DEBUG_MSG(("parsing of path '%s' failed\n", path.c_str()));
     throw GenericException();
@@ -382,7 +391,7 @@ void IWORKPath::appendClose()
 
 void IWORKPath::operator*=(const glm::dmat3 &tr)
 {
-  for_each(m_elements.begin(), m_elements.end(), bind(&Element::transform, _1, cref(tr)));
+  for_each(m_elements.begin(), m_elements.end(), boost::bind(&Element::transform, _1, cref(tr)));
 }
 
 librevenge::RVNGPropertyListVector IWORKPath::toWPG() const

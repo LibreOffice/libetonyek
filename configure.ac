@@ -91,7 +91,8 @@ AC_CHECK_HEADERS(
         boost/ref.hpp \
         boost/scoped_ptr.hpp \
         boost/shared_ptr.hpp \
-        boost/spirit/include/classic_core.hpp \
+        boost/spirit/include/phoenix.hpp \
+        boost/spirit/include/qi.hpp \
         boost/unordered_map.hpp,
     [],
     [AC_MSG_ERROR([Required boost headers not found.])],
