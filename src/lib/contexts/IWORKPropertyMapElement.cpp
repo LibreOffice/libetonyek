@@ -264,10 +264,10 @@ IWORKXMLContextPtr_t AlignmentElement::element(const int name)
 
 void AlignmentElement::endOfElement()
 {
-  IWORKAlignment prop;
-
   if (m_value)
   {
+    IWORKAlignment prop(IWORK_ALIGNMENT_LEFT);
+
     switch (get(m_value))
     {
     case 0 :
@@ -285,9 +285,9 @@ void AlignmentElement::endOfElement()
     default :
       ETONYEK_DEBUG_MSG(("unknown alignment %d\n", get(m_value)));
     }
-  }
 
-  m_propMap.put<property::Alignment>(prop);
+    m_propMap.put<property::Alignment>(prop);
+  }
 }
 
 }
@@ -373,7 +373,8 @@ void CapitalizationElement::endOfElement()
 {
   if (m_capitalization)
   {
-    IWORKCapitalization prop;
+    IWORKCapitalization prop(IWORK_CAPITALIZATION_NONE);
+
     switch (get(m_capitalization))
     {
     case 0 :
@@ -624,20 +625,17 @@ void SuperscriptElement::endOfElement()
 {
   if (m_superscript)
   {
-    IWORKBaseline prop;
     switch (get(m_superscript))
     {
     case 1 :
-      prop = IWORK_BASELINE_SUPER;
+      m_propMap.put<property::Baseline>(IWORK_BASELINE_SUPER);
       break;
     case 2 :
-      prop = IWORK_BASELINE_SUB;
+      m_propMap.put<property::Baseline>(IWORK_BASELINE_SUB);
       break;
     default :
       ETONYEK_DEBUG_MSG(("unknown superscript %d\n", get(m_superscript)));
     }
-
-    m_propMap.put<property::Baseline>(prop);
   }
 }
 
