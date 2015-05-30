@@ -14,10 +14,7 @@
 #include <stdio.h>
 #include <string>
 
-#include <boost/function.hpp>
-#include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/unordered_map.hpp>
 
 #include <librevenge/librevenge.h>
 #include <librevenge-stream/librevenge-stream.h>
