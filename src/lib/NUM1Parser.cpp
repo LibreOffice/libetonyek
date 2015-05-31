@@ -302,6 +302,7 @@ public:
   explicit DocumentElement(NUM1ParserState &state);
 
 private:
+  virtual void startOfElement();
   virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
@@ -311,6 +312,12 @@ private:
 DocumentElement::DocumentElement(NUM1ParserState &state)
   : NUM1XMLElementContextBase(state)
 {
+}
+
+void DocumentElement::startOfElement()
+{
+  getCollector()->startDocument();
+  getCollector()->setMetadata();
 }
 
 void DocumentElement::attribute(const int name, const char *const value)
@@ -343,6 +350,7 @@ IWORKXMLContextPtr_t DocumentElement::element(const int name)
 
 void DocumentElement::endOfElement()
 {
+  getCollector()->endDocument();
 }
 
 }

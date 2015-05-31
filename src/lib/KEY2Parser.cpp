@@ -1719,8 +1719,10 @@ public:
   explicit PresentationElement(KEY2ParserState &state);
 
 private:
+  virtual void startOfElement();
   virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
 
 private:
   optional<IWORKSize> m_size;
@@ -1732,6 +1734,12 @@ PresentationElement::PresentationElement(KEY2ParserState &state)
   , m_size()
   , m_pendingSize(false)
 {
+}
+
+void PresentationElement::startOfElement()
+{
+  getCollector()->startDocument();
+  getCollector()->setMetadata();
 }
 
 void PresentationElement::attribute(const int name, const char *const value)
@@ -1773,6 +1781,11 @@ IWORKXMLContextPtr_t PresentationElement::element(const int name)
   }
 
   return IWORKXMLContextPtr_t();
+}
+
+void PresentationElement::endOfElement()
+{
+  getCollector()->endDocument();
 }
 
 }

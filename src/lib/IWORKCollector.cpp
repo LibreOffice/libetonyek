@@ -233,8 +233,6 @@ IWORKCollector::IWORKCollector(IWORKDocumentInterface *const document)
   , m_currentPath()
   , m_groupLevel(0)
 {
-  m_document->startDocument(librevenge::RVNGPropertyList());
-  m_document->setDocumentMetaData(librevenge::RVNGPropertyList());
 }
 
 IWORKCollector::~IWORKCollector()
@@ -244,8 +242,6 @@ IWORKCollector::~IWORKCollector()
 
   assert(!m_currentPath);
   assert(!m_currentText);
-
-  m_document->endDocument();
 }
 
 void IWORKCollector::collectStyle(const IWORKStylePtr_t &style, const bool anonymous)
@@ -465,6 +461,27 @@ void IWORKCollector::collectTableRow()
 void IWORKCollector::collectTable()
 {
   drawTable();
+}
+
+void IWORKCollector::setMetadata()
+{
+  m_document->setDocumentMetaData(librevenge::RVNGPropertyList());
+}
+
+void IWORKCollector::startDocument()
+{
+  m_document->startDocument(librevenge::RVNGPropertyList());
+}
+
+void IWORKCollector::endDocument()
+{
+  assert(m_levelStack.empty());
+  assert(0 == m_groupLevel);
+
+  assert(!m_currentPath);
+  assert(!m_currentText);
+
+  m_document->endDocument();
 }
 
 void IWORKCollector::startGroup()

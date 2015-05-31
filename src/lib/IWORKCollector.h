@@ -86,6 +86,11 @@ public:
   void collectTableRow();
   void collectTable();
 
+  void setMetadata();
+
+  void startDocument();
+  void endDocument();
+
   void startGroup();
   void endGroup();
 
