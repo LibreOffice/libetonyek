@@ -1069,6 +1069,7 @@ typedef NumericPropertyBase<double, property::LeftIndent> LeftIndentElement;
 typedef NumericPropertyBase<double, property::RightIndent> RightIndentElement;
 typedef NumericPropertyBase<double, property::SpaceAfter> SpaceAfterElement;
 typedef NumericPropertyBase<double, property::SpaceBefore> SpaceBeforeElement;
+typedef NumericPropertyBase<double, property::Tracking> TrackingElement;
 typedef NumericPropertyBase<bool, property::KeepLinesTogether> KeepLinesTogetherElement;
 typedef NumericPropertyBase<bool, property::KeepWithNext> KeepWithNextElement;
 typedef NumericPropertyBase<bool, property::WidowControl> WidowControlElement;
@@ -1162,6 +1163,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<TabsProperty>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::textBackground :
     return makeContext<TextBackgroundElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::tracking :
+    return makeContext<TrackingElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::underline :
     return makeContext<UnderlineElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::widowControl :

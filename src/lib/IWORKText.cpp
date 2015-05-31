@@ -64,6 +64,8 @@ void fillCharPropList(librevenge::RVNGPropertyList &props, const IWORKStyleStack
     props.insert("style:text-line-through-type", "single");
   if (style.has<Outline>() && style.get<Outline>())
     props.insert("style:text-outline", true);
+  if (style.has<Tracking>())
+    props.insert("fo:letter-spacing", 1 + style.get<Tracking>(), librevenge::RVNG_PERCENT);
 
   // TODO: handle baseline shift as well. It does interact with sub/superscript.
   if (style.has<Baseline>())

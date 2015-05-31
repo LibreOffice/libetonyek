@@ -42,6 +42,7 @@ IWORK_DECLARE_PROPERTY(SpaceBefore, double);
 IWORK_DECLARE_PROPERTY(Strikethru, bool);
 IWORK_DECLARE_PROPERTY(Tabs, IWORKTabStops_t);
 IWORK_DECLARE_PROPERTY(TextBackground, IWORKColor);
+IWORK_DECLARE_PROPERTY(Tracking, double);
 IWORK_DECLARE_PROPERTY(Underline, bool);
 IWORK_DECLARE_PROPERTY(WidowControl, bool);
 

@@ -187,6 +187,7 @@ enum
   text_storage,
   title_placeholder_ref,
   tocStyle,
+  tracking,
   type,
   underline,
   unfiltered,
