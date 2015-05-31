@@ -44,11 +44,13 @@ protected:
 
 protected:
   IWORKPropertyMap &m_propMap;
+  bool m_default;
 };
 
 PropertyContextBase::PropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : IWORKXMLElementContextBase(state)
   , m_propMap(propMap)
+  , m_default(true)
 {
 }
 
@@ -152,6 +154,8 @@ DirectPropertyContextBase<ContextT, PropertyT>::DirectPropertyContextBase(IWORKX
 template<class ContextT, class PropertyT>
 IWORKXMLContextPtr_t DirectPropertyContextBase<ContextT, PropertyT>::element(const int name)
 {
+  m_default = false;
+
   if (m_propId == name)
     return makeContext<ContextT>(getState(), m_value);
 
@@ -163,6 +167,8 @@ void DirectPropertyContextBase<ContextT, PropertyT>::endOfElement()
 {
   if (bool(m_value))
     m_propMap.put<PropertyT>(m_value);
+  else if (m_default)
+    m_propMap.clear<PropertyT>();
 }
 
 }
@@ -196,6 +202,8 @@ ValuePropertyContextBase<ContextT, PropertyT>::ValuePropertyContextBase(IWORKXML
 template<class ContextT, class PropertyT>
 IWORKXMLContextPtr_t ValuePropertyContextBase<ContextT, PropertyT>::element(const int name)
 {
+  m_default = false;
+
   if (m_propId == name)
     return makeContext<ContextT>(getState(), m_value);
 
@@ -207,6 +215,8 @@ void ValuePropertyContextBase<ContextT, PropertyT>::endOfElement()
 {
   if (bool(m_value))
     m_propMap.put<PropertyT>(get(m_value));
+  else if (m_default)
+    m_propMap.clear<PropertyT>();
 }
 
 }
@@ -509,6 +519,8 @@ TabsProperty::TabsProperty(IWORKXMLParserState &state, IWORKPropertyMap &propMap
 
 IWORKXMLContextPtr_t TabsProperty::element(const int name)
 {
+  m_default = false;
+
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::tabs :
@@ -531,6 +543,10 @@ void TabsProperty::endOfElement()
     IWORKTabStopsMap_t::const_iterator it = getState().getDictionary().m_tabs.find(get(m_ref));
     if (getState().getDictionary().m_tabs.end() != it)
       m_propMap.put<property::Tabs>(it->second);
+  }
+  else if (m_default)
+  {
+    m_propMap.clear<property::Tabs>();
   }
 }
 
@@ -726,6 +742,7 @@ LanguageElement::LanguageElement(IWORKXMLParserState &state, IWORKPropertyMap &p
 
 IWORKXMLContextPtr_t LanguageElement::element(const int name)
 {
+  m_default = false;
   if ((IWORKToken::NS_URI_SF | IWORKToken::string) == name)
     return makeContext<StringElement>(getState(), m_lang);
   return IWORKXMLContextPtr_t();
@@ -738,6 +755,8 @@ void LanguageElement::endOfElement()
     if (IWORKToken::__multilingual != getToken(get(m_lang).c_str()))
       m_propMap.put<property::Language>(get(m_lang));
   }
+  else if (m_default)
+    m_propMap.clear<property::Language>();
 }
 
 }
