@@ -252,6 +252,9 @@ librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, cons
         break;
       }
     }
+
+    if (styleStack.has<PageBreakBefore>())
+      props.insert("fo:break-before", "page");
   }
 
   return props;

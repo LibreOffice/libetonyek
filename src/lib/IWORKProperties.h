@@ -34,6 +34,7 @@ IWORK_DECLARE_PROPERTY(Language, std::string);
 IWORK_DECLARE_PROPERTY(LeftIndent, double);
 IWORK_DECLARE_PROPERTY(LineSpacing, IWORKLineSpacing);
 IWORK_DECLARE_PROPERTY(Outline, bool);
+IWORK_DECLARE_PROPERTY(PageBreakBefore, bool);
 IWORK_DECLARE_PROPERTY(ParagraphBorderType, IWORKBorderType);
 IWORK_DECLARE_PROPERTY(ParagraphFill, IWORKColor);
 IWORK_DECLARE_PROPERTY(RightIndent, double);

@@ -139,6 +139,7 @@ enum
   other_datas,
   outline,
   p,
+  pageBreakBefore,
   paragraphBorderType,
   paragraphFill,
   paragraphstyle,

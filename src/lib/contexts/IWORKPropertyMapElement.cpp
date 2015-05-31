@@ -769,6 +769,7 @@ typedef NumericPropertyBase<bool, property::Italic> ItalicElement;
 typedef NumericPropertyBase<bool, property::KeepLinesTogether> KeepLinesTogetherElement;
 typedef NumericPropertyBase<bool, property::KeepWithNext> KeepWithNextElement;
 typedef NumericPropertyBase<bool, property::Outline> OutlineElement;
+typedef NumericPropertyBase<bool, property::PageBreakBefore> PageBreakBeforeElement;
 typedef NumericPropertyBase<bool, property::Strikethru> StrikethruElement;
 typedef NumericPropertyBase<bool, property::Underline> UnderlineElement;
 typedef NumericPropertyBase<bool, property::WidowControl> WidowControlElement;
@@ -855,6 +856,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<LineSpacingElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::outline :
     return makeContext<OutlineElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::pageBreakBefore :
+    return makeContext<PageBreakBeforeElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphBorderType :
     return makeContext<ParagraphBorderTypeElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphFill :
