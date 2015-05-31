@@ -252,6 +252,8 @@ struct NumberConverter<IWORKAlignment>
         return IWORK_ALIGNMENT_CENTER;
       case 3 :
         return IWORK_ALIGNMENT_JUSTIFY;
+      case 4 : // TODO: what is this?
+        break;
       }
     }
 
