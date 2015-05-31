@@ -87,6 +87,7 @@ displayname,displayname
 drawables,drawables
 du,du
 editable-bezier-path,editable_bezier_path
+element,element
 f,f
 false,false_
 filtered,filtered
@@ -160,11 +161,13 @@ p,p
 pageBreakBefore,pageBreakBefore
 paragraphBorderType,paragraphBorderType
 paragraphFill,paragraphFill
+paragraphStroke,paragraphStroke
 paragraphstyle,paragraphstyle
 paragraphstyle-ref,paragraphstyle_ref
 parent-ident,parent_ident
 parent-ref,parent_ref
 path,path
+pattern,pattern
 placeholder-style,placeholder_style
 placeholder-style-ref,placeholder_style_ref
 point,point
@@ -198,6 +201,7 @@ span,span
 sticky-note,sticky_note
 strikethru,strikethru
 string,string
+stroke,stroke
 style,style
 styles,styles
 superscript,superscript
@@ -227,6 +231,7 @@ underline,underline
 unfiltered,unfiltered
 unfiltered-ref,unfiltered_ref
 v,v
+val,val
 vector-style,vector_style
 vector-style-ref,vector_style_ref
 verticalFlip,verticalFlip

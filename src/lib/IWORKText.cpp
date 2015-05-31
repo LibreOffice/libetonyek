@@ -231,22 +231,47 @@ librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, cons
 
     if (styleStack.has<ParagraphBorderType>())
     {
-      props.insert("style:border-line-width", pt2in(1));
+      librevenge::RVNGString border;
+
+      if (styleStack.has<ParagraphStroke>())
+      {
+        const IWORKStroke &stroke = styleStack.get<ParagraphStroke>();
+        border.sprintf("%fpt", stroke.m_width);
+
+        // The format can represent arbitrary patterns, but we have to
+        // fit them to the limited number of options ODF allows...
+        if (stroke.m_pattern.size() >= 2)
+        {
+          const double x = stroke.m_pattern[0];
+          const double y = stroke.m_pattern[1];
+          if (((x / y) < 0.01) || ((y / x) < 0.01)) // arbitrarily picked constant
+            border.append(" dotted");
+          else
+            border.append(" dashed");
+        }
+        else
+        {
+          border.append(" solid");
+        }
+
+        border.append(" ");
+        border.append(makeColor(stroke.m_color));
+      }
 
       switch (styleStack.get<ParagraphBorderType>())
       {
       case IWORK_BORDER_TYPE_TOP :
-        props.insert("fo:border-top", "solid");
+        props.insert("fo:border-top", border);
         break;
       case IWORK_BORDER_TYPE_BOTTOM :
-        props.insert("fo:border-bottom", "solid");
+        props.insert("fo:border-bottom", border);
         break;
       case IWORK_BORDER_TYPE_TOP_AND_BOTTOM :
-        props.insert("fo:border-top", "solid");
-        props.insert("fo:border-bottom", "solid");
+        props.insert("fo:border-top", border);
+        props.insert("fo:border-bottom", border);
         break;
       case IWORK_BORDER_TYPE_ALL :
-        props.insert("fo:border", "solid");
+        props.insert("fo:border", border);
         break;
       default :
         break;

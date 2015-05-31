@@ -179,6 +179,15 @@ struct IWORKTableData
   boost::optional<std::string> m_content;
 };
 
+struct IWORKStroke
+{
+  IWORKStroke();
+
+  double m_width;
+  IWORKColor m_color;
+  std::deque<double> m_pattern;
+};
+
 }
 
 #endif //  IWORKTYPES_H_INCLUDED

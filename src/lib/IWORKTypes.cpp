@@ -152,6 +152,13 @@ IWORKTableData::IWORKTableData()
 {
 }
 
+IWORKStroke::IWORKStroke()
+  : m_width(0)
+  , m_color()
+  , m_pattern()
+{
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

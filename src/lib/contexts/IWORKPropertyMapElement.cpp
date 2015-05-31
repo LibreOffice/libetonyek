@@ -32,6 +32,7 @@ using boost::lexical_cast;
 using boost::none;
 using boost::optional;
 
+using std::deque;
 using std::string;
 
 namespace
@@ -697,6 +698,195 @@ ParagraphFillElement::ParagraphFillElement(IWORKXMLParserState &state, IWORKProp
 namespace
 {
 
+class ElementElement : public IWORKXMLEmptyContextBase
+{
+public:
+  ElementElement(IWORKXMLParserState &state, optional<double> &value);
+
+private:
+  virtual void attribute(int name, const char *value);
+
+private:
+  optional<double> &m_value;
+};
+
+ElementElement::ElementElement(IWORKXMLParserState &state, optional<double> &value)
+  : IWORKXMLEmptyContextBase(state)
+  , m_value(value)
+{
+}
+
+void ElementElement::attribute(const int name, const char *const value)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::val))
+    m_value = double_cast(value);
+}
+
+}
+
+namespace
+{
+
+class PatternContainerElement : public IWORKXMLElementContextBase
+{
+public:
+  PatternContainerElement(IWORKXMLParserState &state, deque<double> &value);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  deque<double> &m_value;
+  optional<double> m_element;
+};
+
+PatternContainerElement::PatternContainerElement(IWORKXMLParserState &state, deque<double> &value)
+  : IWORKXMLElementContextBase(state)
+  , m_value(value)
+  , m_element()
+{
+}
+
+IWORKXMLContextPtr_t PatternContainerElement::element(const int name)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::element))
+  {
+    if (m_element)
+    {
+      m_value.push_back(get(m_element));
+      m_element.reset();
+    }
+    return makeContext<ElementElement>(getState(), m_element);
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void PatternContainerElement::endOfElement()
+{
+  if (m_element)
+    m_value.push_back(get(m_element));
+}
+
+}
+
+namespace
+{
+
+class PatternElement : public IWORKXMLElementContextBase
+{
+public:
+  PatternElement(IWORKXMLParserState &state, deque<double> &value);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+
+private:
+  deque<double> &m_value;
+};
+
+PatternElement::PatternElement(IWORKXMLParserState &state, deque<double> &value)
+  : IWORKXMLElementContextBase(state)
+  , m_value(value)
+{
+}
+
+IWORKXMLContextPtr_t PatternElement::element(const int name)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::pattern))
+    return makeContext<PatternContainerElement>(getState(), m_value);
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
+class StrokeElement : public IWORKXMLElementContextBase
+{
+public:
+  StrokeElement(IWORKXMLParserState &state, optional<IWORKStroke> &value);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  optional<IWORKStroke> &m_value;
+  optional<double> m_width;
+  optional<IWORKColor> m_color;
+  deque<double> m_pattern;
+};
+
+StrokeElement::StrokeElement(IWORKXMLParserState &state, optional<IWORKStroke> &value)
+  : IWORKXMLElementContextBase(state)
+  , m_value(value)
+  , m_width()
+  , m_color()
+  , m_pattern()
+{
+}
+
+void StrokeElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::width :
+    m_width = double_cast(value);
+    break;
+  }
+}
+
+IWORKXMLContextPtr_t StrokeElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::color :
+    return makeContext<IWORKColorElement>(getState(), m_color);
+  case IWORKToken::NS_URI_SF | IWORKToken::pattern :
+    return makeContext<PatternElement>(getState(), m_pattern);
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void StrokeElement::endOfElement()
+{
+  if (m_width)
+  {
+    m_value = IWORKStroke();
+    IWORKStroke &value = get(m_value);
+    value.m_width = get(m_width);
+    if (m_color)
+      value.m_color = get(m_color);
+    value.m_pattern = m_pattern;
+  }
+}
+
+}
+
+namespace
+{
+
+class ParagraphStrokeElement : public ValuePropertyContextBase<StrokeElement, property::ParagraphStroke>
+{
+public:
+  ParagraphStrokeElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+};
+
+ParagraphStrokeElement::ParagraphStrokeElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::stroke)
+{
+}
+
+}
+
+namespace
+{
+
 template<>
 struct NumberConverter<IWORKBorderType>
 {
@@ -862,6 +1052,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<ParagraphBorderTypeElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphFill :
     return makeContext<ParagraphFillElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::paragraphStroke :
+    return makeContext<ParagraphStrokeElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::rightIndent :
     return makeContext<RightIndentElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceAfter :
