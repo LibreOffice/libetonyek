@@ -67,7 +67,6 @@ void fillCharPropList(librevenge::RVNGPropertyList &props, const IWORKStyleStack
   if (style.has<Tracking>())
     props.insert("fo:letter-spacing", 1 + style.get<Tracking>(), librevenge::RVNG_PERCENT);
 
-  // TODO: handle baseline shift as well. It does interact with sub/superscript.
   if (style.has<Baseline>())
   {
     switch (style.get<Baseline>())
@@ -81,6 +80,10 @@ void fillCharPropList(librevenge::RVNGPropertyList &props, const IWORKStyleStack
     default :
       break;
     }
+  }
+  else if (style.has<BaselineShift>())
+  {
+    props.insert("style:text-position", style.get<BaselineShift>(), librevenge::RVNG_PERCENT);
   }
 
   if (style.has<Capitalization>())
