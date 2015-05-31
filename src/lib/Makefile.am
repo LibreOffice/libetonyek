@@ -121,6 +121,8 @@ libetonyek_internal_la_SOURCES = \
 	PAGCollector.h \
 	PAGDictionary.cpp \
 	PAGDictionary.h \
+	PAGTypes.cpp \
+	PAGTypes.h \
 	PAG1Parser.cpp \
 	PAG1Parser.h \
 	PAG1ParserState.cpp \
@@ -146,6 +148,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKRefContext.h \
 	contexts/IWORKSizeElement.cpp \
 	contexts/IWORKSizeElement.h \
+	contexts/IWORKStringElement.cpp \
+	contexts/IWORKStringElement.h \
 	contexts/IWORKStylesContext.cpp \
 	contexts/IWORKStylesContext.h \
 	contexts/IWORKStyleContext.cpp \

@@ -17,6 +17,9 @@ namespace libetonyek
 
 class IWORKDocumentInterface;
 
+class PAGMetadata;
+class PAGPublicationInfo;
+
 class PAGCollector : public IWORKCollector
 {
   struct Section
@@ -35,6 +38,9 @@ public:
   explicit PAGCollector(IWORKDocumentInterface *document);
 
   // collector functions
+
+  void collectPublicationInfo(const PAGPublicationInfo &pubInfo);
+  void collectMetadata(const PAGMetadata &metadata);
 
   void collectTextBody();
   void collectAttachment(const IWORKOutputID_t &id);

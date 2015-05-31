@@ -9,16 +9,49 @@
 
 #include "PAGCollector.h"
 
+#include <boost/algorithm/string/join.hpp>
 #include <boost/make_shared.hpp>
 
 #include "IWORKDocumentInterface.h"
 #include "IWORKOutputElements.h"
 #include "IWORKText.h"
+#include "PAGTypes.h"
 
 namespace libetonyek
 {
 
 using librevenge::RVNGPropertyList;
+
+using std::string;
+
+namespace
+{
+
+struct NotEmpty
+{
+  bool operator()(const string &str) const
+  {
+    return !str.empty();
+  }
+};
+
+void fillMetadata(const PAGMetadata &metadata, const PAGPublicationInfo &/*docInfo*/, RVNGPropertyList &props)
+{
+  using boost::join_if;
+
+  if (metadata.m_title && !get(metadata.m_title).empty())
+    props.insert("dc:subject", get(metadata.m_title).c_str());
+  if (!metadata.m_authors.empty())
+    props.insert("meta:intial-creator", join_if(metadata.m_authors, ", ", NotEmpty()).c_str());
+  if (!metadata.m_projects.empty())
+    props.insert("librevenge:project", join_if(metadata.m_projects, ", ", NotEmpty()).c_str());
+  if (!metadata.m_keywords.empty())
+    props.insert("meta:keyword", join_if(metadata.m_keywords, ", ", NotEmpty()).c_str());
+  if (metadata.m_comment && !get(metadata.m_comment).empty())
+    props.insert("librevenge:comments", get(metadata.m_comment).c_str());
+}
+
+}
 
 PAGCollector::Section::Section()
   : m_width()
@@ -40,6 +73,17 @@ PAGCollector::PAGCollector(IWORKDocumentInterface *const document)
   : IWORKCollector(document)
   , m_currentSection()
 {
+}
+
+void PAGCollector::collectPublicationInfo(const PAGPublicationInfo &/*pubInfo*/)
+{
+}
+
+void PAGCollector::collectMetadata(const PAGMetadata &metadata)
+{
+  RVNGPropertyList props;
+  fillMetadata(metadata, PAGPublicationInfo(), props);
+  m_document->setDocumentMetaData(props);
 }
 
 void PAGCollector::collectTextBody()

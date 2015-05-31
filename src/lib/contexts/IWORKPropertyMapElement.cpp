@@ -18,6 +18,7 @@
 #include "IWORKGeometryElement.h"
 #include "IWORKProperties.h"
 #include "IWORKRefContext.h"
+#include "IWORKStringElement.h"
 #include "IWORKStyleContext.h"
 #include "IWORKStyleRefContext.h"
 #include "IWORKToken.h"
@@ -339,36 +340,7 @@ struct NumberConverter<IWORKCapitalization>
 namespace
 {
 
-class StringElement : public IWORKXMLEmptyContextBase
-{
-public:
-  StringElement(IWORKXMLParserState &state, optional<string> &str);
-
-private:
-  virtual void attribute(int name, const char *value);
-
-private:
-  optional<string> &m_string;
-};
-
-StringElement::StringElement(IWORKXMLParserState &state, optional<string> &str)
-  : IWORKXMLEmptyContextBase(state)
-  , m_string(str)
-{
-}
-
-void StringElement::attribute(const int name, const char *const value)
-{
-  if ((IWORKToken::NS_URI_SFA | IWORKToken::string) == name)
-    m_string = value;
-}
-
-}
-
-namespace
-{
-
-class FontNameElement : public ValuePropertyContextBase<StringElement, property::FontName>
+class FontNameElement : public ValuePropertyContextBase<IWORKStringElement, property::FontName>
 {
 public:
   FontNameElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
@@ -934,7 +906,7 @@ IWORKXMLContextPtr_t LanguageElement::element(const int name)
 {
   m_default = false;
   if ((IWORKToken::NS_URI_SF | IWORKToken::string) == name)
-    return makeContext<StringElement>(getState(), m_lang);
+    return makeContext<IWORKStringElement>(getState(), m_lang);
   return IWORKXMLContextPtr_t();
 }
 

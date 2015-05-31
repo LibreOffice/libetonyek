@@ -22,14 +22,17 @@ struct Token
 };
 %%
 92008102400,VERSION_STR_4
+SLCreationDateProperty,SLCreationDateProperty
 body,body
 cell,cell
+date,date
 document,document
 footnote,footnote
 header,header
 http://developer.apple.com/namespaces/sl,NS_URI_SL
 layout,layout
 note,note
+publication-info,publication_info
 section-prototypes,section_prototypes
 stylesheet,stylesheet
 textbox,textbox

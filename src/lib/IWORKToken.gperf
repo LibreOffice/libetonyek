@@ -49,10 +49,12 @@ alignment,alignment
 amt,amt
 angle,angle
 anon-styles,anon_styles
+array,array
 aspectRatioLocked,aspectRatioLocked
 attachment,attachment
 attachment-ref,attachment_ref
 attachments,attachments
+authors,authors
 b,b
 baselineShift,baselineShift
 bezier,bezier
@@ -71,6 +73,7 @@ characterstyle-ref,characterstyle_ref
 col-span,col_span
 color,color
 columns,columns
+comment,comment
 connection-line,connection_line
 connection-path,connection_path
 connection-style,connection_style
@@ -127,6 +130,7 @@ intratopicbr,intratopicbr
 italic,italic
 keepLinesTogether,keepLinesTogether
 keepWithNext,keepWithNext
+keywords,keywords
 kind,kind
 language,language
 layer,layer
@@ -174,6 +178,7 @@ point,point
 point-path,point_path
 pos,pos
 position,position
+projects,projects
 property-map,property_map
 proxy-master-layer,proxy_master_layer
 r,r
@@ -222,6 +227,7 @@ text,text
 textBackground,textBackground
 text-body,text_body
 text-storage,text_storage
+title,title
 title-placeholder-ref,title_placeholder_ref
 tocStyle,tocStyle
 tracking,tracking

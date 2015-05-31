@@ -31,9 +31,12 @@ enum
   sl,
 
   // elements
+  SLCreationDateProperty,
+  date,
   document,
   header,
   layout,
+  publication_info,
   section,
   section_prototypes,
   stylesheet,
