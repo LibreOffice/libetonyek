@@ -113,6 +113,13 @@ void IWORKStyleStackTest::testLookup()
   context.set(makeStyle(IWORKPropertyMap()));
   CPPUNIT_ASSERT(context.has<Answer>());
   CPPUNIT_ASSERT_EQUAL(42, context.get<Answer>());
+
+  // lookup stops at cleared property
+  IWORKPropertyMap props3;
+  props3.clear<Answer>();
+  context.push();
+  context.set(makeStyle(props3));
+  CPPUNIT_ASSERT(!context.has<Answer>());
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(IWORKStyleStackTest);

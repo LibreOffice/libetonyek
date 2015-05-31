@@ -65,6 +65,11 @@ void IWORKPropertyMapTest::testLookup()
   // non-existing value
   CPPUNIT_ASSERT(!props.has<Antwort>());
   CPPUNIT_ASSERT_THROW(props.get<Antwort>(), IWORKPropertyMap::NotFoundException);
+
+  // cleared value
+  props.clear<Answer>();
+  CPPUNIT_ASSERT(!props.has<Answer>());
+  CPPUNIT_ASSERT_THROW(props.get<Answer>(), IWORKPropertyMap::NotFoundException);
 }
 
 void IWORKPropertyMapTest::testLookupWithParent()
@@ -96,6 +101,11 @@ void IWORKPropertyMapTest::testLookupWithParent()
     parent.setParent(&grandparent);
     CPPUNIT_ASSERT(props.has<Antwort>(true));
     CPPUNIT_ASSERT_EQUAL(17, props.get<Antwort>(true));
+
+    // cleared value
+    props.clear<Answer>();
+    CPPUNIT_ASSERT(!props.has<Answer>());
+    CPPUNIT_ASSERT(!props.has<Answer>(true));
   }
 
   // switching of parents
