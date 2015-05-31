@@ -29,6 +29,7 @@ namespace libetonyek
 
 using boost::any;
 using boost::lexical_cast;
+using boost::none;
 using boost::optional;
 
 using std::string;
@@ -233,62 +234,30 @@ NumericPropertyBase<ValueT, PropertyT>::NumericPropertyBase(IWORKXMLParserState 
 namespace
 {
 
-class AlignmentElement : public PropertyContextBase
+template<>
+struct NumberConverter<IWORKAlignment>
 {
-public:
-  AlignmentElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  optional<int> m_value;
-};
-
-AlignmentElement::AlignmentElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : PropertyContextBase(state, propMap)
-{
-}
-
-IWORKXMLContextPtr_t AlignmentElement::element(const int name)
-{
-  switch (name)
+  static optional<IWORKAlignment> convert(const char *const value)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::number :
-    return makeContext<NumberElement<int> >(getState(), m_value);
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-void AlignmentElement::endOfElement()
-{
-  if (m_value)
-  {
-    IWORKAlignment prop(IWORK_ALIGNMENT_LEFT);
-
-    switch (get(m_value))
+    const optional<int> alignment(try_int_cast(value));
+    if (alignment)
     {
-    case 0 :
-      prop = IWORK_ALIGNMENT_LEFT;
-      break;
-    case 1 :
-      prop = IWORK_ALIGNMENT_RIGHT;
-      break;
-    case 2 :
-      prop = IWORK_ALIGNMENT_CENTER;
-      break;
-    case 3 :
-      prop = IWORK_ALIGNMENT_JUSTIFY;
-      break;
-    default :
-      ETONYEK_DEBUG_MSG(("unknown alignment %d\n", get(m_value)));
+      switch (get(alignment))
+      {
+      case 0 :
+        return IWORK_ALIGNMENT_LEFT;
+      case 1 :
+        return IWORK_ALIGNMENT_RIGHT;
+      case 2 :
+        return IWORK_ALIGNMENT_CENTER;
+      case 3 :
+        return IWORK_ALIGNMENT_JUSTIFY;
+      }
     }
 
-    m_propMap.put<property::Alignment>(prop);
+    return none;
   }
-}
+};
 
 }
 
@@ -327,75 +296,30 @@ GeometryElement::GeometryElement(IWORKXMLParserState &state, IWORKPropertyMap &p
 namespace
 {
 
-class BoldElement : public ValuePropertyContextBase<NumberElement<bool>, property::Bold>
+template<>
+struct NumberConverter<IWORKCapitalization>
 {
-public:
-  BoldElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
-
-BoldElement::BoldElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number)
-{
-}
-
-}
-
-namespace
-{
-
-class CapitalizationElement : public PropertyContextBase
-{
-public:
-  CapitalizationElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  optional<int> m_capitalization;
-};
-
-CapitalizationElement::CapitalizationElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : PropertyContextBase(state, propMap)
-{
-}
-
-IWORKXMLContextPtr_t CapitalizationElement::element(const int name)
-{
-  if ((IWORKToken::NS_URI_SF | IWORKToken::number) == name)
-    return makeContext<NumberElement<int> >(getState(), m_capitalization);
-
-  return IWORKXMLContextPtr_t();
-}
-
-void CapitalizationElement::endOfElement()
-{
-  if (m_capitalization)
+  static optional<IWORKCapitalization> convert(const char *const value)
   {
-    IWORKCapitalization prop(IWORK_CAPITALIZATION_NONE);
-
-    switch (get(m_capitalization))
+    const optional<int> capitalization(try_int_cast(value));
+    if (capitalization)
     {
-    case 0 :
-      prop = IWORK_CAPITALIZATION_NONE;
-      break;
-    case 1 :
-      prop = IWORK_CAPITALIZATION_ALL_CAPS;
-      break;
-    case 2 :
-      prop = IWORK_CAPITALIZATION_SMALL_CAPS;
-      break;
-    case 3 :
-      prop = IWORK_CAPITALIZATION_TITLE;
-      break;
-    default :
-      ETONYEK_DEBUG_MSG(("unknown capitalization %d\n", get(m_capitalization)));
+      switch (get(capitalization))
+      {
+      case 0 :
+        return IWORK_CAPITALIZATION_NONE;
+      case 1 :
+        return IWORK_CAPITALIZATION_ALL_CAPS;
+      case 2 :
+        return IWORK_CAPITALIZATION_SMALL_CAPS;
+      case 3 :
+        return IWORK_CAPITALIZATION_TITLE;
+      }
     }
 
-    m_propMap.put<property::Capitalization>(prop);
+    return none;
   }
-}
+};
 
 }
 
@@ -447,197 +371,26 @@ FontNameElement::FontNameElement(IWORKXMLParserState &state, IWORKPropertyMap &p
 namespace
 {
 
-class FontSizeElement : public PropertyContextBase
+template<>
+struct NumberConverter<IWORKBaseline>
 {
-public:
-  FontSizeElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  optional<double> m_fontSize;
-};
-
-FontSizeElement::FontSizeElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : PropertyContextBase(state, propMap)
-{
-}
-
-IWORKXMLContextPtr_t FontSizeElement::element(const int name)
-{
-  if ((IWORKToken::NS_URI_SF | IWORKToken::number) == name)
-    return makeContext<NumberElement<double> >(getState(), m_fontSize);
-
-  return IWORKXMLContextPtr_t();
-}
-
-void FontSizeElement::endOfElement()
-{
-  if (m_fontSize)
-    m_propMap.put<property::FontSize>(get(m_fontSize));
-}
-
-}
-
-namespace
-{
-
-class ItalicElement : public PropertyContextBase
-{
-public:
-  ItalicElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  optional<bool> m_italic;
-};
-
-ItalicElement::ItalicElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : PropertyContextBase(state, propMap)
-{
-}
-
-IWORKXMLContextPtr_t ItalicElement::element(const int name)
-{
-  if ((IWORKToken::NS_URI_SF | IWORKToken::number) == name)
-    return makeContext<NumberElement<bool> >(getState(), m_italic);
-
-  return IWORKXMLContextPtr_t();
-}
-
-void ItalicElement::endOfElement()
-{
-  if (m_italic)
-    m_propMap.put<property::Italic>(get(m_italic));
-}
-
-}
-
-namespace
-{
-
-class OutlineElement : public PropertyContextBase
-{
-public:
-  OutlineElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  optional<bool> m_outline;
-};
-
-OutlineElement::OutlineElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : PropertyContextBase(state, propMap)
-{
-}
-
-IWORKXMLContextPtr_t OutlineElement::element(const int name)
-{
-  if ((IWORKToken::NS_URI_SF | IWORKToken::number) == name)
-    return makeContext<NumberElement<bool> >(getState(), m_outline);
-
-  return IWORKXMLContextPtr_t();
-}
-
-void OutlineElement::endOfElement()
-{
-  if (m_outline)
-    m_propMap.put<property::Outline>(get(m_outline));
-}
-
-}
-
-namespace
-{
-
-class StrikethruElement : public PropertyContextBase
-{
-public:
-  StrikethruElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  optional<bool> m_strikethru;
-};
-
-StrikethruElement::StrikethruElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : PropertyContextBase(state, propMap)
-{
-}
-
-IWORKXMLContextPtr_t StrikethruElement::element(const int name)
-{
-  if ((IWORKToken::NS_URI_SF | IWORKToken::number) == name)
-    return makeContext<NumberElement<bool> >(getState(), m_strikethru);
-
-  return IWORKXMLContextPtr_t();
-}
-
-void StrikethruElement::endOfElement()
-{
-  if (m_strikethru)
-    m_propMap.put<property::Strikethru>(get(m_strikethru));
-}
-
-}
-
-namespace
-{
-
-class SuperscriptElement : public PropertyContextBase
-{
-public:
-  SuperscriptElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  optional<int> m_superscript;
-};
-
-SuperscriptElement::SuperscriptElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : PropertyContextBase(state, propMap)
-{
-}
-
-IWORKXMLContextPtr_t SuperscriptElement::element(const int name)
-{
-  if ((IWORKToken::NS_URI_SF | IWORKToken::number) == name)
-    return makeContext<NumberElement<int> >(getState(), m_superscript);
-
-  return IWORKXMLContextPtr_t();
-}
-
-void SuperscriptElement::endOfElement()
-{
-  if (m_superscript)
+  static optional<IWORKBaseline> convert(const char *const value)
   {
-    switch (get(m_superscript))
+    const optional<int> superscript(try_int_cast(value));
+    if (superscript)
     {
-    case 1 :
-      m_propMap.put<property::Baseline>(IWORK_BASELINE_SUPER);
-      break;
-    case 2 :
-      m_propMap.put<property::Baseline>(IWORK_BASELINE_SUB);
-      break;
-    default :
-      ETONYEK_DEBUG_MSG(("unknown superscript %d\n", get(m_superscript)));
+      switch (get(superscript))
+      {
+      case 1 :
+        return IWORK_BASELINE_SUPER;
+      case 2 :
+        return IWORK_BASELINE_SUB;
+      }
     }
+
+    return none;
   }
-}
+};
 
 }
 
@@ -777,80 +530,6 @@ void TabsProperty::endOfElement()
     if (getState().getDictionary().m_tabs.end() != it)
       m_propMap.put<property::Tabs>(it->second);
   }
-}
-
-}
-
-namespace
-{
-
-class UnderlineElement : public PropertyContextBase
-{
-public:
-  UnderlineElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  optional<bool> m_underline;
-};
-
-UnderlineElement::UnderlineElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : PropertyContextBase(state, propMap)
-{
-}
-
-IWORKXMLContextPtr_t UnderlineElement::element(const int name)
-{
-  if ((IWORKToken::NS_URI_SF | IWORKToken::number) == name)
-    return makeContext<NumberElement<bool> >(getState(), m_underline);
-
-  return IWORKXMLContextPtr_t();
-}
-
-void UnderlineElement::endOfElement()
-{
-  if (m_underline)
-    m_propMap.put<property::Underline>(get(m_underline));
-}
-
-}
-
-namespace
-{
-
-class BaselineShiftElement : public PropertyContextBase
-{
-public:
-  BaselineShiftElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  optional<double> m_baselineShift;
-};
-
-BaselineShiftElement::BaselineShiftElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : PropertyContextBase(state, propMap)
-{
-}
-
-IWORKXMLContextPtr_t BaselineShiftElement::element(const int name)
-{
-  if ((IWORKToken::NS_URI_SF | IWORKToken::number) == name)
-    return makeContext<NumberElement<double> >(getState(), m_baselineShift);
-
-  return IWORKXMLContextPtr_t();
-}
-
-void BaselineShiftElement::endOfElement()
-{
-  if (m_baselineShift)
-    m_propMap.put<property::BaselineShift>(get(m_baselineShift));
 }
 
 }
@@ -1064,16 +743,26 @@ void LanguageElement::endOfElement()
 namespace
 {
 
+typedef NumericPropertyBase<bool, property::Bold> BoldElement;
+typedef NumericPropertyBase<bool, property::Italic> ItalicElement;
+typedef NumericPropertyBase<bool, property::KeepLinesTogether> KeepLinesTogetherElement;
+typedef NumericPropertyBase<bool, property::KeepWithNext> KeepWithNextElement;
+typedef NumericPropertyBase<bool, property::Outline> OutlineElement;
+typedef NumericPropertyBase<bool, property::Strikethru> StrikethruElement;
+typedef NumericPropertyBase<bool, property::Underline> UnderlineElement;
+typedef NumericPropertyBase<bool, property::WidowControl> WidowControlElement;
+typedef NumericPropertyBase<double, property::BaselineShift> BaselineShiftElement;
 typedef NumericPropertyBase<double, property::FirstLineIndent> FirstLineIndentElement;
+typedef NumericPropertyBase<double, property::FontSize> FontSizeElement;
 typedef NumericPropertyBase<double, property::LeftIndent> LeftIndentElement;
 typedef NumericPropertyBase<double, property::RightIndent> RightIndentElement;
 typedef NumericPropertyBase<double, property::SpaceAfter> SpaceAfterElement;
 typedef NumericPropertyBase<double, property::SpaceBefore> SpaceBeforeElement;
 typedef NumericPropertyBase<double, property::Tracking> TrackingElement;
-typedef NumericPropertyBase<bool, property::KeepLinesTogether> KeepLinesTogetherElement;
-typedef NumericPropertyBase<bool, property::KeepWithNext> KeepWithNextElement;
-typedef NumericPropertyBase<bool, property::WidowControl> WidowControlElement;
+typedef NumericPropertyBase<IWORKAlignment, property::Alignment> AlignmentElement;
+typedef NumericPropertyBase<IWORKBaseline, property::Baseline> SuperscriptElement;
 typedef NumericPropertyBase<IWORKBorderType, property::ParagraphBorderType> ParagraphBorderTypeElement;
+typedef NumericPropertyBase<IWORKCapitalization, property::Capitalization> CapitalizationElement;
 
 }
 
