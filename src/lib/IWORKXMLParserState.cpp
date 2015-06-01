@@ -22,6 +22,7 @@ IWORKXMLParserState::IWORKXMLParserState(IWORKParser &parser, IWORKCollector &co
   , m_collector(collector)
   , m_dict(dict)
   , m_tableData()
+  , m_enableCollector(true)
 {
 }
 

@@ -43,6 +43,9 @@ private:
 
 public:
   IWORKTableDataPtr_t m_tableData;
+  // When false, nothing should be sent to collector. This is used to
+  // gather referenceable entities in skipped parts of the file.
+  bool m_enableCollector;
 };
 
 }

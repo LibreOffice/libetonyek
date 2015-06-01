@@ -151,7 +151,8 @@ IWORKXMLContextPtr_t StylesheetElement::element(const int name)
 
 void StylesheetElement::endOfElement()
 {
-  getCollector().collectStylesheet();
+  if (isCollector())
+    getCollector().collectStylesheet();
 }
 
 }
@@ -274,7 +275,8 @@ IWORKXMLContextPtr_t PublicationInfoElement::element(const int name)
 
 void PublicationInfoElement::endOfElement()
 {
-  getCollector().collectPublicationInfo(m_pubInfo);
+  if (isCollector())
+    getCollector().collectPublicationInfo(m_pubInfo);
 }
 
 }
@@ -516,7 +518,8 @@ IWORKXMLContextPtr_t MetadataElement::element(const int name)
 
 void MetadataElement::endOfElement()
 {
-  getCollector().collectMetadata(m_metadata);
+  if (isCollector())
+    getCollector().collectMetadata(m_metadata);
 }
 
 }
@@ -548,7 +551,8 @@ IWORKXMLContextPtr_t AttachmentElement::element(const int name)
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::tabular_info))
   {
     m_known = true;
-    getCollector().getOutputManager().push();
+    if (isCollector())
+      getCollector().getOutputManager().push();
     return makeContext<IWORKTabularInfoElement>(getState());
   }
 
@@ -559,9 +563,12 @@ void AttachmentElement::endOfElement()
 {
   if (m_known)
   {
-    if (getId())
-      getState().getDictionary().m_attachments[get(getId())] = getCollector().getOutputManager().save();
-    getCollector().getOutputManager().pop();
+    if (isCollector())
+    {
+      if (getId())
+        getState().getDictionary().m_attachments[get(getId())] = getCollector().getOutputManager().save();
+      getCollector().getOutputManager().pop();
+    }
   }
 }
 
@@ -630,7 +637,7 @@ IWORKXMLContextPtr_t PElement::element(const int name)
 
 void PElement::endOfElement()
 {
-  if (m_ref)
+  if (m_ref && isCollector())
   {
     const IWORKOutputMap_t::const_iterator it = getState().getDictionary().m_attachments.find(get(m_ref));
     if (it != getState().getDictionary().m_attachments.end())
@@ -700,7 +707,8 @@ void SectionElement::startOfElement()
   const double y(get_optional_value_or(m_pageFrame.m_y, 0));
 
   // TODO: This assumes that the left/right and top/bottom margins are always equal.
-  getCollector().openSection(pt2in(w + 2 * x), pt2in(h + 2 * y), pt2in(x), pt2in(y));
+  if (isCollector())
+    getCollector().openSection(pt2in(w + 2 * x), pt2in(h + 2 * y), pt2in(x), pt2in(y));
 }
 
 IWORKXMLContextPtr_t SectionElement::element(const int name)
@@ -713,7 +721,8 @@ IWORKXMLContextPtr_t SectionElement::element(const int name)
 
 void SectionElement::endOfElement()
 {
-  getCollector().closeSection();
+  if (isCollector())
+    getCollector().closeSection();
 }
 
 }
@@ -827,7 +836,8 @@ IWORKXMLContextPtr_t TextStorageElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::text_body :
     if (!m_textOpened)
     {
-      getCollector().startText();
+      if (isCollector())
+        getCollector().startText();
       m_textOpened = true;
     }
     return makeContext<TextBodyElement>(getState());
@@ -840,7 +850,7 @@ void TextStorageElement::endOfElement()
 {
   IWORKTextStorageElement::endOfElement();
 
-  if (m_textOpened)
+  if (m_textOpened && isCollector())
   {
     getCollector().collectTextBody();
     getCollector().endText();
@@ -877,7 +887,8 @@ DocumentElement::DocumentElement(PAG1ParserState &state)
 
 void DocumentElement::startOfElement()
 {
-  getCollector().startDocument();
+  if (isCollector())
+    getCollector().startDocument();
 }
 
 void DocumentElement::attribute(const int name, const char *const value)
@@ -921,7 +932,8 @@ IWORKXMLContextPtr_t DocumentElement::element(const int name)
 
 void DocumentElement::endOfElement()
 {
-  getCollector().endDocument();
+  if (isCollector())
+    getCollector().endDocument();
 }
 
 }

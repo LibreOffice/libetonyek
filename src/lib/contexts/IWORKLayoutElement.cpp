@@ -28,7 +28,8 @@ void IWORKLayoutElement::attribute(const int name, const char *)
   if ((IWORKToken::NS_URI_SF | IWORKToken::style) == name)
   {
     // TODO: fetch the style
-    getCollector().collectStyle(IWORKStylePtr_t(), false);
+    if (isCollector())
+      getCollector().collectStyle(IWORKStylePtr_t(), false);
   }
 }
 

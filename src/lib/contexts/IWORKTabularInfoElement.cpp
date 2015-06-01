@@ -92,10 +92,13 @@ void CellContextBase::emitCell(const bool covered)
   assert(getState().m_tableData->m_rowSizes.size() > getState().m_tableData->m_row);
 
   // send the cell to collector
-  if (covered)
-    getCollector().collectCoveredTableCell(getState().m_tableData->m_row, getState().m_tableData->m_column);
-  else
-    getCollector().collectTableCell(getState().m_tableData->m_row, getState().m_tableData->m_column, getState().m_tableData->m_content, get_optional_value_or(getState().m_tableData->m_rowSpan, 1), get_optional_value_or(getState().m_tableData->m_columnSpan, 1));
+  if (isCollector())
+  {
+    if (covered)
+      getCollector().collectCoveredTableCell(getState().m_tableData->m_row, getState().m_tableData->m_column);
+    else
+      getCollector().collectTableCell(getState().m_tableData->m_row, getState().m_tableData->m_column, getState().m_tableData->m_content, get_optional_value_or(getState().m_tableData->m_rowSpan, 1), get_optional_value_or(getState().m_tableData->m_columnSpan, 1));
+  }
 
   // reset cell attributes
   getState().m_tableData->m_columnSpan.reset();
@@ -406,7 +409,8 @@ TElement::TElement(IWORKXMLParserState &state)
 
 void TElement::startOfElement()
 {
-  getCollector().startText();
+  if (isCollector())
+    getCollector().startText();
 }
 
 IWORKXMLContextPtr_t TElement::element(const int name)
@@ -424,7 +428,8 @@ void TElement::endOfElement()
 {
   emitCell();
 
-  getCollector().endText();
+  if (isCollector())
+    getCollector().endText();
 }
 
 }
@@ -452,7 +457,8 @@ DatasourceElement::DatasourceElement(IWORKXMLParserState &state)
 
 void DatasourceElement::startOfElement()
 {
-  getCollector().collectTableSizes(getState().m_tableData->m_rowSizes, getState().m_tableData->m_columnSizes);
+  if (isCollector())
+    getCollector().collectTableSizes(getState().m_tableData->m_rowSizes, getState().m_tableData->m_columnSizes);
 }
 
 IWORKXMLContextPtr_t DatasourceElement::element(const int name)
@@ -614,7 +620,8 @@ IWORKTabularInfoElement::IWORKTabularInfoElement(IWORKXMLParserState &state)
 void IWORKTabularInfoElement::startOfElement()
 {
   getState().m_tableData.reset(new IWORKTableData());
-  getCollector().startLevel();
+  if (isCollector())
+    getCollector().startLevel();
 }
 
 IWORKXMLContextPtr_t IWORKTabularInfoElement::element(const int name)
@@ -633,9 +640,12 @@ IWORKXMLContextPtr_t IWORKTabularInfoElement::element(const int name)
 
 void IWORKTabularInfoElement::endOfElement()
 {
-  getCollector().collectTable();
+  if (isCollector())
+  {
+    getCollector().collectTable();
 
-  getCollector().endLevel();
+    getCollector().endLevel();
+  }
 }
 
 }

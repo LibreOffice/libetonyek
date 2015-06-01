@@ -37,7 +37,8 @@ BrContext::BrContext(IWORKXMLParserState &state)
 
 void BrContext::endOfElement()
 {
-  getCollector().collectLineBreak();
+  if (isCollector())
+    getCollector().collectLineBreak();
 }
 
 }
@@ -61,7 +62,8 @@ TabElement::TabElement(IWORKXMLParserState &state)
 
 void TabElement::endOfElement()
 {
-  getCollector().collectTab();
+  if (isCollector())
+    getCollector().collectTab();
 }
 
 }
@@ -128,12 +130,13 @@ IWORKXMLContextPtr_t SpanElement::element(const int name)
 void SpanElement::text(const char *const value)
 {
   ensureOpened();
-  getCollector().collectText(value);
+  if (isCollector())
+    getCollector().collectText(value);
 }
 
 void SpanElement::endOfElement()
 {
-  if (m_opened)
+  if (m_opened && isCollector())
     getCollector().closeSpan();
 }
 
@@ -141,7 +144,8 @@ void SpanElement::ensureOpened()
 {
   if (!m_opened)
   {
-    getCollector().openSpan(m_style);
+    if (isCollector())
+      getCollector().openSpan(m_style);
     m_opened = true;
   }
 }
@@ -176,7 +180,8 @@ void LinkElement::attribute(const int name, const char *const value)
 {
   if (IWORKToken::href == name)
   {
-    getCollector().openLink(value);
+    if (isCollector())
+      getCollector().openLink(value);
     m_opened = true;
   }
 }
@@ -194,12 +199,13 @@ IWORKXMLContextPtr_t LinkElement::element(const int name)
 
 void LinkElement::text(const char *const value)
 {
-  getCollector().collectText(value);
+  if (isCollector())
+    getCollector().collectText(value);
 }
 
 void LinkElement::endOfElement()
 {
-  if (m_opened)
+  if (m_opened && isCollector())
     getCollector().closeLink();
 }
 
@@ -250,20 +256,23 @@ IWORKXMLContextPtr_t IWORKPElement::element(const int name)
 void IWORKPElement::text(const char *const value)
 {
   ensureOpened();
-  getCollector().collectText(value);
+  if (isCollector())
+    getCollector().collectText(value);
 }
 
 void IWORKPElement::endOfElement()
 {
   ensureOpened();
-  getCollector().endParagraph();
+  if (isCollector())
+    getCollector().endParagraph();
 }
 
 void IWORKPElement::ensureOpened()
 {
   if (!m_opened)
   {
-    getCollector().startParagraph(m_style);
+    if (isCollector())
+      getCollector().startParagraph(m_style);
     m_opened = true;
   }
 }

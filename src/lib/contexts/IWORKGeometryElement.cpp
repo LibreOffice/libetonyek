@@ -98,7 +98,7 @@ void IWORKGeometryElement::endOfElement()
 
   if (m_geometry)
     *m_geometry = geometry;
-  else
+  else if (isCollector())
     getCollector().collectGeometry(geometry);
 }
 

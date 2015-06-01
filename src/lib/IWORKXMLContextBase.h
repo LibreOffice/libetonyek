@@ -56,6 +56,11 @@ protected:
     return m_state.getTokenizer().getId(value);
   }
 
+  bool isCollector() const
+  {
+    return m_state.m_enableCollector;
+  }
+
 protected:
   State &m_state;
 };

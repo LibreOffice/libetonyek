@@ -58,7 +58,8 @@ DrawablesElement::DrawablesElement(NUM1ParserState &state)
 
 void DrawablesElement::startOfElement()
 {
-  getCollector().startLevel();
+  if (isCollector())
+    getCollector().startLevel();
 }
 
 void DrawablesElement::attribute(int, const char *)
@@ -97,7 +98,8 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
 
 void DrawablesElement::endOfElement()
 {
-  getCollector().endLevel();
+  if (isCollector())
+    getCollector().endLevel();
 }
 
 }
@@ -288,7 +290,8 @@ IWORKXMLContextPtr_t WorkSpaceArrayElement::element(const int name)
 
 void WorkSpaceArrayElement::endOfElement()
 {
-  getCollector().endWorkSpaceArray();
+  if (isCollector())
+    getCollector().endWorkSpaceArray();
 }
 
 }
@@ -316,8 +319,11 @@ DocumentElement::DocumentElement(NUM1ParserState &state)
 
 void DocumentElement::startOfElement()
 {
-  getCollector().startDocument();
-  getCollector().setMetadata();
+  if (isCollector())
+  {
+    getCollector().startDocument();
+    getCollector().setMetadata();
+  }
 }
 
 void DocumentElement::attribute(const int name, const char *const value)
@@ -350,7 +356,8 @@ IWORKXMLContextPtr_t DocumentElement::element(const int name)
 
 void DocumentElement::endOfElement()
 {
-  getCollector().endDocument();
+  if (isCollector())
+    getCollector().endDocument();
 }
 
 }

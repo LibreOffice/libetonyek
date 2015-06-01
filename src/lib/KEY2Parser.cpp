@@ -171,20 +171,23 @@ IWORKXMLContextPtr_t StylesheetElement::element(const int name)
 
 void StylesheetElement::endOfElement()
 {
-  IWORKStylesheetPtr_t parent;
-
-  if (m_parent)
+  if (isCollector())
   {
-    assert(getId() != m_parent);
+    IWORKStylesheetPtr_t parent;
 
-    const IWORKStylesheetMap_t::const_iterator it = getState().getDictionary().m_stylesheets.find(get(m_parent));
-    if (getState().getDictionary().m_stylesheets.end() != it)
-      parent = it->second;
+    if (m_parent)
+    {
+      assert(getId() != m_parent);
+
+      const IWORKStylesheetMap_t::const_iterator it = getState().getDictionary().m_stylesheets.find(get(m_parent));
+      if (getState().getDictionary().m_stylesheets.end() != it)
+        parent = it->second;
+    }
+
+    const IWORKStylesheetPtr_t stylesheet = getCollector().collectStylesheet(parent);
+    if (bool(stylesheet) && getId())
+      getState().getDictionary().m_stylesheets[get(getId())] = stylesheet;
   }
-
-  const IWORKStylesheetPtr_t stylesheet = getCollector().collectStylesheet(parent);
-  if (bool(stylesheet) && getId())
-    getState().getDictionary().m_stylesheets[get(getId())] = stylesheet;
 }
 
 }
@@ -224,7 +227,7 @@ IWORKXMLContextPtr_t ProxyMasterLayerElement::element(const int name)
 
 void ProxyMasterLayerElement::endOfElement()
 {
-  if (m_ref)
+  if (m_ref && isCollector())
   {
     const KEYLayerMap_t::const_iterator it = getState().getDictionary().m_layers.find(get(m_ref));
     if (getState().getDictionary().m_layers.end() != it)
@@ -307,7 +310,7 @@ IWORKXMLContextPtr_t ConnectionPathElement::element(const int name)
 
 void ConnectionPathElement::endOfElement()
 {
-  if (m_size)
+  if (m_size && isCollector())
     getCollector().collectConnectionPath(get(m_size), get_optional_value_or(m_point.first, 0), get_optional_value_or(m_point.second, 0));
 }
 
@@ -387,10 +390,13 @@ void PointPathElement::endOfElement()
   if (m_size)
     size = get(m_size);
 
-  if (m_star)
-    getCollector().collectStarPath(size, numeric_cast<unsigned>(get_optional_value_or(m_point.first, 0.0)), get_optional_value_or(m_point.second, 0));
-  else
-    getCollector().collectArrowPath(size, get_optional_value_or(m_point.first, 0), get_optional_value_or(m_point.second, 0), m_doubleArrow);
+  if (isCollector())
+  {
+    if (m_star)
+      getCollector().collectStarPath(size, numeric_cast<unsigned>(get_optional_value_or(m_point.first, 0.0)), get_optional_value_or(m_point.second, 0));
+    else
+      getCollector().collectArrowPath(size, get_optional_value_or(m_point.first, 0), get_optional_value_or(m_point.second, 0), m_doubleArrow);
+  }
 }
 
 }
@@ -467,10 +473,13 @@ void ScalarPathElement::endOfElement()
   if (m_size)
     size = get(m_size);
 
-  if (m_polygon)
-    getCollector().collectPolygonPath(size, numeric_cast<unsigned>(m_value));
-  else
-    getCollector().collectRoundedRectanglePath(size, m_value);
+  if (isCollector())
+  {
+    if (m_polygon)
+      getCollector().collectPolygonPath(size, numeric_cast<unsigned>(m_value));
+    else
+      getCollector().collectRoundedRectanglePath(size, m_value);
+  }
 }
 
 }
@@ -514,7 +523,8 @@ void BezierElement::endOfElement()
 {
   if (getId())
     getState().getDictionary().m_beziers[get(getId())] = m_path;
-  getCollector().collectBezier(m_path);
+  if (isCollector())
+    getCollector().collectBezier(m_path);
 }
 
 }
@@ -538,7 +548,7 @@ BezierRefElement::BezierRefElement(KEY2ParserState &state)
 
 void BezierRefElement::endOfElement()
 {
-  if (getRef())
+  if (getRef() && isCollector())
   {
     const IWORKPathMap_t::const_iterator it = getState().getDictionary().m_beziers.find(get(getRef()));
     if (getState().getDictionary().m_beziers.end() != it)
@@ -581,7 +591,8 @@ IWORKXMLContextPtr_t BezierPathElement::element(const int name)
 
 void BezierPathElement::endOfElement()
 {
-  getCollector().collectBezierPath();
+  if (isCollector())
+    getCollector().collectBezierPath();
 }
 
 }
@@ -657,7 +668,8 @@ IWORKXMLContextPtr_t Callout2PathElement::element(const int name)
 
 void Callout2PathElement::endOfElement()
 {
-  getCollector().collectCalloutPath(get_optional_value_or(m_size, IWORKSize()), m_cornerRadius, m_tailSize, m_tailPosX, m_tailPosY, m_tailAtCenter);
+  if (isCollector())
+    getCollector().collectCalloutPath(get_optional_value_or(m_size, IWORKSize()), m_cornerRadius, m_tailSize, m_tailPosX, m_tailPosY, m_tailAtCenter);
 }
 
 }
@@ -727,7 +739,8 @@ void TextElement::attribute(const int name, const char *)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
     // TODO: handle
-    getCollector().collectStyle(IWORKStylePtr_t(), false);
+    if (isCollector())
+      getCollector().collectStyle(IWORKStylePtr_t(), false);
     break;
   }
 }
@@ -766,8 +779,11 @@ ShapeElement::ShapeElement(KEY2ParserState &state)
 
 void ShapeElement::startOfElement()
 {
-  getCollector().startLevel();
-  getCollector().startText();
+  if (isCollector())
+  {
+    getCollector().startLevel();
+    getCollector().startText();
+  }
 }
 
 IWORKXMLContextPtr_t ShapeElement::element(const int name)
@@ -787,9 +803,12 @@ IWORKXMLContextPtr_t ShapeElement::element(const int name)
 
 void ShapeElement::endOfElement()
 {
-  getCollector().collectShape();
-  getCollector().endText();
-  getCollector().endLevel();
+  if (isCollector())
+  {
+    getCollector().collectShape();
+    getCollector().endText();
+    getCollector().endLevel();
+  }
 }
 
 }
@@ -820,7 +839,8 @@ ImageElement::ImageElement(KEY2ParserState &state)
 
 void ImageElement::startOfElement()
 {
-  getCollector().startLevel();
+  if (isCollector())
+    getCollector().startLevel();
 }
 
 void ImageElement::attribute(const int name, const char *const value)
@@ -851,8 +871,11 @@ void ImageElement::endOfElement()
 {
   if (getId())
     getState().getDictionary().m_images[get(getId())] = m_image;
-  getCollector().collectImage(m_image);
-  getCollector().endLevel();
+  if (isCollector())
+  {
+    getCollector().collectImage(m_image);
+    getCollector().endLevel();
+  }
 }
 
 }
@@ -882,7 +905,8 @@ LineElement::LineElement(KEY2ParserState &state)
 
 void LineElement::startOfElement()
 {
-  getCollector().startLevel();
+  if (isCollector())
+    getCollector().startLevel();
 }
 
 IWORKXMLContextPtr_t LineElement::element(const int name)
@@ -913,8 +937,11 @@ void LineElement::endOfElement()
     line->m_x2 = get(m_tail).m_x;
     line->m_y2 = get(m_tail).m_y;
   }
-  getCollector().collectLine(line);
-  getCollector().endLevel();
+  if (isCollector())
+  {
+    getCollector().collectLine(line);
+    getCollector().endLevel();
+  }
 }
 
 }
@@ -940,8 +967,11 @@ GroupElement::GroupElement(KEY2ParserState &state)
 
 void GroupElement::startOfElement()
 {
-  getCollector().startLevel();
-  getCollector().startGroup();
+  if (isCollector())
+  {
+    getCollector().startLevel();
+    getCollector().startGroup();
+  }
 }
 
 IWORKXMLContextPtr_t GroupElement::element(const int name)
@@ -967,8 +997,11 @@ IWORKXMLContextPtr_t GroupElement::element(const int name)
 
 void GroupElement::endOfElement()
 {
-  getCollector().endGroup();
-  getCollector().endLevel();
+  if (isCollector())
+  {
+    getCollector().endGroup();
+    getCollector().endLevel();
+  }
 }
 
 }
@@ -996,7 +1029,7 @@ PlaceholderRefContext::PlaceholderRefContext(KEY2ParserState &state, const bool 
 
 void PlaceholderRefContext::endOfElement()
 {
-  if (getRef())
+  if (getRef() && isCollector())
   {
     KEYDictionary &dict = getState().getDictionary();
     KEYPlaceholderMap_t &placeholderMap = m_title ? dict.m_titlePlaceholders : dict.m_bodyPlaceholders;
@@ -1041,7 +1074,8 @@ IWORKXMLContextPtr_t ConnectionLineElement::element(const int name)
 
 void ConnectionLineElement::endOfElement()
 {
-  getCollector().collectShape();
+  if (isCollector())
+    getCollector().collectShape();
 }
 
 }
@@ -1067,8 +1101,11 @@ StickyNoteElement::StickyNoteElement(KEY2ParserState &state)
 
 void StickyNoteElement::startOfElement()
 {
-  getCollector().startText();
-  getCollector().startLevel();
+  if (isCollector())
+  {
+    getCollector().startText();
+    getCollector().startLevel();
+  }
 }
 
 IWORKXMLContextPtr_t StickyNoteElement::element(const int name)
@@ -1086,10 +1123,13 @@ IWORKXMLContextPtr_t StickyNoteElement::element(const int name)
 
 void StickyNoteElement::endOfElement()
 {
-  getCollector().collectStickyNote();
+  if (isCollector())
+  {
+    getCollector().collectStickyNote();
 
-  getCollector().endLevel();
-  getCollector().endText();
+    getCollector().endLevel();
+    getCollector().endText();
+  }
 }
 
 }
@@ -1116,7 +1156,8 @@ DrawablesElement::DrawablesElement(KEY2ParserState &state)
 
 void DrawablesElement::startOfElement()
 {
-  getCollector().startLevel();
+  if (isCollector())
+    getCollector().startLevel();
 }
 
 void DrawablesElement::attribute(int, const char *)
@@ -1156,7 +1197,8 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
 
 void DrawablesElement::endOfElement()
 {
-  getCollector().endLevel();
+  if (isCollector())
+    getCollector().endLevel();
 }
 
 }
@@ -1182,7 +1224,8 @@ LayerElement::LayerElement(KEY2ParserState &state)
 
 void LayerElement::startOfElement()
 {
-  getCollector().startLayer();
+  if (isCollector())
+    getCollector().startLayer();
 }
 
 IWORKXMLContextPtr_t LayerElement::element(const int name)
@@ -1198,13 +1241,16 @@ IWORKXMLContextPtr_t LayerElement::element(const int name)
 
 void LayerElement::endOfElement()
 {
-  const KEYLayerPtr_t layer(getCollector().collectLayer());
-  getCollector().endLayer();
-  if (bool(layer))
+  if (isCollector())
   {
-    if (bool(layer) && getId())
-      getState().getDictionary().m_layers[get(getId())] = layer;
-    getCollector().insertLayer(layer);
+    const KEYLayerPtr_t layer(getCollector().collectLayer());
+    getCollector().endLayer();
+    if (bool(layer))
+    {
+      if (bool(layer) && getId())
+        getState().getDictionary().m_layers[get(getId())] = layer;
+      getCollector().insertLayer(layer);
+    }
   }
 }
 
@@ -1341,7 +1387,8 @@ PlaceholderContext::PlaceholderContext(KEY2ParserState &state, const bool title)
 
 void PlaceholderContext::startOfElement()
 {
-  getCollector().startText();
+  if (isCollector())
+    getCollector().startText();
 }
 
 IWORKXMLContextPtr_t PlaceholderContext::element(const int name)
@@ -1362,22 +1409,25 @@ IWORKXMLContextPtr_t PlaceholderContext::element(const int name)
 
 void PlaceholderContext::endOfElement()
 {
-  IWORKStylePtr_t style;
-  if (m_ref)
+  if (isCollector())
   {
-    const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_placeholderStyles.find(get(m_ref));
-    if (getState().getDictionary().m_placeholderStyles.end() != it)
-      style = it->second;
-  }
+    IWORKStylePtr_t style;
+    if (m_ref)
+    {
+      const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_placeholderStyles.find(get(m_ref));
+      if (getState().getDictionary().m_placeholderStyles.end() != it)
+        style = it->second;
+    }
 
-  const KEYPlaceholderPtr_t placeholder = getCollector().collectTextPlaceholder(style, m_title);
-  if (bool(placeholder) && getId())
-  {
-    KEYDictionary &dict = getState().getDictionary();
-    KEYPlaceholderMap_t &placeholderMap = m_title ? dict.m_titlePlaceholders : dict.m_bodyPlaceholders;
-    placeholderMap[get(getId())] = placeholder;
+    const KEYPlaceholderPtr_t placeholder = getCollector().collectTextPlaceholder(style, m_title);
+    if (bool(placeholder) && getId())
+    {
+      KEYDictionary &dict = getState().getDictionary();
+      KEYPlaceholderMap_t &placeholderMap = m_title ? dict.m_titlePlaceholders : dict.m_bodyPlaceholders;
+      placeholderMap[get(getId())] = placeholder;
+    }
+    getCollector().endText();
   }
-  getCollector().endText();
 }
 
 }
@@ -1403,7 +1453,8 @@ MasterSlideElement::MasterSlideElement(KEY2ParserState &state)
 
 void MasterSlideElement::startOfElement()
 {
-  getCollector().startPage();
+  if (isCollector())
+    getCollector().startPage();
 }
 
 IWORKXMLContextPtr_t MasterSlideElement::element(const int name)
@@ -1427,8 +1478,11 @@ IWORKXMLContextPtr_t MasterSlideElement::element(const int name)
 
 void MasterSlideElement::endOfElement()
 {
-  getCollector().collectPage();
-  getCollector().endPage();
+  if (isCollector())
+  {
+    getCollector().collectPage();
+    getCollector().endPage();
+  }
 }
 
 }
@@ -1522,7 +1576,8 @@ ThemeListElement::ThemeListElement(KEY2ParserState &state)
 
 void ThemeListElement::startOfElement()
 {
-  getCollector().startThemes();
+  if (isCollector())
+    getCollector().startThemes();
 }
 
 IWORKXMLContextPtr_t ThemeListElement::element(const int name)
@@ -1538,7 +1593,8 @@ IWORKXMLContextPtr_t ThemeListElement::element(const int name)
 
 void ThemeListElement::endOfElement()
 {
-  getCollector().endThemes();
+  if (isCollector())
+    getCollector().endThemes();
 }
 
 }
@@ -1564,7 +1620,8 @@ NotesElement::NotesElement(KEY2ParserState &state)
 
 void NotesElement::startOfElement()
 {
-  getCollector().startText();
+  if (isCollector())
+    getCollector().startText();
 }
 
 IWORKXMLContextPtr_t NotesElement::element(const int name)
@@ -1580,8 +1637,11 @@ IWORKXMLContextPtr_t NotesElement::element(const int name)
 
 void NotesElement::endOfElement()
 {
-  getCollector().collectNote();
-  getCollector().endText();
+  if (isCollector())
+  {
+    getCollector().collectNote();
+    getCollector().endText();
+  }
 }
 
 }
@@ -1637,7 +1697,8 @@ SlideElement::SlideElement(KEY2ParserState &state)
 
 void SlideElement::startOfElement()
 {
-  getCollector().startPage();
+  if (isCollector())
+    getCollector().startPage();
 }
 
 IWORKXMLContextPtr_t SlideElement::element(const int name)
@@ -1663,8 +1724,11 @@ IWORKXMLContextPtr_t SlideElement::element(const int name)
 
 void SlideElement::endOfElement()
 {
-  getCollector().collectPage();
-  getCollector().endPage();
+  if (isCollector())
+  {
+    getCollector().collectPage();
+    getCollector().endPage();
+  }
 }
 
 }
@@ -1690,7 +1754,8 @@ SlideListElement::SlideListElement(KEY2ParserState &state)
 
 void SlideListElement::startOfElement()
 {
-  getCollector().startSlides();
+  if (isCollector())
+    getCollector().startSlides();
 }
 
 IWORKXMLContextPtr_t SlideListElement::element(const int name)
@@ -1706,7 +1771,8 @@ IWORKXMLContextPtr_t SlideListElement::element(const int name)
 
 void SlideListElement::endOfElement()
 {
-  getCollector().endSlides();
+  if (isCollector())
+    getCollector().endSlides();
 }
 
 }
@@ -1739,8 +1805,11 @@ PresentationElement::PresentationElement(KEY2ParserState &state)
 
 void PresentationElement::startOfElement()
 {
-  getCollector().startDocument();
-  getCollector().setMetadata();
+  if (isCollector())
+  {
+    getCollector().startDocument();
+    getCollector().setMetadata();
+  }
 }
 
 void PresentationElement::attribute(const int name, const char *const value)
@@ -1763,7 +1832,7 @@ IWORKXMLContextPtr_t PresentationElement::element(const int name)
 {
   if (m_pendingSize)
   {
-    if (m_size)
+    if (m_size && isCollector())
       getCollector().collectPresentationSize(get(m_size));
     m_pendingSize = false;
   }
@@ -1786,7 +1855,8 @@ IWORKXMLContextPtr_t PresentationElement::element(const int name)
 
 void PresentationElement::endOfElement()
 {
-  getCollector().endDocument();
+  if (isCollector())
+    getCollector().endDocument();
 }
 
 }
