@@ -164,8 +164,6 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKTextStorageElement.h \
 	contexts/KEY2StyleContext.cpp \
 	contexts/KEY2StyleContext.h \
-	contexts/KEY2StyleRefContext.cpp \
-	contexts/KEY2StyleRefContext.h \
 	libetonyek_utils.cpp \
 	libetonyek_utils.h \
 	libetonyek_xml.cpp \
