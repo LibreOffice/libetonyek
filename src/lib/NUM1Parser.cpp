@@ -11,6 +11,7 @@
 
 #include "libetonyek_xml.h"
 #include "IWORKChainedTokenizer.h"
+#include "IWORKDiscardContext.h"
 #include "IWORKTabularInfoElement.h"
 #include "IWORKToken.h"
 #include "NUMCollector.h"
@@ -392,6 +393,22 @@ IWORKXMLContextPtr_t XMLDocument::element(const int name)
 
 }
 
+namespace
+{
+
+class DiscardContext : public NUM1XMLContextBase<IWORKDiscardContext>
+{
+public:
+  explicit DiscardContext(NUM1ParserState &state);
+};
+
+DiscardContext::DiscardContext(NUM1ParserState &state)
+  : NUM1XMLContextBase<IWORKDiscardContext>(state)
+{
+}
+
+}
+
 NUM1Parser::NUM1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector &collector, NUMDictionary *const dict)
   : IWORKParser(input, package)
   , m_state(*this, collector, *dict)
@@ -405,6 +422,11 @@ NUM1Parser::~NUM1Parser()
 IWORKXMLContextPtr_t NUM1Parser::createDocumentContext()
 {
   return makeContext<XMLDocument>(m_state);
+}
+
+IWORKXMLContextPtr_t NUM1Parser::createDiscardContext()
+{
+  return makeContext<DiscardContext>(m_state);
 }
 
 const IWORKTokenizer &NUM1Parser::getTokenizer() const

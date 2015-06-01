@@ -30,6 +30,12 @@ IWORKXMLContextPtr_t KEY1Parser::createDocumentContext()
   return IWORKXMLContextPtr_t();
 }
 
+IWORKXMLContextPtr_t KEY1Parser::createDiscardContext()
+{
+  // TODO: implement me
+  return IWORKXMLContextPtr_t();
+}
+
 const IWORKTokenizer &KEY1Parser::getTokenizer() const
 {
   return KEY1Token::getTokenizer();

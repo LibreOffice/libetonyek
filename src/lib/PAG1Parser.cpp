@@ -11,6 +11,7 @@
 
 #include "libetonyek_xml.h"
 #include "IWORKChainedTokenizer.h"
+#include "IWORKDiscardContext.h"
 #include "IWORKLayoutElement.h"
 #include "IWORKPElement.h"
 #include "IWORKRefContext.h"
@@ -968,6 +969,22 @@ IWORKXMLContextPtr_t XMLDocument::element(const int name)
 
 }
 
+namespace
+{
+
+class DiscardContext : public PAG1XMLContextBase<IWORKDiscardContext>
+{
+public:
+  explicit DiscardContext(PAG1ParserState &state);
+};
+
+DiscardContext::DiscardContext(PAG1ParserState &state)
+  : PAG1XMLContextBase<IWORKDiscardContext>(state)
+{
+}
+
+}
+
 PAG1Parser::PAG1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGCollector &collector, PAGDictionary *const dict)
   : IWORKParser(input, package)
   , m_state(*this, collector, *dict)
@@ -981,6 +998,11 @@ PAG1Parser::~PAG1Parser()
 IWORKXMLContextPtr_t PAG1Parser::createDocumentContext()
 {
   return makeContext<XMLDocument>(m_state);
+}
+
+IWORKXMLContextPtr_t PAG1Parser::createDiscardContext()
+{
+  return makeContext<DiscardContext>(m_state);
 }
 
 const IWORKTokenizer &PAG1Parser::getTokenizer() const

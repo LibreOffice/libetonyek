@@ -40,10 +40,14 @@ public:
 
 private:
   virtual IWORKXMLContextPtr_t createDocumentContext() = 0;
+  virtual IWORKXMLContextPtr_t createDiscardContext() = 0;
+
+  IWORKXMLContextPtr_t getDiscardContext();
 
 private:
   RVNGInputStreamPtr_t m_input;
   RVNGInputStreamPtr_t m_package;
+  IWORKXMLContextPtr_t m_discardContext;
 };
 
 } // namespace libetonyek

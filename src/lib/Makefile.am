@@ -29,6 +29,8 @@ libetonyek_internal_la_SOURCES = \
 	IWORKCollector.h \
 	IWORKDictionary.cpp \
 	IWORKDictionary.h \
+	IWORKDiscardContext.cpp \
+	IWORKDiscardContext.h \
 	IWORKDocumentInterface.cpp \
 	IWORKDocumentInterface.h \
 	IWORKEnum.h \

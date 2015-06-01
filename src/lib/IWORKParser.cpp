@@ -11,7 +11,6 @@
 
 #include <cassert>
 
-#include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <libxml/xmlreader.h>
@@ -32,42 +31,6 @@ namespace libetonyek
 namespace
 {
 
-class DiscardContext : public IWORKXMLContext, public boost::enable_shared_from_this<DiscardContext>
-{
-private:
-  virtual void startOfElement();
-  void attribute(int name, const char *value);
-  IWORKXMLContextPtr_t element(int name);
-  void text(const char *value);
-  virtual void endOfElement();
-};
-
-void DiscardContext::startOfElement()
-{
-}
-
-void DiscardContext::attribute(int, const char *)
-{
-}
-
-IWORKXMLContextPtr_t DiscardContext::element(int)
-{
-  return shared_from_this();
-}
-
-void DiscardContext::text(const char *)
-{
-}
-
-void DiscardContext::endOfElement()
-{
-}
-
-}
-
-namespace
-{
-
 void processAttribute(xmlTextReaderPtr reader, IWORKXMLContextPtr_t context, const IWORKTokenizer &tokenizer)
 {
   const int id = tokenizer.getQualifiedId(char_cast(xmlTextReaderConstLocalName(reader)), char_cast(xmlTextReaderConstNamespaceUri(reader)));
@@ -80,6 +43,7 @@ void processAttribute(xmlTextReaderPtr reader, IWORKXMLContextPtr_t context, con
 IWORKParser::IWORKParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package)
   : m_input(input)
   , m_package(package)
+  , m_discardContext()
 {
 }
 
@@ -113,7 +77,7 @@ bool IWORKParser::parse()
       IWORKXMLContextPtr_t newContext = contextStack.top()->element(id);
 
       if (!newContext)
-        newContext.reset(new DiscardContext());
+        newContext = getDiscardContext();
 
       const bool isEmpty = xmlTextReaderIsEmptyElement(reader);
 
@@ -178,6 +142,13 @@ RVNGInputStreamPtr_t &IWORKParser::getPackage()
 RVNGInputStreamPtr_t IWORKParser::getPackage() const
 {
   return m_package;
+}
+
+IWORKXMLContextPtr_t IWORKParser::getDiscardContext()
+{
+  if (!m_discardContext)
+    m_discardContext = createDiscardContext();
+  return m_discardContext;
 }
 
 }

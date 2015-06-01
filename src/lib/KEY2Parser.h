@@ -27,6 +27,7 @@ public:
 
 private:
   virtual IWORKXMLContextPtr_t createDocumentContext();
+  virtual IWORKXMLContextPtr_t createDiscardContext();
   virtual const IWORKTokenizer &getTokenizer() const;
 
 private:

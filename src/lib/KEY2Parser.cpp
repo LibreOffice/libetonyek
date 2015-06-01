@@ -18,6 +18,7 @@
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"
 #include "IWORKChainedTokenizer.h"
+#include "IWORKDiscardContext.h"
 #include "IWORKGeometryElement.h"
 #include "IWORKMediaElement.h"
 #include "IWORKPath.h"
@@ -1891,6 +1892,22 @@ IWORKXMLContextPtr_t XMLDocument::element(const int name)
 
 }
 
+namespace
+{
+
+class DiscardContext : public KEY2XMLContextBase<IWORKDiscardContext>
+{
+public:
+  explicit DiscardContext(KEY2ParserState &state);
+};
+
+DiscardContext::DiscardContext(KEY2ParserState &state)
+  : KEY2XMLContextBase<IWORKDiscardContext>(state)
+{
+}
+
+}
+
 KEY2Parser::KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector &collector, KEYDictionary &dict)
   : IWORKParser(input, package)
   , m_state(*this, collector, dict)
@@ -1904,6 +1921,11 @@ KEY2Parser::~KEY2Parser()
 IWORKXMLContextPtr_t KEY2Parser::createDocumentContext()
 {
   return makeContext<XMLDocument>(m_state);
+}
+
+IWORKXMLContextPtr_t KEY2Parser::createDiscardContext()
+{
+  return makeContext<DiscardContext>(m_state);
 }
 
 const IWORKTokenizer &KEY2Parser::getTokenizer() const
