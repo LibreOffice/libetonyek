@@ -555,9 +555,10 @@ IWORKXMLContextPtr_t StylePropertyElement::element(const int name)
     return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_paragraphStyles, true);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
-  case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref :
   case IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref :
-    return makeContext<IWORKStyleRefContext>(getState(), name, true, true);
+    return IWORKXMLContextPtr_t();
+  case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref :
+    return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_paragraphStyles, true, true);
   }
 
   return IWORKXMLContextPtr_t();

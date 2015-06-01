@@ -18,10 +18,10 @@
 namespace libetonyek
 {
 
-KEY2StyleRefContext::KEY2StyleRefContext(KEY2ParserState &state, const int id, const bool nested, const bool anonymous)
+KEY2StyleRefContext::KEY2StyleRefContext(KEY2ParserState &state,const IWORKStyleMap_t &styleMap, const bool nested, const bool anonymous)
   : KEY2XMLEmptyContextBase(state)
-  , m_base(state, id, nested)
-  , m_id(id)
+  , m_base(state, styleMap, nested)
+  , m_styleMap(styleMap)
   , m_nested(nested)
   , m_anonymous(anonymous)
 {
@@ -35,47 +35,14 @@ void KEY2StyleRefContext::attribute(const int name, const char *const value)
 
 void KEY2StyleRefContext::endOfElement()
 {
-  const boost::optional<std::string> dummyIdent;
-  const boost::optional<IWORKPropertyMap> dummyProps;
-
-  // TODO: need to get the style
-  switch (m_id)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
+  if (getRef())
   {
     IWORKStylePtr_t style;
-    if (getRef())
-    {
-      KEYDictionary &dict = getDictionary();
-      const IWORKStyleMap_t::const_iterator it = dict.m_layoutStyles.find(get(getRef()));
-      if (dict.m_layoutStyles.end() != it)
-        style = it->second;
-    }
+    const IWORKStyleMap_t::const_iterator it = m_styleMap.find(get(getRef()));
+    if (m_styleMap.end() != it)
+      style = it->second;
     getCollector()->collectStyle(style, m_anonymous);
-    break;
   }
-  case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style_ref :
-  {
-    IWORKStylePtr_t style;
-    if (getRef())
-    {
-      KEYDictionary &dict = getDictionary();
-      const IWORKStyleMap_t::const_iterator it = dict.m_placeholderStyles.find(get(getRef()));
-      if (dict.m_placeholderStyles.end() != it)
-        style = it->second;
-    }
-    getCollector()->collectStyle(style, m_anonymous);
-    break;
-  }
-  default :
-    m_base.endOfElement();
-    break;
-  }
-}
-
-KEYDictionary &KEY2StyleRefContext::getDictionary()
-{
-  return getState().getDictionary();
 }
 
 }

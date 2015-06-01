@@ -10,6 +10,7 @@
 #ifndef IWORKSTYLEREFCONTEXT_H_INCLUDED
 #define IWORKSTYLEREFCONTEXT_H_INCLUDED
 
+#include "IWORKStyle_fwd.h"
 #include "IWORKXMLContextBase.h"
 
 namespace libetonyek
@@ -20,16 +21,13 @@ struct IWORKDictionary;
 class IWORKStyleRefContext : public IWORKXMLEmptyContextBase
 {
 public:
-  IWORKStyleRefContext(IWORKXMLParserState &state, int id, bool nested = false, bool anonymous = false);
+  IWORKStyleRefContext(IWORKXMLParserState &state, const IWORKStyleMap_t &styleMap, bool nested = false, bool anonymous = false);
 
   virtual void attribute(int name, const char *value);
   virtual void endOfElement();
 
 private:
-  IWORKDictionary &getDictionary();
-
-private:
-  const int m_id;
+  const IWORKStyleMap_t &m_styleMap;
   const bool m_nested;
   const bool m_anonymous;
 };
