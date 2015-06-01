@@ -99,7 +99,7 @@ void KEY2StyleContext::endOfElement()
   const IWORKStylePtr_t style(new IWORKStyle(m_props, m_ident, m_parentIdent));
   if (getId() && bool(m_styleMap))
     (*m_styleMap)[get(getId())] = style;
-  getCollector()->collectStyle(style, m_nested);
+  getCollector().collectStyle(style, m_nested);
 }
 
 }

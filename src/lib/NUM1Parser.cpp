@@ -58,7 +58,7 @@ DrawablesElement::DrawablesElement(NUM1ParserState &state)
 
 void DrawablesElement::startOfElement()
 {
-  getCollector()->startLevel();
+  getCollector().startLevel();
 }
 
 void DrawablesElement::attribute(int, const char *)
@@ -97,7 +97,7 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
 
 void DrawablesElement::endOfElement()
 {
-  getCollector()->endLevel();
+  getCollector().endLevel();
 }
 
 }
@@ -288,7 +288,7 @@ IWORKXMLContextPtr_t WorkSpaceArrayElement::element(const int name)
 
 void WorkSpaceArrayElement::endOfElement()
 {
-  getCollector()->endWorkSpaceArray();
+  getCollector().endWorkSpaceArray();
 }
 
 }
@@ -316,8 +316,8 @@ DocumentElement::DocumentElement(NUM1ParserState &state)
 
 void DocumentElement::startOfElement()
 {
-  getCollector()->startDocument();
-  getCollector()->setMetadata();
+  getCollector().startDocument();
+  getCollector().setMetadata();
 }
 
 void DocumentElement::attribute(const int name, const char *const value)
@@ -350,7 +350,7 @@ IWORKXMLContextPtr_t DocumentElement::element(const int name)
 
 void DocumentElement::endOfElement()
 {
-  getCollector()->endDocument();
+  getCollector().endDocument();
 }
 
 }
@@ -385,7 +385,7 @@ IWORKXMLContextPtr_t XMLDocument::element(const int name)
 
 }
 
-NUM1Parser::NUM1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector *const collector, NUMDictionary *const dict)
+NUM1Parser::NUM1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector &collector, NUMDictionary *const dict)
   : IWORKParser(input, package)
   , m_state(*this, collector, *dict)
 {

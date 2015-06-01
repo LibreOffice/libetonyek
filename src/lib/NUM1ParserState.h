@@ -26,13 +26,13 @@ class NUM1ParserState : public IWORKXMLParserState
   NUM1ParserState &operator=(const NUM1ParserState &);
 
 public:
-  NUM1ParserState(NUM1Parser &parser, NUMCollector *collector, NUMDictionary &dict);
+  NUM1ParserState(NUM1Parser &parser, NUMCollector &collector, NUMDictionary &dict);
 
-  NUMCollector *getCollector();
+  NUMCollector &getCollector();
   NUMDictionary &getDictionary();
 
 private:
-  NUMCollector *const m_collector;
+  NUMCollector &m_collector;
   NUMDictionary &m_dict;
 };
 

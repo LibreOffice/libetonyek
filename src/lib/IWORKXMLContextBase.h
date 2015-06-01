@@ -46,7 +46,7 @@ public:
   }
 
 protected:
-  Collector *getCollector() const
+  Collector &getCollector() const
   {
     return m_state.getCollector();
   }

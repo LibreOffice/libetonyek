@@ -16,14 +16,14 @@
 namespace libetonyek
 {
 
-NUM1ParserState::NUM1ParserState(NUM1Parser &parser, NUMCollector *const collector, NUMDictionary &dict)
+NUM1ParserState::NUM1ParserState(NUM1Parser &parser, NUMCollector &collector, NUMDictionary &dict)
   : IWORKXMLParserState(parser, collector, dict)
   , m_collector(collector)
   , m_dict(dict)
 {
 }
 
-NUMCollector *NUM1ParserState::getCollector()
+NUMCollector &NUM1ParserState::getCollector()
 {
   return m_collector;
 }

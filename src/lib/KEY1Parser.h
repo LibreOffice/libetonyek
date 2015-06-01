@@ -20,7 +20,7 @@ class KEYCollector;
 class KEY1Parser : public IWORKParser
 {
 public:
-  KEY1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *collector);
+  KEY1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector &collector);
   virtual ~KEY1Parser();
 
 private:

@@ -394,7 +394,7 @@ bool detect(const RVNGInputStreamPtr_t &input, unsigned checkTypes, DetectionInf
 namespace
 {
 
-shared_ptr<IWORKParser> makeKeynoteParser(const unsigned version, const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *const collector, KEYDictionary &dict)
+shared_ptr<IWORKParser> makeKeynoteParser(const unsigned version, const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector &collector, KEYDictionary &dict)
 {
   shared_ptr<IWORKParser> parser;
 
@@ -458,7 +458,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   KEYDictionary dict;
   IWORKPresentationRedirector redirector(generator);
   KEYCollector collector(&redirector);
-  const shared_ptr<IWORKParser> parser = makeKeynoteParser(info.version, info.input, info.package, &collector, dict);
+  const shared_ptr<IWORKParser> parser = makeKeynoteParser(info.version, info.input, info.package, collector, dict);
   return parser->parse();
 }
 catch (...)
@@ -486,7 +486,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   IWORKSpreadsheetRedirector redirector(document);
   NUMCollector collector(&redirector);
   NUMDictionary dict;
-  NUM1Parser parser(info.input, info.package, &collector, &dict);
+  NUM1Parser parser(info.input, info.package, collector, &dict);
   return parser.parse();
 }
 catch (...)
@@ -514,7 +514,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   IWORKTextRedirector redirector(document);
   PAGCollector collector(&redirector);
   PAGDictionary dict;
-  PAG1Parser parser(info.input, info.package, &collector, &dict);
+  PAG1Parser parser(info.input, info.package, collector, &dict);
   return parser.parse();
 }
 catch (...)

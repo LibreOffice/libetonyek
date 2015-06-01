@@ -22,7 +22,7 @@ struct KEYDictionary;
 class KEY2Parser : public IWORKParser
 {
 public:
-  KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector *collector, KEYDictionary &dict);
+  KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector &collector, KEYDictionary &dict);
   virtual ~KEY2Parser();
 
 private:

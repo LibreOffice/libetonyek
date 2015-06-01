@@ -29,16 +29,16 @@ class IWORKXMLParserState
   IWORKXMLParserState &operator=(const IWORKXMLParserState &);
 
 public:
-  IWORKXMLParserState(IWORKParser &parser, IWORKCollector *collector, IWORKDictionary &dict);
+  IWORKXMLParserState(IWORKParser &parser, IWORKCollector &collector, IWORKDictionary &dict);
 
   IWORKParser &getParser();
   IWORKDictionary &getDictionary();
-  IWORKCollector *getCollector() const;
+  IWORKCollector &getCollector() const;
   const IWORKTokenizer &getTokenizer() const;
 
 private:
   IWORKParser &m_parser;
-  IWORKCollector *const m_collector;
+  IWORKCollector &m_collector;
   IWORKDictionary &m_dict;
 
 public:

@@ -37,7 +37,7 @@ BrContext::BrContext(IWORKXMLParserState &state)
 
 void BrContext::endOfElement()
 {
-  getCollector()->collectLineBreak();
+  getCollector().collectLineBreak();
 }
 
 }
@@ -61,7 +61,7 @@ TabElement::TabElement(IWORKXMLParserState &state)
 
 void TabElement::endOfElement()
 {
-  getCollector()->collectTab();
+  getCollector().collectTab();
 }
 
 }
@@ -128,20 +128,20 @@ IWORKXMLContextPtr_t SpanElement::element(const int name)
 void SpanElement::text(const char *const value)
 {
   ensureOpened();
-  getCollector()->collectText(value);
+  getCollector().collectText(value);
 }
 
 void SpanElement::endOfElement()
 {
   if (m_opened)
-    getCollector()->closeSpan();
+    getCollector().closeSpan();
 }
 
 void SpanElement::ensureOpened()
 {
   if (!m_opened)
   {
-    getCollector()->openSpan(m_style);
+    getCollector().openSpan(m_style);
     m_opened = true;
   }
 }
@@ -176,7 +176,7 @@ void LinkElement::attribute(const int name, const char *const value)
 {
   if (IWORKToken::href == name)
   {
-    getCollector()->openLink(value);
+    getCollector().openLink(value);
     m_opened = true;
   }
 }
@@ -194,13 +194,13 @@ IWORKXMLContextPtr_t LinkElement::element(const int name)
 
 void LinkElement::text(const char *const value)
 {
-  getCollector()->collectText(value);
+  getCollector().collectText(value);
 }
 
 void LinkElement::endOfElement()
 {
   if (m_opened)
-    getCollector()->closeLink();
+    getCollector().closeLink();
 }
 
 }
@@ -250,20 +250,20 @@ IWORKXMLContextPtr_t IWORKPElement::element(const int name)
 void IWORKPElement::text(const char *const value)
 {
   ensureOpened();
-  getCollector()->collectText(value);
+  getCollector().collectText(value);
 }
 
 void IWORKPElement::endOfElement()
 {
   ensureOpened();
-  getCollector()->endParagraph();
+  getCollector().endParagraph();
 }
 
 void IWORKPElement::ensureOpened()
 {
   if (!m_opened)
   {
-    getCollector()->startParagraph(m_style);
+    getCollector().startParagraph(m_style);
     m_opened = true;
   }
 }

@@ -462,7 +462,7 @@ IWORKMediaElement::IWORKMediaElement(IWORKXMLParserState &state)
 
 void IWORKMediaElement::startOfElement()
 {
-  getCollector()->startLevel();
+  getCollector().startLevel();
 }
 
 IWORKXMLContextPtr_t IWORKMediaElement::element(const int name)
@@ -480,8 +480,8 @@ IWORKXMLContextPtr_t IWORKMediaElement::element(const int name)
 
 void IWORKMediaElement::endOfElement()
 {
-  getCollector()->collectMedia(m_content);
-  getCollector()->endLevel();
+  getCollector().collectMedia(m_content);
+  getCollector().endLevel();
 }
 
 }

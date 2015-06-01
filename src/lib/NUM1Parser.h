@@ -22,7 +22,7 @@ struct NUMDictionary;
 class NUM1Parser: public IWORKParser
 {
 public:
-  NUM1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector *collector, NUMDictionary *dict);
+  NUM1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector &collector, NUMDictionary *dict);
   virtual ~NUM1Parser();
 
 private:

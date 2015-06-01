@@ -16,14 +16,14 @@
 namespace libetonyek
 {
 
-PAG1ParserState::PAG1ParserState(PAG1Parser &parser, PAGCollector *const collector, PAGDictionary &dict)
+PAG1ParserState::PAG1ParserState(PAG1Parser &parser, PAGCollector &collector, PAGDictionary &dict)
   : IWORKXMLParserState(parser, collector, dict)
   , m_collector(collector)
   , m_dict(dict)
 {
 }
 
-PAGCollector *PAG1ParserState::getCollector()
+PAGCollector &PAG1ParserState::getCollector()
 {
   return m_collector;
 }

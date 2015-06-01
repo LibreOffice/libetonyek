@@ -26,13 +26,13 @@ class PAG1ParserState : public IWORKXMLParserState
   PAG1ParserState &operator=(const PAG1ParserState &);
 
 public:
-  PAG1ParserState(PAG1Parser &parser, PAGCollector *collector, PAGDictionary &dict);
+  PAG1ParserState(PAG1Parser &parser, PAGCollector &collector, PAGDictionary &dict);
 
-  PAGCollector *getCollector();
+  PAGCollector &getCollector();
   PAGDictionary &getDictionary();
 
 private:
-  PAGCollector *const m_collector;
+  PAGCollector &m_collector;
   PAGDictionary &m_dict;
 };
 

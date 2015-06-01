@@ -26,14 +26,14 @@ class KEY2ParserState : public IWORKXMLParserState
   KEY2ParserState &operator=(const KEY2ParserState &);
 
 public:
-  KEY2ParserState(KEY2Parser &parser, KEYCollector *collector, KEYDictionary &dict);
+  KEY2ParserState(KEY2Parser &parser, KEYCollector &collector, KEYDictionary &dict);
 
   KEYDictionary &getDictionary();
-  KEYCollector *getCollector();
+  KEYCollector &getCollector();
 
 private:
   KEYDictionary &m_dict;
-  KEYCollector *const m_collector;
+  KEYCollector &m_collector;
 };
 
 }

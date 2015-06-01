@@ -38,7 +38,7 @@ void IWORKStyleRefContext::endOfElement()
     const IWORKStyleMap_t::const_iterator it = m_styleMap.find(get(getRef()));
     if (m_styleMap.end() != it)
       style = it->second;
-    getCollector()->collectStyle(style, m_anonymous);
+    getCollector().collectStyle(style, m_anonymous);
   }
 }
 

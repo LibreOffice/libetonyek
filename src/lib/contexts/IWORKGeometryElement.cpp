@@ -99,7 +99,7 @@ void IWORKGeometryElement::endOfElement()
   if (m_geometry)
     *m_geometry = geometry;
   else
-    getCollector()->collectGeometry(geometry);
+    getCollector().collectGeometry(geometry);
 }
 
 }

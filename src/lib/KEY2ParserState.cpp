@@ -15,7 +15,7 @@
 namespace libetonyek
 {
 
-KEY2ParserState::KEY2ParserState(KEY2Parser &parser, KEYCollector *const collector, KEYDictionary &dict)
+KEY2ParserState::KEY2ParserState(KEY2Parser &parser, KEYCollector &collector, KEYDictionary &dict)
   : IWORKXMLParserState(parser, collector, dict)
   , m_dict(dict)
   , m_collector(collector)
@@ -27,7 +27,7 @@ KEYDictionary &KEY2ParserState::getDictionary()
   return m_dict;
 }
 
-KEYCollector *KEY2ParserState::getCollector()
+KEYCollector &KEY2ParserState::getCollector()
 {
   return m_collector;
 }
