@@ -17,9 +17,9 @@
 namespace libetonyek
 {
 
-IWORKStyleRefContext::IWORKStyleRefContext(IWORKXMLParserState &state, const int id, const bool nested, const bool anonymous)
+IWORKStyleRefContext::IWORKStyleRefContext(IWORKXMLParserState &state, const IWORKStyleMap_t &styleMap, const bool nested, const bool anonymous)
   : IWORKXMLEmptyContextBase(state)
-  , m_id(id)
+  , m_styleMap(styleMap)
   , m_nested(nested)
   , m_anonymous(anonymous)
 {
@@ -32,53 +32,16 @@ void IWORKStyleRefContext::attribute(int name, const char *value)
 
 void IWORKStyleRefContext::endOfElement()
 {
-  const boost::optional<std::string> dummyIdent;
-  const boost::optional<IWORKPropertyMap> dummyProps;
 
-  // TODO: need to get the style
-  switch (m_id)
+  IWORKStylePtr_t style;
+  if (getRef())
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref :
-    getCollector()->collectStyle(IWORKStylePtr_t(), m_anonymous);
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::characterstyle_ref :
-  {
-    IWORKStylePtr_t style;
-    if (getRef())
-    {
-      const IWORKStyleMap_t::const_iterator it = getDictionary().m_characterStyles.find(get(getRef()));
-      if (getDictionary().m_characterStyles.end() != it)
-        style = it->second;
-    }
-    getCollector()->collectStyle(style, m_anonymous);
-    break;
+    const IWORKStyleMap_t::const_iterator it = m_styleMap.find(get(getRef()));
+    if (m_styleMap.end() != it)
+      style = it->second;
   }
-  case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
-    getCollector()->collectStyle(IWORKStylePtr_t(), m_anonymous);
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref :
-  {
-    IWORKStylePtr_t style;
-    if (getRef())
-    {
-      const IWORKStyleMap_t::const_iterator it = getDictionary().m_paragraphStyles.find(get(getRef()));
-      if (getDictionary().m_paragraphStyles.end() != it)
-        style = it->second;
-    }
-    getCollector()->collectStyle(style, m_anonymous);
-    break;
-  }
-  case IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref :
-    getCollector()->collectStyle(IWORKStylePtr_t(), m_anonymous);
-    break;
-  default :
-    break;
-  }
-}
+  getCollector()->collectStyle(style, m_anonymous);
 
-IWORKDictionary &IWORKStyleRefContext::getDictionary()
-{
-  return getState().getDictionary();
 }
 
 }

@@ -125,7 +125,7 @@ IWORKXMLContextPtr_t StylesContext::element(const int name)
     return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_placeholderStyles);
 
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
-    return makeContext<KEY2StyleRefContext>(getState(), name, false, m_anonymous);
+    return makeContext<KEY2StyleRefContext>(getState(), getState().getDictionary().m_layoutStyles, false, m_anonymous);
   }
 
   return KEY2XMLContextBase<IWORKStylesContext>::element(name);
