@@ -35,7 +35,7 @@ extern "C" int readFromStream(void *context, char *buffer, int len)
     unsigned long bytesRead = 0;
     const unsigned char *const bytes = input->read((unsigned long)len, bytesRead);
 
-    std::memcpy(buffer, bytes, static_cast<size_t>(bytesRead));
+    if (bytesRead != 0) std::memcpy(buffer, bytes, static_cast<size_t>(bytesRead));
     return static_cast<int>(bytesRead);
   }
   catch (...)
