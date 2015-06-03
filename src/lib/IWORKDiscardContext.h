@@ -11,6 +11,7 @@
 #define IWORKDISCARDCONTEXT_H_INCLUDED
 
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include "IWORKXMLContext.h"
 
@@ -21,6 +22,8 @@ class IWORKXMLParserState;
 
 class IWORKDiscardContext : public IWORKXMLContext, public boost::enable_shared_from_this<IWORKDiscardContext>
 {
+  struct Data;
+
 public:
   explicit IWORKDiscardContext(IWORKXMLParserState &state);
 
@@ -35,6 +38,7 @@ private:
   IWORKXMLParserState &m_state;
   unsigned m_level;
   bool m_enableCollector;
+  boost::shared_ptr<Data> m_data;
 };
 
 }

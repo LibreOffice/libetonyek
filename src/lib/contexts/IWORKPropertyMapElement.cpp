@@ -21,6 +21,7 @@
 #include "IWORKStringElement.h"
 #include "IWORKStyleContext.h"
 #include "IWORKStyleRefContext.h"
+#include "IWORKTabsElement.h"
 #include "IWORKToken.h"
 #include "IWORKTokenizer.h"
 #include "IWORKXMLParserState.h"
@@ -382,93 +383,6 @@ struct NumberConverter<IWORKBaseline>
 namespace
 {
 
-class TabstopElement : public IWORKXMLEmptyContextBase
-{
-public:
-  TabstopElement(IWORKXMLParserState &state, optional<double> &pos);
-
-private:
-  virtual void attribute(int name, const char *value);
-
-private:
-  optional<double> &m_pos;
-};
-
-TabstopElement::TabstopElement(IWORKXMLParserState &state, optional<double> &pos)
-  : IWORKXMLEmptyContextBase(state)
-  , m_pos(pos)
-{
-}
-
-void TabstopElement::attribute(const int name, const char *const value)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::align :
-    // TODO: parse
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::pos :
-    m_pos = lexical_cast<double>(value);
-    break;
-  default :
-    break;
-  }
-}
-
-}
-
-namespace
-{
-
-class TabsElement : public IWORKXMLElementContextBase
-{
-public:
-  TabsElement(IWORKXMLParserState &state, IWORKTabStops_t &tabs);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  IWORKTabStops_t &m_tabs;
-  optional<double> m_current;
-};
-
-TabsElement::TabsElement(IWORKXMLParserState &state, IWORKTabStops_t &tabs)
-  : IWORKXMLElementContextBase(state)
-  , m_tabs(tabs)
-  , m_current()
-{
-}
-
-IWORKXMLContextPtr_t TabsElement::element(const int name)
-{
-  if (m_current)
-  {
-    m_tabs.push_back(IWORKTabStop(get(m_current)));
-    m_current.reset();
-  }
-
-  if ((IWORKToken::NS_URI_SF | IWORKToken::tabstop) == name)
-    return makeContext<TabstopElement>(getState(), m_current);
-
-  return IWORKXMLContextPtr_t();
-}
-
-void TabsElement::endOfElement()
-{
-  if (m_current)
-    m_tabs.push_back(IWORKTabStop(get(m_current)));
-
-  if (getId())
-    getState().getDictionary().m_tabs[get(getId())] = m_tabs;
-}
-
-}
-
-namespace
-{
-
 class TabsProperty : public PropertyContextBase
 {
 public:
@@ -497,7 +411,7 @@ IWORKXMLContextPtr_t TabsProperty::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::tabs :
-    return makeContext<TabsElement>(getState(), m_tabs);
+    return makeContext<IWORKTabsElement>(getState(), m_tabs);
   case IWORKToken::NS_URI_SF | IWORKToken::tabs_ref :
     return makeContext<IWORKRefContext>(getState(), m_ref);
   }
@@ -521,51 +435,6 @@ void TabsProperty::endOfElement()
   {
     m_propMap.clear<property::Tabs>();
   }
-}
-
-}
-
-namespace
-{
-
-class StylePropertyElement : public PropertyContextBase
-{
-public:
-  StylePropertyElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-};
-
-StylePropertyElement::StylePropertyElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : PropertyContextBase(state, propMap)
-{
-}
-
-IWORKXMLContextPtr_t StylePropertyElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::vector_style :
-    return makeContext<IWORKStyleContext>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
-    return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_paragraphStyles, true);
-  case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
-  case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
-  case IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref :
-    return IWORKXMLContextPtr_t();
-  case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref :
-    return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_paragraphStyles, true, true);
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-void StylePropertyElement::endOfElement()
-{
 }
 
 }
@@ -958,32 +827,6 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyLayoutStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyBorderVectorStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyCellLayoutStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyCellParagraphStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyCellStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyHeaderBorderVectorStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyHeaderColumnCellLayoutStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyHeaderColumnCellParagraphStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyHeaderColumnCellStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyHeaderRowCellLayoutStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyHeaderRowCellParagraphStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyHeaderRowCellStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyHeaderSeperatorVectorStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyHeaderVectorStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyVectorStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::TableCellStylePropertyFormatNegativeStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::bulletListStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::followingLayoutStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::followingParagraphStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::layoutParagraphStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::layoutStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::listStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::tocStyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyParagraphStyle :
-    return makeContext<StylePropertyElement>(getState(), m_propMap);
-
   case IWORKToken::NS_URI_SF | IWORKToken::alignment :
     return makeContext<AlignmentElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::baselineShift :

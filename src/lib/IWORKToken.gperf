@@ -26,23 +26,6 @@ __multilingual,__multilingual
 1,_1
 ID,ID
 IDREF,IDREF
-SFTCellStylePropertyLayoutStyle,SFTCellStylePropertyLayoutStyle
-SFTCellStylePropertyParagraphStyle,SFTCellStylePropertyParagraphStyle
-SFTableStylePropertyBorderVectorStyle,SFTableStylePropertyBorderVectorStyle
-SFTableStylePropertyCellLayoutStyle,SFTableStylePropertyCellLayoutStyle
-SFTableStylePropertyCellParagraphStyle,SFTableStylePropertyCellParagraphStyle
-SFTableStylePropertyCellStyle,SFTableStylePropertyCellStyle
-SFTableStylePropertyHeaderBorderVectorStyle,SFTableStylePropertyHeaderBorderVectorStyle
-SFTableStylePropertyHeaderColumnCellLayoutStyle,SFTableStylePropertyHeaderColumnCellLayoutStyle
-SFTableStylePropertyHeaderColumnCellParagraphStyle,SFTableStylePropertyHeaderColumnCellParagraphStyle
-SFTableStylePropertyHeaderColumnCellStyle,SFTableStylePropertyHeaderColumnCellStyle
-SFTableStylePropertyHeaderRowCellLayoutStyle,SFTableStylePropertyHeaderRowCellLayoutStyle
-SFTableStylePropertyHeaderRowCellParagraphStyle,SFTableStylePropertyHeaderRowCellParagraphStyle
-SFTableStylePropertyHeaderRowCellStyle,SFTableStylePropertyHeaderRowCellStyle
-SFTableStylePropertyHeaderSeperatorVectorStyle,SFTableStylePropertyHeaderSeperatorVectorStyle
-SFTableStylePropertyHeaderVectorStyle,SFTableStylePropertyHeaderVectorStyle
-SFTableStylePropertyVectorStyle,SFTableStylePropertyVectorStyle
-TableCellStylePropertyFormatNegativeStyle,TableCellStylePropertyFormatNegativeStyle
 a,a
 align,align
 alignment,alignment
@@ -62,7 +45,6 @@ bezier-path,bezier_path
 bezier-ref,bezier_ref
 body-placeholder-ref,body_placeholder_ref
 bold,bold
-bulletListStyle,bulletListStyle
 calc-engine,calc_engine
 callout2-path,callout2_path
 capitalization,capitalization
@@ -96,8 +78,6 @@ false,false_
 filtered,filtered
 filtered-image,filtered_image
 firstLineIndent,firstLineIndent
-followingLayoutStyle,followingLayoutStyle
-followingParagraphStyle,followingParagraphStyle
 fontColor,fontColor
 fontName,fontName
 fontSize,fontSize
@@ -137,8 +117,6 @@ layer,layer
 layer-ref,layer_ref
 layers,layers
 layout,layout
-layoutParagraphStyle,layoutParagraphStyle
-layoutStyle,layoutStyle
 layoutstyle,layoutstyle
 layoutstyle-ref,layoutstyle_ref
 leftIndent,leftIndent
@@ -147,7 +125,6 @@ line,line
 lineSpacing,lineSpacing
 linespacing,linespacing
 link,link
-listStyle,listStyle
 liststyle,liststyle
 liststyle-ref,liststyle_ref
 lnbr,lnbr
@@ -229,7 +206,6 @@ text-body,text_body
 text-storage,text_storage
 title,title
 title-placeholder-ref,title_placeholder_ref
-tocStyle,tocStyle
 tracking,tracking
 true,true_
 type,type

@@ -17,6 +17,7 @@
 
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"
+#include "IWORKBezierElement.h"
 #include "IWORKChainedTokenizer.h"
 #include "IWORKDiscardContext.h"
 #include "IWORKGeometryElement.h"
@@ -488,51 +489,6 @@ void ScalarPathElement::endOfElement()
 namespace
 {
 
-class BezierElement : public KEY2XMLEmptyContextBase
-{
-public:
-  explicit BezierElement(KEY2ParserState &state);
-
-private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
-
-private:
-  IWORKPathPtr_t m_path;
-};
-
-BezierElement::BezierElement(KEY2ParserState &state)
-  : KEY2XMLEmptyContextBase(state)
-  , m_path()
-{
-}
-
-void BezierElement::attribute(const int name, const char *const value)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SFA | IWORKToken::path :
-    m_path.reset(new IWORKPath(value));
-    break;
-  default :
-    KEY2XMLEmptyContextBase::attribute(name, value);
-    break;
-  }
-}
-
-void BezierElement::endOfElement()
-{
-  if (getId())
-    getState().getDictionary().m_beziers[get(getId())] = m_path;
-  if (isCollector())
-    getCollector().collectBezier(m_path);
-}
-
-}
-
-namespace
-{
-
 class BezierRefElement : public KEY2XMLEmptyContextBase
 {
 public:
@@ -582,7 +538,7 @@ IWORKXMLContextPtr_t BezierPathElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::bezier :
-    return makeContext<BezierElement>(getState());
+    return makeContext<IWORKBezierElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::bezier_ref :
     return makeContext<BezierRefElement>(getState());
   }

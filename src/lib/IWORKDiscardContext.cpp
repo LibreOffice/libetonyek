@@ -9,15 +9,30 @@
 
 #include "IWORKDiscardContext.h"
 
+#include "IWORKBezierElement.h"
+#include "IWORKDataElement.h"
+#include "IWORKDictionary.h"
+#include "IWORKStyleContext.h"
+#include "IWORKTabsElement.h"
+#include "IWORKToken.h"
+#include "IWORKUnfilteredElement.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
 {
 
+struct IWORKDiscardContext::Data
+{
+  IWORKDataPtr_t m_data;
+  IWORKMediaContentPtr_t m_mediaContent;
+  IWORKTabStops_t m_tabStops;
+};
+
 IWORKDiscardContext::IWORKDiscardContext(IWORKXMLParserState &state)
   : m_state(state)
   , m_level(0)
   , m_enableCollector(false)
+  , m_data(new Data())
 {
 }
 
@@ -35,8 +50,27 @@ void IWORKDiscardContext::attribute(int, const char *)
 {
 }
 
-IWORKXMLContextPtr_t IWORKDiscardContext::element(int)
+IWORKXMLContextPtr_t IWORKDiscardContext::element(const int name)
 {
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::bezier :
+    return makeContext<IWORKBezierElement>(m_state);
+  case IWORKToken::NS_URI_SF | IWORKToken::characterstyle :
+    return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_characterStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::data :
+    m_data->m_data.reset();
+    return makeContext<IWORKDataElement>(m_state, m_data->m_data);
+  case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
+    return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_paragraphStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::tabs :
+    m_data->m_tabStops.clear();
+    return makeContext<IWORKTabsElement>(m_state, m_data->m_tabStops);
+  case IWORKToken::NS_URI_SF | IWORKToken::unfiltered :
+    m_data->m_mediaContent.reset();
+    return makeContext<IWORKUnfilteredElement>(m_state, m_data->m_mediaContent);
+  }
+
   return shared_from_this();
 }
 
