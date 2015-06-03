@@ -1855,11 +1855,27 @@ class DiscardContext : public KEY2XMLContextBase<IWORKDiscardContext>
 {
 public:
   explicit DiscardContext(KEY2ParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
 };
 
 DiscardContext::DiscardContext(KEY2ParserState &state)
   : KEY2XMLContextBase<IWORKDiscardContext>(state)
 {
+}
+
+IWORKXMLContextPtr_t DiscardContext::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
+    return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_layoutStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style :
+    return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_placeholderStyles);
+  }
+
+  return KEY2XMLContextBase<IWORKDiscardContext>::element(name);
 }
 
 }
