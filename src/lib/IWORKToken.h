@@ -230,8 +230,11 @@ enum
   __multilingual,
   _0,
   _1,
+  double_,
   false_,
   relative,
+  right,
+  star,
   true_,
 
   LAST_TOKEN

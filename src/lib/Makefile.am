@@ -148,6 +148,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKMediaElement.h \
 	contexts/IWORKPElement.cpp \
 	contexts/IWORKPElement.h \
+	contexts/IWORKPathElement.cpp \
+	contexts/IWORKPathElement.h \
 	contexts/IWORKPositionElement.cpp \
 	contexts/IWORKPositionElement.h \
 	contexts/IWORKPropertyMapElement.cpp \

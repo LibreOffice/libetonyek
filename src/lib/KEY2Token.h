@@ -53,7 +53,6 @@ enum
   title_placeholder,
 
   // attributes
-  right,
   version,
 
   // attribute values
@@ -62,9 +61,7 @@ enum
   VERSION_STR_3,
   VERSION_STR_4,
   VERSION_STR_5,
-  double_,
   i,
-  star,
 
   LAST_TOKEN
 };

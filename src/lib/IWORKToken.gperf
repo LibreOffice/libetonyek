@@ -69,6 +69,7 @@ data,data
 data-ref,data_ref
 datasource,datasource
 displayname,displayname
+double,double_
 drawables,drawables
 du,du
 editable-bezier-path,editable_bezier_path
@@ -160,6 +161,7 @@ property-map,property_map
 proxy-master-layer,proxy_master_layer
 r,r
 relative,relative
+right,right
 rightIndent,rightIndent
 row-span,row_span
 rows,rows
@@ -180,6 +182,7 @@ so,so
 spaceAfter,spaceAfter
 spaceBefore,spaceBefore
 span,span
+star,star
 sticky-note,sticky_note
 strikethru,strikethru
 string,string
