@@ -43,7 +43,6 @@ void processAttribute(xmlTextReaderPtr reader, IWORKXMLContextPtr_t context, con
 IWORKParser::IWORKParser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package)
   : m_input(input)
   , m_package(package)
-  , m_discardContext()
 {
 }
 
@@ -77,7 +76,7 @@ bool IWORKParser::parse()
       IWORKXMLContextPtr_t newContext = contextStack.top()->element(id);
 
       if (!newContext)
-        newContext = getDiscardContext();
+        newContext = createDiscardContext();
 
       const bool isEmpty = xmlTextReaderIsEmptyElement(reader);
 
@@ -142,13 +141,6 @@ RVNGInputStreamPtr_t &IWORKParser::getPackage()
 RVNGInputStreamPtr_t IWORKParser::getPackage() const
 {
   return m_package;
-}
-
-IWORKXMLContextPtr_t IWORKParser::getDiscardContext()
-{
-  if (!m_discardContext)
-    m_discardContext = createDiscardContext();
-  return m_discardContext;
 }
 
 }

@@ -33,6 +33,8 @@ protected:
 
 private:
   IWORKXMLParserState &m_state;
+  unsigned m_level;
+  bool m_enableCollector;
 };
 
 }

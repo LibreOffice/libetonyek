@@ -9,16 +9,26 @@
 
 #include "IWORKDiscardContext.h"
 
+#include "IWORKXMLParserState.h"
+
 namespace libetonyek
 {
 
 IWORKDiscardContext::IWORKDiscardContext(IWORKXMLParserState &state)
   : m_state(state)
+  , m_level(0)
+  , m_enableCollector(false)
 {
 }
 
 void IWORKDiscardContext::startOfElement()
 {
+  if (m_level == 0)
+  {
+    m_enableCollector = m_state.m_enableCollector;
+    m_state.m_enableCollector = false;
+  }
+  ++m_level;
 }
 
 void IWORKDiscardContext::attribute(int, const char *)
@@ -36,8 +46,12 @@ void IWORKDiscardContext::text(const char *)
 
 void IWORKDiscardContext::endOfElement()
 {
-}
+  assert(m_level > 0);
 
+  --m_level;
+  if (m_level == 0)
+    m_state.m_enableCollector = m_enableCollector;
+}
 
 }
 
