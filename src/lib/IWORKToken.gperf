@@ -32,7 +32,6 @@ alignment,alignment
 amt,amt
 angle,angle
 anon-styles,anon_styles
-array,array
 aspectRatioLocked,aspectRatioLocked
 attachment,attachment
 attachment-ref,attachment_ref
@@ -156,7 +155,6 @@ point,point
 point-path,point_path
 pos,pos
 position,position
-projects,projects
 property-map,property_map
 proxy-master-layer,proxy_master_layer
 r,r

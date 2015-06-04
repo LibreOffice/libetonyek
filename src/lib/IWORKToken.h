@@ -34,7 +34,6 @@ enum
   // elements
   alignment,
   anon_styles,
-  array,
   attachment,
   attachment_ref,
   attachments,
@@ -135,7 +134,6 @@ enum
   point,
   point_path,
   position,
-  projects,
   property_map,
   proxy_master_layer,
   r,

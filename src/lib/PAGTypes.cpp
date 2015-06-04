@@ -19,8 +19,7 @@ PAGPublicationInfo::PAGPublicationInfo()
 
 PAGMetadata::PAGMetadata()
   : m_title()
-  , m_authors()
-  , m_projects()
+  , m_author()
   , m_keywords()
   , m_comment()
 {

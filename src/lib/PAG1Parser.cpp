@@ -9,6 +9,8 @@
 
 #include "PAG1Parser.h"
 
+#include <boost/optional.hpp>
+
 #include "libetonyek_xml.h"
 #include "IWORKChainedTokenizer.h"
 #include "IWORKDiscardContext.h"
@@ -29,7 +31,6 @@
 
 using boost::optional;
 
-using std::deque;
 using std::string;
 
 namespace libetonyek
@@ -315,63 +316,19 @@ IWORKXMLContextPtr_t TitleElement::element(const int name)
 namespace
 {
 
-class ArrayElement : public PAG1XMLElementContextBase
-{
-public:
-  ArrayElement(PAG1ParserState &state, deque<string> &value);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  deque<string> &m_value;
-  optional<string> m_element;
-};
-
-ArrayElement::ArrayElement(PAG1ParserState &state, deque<string> &value)
-  : PAG1XMLElementContextBase(state)
-  , m_value(value)
-  , m_element()
-{
-}
-
-IWORKXMLContextPtr_t ArrayElement::element(const int name)
-{
-  if (m_element)
-  {
-    m_value.push_back(get(m_element));
-    m_element.reset();
-  }
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::string))
-    return makeContext<IWORKStringElement>(getState(), m_element);
-  return IWORKXMLContextPtr_t();
-}
-
-void ArrayElement::endOfElement()
-{
-  if (m_element)
-    m_value.push_back(get(m_element));
-}
-
-}
-
-namespace
-{
-
 class AuthorsElement : public PAG1XMLElementContextBase
 {
 public:
-  AuthorsElement(PAG1ParserState &state, deque<string> &value);
+  AuthorsElement(PAG1ParserState &state, optional<string> &value);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 
 private:
-  deque<string> &m_value;
+  optional<string> &m_value;
 };
 
-AuthorsElement::AuthorsElement(PAG1ParserState &state, deque<string> &value)
+AuthorsElement::AuthorsElement(PAG1ParserState &state, optional<string> &value)
   : PAG1XMLElementContextBase(state)
   , m_value(value)
 {
@@ -379,38 +336,8 @@ AuthorsElement::AuthorsElement(PAG1ParserState &state, deque<string> &value)
 
 IWORKXMLContextPtr_t AuthorsElement::element(const int name)
 {
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::array))
-    return makeContext<ArrayElement>(getState(), m_value);
-  return IWORKXMLContextPtr_t();
-}
-
-}
-
-namespace
-{
-
-class ProjectsElement : public PAG1XMLElementContextBase
-{
-public:
-  ProjectsElement(PAG1ParserState &state, deque<string> &value);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-
-private:
-  deque<string> &m_value;
-};
-
-ProjectsElement::ProjectsElement(PAG1ParserState &state, deque<string> &value)
-  : PAG1XMLElementContextBase(state)
-  , m_value(value)
-{
-}
-
-IWORKXMLContextPtr_t ProjectsElement::element(const int name)
-{
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::array))
-    return makeContext<ArrayElement>(getState(), m_value);
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::string))
+    return makeContext<IWORKStringElement>(getState(), m_value);
   return IWORKXMLContextPtr_t();
 }
 
@@ -422,16 +349,16 @@ namespace
 class KeywordsElement : public PAG1XMLElementContextBase
 {
 public:
-  KeywordsElement(PAG1ParserState &state, deque<string> &value);
+  KeywordsElement(PAG1ParserState &state, optional<string> &value);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 
 private:
-  deque<string> &m_value;
+  optional<string> &m_value;
 };
 
-KeywordsElement::KeywordsElement(PAG1ParserState &state, deque<string> &value)
+KeywordsElement::KeywordsElement(PAG1ParserState &state, optional<string> &value)
   : PAG1XMLElementContextBase(state)
   , m_value(value)
 {
@@ -439,8 +366,8 @@ KeywordsElement::KeywordsElement(PAG1ParserState &state, deque<string> &value)
 
 IWORKXMLContextPtr_t KeywordsElement::element(const int name)
 {
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::array))
-    return makeContext<ArrayElement>(getState(), m_value);
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::string))
+    return makeContext<IWORKStringElement>(getState(), m_value);
   return IWORKXMLContextPtr_t();
 }
 
@@ -489,12 +416,18 @@ private:
   virtual void endOfElement();
 
 private:
-  PAGMetadata m_metadata;
+  optional<string> m_author;
+  optional<string> m_title;
+  optional<string> m_keywords;
+  optional<string> m_comment;
 };
 
 MetadataElement::MetadataElement(PAG1ParserState &state)
   : PAG1XMLElementContextBase(state)
-  , m_metadata()
+  , m_author()
+  , m_title()
+  , m_keywords()
+  , m_comment()
 {
 }
 
@@ -503,15 +436,13 @@ IWORKXMLContextPtr_t MetadataElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::authors :
-    return makeContext<AuthorsElement>(getState(), m_metadata.m_authors);
+    return makeContext<AuthorsElement>(getState(), m_author);
   case IWORKToken::NS_URI_SF | IWORKToken::comment :
-    return makeContext<CommentElement>(getState(), m_metadata.m_comment);
+    return makeContext<CommentElement>(getState(), m_comment);
   case IWORKToken::NS_URI_SF | IWORKToken::keywords :
-    return makeContext<KeywordsElement>(getState(), m_metadata.m_keywords);
-  case IWORKToken::NS_URI_SF | IWORKToken::projects :
-    return makeContext<ProjectsElement>(getState(), m_metadata.m_projects);
+    return makeContext<KeywordsElement>(getState(), m_keywords);
   case IWORKToken::NS_URI_SF | IWORKToken::title :
-    return makeContext<TitleElement>(getState(), m_metadata.m_title);
+    return makeContext<TitleElement>(getState(), m_title);
   }
 
   return IWORKXMLContextPtr_t();
@@ -520,7 +451,18 @@ IWORKXMLContextPtr_t MetadataElement::element(const int name)
 void MetadataElement::endOfElement()
 {
   if (isCollector())
-    getCollector().collectMetadata(m_metadata);
+  {
+    PAGMetadata metadata;
+    if (m_author)
+      metadata.m_author = get(m_author);
+    if (m_title)
+      metadata.m_title = get(m_title);
+    if (m_keywords)
+      metadata.m_keywords = get(m_keywords);
+    if (m_comment)
+      metadata.m_comment = get(m_comment);
+    getCollector().collectMetadata(metadata);
+  }
 }
 
 }

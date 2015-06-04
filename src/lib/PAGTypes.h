@@ -10,7 +10,6 @@
 #ifndef PAGTYPES_H_INCLUDED
 #define PAGTYPES_H_INCLUDED
 
-#include <deque>
 #include <string>
 
 #include <boost/optional.hpp>
@@ -29,11 +28,10 @@ struct PAGMetadata
 {
   PAGMetadata();
 
-  boost::optional<std::string> m_title;
-  std::deque<std::string> m_authors;
-  std::deque<std::string> m_projects;
-  std::deque<std::string> m_keywords;
-  boost::optional<std::string> m_comment;
+  std::string m_title;
+  std::string m_author;
+  std::string m_keywords;
+  std::string m_comment;
 };
 
 }

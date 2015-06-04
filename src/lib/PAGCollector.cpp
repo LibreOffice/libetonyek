@@ -9,7 +9,6 @@
 
 #include "PAGCollector.h"
 
-#include <boost/algorithm/string/join.hpp>
 #include <boost/make_shared.hpp>
 
 #include "IWORKDocumentInterface.h"
@@ -27,28 +26,16 @@ using std::string;
 namespace
 {
 
-struct NotEmpty
-{
-  bool operator()(const string &str) const
-  {
-    return !str.empty();
-  }
-};
-
 void fillMetadata(const PAGMetadata &metadata, const PAGPublicationInfo &/*docInfo*/, RVNGPropertyList &props)
 {
-  using boost::join_if;
-
-  if (metadata.m_title && !get(metadata.m_title).empty())
-    props.insert("dc:subject", get(metadata.m_title).c_str());
-  if (!metadata.m_authors.empty())
-    props.insert("meta:intial-creator", join_if(metadata.m_authors, ", ", NotEmpty()).c_str());
-  if (!metadata.m_projects.empty())
-    props.insert("librevenge:project", join_if(metadata.m_projects, ", ", NotEmpty()).c_str());
+  if (!metadata.m_title.empty())
+    props.insert("dc:subject", metadata.m_title.c_str());
+  if (!metadata.m_author.empty())
+    props.insert("meta:intial-creator", metadata.m_author.c_str());
   if (!metadata.m_keywords.empty())
-    props.insert("meta:keyword", join_if(metadata.m_keywords, ", ", NotEmpty()).c_str());
-  if (metadata.m_comment && !get(metadata.m_comment).empty())
-    props.insert("librevenge:comments", get(metadata.m_comment).c_str());
+    props.insert("meta:keyword", metadata.m_keywords.c_str());
+  if (!metadata.m_comment.empty())
+    props.insert("librevenge:comments", metadata.m_comment.c_str());
 }
 
 }
