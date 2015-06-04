@@ -26,7 +26,7 @@ using std::string;
 namespace
 {
 
-void fillMetadata(const PAGMetadata &metadata, const PAGPublicationInfo &/*docInfo*/, RVNGPropertyList &props)
+void fillMetadata(const IWORKMetadata &metadata, const PAGPublicationInfo &/*docInfo*/, RVNGPropertyList &props)
 {
   if (!metadata.m_title.empty())
     props.insert("dc:subject", metadata.m_title.c_str());
@@ -66,7 +66,7 @@ void PAGCollector::collectPublicationInfo(const PAGPublicationInfo &/*pubInfo*/)
 {
 }
 
-void PAGCollector::collectMetadata(const PAGMetadata &metadata)
+void PAGCollector::collectMetadata(const IWORKMetadata &metadata)
 {
   RVNGPropertyList props;
   fillMetadata(metadata, PAGPublicationInfo(), props);

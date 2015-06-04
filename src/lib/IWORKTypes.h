@@ -188,6 +188,16 @@ struct IWORKStroke
   std::deque<double> m_pattern;
 };
 
+struct IWORKMetadata
+{
+  IWORKMetadata();
+
+  std::string m_title;
+  std::string m_author;
+  std::string m_keywords;
+  std::string m_comment;
+};
+
 }
 
 #endif //  IWORKTYPES_H_INCLUDED

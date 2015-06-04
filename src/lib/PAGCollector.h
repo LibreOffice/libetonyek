@@ -40,7 +40,7 @@ public:
   // collector functions
 
   void collectPublicationInfo(const PAGPublicationInfo &pubInfo);
-  void collectMetadata(const PAGMetadata &metadata);
+  void collectMetadata(const IWORKMetadata &metadata);
 
   void collectTextBody();
   void collectAttachment(const IWORKOutputID_t &id);

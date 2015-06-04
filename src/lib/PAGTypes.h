@@ -24,16 +24,6 @@ struct PAGPublicationInfo
   boost::optional<std::string> m_creationDate;
 };
 
-struct PAGMetadata
-{
-  PAGMetadata();
-
-  std::string m_title;
-  std::string m_author;
-  std::string m_keywords;
-  std::string m_comment;
-};
-
 }
 
 #endif //  PAGTYPES_H_INCLUDED

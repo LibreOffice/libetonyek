@@ -17,14 +17,6 @@ PAGPublicationInfo::PAGPublicationInfo()
 {
 }
 
-PAGMetadata::PAGMetadata()
-  : m_title()
-  , m_author()
-  , m_keywords()
-  , m_comment()
-{
-}
-
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

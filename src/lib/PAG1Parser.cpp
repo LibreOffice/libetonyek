@@ -15,6 +15,7 @@
 #include "IWORKChainedTokenizer.h"
 #include "IWORKDiscardContext.h"
 #include "IWORKLayoutElement.h"
+#include "IWORKMetadataElement.h"
 #include "IWORKPElement.h"
 #include "IWORKRefContext.h"
 #include "IWORKStringElement.h"
@@ -279,190 +280,6 @@ void PublicationInfoElement::endOfElement()
 {
   if (isCollector())
     getCollector().collectPublicationInfo(m_pubInfo);
-}
-
-}
-
-namespace
-{
-
-class TitleElement : public PAG1XMLElementContextBase
-{
-public:
-  explicit TitleElement(PAG1ParserState &state, optional<string> &value);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-
-private:
-  optional<string> &m_value;
-};
-
-TitleElement::TitleElement(PAG1ParserState &state, optional<string> &value)
-  : PAG1XMLElementContextBase(state)
-  , m_value(value)
-{
-}
-
-IWORKXMLContextPtr_t TitleElement::element(const int name)
-{
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::string))
-    return makeContext<IWORKStringElement>(getState(), m_value);
-  return IWORKXMLContextPtr_t();
-}
-
-}
-
-namespace
-{
-
-class AuthorsElement : public PAG1XMLElementContextBase
-{
-public:
-  AuthorsElement(PAG1ParserState &state, optional<string> &value);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-
-private:
-  optional<string> &m_value;
-};
-
-AuthorsElement::AuthorsElement(PAG1ParserState &state, optional<string> &value)
-  : PAG1XMLElementContextBase(state)
-  , m_value(value)
-{
-}
-
-IWORKXMLContextPtr_t AuthorsElement::element(const int name)
-{
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::string))
-    return makeContext<IWORKStringElement>(getState(), m_value);
-  return IWORKXMLContextPtr_t();
-}
-
-}
-
-namespace
-{
-
-class KeywordsElement : public PAG1XMLElementContextBase
-{
-public:
-  KeywordsElement(PAG1ParserState &state, optional<string> &value);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-
-private:
-  optional<string> &m_value;
-};
-
-KeywordsElement::KeywordsElement(PAG1ParserState &state, optional<string> &value)
-  : PAG1XMLElementContextBase(state)
-  , m_value(value)
-{
-}
-
-IWORKXMLContextPtr_t KeywordsElement::element(const int name)
-{
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::string))
-    return makeContext<IWORKStringElement>(getState(), m_value);
-  return IWORKXMLContextPtr_t();
-}
-
-}
-
-namespace
-{
-
-class CommentElement : public PAG1XMLElementContextBase
-{
-public:
-  explicit CommentElement(PAG1ParserState &state, optional<string> &m_value);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-
-private:
-  optional<string> &m_value;
-};
-
-CommentElement::CommentElement(PAG1ParserState &state, optional<string> &value)
-  : PAG1XMLElementContextBase(state)
-  , m_value(value)
-{
-}
-
-IWORKXMLContextPtr_t CommentElement::element(const int name)
-{
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::string))
-    return makeContext<IWORKStringElement>(getState(), m_value);
-  return IWORKXMLContextPtr_t();
-}
-
-}
-
-namespace
-{
-
-class MetadataElement : public PAG1XMLElementContextBase
-{
-public:
-  explicit MetadataElement(PAG1ParserState &state);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  optional<string> m_author;
-  optional<string> m_title;
-  optional<string> m_keywords;
-  optional<string> m_comment;
-};
-
-MetadataElement::MetadataElement(PAG1ParserState &state)
-  : PAG1XMLElementContextBase(state)
-  , m_author()
-  , m_title()
-  , m_keywords()
-  , m_comment()
-{
-}
-
-IWORKXMLContextPtr_t MetadataElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::authors :
-    return makeContext<AuthorsElement>(getState(), m_author);
-  case IWORKToken::NS_URI_SF | IWORKToken::comment :
-    return makeContext<CommentElement>(getState(), m_comment);
-  case IWORKToken::NS_URI_SF | IWORKToken::keywords :
-    return makeContext<KeywordsElement>(getState(), m_keywords);
-  case IWORKToken::NS_URI_SF | IWORKToken::title :
-    return makeContext<TitleElement>(getState(), m_title);
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-void MetadataElement::endOfElement()
-{
-  if (isCollector())
-  {
-    PAGMetadata metadata;
-    if (m_author)
-      metadata.m_author = get(m_author);
-    if (m_title)
-      metadata.m_title = get(m_title);
-    if (m_keywords)
-      metadata.m_keywords = get(m_keywords);
-    if (m_comment)
-      metadata.m_comment = get(m_comment);
-    getCollector().collectMetadata(metadata);
-  }
 }
 
 }
@@ -805,6 +622,33 @@ void TextStorageElement::endOfElement()
 namespace
 {
 
+class MetadataElement : public PAG1XMLContextBase<IWORKMetadataElement>
+{
+public:
+  explicit MetadataElement(PAG1ParserState &state);
+
+private:
+  virtual void endOfElement();
+};
+
+MetadataElement::MetadataElement(PAG1ParserState &state)
+  : PAG1XMLContextBase<IWORKMetadataElement>(state)
+{
+}
+
+void MetadataElement::endOfElement()
+{
+  PAG1XMLContextBase<IWORKMetadataElement>::endOfElement();
+
+  if (isCollector())
+    getCollector().collectMetadata(m_metadata);
+}
+
+}
+
+namespace
+{
+
 class DocumentElement : public PAG1XMLElementContextBase
 {
 public:
@@ -818,13 +662,11 @@ private:
 
 private:
   optional<IWORKSize> m_size;
-  PAGMetadata m_metadata;
 };
 
 DocumentElement::DocumentElement(PAG1ParserState &state)
   : PAG1XMLElementContextBase(state)
   , m_size()
-  , m_metadata()
 {
 }
 
