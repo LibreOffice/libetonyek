@@ -128,12 +128,6 @@ KEYPlaceholderPtr_t KEYCollector::collectTextPlaceholder(const IWORKStylePtr_t &
   return placeholder;
 }
 
-void drawPlaceholder(const KEYPlaceholderPtr_t &placeholder, const glm::dmat3 &trafo, IWORKOutputElements &elements)
-{
-  if (bool(placeholder) && bool(placeholder->m_style) && bool(placeholder->m_text))
-    (placeholder->m_text)->draw(trafo, placeholder->m_geometry, elements);
-}
-
 void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
 {
   if (bool(placeholder))
@@ -141,8 +135,10 @@ void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
     glm::dmat3 trafo;
     if (bool(placeholder->m_geometry))
       trafo = makeTransformation(*placeholder->m_geometry);
+    trafo *= m_levelStack.top().m_trafo;
 
-    drawPlaceholder(placeholder, trafo * m_levelStack.top().m_trafo, getOutputManager().getCurrent());
+    if (bool(placeholder) && bool(placeholder->m_style) && bool(placeholder->m_text))
+      (placeholder->m_text)->draw(trafo, placeholder->m_geometry, getOutputManager().getCurrent());
   }
   else
   {
