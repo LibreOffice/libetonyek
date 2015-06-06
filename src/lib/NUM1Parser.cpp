@@ -336,7 +336,6 @@ void DocumentElement::attribute(const int name, const char *const value)
 
 IWORKXMLContextPtr_t DocumentElement::element(const int name)
 {
-
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::metadata :
