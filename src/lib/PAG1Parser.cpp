@@ -622,33 +622,6 @@ void TextStorageElement::endOfElement()
 namespace
 {
 
-class MetadataElement : public PAG1XMLContextBase<IWORKMetadataElement>
-{
-public:
-  explicit MetadataElement(PAG1ParserState &state);
-
-private:
-  virtual void endOfElement();
-};
-
-MetadataElement::MetadataElement(PAG1ParserState &state)
-  : PAG1XMLContextBase<IWORKMetadataElement>(state)
-{
-}
-
-void MetadataElement::endOfElement()
-{
-  PAG1XMLContextBase<IWORKMetadataElement>::endOfElement();
-
-  if (isCollector())
-    getCollector().collectMetadata(m_metadata);
-}
-
-}
-
-namespace
-{
-
 class DocumentElement : public PAG1XMLElementContextBase
 {
 public:
@@ -701,7 +674,7 @@ IWORKXMLContextPtr_t DocumentElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::footers :
     return makeContext<FootersElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::metadata :
-    return makeContext<MetadataElement>(getState());
+    return makeContext<IWORKMetadataElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::text_storage :
     return makeContext<TextStorageElement>(getState());
   case PAG1Token::NS_URI_SL | PAG1Token::publication_info :

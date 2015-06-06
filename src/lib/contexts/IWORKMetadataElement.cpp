@@ -9,8 +9,11 @@
 
 #include "IWORKMetadataElement.h"
 
+#include "IWORKCollector.h"
 #include "IWORKStringElement.h"
 #include "IWORKToken.h"
+#include "IWORKTypes.h"
+#include "IWORKXMLParserState.h"
 
 namespace libetonyek
 {
@@ -141,7 +144,6 @@ IWORKXMLContextPtr_t CommentElement::element(const int name)
 
 IWORKMetadataElement::IWORKMetadataElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
-  , m_metadata()
   , m_author()
   , m_title()
   , m_keywords()
@@ -168,14 +170,19 @@ IWORKXMLContextPtr_t IWORKMetadataElement::element(const int name)
 
 void IWORKMetadataElement::endOfElement()
 {
+  IWORKMetadata metadata;
+
   if (m_author)
-    m_metadata.m_author = get(m_author);
+    metadata.m_author = get(m_author);
   if (m_title)
-    m_metadata.m_title = get(m_title);
+    metadata.m_title = get(m_title);
   if (m_keywords)
-    m_metadata.m_keywords = get(m_keywords);
+    metadata.m_keywords = get(m_keywords);
   if (m_comment)
-    m_metadata.m_comment = get(m_comment);
+    metadata.m_comment = get(m_comment);
+
+  if (isCollector())
+    getCollector().collectMetadata(metadata);
 }
 
 }

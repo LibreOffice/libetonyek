@@ -17,7 +17,6 @@ namespace libetonyek
 
 class IWORKDocumentInterface;
 
-class PAGMetadata;
 class PAGPublicationInfo;
 
 class PAGCollector : public IWORKCollector
@@ -40,7 +39,6 @@ public:
   // collector functions
 
   void collectPublicationInfo(const PAGPublicationInfo &pubInfo);
-  void collectMetadata(const IWORKMetadata &metadata);
 
   void collectTextBody();
   void collectAttachment(const IWORKOutputID_t &id);
@@ -54,9 +52,11 @@ public:
 
 private:
   virtual void drawTable();
+  void flushPageSpan(bool writeEmpty = true);
 
 private:
   Section m_currentSection;
+  bool m_firstPageSpan;
 };
 
 } // namespace libetonyek

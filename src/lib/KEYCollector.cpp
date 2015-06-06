@@ -177,6 +177,7 @@ void KEYCollector::collectStickyNote()
 void KEYCollector::startSlides()
 {
   m_paint = true;
+  m_document->setDocumentMetaData(librevenge::RVNGPropertyList());
 }
 
 void KEYCollector::endSlides()

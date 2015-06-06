@@ -23,23 +23,6 @@ using librevenge::RVNGPropertyList;
 
 using std::string;
 
-namespace
-{
-
-void fillMetadata(const IWORKMetadata &metadata, const PAGPublicationInfo &/*docInfo*/, RVNGPropertyList &props)
-{
-  if (!metadata.m_title.empty())
-    props.insert("dc:subject", metadata.m_title.c_str());
-  if (!metadata.m_author.empty())
-    props.insert("meta:intial-creator", metadata.m_author.c_str());
-  if (!metadata.m_keywords.empty())
-    props.insert("meta:keyword", metadata.m_keywords.c_str());
-  if (!metadata.m_comment.empty())
-    props.insert("librevenge:comments", metadata.m_comment.c_str());
-}
-
-}
-
 PAGCollector::Section::Section()
   : m_width()
   , m_height()
@@ -59,6 +42,7 @@ void PAGCollector::Section::clear()
 PAGCollector::PAGCollector(IWORKDocumentInterface *const document)
   : IWORKCollector(document)
   , m_currentSection()
+  , m_firstPageSpan(true)
 {
 }
 
@@ -66,29 +50,11 @@ void PAGCollector::collectPublicationInfo(const PAGPublicationInfo &/*pubInfo*/)
 {
 }
 
-void PAGCollector::collectMetadata(const IWORKMetadata &metadata)
-{
-  RVNGPropertyList props;
-  fillMetadata(metadata, PAGPublicationInfo(), props);
-  m_document->setDocumentMetaData(props);
-}
-
 void PAGCollector::collectTextBody()
 {
-  assert(bool(m_currentText));
-
   // It seems that this is never used, as Pages always inserts all text
   // into a section. But better safe than sorry.
-  IWORKOutputElements text;
-  m_currentText->draw(text);
-  m_currentText.reset();
-
-  if (!text.empty())
-  {
-    m_document->openPageSpan(RVNGPropertyList());
-    text.write(m_document);
-    m_document->closePageSpan();
-  }
+  flushPageSpan(false);
 }
 
 void PAGCollector::collectAttachment(const IWORKOutputID_t &id)
@@ -117,35 +83,7 @@ void PAGCollector::openSection(const double width, const double height, const do
 
 void PAGCollector::closeSection()
 {
-  assert(bool(m_currentText));
-
-  librevenge::RVNGPropertyList props;
-
-  if (m_currentSection.m_width)
-    props.insert("fo:page-width", get(m_currentSection.m_width));
-  if (m_currentSection.m_height)
-    props.insert("fo:page-height", get(m_currentSection.m_height));
-  if (m_currentSection.m_horizontalMargin)
-  {
-    props.insert("fo:margin-left", get(m_currentSection.m_horizontalMargin));
-    props.insert("fo:margin-right", get(m_currentSection.m_horizontalMargin));
-  }
-  if (m_currentSection.m_verticalMargin)
-  {
-    props.insert("fo:margin-top", get(m_currentSection.m_verticalMargin));
-    props.insert("fo:margin-bottom", get(m_currentSection.m_verticalMargin));
-  }
-
-  IWORKOutputElements text;
-
-  m_currentText->draw(text);
-  m_currentText.reset();
-  m_currentText = boost::make_shared<IWORKText>();
-  m_currentSection.clear();
-
-  m_document->openPageSpan(props);
-  text.write(m_document);
-  m_document->closePageSpan();
+  flushPageSpan();
 }
 
 void PAGCollector::drawTable()
@@ -165,6 +103,50 @@ void PAGCollector::drawTable()
   }
 
   m_currentTable.draw(props, m_outputManager.getCurrent());
+}
+
+void PAGCollector::flushPageSpan(const bool writeEmpty)
+{
+  if (m_firstPageSpan)
+  {
+    RVNGPropertyList metadata;
+    fillMetadata(metadata);
+    m_document->setDocumentMetaData(metadata);
+    m_firstPageSpan = false;
+  }
+
+  if (bool(m_currentText))
+  {
+    librevenge::RVNGPropertyList props;
+
+    if (m_currentSection.m_width)
+      props.insert("fo:page-width", get(m_currentSection.m_width));
+    if (m_currentSection.m_height)
+      props.insert("fo:page-height", get(m_currentSection.m_height));
+    if (m_currentSection.m_horizontalMargin)
+    {
+      props.insert("fo:margin-left", get(m_currentSection.m_horizontalMargin));
+      props.insert("fo:margin-right", get(m_currentSection.m_horizontalMargin));
+    }
+    if (m_currentSection.m_verticalMargin)
+    {
+      props.insert("fo:margin-top", get(m_currentSection.m_verticalMargin));
+      props.insert("fo:margin-bottom", get(m_currentSection.m_verticalMargin));
+    }
+    m_currentSection.clear();
+
+    IWORKOutputElements text;
+
+    m_currentText->draw(text);
+    m_currentText.reset();
+
+    if (!text.empty() || writeEmpty)
+    {
+      m_document->openPageSpan(props);
+      text.write(m_document);
+      m_document->closePageSpan();
+    }
+  }
 }
 
 }

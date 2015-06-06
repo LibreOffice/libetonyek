@@ -86,7 +86,7 @@ public:
   void collectTableRow();
   void collectTable();
 
-  void setMetadata();
+  void collectMetadata(const IWORKMetadata &metadata);
 
   void startDocument();
   void endDocument();
@@ -110,6 +110,9 @@ public:
   void popStyle();
 
   IWORKOutputManager &getOutputManager();
+
+protected:
+  void fillMetadata(librevenge::RVNGPropertyList &props);
 
 private:
   void pushStyle(const IWORKStylePtr_t &style);
@@ -137,6 +140,8 @@ private:
   IWORKMediaContentPtr_t m_currentFiltered;
   IWORKMediaContentPtr_t m_currentLeveled;
   IWORKMediaContentPtr_t m_currentContent;
+
+  IWORKMetadata m_metadata;
 
   int m_groupLevel;
 };

@@ -463,9 +463,9 @@ void IWORKCollector::collectTable()
   drawTable();
 }
 
-void IWORKCollector::setMetadata()
+void IWORKCollector::collectMetadata(const IWORKMetadata &metadata)
 {
-  m_document->setDocumentMetaData(librevenge::RVNGPropertyList());
+  m_metadata = metadata;
 }
 
 void IWORKCollector::startDocument()
@@ -588,6 +588,18 @@ void IWORKCollector::resolveStyle(IWORKStyle &style)
 {
   // TODO: implement me
   (void) style;
+}
+
+void IWORKCollector::fillMetadata(librevenge::RVNGPropertyList &props)
+{
+  if (!m_metadata.m_title.empty())
+    props.insert("dc:subject", m_metadata.m_title.c_str());
+  if (!m_metadata.m_author.empty())
+    props.insert("meta:intial-creator", m_metadata.m_author.c_str());
+  if (!m_metadata.m_keywords.empty())
+    props.insert("meta:keyword", m_metadata.m_keywords.c_str());
+  if (!m_metadata.m_comment.empty())
+    props.insert("librevenge:comments", m_metadata.m_comment.c_str());
 }
 
 IWORKOutputManager &IWORKCollector::getOutputManager()

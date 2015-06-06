@@ -1325,10 +1325,7 @@ PresentationElement::PresentationElement(KEY2ParserState &state)
 void PresentationElement::startOfElement()
 {
   if (isCollector())
-  {
     getCollector().startDocument();
-    getCollector().setMetadata();
-  }
 }
 
 void PresentationElement::attribute(const int name, const char *const value)

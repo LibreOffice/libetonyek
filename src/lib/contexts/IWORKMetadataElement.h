@@ -10,7 +10,6 @@
 #ifndef IWORKMETADATAELEMENT_H_INCLUDED
 #define IWORKMETADATAELEMENT_H_INCLUDED
 
-#include "IWORKTypes.h"
 #include "IWORKXMLContextBase.h"
 
 namespace libetonyek
@@ -24,9 +23,6 @@ public:
 protected:
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
-
-protected:
-  IWORKMetadata m_metadata;
 
 private:
   boost::optional<std::string> m_author;
