@@ -265,16 +265,11 @@ public:
   explicit WorkSpaceArrayElement(NUM1ParserState &state);
 
 private:
-  virtual void startOfElement();
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
 WorkSpaceArrayElement::WorkSpaceArrayElement(NUM1ParserState &state)
   : NUM1XMLElementContextBase(state)
-{
-}
-
-void WorkSpaceArrayElement::startOfElement()
 {
 }
 
