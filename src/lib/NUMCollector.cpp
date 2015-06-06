@@ -21,7 +21,7 @@ NUMCollector::NUMCollector(IWORKDocumentInterface *const document)
 
 void NUMCollector::startDocument()
 {
-  m_document->startDocument(librevenge::RVNGPropertyList());
+  IWORKCollector::startDocument();
 }
 
 void NUMCollector::endDocument()
@@ -30,7 +30,8 @@ void NUMCollector::endDocument()
   fillMetadata(metadata);
   m_document->setDocumentMetaData(metadata);
   getOutputManager().getCurrent().write(m_document);
-  m_document->endDocument();
+
+  IWORKCollector::endDocument();
 }
 
 void NUMCollector::drawTable()
