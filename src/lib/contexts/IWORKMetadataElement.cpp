@@ -25,10 +25,10 @@ using std::string;
 namespace
 {
 
-class TitleElement : public IWORKXMLElementContextBase
+class StringContext : public IWORKXMLElementContextBase
 {
 public:
-  explicit TitleElement(IWORKXMLParserState &state, optional<string> &value);
+  explicit StringContext(IWORKXMLParserState &state, optional<string> &value);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -37,103 +37,13 @@ private:
   optional<string> &m_value;
 };
 
-TitleElement::TitleElement(IWORKXMLParserState &state, optional<string> &value)
+StringContext::StringContext(IWORKXMLParserState &state, optional<string> &value)
   : IWORKXMLElementContextBase(state)
   , m_value(value)
 {
 }
 
-IWORKXMLContextPtr_t TitleElement::element(const int name)
-{
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::string))
-    return makeContext<IWORKStringElement>(getState(), m_value);
-  return IWORKXMLContextPtr_t();
-}
-
-}
-
-namespace
-{
-
-class AuthorsElement : public IWORKXMLElementContextBase
-{
-public:
-  AuthorsElement(IWORKXMLParserState &state, optional<string> &value);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-
-private:
-  optional<string> &m_value;
-};
-
-AuthorsElement::AuthorsElement(IWORKXMLParserState &state, optional<string> &value)
-  : IWORKXMLElementContextBase(state)
-  , m_value(value)
-{
-}
-
-IWORKXMLContextPtr_t AuthorsElement::element(const int name)
-{
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::string))
-    return makeContext<IWORKStringElement>(getState(), m_value);
-  return IWORKXMLContextPtr_t();
-}
-
-}
-
-namespace
-{
-
-class KeywordsElement : public IWORKXMLElementContextBase
-{
-public:
-  KeywordsElement(IWORKXMLParserState &state, optional<string> &value);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-
-private:
-  optional<string> &m_value;
-};
-
-KeywordsElement::KeywordsElement(IWORKXMLParserState &state, optional<string> &value)
-  : IWORKXMLElementContextBase(state)
-  , m_value(value)
-{
-}
-
-IWORKXMLContextPtr_t KeywordsElement::element(const int name)
-{
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::string))
-    return makeContext<IWORKStringElement>(getState(), m_value);
-  return IWORKXMLContextPtr_t();
-}
-
-}
-
-namespace
-{
-
-class CommentElement : public IWORKXMLElementContextBase
-{
-public:
-  explicit CommentElement(IWORKXMLParserState &state, optional<string> &m_value);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-
-private:
-  optional<string> &m_value;
-};
-
-CommentElement::CommentElement(IWORKXMLParserState &state, optional<string> &value)
-  : IWORKXMLElementContextBase(state)
-  , m_value(value)
-{
-}
-
-IWORKXMLContextPtr_t CommentElement::element(const int name)
+IWORKXMLContextPtr_t StringContext::element(const int name)
 {
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::string))
     return makeContext<IWORKStringElement>(getState(), m_value);
@@ -156,13 +66,13 @@ IWORKXMLContextPtr_t IWORKMetadataElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::authors :
-    return makeContext<AuthorsElement>(getState(), m_author);
+    return makeContext<StringContext>(getState(), m_author);
   case IWORKToken::NS_URI_SF | IWORKToken::comment :
-    return makeContext<CommentElement>(getState(), m_comment);
+    return makeContext<StringContext>(getState(), m_comment);
   case IWORKToken::NS_URI_SF | IWORKToken::keywords :
-    return makeContext<KeywordsElement>(getState(), m_keywords);
+    return makeContext<StringContext>(getState(), m_keywords);
   case IWORKToken::NS_URI_SF | IWORKToken::title :
-    return makeContext<TitleElement>(getState(), m_title);
+    return makeContext<StringContext>(getState(), m_title);
   }
 
   return IWORKXMLContextPtr_t();
