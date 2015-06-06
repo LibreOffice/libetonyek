@@ -63,16 +63,6 @@ void PAGCollector::collectAttachment(const IWORKOutputID_t &id)
   m_currentText->insertBlockContent(getOutputManager().get(id));
 }
 
-void PAGCollector::startDocument()
-{
-  m_document->startDocument(librevenge::RVNGPropertyList());
-}
-
-void PAGCollector::endDocument()
-{
-  m_document->endDocument();
-}
-
 void PAGCollector::openSection(const double width, const double height, const double horizontalMargin, const double verticalMargin)
 {
   m_currentSection.m_width = width;

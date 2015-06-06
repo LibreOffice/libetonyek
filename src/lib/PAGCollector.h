@@ -44,8 +44,6 @@ public:
   void collectAttachment(const IWORKOutputID_t &id);
 
   // helper functions
-  void startDocument();
-  void endDocument();
 
   void openSection(double width, double height, double horizontalMargin, double verticalMargin);
   void closeSection();
