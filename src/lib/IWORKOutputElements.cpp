@@ -194,6 +194,22 @@ private:
   librevenge::RVNGPropertyList m_propList;
 };
 
+class EndLayerElement : public IWORKOutputElement
+{
+public:
+  EndLayerElement() {}
+  ~EndLayerElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+};
+
+class EndNotesElement : public IWORKOutputElement
+{
+public:
+  EndNotesElement() {}
+  ~EndNotesElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+};
+
 class EndTextObjectElement : public IWORKOutputElement
 {
 public:
@@ -446,6 +462,28 @@ private:
   librevenge::RVNGPropertyList m_propList;
 };
 
+class StartLayerElement : public IWORKOutputElement
+{
+public:
+  StartLayerElement(const librevenge::RVNGPropertyList &propList) :
+    m_propList(propList) {}
+  ~StartLayerElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+private:
+  const librevenge::RVNGPropertyList m_propList;
+};
+
+class StartNotesElement : public IWORKOutputElement
+{
+public:
+  StartNotesElement(const librevenge::RVNGPropertyList &propList) :
+    m_propList(propList) {}
+  ~StartNotesElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+private:
+  const librevenge::RVNGPropertyList m_propList;
+};
+
 class StartTextObjectElement : public IWORKOutputElement
 {
 public:
@@ -569,6 +607,18 @@ void DrawPolylineElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
     iface->drawPolyline(m_propList);
+}
+
+void EndLayerElement::write(IWORKDocumentInterface *const iface) const
+{
+  if (iface)
+    iface->endLayer();
+}
+
+void EndNotesElement::write(IWORKDocumentInterface *const iface) const
+{
+  if (iface)
+    iface->endNotes();
 }
 
 void EndTextObjectElement::write(IWORKDocumentInterface *iface) const
@@ -715,6 +765,18 @@ void SetStyleElement::write(IWORKDocumentInterface *iface) const
     iface->setStyle(m_propList);
 }
 
+void StartLayerElement::write(IWORKDocumentInterface *const iface) const
+{
+  if (iface)
+    iface->startLayer(m_propList);
+}
+
+void StartNotesElement::write(IWORKDocumentInterface *const iface) const
+{
+  if (iface)
+    iface->startNotes(m_propList);
+}
+
 void StartTextObjectElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
@@ -845,6 +907,16 @@ void IWORKOutputElements::addDrawPolyline(const librevenge::RVNGPropertyList &pr
   m_elements.push_back(make_shared<DrawPolylineElement>(propList));
 }
 
+void IWORKOutputElements::addEndLayer()
+{
+  m_elements.push_back(make_shared<EndLayerElement>());
+}
+
+void IWORKOutputElements::addEndNotes()
+{
+  m_elements.push_back(make_shared<EndNotesElement>());
+}
+
 void IWORKOutputElements::addEndTextObject()
 {
   m_elements.push_back(make_shared<EndTextObjectElement>());
@@ -963,6 +1035,16 @@ void IWORKOutputElements::addOpenUnorderedListLevel(const librevenge::RVNGProper
 void IWORKOutputElements::addSetStyle(const librevenge::RVNGPropertyList &propList)
 {
   m_elements.push_back(make_shared<SetStyleElement>(propList));
+}
+
+void IWORKOutputElements::addStartLayer(const librevenge::RVNGPropertyList &propList)
+{
+  m_elements.push_back(make_shared<StartLayerElement>(propList));
+}
+
+void IWORKOutputElements::addStartNotes(const librevenge::RVNGPropertyList &propList)
+{
+  m_elements.push_back(make_shared<StartNotesElement>(propList));
 }
 
 void IWORKOutputElements::addStartTextObject(const librevenge::RVNGPropertyList &propList)

@@ -9,6 +9,10 @@
 
 #include "KEYCollector.h"
 
+#include <algorithm>
+
+#include <boost/bind.hpp>
+
 #include <glm/glm.hpp>
 
 #include "libetonyek_utils.h"
@@ -24,6 +28,7 @@ namespace libetonyek
 KEYCollector::KEYCollector(IWORKDocumentInterface *const document)
   : IWORKCollector(document)
   , m_size()
+  , m_slides()
   , m_notes()
   , m_stickyNotes()
   , m_pageOpened(false)
@@ -63,15 +68,17 @@ void KEYCollector::insertLayer(const KEYLayerPtr_t &layer)
   {
     if (m_paint)
     {
+      assert(!m_slides.empty());
+
       ++m_layerCount;
 
       librevenge::RVNGPropertyList props;
       props.insert("svg:id", m_layerCount);
 
-      m_document->startLayer(props);
+      m_slides.back().addStartLayer(props);
       if (layer->m_outputId)
-        getOutputManager().get(get(layer->m_outputId)).write(m_document);
-      m_document->endLayer();
+        m_slides.back().append(getOutputManager().get(get(layer->m_outputId)));
+      m_slides.back().addEndLayer();
     }
   }
   else
@@ -88,11 +95,11 @@ void KEYCollector::collectPage()
   {
     if (!m_notes.empty())
     {
-      m_document->startNotes(librevenge::RVNGPropertyList());
-      m_notes.write(m_document);
-      m_document->endNotes();
+      m_slides.back().addStartNotes(librevenge::RVNGPropertyList());
+      m_slides.back().append(m_notes);
+      m_slides.back().addEndNotes();
     }
-    m_stickyNotes.write(m_document);
+    m_slides.back().append(m_stickyNotes);
   }
 }
 
@@ -174,6 +181,17 @@ void KEYCollector::collectStickyNote()
   m_currentText.reset();
 }
 
+void KEYCollector::startDocument()
+{
+  IWORKCollector::startDocument();
+}
+
+void KEYCollector::endDocument()
+{
+  std::for_each(m_slides.begin(), m_slides.end(), boost::bind(&KEYCollector::writeSlide, this, _1));
+  IWORKCollector::endDocument();
+}
+
 void KEYCollector::startSlides()
 {
   m_paint = true;
@@ -202,16 +220,9 @@ void KEYCollector::startPage()
 
   startLevel();
 
-  m_pageOpened = true;
-
   if (m_paint)
-  {
-    librevenge::RVNGPropertyList props;
-    props.insert("svg:width", pt2in(m_size.m_width));
-    props.insert("svg:height", pt2in(m_size.m_height));
-
-    m_document->startSlide(props);
-  }
+    m_slides.push_back(IWORKOutputElements());
+  m_pageOpened = true;
 }
 
 void KEYCollector::endPage()
@@ -224,9 +235,6 @@ void KEYCollector::endPage()
   m_stickyNotes.clear();
 
   m_pageOpened = false;
-
-  if (m_paint)
-    m_document->endSlide();
 }
 
 void KEYCollector::startLayer()
@@ -277,6 +285,17 @@ void KEYCollector::drawTable()
   }
 
   m_currentTable.draw(tableProps, m_outputManager.getCurrent());
+}
+
+void KEYCollector::writeSlide(const IWORKOutputElements &content)
+{
+  librevenge::RVNGPropertyList props;
+  props.insert("svg:width", pt2in(m_size.m_width));
+  props.insert("svg:height", pt2in(m_size.m_height));
+
+  m_document->startSlide(props);
+  content.write(m_document);
+  m_document->endSlide();
 }
 
 }

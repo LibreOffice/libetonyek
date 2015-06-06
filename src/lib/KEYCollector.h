@@ -10,6 +10,8 @@
 #ifndef KEYCOLLECTOR_H_INCLUDED
 #define KEYCOLLECTOR_H_INCLUDED
 
+#include <deque>
+
 #include "IWORKCollector.h"
 #include "IWORKPath_fwd.h"
 #include "KEYTypes.h"
@@ -39,6 +41,11 @@ public:
 
   void collectStickyNote();
 
+  // helper functions
+
+  void startDocument();
+  void endDocument();
+
   void startSlides();
   void endSlides();
   void startThemes();
@@ -51,10 +58,12 @@ public:
 
 private:
   virtual void drawTable();
+  void writeSlide(const IWORKOutputElements &content);
 
 private:
   IWORKSize m_size;
 
+  std::deque<IWORKOutputElements> m_slides;
   IWORKOutputElements m_notes;
   IWORKOutputElements m_stickyNotes;
 
