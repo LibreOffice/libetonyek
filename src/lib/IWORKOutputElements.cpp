@@ -105,14 +105,6 @@ public:
   void write(IWORKDocumentInterface *iface) const;
 };
 
-class ClosePageSpanElement : public IWORKOutputElement
-{
-public:
-  ClosePageSpanElement() {}
-  ~ClosePageSpanElement() {}
-  void write(IWORKDocumentInterface *iface) const;
-};
-
 class CloseParagraphElement : public IWORKOutputElement
 {
 public:
@@ -366,19 +358,6 @@ private:
   librevenge::RVNGPropertyList m_propList;
 };
 
-class OpenPageSpanElement : public IWORKOutputElement
-{
-public:
-  OpenPageSpanElement(const librevenge::RVNGPropertyList &propList)
-    : m_propList(propList)
-  {
-  }
-  ~OpenPageSpanElement() {}
-  void write(IWORKDocumentInterface *iface) const;
-private:
-  librevenge::RVNGPropertyList m_propList;
-};
-
 class OpenParagraphElement : public IWORKOutputElement
 {
 public:
@@ -530,12 +509,6 @@ void CloseOrderedListLevelElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
     iface->closeOrderedListLevel();
-}
-
-void ClosePageSpanElement::write(IWORKDocumentInterface *iface) const
-{
-  if (iface)
-    iface->closePageSpan();
 }
 
 void CloseParagraphElement::write(IWORKDocumentInterface *iface) const
@@ -694,13 +667,6 @@ void OpenOrderedListLevelElement::write(IWORKDocumentInterface *iface) const
     iface->openOrderedListLevel(m_propList);
 }
 
-void OpenPageSpanElement::write(IWORKDocumentInterface *iface) const
-{
-  if (iface)
-    iface->openPageSpan(m_propList);
-
-}
-
 void OpenParagraphElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
@@ -827,11 +793,6 @@ void IWORKOutputElements::addCloseListElement()
 void IWORKOutputElements::addCloseOrderedListLevel()
 {
   m_elements.push_back(make_shared<CloseOrderedListLevelElement>());
-}
-
-void IWORKOutputElements::addClosePageSpan()
-{
-  m_elements.push_back(make_shared<ClosePageSpanElement>());
 }
 
 void IWORKOutputElements::addCloseParagraph()
@@ -962,11 +923,6 @@ void IWORKOutputElements::addOpenListElement(const librevenge::RVNGPropertyList 
 void IWORKOutputElements::addOpenOrderedListLevel(const librevenge::RVNGPropertyList &propList)
 {
   m_elements.push_back(make_shared<OpenOrderedListLevelElement>(propList));
-}
-
-void IWORKOutputElements::addOpenPageSpan(const librevenge::RVNGPropertyList &propList)
-{
-  m_elements.push_back(make_shared<OpenPageSpanElement>(propList));
 }
 
 void IWORKOutputElements::addOpenParagraph(const librevenge::RVNGPropertyList &propList)

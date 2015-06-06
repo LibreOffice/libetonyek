@@ -43,7 +43,6 @@ public:
   void addCloseLink();
   void addCloseListElement();
   void addCloseOrderedListLevel();
-  void addClosePageSpan();
   void addCloseParagraph();
   void addCloseSection();
   void addCloseSpan();
@@ -70,7 +69,6 @@ public:
   void addOpenLink(const librevenge::RVNGPropertyList &propList);
   void addOpenListElement(const librevenge::RVNGPropertyList &propList);
   void addOpenOrderedListLevel(const librevenge::RVNGPropertyList &propList);
-  void addOpenPageSpan(const librevenge::RVNGPropertyList &propList);
   void addOpenParagraph(const librevenge::RVNGPropertyList &propList);
   void addOpenSection(const librevenge::RVNGPropertyList &propList);
   void addOpenSpan(const librevenge::RVNGPropertyList &propList);
