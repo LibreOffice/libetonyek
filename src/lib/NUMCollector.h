@@ -27,7 +27,6 @@ public:
   // helper functions
   void startDocument();
   void endDocument();
-  void endWorkSpaceArray();
 
 private:
   virtual void drawTable();

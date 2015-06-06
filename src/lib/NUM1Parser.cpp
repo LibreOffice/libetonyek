@@ -12,6 +12,7 @@
 #include "libetonyek_xml.h"
 #include "IWORKChainedTokenizer.h"
 #include "IWORKDiscardContext.h"
+#include "IWORKMetadataElement.h"
 #include "IWORKTabularInfoElement.h"
 #include "IWORKToken.h"
 #include "NUMCollector.h"
@@ -266,7 +267,6 @@ public:
 private:
   virtual void startOfElement();
   virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
 };
 
 WorkSpaceArrayElement::WorkSpaceArrayElement(NUM1ParserState &state)
@@ -287,12 +287,6 @@ IWORKXMLContextPtr_t WorkSpaceArrayElement::element(const int name)
   }
 
   return IWORKXMLContextPtr_t();
-}
-
-void WorkSpaceArrayElement::endOfElement()
-{
-  if (isCollector())
-    getCollector().endWorkSpaceArray();
 }
 
 }
@@ -345,6 +339,8 @@ IWORKXMLContextPtr_t DocumentElement::element(const int name)
 
   switch (name)
   {
+  case IWORKToken::NS_URI_SF | IWORKToken::metadata :
+    return makeContext<IWORKMetadataElement>(getState());
   case NUM1Token::NS_URI_LS | NUM1Token::workspace_array :
     return makeContext<WorkSpaceArrayElement>(getState());
   }

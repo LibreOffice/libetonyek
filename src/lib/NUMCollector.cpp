@@ -26,13 +26,11 @@ void NUMCollector::startDocument()
 
 void NUMCollector::endDocument()
 {
-  m_document->endDocument();
-}
-
-void NUMCollector::endWorkSpaceArray()
-{
-  m_document->setDocumentMetaData(librevenge::RVNGPropertyList());
+  librevenge::RVNGPropertyList metadata;
+  fillMetadata(metadata);
+  m_document->setDocumentMetaData(metadata);
   getOutputManager().getCurrent().write(m_document);
+  m_document->endDocument();
 }
 
 void NUMCollector::drawTable()
