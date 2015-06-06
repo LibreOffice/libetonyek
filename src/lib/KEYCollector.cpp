@@ -25,6 +25,8 @@
 namespace libetonyek
 {
 
+using librevenge::RVNGPropertyList;
+
 KEYCollector::KEYCollector(IWORKDocumentInterface *const document)
   : IWORKCollector(document)
   , m_size()
@@ -184,14 +186,18 @@ void KEYCollector::startDocument()
 
 void KEYCollector::endDocument()
 {
+  RVNGPropertyList metadata;
+  fillMetadata(metadata);
+  m_document->setDocumentMetaData(metadata);
+
   std::for_each(m_slides.begin(), m_slides.end(), boost::bind(&KEYCollector::writeSlide, this, _1));
+
   IWORKCollector::endDocument();
 }
 
 void KEYCollector::startSlides()
 {
   m_paint = true;
-  m_document->setDocumentMetaData(librevenge::RVNGPropertyList());
 }
 
 void KEYCollector::endSlides()

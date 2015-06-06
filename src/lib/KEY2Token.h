@@ -32,9 +32,12 @@ enum
   key,
 
   // elements
+  authors,
   body_placeholder,
   c,
+  comment,
   headlineParagraphStyle,
+  keywords,
   master_slide,
   master_slides,
   metadata,
@@ -46,10 +49,12 @@ enum
   slide_list,
   sticky_note,
   sticky_notes,
+  string,
   stylesheet,
   text,
   theme,
   theme_list,
+  title,
   title_placeholder,
 
   // attributes

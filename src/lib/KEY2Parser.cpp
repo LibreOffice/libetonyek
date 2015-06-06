@@ -23,6 +23,7 @@
 #include "IWORKRefContext.h"
 #include "IWORKStyle.h"
 #include "IWORKSizeElement.h"
+#include "IWORKStringElement.h"
 #include "IWORKStyleRefContext.h"
 #include "IWORKStylesContext.h"
 #include "IWORKTabularInfoElement.h"
@@ -71,24 +72,93 @@ unsigned getVersion(const int token)
 namespace
 {
 
+class StringContentContext : public KEY2XMLElementContextBase
+{
+public:
+  StringContentContext(KEY2ParserState &state, optional<string> &value);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+
+private:
+  optional<string> &m_value;
+};
+
+StringContentContext::StringContentContext(KEY2ParserState &state, optional<string> &value)
+  : KEY2XMLElementContextBase(state)
+  , m_value(value)
+{
+}
+
+IWORKXMLContextPtr_t StringContentContext::element(const int name)
+{
+  if (name == (KEY2Token::NS_URI_KEY | KEY2Token::string))
+    return makeContext<IWORKStringElement>(getState(), m_value);
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
 class MetadataElement : public KEY2XMLElementContextBase
 {
 public:
   explicit MetadataElement(KEY2ParserState &state);
 
-private:
+protected:
   virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  boost::optional<std::string> m_author;
+  boost::optional<std::string> m_title;
+  boost::optional<std::string> m_keywords;
+  boost::optional<std::string> m_comment;
 };
 
 MetadataElement::MetadataElement(KEY2ParserState &state)
   : KEY2XMLElementContextBase(state)
+  , m_author()
+  , m_title()
+  , m_keywords()
+  , m_comment()
 {
 }
 
-IWORKXMLContextPtr_t MetadataElement::element(int)
+IWORKXMLContextPtr_t MetadataElement::element(const int name)
 {
-  // TODO: parse
+  switch (name)
+  {
+  case KEY2Token::NS_URI_KEY | KEY2Token::authors :
+    return makeContext<StringContentContext>(getState(), m_author);
+  case KEY2Token::NS_URI_KEY | KEY2Token::comment :
+    return makeContext<StringContentContext>(getState(), m_comment);
+  case KEY2Token::NS_URI_KEY | KEY2Token::keywords :
+    return makeContext<StringContentContext>(getState(), m_keywords);
+  case KEY2Token::NS_URI_KEY | KEY2Token::title :
+    return makeContext<StringContentContext>(getState(), m_title);
+  }
+
   return IWORKXMLContextPtr_t();
+}
+
+void MetadataElement::endOfElement()
+{
+  IWORKMetadata metadata;
+
+  if (m_author)
+    metadata.m_author = get(m_author);
+  if (m_title)
+    metadata.m_title = get(m_title);
+  if (m_keywords)
+    metadata.m_keywords = get(m_keywords);
+  if (m_comment)
+    metadata.m_comment = get(m_comment);
+
+  if (isCollector())
+    getCollector().collectMetadata(metadata);
 }
 
 }
