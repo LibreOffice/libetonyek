@@ -116,6 +116,25 @@ AC_CHECK_HEADERS(
 CPPFLAGS="${saved_CPPFLAGS}"
 AC_SUBST([GLM_CFLAGS])
 
+# =========
+# Find mdds
+# =========
+PKG_CHECK_MODULES([MDDS],[mdds])
+AC_MSG_CHECKING([checking if mdds::flat_segment_tree can store values of any type])
+old_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$MDDS_CFLAGS $CPPFLAGS"
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+#include <mdds/flat_segment_tree.hpp>
+struct Value {};
+mdds::flat_segment_tree<int, Value> tree(0, 4, Value());
+])], [
+    AC_MSG_RESULT([yes])
+], [
+    AC_MSG_RESULT([no])
+    AC_MSG_ERROR([please install mdds >= 0.12.1])
+])
+CPPFLAGS="$old_CPPFLAGS"
+
 # =================================
 # Libtool/Version Makefile settings
 # =================================

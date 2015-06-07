@@ -471,6 +471,22 @@ void LanguageElement::endOfElement()
 namespace
 {
 
+class SFTStrokePropertyElement : public IWORKValuePropertyContextBase<StrokeElement, property::SFTStrokeProperty>
+{
+public:
+  SFTStrokePropertyElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+};
+
+SFTStrokePropertyElement::SFTStrokePropertyElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::stroke)
+{
+}
+
+}
+
+namespace
+{
+
 typedef IWORKNumericPropertyBase<bool, property::Bold> BoldElement;
 typedef IWORKNumericPropertyBase<bool, property::Italic> ItalicElement;
 typedef IWORKNumericPropertyBase<bool, property::KeepLinesTogether> KeepLinesTogetherElement;
@@ -547,6 +563,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<ParagraphStrokeElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::rightIndent :
     return makeContext<RightIndentElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTStrokeProperty :
+    return makeContext<SFTStrokePropertyElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceAfter :
     return makeContext<SpaceAfterElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceBefore :

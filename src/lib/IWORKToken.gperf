@@ -31,6 +31,7 @@ __multilingual,__multilingual
 1414088262,_1414088262
 ID,ID
 IDREF,IDREF
+SFTStrokeProperty, SFTStrokeProperty
 a,a
 align,align
 alignment,alignment
@@ -99,6 +100,7 @@ graphic-style,graphic_style
 grid,grid
 grid-column,grid_column
 grid-row,grid_row
+gridline-index,gridline_index,
 group,group
 h,h
 head,head
@@ -108,6 +110,7 @@ headline-style,headline_style
 height,height
 hfs-type,hfs_type
 horizontalFlip,horizontalFlip
+horizontal-gridline-styles,horizontal_gridline_styles
 href,href
 http://developer.apple.com/namespaces/sf,NS_URI_SF
 http://developer.apple.com/namespaces/sfa,NS_URI_SFA
@@ -145,6 +148,8 @@ n,n
 name,name
 naturalSize,naturalSize
 number,number
+numcols, numcols
+numrows, numrows
 oddPageMaster,oddPageMaster
 other-datas,other_datas
 outline,outline
@@ -194,11 +199,14 @@ spaceAfter,spaceAfter
 spaceBefore,spaceBefore
 span,span
 star,star
+start-index,start_index
+stop-index,stop_index
 sticky-note,sticky_note
 strikethru,strikethru
 string,string
 stroke,stroke
 style,style
+style-run,style_run
 styles,styles
 stylesheet,stylesheet
 superscript,superscript
@@ -232,6 +240,7 @@ val,val
 vector-style,vector_style
 vector-style-ref,vector_style_ref
 verticalFlip,verticalFlip
+vertical-gridline-styles,vertical_gridline_styles,
 w,w
 widowControl,widowControl
 width,width

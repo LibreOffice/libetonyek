@@ -145,10 +145,14 @@ IWORKTableData::IWORKTableData()
   , m_rowSizes()
   , m_column(0)
   , m_row(0)
+  , m_numColumns()
+  , m_numRows()
   , m_columnSpan()
   , m_rowSpan()
   , m_cellMove()
   , m_content()
+  , m_horizontalLines()
+  , m_verticalLines()
 {
 }
 
