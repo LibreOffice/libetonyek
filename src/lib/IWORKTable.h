@@ -14,6 +14,7 @@
 
 #include <deque>
 
+#include "IWORKTypes.h"
 #include "IWORKTypes_fwd.h"
 #include "IWORKOutputElements.h"
 
@@ -39,6 +40,7 @@ public:
   IWORKTable();
 
   void setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowSizes_t &rowSizes);
+  void setBorders(const IWORKGridLineList_t &verticalLines, const IWORKGridLineList_t &horizontalLines);
   void insertCell(unsigned column, unsigned row, const IWORKOutputElements &content = IWORKOutputElements(), unsigned columnSpan = 1, unsigned rowSpan = 1);
   void insertCoveredCell(unsigned column, unsigned row);
 
@@ -48,6 +50,8 @@ private:
   Table_t m_table;
   IWORKColumnSizes_t m_columnSizes;
   IWORKRowSizes_t m_rowSizes;
+  IWORKGridLineList_t m_verticalLines;
+  IWORKGridLineList_t m_horizontalLines;
 };
 
 }
