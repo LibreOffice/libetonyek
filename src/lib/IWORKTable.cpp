@@ -15,6 +15,8 @@
 
 #include "libetonyek_utils.h"
 #include "IWORKDocumentInterface.h"
+#include "IWORKProperties.h"
+#include "IWORKStyle.h"
 #include "IWORKTypes.h"
 
 using boost::numeric_cast;
@@ -34,7 +36,25 @@ IWORKTable::IWORKTable()
   : m_table()
   , m_columnSizes()
   , m_rowSizes()
+  , m_verticalLines()
+  , m_horizontalLines()
 {
+}
+
+librevenge::RVNGString collectBorder(IWORKGridLine_t line, std::size_t index)
+{
+  line.build_tree();
+  if (line.is_tree_valid())
+  {
+    IWORKStylePtr_t style;
+    line.search_tree(index, style);
+    if (style && style->has<property::SFTStrokeProperty>())
+    {
+      const IWORKStroke &stroke = style->get<property::SFTStrokeProperty>();
+      return makeBorder(stroke);
+    }
+  }
+  return librevenge::RVNGString();
 }
 
 void IWORKTable::setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowSizes_t &rowSizes)
@@ -44,6 +64,12 @@ void IWORKTable::setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowS
 
   // init. content table of appropriate dimensions
   m_table = Table_t(m_rowSizes.size(), Row_t(m_columnSizes.size()));
+}
+
+void IWORKTable::setBorders(const IWORKGridLineList_t &verticalLines, const IWORKGridLineList_t &horizontalLines)
+{
+  m_verticalLines = verticalLines;
+  m_horizontalLines = horizontalLines;
 }
 
 void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWORKOutputElements &content, const unsigned columnSpan, const unsigned rowSpan)
@@ -90,6 +116,9 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
     librevenge::RVNGPropertyList rowProps;
     rowProps.insert("style:row-height", pt2in(m_rowSizes[r]));
 
+    const IWORKGridLine_t &topLine = m_horizontalLines[r];
+    const IWORKGridLine_t &bottomLine = m_horizontalLines[r+1];
+
     elements.addOpenTableRow(rowProps);
     for (std::size_t c = 0; row.size() != c; ++c)
     {
@@ -99,6 +128,26 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
       cellProps.insert("librevenge:column", numeric_cast<int>(c));
       cellProps.insert("librevenge:row", numeric_cast<int>(r));
       cellProps.insert("fo:vertical-align", "middle");
+
+      librevenge::RVNGString border;
+
+      border = collectBorder(topLine,c);
+      if (border.len())
+        cellProps.insert("fo:border-top", border);
+
+      border = collectBorder(bottomLine,c);
+      if (border.len())
+        cellProps.insert("fo:border-bottom", border);
+
+      const IWORKGridLine_t &leftLine = m_verticalLines[c];
+      border = collectBorder(leftLine,r);
+      if (border.len())
+        cellProps.insert("fo:border-left", border);
+
+      const IWORKGridLine_t &rightLine = m_verticalLines[c+1];
+      border = collectBorder(rightLine,r);
+      if (border.len())
+        cellProps.insert("fo:border-right", border);
 
       if (cell.m_covered)
       {

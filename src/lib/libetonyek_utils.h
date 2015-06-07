@@ -79,6 +79,9 @@ typedef __int64 int64_t;
 namespace libetonyek
 {
 
+struct IWORKColor;
+struct IWORKStroke;
+
 /* Constants */
 const double etonyek_half_pi(1.57079632679489661923132169163975144209858469968755291048747229615390820314310449931401741267105853399107404326e+00);
 const double etonyek_third_pi(1.04719755119659774615421446109316762806572313312503527365831486410260546876206966620934494178070568932738269550e+00);
@@ -134,6 +137,10 @@ double pt2in(double d);
   * @returns the same angle in radians
   */
 double deg2rad(double value);
+
+librevenge::RVNGString makeColor(const IWORKColor &color);
+
+librevenge::RVNGString makeBorder(const IWORKStroke &stroke);
 
 class EndOfStreamException
 {
