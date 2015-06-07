@@ -65,6 +65,7 @@ struct IWORKGroup;
 
 typedef boost::shared_ptr<IWORKGroup> IWORKGroupPtr_t;
 
+
 }
 
 #endif //  IWORKTYPES_FWD_H_INCLUDED

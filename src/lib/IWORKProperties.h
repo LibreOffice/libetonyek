@@ -39,6 +39,7 @@ IWORK_DECLARE_PROPERTY(ParagraphBorderType, IWORKBorderType);
 IWORK_DECLARE_PROPERTY(ParagraphFill, IWORKColor);
 IWORK_DECLARE_PROPERTY(ParagraphStroke, IWORKStroke);
 IWORK_DECLARE_PROPERTY(RightIndent, double);
+IWORK_DECLARE_PROPERTY(SFTStrokeProperty, IWORKStroke);
 IWORK_DECLARE_PROPERTY(SpaceAfter, double);
 IWORK_DECLARE_PROPERTY(SpaceBefore, double);
 IWORK_DECLARE_PROPERTY(Strikethru, bool);
