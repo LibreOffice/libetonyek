@@ -39,6 +39,7 @@ struct IWORKDictionary
   IWORKStyleMap_t m_characterStyles;
   IWORKStyleMap_t m_graphicStyles;
   IWORKStyleMap_t m_paragraphStyles;
+  IWORKStyleMap_t m_vectorStyles;
 
   IWORKStylesheetMap_t m_stylesheets;
 
