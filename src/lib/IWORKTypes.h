@@ -20,6 +20,8 @@
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle_fwd.h"
 
+#include "mdds/flat_segment_tree.hpp"
+
 namespace libetonyek
 {
 
@@ -87,6 +89,8 @@ struct IWORKTabStop
 
 typedef std::deque<IWORKTabStop> IWORKTabStops_t;
 typedef boost::unordered_map<ID_t, IWORKTabStops_t> IWORKTabStopsMap_t;
+typedef mdds::flat_segment_tree<size_t, IWORKStylePtr_t> IWORKIntervalMap;
+typedef std::vector<IWORKIntervalMap> IWORKIntervalMap_t;
 
 struct IWORKLine
 {
@@ -177,6 +181,8 @@ struct IWORKTableData
   boost::optional<unsigned> m_rowSpan;
   boost::optional<unsigned> m_cellMove;
   boost::optional<std::string> m_content;
+  IWORKIntervalMap_t m_horizontalIntervalMap;
+  IWORKIntervalMap_t m_verticalIntervalMap;
 };
 
 struct IWORKStroke

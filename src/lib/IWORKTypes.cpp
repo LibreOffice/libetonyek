@@ -149,6 +149,8 @@ IWORKTableData::IWORKTableData()
   , m_rowSpan()
   , m_cellMove()
   , m_content()
+  , m_horizontalIntervalMap()
+  , m_verticalIntervalMap()
 {
 }
 
