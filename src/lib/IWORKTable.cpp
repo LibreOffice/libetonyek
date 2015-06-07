@@ -15,6 +15,8 @@
 
 #include "libetonyek_utils.h"
 #include "IWORKDocumentInterface.h"
+#include "IWORKProperties.h"
+#include "IWORKStyle.h"
 #include "IWORKTypes.h"
 
 using boost::numeric_cast;
@@ -34,6 +36,8 @@ IWORKTable::IWORKTable()
   : m_table()
   , m_columnSizes()
   , m_rowSizes()
+  , m_verticalLines()
+  , m_horizontalLines()
 {
 }
 
@@ -44,6 +48,12 @@ void IWORKTable::setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowS
 
   // init. content table of appropriate dimensions
   m_table = Table_t(m_rowSizes.size(), Row_t(m_columnSizes.size()));
+}
+
+void IWORKTable::setBorders(const IWORKGridLineList_t &verticalLines, const IWORKGridLineList_t &horizontalLines)
+{
+  m_verticalLines = verticalLines;
+  m_horizontalLines = horizontalLines;
 }
 
 void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWORKOutputElements &content, const unsigned columnSpan, const unsigned rowSpan)
@@ -90,6 +100,9 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
     librevenge::RVNGPropertyList rowProps;
     rowProps.insert("style:row-height", pt2in(m_rowSizes[r]));
 
+    const IWORKGridLine_t &topLine = m_horizontalLines[r];
+    const IWORKGridLine_t &bottomLine = m_horizontalLines[r+1];
+
     elements.addOpenTableRow(rowProps);
     for (std::size_t c = 0; row.size() != c; ++c)
     {
@@ -99,6 +112,53 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
       cellProps.insert("librevenge:column", numeric_cast<int>(c));
       cellProps.insert("librevenge:row", numeric_cast<int>(r));
       cellProps.insert("fo:vertical-align", "middle");
+
+      IWORKStylePtr_t styleTop;
+      topLine.search(c, styleTop);
+      if (styleTop)
+      {
+        librevenge::RVNGString borderTop;
+        if (styleTop->has<property::SFTStrokeProperty>())
+        {
+          const IWORKStroke &stroke = styleTop->get<property::SFTStrokeProperty>();
+          borderTop.sprintf("%fpt", stroke.m_width);
+
+          if (stroke.m_pattern.size() >= 2)
+          {
+            const double x = stroke.m_pattern[0];
+            const double y = stroke.m_pattern[1];
+            if (((x / y) < 0.01) || ((y / x) < 0.01))
+              borderTop.append(" dotted");
+            else
+              borderTop.append(" dashed");
+          }
+          else
+            borderTop.append(" solid");
+
+          borderTop.append(" ");
+          borderTop.append(makeColor(stroke.m_color));
+        }
+
+        cellProps.insert("fo:border-top", borderTop);
+      }
+
+      IWORKStylePtr_t styleBottom;
+      bottomLine.search_tree(c, styleBottom);
+
+      const IWORKGridLine_t &leftLine = m_verticalLines[c];
+      IWORKStylePtr_t styleLeft;
+      leftLine.search_tree(r, styleLeft);
+
+      const IWORKGridLine_t &rightLine = m_verticalLines[c+1];
+      IWORKStylePtr_t styleRight;
+      rightLine.search_tree(r, styleRight);
+
+      // if (styleTop.has<ParagraphBorderType>())
+      // {
+      //  librevenge::RVNGString border;
+      //  border.append("solid");
+      //  cellProps.insert("fo:border-top", border);
+      // }
 
       if (cell.m_covered)
       {

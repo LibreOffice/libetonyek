@@ -424,6 +424,11 @@ void IWORKCollector::collectTableSizes(const IWORKRowSizes_t &rowSizes, const IW
   m_currentTable.setSizes(columnSizes, rowSizes);
 }
 
+void IWORKCollector::collectTableBorders(const IWORKGridLineList_t &verticalLines, const IWORKGridLineList_t &horizontalLines)
+{
+  m_currentTable.setBorders(verticalLines, horizontalLines);
+}
+
 void IWORKCollector::collectTableCell(const unsigned row, const unsigned column, const boost::optional<std::string> &content, const unsigned rowSpan, const unsigned columnSpan)
 {
   IWORKOutputElements elements;

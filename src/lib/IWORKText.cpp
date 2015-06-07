@@ -36,20 +36,6 @@ namespace libetonyek
 namespace
 {
 
-librevenge::RVNGString makeColor(const IWORKColor &color)
-{
-  // TODO: alpha
-
-  const unsigned r = color.m_red * 256 - 0.5;
-  const unsigned g = color.m_green * 256 - 0.5;
-  const unsigned b = color.m_blue * 256 - 0.5;
-
-  librevenge::RVNGString str;
-  str.sprintf("#%.2x%.2x%.2x", r, g, b);
-
-  return str;
-}
-
 void fillCharPropList(librevenge::RVNGPropertyList &props, const IWORKStyleStack &style)
 {
   using namespace property;

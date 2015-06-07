@@ -20,8 +20,12 @@
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle_fwd.h"
 
+#include "mdds/flat_segment_tree.hpp"
+
 namespace libetonyek
 {
+
+using boost::optional;
 
 struct IWORKSize
 {
@@ -87,6 +91,8 @@ struct IWORKTabStop
 
 typedef std::deque<IWORKTabStop> IWORKTabStops_t;
 typedef boost::unordered_map<ID_t, IWORKTabStops_t> IWORKTabStopsMap_t;
+typedef mdds::flat_segment_tree<unsigned, IWORKStylePtr_t> IWORKGridLine_t;
+typedef std::vector<IWORKGridLine_t> IWORKGridLineList_t;
 
 struct IWORKLine
 {
@@ -172,11 +178,15 @@ struct IWORKTableData
 
   unsigned m_column;
   unsigned m_row;
+  unsigned m_numColumns;
+  unsigned m_numRows;
 
   boost::optional<unsigned> m_columnSpan;
   boost::optional<unsigned> m_rowSpan;
   boost::optional<unsigned> m_cellMove;
   boost::optional<std::string> m_content;
+  IWORKGridLineList_t m_horizontalLines;
+  IWORKGridLineList_t m_verticalLines;
 };
 
 struct IWORKStroke
@@ -187,6 +197,25 @@ struct IWORKStroke
   IWORKColor m_color;
   std::deque<double> m_pattern;
 };
+
+namespace
+{
+
+librevenge::RVNGString makeColor(const IWORKColor &color)
+{
+  // TODO: alpha
+
+  const unsigned r = color.m_red * 256 - 0.5;
+  const unsigned g = color.m_green * 256 - 0.5;
+  const unsigned b = color.m_blue * 256 - 0.5;
+
+  librevenge::RVNGString str;
+  str.sprintf("#%.2x%.2x%.2x", r, g, b);
+
+  return str;
+}
+
+}
 
 }
 
