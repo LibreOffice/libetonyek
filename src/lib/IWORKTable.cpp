@@ -15,12 +15,35 @@
 
 #include "libetonyek_utils.h"
 #include "IWORKDocumentInterface.h"
+#include "IWORKProperties.h"
+#include "IWORKStyle.h"
 #include "IWORKTypes.h"
 
 using boost::numeric_cast;
 
 namespace libetonyek
 {
+
+namespace
+{
+
+void collectBorder(IWORKGridLine_t &line, std::size_t index, librevenge::RVNGPropertyList &props, const char *name)
+{
+  IWORKStylePtr_t style;
+  if (!line.is_tree_valid())
+  {
+    line.build_tree();
+  }
+
+  line.search_tree(index, style);
+  if (style && style->has<property::SFTStrokeProperty>())
+  {
+    const IWORKStroke &stroke = style->get<property::SFTStrokeProperty>();
+    props.insert(name, makeBorder(stroke));
+  }
+}
+
+}
 
 IWORKTable::Cell::Cell()
   : m_content()
@@ -34,6 +57,8 @@ IWORKTable::IWORKTable()
   : m_table()
   , m_columnSizes()
   , m_rowSizes()
+  , m_verticalLines()
+  , m_horizontalLines()
 {
 }
 
@@ -44,6 +69,12 @@ void IWORKTable::setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowS
 
   // init. content table of appropriate dimensions
   m_table = Table_t(m_rowSizes.size(), Row_t(m_columnSizes.size()));
+}
+
+void IWORKTable::setBorders(const IWORKGridLineList_t &verticalLines, const IWORKGridLineList_t &horizontalLines)
+{
+  m_verticalLines = verticalLines;
+  m_horizontalLines = horizontalLines;
 }
 
 void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWORKOutputElements &content, const unsigned columnSpan, const unsigned rowSpan)
@@ -68,7 +99,7 @@ void IWORKTable::insertCoveredCell(const unsigned column, const unsigned row)
   m_table[row][column] = cell;
 }
 
-void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements) const
+void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements)
 {
   librevenge::RVNGPropertyListVector columnSizes;
 
@@ -90,6 +121,9 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
     librevenge::RVNGPropertyList rowProps;
     rowProps.insert("style:row-height", pt2in(m_rowSizes[r]));
 
+    IWORKGridLine_t &topLine = m_horizontalLines[r];
+    IWORKGridLine_t &bottomLine = m_horizontalLines[r+1];
+
     elements.addOpenTableRow(rowProps);
     for (std::size_t c = 0; row.size() != c; ++c)
     {
@@ -99,6 +133,11 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
       cellProps.insert("librevenge:column", numeric_cast<int>(c));
       cellProps.insert("librevenge:row", numeric_cast<int>(r));
       cellProps.insert("fo:vertical-align", "middle");
+
+      collectBorder(topLine, c, cellProps, "fo:border-top");
+      collectBorder(bottomLine, c, cellProps, "fo:border-bottom");
+      collectBorder(m_verticalLines[c], r, cellProps, "fo:border-left");
+      collectBorder(m_verticalLines[c+1], r, cellProps, "fo:border-right");
 
       if (cell.m_covered)
       {

@@ -549,14 +549,16 @@ IWORKXMLContextPtr_t StylePropertyElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::vector_style :
     return makeContext<IWORKStyleContext>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::vector_style :
+    return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_vectorStyles, true);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
     return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_paragraphStyles, true);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
-  case IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref :
     return IWORKXMLContextPtr_t();
+  case IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref :
+    return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_vectorStyles, true, true);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref :
     return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_paragraphStyles, true, true);
   }
@@ -924,6 +926,22 @@ void LanguageElement::endOfElement()
 namespace
 {
 
+class SFTStrokePropertyElement : public ValuePropertyContextBase<StrokeElement, property::SFTStrokeProperty>
+{
+public:
+  SFTStrokePropertyElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+};
+
+SFTStrokePropertyElement::SFTStrokePropertyElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::stroke)
+{
+}
+
+}
+
+namespace
+{
+
 typedef NumericPropertyBase<bool, property::Bold> BoldElement;
 typedef NumericPropertyBase<bool, property::Italic> ItalicElement;
 typedef NumericPropertyBase<bool, property::KeepLinesTogether> KeepLinesTogetherElement;
@@ -1026,6 +1044,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<ParagraphStrokeElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::rightIndent :
     return makeContext<RightIndentElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTStrokeProperty :
+    return makeContext<SFTStrokePropertyElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceAfter :
     return makeContext<SpaceAfterElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceBefore :
