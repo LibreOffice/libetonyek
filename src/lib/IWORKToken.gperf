@@ -112,6 +112,7 @@ graphic-style,graphic_style
 grid,grid
 grid-column,grid_column
 grid-row,grid_row
+gridline-index,gridline_index,
 group,group
 h,h
 head,head
@@ -203,12 +204,15 @@ so,so
 spaceAfter,spaceAfter
 spaceBefore,spaceBefore
 span,span
+start-index,start_index
+stop-index,stop_index
 sticky-note,sticky_note
 strikethru,strikethru
 string,string
 stroke,stroke
 style,style
 styles,styles
+style-run,style_run
 superscript,superscript
 t,t
 tab,tab
@@ -241,6 +245,7 @@ val,val
 vector-style,vector_style
 vector-style-ref,vector_style_ref
 verticalFlip,verticalFlip
+vertical-gridline-styles,vertical_gridline_styles,
 w,w
 widowControl,widowControl
 width,width

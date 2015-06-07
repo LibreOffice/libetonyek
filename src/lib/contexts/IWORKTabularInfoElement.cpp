@@ -489,6 +489,78 @@ IWORKXMLContextPtr_t DatasourceElement::element(const int name)
 namespace
 {
 
+class StyleRunElement : public IWORKXMLElementContextBase
+{
+public:
+  explicit StyleRunElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+StyleRunElement::StyleRunElement(IWORKXMLParserState &state)
+  : IWORKXMLElementContextBase(state)
+{
+}
+
+void StyleRunElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::gridline_index :
+  default :
+    break;
+  }
+}
+
+IWORKXMLContextPtr_t StyleRunElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::vector_style_ref | IWORKToken::NS_URI_SF :
+    return  IWORKXMLContextPtr_t();
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+
+namespace
+{
+
+class VerticalGridlineElement : public IWORKXMLElementContextBase
+{
+public:
+  explicit VerticalGridlineElement(IWORKXMLParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+VerticalGridlineElement::VerticalGridlineElement(IWORKXMLParserState &state)
+  : IWORKXMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t VerticalGridlineElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::style_run | IWORKToken::NS_URI_SF :
+    return makeContext<StyleRunElement>(getState());
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
 class GridRowElement : public IWORKXMLEmptyContextBase
 {
 public:
@@ -575,6 +647,8 @@ IWORKXMLContextPtr_t GridElement::element(const int name)
     return makeContext<DatasourceElement>(getState());
   case IWORKToken::rows | IWORKToken::NS_URI_SF :
     return makeContext<RowsElement>(getState());
+  case IWORKToken::vertical_gridline_styles | IWORKToken::NS_URI_SF :
+    return makeContext<VerticalGridlineElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
