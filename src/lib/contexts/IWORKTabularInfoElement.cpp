@@ -13,15 +13,19 @@
 
 #include "IWORKCollector.h"
 #include "IWORKGeometryElement.h"
+#include "IWORKRefContext.h"
 #include "IWORKTextBodyElement.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 #include "IWORKXMLContextBase.h"
 
+#include "mdds/flat_segment_tree.hpp"
+
 namespace libetonyek
 {
 
 using boost::lexical_cast;
+using boost::optional;
 
 namespace
 {
@@ -489,6 +493,120 @@ IWORKXMLContextPtr_t DatasourceElement::element(const int name)
 namespace
 {
 
+class VectorStyleElement : public IWORKXMLElementContextBase
+{
+public:
+  explicit VectorStyleElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+  std::vector< mdds::flat_segment_tree<size_t, IWORKStylePtr_t> > interval_map;
+};
+
+VectorStyleElement::VectorStyleElement(IWORKXMLParserState &state)
+  : IWORKXMLElementContextBase(state)
+{
+}
+
+void VectorStyleElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::start_index :
+  printf("ANN\n");
+  default :
+    break;
+  }
+}
+
+IWORKXMLContextPtr_t VectorStyleElement::element(const int name)
+{
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+
+namespace
+{
+
+class StyleRunElement : public IWORKXMLElementContextBase
+{
+public:
+  explicit StyleRunElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+
+private:
+  optional<ID_t> m_ref;
+};
+
+StyleRunElement::StyleRunElement(IWORKXMLParserState &state)
+  : IWORKXMLElementContextBase(state)
+  , m_ref()
+{
+}
+
+void StyleRunElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::gridline_index :
+  default :
+    break;
+  }
+}
+
+IWORKXMLContextPtr_t StyleRunElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::vector_style_ref | IWORKToken::NS_URI_SF :
+    return makeContext<IWORKRefContext>(getState(), m_ref);
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+
+namespace
+{
+
+class VerticalGridlineElement : public IWORKXMLElementContextBase
+{
+public:
+  explicit VerticalGridlineElement(IWORKXMLParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+VerticalGridlineElement::VerticalGridlineElement(IWORKXMLParserState &state)
+  : IWORKXMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t VerticalGridlineElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::style_run | IWORKToken::NS_URI_SF :
+    return makeContext<StyleRunElement>(getState());
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
 class GridRowElement : public IWORKXMLEmptyContextBase
 {
 public:
@@ -575,6 +693,8 @@ IWORKXMLContextPtr_t GridElement::element(const int name)
     return makeContext<DatasourceElement>(getState());
   case IWORKToken::rows | IWORKToken::NS_URI_SF :
     return makeContext<RowsElement>(getState());
+  case IWORKToken::vertical_gridline_styles | IWORKToken::NS_URI_SF :
+    return makeContext<VerticalGridlineElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
