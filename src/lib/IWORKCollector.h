@@ -81,6 +81,7 @@ public:
   void collectLineBreak();
 
   void collectTableSizes(const IWORKRowSizes_t &rowSizes, const IWORKColumnSizes_t &columnSizes);
+  void collectTableBorders(const IWORKGridLineList_t &verticalLines, const IWORKGridLineList_t &horizontalLines);
   void collectTableCell(unsigned row, unsigned column, const boost::optional<std::string> &content, unsigned rowSpan, unsigned columnSpan);
   void collectCoveredTableCell(unsigned row, unsigned column);
   void collectTableRow();

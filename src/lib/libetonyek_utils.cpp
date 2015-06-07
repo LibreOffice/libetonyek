@@ -8,6 +8,7 @@
  */
 
 #include "libetonyek_utils.h"
+#include "IWORKTypes.h"
 
 namespace libetonyek
 {
@@ -103,6 +104,47 @@ double deg2rad(double value)
 
   // convert
   return etonyek_pi / 180 * value;
+}
+
+librevenge::RVNGString makeColor(const IWORKColor &color)
+{
+  // TODO: alpha
+
+  const unsigned r = color.m_red * 256 - 0.5;
+  const unsigned g = color.m_green * 256 - 0.5;
+  const unsigned b = color.m_blue * 256 - 0.5;
+
+  librevenge::RVNGString str;
+  str.sprintf("#%.2x%.2x%.2x", r, g, b);
+
+  return str;
+}
+
+librevenge::RVNGString makeBorder(const IWORKStroke &stroke)
+{
+  librevenge::RVNGString border;
+
+  border.sprintf("%fpt", stroke.m_width);
+
+  // The format can represent arbitrary patterns, but we have to
+  // fit them to the limited number of options ODF allows...
+  if (stroke.m_pattern.size() >= 2)
+  {
+    const double x = stroke.m_pattern[0];
+    const double y = stroke.m_pattern[1];
+    if (((x / y) < 0.01) || ((y / x) < 0.01)) // arbitrarily picked constant
+      border.append(" dotted");
+    else
+      border.append(" dashed");
+  }
+  else
+  {
+    border.append(" solid");
+  }
+
+  border.append(" ");
+  border.append(makeColor(stroke.m_color));
+  return border;
 }
 
 }
