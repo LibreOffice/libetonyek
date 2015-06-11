@@ -60,7 +60,7 @@ bool IWORKParser::parse()
   assert(reader);
 
   const IWORKTokenizer &tokenizer = getTokenizer();
-  stack <IWORKXMLContextPtr_t> contextStack;
+  stack<IWORKXMLContextPtr_t> contextStack;
 
   int ret = xmlTextReaderRead(reader);
   contextStack.push(createDocumentContext());
