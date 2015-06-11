@@ -118,6 +118,12 @@ bool IWORKParser::parse()
     ret = xmlTextReaderRead(reader);
 
   }
+
+  while (!contextStack.empty()) // finish parsing in case of broken XML
+  {
+    contextStack.top()->endOfElement();
+    contextStack.pop();
+  }
   xmlTextReaderClose(reader);
 
   return true;
