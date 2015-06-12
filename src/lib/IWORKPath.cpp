@@ -323,7 +323,7 @@ IWORKPath::IWORKPath(const std::string &path)
   if (!r || (path.end() != it))
   {
     ETONYEK_DEBUG_MSG(("parsing of path '%s' failed\n", path.c_str()));
-    throw GenericException();
+    throw InvalidException();
   }
 }
 

@@ -29,7 +29,14 @@ void IWORKBezierElement::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::NS_URI_SFA | IWORKToken::path :
-    m_path.reset(new IWORKPath(value));
+    try
+    {
+      m_path.reset(new IWORKPath(value));
+    }
+    catch (const IWORKPath::InvalidException &)
+    {
+      ETONYEK_DEBUG_MSG(("'%s' is not a valid path\n", value));
+    }
     break;
   default :
     IWORKXMLEmptyContextBase::attribute(name, value);

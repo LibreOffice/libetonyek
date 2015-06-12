@@ -31,6 +31,8 @@ class IWORKPath
 public:
   class Element;
 
+  struct InvalidException {};
+
 public:
   IWORKPath();
   explicit IWORKPath(const std::string &path);
