@@ -43,13 +43,13 @@ string toSVG(const IWORKPath &path)
   {
     const librevenge::RVNGPropertyList &element = it();
 
-    CPPUNIT_ASSERT(0 != element["libwpg:path-action"]);
+    CPPUNIT_ASSERT(0 != element["librevenge:path-action"]);
 
     if (first)
       first = false;
     else
       output << ' ';
-    output << element["libwpg:path-action"]->getStr().cstr();
+    output << element["librevenge:path-action"]->getStr().cstr();
     if (element["svg:x1"])
       output << ' ' << in2pt(element["svg:x1"]->getDouble());
     if (element["svg:y1"])

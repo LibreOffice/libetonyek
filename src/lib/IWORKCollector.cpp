@@ -108,7 +108,7 @@ void drawMedia(const IWORKMediaPtr_t &media, const glm::dmat3 &trafo, IWORKOutpu
 
       librevenge::RVNGPropertyList props;
 
-      props.insert("libwpg:mime-type", mimetype.c_str());
+      props.insert("librevenge:mime-type", mimetype.c_str());
       props.insert("office:binary-data", librevenge::RVNGBinaryData(bytes, size));
 
       glm::dvec3 vec = trafo * glm::dvec3(0, 0, 1);

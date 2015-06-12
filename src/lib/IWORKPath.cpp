@@ -114,7 +114,7 @@ librevenge::RVNGPropertyList MoveTo::toWPG() const
 {
   librevenge::RVNGPropertyList element;
 
-  element.insert("libwpg:path-action", "M");
+  element.insert("librevenge:path-action", "M");
   element.insert("svg:x", pt2in(m_x));
   element.insert("svg:y", pt2in(m_y));
 
@@ -177,7 +177,7 @@ librevenge::RVNGPropertyList LineTo::toWPG() const
 {
   librevenge::RVNGPropertyList element;
 
-  element.insert("libwpg:path-action", "L");
+  element.insert("librevenge:path-action", "L");
   element.insert("svg:x", pt2in(m_x));
   element.insert("svg:y", pt2in(m_y));
 
@@ -262,7 +262,7 @@ librevenge::RVNGPropertyList CurveTo::toWPG() const
 {
   librevenge::RVNGPropertyList element;
 
-  element.insert("libwpg:path-action", "C");
+  element.insert("librevenge:path-action", "C");
   element.insert("svg:x", pt2in(m_x));
   element.insert("svg:y", pt2in(m_y));
   element.insert("svg:x1", pt2in(m_x1));
@@ -404,7 +404,7 @@ librevenge::RVNGPropertyListVector IWORKPath::toWPG() const
   if (m_closed)
   {
     librevenge::RVNGPropertyList element;
-    element.insert("libwpg:path-action", "Z");
+    element.insert("librevenge:path-action", "Z");
     vec.append(element);
   }
 
