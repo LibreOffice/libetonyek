@@ -34,7 +34,14 @@ void IWORKDataElement::attribute(const int name, const char *const value)
     m_displayName = value;
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::hfs_type :
-    m_type = boost::lexical_cast<unsigned>(value);
+    try
+    {
+      m_type = boost::lexical_cast<unsigned>(value);
+    }
+    catch (const boost::bad_lexical_cast &)
+    {
+      ETONYEK_DEBUG_MSG(("sf:hfs_type should contain a number, got '%s'\n", value));
+    }
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::path :
     m_stream.reset(getState().getParser().getPackage()->getSubStreamByName(value));
