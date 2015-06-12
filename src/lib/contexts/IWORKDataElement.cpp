@@ -24,6 +24,8 @@ namespace libetonyek
 IWORKDataElement::IWORKDataElement(IWORKXMLParserState &state, IWORKDataPtr_t &data)
   : IWORKXMLEmptyContextBase(state)
   , m_data(data)
+  , m_displayName()
+  , m_stream()
   , m_mimeType()
 {
 }
