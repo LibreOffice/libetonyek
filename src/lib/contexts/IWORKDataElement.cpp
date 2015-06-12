@@ -7,8 +7,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <boost/lexical_cast.hpp>
-
 #include "IWORKDataElement.h"
 
 #include "IWORKDictionary.h"
