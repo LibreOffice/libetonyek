@@ -46,10 +46,8 @@ void IWORKDataElement::attribute(const int name, const char *const value)
   case IWORKToken::NS_URI_SF | IWORKToken::path :
     m_stream.reset(getState().getParser().getPackage()->getSubStreamByName(value));
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
-    // TODO: handle
-    break;
   default :
+    IWORKXMLEmptyContextBase::attribute(name, value);
     break;
   }
 }
