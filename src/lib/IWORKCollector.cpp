@@ -41,7 +41,7 @@ const unsigned char SIGNATURE_QUICKTIME[] = { 'm', 'o', 'o', 'v' };
 const unsigned char SIGNATURE_TIFF_1[] = { 0x49, 0x49, 0x2a, 0x00 };
 const unsigned char SIGNATURE_TIFF_2[] = { 0x4d, 0x4d, 0x00, 0x2a };
 
-optional<string> detectMimetype(const RVNGInputStreamPtr_t &stream)
+string detectMimetype(const RVNGInputStreamPtr_t &stream)
 {
   stream->seek(0, librevenge::RVNG_SEEK_SET);
 
@@ -50,7 +50,7 @@ optional<string> detectMimetype(const RVNGInputStreamPtr_t &stream)
 
   if (8 != numBytesRead)
     // looks like the binary is broken anyway: just bail out
-    return optional<string>();
+    return string();
 
   if (0 == memcmp(sig, SIGNATURE_PNG, ETONYEK_NUM_ELEMENTS(SIGNATURE_PNG)))
     return string("image/png");
@@ -68,31 +68,7 @@ optional<string> detectMimetype(const RVNGInputStreamPtr_t &stream)
   if (0 == memcmp(sig, SIGNATURE_JPEG, ETONYEK_NUM_ELEMENTS(SIGNATURE_JPEG)))
     return string("image/jpeg");
 
-  return optional<string>();
-}
-
-optional<string> getMimetype(const optional<int> &type, const RVNGInputStreamPtr_t &stream)
-{
-  if (type)
-  {
-    switch (get(type))
-    {
-    case 1246774599 :
-      return string("image/jpeg");
-    case 1299148630 :
-      return string("video/quicktime");
-    case 1346651680 :
-      return string("application/pdf");
-    case 1347307366 :
-      return string("image/png");
-    case 1414088262 :
-      return string("image/tiff");
-    default :
-      break;
-    }
-  }
-
-  return detectMimetype(stream);
+  return string();
 }
 
 librevenge::RVNGPropertyList pointToWPG(const double x, const double y)
@@ -115,9 +91,11 @@ void drawMedia(const IWORKMediaPtr_t &media, const glm::dmat3 &trafo, IWORKOutpu
   {
     const RVNGInputStreamPtr_t input = media->m_content->m_data->m_stream;
 
-    const optional<string> mimetype = getMimetype(media->m_content->m_data->m_type, input);
+    string mimetype(media->m_content->m_data->m_mimeType);
+    if (mimetype.empty())
+      mimetype = detectMimetype(input);
 
-    if (mimetype)
+    if (!mimetype.empty())
     {
       input->seek(0, librevenge::RVNG_SEEK_END);
       const unsigned long size = input->tell();
@@ -130,7 +108,7 @@ void drawMedia(const IWORKMediaPtr_t &media, const glm::dmat3 &trafo, IWORKOutpu
 
       librevenge::RVNGPropertyList props;
 
-      props.insert("libwpg:mime-type", get(mimetype).c_str());
+      props.insert("libwpg:mime-type", mimetype.c_str());
       props.insert("office:binary-data", librevenge::RVNGBinaryData(bytes, size));
 
       glm::dvec3 vec = trafo * glm::dvec3(0, 0, 1);

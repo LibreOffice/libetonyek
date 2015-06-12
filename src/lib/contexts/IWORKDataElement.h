@@ -34,7 +34,7 @@ private:
   IWORKDataPtr_t &m_data;
   boost::optional<std::string> m_displayName;
   RVNGInputStreamPtr_t m_stream;
-  boost::optional<unsigned> m_type;
+  boost::optional<std::string> m_mimeType;
 };
 
 }

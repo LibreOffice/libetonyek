@@ -104,7 +104,7 @@ struct IWORKData
 {
   RVNGInputStreamPtr_t m_stream;
   boost::optional<std::string> m_displayName;
-  boost::optional<int> m_type;
+  std::string m_mimeType;
 
   IWORKData();
 };

@@ -14,6 +14,7 @@
 #include "IWORKDictionary.h"
 #include "IWORKParser.h"
 #include "IWORKToken.h"
+#include "IWORKTokenizer.h"
 #include "IWORKTypes.h"
 #include "IWORKXMLParserState.h"
 
@@ -23,6 +24,7 @@ namespace libetonyek
 IWORKDataElement::IWORKDataElement(IWORKXMLParserState &state, IWORKDataPtr_t &data)
   : IWORKXMLEmptyContextBase(state)
   , m_data(data)
+  , m_mimeType()
 {
 }
 
@@ -34,15 +36,29 @@ void IWORKDataElement::attribute(const int name, const char *const value)
     m_displayName = value;
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::hfs_type :
-    try
+  {
+    switch (getState().getTokenizer().getId(value))
     {
-      m_type = boost::lexical_cast<unsigned>(value);
-    }
-    catch (const boost::bad_lexical_cast &)
-    {
-      ETONYEK_DEBUG_MSG(("sf:hfs_type should contain a number, got '%s'\n", value));
+    case IWORKToken::_1246774599 :
+      m_mimeType = "image/jpeg";
+      break;
+    case IWORKToken::_1299148630 :
+      m_mimeType = "video/quicktime";
+      break;
+    case IWORKToken::_1346651680 :
+      m_mimeType = "application/pdf";
+      break;
+    case IWORKToken::_1347307366 :
+      m_mimeType = "image/png";
+      break;
+    case IWORKToken::_1414088262 :
+      m_mimeType = "image/tiff";
+      break;
+    default :
+      break;
     }
     break;
+  }
   case IWORKToken::NS_URI_SF | IWORKToken::path :
     m_stream.reset(getState().getParser().getPackage()->getSubStreamByName(value));
     break;
@@ -59,7 +75,8 @@ void IWORKDataElement::endOfElement()
     m_data.reset(new IWORKData());
     m_data->m_stream = m_stream;
     m_data->m_displayName = m_displayName;
-    m_data->m_type = m_type;
+    if (m_mimeType)
+      m_data->m_mimeType = get(m_mimeType);
 
     if (getId())
       getState().getDictionary().m_data[get(getId())] = m_data;

@@ -94,7 +94,7 @@ IWORKLine::IWORKLine()
 IWORKData::IWORKData()
   : m_stream()
   , m_displayName()
-  , m_type()
+  , m_mimeType()
 {
 }
 
