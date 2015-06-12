@@ -9,8 +9,7 @@
 
 #include "IWORKSizeElement.h"
 
-#include <boost/lexical_cast.hpp>
-
+#include "libetonyek_xml.h"
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKToken.h"
@@ -18,8 +17,6 @@
 
 namespace libetonyek
 {
-
-using boost::lexical_cast;
 
 IWORKSizeElement::IWORKSizeElement(IWORKXMLParserState &state, boost::optional<IWORKSize> &size)
   : IWORKXMLEmptyContextBase(state)
@@ -34,10 +31,10 @@ void IWORKSizeElement::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::NS_URI_SFA | IWORKToken::w :
-    m_width = lexical_cast<double>(value);
+    m_width = try_double_cast(value);
     break;
   case IWORKToken::NS_URI_SFA | IWORKToken::h :
-    m_height = lexical_cast<double>(value);
+    m_height = try_double_cast(value);
     break;
   }
 }

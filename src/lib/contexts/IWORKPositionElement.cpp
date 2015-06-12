@@ -9,8 +9,7 @@
 
 #include "IWORKPositionElement.h"
 
-#include <boost/lexical_cast.hpp>
-
+#include "libetonyek_xml.h"
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKToken.h"
@@ -18,8 +17,6 @@
 
 namespace libetonyek
 {
-
-using boost::lexical_cast;
 
 IWORKPositionElement::IWORKPositionElement(IWORKXMLParserState &state, boost::optional<IWORKPosition> &position)
   : IWORKXMLEmptyContextBase(state)
@@ -32,10 +29,10 @@ void IWORKPositionElement::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::NS_URI_SFA | IWORKToken::x :
-    m_x = lexical_cast<double>(value);
+    m_x = try_double_cast(value);
     break;
   case IWORKToken::NS_URI_SFA | IWORKToken::y :
-    m_y = lexical_cast<double>(value);
+    m_y = try_double_cast(value);
     break;
   }
 }
