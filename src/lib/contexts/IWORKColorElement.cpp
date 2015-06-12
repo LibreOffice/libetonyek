@@ -33,21 +33,28 @@ IWORKColorElement::IWORKColorElement(IWORKXMLParserState &state, boost::optional
 
 void IWORKColorElement::attribute(const int name, const char *const value)
 {
-  switch (name)
+  try
   {
-  // TODO: check xsi:type too
-  case IWORKToken::NS_URI_SFA | IWORKToken::a :
-    m_a = lexical_cast<double>(value);
-    break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::b :
-    m_b = lexical_cast<double>(value);
-    break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::g :
-    m_g = lexical_cast<double>(value);
-    break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::r :
-    m_r = lexical_cast<double>(value);
-    break;
+    switch (name)
+    {
+    // TODO: check xsi:type too
+    case IWORKToken::NS_URI_SFA | IWORKToken::a :
+      m_a = lexical_cast<double>(value);
+      break;
+    case IWORKToken::NS_URI_SFA | IWORKToken::b :
+      m_b = lexical_cast<double>(value);
+      break;
+    case IWORKToken::NS_URI_SFA | IWORKToken::g :
+      m_g = lexical_cast<double>(value);
+      break;
+    case IWORKToken::NS_URI_SFA | IWORKToken::r :
+      m_r = lexical_cast<double>(value);
+      break;
+    }
+  }
+  catch (const boost::bad_lexical_cast &)
+  {
+    ETONYEK_DEBUG_MSG(("invalid color value: %s\n", value));
   }
 }
 
