@@ -208,6 +208,8 @@ IWORKCollector::IWORKCollector(IWORKDocumentInterface *const document)
   , m_newStyles()
   , m_currentText()
   , m_currentTable()
+  , m_headers()
+  , m_footers()
   , m_currentPath()
   , m_groupLevel(0)
 {
@@ -446,6 +448,16 @@ void IWORKCollector::collectMetadata(const IWORKMetadata &metadata)
   m_metadata = metadata;
 }
 
+void IWORKCollector::collectHeader(const std::string &name)
+{
+  collectHeaderFooter(name, m_headers);
+}
+
+void IWORKCollector::collectFooter(const std::string &name)
+{
+  collectHeaderFooter(name, m_headers);
+}
+
 void IWORKCollector::startDocument()
 {
   m_document->startDocument(librevenge::RVNGPropertyList());
@@ -566,6 +578,18 @@ void IWORKCollector::resolveStyle(IWORKStyle &style)
 {
   // TODO: implement me
   (void) style;
+}
+
+void IWORKCollector::collectHeaderFooter(const std::string &name, IWORKHeaderFooterMap_t &map)
+{
+  IWORKOutputElements &elements = map[name];
+  if (!elements.empty())
+  {
+    ETONYEK_DEBUG_MSG(("header '%s' already exists, overwriting\n"));
+    elements.clear();
+  }
+  m_currentText->draw(elements);
+  m_currentText.reset();
 }
 
 void IWORKCollector::fillMetadata(librevenge::RVNGPropertyList &props)

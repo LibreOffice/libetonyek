@@ -86,6 +86,7 @@ firstLineIndent,firstLineIndent
 fontColor,fontColor
 fontName,fontName
 fontSize,fontSize
+footer,footer
 footers,footers
 frame-h,frame_h
 frame-w,frame_w
@@ -100,6 +101,7 @@ grid-row,grid_row
 group,group
 h,h
 head,head
+header,header
 headers,headers
 headline-style,headline_style
 height,height
@@ -139,6 +141,7 @@ metadata,metadata
 mode,mode
 movie-media,movie_media
 n,n
+name,name
 naturalSize,naturalSize
 number,number
 other-datas,other_datas

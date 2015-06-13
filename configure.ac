@@ -82,6 +82,7 @@ AC_CHECK_HEADERS(
         boost/algorithm/string/split.hpp \
         boost/any.hpp \
         boost/bind.hpp \
+        boost/function.hpp \
         boost/lexical_cast.hpp \
         boost/logic/tribool.hpp \
         boost/make_shared.hpp \

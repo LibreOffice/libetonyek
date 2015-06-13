@@ -38,6 +38,10 @@ struct IWORKSize;
 
 class IWORKCollector
 {
+protected:
+  typedef boost::unordered_map<std::string, IWORKOutputElements> IWORKHeaderFooterMap_t;
+
+private:
   struct Level
   {
     IWORKGeometryPtr_t m_geometry;
@@ -88,6 +92,9 @@ public:
 
   void collectMetadata(const IWORKMetadata &metadata);
 
+  void collectHeader(const std::string &name);
+  void collectFooter(const std::string &name);
+
   void startDocument();
   void endDocument();
 
@@ -118,6 +125,8 @@ private:
   void pushStyle(const IWORKStylePtr_t &style);
   void resolveStyle(IWORKStyle &style);
 
+  void collectHeaderFooter(const std::string &name, IWORKHeaderFooterMap_t &map);
+
   virtual void drawTable() = 0;
 
 protected:
@@ -132,6 +141,9 @@ protected:
 
   IWORKTextPtr_t m_currentText;
   IWORKTable m_currentTable;
+
+  IWORKHeaderFooterMap_t m_headers;
+  IWORKHeaderFooterMap_t m_footers;
 
 private:
   IWORKPathPtr_t m_currentPath;

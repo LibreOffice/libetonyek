@@ -9,11 +9,14 @@
 
 #include "PAG1Parser.h"
 
+#include <boost/bind.hpp>
 #include <boost/optional.hpp>
+#include <boost/ref.hpp>
 
 #include "libetonyek_xml.h"
 #include "IWORKChainedTokenizer.h"
 #include "IWORKDiscardContext.h"
+#include "IWORKHeaderFooterContext.h"
 #include "IWORKLayoutElement.h"
 #include "IWORKMetadataElement.h"
 #include "IWORKPElement.h"
@@ -88,9 +91,11 @@ FootersElement::FootersElement(PAG1ParserState &state)
 {
 }
 
-IWORKXMLContextPtr_t FootersElement::element(int)
+IWORKXMLContextPtr_t FootersElement::element(const int name)
 {
-  // TODO: parse
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::footer))
+    return makeContext<IWORKHeaderFooterContext>(getState(),
+                                                 boost::bind(&IWORKCollector::collectFooter, boost::ref(getCollector()), _1));
   return IWORKXMLContextPtr_t();
 }
 
@@ -113,9 +118,11 @@ HeadersElement::HeadersElement(PAG1ParserState &state)
 {
 }
 
-IWORKXMLContextPtr_t HeadersElement::element(int)
+IWORKXMLContextPtr_t HeadersElement::element(const int name)
 {
-  // TODO: parse
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::header))
+    return makeContext<IWORKHeaderFooterContext>(getState(),
+                                                 boost::bind(&IWORKCollector::collectHeader, boost::ref(getCollector()), _1));
   return IWORKXMLContextPtr_t();
 }
 
