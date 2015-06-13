@@ -138,6 +138,7 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKColorElement.h \
 	contexts/IWORKDataElement.cpp \
 	contexts/IWORKDataElement.h \
+	contexts/IWORKDirectPropertyContextBase.h \
 	contexts/IWORKGeometryElement.cpp \
 	contexts/IWORKGeometryElement.h \
 	contexts/IWORKHeaderFooterContext.cpp \
@@ -150,12 +151,18 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKMediaElement.h \
 	contexts/IWORKMetadataElement.cpp \
 	contexts/IWORKMetadataElement.h \
+	contexts/IWORKNumberConverter.cpp \
+	contexts/IWORKNumberConverter.h \
+	contexts/IWORKNumberElement.h \
+	contexts/IWORKNumericPropertyBase.h \
 	contexts/IWORKPElement.cpp \
 	contexts/IWORKPElement.h \
 	contexts/IWORKPathElement.cpp \
 	contexts/IWORKPathElement.h \
 	contexts/IWORKPositionElement.cpp \
 	contexts/IWORKPositionElement.h \
+	contexts/IWORKPropertyContextBase.cpp \
+	contexts/IWORKPropertyContextBase.h \
 	contexts/IWORKPropertyMapElement.cpp \
 	contexts/IWORKPropertyMapElement.h \
 	contexts/IWORKRefContext.cpp \
@@ -180,6 +187,7 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKTextStorageElement.h \
 	contexts/IWORKUnfilteredElement.cpp \
 	contexts/IWORKUnfilteredElement.h \
+	contexts/IWORKValuePropertyContextBase.h \
 	contexts/KEY2StyleContext.cpp \
 	contexts/KEY2StyleContext.h \
 	libetonyek_utils.cpp \

@@ -9,13 +9,13 @@
 
 #include "IWORKPropertyMapElement.h"
 
-#include <boost/lexical_cast.hpp>
-
 #include "libetonyek_xml.h"
 #include "IWORKCollector.h"
 #include "IWORKColorElement.h"
 #include "IWORKDictionary.h"
+#include "IWORKDirectPropertyContextBase.h"
 #include "IWORKGeometryElement.h"
+#include "IWORKNumericPropertyBase.h"
 #include "IWORKProperties.h"
 #include "IWORKRefContext.h"
 #include "IWORKStringElement.h"
@@ -24,14 +24,12 @@
 #include "IWORKTabsElement.h"
 #include "IWORKToken.h"
 #include "IWORKTokenizer.h"
+#include "IWORKValuePropertyContextBase.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
 {
 
-using boost::any;
-using boost::lexical_cast;
-using boost::none;
 using boost::optional;
 
 using std::deque;
@@ -40,253 +38,14 @@ using std::string;
 namespace
 {
 
-class PropertyContextBase : public IWORKXMLElementContextBase
-{
-protected:
-  PropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-
-protected:
-  IWORKPropertyMap &m_propMap;
-  bool m_default;
-};
-
-PropertyContextBase::PropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : IWORKXMLElementContextBase(state)
-  , m_propMap(propMap)
-  , m_default(true)
-{
-}
-
-}
-
-namespace
-{
-
-template<typename T>
-struct NumberConverter
-{
-  static T convert(const char *value);
-};
-
-template<>
-struct NumberConverter<bool>
-{
-  static optional<bool> convert(const char *const value)
-  {
-    return try_bool_cast(value);
-  }
-};
-
-template<>
-struct NumberConverter<int>
-{
-  static optional<int> convert(const char *const value)
-  {
-    return try_int_cast(value);
-  }
-};
-
-template<>
-struct NumberConverter<double>
-{
-  static optional<double> convert(const char *const value)
-  {
-    return try_double_cast(value);
-  }
-};
-
-template<typename T>
-class NumberElement : public IWORKXMLEmptyContextBase
-{
-public:
-  NumberElement(IWORKXMLParserState &state, optional<T> &value);
-
-private:
-  virtual void attribute(int name, const char *value);
-
-private:
-  optional<T> &m_value;
-};
-
-template<typename T>
-NumberElement<T>::NumberElement(IWORKXMLParserState &state, optional<T> &value)
-  : IWORKXMLEmptyContextBase(state)
-  , m_value(value)
-{
-}
-
-template<typename T>
-void NumberElement<T>::attribute(const int name, const char *const value)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SFA | IWORKToken::number :
-    m_value = NumberConverter<T>::convert(value);
-    break;
-  }
-}
-
-}
-
-namespace
-{
-
-template<class ContextT, class PropertyT>
-class DirectPropertyContextBase : public PropertyContextBase
-{
-public:
-  DirectPropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap, int propId);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  const int m_propId;
-  typename IWORKPropertyInfo<PropertyT>::ValueType m_value;
-};
-
-template<class ContextT, class PropertyT>
-DirectPropertyContextBase<ContextT, PropertyT>::DirectPropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap, const int propId)
-  : PropertyContextBase(state, propMap)
-  , m_propId(propId)
-  , m_value()
-{
-}
-
-template<class ContextT, class PropertyT>
-IWORKXMLContextPtr_t DirectPropertyContextBase<ContextT, PropertyT>::element(const int name)
-{
-  m_default = false;
-
-  if (m_propId == name)
-    return makeContext<ContextT>(getState(), m_value);
-
-  return IWORKXMLContextPtr_t();
-}
-
-template<class ContextT, class PropertyT>
-void DirectPropertyContextBase<ContextT, PropertyT>::endOfElement()
-{
-  if (bool(m_value))
-    m_propMap.put<PropertyT>(m_value);
-  else if (m_default)
-    m_propMap.clear<PropertyT>();
-}
-
-}
-
-namespace
-{
-
-template<class ContextT, class PropertyT>
-class ValuePropertyContextBase : public PropertyContextBase
-{
-public:
-  ValuePropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap, int propId);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  const int m_propId;
-  optional<typename IWORKPropertyInfo<PropertyT>::ValueType> m_value;
-};
-
-template<class ContextT, class PropertyT>
-ValuePropertyContextBase<ContextT, PropertyT>::ValuePropertyContextBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap, const int propId)
-  : PropertyContextBase(state, propMap)
-  , m_propId(propId)
-  , m_value()
-{
-}
-
-template<class ContextT, class PropertyT>
-IWORKXMLContextPtr_t ValuePropertyContextBase<ContextT, PropertyT>::element(const int name)
-{
-  m_default = false;
-
-  if (m_propId == name)
-    return makeContext<ContextT>(getState(), m_value);
-
-  return IWORKXMLContextPtr_t();
-}
-
-template<class ContextT, class PropertyT>
-void ValuePropertyContextBase<ContextT, PropertyT>::endOfElement()
-{
-  if (bool(m_value))
-    m_propMap.put<PropertyT>(get(m_value));
-  else if (m_default)
-    m_propMap.clear<PropertyT>();
-}
-
-}
-
-namespace
-{
-
-template<typename ValueT, class PropertyT>
-class NumericPropertyBase : public ValuePropertyContextBase<NumberElement<ValueT>, PropertyT>
-{
-  typedef ValuePropertyContextBase<NumberElement<ValueT>, PropertyT> Parent_t;
-
-public:
-  NumericPropertyBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
-
-template<typename ValueT, class PropertyT>
-NumericPropertyBase<ValueT, PropertyT>::NumericPropertyBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : Parent_t(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number)
-{
-}
-
-}
-
-namespace
-{
-
-template<>
-struct NumberConverter<IWORKAlignment>
-{
-  static optional<IWORKAlignment> convert(const char *const value)
-  {
-    const optional<int> alignment(try_int_cast(value));
-    if (alignment)
-    {
-      switch (get(alignment))
-      {
-      case 0 :
-        return IWORK_ALIGNMENT_LEFT;
-      case 1 :
-        return IWORK_ALIGNMENT_RIGHT;
-      case 2 :
-        return IWORK_ALIGNMENT_CENTER;
-      case 3 :
-        return IWORK_ALIGNMENT_JUSTIFY;
-      case 4 : // TODO: what is this?
-        break;
-      }
-    }
-
-    return none;
-  }
-};
-
-}
-
-namespace
-{
-
-class FontColorElement : public ValuePropertyContextBase<IWORKColorElement, property::FontColor>
+class FontColorElement : public IWORKValuePropertyContextBase<IWORKColorElement, property::FontColor>
 {
 public:
   FontColorElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
 FontColorElement::FontColorElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::color)
+  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::color)
 {
 }
 
@@ -295,14 +54,14 @@ FontColorElement::FontColorElement(IWORKXMLParserState &state, IWORKPropertyMap 
 namespace
 {
 
-class GeometryElement : public DirectPropertyContextBase<IWORKGeometryElement, property::Geometry>
+class GeometryElement : public IWORKDirectPropertyContextBase<IWORKGeometryElement, property::Geometry>
 {
 public:
   GeometryElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
 GeometryElement::GeometryElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : DirectPropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::geometry)
+  : IWORKDirectPropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::geometry)
 {
 }
 
@@ -311,44 +70,14 @@ GeometryElement::GeometryElement(IWORKXMLParserState &state, IWORKPropertyMap &p
 namespace
 {
 
-template<>
-struct NumberConverter<IWORKCapitalization>
-{
-  static optional<IWORKCapitalization> convert(const char *const value)
-  {
-    const optional<int> capitalization(try_int_cast(value));
-    if (capitalization)
-    {
-      switch (get(capitalization))
-      {
-      case 0 :
-        return IWORK_CAPITALIZATION_NONE;
-      case 1 :
-        return IWORK_CAPITALIZATION_ALL_CAPS;
-      case 2 :
-        return IWORK_CAPITALIZATION_SMALL_CAPS;
-      case 3 :
-        return IWORK_CAPITALIZATION_TITLE;
-      }
-    }
-
-    return none;
-  }
-};
-
-}
-
-namespace
-{
-
-class FontNameElement : public ValuePropertyContextBase<IWORKStringElement, property::FontName>
+class FontNameElement : public IWORKValuePropertyContextBase<IWORKStringElement, property::FontName>
 {
 public:
   FontNameElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
 FontNameElement::FontNameElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::string)
+  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::string)
 {
 }
 
@@ -357,33 +86,7 @@ FontNameElement::FontNameElement(IWORKXMLParserState &state, IWORKPropertyMap &p
 namespace
 {
 
-template<>
-struct NumberConverter<IWORKBaseline>
-{
-  static optional<IWORKBaseline> convert(const char *const value)
-  {
-    const optional<int> superscript(try_int_cast(value));
-    if (superscript)
-    {
-      switch (get(superscript))
-      {
-      case 1 :
-        return IWORK_BASELINE_SUPER;
-      case 2 :
-        return IWORK_BASELINE_SUB;
-      }
-    }
-
-    return none;
-  }
-};
-
-}
-
-namespace
-{
-
-class TabsProperty : public PropertyContextBase
+class TabsProperty : public IWORKPropertyContextBase
 {
 public:
   TabsProperty(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
@@ -398,7 +101,7 @@ private:
 };
 
 TabsProperty::TabsProperty(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : PropertyContextBase(state, propMap)
+  : IWORKPropertyContextBase(state, propMap)
   , m_tabs()
   , m_ref()
 {
@@ -442,14 +145,14 @@ void TabsProperty::endOfElement()
 namespace
 {
 
-class TextBackgroundElement : public ValuePropertyContextBase<IWORKColorElement, property::TextBackground>
+class TextBackgroundElement : public IWORKValuePropertyContextBase<IWORKColorElement, property::TextBackground>
 {
 public:
   TextBackgroundElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
 TextBackgroundElement::TextBackgroundElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::color)
+  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::color)
 {
 }
 
@@ -505,14 +208,14 @@ void LinespacingElement::endOfElement()
 namespace
 {
 
-class LineSpacingElement : public ValuePropertyContextBase<LinespacingElement, property::LineSpacing>
+class LineSpacingElement : public IWORKValuePropertyContextBase<LinespacingElement, property::LineSpacing>
 {
 public:
   LineSpacingElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
 LineSpacingElement::LineSpacingElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::linespacing)
+  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::linespacing)
 {
 }
 
@@ -521,14 +224,14 @@ LineSpacingElement::LineSpacingElement(IWORKXMLParserState &state, IWORKProperty
 namespace
 {
 
-class ParagraphFillElement : public ValuePropertyContextBase<IWORKColorElement, property::ParagraphFill>
+class ParagraphFillElement : public IWORKValuePropertyContextBase<IWORKColorElement, property::ParagraphFill>
 {
 public:
   ParagraphFillElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
 ParagraphFillElement::ParagraphFillElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::color)
+  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::color)
 {
 }
 
@@ -710,14 +413,14 @@ void StrokeElement::endOfElement()
 namespace
 {
 
-class ParagraphStrokeElement : public ValuePropertyContextBase<StrokeElement, property::ParagraphStroke>
+class ParagraphStrokeElement : public IWORKValuePropertyContextBase<StrokeElement, property::ParagraphStroke>
 {
 public:
   ParagraphStrokeElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
 ParagraphStrokeElement::ParagraphStrokeElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : ValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::stroke)
+  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::stroke)
 {
 }
 
@@ -726,32 +429,7 @@ ParagraphStrokeElement::ParagraphStrokeElement(IWORKXMLParserState &state, IWORK
 namespace
 {
 
-template<>
-struct NumberConverter<IWORKBorderType>
-{
-  static optional<IWORKBorderType> convert(const char *const value)
-  {
-    switch (int_cast(value))
-    {
-    case 1 :
-      return IWORK_BORDER_TYPE_TOP;
-    case 2 :
-      return IWORK_BORDER_TYPE_BOTTOM;
-    case 3 :
-      return IWORK_BORDER_TYPE_TOP_AND_BOTTOM;
-    case 4 :
-      return IWORK_BORDER_TYPE_ALL;
-    }
-    return optional<IWORKBorderType>();
-  }
-};
-
-}
-
-namespace
-{
-
-class LanguageElement : public PropertyContextBase
+class LanguageElement : public IWORKPropertyContextBase
 {
 public:
   LanguageElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
@@ -765,7 +443,7 @@ private:
 };
 
 LanguageElement::LanguageElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : PropertyContextBase(state, propMap)
+  : IWORKPropertyContextBase(state, propMap)
 {
 }
 
@@ -793,27 +471,27 @@ void LanguageElement::endOfElement()
 namespace
 {
 
-typedef NumericPropertyBase<bool, property::Bold> BoldElement;
-typedef NumericPropertyBase<bool, property::Italic> ItalicElement;
-typedef NumericPropertyBase<bool, property::KeepLinesTogether> KeepLinesTogetherElement;
-typedef NumericPropertyBase<bool, property::KeepWithNext> KeepWithNextElement;
-typedef NumericPropertyBase<bool, property::Outline> OutlineElement;
-typedef NumericPropertyBase<bool, property::PageBreakBefore> PageBreakBeforeElement;
-typedef NumericPropertyBase<bool, property::Strikethru> StrikethruElement;
-typedef NumericPropertyBase<bool, property::Underline> UnderlineElement;
-typedef NumericPropertyBase<bool, property::WidowControl> WidowControlElement;
-typedef NumericPropertyBase<double, property::BaselineShift> BaselineShiftElement;
-typedef NumericPropertyBase<double, property::FirstLineIndent> FirstLineIndentElement;
-typedef NumericPropertyBase<double, property::FontSize> FontSizeElement;
-typedef NumericPropertyBase<double, property::LeftIndent> LeftIndentElement;
-typedef NumericPropertyBase<double, property::RightIndent> RightIndentElement;
-typedef NumericPropertyBase<double, property::SpaceAfter> SpaceAfterElement;
-typedef NumericPropertyBase<double, property::SpaceBefore> SpaceBeforeElement;
-typedef NumericPropertyBase<double, property::Tracking> TrackingElement;
-typedef NumericPropertyBase<IWORKAlignment, property::Alignment> AlignmentElement;
-typedef NumericPropertyBase<IWORKBaseline, property::Baseline> SuperscriptElement;
-typedef NumericPropertyBase<IWORKBorderType, property::ParagraphBorderType> ParagraphBorderTypeElement;
-typedef NumericPropertyBase<IWORKCapitalization, property::Capitalization> CapitalizationElement;
+typedef IWORKNumericPropertyBase<bool, property::Bold> BoldElement;
+typedef IWORKNumericPropertyBase<bool, property::Italic> ItalicElement;
+typedef IWORKNumericPropertyBase<bool, property::KeepLinesTogether> KeepLinesTogetherElement;
+typedef IWORKNumericPropertyBase<bool, property::KeepWithNext> KeepWithNextElement;
+typedef IWORKNumericPropertyBase<bool, property::Outline> OutlineElement;
+typedef IWORKNumericPropertyBase<bool, property::PageBreakBefore> PageBreakBeforeElement;
+typedef IWORKNumericPropertyBase<bool, property::Strikethru> StrikethruElement;
+typedef IWORKNumericPropertyBase<bool, property::Underline> UnderlineElement;
+typedef IWORKNumericPropertyBase<bool, property::WidowControl> WidowControlElement;
+typedef IWORKNumericPropertyBase<double, property::BaselineShift> BaselineShiftElement;
+typedef IWORKNumericPropertyBase<double, property::FirstLineIndent> FirstLineIndentElement;
+typedef IWORKNumericPropertyBase<double, property::FontSize> FontSizeElement;
+typedef IWORKNumericPropertyBase<double, property::LeftIndent> LeftIndentElement;
+typedef IWORKNumericPropertyBase<double, property::RightIndent> RightIndentElement;
+typedef IWORKNumericPropertyBase<double, property::SpaceAfter> SpaceAfterElement;
+typedef IWORKNumericPropertyBase<double, property::SpaceBefore> SpaceBeforeElement;
+typedef IWORKNumericPropertyBase<double, property::Tracking> TrackingElement;
+typedef IWORKNumericPropertyBase<IWORKAlignment, property::Alignment> AlignmentElement;
+typedef IWORKNumericPropertyBase<IWORKBaseline, property::Baseline> SuperscriptElement;
+typedef IWORKNumericPropertyBase<IWORKBorderType, property::ParagraphBorderType> ParagraphBorderTypeElement;
+typedef IWORKNumericPropertyBase<IWORKCapitalization, property::Capitalization> CapitalizationElement;
 
 }
 
