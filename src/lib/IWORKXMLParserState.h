@@ -36,16 +36,16 @@ public:
   IWORKCollector &getCollector() const;
   const IWORKTokenizer &getTokenizer() const;
 
-private:
-  IWORKParser &m_parser;
-  IWORKCollector &m_collector;
-  IWORKDictionary &m_dict;
-
 public:
   IWORKTableDataPtr_t m_tableData;
   // When false, nothing should be sent to collector. This is used to
   // gather referenceable entities in skipped parts of the file.
   bool m_enableCollector;
+
+private:
+  IWORKParser &m_parser;
+  IWORKCollector &m_collector;
+  IWORKDictionary &m_dict;
 };
 
 }
