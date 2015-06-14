@@ -38,6 +38,8 @@ libetonyek_internal_la_SOURCES = \
 	IWORKMemoryStream.h \
 	IWORKOutputElements.cpp \
 	IWORKOutputElements.h \
+	IWORKOutputManager.cpp \
+	IWORKOutputManager.h \
 	IWORKParser.cpp \
 	IWORKParser.h \
 	IWORKPath.cpp \
@@ -56,20 +58,18 @@ libetonyek_internal_la_SOURCES = \
 	IWORKSpreadsheetRedirector.h \
 	IWORKStyle.cpp \
 	IWORKStyle.h \
+	IWORKStyleStack.cpp \
+	IWORKStyleStack.h \
 	IWORKStyle_fwd.h \
 	IWORKStylesheet.cpp \
 	IWORKStylesheet.h \
-	IWORKStyleStack.cpp \
-	IWORKStyleStack.h \
 	IWORKTable.cpp \
 	IWORKTable.h \
 	IWORKText.cpp \
 	IWORKText.h \
-	IWORKText_fwd.h \
 	IWORKTextRedirector.cpp \
 	IWORKTextRedirector.h \
-	IWORKTransformation.cpp \
-	IWORKTransformation.h \
+	IWORKText_fwd.h \
 	IWORKToken.cpp \
 	IWORKToken.h \
 	IWORKTokenInfo.h \
@@ -77,6 +77,8 @@ libetonyek_internal_la_SOURCES = \
 	IWORKTokenizer.h \
 	IWORKTokenizerBase.cpp \
 	IWORKTokenizerBase.h \
+	IWORKTransformation.cpp \
+	IWORKTransformation.h \
 	IWORKTypes.cpp \
 	IWORKTypes.h \
 	IWORKTypes_fwd.h \
@@ -88,8 +90,6 @@ libetonyek_internal_la_SOURCES = \
 	IWORKXMLParserState.h \
 	IWORKZlibStream.cpp \
 	IWORKZlibStream.h \
-	IWORKOutputManager.cpp \
-	IWORKOutputManager.h \
 	KEY1Parser.cpp \
 	KEY1Parser.h \
 	KEY1Token.cpp \
@@ -108,10 +108,6 @@ libetonyek_internal_la_SOURCES = \
 	KEYTypes.cpp \
 	KEYTypes.h \
 	KEYTypes_fwd.h \
-	NUMCollector.cpp \
-	NUMCollector.h \
-	NUMDictionary.cpp \
-	NUMDictionary.h \
 	NUM1Parser.cpp \
 	NUM1Parser.h \
 	NUM1ParserState.cpp \
@@ -119,6 +115,17 @@ libetonyek_internal_la_SOURCES = \
 	NUM1Token.cpp \
 	NUM1Token.h \
 	NUM1XMLContextBase.h \
+	NUMCollector.cpp \
+	NUMCollector.h \
+	NUMDictionary.cpp \
+	NUMDictionary.h \
+	PAG1Parser.cpp \
+	PAG1Parser.h \
+	PAG1ParserState.cpp \
+	PAG1ParserState.h \
+	PAG1Token.cpp \
+	PAG1Token.h \
+	PAG1XMLContextBase.h \
 	PAGCollector.cpp \
 	PAGCollector.h \
 	PAGDictionary.cpp \
@@ -127,13 +134,6 @@ libetonyek_internal_la_SOURCES = \
 	PAGProperties.h \
 	PAGTypes.cpp \
 	PAGTypes.h \
-	PAG1Parser.cpp \
-	PAG1Parser.h \
-	PAG1ParserState.cpp \
-	PAG1ParserState.h \
-	PAG1Token.cpp \
-	PAG1Token.h \
-	PAG1XMLContextBase.h \
 	contexts/IWORKBezierElement.cpp \
 	contexts/IWORKBezierElement.h \
 	contexts/IWORKColorElement.cpp \
@@ -173,12 +173,12 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKSizeElement.h \
 	contexts/IWORKStringElement.cpp \
 	contexts/IWORKStringElement.h \
-	contexts/IWORKStylesContext.cpp \
-	contexts/IWORKStylesContext.h \
 	contexts/IWORKStyleContext.cpp \
 	contexts/IWORKStyleContext.h \
 	contexts/IWORKStyleRefContext.cpp \
 	contexts/IWORKStyleRefContext.h \
+	contexts/IWORKStylesContext.cpp \
+	contexts/IWORKStylesContext.h \
 	contexts/IWORKTabsElement.cpp \
 	contexts/IWORKTabsElement.h \
 	contexts/IWORKTabularInfoElement.cpp \
