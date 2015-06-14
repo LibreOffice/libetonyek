@@ -24,6 +24,14 @@ struct PAGPublicationInfo
   boost::optional<std::string> m_creationDate;
 };
 
+struct PAGPageMaster
+{
+  PAGPageMaster();
+
+  std::string m_header;
+  std::string m_footer;
+};
+
 }
 
 #endif //  PAGTYPES_H_INCLUDED

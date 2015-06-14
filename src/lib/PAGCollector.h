@@ -27,6 +27,7 @@ class PAGCollector : public IWORKCollector
 
     void clear();
 
+    IWORKStylePtr_t m_style;
     boost::optional<double> m_width;
     boost::optional<double> m_height;
     boost::optional<double> m_horizontalMargin;
@@ -45,7 +46,7 @@ public:
 
   // helper functions
 
-  void openSection(double width, double height, double horizontalMargin, double verticalMargin);
+  void openSection(const IWORKStylePtr_t &style, double width, double height, double horizontalMargin, double verticalMargin);
   void closeSection();
 
 private:

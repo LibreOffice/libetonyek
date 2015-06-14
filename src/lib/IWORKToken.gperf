@@ -78,6 +78,7 @@ drawables,drawables
 du,du
 editable-bezier-path,editable_bezier_path
 element,element
+evenPageMaster,evenPageMaster
 f,f
 false,false_
 filtered,filtered
@@ -144,10 +145,12 @@ n,n
 name,name
 naturalSize,naturalSize
 number,number
+oddPageMaster,oddPageMaster
 other-datas,other_datas
 outline,outline
 p,p
 pageBreakBefore,pageBreakBefore
+pagemaster,pagemaster
 paragraphBorderType,paragraphBorderType
 paragraphFill,paragraphFill
 paragraphStroke,paragraphStroke
@@ -175,6 +178,8 @@ s,s
 scalar,scalar
 scalar-path,scalar_path
 section,section
+sectionstyle,sectionstyle
+sectionstyle_ref,sectionstyle_ref
 self-contained-movie,self_contained_movie
 sf,sf
 sfa,sfa

@@ -17,6 +17,12 @@ PAGPublicationInfo::PAGPublicationInfo()
 {
 }
 
+PAGPageMaster::PAGPageMaster()
+  : m_header()
+  , m_footer()
+{
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

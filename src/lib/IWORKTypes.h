@@ -13,6 +13,7 @@
 #include "IWORKTypes_fwd.h"
 
 #include <deque>
+#include <string>
 
 #include <boost/optional.hpp>
 
@@ -22,6 +23,10 @@
 
 namespace libetonyek
 {
+
+class IWORKOutputElements;
+
+typedef boost::unordered_map<std::string, IWORKOutputElements> IWORKHeaderFooterMap_t;
 
 struct IWORKSize
 {

@@ -14,6 +14,7 @@
 #include "IWORKDocumentInterface.h"
 #include "IWORKOutputElements.h"
 #include "IWORKText.h"
+#include "PAGProperties.h"
 #include "PAGTypes.h"
 
 namespace libetonyek
@@ -23,8 +24,65 @@ using librevenge::RVNGPropertyList;
 
 using std::string;
 
+namespace
+{
+
+typedef void (IWORKDocumentInterface::*OpenFunction)(const RVNGPropertyList &);
+typedef void (IWORKDocumentInterface::*CloseFunction)();
+typedef const std::string &(*PickFunction)(const PAGPageMaster &);
+
+const std::string &pickHeader(const PAGPageMaster &pageMaster)
+{
+  return pageMaster.m_header;
+}
+
+const std::string &pickFooter(const PAGPageMaster &pageMaster)
+{
+  return pageMaster.m_footer;
+}
+
+void writeHeaderFooter(
+  IWORKDocumentInterface *const document, const IWORKHeaderFooterMap_t &hfMap,
+  const string &name, const string &occurence,
+  const OpenFunction open, const CloseFunction close)
+{
+  assert(document);
+
+  const IWORKHeaderFooterMap_t::const_iterator it = hfMap.find(name);
+  RVNGPropertyList props;
+  props.insert("librevenge:occurence", occurence.c_str());
+  (document->*open)(props);
+  if (it != hfMap.end())
+    it->second.write(document);
+  (document->*close)();
+}
+
+void writeHeadersFooters(
+  IWORKDocumentInterface *const document, const IWORKStylePtr_t &style, const IWORKHeaderFooterMap_t &hfMap,
+  const PickFunction pick, const OpenFunction open, const CloseFunction close)
+{
+  assert(bool(style));
+
+  using namespace property;
+  const string odd((style->has<OddPageMaster>()) ? pick(style->get<OddPageMaster>()) : "");
+  const string even((style->has<EvenPageMaster>()) ? pick(style->get<EvenPageMaster>()) : "");
+
+  if (odd == even)
+  {
+    writeHeaderFooter(document, hfMap, odd, "both", open, close);
+  }
+  else
+  {
+    writeHeaderFooter(document, hfMap, odd, "odd", open, close);
+    writeHeaderFooter(document, hfMap, even, "even", open, close);
+  }
+}
+
+}
+
 PAGCollector::Section::Section()
-  : m_width()
+  : m_style()
+  , m_width()
   , m_height()
   , m_horizontalMargin()
   , m_verticalMargin()
@@ -33,6 +91,7 @@ PAGCollector::Section::Section()
 
 void PAGCollector::Section::clear()
 {
+  m_style.reset();
   m_width.reset();
   m_height.reset();
   m_horizontalMargin.reset();
@@ -63,8 +122,9 @@ void PAGCollector::collectAttachment(const IWORKOutputID_t &id)
   m_currentText->insertBlockContent(getOutputManager().get(id));
 }
 
-void PAGCollector::openSection(const double width, const double height, const double horizontalMargin, const double verticalMargin)
+void PAGCollector::openSection(const IWORKStylePtr_t &style, const double width, const double height, const double horizontalMargin, const double verticalMargin)
 {
+  m_currentSection.m_style = style;
   m_currentSection.m_width = width;
   m_currentSection.m_height = height;
   m_currentSection.m_horizontalMargin = horizontalMargin;
@@ -105,38 +165,46 @@ void PAGCollector::flushPageSpan(const bool writeEmpty)
     m_firstPageSpan = false;
   }
 
+  librevenge::RVNGPropertyList props;
+
+  if (m_currentSection.m_width)
+    props.insert("fo:page-width", get(m_currentSection.m_width));
+  if (m_currentSection.m_height)
+    props.insert("fo:page-height", get(m_currentSection.m_height));
+  if (m_currentSection.m_horizontalMargin)
+  {
+    props.insert("fo:margin-left", get(m_currentSection.m_horizontalMargin));
+    props.insert("fo:margin-right", get(m_currentSection.m_horizontalMargin));
+  }
+  if (m_currentSection.m_verticalMargin)
+  {
+    props.insert("fo:margin-top", get(m_currentSection.m_verticalMargin));
+    props.insert("fo:margin-bottom", get(m_currentSection.m_verticalMargin));
+  }
+
+  IWORKOutputElements text;
+
   if (bool(m_currentText))
   {
-    librevenge::RVNGPropertyList props;
-
-    if (m_currentSection.m_width)
-      props.insert("fo:page-width", get(m_currentSection.m_width));
-    if (m_currentSection.m_height)
-      props.insert("fo:page-height", get(m_currentSection.m_height));
-    if (m_currentSection.m_horizontalMargin)
-    {
-      props.insert("fo:margin-left", get(m_currentSection.m_horizontalMargin));
-      props.insert("fo:margin-right", get(m_currentSection.m_horizontalMargin));
-    }
-    if (m_currentSection.m_verticalMargin)
-    {
-      props.insert("fo:margin-top", get(m_currentSection.m_verticalMargin));
-      props.insert("fo:margin-bottom", get(m_currentSection.m_verticalMargin));
-    }
-    m_currentSection.clear();
-
-    IWORKOutputElements text;
-
     m_currentText->draw(text);
     m_currentText.reset();
-
-    if (!text.empty() || writeEmpty)
-    {
-      m_document->openPageSpan(props);
-      text.write(m_document);
-      m_document->closePageSpan();
-    }
   }
+
+  if (!text.empty() || writeEmpty)
+  {
+    m_document->openPageSpan(props);
+    if (m_currentSection.m_style)
+    {
+      writeHeadersFooters(m_document, m_currentSection.m_style, m_headers, pickHeader,
+                          &IWORKDocumentInterface::openHeader, &IWORKDocumentInterface::closeHeader);
+      writeHeadersFooters(m_document, m_currentSection.m_style, m_footers, pickFooter,
+                          &IWORKDocumentInterface::openFooter, &IWORKDocumentInterface::closeFooter);
+    }
+    text.write(m_document);
+    m_document->closePageSpan();
+  }
+
+  m_currentSection.clear();
 }
 
 }

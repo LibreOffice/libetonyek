@@ -7,25 +7,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef PAGDICTIONARY_H_INCLUDED
-#define PAGDICTIONARY_H_INCLUDED
-
-#include "IWORKDictionary.h"
+#include "PAGProperties.h"
 
 namespace libetonyek
 {
 
-struct PAGDictionary : public IWORKDictionary
-{
-  PAGDictionary();
-
-  IWORKOutputMap_t m_attachments;
-
-  IWORKStyleMap_t m_sectionStyles;
-};
+IWORK_IMPLEMENT_PROPERTY(EvenPageMaster);
+IWORK_IMPLEMENT_PROPERTY(OddPageMaster);
 
 }
-
-#endif //  PAGDICTIONARY_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

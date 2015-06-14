@@ -15,6 +15,7 @@ namespace libetonyek
 PAGDictionary::PAGDictionary()
   : IWORKDictionary()
   , m_attachments()
+  , m_sectionStyles()
 {
 }
 

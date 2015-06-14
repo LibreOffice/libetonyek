@@ -47,6 +47,7 @@ enum
   // attribute values
   body,
   cell,
+  footer,
   footnote,
   note,
   textbox,

@@ -22,11 +22,13 @@
 #include "IWORKPElement.h"
 #include "IWORKRefContext.h"
 #include "IWORKStringElement.h"
+#include "IWORKStyleRefContext.h"
 #include "IWORKStylesContext.h"
 #include "IWORKTabularInfoElement.h"
 #include "IWORKTextBodyElement.h"
 #include "IWORKTextStorageElement.h"
 #include "IWORKToken.h"
+#include "PAG1StyleContext.h"
 #include "PAGCollector.h"
 #include "PAGDictionary.h"
 #include "PAGTypes.h"
@@ -131,6 +133,38 @@ IWORKXMLContextPtr_t HeadersElement::element(const int name)
 namespace
 {
 
+class StylesContext : public PAG1XMLContextBase<IWORKStylesContext>
+{
+public:
+  StylesContext(PAG1ParserState &state, bool anonymous);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+StylesContext::StylesContext(PAG1ParserState &state, const bool anonymous)
+  : PAG1XMLContextBase<IWORKStylesContext>(state, anonymous)
+{
+}
+
+IWORKXMLContextPtr_t StylesContext::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::sectionstyle :
+    return makeContext<PAG1StyleContext>(getState(), &getState().getDictionary().m_sectionStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::sectionstyle_ref :
+    return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_sectionStyles);
+  }
+
+  return PAG1XMLContextBase<IWORKStylesContext>::element(name);
+}
+
+}
+
+namespace
+{
+
 class StylesheetElement : public PAG1XMLElementContextBase
 {
 public:
@@ -151,9 +185,9 @@ IWORKXMLContextPtr_t StylesheetElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::anon_styles :
-    return makeContext<IWORKStylesContext>(getState(), true);
+    return makeContext<StylesContext>(getState(), true);
   case IWORKToken::NS_URI_SF | IWORKToken::styles :
-    return makeContext<IWORKStylesContext>(getState(), false);
+    return makeContext<StylesContext>(getState(), false);
   }
 
   return IWORKXMLContextPtr_t();
@@ -452,34 +486,65 @@ public:
   SectionElement(PAG1ParserState &state, const PageFrame &pageFrame);
 
 private:
-  virtual void startOfElement();
+  void open();
+
+  virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
 private:
   const PageFrame &m_pageFrame;
+  bool m_opened;
+  optional<string> m_style;
 };
 
 SectionElement::SectionElement(PAG1ParserState &state, const PageFrame &pageFrame)
   : PAG1XMLElementContextBase(state)
   , m_pageFrame(pageFrame)
+  , m_opened(false)
 {
 }
 
-void SectionElement::startOfElement()
+void SectionElement::open()
 {
-  const double w(get_optional_value_or(m_pageFrame.m_w, 0));
-  const double h(get_optional_value_or(m_pageFrame.m_h, 0));
-  const double x(get_optional_value_or(m_pageFrame.m_x, 0));
-  const double y(get_optional_value_or(m_pageFrame.m_y, 0));
+  assert(!m_opened);
 
-  // TODO: This assumes that the left/right and top/bottom margins are always equal.
   if (isCollector())
-    getCollector().openSection(pt2in(w + 2 * x), pt2in(h + 2 * y), pt2in(x), pt2in(y));
+  {
+    const double w(get_optional_value_or(m_pageFrame.m_w, 0));
+    const double h(get_optional_value_or(m_pageFrame.m_h, 0));
+    const double x(get_optional_value_or(m_pageFrame.m_x, 0));
+    const double y(get_optional_value_or(m_pageFrame.m_y, 0));
+
+    IWORKStylePtr_t style;
+
+    if (m_style)
+    {
+      const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_sectionStyles.find(get(m_style));
+      if (it != getState().getDictionary().m_sectionStyles.end())
+        style = it->second;
+    }
+
+    // TODO: This assumes that the left/right and top/bottom margins are always equal.
+    getCollector().openSection(style, pt2in(w + 2 * x), pt2in(h + 2 * y), pt2in(x), pt2in(y));
+  }
+
+  m_opened = true;
+}
+
+void SectionElement::attribute(const int name, const char *const value)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::style))
+    m_style = value;
+  else
+    PAG1XMLElementContextBase::attribute(name, value);
 }
 
 IWORKXMLContextPtr_t SectionElement::element(const int name)
 {
+  if (!m_opened)
+    open();
+
   if ((IWORKToken::NS_URI_SF | IWORKToken::layout) == name)
     return makeContext<LayoutElement>(getState());
 
@@ -489,7 +554,11 @@ IWORKXMLContextPtr_t SectionElement::element(const int name)
 void SectionElement::endOfElement()
 {
   if (isCollector())
+  {
+    if (!m_opened)
+      open();
     getCollector().closeSection();
+  }
 }
 
 }
@@ -740,11 +809,24 @@ class DiscardContext : public PAG1XMLContextBase<IWORKDiscardContext>
 {
 public:
   explicit DiscardContext(PAG1ParserState &state);
+
+  virtual IWORKXMLContextPtr_t element(int name);
 };
 
 DiscardContext::DiscardContext(PAG1ParserState &state)
   : PAG1XMLContextBase<IWORKDiscardContext>(state)
 {
+}
+
+  IWORKXMLContextPtr_t DiscardContext::element(const int name)
+{
+  switch (name)
+  {
+    case IWORKToken::NS_URI_SF | IWORKToken::sectionstyle :
+      return makeContext<PAG1StyleContext>(getState(), &getState().getDictionary().m_sectionStyles);
+  }
+
+  return PAG1XMLContextBase<IWORKDiscardContext>::element(name);
 }
 
 }

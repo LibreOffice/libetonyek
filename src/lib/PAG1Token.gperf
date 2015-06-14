@@ -27,6 +27,7 @@ body,body
 cell,cell
 date,date
 document,document
+footer,footer
 footnote,footnote
 header,header
 http://developer.apple.com/namespaces/sl,NS_URI_SL

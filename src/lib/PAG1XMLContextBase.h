@@ -28,6 +28,12 @@ public:
     : Parent_t(state)
   {
   }
+
+  template<typename T1>
+  PAG1XMLContextBase(PAG1ParserState &state, T1 arg1)
+    : Parent_t(state, arg1)
+  {
+  }
 };
 
 typedef PAG1XMLContextBase<IWORKXMLContextElement> PAG1XMLElementContextBase;

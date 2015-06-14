@@ -38,9 +38,6 @@ struct IWORKSize;
 
 class IWORKCollector
 {
-protected:
-  typedef boost::unordered_map<std::string, IWORKOutputElements> IWORKHeaderFooterMap_t;
-
 private:
   struct Level
   {
