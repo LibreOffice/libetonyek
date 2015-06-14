@@ -455,7 +455,7 @@ void IWORKCollector::collectHeader(const std::string &name)
 
 void IWORKCollector::collectFooter(const std::string &name)
 {
-  collectHeaderFooter(name, m_headers);
+  collectHeaderFooter(name, m_footers);
 }
 
 void IWORKCollector::startDocument()
