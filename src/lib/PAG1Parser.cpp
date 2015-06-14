@@ -204,6 +204,32 @@ void StylesheetElement::endOfElement()
 namespace
 {
 
+class PrototypeElement : public PAG1XMLElementContextBase
+{
+public:
+  explicit PrototypeElement(PAG1ParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+PrototypeElement::PrototypeElement(PAG1ParserState &state)
+  : PAG1XMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t PrototypeElement::element(const int name)
+{
+  if (name == (PAG1Token::NS_URI_SL | PAG1Token::stylesheet))
+    return makeContext<StylesheetElement>(getState());
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
 class SectionPrototypesElement : public PAG1XMLElementContextBase
 {
 public:
@@ -218,9 +244,10 @@ SectionPrototypesElement::SectionPrototypesElement(PAG1ParserState &state)
 {
 }
 
-IWORKXMLContextPtr_t SectionPrototypesElement::element(int)
+IWORKXMLContextPtr_t SectionPrototypesElement::element(const int name)
 {
-  // TODO: parse
+  if (name == (PAG1Token::NS_URI_SL | PAG1Token::prototype))
+    return makeContext<PrototypeElement>(getState());
   return IWORKXMLContextPtr_t();
 }
 
@@ -818,12 +845,12 @@ DiscardContext::DiscardContext(PAG1ParserState &state)
 {
 }
 
-  IWORKXMLContextPtr_t DiscardContext::element(const int name)
+IWORKXMLContextPtr_t DiscardContext::element(const int name)
 {
   switch (name)
   {
-    case IWORKToken::NS_URI_SF | IWORKToken::sectionstyle :
-      return makeContext<PAG1StyleContext>(getState(), &getState().getDictionary().m_sectionStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::sectionstyle :
+    return makeContext<PAG1StyleContext>(getState(), &getState().getDictionary().m_sectionStyles);
   }
 
   return PAG1XMLContextBase<IWORKDiscardContext>::element(name);

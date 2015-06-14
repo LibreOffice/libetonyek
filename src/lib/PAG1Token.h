@@ -36,6 +36,7 @@ enum
   document,
   header,
   layout,
+  prototype,
   publication_info,
   section,
   section_prototypes,
