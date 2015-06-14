@@ -65,6 +65,10 @@ struct IWORKGroup;
 
 typedef boost::shared_ptr<IWORKGroup> IWORKGroupPtr_t;
 
+struct IWORKTableData;
+
+typedef boost::shared_ptr<IWORKTableData> IWORKTableDataPtr_t;
+
 }
 
 #endif //  IWORKTYPES_FWD_H_INCLUDED

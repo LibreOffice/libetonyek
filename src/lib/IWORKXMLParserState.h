@@ -12,6 +12,8 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include "IWORKTypes_fwd.h"
+
 namespace libetonyek
 {
 
@@ -19,8 +21,6 @@ class IWORKCollector;
 struct IWORKDictionary;
 class IWORKParser;
 class IWORKTokenizer;
-struct IWORKTableData;
-typedef boost::shared_ptr<IWORKTableData> IWORKTableDataPtr_t;
 
 class IWORKXMLParserState
 {
