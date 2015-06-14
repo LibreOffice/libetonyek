@@ -26,6 +26,7 @@
 #include "IWORKStringElement.h"
 #include "IWORKStyleRefContext.h"
 #include "IWORKStylesContext.h"
+#include "IWORKStylesheetBase.h"
 #include "IWORKTabularInfoElement.h"
 #include "IWORKTextBodyElement.h"
 #include "IWORKTextStorageElement.h"
@@ -201,7 +202,7 @@ IWORKXMLContextPtr_t StylesContext::element(const int name)
 namespace
 {
 
-class StylesheetElement : public KEY2XMLElementContextBase
+class StylesheetElement : public KEY2XMLContextBase<IWORKStylesheetBase>
 {
 public:
   explicit StylesheetElement(KEY2ParserState &state);
@@ -215,7 +216,7 @@ private:
 };
 
 StylesheetElement::StylesheetElement(KEY2ParserState &state)
-  : KEY2XMLElementContextBase(state)
+  : KEY2XMLContextBase<IWORKStylesheetBase>(state)
 {
 }
 
@@ -231,28 +232,21 @@ IWORKXMLContextPtr_t StylesheetElement::element(const int name)
     return makeContext<IWORKRefContext>(getState(), m_parent);
   }
 
-  return IWORKXMLContextPtr_t();
+  return KEY2XMLContextBase<IWORKStylesheetBase>::element(name);
 }
 
 void StylesheetElement::endOfElement()
 {
-  if (isCollector())
+  if (m_parent)
   {
-    IWORKStylesheetPtr_t parent;
+    assert(getId() != m_parent);
 
-    if (m_parent)
-    {
-      assert(getId() != m_parent);
-
-      const IWORKStylesheetMap_t::const_iterator it = getState().getDictionary().m_stylesheets.find(get(m_parent));
-      if (getState().getDictionary().m_stylesheets.end() != it)
-        parent = it->second;
-    }
-
-    const IWORKStylesheetPtr_t stylesheet = getCollector().collectStylesheet(parent);
-    if (bool(stylesheet) && getId())
-      getState().getDictionary().m_stylesheets[get(getId())] = stylesheet;
+    const IWORKStylesheetMap_t::const_iterator it = getState().getDictionary().m_stylesheets.find(get(m_parent));
+    if (getState().getDictionary().m_stylesheets.end() != it)
+      getState().m_stylesheet->parent = it->second;
   }
+
+  KEY2XMLContextBase<IWORKStylesheetBase>::endOfElement();
 }
 
 }
@@ -329,7 +323,7 @@ void TextElement::attribute(const int name, const char *)
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
     // TODO: handle
     if (isCollector())
-      getCollector().collectStyle(IWORKStylePtr_t(), false);
+      getCollector().collectStyle(IWORKStylePtr_t());
     break;
   }
 }
@@ -1502,6 +1496,8 @@ IWORKXMLContextPtr_t DiscardContext::element(const int name)
     return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_layoutStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style :
     return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_placeholderStyles);
+  case KEY2Token::NS_URI_KEY | KEY2Token::stylesheet :
+    return makeContext<StylesheetElement>(getState());
   }
 
   return KEY2XMLContextBase<IWORKDiscardContext>::element(name);

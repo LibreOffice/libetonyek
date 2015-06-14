@@ -54,7 +54,7 @@ public:
 
   // collector functions
 
-  void collectStyle(const IWORKStylePtr_t &style, bool anonymous);
+  void collectStyle(const IWORKStylePtr_t &style);
 
   void setGraphicStyle(const IWORKStylePtr_t &style);
 
@@ -75,7 +75,7 @@ public:
 
   void collectMedia(const IWORKMediaContentPtr_t &content);
 
-  IWORKStylesheetPtr_t collectStylesheet(const IWORKStylesheetPtr_t &parent = IWORKStylesheetPtr_t());
+  void collectStylesheet(const IWORKStylesheetPtr_t &stylesheet);
 
   void collectText(const std::string &text);
   void collectTab();
@@ -133,7 +133,6 @@ protected:
   IWORKStyleStack m_styleStack;
   IWORKOutputManager m_outputManager;
 
-  IWORKStylesheetPtr_t m_currentStylesheet;
   std::deque<IWORKStylePtr_t> m_newStyles;
 
   IWORKTextPtr_t m_currentText;

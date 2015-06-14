@@ -204,7 +204,6 @@ IWORKCollector::Level::Level()
 IWORKCollector::IWORKCollector(IWORKDocumentInterface *const document)
   : m_document(document)
   , m_levelStack()
-  , m_currentStylesheet(new IWORKStylesheet())
   , m_newStyles()
   , m_currentText()
   , m_currentTable()
@@ -224,16 +223,10 @@ IWORKCollector::~IWORKCollector()
   assert(!m_currentText);
 }
 
-void IWORKCollector::collectStyle(const IWORKStylePtr_t &style, const bool anonymous)
+void IWORKCollector::collectStyle(const IWORKStylePtr_t &style)
 {
-  assert(m_currentStylesheet);
-
   if (bool(style))
-  {
-    if (style->getIdent() && !anonymous)
-      m_currentStylesheet->m_styles[get(style->getIdent())] = style;
     m_newStyles.push_back(style);
-  }
 }
 
 void IWORKCollector::setGraphicStyle(const IWORKStylePtr_t &style)
@@ -362,20 +355,10 @@ void IWORKCollector::collectMedia(const IWORKMediaContentPtr_t &content)
   drawMedia(media, m_levelStack.top().m_trafo, m_outputManager.getCurrent());
 }
 
-IWORKStylesheetPtr_t IWORKCollector::collectStylesheet(const IWORKStylesheetPtr_t &parent)
+void IWORKCollector::collectStylesheet(const IWORKStylesheetPtr_t &stylesheet)
 {
-  assert(m_currentStylesheet);
-  assert(parent != m_currentStylesheet);
-
-  m_currentStylesheet->parent = parent;
-
-  for_each(m_newStyles.begin(), m_newStyles.end(), boost::bind(&IWORKStyle::link, _1, m_currentStylesheet));
-
-  IWORKStylesheetPtr_t stylesheet(m_currentStylesheet);
-  m_currentStylesheet.reset(new IWORKStylesheet());
+  for_each(m_newStyles.begin(), m_newStyles.end(), boost::bind(&IWORKStyle::link, _1, stylesheet));
   m_newStyles.clear();
-
-  return stylesheet;
 }
 
 void IWORKCollector::collectText(const std::string &text)

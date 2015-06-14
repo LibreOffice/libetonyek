@@ -34,12 +34,15 @@ void IWORKStyleRefContext::endOfElement()
 {
   if (getRef())
   {
-    IWORKStylePtr_t style;
     const IWORKStyleMap_t::const_iterator it = m_styleMap.find(get(getRef()));
     if (m_styleMap.end() != it)
-      style = it->second;
-    if (isCollector())
-      getCollector().collectStyle(style, m_anonymous);
+    {
+      const IWORKStylePtr_t &style = it->second;
+      if (style->getIdent() && !m_nested)
+        getState().m_stylesheet->m_styles[get(style->getIdent())] = style;
+      if (isCollector())
+        getCollector().collectStyle(style);
+    }
   }
 }
 

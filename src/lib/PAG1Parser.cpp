@@ -24,6 +24,7 @@
 #include "IWORKStringElement.h"
 #include "IWORKStyleRefContext.h"
 #include "IWORKStylesContext.h"
+#include "IWORKStylesheetBase.h"
 #include "IWORKTabularInfoElement.h"
 #include "IWORKTextBodyElement.h"
 #include "IWORKTextStorageElement.h"
@@ -165,18 +166,17 @@ IWORKXMLContextPtr_t StylesContext::element(const int name)
 namespace
 {
 
-class StylesheetElement : public PAG1XMLElementContextBase
+class StylesheetElement : public PAG1XMLContextBase<IWORKStylesheetBase>
 {
 public:
   explicit StylesheetElement(PAG1ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
 };
 
 StylesheetElement::StylesheetElement(PAG1ParserState &state)
-  : PAG1XMLElementContextBase(state)
+  : PAG1XMLContextBase<IWORKStylesheetBase>(state)
 {
 }
 
@@ -190,13 +190,7 @@ IWORKXMLContextPtr_t StylesheetElement::element(const int name)
     return makeContext<StylesContext>(getState(), false);
   }
 
-  return IWORKXMLContextPtr_t();
-}
-
-void StylesheetElement::endOfElement()
-{
-  if (isCollector())
-    getCollector().collectStylesheet();
+  return PAG1XMLContextBase<IWORKStylesheetBase>::element(name);
 }
 
 }
@@ -842,6 +836,9 @@ IWORKXMLContextPtr_t DiscardContext::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::sectionstyle :
     return makeContext<PAG1StyleContext>(getState(), &getState().getDictionary().m_sectionStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::stylesheet :
+  case PAG1Token::NS_URI_SL | PAG1Token::stylesheet :
+    return makeContext<StylesheetElement>(getState());
   }
 
   return PAG1XMLContextBase<IWORKDiscardContext>::element(name);

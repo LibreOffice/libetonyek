@@ -29,7 +29,7 @@ void IWORKLayoutElement::attribute(const int name, const char *)
   {
     // TODO: fetch the style
     if (isCollector())
-      getCollector().collectStyle(IWORKStylePtr_t(), false);
+      getCollector().collectStyle(IWORKStylePtr_t());
   }
 }
 

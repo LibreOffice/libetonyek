@@ -12,6 +12,7 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include "IWORKStylesheet.h"
 #include "IWORKTypes_fwd.h"
 
 namespace libetonyek
@@ -38,6 +39,7 @@ public:
 
 public:
   IWORKTableDataPtr_t m_tableData;
+  IWORKStylesheetPtr_t m_stylesheet;
   // When false, nothing should be sent to collector. This is used to
   // gather referenceable entities in skipped parts of the file.
   bool m_enableCollector;

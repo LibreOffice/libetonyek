@@ -19,6 +19,7 @@ namespace libetonyek
 
 IWORKXMLParserState::IWORKXMLParserState(IWORKParser &parser, IWORKCollector &collector, IWORKDictionary &dict)
   : m_tableData()
+  , m_stylesheet()
   , m_enableCollector(true)
   , m_parser(parser)
   , m_collector(collector)
