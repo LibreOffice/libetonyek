@@ -46,7 +46,7 @@ public:
 
   // helper functions
 
-  void openSection(const IWORKStylePtr_t &style, double width, double height, double horizontalMargin, double verticalMargin);
+  void openSection(const std::string &style, double width, double height, double horizontalMargin, double verticalMargin);
   void closeSection();
 
 private:

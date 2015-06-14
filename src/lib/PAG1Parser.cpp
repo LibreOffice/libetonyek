@@ -543,17 +543,8 @@ void SectionElement::open()
     const double x(get_optional_value_or(m_pageFrame.m_x, 0));
     const double y(get_optional_value_or(m_pageFrame.m_y, 0));
 
-    IWORKStylePtr_t style;
-
-    if (m_style)
-    {
-      const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_sectionStyles.find(get(m_style));
-      if (it != getState().getDictionary().m_sectionStyles.end())
-        style = it->second;
-    }
-
     // TODO: This assumes that the left/right and top/bottom margins are always equal.
-    getCollector().openSection(style, pt2in(w + 2 * x), pt2in(h + 2 * y), pt2in(x), pt2in(y));
+    getCollector().openSection(get_optional_value_or(m_style, ""), pt2in(w + 2 * x), pt2in(h + 2 * y), pt2in(x), pt2in(y));
   }
 
   m_opened = true;
