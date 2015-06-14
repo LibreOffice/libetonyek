@@ -13,6 +13,7 @@
 #include "IWORKChainedTokenizer.h"
 #include "IWORKDiscardContext.h"
 #include "IWORKMetadataElement.h"
+#include "IWORKStylesheetBase.h"
 #include "IWORKTabularInfoElement.h"
 #include "IWORKToken.h"
 #include "NUMCollector.h"
@@ -219,6 +220,22 @@ void PageInfoElement::endOfElement()
 namespace
 {
 
+class StylesheetElement : public NUM1XMLContextBase<IWORKStylesheetBase>
+{
+public:
+  explicit StylesheetElement(NUM1ParserState &state);
+};
+
+StylesheetElement::StylesheetElement(NUM1ParserState &state)
+  : NUM1XMLContextBase<IWORKStylesheetBase>(state)
+{
+}
+
+}
+
+namespace
+{
+
 class WorkSpaceElement : public NUM1XMLElementContextBase
 {
 public:
@@ -335,6 +352,8 @@ IWORKXMLContextPtr_t DocumentElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::metadata :
     return makeContext<IWORKMetadataElement>(getState());
+  case NUM1Token::NS_URI_LS | NUM1Token::stylesheet :
+    return makeContext<StylesheetElement>(getState());
   case NUM1Token::NS_URI_LS | NUM1Token::workspace_array :
     return makeContext<WorkSpaceArrayElement>(getState());
   }
@@ -387,11 +406,25 @@ class DiscardContext : public NUM1XMLContextBase<IWORKDiscardContext>
 {
 public:
   explicit DiscardContext(NUM1ParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
 };
 
 DiscardContext::DiscardContext(NUM1ParserState &state)
   : NUM1XMLContextBase<IWORKDiscardContext>(state)
 {
+}
+
+IWORKXMLContextPtr_t DiscardContext::element(const int name)
+{
+  switch (name)
+  {
+  case NUM1Token::NS_URI_LS | NUM1Token::stylesheet :
+    return makeContext<StylesheetElement>(getState());
+  }
+
+  return shared_from_this();
 }
 
 }
