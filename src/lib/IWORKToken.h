@@ -163,6 +163,7 @@ enum
   stroke,
   style,
   styles,
+  stylesheet,
   superscript,
   t,
   tab,

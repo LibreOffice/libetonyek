@@ -220,7 +220,7 @@ PrototypeElement::PrototypeElement(PAG1ParserState &state)
 
 IWORKXMLContextPtr_t PrototypeElement::element(const int name)
 {
-  if (name == (PAG1Token::NS_URI_SL | PAG1Token::stylesheet))
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::stylesheet))
     return makeContext<StylesheetElement>(getState());
   return IWORKXMLContextPtr_t();
 }
