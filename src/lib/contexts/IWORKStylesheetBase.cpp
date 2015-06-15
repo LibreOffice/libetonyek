@@ -41,7 +41,7 @@ IWORKXMLContextPtr_t IWORKStylesheetBase::element(const int name)
     return makeContext<IWORKStylesContext>(getState(), false);
   }
 
-  return IWORKXMLElementContextBase::element(name);
+  return IWORKXMLContextPtr_t();
 }
 
 void IWORKStylesheetBase::endOfElement()
