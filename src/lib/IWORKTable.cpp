@@ -119,9 +119,6 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
     librevenge::RVNGPropertyList rowProps;
     rowProps.insert("style:row-height", pt2in(m_rowSizes[r]));
 
-    IWORKGridLine_t &topLine = m_horizontalLines[r];
-    IWORKGridLine_t &bottomLine = m_horizontalLines[r+1];
-
     elements.addOpenTableRow(rowProps);
     for (std::size_t c = 0; row.size() != c; ++c)
     {
@@ -132,10 +129,17 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
       cellProps.insert("librevenge:row", numeric_cast<int>(r));
       cellProps.insert("fo:vertical-align", "middle");
 
-      writeBorder(cellProps, "fo:border-top", topLine, c);
-      writeBorder(cellProps, "fo:border-bottom", bottomLine, c);
-      writeBorder(cellProps, "fo:border-left", m_verticalLines[c], r);
-      writeBorder(cellProps, "fo:border-right", m_verticalLines[c+1], r);
+      if (r+1 < m_horizontalLines.size())
+      {
+        writeBorder(cellProps, "fo:border-top", m_horizontalLines[r], c);
+        writeBorder(cellProps, "fo:border-bottom", m_horizontalLines[r+1], c);
+      }
+
+      if (c+1 < m_verticalLines.size())
+      {
+        writeBorder(cellProps, "fo:border-left", m_verticalLines[c], r);
+        writeBorder(cellProps, "fo:border-right", m_verticalLines[c+1], r);
+      }
 
       if (cell.m_covered)
       {
