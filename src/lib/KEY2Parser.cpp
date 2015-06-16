@@ -1118,6 +1118,7 @@ private:
 
 ThemeElement::ThemeElement(KEY2ParserState &state)
   : KEY2XMLElementContextBase(state)
+  , m_size()
 {
 }
 
