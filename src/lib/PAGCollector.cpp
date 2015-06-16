@@ -122,7 +122,7 @@ void PAGCollector::collectAttachment(const IWORKOutputID_t &id)
   m_currentText->insertBlockContent(getOutputManager().get(id));
 }
 
-void PAGCollector::openSection(const std::string &/*style*/, const double width, const double height, const double horizontalMargin, const double verticalMargin)
+void PAGCollector::openSection(const std::string &style, const double width, const double height, const double horizontalMargin, const double verticalMargin)
 {
   m_currentSection.m_width = width;
   m_currentSection.m_height = height;
@@ -131,14 +131,21 @@ void PAGCollector::openSection(const std::string &/*style*/, const double width,
 
   // in preparation of stylesheet handling rework
 #if 0
-  const IWORKStyleMap_t::iterator it = m_currentStylesheet->m_styles.find(style);
-  if (it != m_currentStylesheet->m_styles.end())
+  if (!m_stylesheetStack.empty())
   {
-    m_currentSection.m_style = it->second;
+    const IWORKStyleMap_t::iterator it = m_stylesheetStack.top()->m_styles.find(style);
+    if (it != m_stylesheetStack.top()->m_styles.end())
+    {
+      m_currentSection.m_style = it->second;
+    }
+    else
+    {
+      ETONYEK_DEBUG_MSG(("style '%s' not found\n", style.c_str()));
+    }
   }
   else
   {
-    ETONYEK_DEBUG_MSG(("style '%s' not found\n", style.c_str()));
+    ETONYEK_DEBUG_MSG(("no stylesheet is available\n"));
   }
 #endif
 }

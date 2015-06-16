@@ -114,6 +114,9 @@ public:
   void pushStyle();
   void popStyle();
 
+  void pushStylesheet(const IWORKStylesheetPtr_t &stylesheet);
+  void popStylesheet();
+
   IWORKOutputManager &getOutputManager();
 
 protected:
@@ -132,6 +135,7 @@ protected:
 
   std::stack<Level> m_levelStack;
   IWORKStyleStack m_styleStack;
+  std::stack<IWORKStylesheetPtr_t> m_stylesheetStack;
   IWORKOutputManager m_outputManager;
 
   std::deque<IWORKStylePtr_t> m_newStyles;

@@ -169,6 +169,7 @@ enum
   style_run,
   styles,
   stylesheet,
+  stylesheet_ref,
   superscript,
   t,
   tab,

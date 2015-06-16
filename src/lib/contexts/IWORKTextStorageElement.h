@@ -10,6 +10,9 @@
 #ifndef IWORKTEXTSTORAGEELEMENT_H_INCLUDED
 #define IWORKTEXTSTORAGEELEMENT_H_INCLUDED
 
+#include <boost/optional.hpp>
+
+#include "IWORKTypes_fwd.h"
 #include "IWORKXMLContextBase.h"
 
 namespace libetonyek
@@ -22,7 +25,15 @@ class IWORKTextStorageElement : public IWORKXMLElementContextBase
 public:
   explicit IWORKTextStorageElement(IWORKXMLParserState &state);
 
+protected:
   virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+  void sendStylesheet();
+
+private:
+  boost::optional<ID_t> m_stylesheetId;
+  bool m_hasStylesheet;
 };
 
 }

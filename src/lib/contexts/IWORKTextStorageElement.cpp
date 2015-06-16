@@ -9,27 +9,57 @@
 
 #include "IWORKTextStorageElement.h"
 
+#include "IWORKCollector.h"
+#include "IWORKDictionary.h"
+#include "IWORKRefContext.h"
 #include "IWORKTextBodyElement.h"
 #include "IWORKToken.h"
+#include "IWORKXMLParserState.h"
 
 namespace libetonyek
 {
 
 IWORKTextStorageElement::IWORKTextStorageElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
+  , m_stylesheetId()
+  , m_hasStylesheet(false)
 {
 }
 
 IWORKXMLContextPtr_t IWORKTextStorageElement::element(const int name)
 {
+  sendStylesheet();
+
   switch (name)
   {
+  case IWORKToken::NS_URI_SF | IWORKToken::stylesheet_ref :
+    return makeContext<IWORKRefContext>(getState(), m_stylesheetId);
   case IWORKToken::NS_URI_SF | IWORKToken::text_body :
     return makeContext<IWORKTextBodyElement>(getState());
     break;
   }
 
   return IWORKXMLContextPtr_t();
+}
+
+void IWORKTextStorageElement::endOfElement()
+{
+  if (isCollector() && m_hasStylesheet)
+    getCollector().popStylesheet();
+}
+
+void IWORKTextStorageElement::sendStylesheet()
+{
+  if (m_stylesheetId) // a stylesheet has been found
+  {
+    const IWORKStylesheetMap_t::const_iterator it = getState().getDictionary().m_stylesheets.find(get(m_stylesheetId));
+    if (it != getState().getDictionary().m_stylesheets.end())
+    {
+      getCollector().pushStylesheet(it->second);
+      m_hasStylesheet = true;
+    }
+    m_stylesheetId.reset();
+  }
 }
 
 }

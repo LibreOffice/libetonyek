@@ -677,6 +677,8 @@ TextStorageElement::TextStorageElement(PAG1ParserState &state)
 
 IWORKXMLContextPtr_t TextStorageElement::element(const int name)
 {
+  sendStylesheet();
+
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::attachments :
@@ -696,13 +698,13 @@ IWORKXMLContextPtr_t TextStorageElement::element(const int name)
 
 void TextStorageElement::endOfElement()
 {
-  IWORKTextStorageElement::endOfElement();
-
-  if (m_textOpened && isCollector())
+  if (isCollector() && m_textOpened)
   {
     getCollector().collectTextBody();
     getCollector().endText();
   }
+
+  PAG1XMLContextBase<IWORKTextStorageElement>::endOfElement();
 }
 
 }

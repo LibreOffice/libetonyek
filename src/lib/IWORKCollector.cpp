@@ -204,6 +204,7 @@ IWORKCollector::Level::Level()
 IWORKCollector::IWORKCollector(IWORKDocumentInterface *const document)
   : m_document(document)
   , m_levelStack()
+  , m_stylesheetStack()
   , m_newStyles()
   , m_currentText()
   , m_currentTable()
@@ -217,6 +218,7 @@ IWORKCollector::IWORKCollector(IWORKDocumentInterface *const document)
 IWORKCollector::~IWORKCollector()
 {
   assert(m_levelStack.empty());
+  assert(m_stylesheetStack.empty());
   assert(0 == m_groupLevel);
 
   assert(!m_currentPath);
@@ -560,6 +562,18 @@ void IWORKCollector::pushStyle()
 void IWORKCollector::popStyle()
 {
   m_styleStack.pop();
+}
+
+void IWORKCollector::pushStylesheet(const IWORKStylesheetPtr_t &stylesheet)
+{
+  m_stylesheetStack.push(stylesheet);
+}
+
+void IWORKCollector::popStylesheet()
+{
+  assert(!m_stylesheetStack.empty());
+
+  m_stylesheetStack.pop();
 }
 
 void IWORKCollector::resolveStyle(IWORKStyle &style)

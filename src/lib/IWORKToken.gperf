@@ -209,6 +209,7 @@ style,style
 style-run,style_run
 styles,styles
 stylesheet,stylesheet
+stylesheet-ref,stylesheet_ref
 superscript,superscript
 t,t
 tab,tab
