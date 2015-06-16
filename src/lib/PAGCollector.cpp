@@ -9,6 +9,8 @@
 
 #include "PAGCollector.h"
 
+#include <cassert>
+
 #include <boost/make_shared.hpp>
 
 #include "IWORKDocumentInterface.h"
@@ -129,8 +131,6 @@ void PAGCollector::openSection(const std::string &style, const double width, con
   m_currentSection.m_horizontalMargin = horizontalMargin;
   m_currentSection.m_verticalMargin = verticalMargin;
 
-  // in preparation of stylesheet handling rework
-#if 0
   if (!m_stylesheetStack.empty())
   {
     const IWORKStyleMap_t::iterator it = m_stylesheetStack.top()->m_styles.find(style);
@@ -147,7 +147,6 @@ void PAGCollector::openSection(const std::string &style, const double width, con
   {
     ETONYEK_DEBUG_MSG(("no stylesheet is available\n"));
   }
-#endif
 }
 
 void PAGCollector::closeSection()
