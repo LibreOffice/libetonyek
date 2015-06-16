@@ -12,13 +12,18 @@
 #include "libetonyek_xml.h"
 #include "IWORKChainedTokenizer.h"
 #include "IWORKDiscardContext.h"
+#include "IWORKRefContext.h"
 #include "IWORKMetadataElement.h"
+#include "IWORKStylesContext.h"
 #include "IWORKStylesheetBase.h"
 #include "IWORKTabularInfoElement.h"
 #include "IWORKToken.h"
 #include "NUMCollector.h"
+#include "NUMDictionary.h"
 #include "NUM1Token.h"
 #include "NUM1XMLContextBase.h"
+
+using boost::optional;
 
 namespace libetonyek
 {
@@ -220,15 +225,82 @@ void PageInfoElement::endOfElement()
 namespace
 {
 
+class StylesContext : public NUM1XMLContextBase<IWORKStylesContext>
+{
+public:
+  StylesContext(NUM1ParserState &state, bool anonymous);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+StylesContext::StylesContext(NUM1ParserState &state, const bool anonymous)
+  : NUM1XMLContextBase<IWORKStylesContext>(state, anonymous)
+{
+}
+
+IWORKXMLContextPtr_t StylesContext::element(const int name)
+{
+  // switch (name)
+  // {
+  // case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
+  // case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style :
+  // case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
+  // }
+
+  return NUM1XMLContextBase<IWORKStylesContext>::element(name);
+}
+
+}
+
+namespace
+{
+
 class StylesheetElement : public NUM1XMLContextBase<IWORKStylesheetBase>
 {
 public:
   explicit StylesheetElement(NUM1ParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  optional<ID_t> m_parent;
 };
 
 StylesheetElement::StylesheetElement(NUM1ParserState &state)
   : NUM1XMLContextBase<IWORKStylesheetBase>(state)
 {
+}
+
+IWORKXMLContextPtr_t StylesheetElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::styles :
+    return makeContext<StylesContext>(getState(), false);
+  case IWORKToken::NS_URI_SF | IWORKToken::anon_styles :
+    return makeContext<StylesContext>(getState(), false);
+  case IWORKToken::NS_URI_SF | IWORKToken::parent_ref :
+    return makeContext<IWORKRefContext>(getState(), m_parent);
+  }
+
+  return NUM1XMLContextBase<IWORKStylesheetBase>::element(name);
+}
+
+void StylesheetElement::endOfElement()
+{
+  if (m_parent)
+  {
+    assert(getId() != m_parent);
+
+    const IWORKStylesheetMap_t::const_iterator it = getState().getDictionary().m_stylesheets.find(get(m_parent));
+    if (getState().getDictionary().m_stylesheets.end() != it)
+      getState().m_stylesheet->parent = it->second;
+  }
+
+  NUM1XMLContextBase<IWORKStylesheetBase>::endOfElement();
 }
 
 }

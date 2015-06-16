@@ -28,6 +28,12 @@ public:
     : Parent_t(state)
   {
   }
+
+  template<typename T>
+  NUM1XMLContextBase(NUM1ParserState &state, const T &a)
+    : Parent_t(state, a)
+  {
+  }
 };
 
 typedef NUM1XMLContextBase<IWORKXMLContextElement> NUM1XMLElementContextBase;
