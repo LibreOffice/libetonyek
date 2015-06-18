@@ -75,6 +75,7 @@ enum
   filtered,
   filtered_image,
   firstLineIndent,
+  firstPageMaster,
   fontColor,
   fontName,
   fontSize,

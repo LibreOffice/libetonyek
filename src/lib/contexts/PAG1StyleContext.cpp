@@ -107,6 +107,22 @@ EvenPageMasterElement::EvenPageMasterElement(IWORKXMLParserState &state, IWORKPr
 namespace
 {
 
+class FirstPageMasterElement : public IWORKValuePropertyContextBase<PagemasterElement, property::FirstPageMaster>
+{
+public:
+  FirstPageMasterElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+};
+
+FirstPageMasterElement::FirstPageMasterElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::pagemaster)
+{
+}
+
+}
+
+namespace
+{
+
 class OddPageMasterElement : public IWORKValuePropertyContextBase<PagemasterElement, property::OddPageMaster>
 {
 public:
@@ -149,6 +165,8 @@ IWORKXMLContextPtr_t PropertyMapElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::evenPageMaster :
     return makeContext<EvenPageMasterElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::firstPageMaster :
+    return makeContext<FirstPageMasterElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::oddPageMaster :
     return makeContext<OddPageMasterElement>(getState(), m_propMap);
   }

@@ -72,6 +72,7 @@ void writeHeadersFooters(
   using namespace property;
   const string odd((style->has<OddPageMaster>()) ? pick(style->get<OddPageMaster>()) : "");
   const string even((style->has<EvenPageMaster>()) ? pick(style->get<EvenPageMaster>()) : "");
+  const string first((style->has<FirstPageMaster>()) ? pick(style->get<FirstPageMaster>()) : "");
 
   if (odd == even)
   {
@@ -82,6 +83,7 @@ void writeHeadersFooters(
     writeHeaderFooter(document, hfMap, odd, "odd", open, close);
     writeHeaderFooter(document, hfMap, even, "even", open, close);
   }
+  writeHeaderFooter(document, hfMap, first, "first", open, close);
 }
 
 }

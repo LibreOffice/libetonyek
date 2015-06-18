@@ -85,6 +85,7 @@ false,false_
 filtered,filtered
 filtered-image,filtered_image
 firstLineIndent,firstLineIndent
+firstPageMaster,firstPageMaster
 fontColor,fontColor
 fontName,fontName
 fontSize,fontSize
