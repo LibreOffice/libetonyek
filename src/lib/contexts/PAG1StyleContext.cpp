@@ -75,12 +75,15 @@ void PagemasterElement::attribute(const int name, const char *const value)
 
 void PagemasterElement::endOfElement()
 {
-  PAGPageMaster pageMaster;
-  if (m_header)
-    pageMaster.m_header = get(m_header);
-  if (m_footer)
-    pageMaster.m_footer = get(m_footer);
-  m_value = pageMaster;
+  if (m_header || m_footer)
+  {
+    PAGPageMaster pageMaster;
+    if (m_header)
+      pageMaster.m_header = get(m_header);
+    if (m_footer)
+      pageMaster.m_footer = get(m_footer);
+    m_value = pageMaster;
+  }
 }
 
 }
