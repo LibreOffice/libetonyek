@@ -49,14 +49,18 @@ void writeHeaderFooter(
   const OpenFunction open, const CloseFunction close)
 {
   assert(document);
+  if (name.empty())
+    return;
 
   const IWORKHeaderFooterMap_t::const_iterator it = hfMap.find(name);
-  RVNGPropertyList props;
-  props.insert("librevenge:occurence", occurence.c_str());
-  (document->*open)(props);
   if (it != hfMap.end())
+  {
+    RVNGPropertyList props;
+    props.insert("librevenge:occurence", occurence.c_str());
+    (document->*open)(props);
     it->second.write(document);
-  (document->*close)();
+    (document->*close)();
+  }
 }
 
 void writeHeadersFooters(
