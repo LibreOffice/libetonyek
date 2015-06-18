@@ -24,7 +24,7 @@ namespace libetonyek
 class PAG1StyleContext : public PAG1XMLElementContextBase
 {
 public:
-  PAG1StyleContext(PAG1ParserState &state, IWORKStyleMap_t *styleMap, bool nested = false);
+  PAG1StyleContext(PAG1ParserState &state, IWORKStyleMap_t *styleMap, const char *defaultParent, bool nested = false);
 
 private:
   virtual void attribute(int name, const char *value);

@@ -153,7 +153,9 @@ IWORKXMLContextPtr_t StylesContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::sectionstyle :
-    return makeContext<PAG1StyleContext>(getState(), &getState().getDictionary().m_sectionStyles);
+    // TODO: setting of the default parent would also be a good candidate for leaveElement(),
+    // if we ever add this, as it seems to be limited to a few style types.
+    return makeContext<PAG1StyleContext>(getState(), &getState().getDictionary().m_sectionStyles, "section-style-default");
   case IWORKToken::NS_URI_SF | IWORKToken::sectionstyle_ref :
     return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_sectionStyles);
   }
@@ -837,7 +839,7 @@ IWORKXMLContextPtr_t DiscardContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::sectionstyle :
-    return makeContext<PAG1StyleContext>(getState(), &getState().getDictionary().m_sectionStyles);
+    return makeContext<PAG1StyleContext>(getState(), &getState().getDictionary().m_sectionStyles, "section-style-default");
   case IWORKToken::NS_URI_SF | IWORKToken::stylesheet :
   case PAG1Token::NS_URI_SL | PAG1Token::stylesheet :
     return makeContext<StylesheetElement>(getState());

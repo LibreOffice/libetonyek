@@ -8,4 +8,9 @@
 
 * Set text formatting defaults.
 
+* Figure out how section-style-default is used. For now I assume that a
+  section style that does not have a parent is derived from
+  section-style-default. But maybe the default style is implicitly used if
+  a property in a regular style is empty or missing...
+
 * More TODO items are sprinkled over the source files...

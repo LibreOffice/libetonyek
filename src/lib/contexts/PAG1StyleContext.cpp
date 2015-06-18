@@ -158,10 +158,10 @@ IWORKXMLContextPtr_t PropertyMapElement::element(const int name)
 
 }
 
-PAG1StyleContext::PAG1StyleContext(PAG1ParserState &state, IWORKStyleMap_t *const styleMap, const bool nested)
+PAG1StyleContext::PAG1StyleContext(PAG1ParserState &state, IWORKStyleMap_t *const styleMap, const char *const defaultParent, const bool nested)
   : PAG1XMLElementContextBase(state)
   , m_props()
-  , m_base(state, m_props, styleMap, nested)
+  , m_base(state, m_props, styleMap, defaultParent, nested)
   , m_styleMap(styleMap)
   , m_nested(nested)
 {
@@ -198,13 +198,7 @@ IWORKXMLContextPtr_t PAG1StyleContext::element(const int name)
 
 void PAG1StyleContext::endOfElement()
 {
-  const IWORKStylePtr_t style(new IWORKStyle(m_props, m_ident, m_parentIdent));
-  if (getId() && bool(m_styleMap))
-    (*m_styleMap)[get(getId())] = style;
-  if (m_ident && !m_nested)
-    getState().m_stylesheet->m_styles[get(m_ident)] = style;
-  if (isCollector())
-    getCollector().collectStyle(style);
+  m_base.endOfElement();
 }
 
 }

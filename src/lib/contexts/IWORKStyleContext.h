@@ -26,8 +26,9 @@ struct IWORKDictionary;
 class IWORKStyleContext : public IWORKXMLElementContextBase
 {
 public:
-  IWORKStyleContext(IWORKXMLParserState &state, IWORKStyleMap_t *styleMap = 0, bool nested = false);
+  IWORKStyleContext(IWORKXMLParserState &state, IWORKStyleMap_t *styleMap = 0,  bool nested = false);
   IWORKStyleContext(IWORKXMLParserState &state, IWORKPropertyMap &props, IWORKStyleMap_t *styleMap = 0, bool nested = false);
+  IWORKStyleContext(IWORKXMLParserState &state, IWORKPropertyMap &props, IWORKStyleMap_t *styleMap = 0, const char *defaultParent = 0, bool nested = false);
 
   virtual void attribute(int name, const char *value);
   virtual void endOfElement();
@@ -37,6 +38,7 @@ private:
 
 private:
   IWORKStyleMap_t *const m_styleMap;
+  const std::string m_defaultParent;
   const bool m_nested;
   IWORKPropertyMap m_ownProps;
   IWORKPropertyMap &m_props;

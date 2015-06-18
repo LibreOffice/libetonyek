@@ -22,6 +22,7 @@ namespace libetonyek
 IWORKStyleContext::IWORKStyleContext(IWORKXMLParserState &state, IWORKStyleMap_t *const styleMap, const bool nested)
   : IWORKXMLElementContextBase(state)
   , m_styleMap(styleMap)
+  , m_defaultParent()
   , m_nested(nested)
   , m_ownProps()
   , m_props(m_ownProps)
@@ -31,6 +32,17 @@ IWORKStyleContext::IWORKStyleContext(IWORKXMLParserState &state, IWORKStyleMap_t
 IWORKStyleContext::IWORKStyleContext(IWORKXMLParserState &state, IWORKPropertyMap &props, IWORKStyleMap_t *const styleMap, const bool nested)
   : IWORKXMLElementContextBase(state)
   , m_styleMap(styleMap)
+  , m_defaultParent()
+  , m_nested(nested)
+  , m_ownProps()
+  , m_props(props)
+{
+}
+
+IWORKStyleContext::IWORKStyleContext(IWORKXMLParserState &state, IWORKPropertyMap &props, IWORKStyleMap_t *const styleMap, const char *const defaultParent, const bool nested)
+  : IWORKXMLElementContextBase(state)
+  , m_styleMap(styleMap)
+  , m_defaultParent(defaultParent)
   , m_nested(nested)
   , m_ownProps()
   , m_props(props)
@@ -66,6 +78,8 @@ IWORKXMLContextPtr_t IWORKStyleContext::element(const int name)
 
 void IWORKStyleContext::endOfElement()
 {
+  if (!m_parentIdent && !m_defaultParent.empty() && (!m_ident || (m_defaultParent != get(m_ident))))
+    m_parentIdent = m_defaultParent;
   const IWORKStylePtr_t style(new IWORKStyle(m_props, m_ident, m_parentIdent));
   if (getId() && bool(m_styleMap))
     (*m_styleMap)[get(getId())] = style;
