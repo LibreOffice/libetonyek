@@ -45,7 +45,7 @@ const std::string &pickFooter(const PAGPageMaster &pageMaster)
 
 void writeHeaderFooter(
   IWORKDocumentInterface *const document, const IWORKHeaderFooterMap_t &hfMap,
-  const string &name, const string &occurence,
+  const string &name, const string &occurrence,
   const OpenFunction open, const CloseFunction close)
 {
   assert(document);
@@ -56,7 +56,7 @@ void writeHeaderFooter(
   if (it != hfMap.end())
   {
     RVNGPropertyList props;
-    props.insert("librevenge:occurence", occurence.c_str());
+    props.insert("librevenge:occurrence", occurrence.c_str());
     (document->*open)(props);
     it->second.write(document);
     (document->*close)();
