@@ -44,7 +44,12 @@ public:
   void collectTextBody();
   void collectAttachment(const IWORKOutputID_t &id);
 
+  void collectFootnote();
+  void insertFootnote();
+
   // helper functions
+
+  void flushFootnote();
 
   void openSection(const std::string &style, double width, double height, double horizontalMargin, double verticalMargin);
   void closeSection();
@@ -56,6 +61,10 @@ private:
 private:
   Section m_currentSection;
   bool m_firstPageSpan;
+
+  std::deque<IWORKOutputElements> m_footnotes;
+  std::deque<IWORKOutputElements>::const_iterator m_nextFootnote;
+  bool m_pendingFootnote;
 };
 
 } // namespace libetonyek

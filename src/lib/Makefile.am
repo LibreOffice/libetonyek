@@ -146,6 +146,8 @@ libetonyek_internal_la_SOURCES = \
 	PAGTypes.h \
 	contexts/IWORKBezierElement.cpp \
 	contexts/IWORKBezierElement.h \
+	contexts/IWORKBrContext.cpp \
+	contexts/IWORKBrContext.h \
 	contexts/IWORKColorElement.cpp \
 	contexts/IWORKColorElement.h \
 	contexts/IWORKDataElement.cpp \
@@ -159,6 +161,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKImageContext.h \
 	contexts/IWORKLayoutElement.cpp \
 	contexts/IWORKLayoutElement.h \
+	contexts/IWORKLinkElement.cpp \
+	contexts/IWORKLinkElement.h \
 	contexts/IWORKMediaElement.cpp \
 	contexts/IWORKMediaElement.h \
 	contexts/IWORKMetadataElement.cpp \
@@ -181,6 +185,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKRefContext.h \
 	contexts/IWORKSizeElement.cpp \
 	contexts/IWORKSizeElement.h \
+	contexts/IWORKSpanElement.cpp \
+	contexts/IWORKSpanElement.h \
 	contexts/IWORKStringElement.cpp \
 	contexts/IWORKStringElement.h \
 	contexts/IWORKStyleContext.cpp \
@@ -191,6 +197,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKStylesContext.h \
 	contexts/IWORKStylesheetBase.cpp \
 	contexts/IWORKStylesheetBase.h \
+	contexts/IWORKTabElement.cpp \
+	contexts/IWORKTabElement.h \
 	contexts/IWORKTabsElement.cpp \
 	contexts/IWORKTabsElement.h \
 	contexts/IWORKTabularInfoElement.cpp \
@@ -204,8 +212,12 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKValuePropertyContextBase.h \
 	contexts/KEY2StyleContext.cpp \
 	contexts/KEY2StyleContext.h \
+	contexts/PAG1FootnotesElement.cpp \
+	contexts/PAG1FootnotesElement.h \
 	contexts/PAG1StyleContext.cpp \
 	contexts/PAG1StyleContext.h \
+	contexts/PAG1TextStorageElement.cpp \
+	contexts/PAG1TextStorageElement.h \
 	libetonyek_utils.cpp \
 	libetonyek_utils.h \
 	libetonyek_xml.cpp \

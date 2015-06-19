@@ -91,6 +91,10 @@ fontName,fontName
 fontSize,fontSize
 footer,footer
 footers,footers
+footnote,footnote
+footnote-mark,footnote_mark
+footnotebr,footnotebr
+footnotes,footnotes
 frame-h,frame_h
 frame-w,frame_w
 frame-x,frame_x

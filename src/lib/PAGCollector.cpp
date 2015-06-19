@@ -110,6 +110,9 @@ PAGCollector::PAGCollector(IWORKDocumentInterface *const document)
   : IWORKCollector(document)
   , m_currentSection()
   , m_firstPageSpan(true)
+  , m_footnotes()
+  , m_nextFootnote(m_footnotes.end())
+  , m_pendingFootnote(false)
 {
 }
 
@@ -130,6 +133,44 @@ void PAGCollector::collectAttachment(const IWORKOutputID_t &id)
   assert(bool(m_textStack.top()));
 
   m_textStack.top()->insertBlockContent(getOutputManager().get(id));
+}
+
+void PAGCollector::collectFootnote()
+{
+  m_pendingFootnote = true;
+}
+
+void PAGCollector::insertFootnote()
+{
+  assert(!m_textStack.empty());
+  assert(bool(m_textStack.top()));
+
+  if (m_nextFootnote != m_footnotes.end())
+  {
+    m_textStack.top()->insertInlineContent(*m_nextFootnote);
+    ++m_nextFootnote;
+  }
+}
+
+void PAGCollector::flushFootnote()
+{
+  assert(!m_textStack.empty());
+
+  if (m_pendingFootnote)
+  {
+    const bool firstFootnote = m_footnotes.empty();
+    m_footnotes.push_back(IWORKOutputElements());
+    if (bool(m_textStack.top()))
+    {
+      m_footnotes.back().addOpenFootnote(RVNGPropertyList());
+      m_textStack.top()->draw(m_footnotes.back());
+      m_footnotes.back().addCloseFootnote();
+      m_textStack.top().reset(new IWORKText(false));
+    }
+    if (firstFootnote) // We can init. insertion iterator now
+      m_nextFootnote = m_footnotes.begin();
+    m_pendingFootnote = false;
+  }
 }
 
 void PAGCollector::openSection(const std::string &style, const double width, const double height, const double horizontalMargin, const double verticalMargin)

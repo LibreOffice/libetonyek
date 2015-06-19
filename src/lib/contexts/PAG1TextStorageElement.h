@@ -7,35 +7,32 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef IWORKPELEMENT_H_INCLUDED
-#define IWORKPELEMENT_H_INCLUDED
+#ifndef PAG1TEXTSTORAGEELEMENT_H_INCLUDED
+#define PAG1TEXTSTORAGEELEMENT_H_INCLUDED
 
-#include "IWORKTypes.h"
-#include "IWORKXMLContextBase.h"
+#include "PAG1XMLContextBase.h"
+
+#include "IWORKTextStorageElement.h"
 
 namespace libetonyek
 {
 
-class IWORKPElement : public IWORKXMLMixedContextBase
+class PAG1TextStorageElement : public PAG1XMLContextBase<IWORKTextStorageElement>
 {
 public:
-  explicit IWORKPElement(IWORKXMLParserState &state);
-
-protected:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-  virtual void text(const char *value);
-
-  void ensureOpened();
+  explicit PAG1TextStorageElement(PAG1ParserState &state, bool footnotes = false);
 
 private:
-  IWORKStylePtr_t m_style;
-  bool m_opened;
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  bool m_footnotes;
+  bool m_textOpened;
 };
 
 }
 
-#endif // IWORKPELEMENT_H_INCLUDED
+#endif // PAG1TEXTSTORAGEELEMENT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

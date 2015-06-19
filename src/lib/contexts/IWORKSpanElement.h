@@ -7,25 +7,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef IWORKPELEMENT_H_INCLUDED
-#define IWORKPELEMENT_H_INCLUDED
+#ifndef IWORKSPANELEMENT_H_INCLUDED
+#define IWORKSPANELEMENT_H_INCLUDED
 
-#include "IWORKTypes.h"
 #include "IWORKXMLContextBase.h"
+
+#include "IWORKStyle.h"
 
 namespace libetonyek
 {
 
-class IWORKPElement : public IWORKXMLMixedContextBase
+class IWORKSpanElement : public IWORKXMLElementContextBase
 {
 public:
-  explicit IWORKPElement(IWORKXMLParserState &state);
+  explicit IWORKSpanElement(IWORKXMLParserState &state);
 
 protected:
   virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
   virtual void text(const char *value);
+  virtual void endOfElement();
 
   void ensureOpened();
 
@@ -36,6 +37,6 @@ private:
 
 }
 
-#endif // IWORKPELEMENT_H_INCLUDED
+#endif // IWORKSPANELEMENT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
