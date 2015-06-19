@@ -211,7 +211,7 @@ void PAGCollector::flushPageSpan(const bool writeEmpty)
   if (bool(m_currentText))
   {
     m_currentText->draw(text);
-    m_currentText.reset();
+    m_currentText.reset(new IWORKText(false));
   }
 
   if (!text.empty() || writeEmpty)
