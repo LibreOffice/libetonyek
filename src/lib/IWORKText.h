@@ -27,7 +27,7 @@ class IWORKText
 {
 
 public:
-  IWORKText();
+  explicit IWORKText(bool discardEmptyContent);
 
   void openParagraph(const IWORKStylePtr_t &style);
   void closeParagraph();

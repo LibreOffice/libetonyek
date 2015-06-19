@@ -518,11 +518,11 @@ void IWORKCollector::closeLink()
   m_currentText->closeLink();
 }
 
-void IWORKCollector::startText()
+void IWORKCollector::startText(bool discardEmptyContent)
 {
   assert(!m_currentText);
 
-  m_currentText.reset(new IWORKText());
+  m_currentText.reset(new IWORKText(discardEmptyContent));
 
   assert(m_currentText->empty());
 }

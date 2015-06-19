@@ -294,12 +294,15 @@ void IWORKText::draw(const glm::dmat3 &trafo, const IWORKGeometryPtr_t &bounding
 
 }
 
-IWORKText::IWORKText()
+IWORKText::IWORKText(const bool discardEmptyContent)
   : m_styleStack()
   , m_elements()
   , m_currentParaStyle()
   , m_paraOpened(false)
-  , m_ignoreEmptyPara(false)
+    // FIXME: This will work fine when encountering real empty text block, i.e., with a single
+    // empty paragraph. But it will cause a loss of a leading empty paragraph otherwise. It is
+    // good enough for now, though.
+  , m_ignoreEmptyPara(discardEmptyContent)
   , m_currentSpanStyle()
   , m_spanOpened(false)
   , m_pendingSpanClose(false)

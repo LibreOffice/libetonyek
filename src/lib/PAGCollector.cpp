@@ -53,7 +53,7 @@ void writeHeaderFooter(
     return;
 
   const IWORKHeaderFooterMap_t::const_iterator it = hfMap.find(name);
-  if (it != hfMap.end())
+  if ((it != hfMap.end()) && !it->second.empty())
   {
     RVNGPropertyList props;
     props.insert("librevenge:occurrence", occurrence.c_str());

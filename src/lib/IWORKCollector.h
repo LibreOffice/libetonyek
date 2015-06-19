@@ -105,7 +105,7 @@ public:
   void closeSpan();
   void openLink(const std::string &url);
   void closeLink();
-  void startText();
+  void startText(bool discardEmptyContent = false);
   void endText();
 
   void startLevel();

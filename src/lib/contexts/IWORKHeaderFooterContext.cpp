@@ -27,7 +27,7 @@ IWORKHeaderFooterContext::IWORKHeaderFooterContext(IWORKXMLParserState &state, c
 void IWORKHeaderFooterContext::startOfElement()
 {
   if (isCollector())
-    getCollector().startText();
+    getCollector().startText(true);
 }
 
 void IWORKHeaderFooterContext::attribute(const int name, const char *const value)
