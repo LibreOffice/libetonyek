@@ -140,7 +140,7 @@ protected:
 
   std::deque<IWORKStylePtr_t> m_newStyles;
 
-  IWORKTextPtr_t m_currentText;
+  std::stack<IWORKTextPtr_t> m_textStack;
   IWORKTable m_currentTable;
 
   IWORKHeaderFooterMap_t m_headers;

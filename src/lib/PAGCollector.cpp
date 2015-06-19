@@ -126,8 +126,10 @@ void PAGCollector::collectTextBody()
 
 void PAGCollector::collectAttachment(const IWORKOutputID_t &id)
 {
-  assert(bool(m_currentText));
-  m_currentText->insertBlockContent(getOutputManager().get(id));
+  assert(!m_textStack.empty());
+  assert(bool(m_textStack.top()));
+
+  m_textStack.top()->insertBlockContent(getOutputManager().get(id));
 }
 
 void PAGCollector::openSection(const std::string &style, const double width, const double height, const double horizontalMargin, const double verticalMargin)
@@ -181,6 +183,8 @@ void PAGCollector::drawTable()
 
 void PAGCollector::flushPageSpan(const bool writeEmpty)
 {
+  assert(!m_textStack.empty());
+
   if (m_firstPageSpan)
   {
     RVNGPropertyList metadata;
@@ -208,10 +212,10 @@ void PAGCollector::flushPageSpan(const bool writeEmpty)
 
   IWORKOutputElements text;
 
-  if (bool(m_currentText))
+  if (bool(m_textStack.top()))
   {
-    m_currentText->draw(text);
-    m_currentText.reset(new IWORKText(false));
+    m_textStack.top()->draw(text);
+    m_textStack.top().reset(new IWORKText(false));
   }
 
   if (!text.empty() || writeEmpty)
