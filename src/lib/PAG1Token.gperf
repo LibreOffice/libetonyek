@@ -31,8 +31,11 @@ footer,footer
 footnote,footnote
 header,header
 http://developer.apple.com/namespaces/sl,NS_URI_SL
+kSFWPFootnoteGapProperty,kSFWPFootnoteGapProperty
+kSFWPFootnoteKindProperty,kSFWPFootnoteKindProperty
 layout,layout
 note,note
+number,number
 prototype,prototype
 publication-info,publication_info
 section-prototypes,section_prototypes

@@ -11,13 +11,12 @@
 #define PAGCOLLECTOR_H_INCLUDED
 
 #include "IWORKCollector.h"
+#include "PAGTypes.h"
 
 namespace libetonyek
 {
 
 class IWORKDocumentInterface;
-
-class PAGPublicationInfo;
 
 class PAGCollector : public IWORKCollector
 {
@@ -65,6 +64,8 @@ private:
   std::deque<IWORKOutputElements> m_footnotes;
   std::deque<IWORKOutputElements>::const_iterator m_nextFootnote;
   bool m_pendingFootnote;
+
+  PAGPublicationInfo m_pubInfo;
 };
 
 } // namespace libetonyek

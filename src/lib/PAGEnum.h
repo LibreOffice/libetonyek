@@ -7,24 +7,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "PAGTypes.h"
+#ifndef PAGENUM_H_INCLUDED
+#define PAGENUM_H_INCLUDED
 
 namespace libetonyek
 {
 
-PAGPublicationInfo::PAGPublicationInfo()
-  : m_creationDate()
-  , m_footnoteGap()
-  , m_footnoteKind(PAG_FOOTNOTE_KIND_FOOTNOTE)
+enum PAGFootnoteKind
 {
-}
-
-PAGPageMaster::PAGPageMaster()
-  : m_header()
-  , m_footer()
-{
-}
+  PAG_FOOTNOTE_KIND_FOOTNOTE,
+  PAG_FOOTNOTE_KIND_ENDNOTE,
+  PAG_FOOTNOTE_KIND_SECTION_ENDNOTE
+};
 
 }
+
+#endif //  PAGENUM_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

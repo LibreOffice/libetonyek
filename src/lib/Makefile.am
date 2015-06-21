@@ -140,6 +140,7 @@ libetonyek_internal_la_SOURCES = \
 	PAGCollector.h \
 	PAGDictionary.cpp \
 	PAGDictionary.h \
+	PAGEnum.h \
 	PAGProperties.cpp \
 	PAGProperties.h \
 	PAGTypes.cpp \

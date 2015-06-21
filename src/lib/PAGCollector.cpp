@@ -17,7 +17,6 @@
 #include "IWORKOutputElements.h"
 #include "IWORKText.h"
 #include "PAGProperties.h"
-#include "PAGTypes.h"
 
 namespace libetonyek
 {
@@ -116,8 +115,9 @@ PAGCollector::PAGCollector(IWORKDocumentInterface *const document)
 {
 }
 
-void PAGCollector::collectPublicationInfo(const PAGPublicationInfo &/*pubInfo*/)
+void PAGCollector::collectPublicationInfo(const PAGPublicationInfo &pubInfo)
 {
+  m_pubInfo = pubInfo;
 }
 
 void PAGCollector::collectTextBody()

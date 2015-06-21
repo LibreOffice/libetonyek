@@ -17,6 +17,8 @@
 #include "IWORKDiscardContext.h"
 #include "IWORKHeaderFooterContext.h"
 #include "IWORKMetadataElement.h"
+#include "IWORKNumberConverter.h"
+#include "IWORKNumberElement.h"
 #include "IWORKStyleRefContext.h"
 #include "IWORKStylesContext.h"
 #include "IWORKStylesheetBase.h"
@@ -28,7 +30,9 @@
 #include "PAGCollector.h"
 #include "PAGDictionary.h"
 #include "PAGTypes.h"
+#include "libetonyek_xml.h"
 
+using boost::none;
 using boost::optional;
 
 using std::string;
@@ -286,6 +290,68 @@ IWORKXMLContextPtr_t SLCreationDatePropertyElement::element(const int name)
 namespace
 {
 
+template<class T, class C, int I>
+class DocumentPropertyContext : public PAG1XMLElementContextBase
+{
+public:
+  DocumentPropertyContext(PAG1ParserState &state, optional<T> &value);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+
+private:
+  optional<T> &m_value;
+};
+
+template<class T, class C, int I>
+DocumentPropertyContext<T, C, I>::DocumentPropertyContext(PAG1ParserState &state, optional<T> &value)
+  : PAG1XMLElementContextBase(state)
+  , m_value(value)
+{
+}
+
+template<class T, class C, int I>
+IWORKXMLContextPtr_t DocumentPropertyContext<T, C, I>::element(const int name)
+{
+  if (name == I)
+    return makeContext<C>(getState(), m_value);
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+IWORK_DECLARE_NUMBER_CONVERTER(PAGFootnoteKind);
+
+optional<PAGFootnoteKind> IWORKNumberConverter<PAGFootnoteKind>::convert(const char *const value)
+{
+  const optional<int> kind(try_int_cast(value));
+  if (kind)
+  {
+    switch (get(kind))
+    {
+    case 0 :
+      return PAG_FOOTNOTE_KIND_FOOTNOTE;
+    case 1 :
+      return PAG_FOOTNOTE_KIND_ENDNOTE;
+    case 2 :
+      return PAG_FOOTNOTE_KIND_SECTION_ENDNOTE;
+    }
+  }
+
+  return none;
+}
+
+namespace
+{
+
+typedef DocumentPropertyContext<double, IWORKNumberElement<double>, PAG1Token::NS_URI_SL | PAG1Token::number> KSFWPFootnoteGapPropertyElement;
+typedef DocumentPropertyContext<PAGFootnoteKind, IWORKNumberElement<PAGFootnoteKind>, PAG1Token::NS_URI_SL | PAG1Token::number> KSFWPFootnoteKindPropertyElement;
+
+}
+
+namespace
+{
+
 class PublicationInfoElement : public PAG1XMLElementContextBase
 {
 public:
@@ -297,6 +363,7 @@ private:
 
 private:
   PAGPublicationInfo m_pubInfo;
+  optional<PAGFootnoteKind> m_footnoteKind;
 };
 
 PublicationInfoElement::PublicationInfoElement(PAG1ParserState &state)
@@ -309,6 +376,10 @@ IWORKXMLContextPtr_t PublicationInfoElement::element(const int name)
 {
   switch (name)
   {
+  case PAG1Token::NS_URI_SL | PAG1Token::kSFWPFootnoteGapProperty :
+    return makeContext<KSFWPFootnoteGapPropertyElement>(getState(), m_pubInfo.m_footnoteGap);
+  case PAG1Token::NS_URI_SL | PAG1Token::kSFWPFootnoteKindProperty :
+    return makeContext<KSFWPFootnoteKindPropertyElement>(getState(), m_footnoteKind);
   case PAG1Token::NS_URI_SL | PAG1Token::SLCreationDateProperty :
     return makeContext<SLCreationDatePropertyElement>(getState(), m_pubInfo.m_creationDate);
   }
@@ -318,7 +389,11 @@ IWORKXMLContextPtr_t PublicationInfoElement::element(const int name)
 void PublicationInfoElement::endOfElement()
 {
   if (isCollector())
+  {
+    if (m_footnoteKind)
+      m_pubInfo.m_footnoteKind = get(m_footnoteKind);
     getCollector().collectPublicationInfo(m_pubInfo);
+  }
 }
 
 }

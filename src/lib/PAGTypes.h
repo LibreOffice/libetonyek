@@ -14,6 +14,8 @@
 
 #include <boost/optional.hpp>
 
+#include "PAGEnum.h"
+
 namespace libetonyek
 {
 
@@ -22,6 +24,8 @@ struct PAGPublicationInfo
   PAGPublicationInfo();
 
   boost::optional<std::string> m_creationDate;
+  boost::optional<double> m_footnoteGap;
+  PAGFootnoteKind m_footnoteKind;
 };
 
 struct PAGPageMaster
