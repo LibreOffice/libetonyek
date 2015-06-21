@@ -221,6 +221,20 @@ void PAGCollector::drawTable()
   m_currentTable.draw(props, m_outputManager.getCurrent());
 }
 
+void PAGCollector::drawMedia(
+  const double x, const double y, const double w, const double h,
+  const std::string &mimetype, const librevenge::RVNGBinaryData &data)
+{
+  // TODO: implement me
+  (void) x;
+  (void) y;
+  (void) w;
+  (void) h;
+  (void) mimetype;
+  (void) data;
+  (void) x;
+}
+
 void PAGCollector::flushPageSpan(const bool writeEmpty)
 {
   assert(!m_textStack.empty());

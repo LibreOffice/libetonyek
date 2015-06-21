@@ -51,6 +51,8 @@ public:
 
 private:
   virtual void drawTable();
+  virtual void drawMedia(double x, double y, double w, double h, const std::string &mimetype, const librevenge::RVNGBinaryData &data);
+
   void flushPageSpan(bool writeEmpty = true);
 
 private:

@@ -294,6 +294,22 @@ void KEYCollector::drawTable()
   m_currentTable.draw(tableProps, m_outputManager.getCurrent());
 }
 
+void KEYCollector::drawMedia(
+  const double x, const double y, const double w, const double h,
+  const std::string &mimetype, const librevenge::RVNGBinaryData &data)
+{
+  librevenge::RVNGPropertyList props;
+
+  props.insert("librevenge:mime-type", mimetype.c_str());
+  props.insert("office:binary-data", data);
+  props.insert("svg:x", pt2in(x));
+  props.insert("svg:y", pt2in(y));
+  props.insert("svg:width", pt2in(w));
+  props.insert("svg:height", pt2in(h));
+
+  getOutputManager().getCurrent().addDrawGraphicObject(props);
+}
+
 void KEYCollector::writeSlide(const IWORKOutputElements &content)
 {
   librevenge::RVNGPropertyList props;

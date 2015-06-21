@@ -40,6 +40,20 @@ void NUMCollector::drawTable()
   m_currentTable.draw(props, m_outputManager.getCurrent());
 }
 
+void NUMCollector::drawMedia(
+  const double x, const double y, const double w, const double h,
+  const std::string &mimetype, const librevenge::RVNGBinaryData &data)
+{
+  // TODO: implement me
+  (void) x;
+  (void) y;
+  (void) w;
+  (void) h;
+  (void) mimetype;
+  (void) data;
+  (void) x;
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

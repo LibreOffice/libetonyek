@@ -81,51 +81,6 @@ librevenge::RVNGPropertyList pointToWPG(const double x, const double y)
   return props;
 }
 
-void drawMedia(const IWORKMediaPtr_t &media, const glm::dmat3 &trafo, IWORKOutputElements &elements)
-{
-  if (bool(media)
-      && bool(media->m_geometry)
-      && bool(media->m_content)
-      && bool(media->m_content->m_data)
-      && bool(media->m_content->m_data->m_stream))
-  {
-    const RVNGInputStreamPtr_t input = media->m_content->m_data->m_stream;
-
-    string mimetype(media->m_content->m_data->m_mimeType);
-    if (mimetype.empty())
-      mimetype = detectMimetype(input);
-
-    if (!mimetype.empty())
-    {
-      input->seek(0, librevenge::RVNG_SEEK_END);
-      const unsigned long size = input->tell();
-      input->seek(0, librevenge::RVNG_SEEK_SET);
-
-      unsigned long readBytes = 0;
-      const unsigned char *const bytes = input->read(size, readBytes);
-      if (readBytes != size)
-        throw GenericException();
-
-      librevenge::RVNGPropertyList props;
-
-      props.insert("librevenge:mime-type", mimetype.c_str());
-      props.insert("office:binary-data", librevenge::RVNGBinaryData(bytes, size));
-
-      glm::dvec3 vec = trafo * glm::dvec3(0, 0, 1);
-      props.insert("svg:x", pt2in(vec[0]));
-      props.insert("svg:y", pt2in(vec[1]));
-
-      double width = media->m_geometry->m_size.m_width;
-      double height = media->m_geometry->m_size.m_height;
-      vec = trafo * glm::dvec3(width, height, 0);
-      props.insert("svg:width", pt2in(vec[0]));
-      props.insert("svg:height", pt2in(vec[1]));
-
-      elements.addDrawGraphicObject(props);
-    }
-  }
-}
-
 void drawImage(const IWORKImagePtr_t &image, const glm::dmat3 &trafo, IWORKOutputElements &elements)
 {
   // TODO: implement me
@@ -355,7 +310,7 @@ void IWORKCollector::collectMedia(const IWORKMediaContentPtr_t &content)
   m_levelStack.top().m_geometry.reset();
   m_levelStack.top().m_graphicStyle.reset();
 
-  drawMedia(media, m_levelStack.top().m_trafo, m_outputManager.getCurrent());
+  drawMedia(media);
 }
 
 void IWORKCollector::collectStylesheet(const IWORKStylesheetPtr_t &stylesheet)
@@ -617,6 +572,42 @@ void IWORKCollector::fillMetadata(librevenge::RVNGPropertyList &props)
 IWORKOutputManager &IWORKCollector::getOutputManager()
 {
   return m_outputManager;
+}
+
+void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
+{
+  if (bool(media)
+      && bool(media->m_geometry)
+      && bool(media->m_content)
+      && bool(media->m_content->m_data)
+      && bool(media->m_content->m_data->m_stream))
+  {
+    const glm::dmat3 trafo = m_levelStack.top().m_trafo;
+    const RVNGInputStreamPtr_t input = media->m_content->m_data->m_stream;
+
+    string mimetype(media->m_content->m_data->m_mimeType);
+    if (mimetype.empty())
+      mimetype = detectMimetype(input);
+
+    if (!mimetype.empty())
+    {
+      input->seek(0, librevenge::RVNG_SEEK_END);
+      const unsigned long size = input->tell();
+      input->seek(0, librevenge::RVNG_SEEK_SET);
+
+      unsigned long readBytes = 0;
+      const unsigned char *const bytes = input->read(size, readBytes);
+      if (readBytes != size)
+        throw GenericException();
+
+      const glm::dvec3 pos = trafo * glm::dvec3(0, 0, 1);
+      const double width = media->m_geometry->m_size.m_width;
+      const double height = media->m_geometry->m_size.m_height;
+      const glm::dvec3 dim = trafo * glm::dvec3(width, height, 0);
+
+      drawMedia(pos[0], pos[1], dim[0], dim[1], mimetype, librevenge::RVNGBinaryData(bytes, size));
+    }
+  }
 }
 
 } // namespace libetonyek

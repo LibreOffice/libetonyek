@@ -128,7 +128,10 @@ private:
 
   void collectHeaderFooter(const std::string &name, IWORKHeaderFooterMap_t &map);
 
+  void drawMedia(const IWORKMediaPtr_t &media);
+
   virtual void drawTable() = 0;
+  virtual void drawMedia(double x, double y, double w, double h, const std::string &mimetype, const librevenge::RVNGBinaryData &data) = 0;
 
 protected:
   IWORKDocumentInterface *m_document;
