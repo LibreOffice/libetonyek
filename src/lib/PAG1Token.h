@@ -34,11 +34,13 @@ enum
   SLCreationDateProperty,
   date,
   document,
+  drawables,
   header,
   kSFWPFootnoteGapProperty,
   kSFWPFootnoteKindProperty,
   layout,
   number,
+  page_group,
   prototype,
   publication_info,
   section,
@@ -46,6 +48,8 @@ enum
   stylesheet,
 
   // attributes
+  page,
+  rpage,
   version,
 
   // attribute values

@@ -16,6 +16,7 @@
 #include "IWORKChainedTokenizer.h"
 #include "IWORKDiscardContext.h"
 #include "IWORKHeaderFooterContext.h"
+#include "IWORKMediaElement.h"
 #include "IWORKMetadataElement.h"
 #include "IWORKNumberConverter.h"
 #include "IWORKNumberElement.h"
@@ -401,6 +402,112 @@ void PublicationInfoElement::endOfElement()
 namespace
 {
 
+class PageGroupElement : public PAG1XMLElementContextBase
+{
+public:
+  explicit PageGroupElement(PAG1ParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  void open();
+
+private:
+  optional<int> m_page;
+  optional<int> m_rpage;
+  bool m_opened;
+};
+
+PageGroupElement::PageGroupElement(PAG1ParserState &state)
+  : PAG1XMLElementContextBase(state)
+  , m_page()
+  , m_rpage()
+  , m_opened(false)
+{
+}
+
+void PageGroupElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  // TODO: what is the exact relation of sl:page and sl:rpage attrs?
+  case PAG1Token::NS_URI_SL | PAG1Token::page :
+    m_page = try_int_cast(value);
+    break;
+  case PAG1Token::NS_URI_SL | PAG1Token::rpage :
+    m_rpage = try_int_cast(value);
+    break;
+  }
+}
+
+IWORKXMLContextPtr_t PageGroupElement::element(const int name)
+{
+  if (!m_opened)
+    open();
+
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::media :
+    return makeContext<IWORKMediaElement>(getState());
+  }
+  return IWORKXMLContextPtr_t();
+}
+
+void PageGroupElement::endOfElement()
+{
+  if (isCollector())
+    getCollector().closePageGroup();
+}
+
+void PageGroupElement::open()
+{
+  if (isCollector())
+  {
+    if (!m_page && m_rpage)
+      m_page = get(m_rpage) + 1;
+    if (m_page)
+      getCollector().openPageGroup(m_page);
+  }
+  m_opened = true;
+}
+
+}
+
+namespace
+{
+
+class DrawablesElement : public PAG1XMLElementContextBase
+{
+public:
+  explicit DrawablesElement(PAG1ParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+DrawablesElement::DrawablesElement(PAG1ParserState &state)
+  : PAG1XMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t DrawablesElement::element(const int name)
+{
+  switch (name)
+  {
+  case PAG1Token::NS_URI_SL | PAG1Token::page_group :
+    return makeContext<PageGroupElement>(getState());
+  }
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
 class DocumentElement : public PAG1XMLElementContextBase
 {
 public:
@@ -456,6 +563,8 @@ IWORKXMLContextPtr_t DocumentElement::element(const int name)
     return makeContext<IWORKMetadataElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::text_storage :
     return makeContext<PAG1TextStorageElement>(getState());
+  case PAG1Token::NS_URI_SL | PAG1Token::drawables :
+    return makeContext<DrawablesElement>(getState());
   case PAG1Token::NS_URI_SL | PAG1Token::publication_info :
     return makeContext<PublicationInfoElement>(getState());
   case PAG1Token::NS_URI_SL | PAG1Token::section_prototypes :

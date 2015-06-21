@@ -111,6 +111,8 @@ PAGCollector::PAGCollector(IWORKDocumentInterface *const document)
   , m_firstPageSpan(true)
   , m_footnotes()
   , m_nextFootnote(m_footnotes.end())
+  , m_pageGroups()
+  , m_page(0)
 {
 }
 
@@ -202,6 +204,27 @@ void PAGCollector::closeSection()
   flushPageSpan();
 }
 
+void PAGCollector::openPageGroup(const boost::optional<int> &page)
+{
+  getOutputManager().push();
+  if (page)
+    m_page = get(page);
+  else
+    ++m_page;
+}
+
+void PAGCollector::closePageGroup()
+{
+  typedef std::pair<PageGroupsMap_t::const_iterator, bool> Result_t;
+  const IWORKOutputID_t id = getOutputManager().save();
+  const Result_t result = m_pageGroups.insert(PageGroupsMap_t::value_type(m_page, id));
+  if (!result.second)
+  {
+    ETONYEK_DEBUG_MSG(("Page group for page %u already exists\n", m_page));
+  }
+  getOutputManager().pop();
+}
+
 void PAGCollector::drawTable()
 {
   assert(!m_levelStack.empty());
@@ -225,14 +248,21 @@ void PAGCollector::drawMedia(
   const double x, const double y, const double w, const double h,
   const std::string &mimetype, const librevenge::RVNGBinaryData &data)
 {
-  // TODO: implement me
-  (void) x;
-  (void) y;
-  (void) w;
-  (void) h;
-  (void) mimetype;
-  (void) data;
-  (void) x;
+  RVNGPropertyList frameProps;
+  frameProps.insert("text:anchor-type", "page"); // TODO: this needs to be more flexible
+  frameProps.insert("text:anchor-page-number", m_page);
+  frameProps.insert("svg:x", pt2in(x));
+  frameProps.insert("svg:y", pt2in(y));
+  frameProps.insert("svg:width", pt2in(w));
+  frameProps.insert("svg:height", pt2in(h));
+
+  RVNGPropertyList binaryObjectProps;
+  binaryObjectProps.insert("librevenge:mime-type", mimetype.c_str());
+  binaryObjectProps.insert("office:binary-data", data);
+
+  getOutputManager().getCurrent().addOpenFrame(frameProps);
+  getOutputManager().getCurrent().addInsertBinaryObject(binaryObjectProps);
+  getOutputManager().getCurrent().addCloseFrame();
 }
 
 void PAGCollector::flushPageSpan(const bool writeEmpty)
@@ -244,6 +274,7 @@ void PAGCollector::flushPageSpan(const bool writeEmpty)
     RVNGPropertyList metadata;
     fillMetadata(metadata);
     m_document->setDocumentMetaData(metadata);
+    writePageGroupsObjects();
     m_firstPageSpan = false;
   }
 
@@ -287,6 +318,12 @@ void PAGCollector::flushPageSpan(const bool writeEmpty)
   }
 
   m_currentSection.clear();
+}
+
+void PAGCollector::writePageGroupsObjects()
+{
+  for (PageGroupsMap_t::const_iterator it = m_pageGroups.begin(); it != m_pageGroups.end(); ++it)
+    getOutputManager().get(it->second).write(m_document);
 }
 
 }

@@ -27,6 +27,7 @@ body,body
 cell,cell
 date,date
 document,document
+drawables,drawables
 footer,footer
 footnote,footnote
 header,header
@@ -36,8 +37,11 @@ kSFWPFootnoteKindProperty,kSFWPFootnoteKindProperty
 layout,layout
 note,note
 number,number
+page,page
+page-group,page_group
 prototype,prototype
 publication-info,publication_info
+rpage,rpage
 section-prototypes,section_prototypes
 stylesheet,stylesheet
 textbox,textbox

@@ -10,6 +10,8 @@
 #ifndef PAGCOLLECTOR_H_INCLUDED
 #define PAGCOLLECTOR_H_INCLUDED
 
+#include <map>
+
 #include "IWORKCollector.h"
 #include "PAGTypes.h"
 
@@ -33,6 +35,8 @@ class PAGCollector : public IWORKCollector
     boost::optional<double> m_verticalMargin;
   };
 
+  typedef std::map<unsigned, IWORKOutputID_t> PageGroupsMap_t;
+
 public:
   explicit PAGCollector(IWORKDocumentInterface *document);
 
@@ -46,6 +50,11 @@ public:
   void collectFootnote(const std::string &mark);
   void insertFootnote();
 
+  void openPageGroup(const boost::optional<int> &page);
+  void closePageGroup();
+
+  // helper functions
+
   void openSection(const std::string &style, double width, double height, double horizontalMargin, double verticalMargin);
   void closeSection();
 
@@ -54,6 +63,7 @@ private:
   virtual void drawMedia(double x, double y, double w, double h, const std::string &mimetype, const librevenge::RVNGBinaryData &data);
 
   void flushPageSpan(bool writeEmpty = true);
+  void writePageGroupsObjects();
 
 private:
   Section m_currentSection;
@@ -63,6 +73,9 @@ private:
   std::deque<IWORKOutputElements>::const_iterator m_nextFootnote;
 
   PAGPublicationInfo m_pubInfo;
+
+  PageGroupsMap_t m_pageGroups;
+  int m_page;
 };
 
 } // namespace libetonyek
