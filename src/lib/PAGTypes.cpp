@@ -28,6 +28,7 @@ PAGPageMaster::PAGPageMaster()
 PAGFootnoteState::PAGFootnoteState()
   : m_firstTextAfterMark(false)
   , m_pending(false)
+  , m_mark()
 {
 }
 

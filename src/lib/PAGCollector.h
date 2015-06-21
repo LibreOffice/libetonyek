@@ -43,7 +43,7 @@ public:
   void collectTextBody();
   void collectAttachment(const IWORKOutputID_t &id);
 
-  void collectFootnote();
+  void collectFootnote(const std::string &mark);
   void insertFootnote();
 
   void openSection(const std::string &style, double width, double height, double horizontalMargin, double verticalMargin);

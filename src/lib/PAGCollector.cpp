@@ -146,7 +146,7 @@ void PAGCollector::insertFootnote()
   }
 }
 
-void PAGCollector::collectFootnote()
+void PAGCollector::collectFootnote(const std::string &mark)
 {
   assert(!m_textStack.empty());
 
@@ -155,6 +155,8 @@ void PAGCollector::collectFootnote()
   if (bool(m_textStack.top()))
   {
     RVNGPropertyList props;
+    if (!mark.empty())
+      props.insert("text:label", mark.c_str());
     if (m_pubInfo.m_footnoteKind == PAG_FOOTNOTE_KIND_FOOTNOTE)
       m_footnotes.back().addOpenFootnote(props);
     else

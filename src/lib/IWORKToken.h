@@ -225,6 +225,7 @@ enum
   ident,
   kind,
   locked,
+  mark,
   mode,
   name,
   numcols,

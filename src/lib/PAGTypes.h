@@ -42,6 +42,7 @@ struct PAGFootnoteState
 
   bool m_firstTextAfterMark;
   bool m_pending;
+  std::string m_mark;
 };
 
 }

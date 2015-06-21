@@ -191,12 +191,19 @@ public:
   explicit FootnoteMarkElement(PAG1ParserState &state);
 
 private:
+  virtual void attribute(int name, const char *value);
   virtual void endOfElement();
 };
 
 FootnoteMarkElement::FootnoteMarkElement(PAG1ParserState &state)
   : PAG1XMLEmptyContextBase(state)
 {
+}
+
+void FootnoteMarkElement::attribute(const int name, const char *const value)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::mark))
+    m_state.m_footnoteState.m_mark = value;
 }
 
 void FootnoteMarkElement::endOfElement()
@@ -399,9 +406,10 @@ void PElement::endOfElement()
   if (getState().m_footnoteState.m_pending)
   {
     if (isCollector())
-      getCollector().collectFootnote();
+      getCollector().collectFootnote(getState().m_footnoteState.m_mark);
     getState().m_footnoteState.m_pending = false;
     getState().m_footnoteState.m_firstTextAfterMark = false;
+    getState().m_footnoteState.m_mark.clear();
   }
 }
 
