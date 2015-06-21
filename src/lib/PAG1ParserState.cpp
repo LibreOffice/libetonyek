@@ -18,6 +18,7 @@ namespace libetonyek
 
 PAG1ParserState::PAG1ParserState(PAG1Parser &parser, PAGCollector &collector, PAGDictionary &dict)
   : IWORKXMLParserState(parser, collector, dict)
+  , m_footnoteState()
   , m_collector(collector)
   , m_dict(dict)
 {

@@ -25,6 +25,12 @@ PAGPageMaster::PAGPageMaster()
 {
 }
 
+PAGFootnoteState::PAGFootnoteState()
+  : m_firstTextAfterMark(false)
+  , m_pending(false)
+{
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

@@ -177,8 +177,31 @@ FootnotebrElement::FootnotebrElement(PAG1ParserState &state)
 
 void FootnotebrElement::endOfElement()
 {
-  if (isCollector())
-    getCollector().collectFootnote();
+  getState().m_footnoteState.m_pending = true;
+}
+
+}
+
+namespace
+{
+
+class FootnoteMarkElement : public PAG1XMLEmptyContextBase
+{
+public:
+  explicit FootnoteMarkElement(PAG1ParserState &state);
+
+private:
+  virtual void endOfElement();
+};
+
+FootnoteMarkElement::FootnoteMarkElement(PAG1ParserState &state)
+  : PAG1XMLEmptyContextBase(state)
+{
+}
+
+void FootnoteMarkElement::endOfElement()
+{
+  m_state.m_footnoteState.m_firstTextAfterMark = true;
 }
 
 }
@@ -189,7 +212,7 @@ namespace
 class FootnoteHelper
 {
 public:
-  FootnoteHelper(PAG1ParserState &state, IWORKXMLContext &context, bool &afterFootnoteMark);
+  FootnoteHelper(PAG1ParserState &state, IWORKXMLContext &context);
 
   IWORKXMLContextPtr_t element(int name);
   const char *text(const char *value);
@@ -197,13 +220,11 @@ public:
 private:
   PAG1ParserState &m_state;
   IWORKXMLContext &m_context;
-  bool &m_afterFootnoteMark;
 };
 
-FootnoteHelper::FootnoteHelper(PAG1ParserState &state, IWORKXMLContext &context, bool &afterFootnoteMark)
+FootnoteHelper::FootnoteHelper(PAG1ParserState &state, IWORKXMLContext &context)
   : m_state(state)
   , m_context(context)
-  , m_afterFootnoteMark(afterFootnoteMark)
 {
 }
 
@@ -216,8 +237,7 @@ IWORKXMLContextPtr_t FootnoteHelper::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::footnotebr :
     return makeContext<FootnotebrElement>(m_state);
   case IWORKToken::NS_URI_SF | IWORKToken::footnote_mark :
-    m_afterFootnoteMark = true;
-    break;
+    return makeContext<FootnoteMarkElement>(m_state);
   }
 
   return IWORKXMLContextPtr_t();
@@ -225,9 +245,9 @@ IWORKXMLContextPtr_t FootnoteHelper::element(const int name)
 
 const char *FootnoteHelper::text(const char *const value)
 {
-  if (m_afterFootnoteMark && value && (value[0] == ' '))
+  if (m_state.m_footnoteState.m_firstTextAfterMark && value && (value[0] == ' '))
   {
-    m_afterFootnoteMark = false;
+    m_state.m_footnoteState.m_firstTextAfterMark = false;
     return value + 1;
   }
   return value;
@@ -241,7 +261,7 @@ namespace
 class SpanElement : public PAG1XMLContextBase<IWORKSpanElement>
 {
 public:
-  explicit SpanElement(PAG1ParserState &state, bool &afterFootnoteMark);
+  explicit SpanElement(PAG1ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -251,9 +271,9 @@ private:
   FootnoteHelper m_footnoteHelper;
 };
 
-SpanElement::SpanElement(PAG1ParserState &state, bool &afterFootnoteMark)
+SpanElement::SpanElement(PAG1ParserState &state)
   : PAG1XMLContextBase<IWORKSpanElement>(state)
-  , m_footnoteHelper(state, *this, afterFootnoteMark)
+  , m_footnoteHelper(state, *this)
 {
 }
 
@@ -278,7 +298,7 @@ namespace
 class LinkElement : public PAG1XMLContextBase<IWORKLinkElement>
 {
 public:
-  LinkElement(PAG1ParserState &state, bool &afterFootnoteMark);
+  LinkElement(PAG1ParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
@@ -286,20 +306,18 @@ private:
 
 private:
   FootnoteHelper m_footnoteHelper;
-  bool &m_afterFootnoteMark;
 };
 
-LinkElement::LinkElement(PAG1ParserState &state, bool &afterFootnoteMark)
+LinkElement::LinkElement(PAG1ParserState &state)
   : PAG1XMLContextBase<IWORKLinkElement>(state)
-  , m_footnoteHelper(state, *this, afterFootnoteMark)
-  , m_afterFootnoteMark(afterFootnoteMark)
+  , m_footnoteHelper(state, *this)
 {
 }
 
 IWORKXMLContextPtr_t LinkElement::element(const int name)
 {
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::span))
-    return makeContext<SpanElement>(m_state, m_afterFootnoteMark);
+    return makeContext<SpanElement>(m_state);
   const IWORKXMLContextPtr_t context = m_footnoteHelper.element(name);
   if (bool(context))
     return context;
@@ -327,15 +345,13 @@ private:
   virtual void endOfElement();
 
 private:
-  bool m_afterFootnoteMark;
   FootnoteHelper m_footnoteHelper;
   optional<ID_t> m_ref;
 };
 
 PElement::PElement(PAG1ParserState &state)
   : PAG1XMLContextBase<IWORKPElement>(state)
-  , m_afterFootnoteMark(false)
-  , m_footnoteHelper(state, *this, m_afterFootnoteMark)
+  , m_footnoteHelper(state, *this)
   , m_ref()
 {
 }
@@ -352,9 +368,9 @@ IWORKXMLContextPtr_t PElement::element(const int name)
     assert(!m_ref);
     return makeContext<IWORKRefContext>(getState(), m_ref);
   case IWORKToken::NS_URI_SF | IWORKToken::link :
-    return makeContext<LinkElement>(getState(), m_afterFootnoteMark);
+    return makeContext<LinkElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::span :
-    return makeContext<SpanElement>(getState(), m_afterFootnoteMark);
+    return makeContext<SpanElement>(getState());
   }
 
   const IWORKXMLContextPtr_t context = m_footnoteHelper.element(name);
@@ -379,8 +395,14 @@ void PElement::endOfElement()
   }
 
   IWORKPElement::endOfElement();
-  if (isCollector())
-    getCollector().flushFootnote();
+
+  if (getState().m_footnoteState.m_pending)
+  {
+    if (isCollector())
+      getCollector().collectFootnote();
+    getState().m_footnoteState.m_pending = false;
+    getState().m_footnoteState.m_firstTextAfterMark = false;
+  }
 }
 
 }

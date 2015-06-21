@@ -46,10 +46,6 @@ public:
   void collectFootnote();
   void insertFootnote();
 
-  // helper functions
-
-  void flushFootnote();
-
   void openSection(const std::string &style, double width, double height, double horizontalMargin, double verticalMargin);
   void closeSection();
 
@@ -63,7 +59,6 @@ private:
 
   std::deque<IWORKOutputElements> m_footnotes;
   std::deque<IWORKOutputElements>::const_iterator m_nextFootnote;
-  bool m_pendingFootnote;
 
   PAGPublicationInfo m_pubInfo;
 };

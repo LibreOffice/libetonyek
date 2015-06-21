@@ -36,6 +36,14 @@ struct PAGPageMaster
   std::string m_footer;
 };
 
+struct PAGFootnoteState
+{
+  PAGFootnoteState();
+
+  bool m_firstTextAfterMark;
+  bool m_pending;
+};
+
 }
 
 #endif //  PAGTYPES_H_INCLUDED

@@ -111,7 +111,6 @@ PAGCollector::PAGCollector(IWORKDocumentInterface *const document)
   , m_firstPageSpan(true)
   , m_footnotes()
   , m_nextFootnote(m_footnotes.end())
-  , m_pendingFootnote(false)
 {
 }
 
@@ -135,11 +134,6 @@ void PAGCollector::collectAttachment(const IWORKOutputID_t &id)
   m_textStack.top()->insertBlockContent(getOutputManager().get(id));
 }
 
-void PAGCollector::collectFootnote()
-{
-  m_pendingFootnote = true;
-}
-
 void PAGCollector::insertFootnote()
 {
   assert(!m_textStack.empty());
@@ -152,32 +146,28 @@ void PAGCollector::insertFootnote()
   }
 }
 
-void PAGCollector::flushFootnote()
+void PAGCollector::collectFootnote()
 {
   assert(!m_textStack.empty());
 
-  if (m_pendingFootnote)
+  const bool firstFootnote = m_footnotes.empty();
+  m_footnotes.push_back(IWORKOutputElements());
+  if (bool(m_textStack.top()))
   {
-    const bool firstFootnote = m_footnotes.empty();
-    m_footnotes.push_back(IWORKOutputElements());
-    if (bool(m_textStack.top()))
-    {
-      RVNGPropertyList props;
-      if (m_pubInfo.m_footnoteKind == PAG_FOOTNOTE_KIND_FOOTNOTE)
-        m_footnotes.back().addOpenFootnote(props);
-      else
-        m_footnotes.back().addOpenEndnote(props);
-      m_textStack.top()->draw(m_footnotes.back());
-      if (m_pubInfo.m_footnoteKind == PAG_FOOTNOTE_KIND_FOOTNOTE)
-        m_footnotes.back().addCloseFootnote();
-      else
-        m_footnotes.back().addCloseEndnote();
-      m_textStack.top().reset(new IWORKText(false));
-    }
-    if (firstFootnote) // We can init. insertion iterator now
-      m_nextFootnote = m_footnotes.begin();
-    m_pendingFootnote = false;
+    RVNGPropertyList props;
+    if (m_pubInfo.m_footnoteKind == PAG_FOOTNOTE_KIND_FOOTNOTE)
+      m_footnotes.back().addOpenFootnote(props);
+    else
+      m_footnotes.back().addOpenEndnote(props);
+    m_textStack.top()->draw(m_footnotes.back());
+    if (m_pubInfo.m_footnoteKind == PAG_FOOTNOTE_KIND_FOOTNOTE)
+      m_footnotes.back().addCloseFootnote();
+    else
+      m_footnotes.back().addCloseEndnote();
+    m_textStack.top().reset(new IWORKText(false));
   }
+  if (firstFootnote) // We can init. insertion iterator now
+    m_nextFootnote = m_footnotes.begin();
 }
 
 void PAGCollector::openSection(const std::string &style, const double width, const double height, const double horizontalMargin, const double verticalMargin)

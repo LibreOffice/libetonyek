@@ -11,6 +11,7 @@
 #define PAG1PARSERSTATE_H_INCLUDED
 
 #include "IWORKXMLParserState.h"
+#include "PAGTypes.h"
 
 namespace libetonyek
 {
@@ -30,6 +31,9 @@ public:
 
   PAGCollector &getCollector();
   PAGDictionary &getDictionary();
+
+public:
+  PAGFootnoteState m_footnoteState;
 
 private:
   PAGCollector &m_collector;
