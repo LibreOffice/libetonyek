@@ -162,9 +162,16 @@ void PAGCollector::flushFootnote()
     m_footnotes.push_back(IWORKOutputElements());
     if (bool(m_textStack.top()))
     {
-      m_footnotes.back().addOpenFootnote(RVNGPropertyList());
+      RVNGPropertyList props;
+      if (m_pubInfo.m_footnoteKind == PAG_FOOTNOTE_KIND_FOOTNOTE)
+        m_footnotes.back().addOpenFootnote(props);
+      else
+        m_footnotes.back().addOpenEndnote(props);
       m_textStack.top()->draw(m_footnotes.back());
-      m_footnotes.back().addCloseFootnote();
+      if (m_pubInfo.m_footnoteKind == PAG_FOOTNOTE_KIND_FOOTNOTE)
+        m_footnotes.back().addCloseFootnote();
+      else
+        m_footnotes.back().addCloseEndnote();
       m_textStack.top().reset(new IWORKText(false));
     }
     if (firstFootnote) // We can init. insertion iterator now
