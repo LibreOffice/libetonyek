@@ -32,6 +32,18 @@ PAGFootnoteState::PAGFootnoteState()
 {
 }
 
+PAGAttachment::PAGAttachment()
+  : m_id(0)
+  , m_block(false)
+{
+}
+
+PAGAttachment::PAGAttachment(const IWORKOutputID_t id, const bool block)
+  : m_id(id)
+  , m_block(block)
+{
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

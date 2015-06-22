@@ -13,7 +13,9 @@
 #include <string>
 
 #include <boost/optional.hpp>
+#include <boost/unordered_map.hpp>
 
+#include "IWORKTypes_fwd.h"
 #include "PAGEnum.h"
 
 namespace libetonyek
@@ -44,6 +46,17 @@ struct PAGFootnoteState
   bool m_pending;
   std::string m_mark;
 };
+
+struct PAGAttachment
+{
+  PAGAttachment();
+  PAGAttachment(IWORKOutputID_t id, bool block);
+
+  IWORKOutputID_t m_id;
+  bool m_block;
+};
+
+typedef boost::unordered_map<ID_t, PAGAttachment> PAGAttachmentMap_t;
 
 }
 

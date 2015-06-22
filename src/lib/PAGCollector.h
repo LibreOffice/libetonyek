@@ -45,7 +45,9 @@ public:
   void collectPublicationInfo(const PAGPublicationInfo &pubInfo);
 
   void collectTextBody();
-  void collectAttachment(const IWORKOutputID_t &id);
+
+  void collectAttachment(const IWORKOutputID_t &id, bool block);
+  void collectAttachmentPosition(const IWORKPosition &position);
 
   void collectFootnote(const std::string &mark);
   void insertFootnote();
@@ -57,6 +59,9 @@ public:
 
   void openSection(const std::string &style, double width, double height, double horizontalMargin, double verticalMargin);
   void closeSection();
+
+  void openAttachments();
+  void closeAttachments();
 
 private:
   virtual void drawTable();
@@ -76,6 +81,10 @@ private:
 
   PageGroupsMap_t m_pageGroups;
   int m_page;
+
+  // FIXME: This is a clumsy workaround.
+  boost::optional<IWORKPosition> m_attachmentPosition;
+  bool m_inAttachments;
 };
 
 } // namespace libetonyek

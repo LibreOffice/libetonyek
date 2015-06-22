@@ -113,6 +113,8 @@ PAGCollector::PAGCollector(IWORKDocumentInterface *const document)
   , m_nextFootnote(m_footnotes.end())
   , m_pageGroups()
   , m_page(0)
+  , m_attachmentPosition()
+  , m_inAttachments(false)
 {
 }
 
@@ -128,12 +130,20 @@ void PAGCollector::collectTextBody()
   flushPageSpan(false);
 }
 
-void PAGCollector::collectAttachment(const IWORKOutputID_t &id)
+void PAGCollector::collectAttachment(const IWORKOutputID_t &id, const bool block)
 {
   assert(!m_textStack.empty());
   assert(bool(m_textStack.top()));
 
-  m_textStack.top()->insertBlockContent(getOutputManager().get(id));
+  if (block)
+    m_textStack.top()->insertBlockContent(getOutputManager().get(id));
+  else
+    m_textStack.top()->insertInlineContent(getOutputManager().get(id));
+}
+
+void PAGCollector::collectAttachmentPosition(const IWORKPosition &position)
+{
+  m_attachmentPosition = position;
 }
 
 void PAGCollector::insertFootnote()
@@ -204,6 +214,18 @@ void PAGCollector::closeSection()
   flushPageSpan();
 }
 
+void PAGCollector::openAttachments()
+{
+  assert(!m_inAttachments);
+  m_inAttachments = true;
+}
+
+void PAGCollector::closeAttachments()
+{
+  assert(m_inAttachments);
+  m_inAttachments = false;
+}
+
 void PAGCollector::openPageGroup(const boost::optional<int> &page)
 {
   getOutputManager().push();
@@ -249,10 +271,25 @@ void PAGCollector::drawMedia(
   const std::string &mimetype, const librevenge::RVNGBinaryData &data)
 {
   RVNGPropertyList frameProps;
-  frameProps.insert("text:anchor-type", "page"); // TODO: this needs to be more flexible
-  frameProps.insert("text:anchor-page-number", m_page);
-  frameProps.insert("svg:x", pt2in(x));
-  frameProps.insert("svg:y", pt2in(y));
+  if (m_inAttachments)
+  {
+    frameProps.insert("text:anchor-type", "char");
+  }
+  else
+  {
+    frameProps.insert("text:anchor-type", "page");
+    frameProps.insert("text:anchor-page-number", m_page);
+  }
+  if (m_attachmentPosition)
+  {
+    frameProps.insert("svg:x", pt2in(get(m_attachmentPosition).m_x));
+    frameProps.insert("svg:y", pt2in(get(m_attachmentPosition).m_y));
+  }
+  else
+  {
+    frameProps.insert("svg:x", pt2in(x));
+    frameProps.insert("svg:y", pt2in(y));
+  }
   frameProps.insert("svg:width", pt2in(w));
   frameProps.insert("svg:height", pt2in(h));
 

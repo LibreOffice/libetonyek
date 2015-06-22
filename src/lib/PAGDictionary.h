@@ -11,6 +11,7 @@
 #define PAGDICTIONARY_H_INCLUDED
 
 #include "IWORKDictionary.h"
+#include "PAGTypes.h"
 
 namespace libetonyek
 {
@@ -19,7 +20,7 @@ struct PAGDictionary : public IWORKDictionary
 {
   PAGDictionary();
 
-  IWORKOutputMap_t m_attachments;
+  PAGAttachmentMap_t m_attachments;
 
   IWORKStyleMap_t m_sectionStyles;
 };

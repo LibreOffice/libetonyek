@@ -15,7 +15,9 @@
 
 #include "IWORKLayoutElement.h"
 #include "IWORKLinkElement.h"
+#include "IWORKMediaElement.h"
 #include "IWORKPElement.h"
+#include "IWORKPositionElement.h"
 #include "IWORKRefContext.h"
 #include "IWORKSpanElement.h"
 #include "IWORKTabularInfoElement.h"
@@ -71,25 +73,44 @@ private:
 
 private:
   bool m_known;
+  bool m_block;
+  optional<IWORKPosition> m_position;
 };
 
 AttachmentElement::AttachmentElement(PAG1ParserState &state)
   : PAG1XMLElementContextBase(state)
   , m_known(false)
+  , m_block(false)
+  , m_position()
 {
 }
 
 IWORKXMLContextPtr_t AttachmentElement::element(const int name)
 {
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::tabular_info))
+  IWORKXMLContextPtr_t context;
+
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::media :
+    m_block = false;
+    context = makeContext<IWORKMediaElement>(getState());
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::position :
+    return makeContext<IWORKPositionElement>(getState(), m_position);
+  case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
+    m_block = true;
+    context = makeContext<IWORKTabularInfoElement>(getState());
+    break;
+  }
+
+  if (bool(context))
   {
     m_known = true;
     if (isCollector())
       getCollector().getOutputManager().push();
-    return makeContext<IWORKTabularInfoElement>(getState());
   }
 
-  return IWORKXMLContextPtr_t();
+  return context;
 }
 
 void AttachmentElement::endOfElement()
@@ -98,8 +119,10 @@ void AttachmentElement::endOfElement()
   {
     if (isCollector())
     {
+      if (m_position)
+        getCollector().collectAttachmentPosition(get(m_position));
       if (getId())
-        getState().getDictionary().m_attachments[get(getId())] = getCollector().getOutputManager().save();
+        getState().getDictionary().m_attachments[get(getId())] = PAGAttachment(getCollector().getOutputManager().save(), m_block);
       getCollector().getOutputManager().pop();
     }
   }
@@ -116,7 +139,9 @@ public:
   explicit AttachmentsElement(PAG1ParserState &state);
 
 private:
+  virtual void startOfElement();
   virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
 };
 
 AttachmentsElement::AttachmentsElement(PAG1ParserState &state)
@@ -124,11 +149,23 @@ AttachmentsElement::AttachmentsElement(PAG1ParserState &state)
 {
 }
 
+void AttachmentsElement::startOfElement()
+{
+  if (isCollector())
+    getCollector().openAttachments();
+}
+
 IWORKXMLContextPtr_t AttachmentsElement::element(const int name)
 {
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::attachment))
     return makeContext<AttachmentElement>(getState());
   return IWORKXMLContextPtr_t();
+}
+
+void AttachmentsElement::endOfElement()
+{
+  if (isCollector())
+    getCollector().closeAttachments();
 }
 
 }
@@ -396,9 +433,9 @@ void PElement::endOfElement()
 {
   if (m_ref && isCollector())
   {
-    const IWORKOutputMap_t::const_iterator it = getState().getDictionary().m_attachments.find(get(m_ref));
+    const PAGAttachmentMap_t::const_iterator it = getState().getDictionary().m_attachments.find(get(m_ref));
     if (it != getState().getDictionary().m_attachments.end())
-      getCollector().collectAttachment(it->second);
+      getCollector().collectAttachment(it->second.m_id, it->second.m_block);
   }
 
   IWORKPElement::endOfElement();
