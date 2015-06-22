@@ -22,12 +22,14 @@
 #include "IWORKPositionElement.h"
 #include "IWORKRefContext.h"
 #include "IWORKStyle.h"
+#include "IWORKShapeContext.h"
 #include "IWORKSizeElement.h"
 #include "IWORKStringElement.h"
 #include "IWORKStyleRefContext.h"
 #include "IWORKStylesContext.h"
 #include "IWORKStylesheetBase.h"
 #include "IWORKTabularInfoElement.h"
+#include "IWORKTextElement.h"
 #include "IWORKTextBodyElement.h"
 #include "IWORKTextStorageElement.h"
 #include "IWORKToken.h"
@@ -299,106 +301,6 @@ void ProxyMasterLayerElement::endOfElement()
 namespace
 {
 
-// NOTE: isn't it wonderful that there are two text elements in two
-// different namespaces, but with the same schema?
-class TextElement : public KEY2XMLElementContextBase
-{
-public:
-  explicit TextElement(KEY2ParserState &state);
-
-private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-};
-
-TextElement::TextElement(KEY2ParserState &state)
-  : KEY2XMLElementContextBase(state)
-{
-}
-
-void TextElement::attribute(const int name, const char *)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
-    // TODO: handle
-    if (isCollector())
-      getCollector().collectStyle(IWORKStylePtr_t());
-    break;
-  }
-}
-
-IWORKXMLContextPtr_t TextElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::text_storage :
-    return makeContext<IWORKTextStorageElement>(getState());
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-}
-
-namespace
-{
-
-class ShapeElement : public KEY2XMLElementContextBase
-{
-public:
-  explicit ShapeElement(KEY2ParserState &state);
-
-private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-};
-
-ShapeElement::ShapeElement(KEY2ParserState &state)
-  : KEY2XMLElementContextBase(state)
-{
-}
-
-void ShapeElement::startOfElement()
-{
-  if (isCollector())
-  {
-    getCollector().startLevel();
-    getCollector().startText();
-  }
-}
-
-IWORKXMLContextPtr_t ShapeElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::geometry :
-    return makeContext<IWORKGeometryElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::path :
-    return makeContext<IWORKPathElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::text :
-    return makeContext<TextElement>(getState());
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-void ShapeElement::endOfElement()
-{
-  if (isCollector())
-  {
-    getCollector().collectShape();
-    getCollector().endText();
-    getCollector().endLevel();
-  }
-}
-
-}
-
-namespace
-{
-
 class ImageElement : public KEY2XMLElementContextBase
 {
 public:
@@ -572,7 +474,7 @@ IWORKXMLContextPtr_t GroupElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::media :
     return makeContext<IWORKMediaElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::shape :
-    return makeContext<ShapeElement>(getState());
+    return makeContext<IWORKShapeContext>(getState());
   }
 
   return IWORKXMLContextPtr_t();
@@ -698,7 +600,7 @@ IWORKXMLContextPtr_t StickyNoteElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::geometry :
     return makeContext<IWORKGeometryElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::text :
-    return makeContext<TextElement>(getState());
+    return makeContext<IWORKTextElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
@@ -764,7 +666,7 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::media :
     return makeContext<IWORKMediaElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::shape :
-    return makeContext<ShapeElement>(getState());
+    return makeContext<IWORKShapeContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::sticky_note :
     return makeContext<StickyNoteElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
@@ -984,7 +886,7 @@ IWORKXMLContextPtr_t PlaceholderContext::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::style :
     return makeContext<StyleElement>(getState(), m_ref);
   case KEY2Token::NS_URI_KEY | KEY2Token::text :
-    return makeContext<TextElement>(getState());
+    return makeContext<IWORKTextElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();

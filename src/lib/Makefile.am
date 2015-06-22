@@ -184,6 +184,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKPropertyMapElement.h \
 	contexts/IWORKRefContext.cpp \
 	contexts/IWORKRefContext.h \
+	contexts/IWORKShapeContext.cpp \
+	contexts/IWORKShapeContext.h \
 	contexts/IWORKSizeElement.cpp \
 	contexts/IWORKSizeElement.h \
 	contexts/IWORKSpanElement.cpp \
@@ -204,6 +206,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKTabsElement.h \
 	contexts/IWORKTabularInfoElement.cpp \
 	contexts/IWORKTabularInfoElement.h \
+	contexts/IWORKTextElement.cpp \
+	contexts/IWORKTextElement.h \
 	contexts/IWORKTextBodyElement.cpp \
 	contexts/IWORKTextBodyElement.h \
 	contexts/IWORKTextStorageElement.cpp \
