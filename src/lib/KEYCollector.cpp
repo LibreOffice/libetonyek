@@ -141,7 +141,7 @@ void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
     trafo *= m_levelStack.top().m_trafo;
 
     if (bool(placeholder) && bool(placeholder->m_style) && bool(placeholder->m_text))
-      (placeholder->m_text)->draw(trafo, placeholder->m_geometry, getOutputManager().getCurrent());
+      drawTextBox(placeholder->m_text, trafo, placeholder->m_geometry);
   }
   else
   {
@@ -308,6 +308,48 @@ void KEYCollector::drawMedia(
   props.insert("svg:height", pt2in(h));
 
   getOutputManager().getCurrent().addDrawGraphicObject(props);
+}
+
+void KEYCollector::fillShapeProperties(librevenge::RVNGPropertyList &)
+{
+}
+
+void KEYCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox)
+{
+  if (bool(text))
+  {
+    librevenge::RVNGPropertyList props;
+
+    glm::dvec3 vec = trafo * glm::dvec3(0, 0, 1);
+
+    props.insert("svg:x", pt2in(vec[0]));
+    props.insert("svg:y", pt2in(vec[1]));
+
+    if (bool(boundingBox))
+    {
+      double w = boundingBox->m_naturalSize.m_width;
+      double h = boundingBox->m_naturalSize.m_height;
+      vec = trafo * glm::dvec3(w, h, 0);
+
+      props.insert("svg:width", pt2in(vec[0]));
+      props.insert("svg:height", pt2in(vec[1]));
+    }
+
+    IWORKPath path;
+    path.appendMoveTo(0, 0);
+    path.appendLineTo(0, 1);
+    path.appendLineTo(1, 1);
+    path.appendLineTo(1, 0);
+    path.appendClose();
+    path *= trafo;
+
+    props.insert("svg:d", path.toWPG());
+
+    IWORKOutputElements &elements = m_outputManager.getCurrent();
+    elements.addStartTextObject(props);
+    text->draw(elements);
+    elements.addEndTextObject();
+  }
 }
 
 void KEYCollector::writeSlide(const IWORKOutputElements &content)

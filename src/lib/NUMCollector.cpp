@@ -54,6 +54,20 @@ void NUMCollector::drawMedia(
   (void) x;
 }
 
+void NUMCollector::fillShapeProperties(librevenge::RVNGPropertyList &props)
+{
+  // TODO: implement me
+  (void) props;
+}
+
+void NUMCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox)
+{
+  // TODO: implement me
+  (void) text;
+  (void) trafo;
+  (void) boundingBox;
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

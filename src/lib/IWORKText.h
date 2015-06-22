@@ -48,7 +48,6 @@ public:
   bool empty() const;
 
   void draw(IWORKOutputElements &elements);
-  void draw(const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox, IWORKOutputElements &elements);
 
 private:
   void doOpenPara();

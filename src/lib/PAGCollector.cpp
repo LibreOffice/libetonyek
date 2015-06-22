@@ -302,6 +302,20 @@ void PAGCollector::drawMedia(
   getOutputManager().getCurrent().addCloseFrame();
 }
 
+void PAGCollector::fillShapeProperties(librevenge::RVNGPropertyList &props)
+{
+  // TODO: implement me
+  (void) props;
+}
+
+void PAGCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox)
+{
+  // TODO: implement me
+  (void) text;
+  (void) trafo;
+  (void) boundingBox;
+}
+
 void PAGCollector::flushPageSpan(const bool writeEmpty)
 {
   assert(!m_textStack.empty());

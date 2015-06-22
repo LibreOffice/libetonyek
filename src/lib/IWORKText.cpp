@@ -259,41 +259,6 @@ void IWORKText::draw(IWORKOutputElements &elements)
   elements.append(m_elements);
 }
 
-void IWORKText::draw(const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox, IWORKOutputElements &elements)
-{
-  librevenge::RVNGPropertyList props;
-
-  glm::dvec3 vec = trafo * glm::dvec3(0, 0, 1);
-
-  props.insert("svg:x", pt2in(vec[0]));
-  props.insert("svg:y", pt2in(vec[1]));
-
-  if (bool(boundingBox))
-  {
-    double w = boundingBox->m_naturalSize.m_width;
-    double h = boundingBox->m_naturalSize.m_height;
-    vec = trafo * glm::dvec3(w, h, 0);
-
-    props.insert("svg:width", pt2in(vec[0]));
-    props.insert("svg:height", pt2in(vec[1]));
-  }
-
-  IWORKPath path;
-  path.appendMoveTo(0, 0);
-  path.appendLineTo(0, 1);
-  path.appendLineTo(1, 1);
-  path.appendLineTo(1, 0);
-  path.appendClose();
-  path *= trafo;
-
-  props.insert("svg:d", path.toWPG());
-
-  elements.addStartTextObject(props);
-  draw(elements);
-  elements.addEndTextObject();
-
-}
-
 IWORKText::IWORKText(const bool discardEmptyContent)
   : m_styleStack()
   , m_elements()

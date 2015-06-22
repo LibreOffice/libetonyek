@@ -128,25 +128,6 @@ void drawLine(const IWORKLinePtr_t &line, const glm::dmat3 &trafo, IWORKOutputEl
   }
 }
 
-void drawShape(const IWORKShapePtr_t &shape, const glm::dmat3 &trafo, IWORKOutputElements &elements)
-{
-  if (bool(shape) && bool(shape->m_path))
-  {
-    // TODO: make style
-
-    const IWORKPath path = *shape->m_path * trafo;
-
-    librevenge::RVNGPropertyList props;
-    props.insert("svg:d", path.toWPG());
-
-    elements.addSetStyle(librevenge::RVNGPropertyList());
-    elements.addDrawPath(props);
-
-    if (bool(shape->m_text))
-      shape->m_text->draw(trafo, shape->m_geometry, elements);
-  }
-}
-
 }
 
 IWORKCollector::Level::Level()
@@ -254,7 +235,7 @@ void IWORKCollector::collectShape()
   shape->m_style = m_levelStack.top().m_graphicStyle;
   m_levelStack.top().m_graphicStyle.reset();
 
-  drawShape(shape, m_levelStack.top().m_trafo, m_outputManager.getCurrent());
+  drawShape(shape);
 }
 
 void IWORKCollector::collectBezierPath()
@@ -607,6 +588,29 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
 
       drawMedia(pos[0], pos[1], dim[0], dim[1], mimetype, librevenge::RVNGBinaryData(bytes, size));
     }
+  }
+}
+
+void IWORKCollector::drawShape(const IWORKShapePtr_t &shape)
+{
+  if (bool(shape) && bool(shape->m_path))
+  {
+    const glm::dmat3 trafo = m_levelStack.top().m_trafo;
+    IWORKOutputElements &elements = m_outputManager.getCurrent();
+
+    // TODO: make style
+
+    const IWORKPath path = *shape->m_path * trafo;
+
+    librevenge::RVNGPropertyList props;
+    props.insert("svg:d", path.toWPG());
+
+    fillShapeProperties(props);
+
+    elements.addSetStyle(librevenge::RVNGPropertyList());
+    elements.addDrawPath(props);
+
+    drawTextBox(shape->m_text, trafo, shape->m_geometry);
   }
 }
 

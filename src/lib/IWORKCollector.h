@@ -20,6 +20,7 @@
 
 #include "libetonyek_utils.h"
 #include "IWORKPath_fwd.h"
+#include "IWORKShape.h"
 #include "IWORKStyle.h"
 #include "IWORKStyleStack.h"
 #include "IWORKStylesheet.h"
@@ -129,9 +130,12 @@ private:
   void collectHeaderFooter(const std::string &name, IWORKHeaderFooterMap_t &map);
 
   void drawMedia(const IWORKMediaPtr_t &media);
+  void drawShape(const IWORKShapePtr_t &shape);
 
   virtual void drawTable() = 0;
   virtual void drawMedia(double x, double y, double w, double h, const std::string &mimetype, const librevenge::RVNGBinaryData &data) = 0;
+  virtual void fillShapeProperties(librevenge::RVNGPropertyList &props) = 0;
+  virtual void drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox) = 0;
 
 protected:
   IWORKDocumentInterface *m_document;
