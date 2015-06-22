@@ -66,6 +66,7 @@ enum
   data,
   data_ref,
   datasource,
+  drawable_shape,
   drawables,
   du,
   editable_bezier_path,

@@ -20,6 +20,7 @@
 #include "IWORKMetadataElement.h"
 #include "IWORKNumberConverter.h"
 #include "IWORKNumberElement.h"
+#include "IWORKShapeContext.h"
 #include "IWORKStyleRefContext.h"
 #include "IWORKStylesContext.h"
 #include "IWORKStylesheetBase.h"
@@ -452,7 +453,10 @@ IWORKXMLContextPtr_t PageGroupElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::media :
     return makeContext<IWORKMediaElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::drawable_shape :
+    return makeContext<IWORKShapeContext>(getState());
   }
+
   return IWORKXMLContextPtr_t();
 }
 

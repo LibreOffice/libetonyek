@@ -70,9 +70,9 @@ void IWORKTextRedirector::endMasterSlide()
   assert(0);
 }
 
-void IWORKTextRedirector::setStyle(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::setStyle(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->defineGraphicStyle(propList);
 }
 
 void IWORKTextRedirector::startLayer(const librevenge::RVNGPropertyList &/*propList*/)
@@ -331,13 +331,13 @@ void IWORKTextRedirector::drawConnector(const librevenge::RVNGPropertyList &prop
   m_iface->drawConnector(propList);
 }
 
-void IWORKTextRedirector::startTextObject(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKTextRedirector::startTextObject(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openTextBox(propList);
 }
 void IWORKTextRedirector::endTextObject()
 {
-  assert(0);
+  m_iface->closeTextBox();
 }
 
 void IWORKTextRedirector::startNotes(const librevenge::RVNGPropertyList &/*propList*/)

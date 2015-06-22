@@ -76,6 +76,7 @@ datasource,datasource
 displayname,displayname
 double,double_
 drawables,drawables
+drawable-shape,drawable_shape
 du,du
 editable-bezier-path,editable_bezier_path
 element,element

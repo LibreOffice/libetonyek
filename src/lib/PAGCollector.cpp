@@ -304,16 +304,47 @@ void PAGCollector::drawMedia(
 
 void PAGCollector::fillShapeProperties(librevenge::RVNGPropertyList &props)
 {
-  // TODO: implement me
-  (void) props;
+  props.insert("text:anchor-type", "page");
+  props.insert("text:anchor-page-number", m_page);
 }
 
 void PAGCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox)
 {
-  // TODO: implement me
   (void) text;
   (void) trafo;
   (void) boundingBox;
+  // FIXME: Text content is never parsed as empty. And the text boxes
+  // half cover the shapes in the output.
+#if 0
+  if (bool(text) && !text->empty())
+  {
+    librevenge::RVNGPropertyList props;
+
+    glm::dvec3 vec = trafo * glm::dvec3(0, 0, 1);
+
+    props.insert("svg:x", pt2in(vec[0]));
+    props.insert("svg:y", pt2in(vec[1]));
+
+    if (bool(boundingBox))
+    {
+      double w = boundingBox->m_naturalSize.m_width;
+      double h = boundingBox->m_naturalSize.m_height;
+      vec = trafo * glm::dvec3(w, h, 0);
+
+      props.insert("svg:width", pt2in(vec[0]));
+      props.insert("svg:height", pt2in(vec[1]));
+    }
+
+    fillShapeProperties(props);
+
+    IWORKOutputElements &elements = m_outputManager.getCurrent();
+    elements.addOpenFrame(props);
+    elements.addStartTextObject(RVNGPropertyList());
+    text->draw(elements);
+    elements.addEndTextObject();
+    elements.addCloseFrame();
+  }
+#endif
 }
 
 void PAGCollector::flushPageSpan(const bool writeEmpty)
