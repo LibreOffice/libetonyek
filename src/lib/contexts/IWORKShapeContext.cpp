@@ -49,7 +49,7 @@ StyleElement::StyleElement(IWORKXMLParserState &state, IWORKStylePtr_t &style)
 
 IWORKXMLContextPtr_t StyleElement::element(const int name)
 {
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::style))
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref))
     return makeContext<IWORKRefContext>(getState(), m_ref);
   return IWORKXMLContextPtr_t();
 }

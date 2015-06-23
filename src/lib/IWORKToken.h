@@ -90,6 +90,7 @@ enum
   g,
   geometry,
   graphic_style,
+  graphic_style_ref,
   grid,
   grid_column,
   grid_row,

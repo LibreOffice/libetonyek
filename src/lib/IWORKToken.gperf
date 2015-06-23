@@ -104,6 +104,7 @@ frame-y,frame_y
 g,g
 geometry,geometry
 graphic-style,graphic_style
+graphic-style-ref,graphic_style_ref
 grid,grid
 grid-column,grid_column
 grid-row,grid_row
