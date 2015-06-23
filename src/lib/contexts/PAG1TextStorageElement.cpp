@@ -471,6 +471,9 @@ LayoutElement::LayoutElement(PAG1ParserState &state)
 
 IWORKXMLContextPtr_t LayoutElement::element(const int name)
 {
+  if (!m_opened)
+    open();
+
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::p))
     return makeContext<PElement>(getState());
 

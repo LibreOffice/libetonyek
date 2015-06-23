@@ -173,6 +173,18 @@ IWORKMetadata::IWORKMetadata()
 {
 }
 
+IWORKColumns::Column::Column()
+  : m_width(0)
+  , m_spacing(0)
+{
+}
+
+IWORKColumns::IWORKColumns()
+  : m_equal(true)
+  , m_columns()
+{
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

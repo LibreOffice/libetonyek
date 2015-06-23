@@ -187,13 +187,8 @@ IWORKXMLContextPtr_t StylesContext::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
-    return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_layoutStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style :
     return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_placeholderStyles);
-
-  case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
-    return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_layoutStyles, false, m_anonymous);
   }
 
   return KEY2XMLContextBase<IWORKStylesContext>::element(name);
@@ -1395,8 +1390,6 @@ IWORKXMLContextPtr_t DiscardContext::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
-    return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_layoutStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style :
     return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_placeholderStyles);
   case KEY2Token::NS_URI_KEY | KEY2Token::stylesheet :

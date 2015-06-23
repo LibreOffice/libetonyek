@@ -28,6 +28,9 @@
 
 using boost::optional;
 
+using librevenge::RVNGPropertyList;
+using librevenge::RVNGPropertyListVector;
+
 using std::string;
 
 namespace libetonyek
@@ -35,6 +38,45 @@ namespace libetonyek
 
 namespace
 {
+
+void fillSectionPropList(const IWORKStylePtr_t &style, RVNGPropertyList &props)
+{
+  assert(bool(style));
+
+  using namespace property;
+
+  if (style->has<Columns>())
+  {
+    const IWORKColumns &columns = style->get<Columns>();
+
+    if (columns.m_columns.size() > 1)
+    {
+      RVNGPropertyListVector vec;
+
+      double width = 0;
+      for (IWORKColumns::Columns_t::const_iterator it = columns.m_columns.begin(); it != columns.m_columns.end(); ++it)
+        width += it->m_width;
+
+      for (IWORKColumns::Columns_t::const_iterator it = columns.m_columns.begin(); it != columns.m_columns.end(); ++it)
+      {
+        RVNGPropertyList columnProps;
+        if (width > 0)
+          columnProps.insert("style:rel-width", it->m_width / width, librevenge::RVNG_PERCENT);
+        columnProps.insert("fo:start-indent", pt2in(it->m_spacing));
+        columnProps.insert("fo:end-indent", pt2in(it->m_spacing));
+        vec.append(columnProps);
+      }
+      props.insert("style:columns", vec);
+
+      props.insert("text:dont-balance-text-columns", columns.m_equal ? "false" : "true");
+    }
+    else if (columns.m_columns.size() == 1)
+    {
+      props.insert("fo:margin-left", pt2in(columns.m_columns.front().m_spacing));
+      props.insert("fo:margin-right", pt2in(columns.m_columns.front().m_spacing));
+    }
+  }
+}
 
 void fillCharPropList(librevenge::RVNGPropertyList &props, const IWORKStyleStack &style)
 {
@@ -262,6 +304,7 @@ void IWORKText::draw(IWORKOutputElements &elements)
 IWORKText::IWORKText(const bool discardEmptyContent)
   : m_styleStack()
   , m_elements()
+  , m_sectionOpened(false)
   , m_currentParaStyle()
   , m_paraOpened(false)
     // FIXME: This will work fine when encountering real empty text block, i.e., with a single
@@ -273,6 +316,27 @@ IWORKText::IWORKText(const bool discardEmptyContent)
   , m_pendingSpanClose(false)
   , m_inSpan(false)
 {
+}
+
+void IWORKText::openLayout(const IWORKStylePtr_t &style)
+{
+  assert(!m_paraOpened);
+
+  if (bool(style))
+  {
+    RVNGPropertyList props;
+    fillSectionPropList(style, props);
+    m_elements.addOpenSection(props);
+    m_sectionOpened = true;
+  }
+}
+
+void IWORKText::closeLayout()
+{
+  assert(!m_paraOpened);
+
+  if (m_sectionOpened)
+    m_elements.addCloseSection();
 }
 
 void IWORKText::openParagraph(const IWORKStylePtr_t &style)

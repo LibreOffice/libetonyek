@@ -15,6 +15,7 @@ namespace libetonyek
 IWORKDictionary::IWORKDictionary()
   : m_characterStyles()
   , m_graphicStyles()
+  , m_layoutStyles()
   , m_paragraphStyles()
   , m_vectorStyles()
   , m_stylesheets()

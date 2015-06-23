@@ -14,7 +14,6 @@ namespace libetonyek
 
 KEYDictionary::KEYDictionary()
   : IWORKDictionary()
-  , m_layoutStyles()
   , m_placeholderStyles()
   , m_bodyPlaceholders()
   , m_titlePlaceholders()

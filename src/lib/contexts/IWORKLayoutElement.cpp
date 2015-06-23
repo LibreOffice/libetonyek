@@ -10,6 +10,7 @@
 #include "IWORKLayoutElement.h"
 
 #include "IWORKCollector.h"
+#include "IWORKDictionary.h"
 #include "IWORKPElement.h"
 #include "IWORKStyle.h"
 #include "IWORKToken.h"
@@ -20,25 +21,48 @@ namespace libetonyek
 
 IWORKLayoutElement::IWORKLayoutElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
+  , m_opened(false)
+  , m_style()
 {
 }
 
-void IWORKLayoutElement::attribute(const int name, const char *)
+void IWORKLayoutElement::attribute(const int name, const char *const value)
 {
   if ((IWORKToken::NS_URI_SF | IWORKToken::style) == name)
   {
-    // TODO: fetch the style
-    if (isCollector())
-      getCollector().collectStyle(IWORKStylePtr_t());
+    const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_layoutStyles.find(value);
+    if (it != getState().getDictionary().m_layoutStyles.end())
+      m_style = it->second;
   }
 }
 
 IWORKXMLContextPtr_t IWORKLayoutElement::element(const int name)
 {
+  if (!m_opened)
+    open();
+
   if ((IWORKToken::NS_URI_SF | IWORKToken::p) == name)
     return makeContext<IWORKPElement>(getState());
 
   return IWORKXMLContextPtr_t();
+}
+
+void IWORKLayoutElement::endOfElement()
+{
+  if (m_opened)
+  {
+    if (isCollector())
+      getCollector().endLayout();
+  }
+}
+
+void IWORKLayoutElement::open()
+{
+  assert(!m_opened);
+
+  if (isCollector())
+    getCollector().startLayout(m_style);
+  m_opened = true;
 }
 
 }

@@ -461,6 +461,22 @@ void IWORKCollector::endGroup()
   --m_groupLevel;
 }
 
+void IWORKCollector::startLayout(const IWORKStylePtr_t &style)
+{
+  assert(!m_textStack.empty());
+  assert(bool(m_textStack.top()));
+
+  m_textStack.top()->openLayout(style);
+}
+
+void IWORKCollector::endLayout()
+{
+  assert(!m_textStack.empty());
+  assert(bool(m_textStack.top()));
+
+  m_textStack.top()->closeLayout();
+}
+
 void IWORKCollector::startParagraph(const IWORKStylePtr_t &style)
 {
   assert(!m_textStack.empty());

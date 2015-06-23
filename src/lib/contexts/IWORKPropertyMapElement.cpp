@@ -337,6 +337,98 @@ void StrokeElement::endOfElement()
 namespace
 {
 
+class ColumnElement : public IWORKXMLEmptyContextBase
+{
+public:
+  ColumnElement(IWORKXMLParserState &state, IWORKColumns::Column &value);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual void endOfElement();
+
+private:
+  IWORKColumns::Column &m_value;
+  IWORKColumns::Column m_builder;
+};
+
+ColumnElement::ColumnElement(IWORKXMLParserState &state, IWORKColumns::Column &value)
+  : IWORKXMLEmptyContextBase(state)
+  , m_value(value)
+  , m_builder()
+{
+}
+
+void ColumnElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::spacing :
+    m_builder.m_spacing = get_optional_value_or(try_double_cast(value), 0);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::width :
+    m_builder.m_width = get_optional_value_or(try_double_cast(value), 0);
+    break;
+  }
+}
+
+void ColumnElement::endOfElement()
+{
+  m_value = m_builder;
+}
+
+}
+
+namespace
+{
+
+class ColumnsElement : public IWORKXMLElementContextBase
+{
+public:
+  ColumnsElement(IWORKXMLParserState &state, optional<IWORKColumns> &value);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  optional<IWORKColumns> &m_value;
+  IWORKColumns m_builder;
+};
+
+ColumnsElement::ColumnsElement(IWORKXMLParserState &state, optional<IWORKColumns> &value)
+  : IWORKXMLElementContextBase(state)
+  , m_value(value)
+  , m_builder()
+{
+}
+
+void ColumnsElement::attribute(const int name, const char *const value)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::equal_columns))
+    m_builder.m_equal = get_optional_value_or(try_bool_cast(value), false);
+}
+
+IWORKXMLContextPtr_t ColumnsElement::element(const int name)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::column))
+  {
+    m_builder.m_columns.push_back(IWORKColumns::Column());
+    return makeContext<ColumnElement>(getState(), m_builder.m_columns.back());
+  }
+  return IWORKXMLContextPtr_t();
+}
+
+void ColumnsElement::endOfElement()
+{
+  m_value = m_builder;
+}
+
+}
+
+namespace
+{
+
 class LanguageElement : public IWORKPropertyContextBase
 {
 public:
@@ -379,6 +471,7 @@ void LanguageElement::endOfElement()
 namespace
 {
 
+typedef IWORKPropertyContext<property::Columns, ColumnsElement, IWORKToken::NS_URI_SF | IWORKToken::columns> ColumnsProperty;
 typedef IWORKPropertyContext<property::Fill, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> FillElement;
 typedef IWORKPropertyContext<property::FontColor, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> FontColorElement;
 typedef IWORKPropertyContext<property::FontName, IWORKStringElement, IWORKToken::NS_URI_SF | IWORKToken::string> FontNameElement;
@@ -433,6 +526,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<BoldElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::capitalization :
     return makeContext<CapitalizationElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::columns :
+    return makeContext<ColumnsProperty>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::fill :
     return makeContext<FillElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::firstLineIndent :

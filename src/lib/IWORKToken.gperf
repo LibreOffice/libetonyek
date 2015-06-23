@@ -61,6 +61,7 @@ characterstyle,characterstyle
 characterstyle-ref,characterstyle_ref
 col-span,col_span
 color,color
+column,column
 columns,columns
 comment,comment
 connection-line,connection_line
@@ -82,6 +83,7 @@ drawable-shape,drawable_shape
 du,du
 editable-bezier-path,editable_bezier_path
 element,element
+equal-columns,equal_columns
 evenPageMaster,evenPageMaster
 f,f
 false,false_
@@ -210,6 +212,7 @@ slide-style,slide_style
 so,so
 spaceAfter,spaceAfter
 spaceBefore,spaceBefore
+spacing,spacing
 span,span
 star,star
 start-index,start_index

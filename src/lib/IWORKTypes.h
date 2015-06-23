@@ -214,6 +214,24 @@ struct IWORKMetadata
   std::string m_comment;
 };
 
+struct IWORKColumns
+{
+  struct Column
+  {
+    Column();
+
+    double m_width;
+    double m_spacing;
+  };
+
+  typedef std::deque<Column> Columns_t;
+
+  IWORKColumns();
+
+  bool m_equal;
+  Columns_t m_columns;
+};
+
 }
 
 #endif //  IWORKTYPES_H_INCLUDED

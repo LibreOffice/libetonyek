@@ -40,15 +40,20 @@ IWORKXMLContextPtr_t IWORKStylesContext::element(const int name)
     return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_graphicStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::characterstyle :
     return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_characterStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
+    return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_layoutStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
     return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::vector_style :
     return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_vectorStyles);
+
   case IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref :
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
     return IWORKXMLContextPtr_t();
   case IWORKToken::NS_URI_SF | IWORKToken::characterstyle_ref :
     return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_characterStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
+    return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_layoutStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref :
     return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref :

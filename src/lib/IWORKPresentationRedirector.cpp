@@ -172,11 +172,11 @@ void IWORKPresentationRedirector::defineSectionStyle(const librevenge::RVNGPrope
 
 void IWORKPresentationRedirector::openSection(const librevenge::RVNGPropertyList &/*propList*/)
 {
-  assert(0);
+  // ignore
 }
 void IWORKPresentationRedirector::closeSection()
 {
-  assert(0);
+  // ignore
 }
 
 void IWORKPresentationRedirector::insertTab()

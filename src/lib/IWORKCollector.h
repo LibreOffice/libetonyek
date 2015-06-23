@@ -100,6 +100,8 @@ public:
   void startGroup();
   void endGroup();
 
+  void startLayout(const IWORKStylePtr_t &style);
+  void endLayout();
   void startParagraph(const IWORKStylePtr_t &style);
   void endParagraph();
   void openSpan(const IWORKStylePtr_t &style);

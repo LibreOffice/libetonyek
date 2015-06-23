@@ -61,6 +61,8 @@ IWORKXMLContextPtr_t IWORKDiscardContext::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::data :
     m_data->m_data.reset();
     return makeContext<IWORKDataElement>(m_state, m_data->m_data);
+  case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
+    return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_layoutStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
     return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::tabs :

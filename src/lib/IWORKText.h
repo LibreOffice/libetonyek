@@ -29,6 +29,9 @@ class IWORKText
 public:
   explicit IWORKText(bool discardEmptyContent);
 
+  void openLayout(const IWORKStylePtr_t &style);
+  void closeLayout();
+
   void openParagraph(const IWORKStylePtr_t &style);
   void closeParagraph();
 
@@ -62,6 +65,8 @@ private:
   IWORKStyleStack m_styleStack;
 
   IWORKOutputElements m_elements;
+
+  bool m_sectionOpened;
 
   IWORKStylePtr_t m_currentParaStyle;
   bool m_paraOpened;
