@@ -13,10 +13,11 @@
 #include "IWORKCollector.h"
 #include "IWORKColorElement.h"
 #include "IWORKDictionary.h"
-#include "IWORKDirectPropertyContextBase.h"
 #include "IWORKGeometryElement.h"
 #include "IWORKNumericPropertyBase.h"
 #include "IWORKProperties.h"
+#include "IWORKPropertyContext.h"
+#include "IWORKPtrPropertyContext.h"
 #include "IWORKRefContext.h"
 #include "IWORKStringElement.h"
 #include "IWORKStyleContext.h"
@@ -24,7 +25,6 @@
 #include "IWORKTabsElement.h"
 #include "IWORKToken.h"
 #include "IWORKTokenizer.h"
-#include "IWORKValuePropertyContextBase.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
@@ -34,54 +34,6 @@ using boost::optional;
 
 using std::deque;
 using std::string;
-
-namespace
-{
-
-class FontColorElement : public IWORKValuePropertyContextBase<IWORKColorElement, property::FontColor>
-{
-public:
-  FontColorElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
-
-FontColorElement::FontColorElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::color)
-{
-}
-
-}
-
-namespace
-{
-
-class GeometryElement : public IWORKDirectPropertyContextBase<IWORKGeometryElement, property::Geometry>
-{
-public:
-  GeometryElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
-
-GeometryElement::GeometryElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : IWORKDirectPropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::geometry)
-{
-}
-
-}
-
-namespace
-{
-
-class FontNameElement : public IWORKValuePropertyContextBase<IWORKStringElement, property::FontName>
-{
-public:
-  FontNameElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
-
-FontNameElement::FontNameElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::string)
-{
-}
-
-}
 
 namespace
 {
@@ -145,22 +97,6 @@ void TabsProperty::endOfElement()
 namespace
 {
 
-class TextBackgroundElement : public IWORKValuePropertyContextBase<IWORKColorElement, property::TextBackground>
-{
-public:
-  TextBackgroundElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
-
-TextBackgroundElement::TextBackgroundElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::color)
-{
-}
-
-}
-
-namespace
-{
-
 class LinespacingElement : public IWORKXMLEmptyContextBase
 {
 public:
@@ -201,38 +137,6 @@ void LinespacingElement::endOfElement()
 {
   if (m_amount)
     m_value = IWORKLineSpacing(get(m_amount), get_optional_value_or(m_relative, false));
-}
-
-}
-
-namespace
-{
-
-class LineSpacingElement : public IWORKValuePropertyContextBase<LinespacingElement, property::LineSpacing>
-{
-public:
-  LineSpacingElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
-
-LineSpacingElement::LineSpacingElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::linespacing)
-{
-}
-
-}
-
-namespace
-{
-
-class ParagraphFillElement : public IWORKValuePropertyContextBase<IWORKColorElement, property::ParagraphFill>
-{
-public:
-  ParagraphFillElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
-
-ParagraphFillElement::ParagraphFillElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::color)
-{
 }
 
 }
@@ -413,22 +317,6 @@ void StrokeElement::endOfElement()
 namespace
 {
 
-class ParagraphStrokeElement : public IWORKValuePropertyContextBase<StrokeElement, property::ParagraphStroke>
-{
-public:
-  ParagraphStrokeElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
-
-ParagraphStrokeElement::ParagraphStrokeElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::stroke)
-{
-}
-
-}
-
-namespace
-{
-
 class LanguageElement : public IWORKPropertyContextBase
 {
 public:
@@ -471,16 +359,15 @@ void LanguageElement::endOfElement()
 namespace
 {
 
-class SFTStrokePropertyElement : public IWORKValuePropertyContextBase<StrokeElement, property::SFTStrokeProperty>
-{
-public:
-  SFTStrokePropertyElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
+typedef IWORKPropertyContext<property::FontColor, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> FontColorElement;
+typedef IWORKPropertyContext<property::FontName, IWORKStringElement, IWORKToken::NS_URI_SF | IWORKToken::string> FontNameElement;
+typedef IWORKPropertyContext<property::LineSpacing, LinespacingElement, IWORKToken::NS_URI_SF | IWORKToken::linespacing> LineSpacingElement;
+typedef IWORKPropertyContext<property::ParagraphFill, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> ParagraphFillElement;
+typedef IWORKPropertyContext<property::ParagraphStroke, StrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke> ParagraphStrokeElement;
+typedef IWORKPropertyContext<property::SFTStrokeProperty, StrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke> SFTStrokePropertyElement;
+typedef IWORKPropertyContext<property::TextBackground, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> TextBackgroundElement;
 
-SFTStrokePropertyElement::SFTStrokePropertyElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::stroke)
-{
-}
+typedef IWORKPtrPropertyContext<property::Geometry, IWORKGeometryElement, IWORKToken::NS_URI_SF | IWORKToken::geometry> GeometryElement;
 
 }
 

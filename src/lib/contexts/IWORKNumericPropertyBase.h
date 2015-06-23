@@ -11,15 +11,15 @@
 #define IWORKNUMERICPROPERTYBASE_H_INCLUDED
 
 #include "IWORKNumberElement.h"
-#include "IWORKValuePropertyContextBase.h"
+#include "IWORKPropertyContext.h"
 
 namespace libetonyek
 {
 
 template<typename ValueT, class PropertyT>
-class IWORKNumericPropertyBase : public IWORKValuePropertyContextBase<IWORKNumberElement<ValueT>, PropertyT>
+class IWORKNumericPropertyBase : public IWORKPropertyContext<PropertyT, IWORKNumberElement<ValueT>, IWORKToken::NS_URI_SF | IWORKToken::number>
 {
-  typedef IWORKValuePropertyContextBase<IWORKNumberElement<ValueT>, PropertyT> Parent_t;
+  typedef IWORKPropertyContext<PropertyT, IWORKNumberElement<ValueT>, IWORKToken::NS_URI_SF | IWORKToken::number> Parent_t;
 
 public:
   IWORKNumericPropertyBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
@@ -27,7 +27,7 @@ public:
 
 template<typename ValueT, class PropertyT>
 IWORKNumericPropertyBase<ValueT, PropertyT>::IWORKNumericPropertyBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : Parent_t(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::number)
+  : Parent_t(state, propMap)
 {
 }
 

@@ -14,10 +14,10 @@
 #include <boost/optional.hpp>
 
 #include "libetonyek_xml.h"
+#include "IWORKPropertyContext.h"
 #include "IWORKPropertyMapElement.h"
 #include "IWORKStyle.h"
 #include "IWORKToken.h"
-#include "IWORKValuePropertyContextBase.h"
 #include "PAG1ParserState.h"
 #include "PAG1Token.h"
 #include "PAGCollector.h"
@@ -91,48 +91,9 @@ void PagemasterElement::endOfElement()
 namespace
 {
 
-class EvenPageMasterElement : public IWORKValuePropertyContextBase<PagemasterElement, property::EvenPageMaster>
-{
-public:
-  EvenPageMasterElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
-
-EvenPageMasterElement::EvenPageMasterElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::pagemaster)
-{
-}
-
-}
-
-namespace
-{
-
-class FirstPageMasterElement : public IWORKValuePropertyContextBase<PagemasterElement, property::FirstPageMaster>
-{
-public:
-  FirstPageMasterElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
-
-FirstPageMasterElement::FirstPageMasterElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::pagemaster)
-{
-}
-
-}
-
-namespace
-{
-
-class OddPageMasterElement : public IWORKValuePropertyContextBase<PagemasterElement, property::OddPageMaster>
-{
-public:
-  OddPageMasterElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-};
-
-OddPageMasterElement::OddPageMasterElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : IWORKValuePropertyContextBase(state, propMap, IWORKToken::NS_URI_SF | IWORKToken::pagemaster)
-{
-}
+typedef IWORKPropertyContext<property::EvenPageMaster, PagemasterElement, IWORKToken::NS_URI_SF | IWORKToken::pagemaster> EvenPageMasterElement;
+typedef IWORKPropertyContext<property::FirstPageMaster, PagemasterElement, IWORKToken::NS_URI_SF | IWORKToken::pagemaster> FirstPageMasterElement;
+typedef IWORKPropertyContext<property::OddPageMaster, PagemasterElement, IWORKToken::NS_URI_SF | IWORKToken::pagemaster> OddPageMasterElement;
 
 }
 
