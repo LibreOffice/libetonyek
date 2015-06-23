@@ -185,8 +185,8 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
     ;
 
   expression %= term
-    | binaryOp
-    ;
+                | binaryOp
+                ;
 
   formula %= lit('=') >> expression;
 
@@ -285,6 +285,142 @@ struct printer : public boost::static_visitor<string>
 
 }
 
+namespace
+{
+
+struct collector : public boost::static_visitor<>
+{
+
+  explicit collector(librevenge::RVNGPropertyListVector &propsVector)
+    : m_propsVector(propsVector)
+  { }
+
+  void operator()(double val) const
+  {
+    librevenge::RVNGPropertyList props;
+    props.insert("librevenge:type", "librevenge-number");
+    props.insert("librevenge:number", val);
+    m_propsVector.append(props);
+  }
+
+  void operator()(const std::string &val) const
+  {
+    librevenge::RVNGPropertyList props;
+    props.insert("librevenge:type", "librevenge-text");
+    props.insert("librevenge:text", val.c_str());
+    m_propsVector.append(props);
+  }
+
+  void operator()(const Address &val) const
+  {
+    if (val.m_worksheet && val.m_table)
+    {
+      librevenge::RVNGPropertyList props;
+      props.insert("librevenge:type", "librevenge-sheet");
+      const optional<std::string> sheetTable = get(val.m_worksheet) + '.' + get(val.m_table);
+      props.insert("librevenge:sheet", sheetTable);
+      m_propsVector.append(props);
+    }
+    else if (val.m_worksheet)
+    {
+      librevenge::RVNGPropertyList props;
+      props.insert("librevenge:type", "librevenge-sheet");
+      props.insert("librevenge:sheet", val.m_worksheet);
+      m_propsVector.append(props);
+    }
+    else if (val.m_table)
+    {
+      librevenge::RVNGPropertyList props;
+      props.insert("librevenge:type", "librevenge-sheet");
+      props.insert("librevenge:sheet", val.m_table);
+      m_propsVector.append(props);
+    }
+
+    librevenge::RVNGPropertyList props;
+    props.insert("librevenge:type", "librevenge-cell");
+
+    if (val.m_column.m_absolute)
+      props.insert("librevenge:column-absolute", true);
+    props.insert("librevenge:column", int(val.m_column.m_coord));
+
+    if (val.m_row.m_absolute)
+      props.insert("librevenge:row-absolute", true);
+    props.insert("librevenge:row", int(val.m_row.m_coord));
+
+    m_propsVector.append(props);
+  }
+
+  void operator()(const AddressRange &val) const
+  {
+    librevenge::RVNGPropertyList props;
+    props.insert("librevenge:type", "librevenge-cells");
+
+    if (val.first.m_column.m_absolute)
+      props.insert("librevenge:start-column-absolute", true);
+    props.insert("librevenge:start-column", int(val.first.m_column.m_coord));
+
+    if (val.first.m_row.m_absolute)
+      props.insert("librevenge:start-row-absolute", true);
+    props.insert("librevenge:start-row", int(val.first.m_row.m_coord));
+
+    if (val.second.m_column.m_absolute)
+      props.insert("librevenge:end-column-absolute", true);
+    props.insert("librevenge:end-column", int(val.second.m_column.m_coord));
+
+    if (val.second.m_row.m_absolute)
+      props.insert("librevenge:end-row-absolute", true);
+    props.insert("librevenge:end-row", int(val.second.m_row.m_coord));
+
+    m_propsVector.append(props);
+  }
+
+  void operator()(const recursive_wrapper<UnaryOp> &val) const
+  {
+    librevenge::RVNGPropertyList props;
+    props.insert("librevenge:type", "librevenge-operator");
+    props.insert("librevenge:operator", val.get().m_op);
+    m_propsVector.append(props);
+    apply_visitor(collector(m_propsVector), val.get().m_expr);
+  }
+
+  void operator()(const recursive_wrapper<BinaryOp> &val) const
+  {
+    apply_visitor(collector(m_propsVector), val.get().m_left);
+    librevenge::RVNGPropertyList props;
+    props.insert("librevenge:type", "librevenge-operator");
+    props.insert("librevenge:operator", val.get().m_op);
+    m_propsVector.append(props);
+    apply_visitor(collector(m_propsVector), val.get().m_right);
+  }
+
+  void operator()(const recursive_wrapper<Function> &val) const
+  {
+    librevenge::RVNGPropertyList props1;
+    props1.insert("librevenge:type", "librevenge-function");
+    props1.insert("librevenge:function", val.get().m_name.c_str());
+    m_propsVector.append(props1);
+
+    librevenge::RVNGPropertyList props2;
+    props2.insert("librevenge:type", "librevenge-operator");
+    props2.insert("librevenge:operator", "(");
+    m_propsVector.append(props2);
+
+    for (vector<Expression>::const_iterator it = val.get().m_args.begin(); it != val.get().m_args.end(); ++it)
+      apply_visitor(collector(m_propsVector), *it);
+
+    librevenge::RVNGPropertyList props3;
+    props3.insert("librevenge:type", "librevenge-operator");
+    props3.insert("librevenge:operator", ")");
+    m_propsVector.append(props3);
+  }
+
+private:
+    librevenge::RVNGPropertyListVector &m_propsVector;
+
+};
+
+}
+
 struct IWORKFormula::Impl
 {
   Expression m_formula;
@@ -307,6 +443,11 @@ bool IWORKFormula::parse(const std::string &formula)
 const std::string IWORKFormula::toString() const
 {
   return '=' + apply_visitor(printer(), m_impl->m_formula);
+}
+
+void IWORKFormula::write(librevenge::RVNGPropertyListVector &formula)
+{
+  apply_visitor(collector(formula), m_impl->m_formula);
 }
 
 } // namespace libetonyek

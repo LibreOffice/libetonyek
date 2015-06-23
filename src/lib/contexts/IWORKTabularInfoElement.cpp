@@ -14,6 +14,7 @@
 #include "libetonyek_xml.h"
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
+#include "IWORKFormula.h"
 #include "IWORKGeometryElement.h"
 #include "IWORKTextBodyElement.h"
 #include "IWORKToken.h"
@@ -211,6 +212,103 @@ DuElement::DuElement(IWORKXMLParserState &state)
 namespace
 {
 
+class RnElement : public CellContextBase
+{
+public:
+  explicit RnElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+};
+
+RnElement::RnElement(IWORKXMLParserState &state)
+  : CellContextBase(state)
+{
+}
+
+void RnElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::v | IWORKToken::NS_URI_SF :
+    getState().m_tableData->m_content = value;
+    break;
+  default :
+    CellContextBase::attribute(name, value);
+  }
+}
+
+}
+
+namespace
+{
+
+class RElement : public CellContextBase
+{
+public:
+  explicit RElement(IWORKXMLParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+RElement::RElement(IWORKXMLParserState &state)
+  : CellContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t RElement::element(int name)
+{
+  switch (name)
+  {
+  case IWORKToken::rn | IWORKToken::NS_URI_SF :
+    return makeContext<RnElement>(getState());
+    break;
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
+class FoElement : public CellContextBase
+{
+public:
+  explicit FoElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+};
+
+FoElement::FoElement(IWORKXMLParserState &state)
+  : CellContextBase(state)
+{
+}
+
+void FoElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::fs | IWORKToken::NS_URI_SF :
+  {
+    IWORKFormula formula;
+    if (formula.parse(value))
+      formula.write(getState().m_tableData->m_formula);
+    break;
+  }
+  default :
+    break;
+  }
+}
+
+}
+
+namespace
+{
+
 class FElement : public CellContextBase
 {
 public:
@@ -225,8 +323,18 @@ FElement::FElement(IWORKXMLParserState &state)
 {
 }
 
-IWORKXMLContextPtr_t FElement::element(int)
+IWORKXMLContextPtr_t FElement::element(int name)
 {
+  switch (name)
+  {
+  case IWORKToken::fo | IWORKToken::NS_URI_SF :
+    return makeContext<FoElement>(getState());
+    break;
+  case IWORKToken::r | IWORKToken::NS_URI_SF :
+    return makeContext<RElement>(getState());
+    break;
+  }
+
   return IWORKXMLContextPtr_t();
 }
 
