@@ -369,11 +369,6 @@ typedef IWORKPropertyContext<property::TextBackground, IWORKColorElement, IWORKT
 
 typedef IWORKPtrPropertyContext<property::Geometry, IWORKGeometryElement, IWORKToken::NS_URI_SF | IWORKToken::geometry> GeometryElement;
 
-}
-
-namespace
-{
-
 typedef IWORKNumericPropertyContext<property::Alignment> AlignmentElement;
 typedef IWORKNumericPropertyContext<property::Baseline> SuperscriptElement;
 typedef IWORKNumericPropertyContext<property::BaselineShift> BaselineShiftElement;
