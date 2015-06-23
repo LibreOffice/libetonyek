@@ -16,17 +16,17 @@
 namespace libetonyek
 {
 
-template<typename Value, class Property>
-class IWORKNumericPropertyBase : public IWORKPropertyContext<Property, IWORKNumberElement<Value>, IWORKToken::NS_URI_SF | IWORKToken::number>
+template<class Property>
+class IWORKNumericPropertyBase : public IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, IWORKToken::NS_URI_SF | IWORKToken::number>
 {
-  typedef IWORKPropertyContext<Property, IWORKNumberElement<Value>, IWORKToken::NS_URI_SF | IWORKToken::number> Parent_t;
+  typedef IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, IWORKToken::NS_URI_SF | IWORKToken::number> Parent_t;
 
 public:
   IWORKNumericPropertyBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
-template<typename Value, class Property>
-IWORKNumericPropertyBase<Value, Property>::IWORKNumericPropertyBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+template<class Property>
+IWORKNumericPropertyBase<Property>::IWORKNumericPropertyBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : Parent_t(state, propMap)
 {
 }

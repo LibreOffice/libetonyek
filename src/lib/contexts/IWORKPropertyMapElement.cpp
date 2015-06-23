@@ -374,27 +374,27 @@ typedef IWORKPtrPropertyContext<property::Geometry, IWORKGeometryElement, IWORKT
 namespace
 {
 
-typedef IWORKNumericPropertyBase<bool, property::Bold> BoldElement;
-typedef IWORKNumericPropertyBase<bool, property::Italic> ItalicElement;
-typedef IWORKNumericPropertyBase<bool, property::KeepLinesTogether> KeepLinesTogetherElement;
-typedef IWORKNumericPropertyBase<bool, property::KeepWithNext> KeepWithNextElement;
-typedef IWORKNumericPropertyBase<bool, property::Outline> OutlineElement;
-typedef IWORKNumericPropertyBase<bool, property::PageBreakBefore> PageBreakBeforeElement;
-typedef IWORKNumericPropertyBase<bool, property::Strikethru> StrikethruElement;
-typedef IWORKNumericPropertyBase<bool, property::Underline> UnderlineElement;
-typedef IWORKNumericPropertyBase<bool, property::WidowControl> WidowControlElement;
-typedef IWORKNumericPropertyBase<double, property::BaselineShift> BaselineShiftElement;
-typedef IWORKNumericPropertyBase<double, property::FirstLineIndent> FirstLineIndentElement;
-typedef IWORKNumericPropertyBase<double, property::FontSize> FontSizeElement;
-typedef IWORKNumericPropertyBase<double, property::LeftIndent> LeftIndentElement;
-typedef IWORKNumericPropertyBase<double, property::RightIndent> RightIndentElement;
-typedef IWORKNumericPropertyBase<double, property::SpaceAfter> SpaceAfterElement;
-typedef IWORKNumericPropertyBase<double, property::SpaceBefore> SpaceBeforeElement;
-typedef IWORKNumericPropertyBase<double, property::Tracking> TrackingElement;
-typedef IWORKNumericPropertyBase<IWORKAlignment, property::Alignment> AlignmentElement;
-typedef IWORKNumericPropertyBase<IWORKBaseline, property::Baseline> SuperscriptElement;
-typedef IWORKNumericPropertyBase<IWORKBorderType, property::ParagraphBorderType> ParagraphBorderTypeElement;
-typedef IWORKNumericPropertyBase<IWORKCapitalization, property::Capitalization> CapitalizationElement;
+typedef IWORKNumericPropertyBase<property::Alignment> AlignmentElement;
+typedef IWORKNumericPropertyBase<property::Baseline> SuperscriptElement;
+typedef IWORKNumericPropertyBase<property::BaselineShift> BaselineShiftElement;
+typedef IWORKNumericPropertyBase<property::Bold> BoldElement;
+typedef IWORKNumericPropertyBase<property::Capitalization> CapitalizationElement;
+typedef IWORKNumericPropertyBase<property::FirstLineIndent> FirstLineIndentElement;
+typedef IWORKNumericPropertyBase<property::FontSize> FontSizeElement;
+typedef IWORKNumericPropertyBase<property::Italic> ItalicElement;
+typedef IWORKNumericPropertyBase<property::KeepLinesTogether> KeepLinesTogetherElement;
+typedef IWORKNumericPropertyBase<property::KeepWithNext> KeepWithNextElement;
+typedef IWORKNumericPropertyBase<property::LeftIndent> LeftIndentElement;
+typedef IWORKNumericPropertyBase<property::Outline> OutlineElement;
+typedef IWORKNumericPropertyBase<property::PageBreakBefore> PageBreakBeforeElement;
+typedef IWORKNumericPropertyBase<property::ParagraphBorderType> ParagraphBorderTypeElement;
+typedef IWORKNumericPropertyBase<property::RightIndent> RightIndentElement;
+typedef IWORKNumericPropertyBase<property::SpaceAfter> SpaceAfterElement;
+typedef IWORKNumericPropertyBase<property::SpaceBefore> SpaceBeforeElement;
+typedef IWORKNumericPropertyBase<property::Strikethru> StrikethruElement;
+typedef IWORKNumericPropertyBase<property::Tracking> TrackingElement;
+typedef IWORKNumericPropertyBase<property::Underline> UnderlineElement;
+typedef IWORKNumericPropertyBase<property::WidowControl> WidowControlElement;
 
 }
 
