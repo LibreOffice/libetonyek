@@ -88,6 +88,7 @@ filtered,filtered
 filtered-image,filtered_image
 firstLineIndent,firstLineIndent
 firstPageMaster,firstPageMaster
+fo,fo
 fontColor,fontColor
 fontName,fontName
 fontSize,fontSize
@@ -101,6 +102,7 @@ frame-h,frame_h
 frame-w,frame_w
 frame-x,frame_x
 frame-y,frame_y
+fs,fs
 g,g
 geometry,geometry
 graphic-style,graphic_style
@@ -185,6 +187,7 @@ r,r
 relative,relative
 right,right
 rightIndent,rightIndent
+rn,rn
 row-span,row_span
 rows,rows
 s,s

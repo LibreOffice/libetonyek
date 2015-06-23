@@ -14,6 +14,8 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <libetonyek_utils.h>
+
 namespace libetonyek
 {
 
@@ -27,6 +29,8 @@ public:
   bool parse(const std::string &formula);
 
   const std::string toString() const;
+
+  void collectFormula(librevenge::RVNGPropertyListVector &formula);
 
 private:
   boost::shared_ptr<Impl> m_impl;
