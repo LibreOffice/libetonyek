@@ -170,19 +170,22 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
 
   range %= address >> ':' >> address;
 
-  unaryOp %= unaryLit >> expression;
-  binaryOp %= expression >> binaryLit >> expression;
+  unaryOp %= unaryLit >> term;
+  binaryOp %= term >> binaryLit >> expression;
 
   function %= +alpha >> '(' >> -(expression % ';') >> ')';
 
-  expression %=
+  term %=
     number
     | str
     | address
     | range
     | unaryOp
-    | binaryOp
     | function
+    ;
+
+  expression %= term
+    | binaryOp
     ;
 
   formula %= lit('=') >> expression;
@@ -200,11 +203,12 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   range.name("address range");
   function.name("function");
   expression.name("expression");
+  term.name("term");
   formula.name("formula");
 }
 
 qi::rule<Iterator, Function()> function;
-qi::rule<Iterator, Expression()> expression, formula;
+qi::rule<Iterator, Expression()> expression, formula, term;
 qi::rule<Iterator, Address()> address;
 qi::rule<Iterator, AddressRange()> range;
 qi::rule<Iterator, unsigned()> columnName;
