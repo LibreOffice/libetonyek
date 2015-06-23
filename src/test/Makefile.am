@@ -20,6 +20,7 @@ test_LDADD = \
 
 test_SOURCES = \
 	IWORKChainedTokenizerTest.cpp \
+	IWORKFormulaTest.cpp \
 	IWORKPathTest.cpp \
 	IWORKPropertyMapTest.cpp \
 	IWORKShapeTest.cpp \
