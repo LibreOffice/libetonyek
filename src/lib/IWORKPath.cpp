@@ -22,6 +22,9 @@
 
 using boost::cref;
 
+using librevenge::RVNGPropertyList;
+using librevenge::RVNGPropertyListVector;
+
 using std::string;
 
 namespace libetonyek
@@ -54,9 +57,9 @@ public:
     */
   virtual void transform(const glm::dmat3 &tr) = 0;
 
-  /** Create WPG representation of this path element.
+  /** Create librevenge representation of this path element.
    */
-  virtual librevenge::RVNGPropertyList toWPG() const = 0;
+  virtual void write(RVNGPropertyList &element) const = 0;
 };
 
 namespace
@@ -73,7 +76,7 @@ public:
 
   virtual void transform(const glm::dmat3 &tr);
 
-  virtual librevenge::RVNGPropertyList toWPG() const;
+  virtual void write(RVNGPropertyList &element) const;
 
 private:
   double m_x;
@@ -110,15 +113,11 @@ void MoveTo::transform(const glm::dmat3 &tr)
 
 }
 
-librevenge::RVNGPropertyList MoveTo::toWPG() const
+void MoveTo::write(RVNGPropertyList &element) const
 {
-  librevenge::RVNGPropertyList element;
-
   element.insert("librevenge:path-action", "M");
   element.insert("svg:x", pt2in(m_x));
   element.insert("svg:y", pt2in(m_y));
-
-  return element;
 }
 
 }
@@ -137,7 +136,7 @@ public:
 
   virtual void transform(const glm::dmat3 &tr);
 
-  virtual librevenge::RVNGPropertyList toWPG() const;
+  virtual void write(RVNGPropertyList &element) const;
 
 private:
   double m_x;
@@ -173,15 +172,11 @@ void LineTo::transform(const glm::dmat3 &tr)
   m_y = vec[1];
 }
 
-librevenge::RVNGPropertyList LineTo::toWPG() const
+void LineTo::write(RVNGPropertyList &element) const
 {
-  librevenge::RVNGPropertyList element;
-
   element.insert("librevenge:path-action", "L");
   element.insert("svg:x", pt2in(m_x));
   element.insert("svg:y", pt2in(m_y));
-
-  return element;
 }
 
 }
@@ -200,7 +195,7 @@ public:
 
   virtual void transform(const glm::dmat3 &tr);
 
-  virtual librevenge::RVNGPropertyList toWPG() const;
+  virtual void write(RVNGPropertyList &element) const;
 
 private:
   double m_x1;
@@ -258,10 +253,8 @@ void CurveTo::transform(const glm::dmat3 &tr)
 
 }
 
-librevenge::RVNGPropertyList CurveTo::toWPG() const
+void CurveTo::write(RVNGPropertyList &element) const
 {
-  librevenge::RVNGPropertyList element;
-
   element.insert("librevenge:path-action", "C");
   element.insert("svg:x", pt2in(m_x));
   element.insert("svg:y", pt2in(m_y));
@@ -269,8 +262,6 @@ librevenge::RVNGPropertyList CurveTo::toWPG() const
   element.insert("svg:y1", pt2in(m_y1));
   element.insert("svg:x2", pt2in(m_x2));
   element.insert("svg:y2", pt2in(m_y2));
-
-  return element;
 }
 
 }
@@ -394,12 +385,14 @@ void IWORKPath::operator*=(const glm::dmat3 &tr)
   for_each(m_elements.begin(), m_elements.end(), boost::bind(&Element::transform, _1, cref(tr)));
 }
 
-librevenge::RVNGPropertyListVector IWORKPath::toWPG() const
+void IWORKPath::write(librevenge::RVNGPropertyListVector &vec) const
 {
-  librevenge::RVNGPropertyListVector vec;
-
   for (std::deque<Element *>::const_iterator it = m_elements.begin(); m_elements.end() != it; ++it)
-    vec.append((*it)->toWPG());
+  {
+    RVNGPropertyList element;
+    (*it)->write(element);
+    vec.append(element);
+  }
 
   if (m_closed)
   {
@@ -407,8 +400,6 @@ librevenge::RVNGPropertyListVector IWORKPath::toWPG() const
     element.insert("librevenge:path-action", "Z");
     vec.append(element);
   }
-
-  return vec;
 }
 
 bool approxEqual(const IWORKPath &left, const IWORKPath &right, const double eps)

@@ -343,7 +343,9 @@ void KEYCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &tra
     path.appendClose();
     path *= trafo;
 
-    props.insert("svg:d", path.toWPG());
+    librevenge::RVNGPropertyListVector d;
+    path.write(d);
+    props.insert("svg:d", d);
 
     IWORKOutputElements &elements = m_outputManager.getCurrent();
     elements.addStartTextObject(props);

@@ -55,9 +55,9 @@ public:
     */
   void operator*=(const glm::dmat3 &tr);
 
-  /** Create WPG representation of this path.
+  /** Create librevenge representation of this path.
     */
-  librevenge::RVNGPropertyListVector toWPG() const;
+  void write(librevenge::RVNGPropertyListVector &vec) const;
 
 private:
   std::deque<Element *> m_elements;

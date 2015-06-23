@@ -71,7 +71,7 @@ string detectMimetype(const RVNGInputStreamPtr_t &stream)
   return string();
 }
 
-librevenge::RVNGPropertyList pointToWPG(const double x, const double y)
+librevenge::RVNGPropertyList makePoint(const double x, const double y)
 {
   librevenge::RVNGPropertyList props;
 
@@ -114,8 +114,8 @@ void drawLine(const IWORKLinePtr_t &line, const glm::dmat3 &trafo, IWORKOutputEl
     elements.addSetStyle(props);
 
     librevenge::RVNGPropertyListVector vertices;
-    vertices.append(pointToWPG(get(line->m_x1), get(line->m_y1)));
-    vertices.append(pointToWPG(get(line->m_x2), get(line->m_y2)));
+    vertices.append(makePoint(get(line->m_x1), get(line->m_y1)));
+    vertices.append(makePoint(get(line->m_x2), get(line->m_y2)));
 
     librevenge::RVNGPropertyList points;
     points.insert("svg:points", vertices);
@@ -605,6 +605,9 @@ void IWORKCollector::drawShape(const IWORKShapePtr_t &shape)
     librevenge::RVNGPropertyList props;
     props.insert("svg:d", path.toWPG());
 
+    librevenge::RVNGPropertyListVector vec;
+    path.write(vec);
+    props.insert("svg:d", vec);
     fillShapeProperties(props);
 
     elements.addSetStyle(librevenge::RVNGPropertyList());

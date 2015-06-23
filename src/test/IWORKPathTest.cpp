@@ -34,7 +34,8 @@ string toSVG(const IWORKPath &path)
 {
   std::ostringstream output;
 
-  const librevenge::RVNGPropertyListVector vec = path.toWPG();
+  librevenge::RVNGPropertyListVector vec;
+  path.write(vec);
 
   bool first = true;
 
