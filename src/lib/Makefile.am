@@ -228,7 +228,8 @@ libetonyek_internal_la_SOURCES = \
 	libetonyek_utils.cpp \
 	libetonyek_utils.h \
 	libetonyek_xml.cpp \
-	libetonyek_xml.h
+	libetonyek_xml.h \
+	$(BUILT_SOURCES)
 
 if OS_WIN32
 
@@ -238,9 +239,6 @@ if OS_WIN32
 
 endif
 
-distclean-local :
-	rm -f $(BUILT_SOURCES)
-
 EXTRA_DIST = \
 	IWORKToken.gperf \
 	KEY1Token.gperf \
@@ -249,15 +247,11 @@ EXTRA_DIST = \
 	PAG1Token.gperf \
 	libetonyek.rc.in
 
+MAINTAINERCLEANFILES = $(BUILT_SOURCES)
+
 # These may be in the builddir too
 BUILD_EXTRA_DIST = \
 	libetonyek.rc
-
-IWORKToken.cpp : IWORKToken.inc
-KEY1Token.cpp : KEY1Token.inc
-KEY2Token.cpp : KEY2Token.inc
-NUM1Token.cpp : NUM1Token.inc
-PAG1Token.cpp : PAG1Token.inc
 
 %.inc : %.gperf
 	if $(GPERF) $(GPERFFLAGS) --language C++ $< > $@.tmp; then \
