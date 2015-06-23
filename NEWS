@@ -1,3 +1,24 @@
+libetonyek 0.1.3
+
+- Common:
+  + Import more text formatting properties.
+  + Correctly interpret properties set by paragraph style, but turned
+    off in character style.
+  + Import paragraph borders.
+  + Import metadata.
+  + Collect styles and other referenceable entities even from skipped
+    parts of the input.
+  + Fix a typo that caused shapes being dropped from output.
+  + Import table borders.
+  + Add dependency on mdds.
+  + Various small bugfixes and improvements.
+- Pages:
+  + Import headers and footers.
+  + Import footnotes and endnotes.
+  + Import images.
+  + Import shapes.
+  + Import text columns.
+
 libetonyek 0.1.2
 
 - Use symbol visibility on Linux. The library only exports the two public
