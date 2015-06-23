@@ -118,10 +118,14 @@ namespace fusion = boost::fusion;
 namespace phoenix = boost::phoenix;
 namespace qi = boost::spirit::qi;
 
-unsigned parseRowName(const vector<char> &)
+unsigned parseRowName(const vector<char> &columnName)
 {
-  // TODO: implement
-  return 0;
+  unsigned columnNumber = 0;
+
+  for(vector<char>::const_iterator it = columnName.begin(); it != columnName.end(); ++it)
+      columnNumber = 26*columnNumber + (toupper(*it) - 'A') + 1;
+
+  return columnNumber;
 }
 
 template<typename Iterator>
