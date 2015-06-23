@@ -53,6 +53,18 @@ enum IWORKCapitalization
   IWORK_CAPITALIZATION_TITLE
 };
 
+enum IWORKLineCap
+{
+  IWORK_LINE_CAP_NONE,
+  IWORK_LINE_CAP_BUTT
+};
+
+enum IWORKLineJoin
+{
+  IWORK_LINE_JOIN_NONE,
+  IWORK_LINE_JOIN_MITER
+};
+
 }
 
 #endif //  IWORKENUM_H_INCLUDED

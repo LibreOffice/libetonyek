@@ -159,6 +159,8 @@ IWORKTableData::IWORKTableData()
 IWORKStroke::IWORKStroke()
   : m_width(0)
   , m_color()
+  , m_join(IWORK_LINE_JOIN_NONE)
+  , m_cap(IWORK_LINE_CAP_NONE)
   , m_pattern()
 {
 }

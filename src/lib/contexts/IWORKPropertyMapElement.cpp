@@ -264,6 +264,8 @@ private:
   optional<IWORKStroke> &m_value;
   optional<double> m_width;
   optional<IWORKColor> m_color;
+  optional<IWORKLineCap> m_cap;
+  optional<IWORKLineJoin> m_join;
   deque<double> m_pattern;
 };
 
@@ -272,6 +274,8 @@ StrokeElement::StrokeElement(IWORKXMLParserState &state, optional<IWORKStroke> &
   , m_value(value)
   , m_width()
   , m_color()
+  , m_cap()
+  , m_join()
   , m_pattern()
 {
 }
@@ -280,6 +284,22 @@ void StrokeElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
+  case IWORKToken::NS_URI_SF | IWORKToken::cap :
+    switch (getState().getTokenizer().getId(value))
+    {
+    case IWORKToken::butt :
+      m_cap = IWORK_LINE_CAP_BUTT;
+      break;
+    }
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::join :
+    switch (getState().getTokenizer().getId(value))
+    {
+    case IWORKToken::miter :
+      m_join = IWORK_LINE_JOIN_MITER;
+      break;
+    }
+    break;
   case IWORKToken::NS_URI_SF | IWORKToken::width :
     m_width = double_cast(value);
     break;
@@ -366,6 +386,7 @@ typedef IWORKPropertyContext<property::LineSpacing, LinespacingElement, IWORKTok
 typedef IWORKPropertyContext<property::ParagraphFill, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> ParagraphFillElement;
 typedef IWORKPropertyContext<property::ParagraphStroke, StrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke> ParagraphStrokeElement;
 typedef IWORKPropertyContext<property::SFTStrokeProperty, StrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke> SFTStrokePropertyElement;
+typedef IWORKPropertyContext<property::Stroke, StrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke> StrokeProperty;
 typedef IWORKPropertyContext<property::TextBackground, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> TextBackgroundElement;
 
 typedef IWORKPtrPropertyContext<property::Geometry, IWORKGeometryElement, IWORKToken::NS_URI_SF | IWORKToken::geometry> GeometryElement;
@@ -456,6 +477,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<SpaceBeforeElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::strikethru :
     return makeContext<StrikethruElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::stroke :
+    return makeContext<StrokeProperty>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::superscript :
     return makeContext<SuperscriptElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::tabs :

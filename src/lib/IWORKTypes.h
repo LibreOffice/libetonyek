@@ -20,6 +20,7 @@
 #include <mdds/flat_segment_tree.hpp>
 
 #include "libetonyek_utils.h"
+#include "IWORKEnum.h"
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle_fwd.h"
 
@@ -198,6 +199,8 @@ struct IWORKStroke
 
   double m_width;
   IWORKColor m_color;
+  IWORKLineJoin m_join;
+  IWORKLineCap m_cap;
   std::deque<double> m_pattern;
 };
 

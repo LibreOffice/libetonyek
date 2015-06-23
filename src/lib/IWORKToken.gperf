@@ -50,8 +50,10 @@ bezier-path,bezier_path
 bezier-ref,bezier_ref
 body-placeholder-ref,body_placeholder_ref
 bold,bold
+butt,butt
 calc-engine,calc_engine
 callout2-path,callout2_path
+cap,cap
 capitalization,capitalization
 cell-style,cell_style
 cell-style-ref,cell_style_ref
@@ -127,6 +129,7 @@ image,image
 image-media,image_media
 intratopicbr,intratopicbr
 italic,italic
+join,join
 keepLinesTogether,keepLinesTogether
 keepWithNext,keepWithNext
 keywords,keywords
@@ -151,6 +154,7 @@ locked,locked
 mark,mark
 media,media
 metadata,metadata
+miter,miter
 mode,mode
 movie-media,movie_media
 n,n

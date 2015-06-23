@@ -143,6 +143,34 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
     props.insert("draw:fill", "solid");
     props.insert("draw:fill-color", makeColor(style->get<Fill>()));
   }
+
+  if (style->has<Stroke>())
+  {
+    const IWORKStroke &stroke = style->get<Stroke>();
+
+    // TODO: interpret pattern
+    props.insert("draw:stroke", "solid");
+
+    props.insert("svg:stroke-width", pt2in(stroke.m_width));
+    props.insert("svg:stroke-color", makeColor(stroke.m_color));
+
+    switch (stroke.m_cap)
+    {
+    default :
+    case IWORK_LINE_CAP_BUTT :
+      props.insert("svg:stroke-linecap", "butt");
+      break;
+    }
+
+    switch (stroke.m_join)
+    {
+    case IWORK_LINE_JOIN_MITER :
+      props.insert("svg:stroke-linejoin", "miter");
+      break;
+    default :
+      props.insert("svg:stroke-linejoin", "none");
+    }
+  }
 }
 
 }
