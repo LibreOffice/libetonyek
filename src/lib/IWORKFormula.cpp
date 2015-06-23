@@ -184,7 +184,8 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
     | function
     ;
 
-  expression %= term
+  expression %=
+    term
     | binaryOp
     ;
 
