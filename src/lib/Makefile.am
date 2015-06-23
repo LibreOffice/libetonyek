@@ -172,7 +172,7 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKNumberConverter.cpp \
 	contexts/IWORKNumberConverter.h \
 	contexts/IWORKNumberElement.h \
-	contexts/IWORKNumericPropertyBase.h \
+	contexts/IWORKNumericPropertyContext.h \
 	contexts/IWORKPElement.cpp \
 	contexts/IWORKPElement.h \
 	contexts/IWORKPathElement.cpp \

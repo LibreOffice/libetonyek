@@ -14,7 +14,7 @@
 #include "IWORKColorElement.h"
 #include "IWORKDictionary.h"
 #include "IWORKGeometryElement.h"
-#include "IWORKNumericPropertyBase.h"
+#include "IWORKNumericPropertyContext.h"
 #include "IWORKProperties.h"
 #include "IWORKPropertyContext.h"
 #include "IWORKPtrPropertyContext.h"
@@ -374,27 +374,27 @@ typedef IWORKPtrPropertyContext<property::Geometry, IWORKGeometryElement, IWORKT
 namespace
 {
 
-typedef IWORKNumericPropertyBase<property::Alignment> AlignmentElement;
-typedef IWORKNumericPropertyBase<property::Baseline> SuperscriptElement;
-typedef IWORKNumericPropertyBase<property::BaselineShift> BaselineShiftElement;
-typedef IWORKNumericPropertyBase<property::Bold> BoldElement;
-typedef IWORKNumericPropertyBase<property::Capitalization> CapitalizationElement;
-typedef IWORKNumericPropertyBase<property::FirstLineIndent> FirstLineIndentElement;
-typedef IWORKNumericPropertyBase<property::FontSize> FontSizeElement;
-typedef IWORKNumericPropertyBase<property::Italic> ItalicElement;
-typedef IWORKNumericPropertyBase<property::KeepLinesTogether> KeepLinesTogetherElement;
-typedef IWORKNumericPropertyBase<property::KeepWithNext> KeepWithNextElement;
-typedef IWORKNumericPropertyBase<property::LeftIndent> LeftIndentElement;
-typedef IWORKNumericPropertyBase<property::Outline> OutlineElement;
-typedef IWORKNumericPropertyBase<property::PageBreakBefore> PageBreakBeforeElement;
-typedef IWORKNumericPropertyBase<property::ParagraphBorderType> ParagraphBorderTypeElement;
-typedef IWORKNumericPropertyBase<property::RightIndent> RightIndentElement;
-typedef IWORKNumericPropertyBase<property::SpaceAfter> SpaceAfterElement;
-typedef IWORKNumericPropertyBase<property::SpaceBefore> SpaceBeforeElement;
-typedef IWORKNumericPropertyBase<property::Strikethru> StrikethruElement;
-typedef IWORKNumericPropertyBase<property::Tracking> TrackingElement;
-typedef IWORKNumericPropertyBase<property::Underline> UnderlineElement;
-typedef IWORKNumericPropertyBase<property::WidowControl> WidowControlElement;
+typedef IWORKNumericPropertyContext<property::Alignment> AlignmentElement;
+typedef IWORKNumericPropertyContext<property::Baseline> SuperscriptElement;
+typedef IWORKNumericPropertyContext<property::BaselineShift> BaselineShiftElement;
+typedef IWORKNumericPropertyContext<property::Bold> BoldElement;
+typedef IWORKNumericPropertyContext<property::Capitalization> CapitalizationElement;
+typedef IWORKNumericPropertyContext<property::FirstLineIndent> FirstLineIndentElement;
+typedef IWORKNumericPropertyContext<property::FontSize> FontSizeElement;
+typedef IWORKNumericPropertyContext<property::Italic> ItalicElement;
+typedef IWORKNumericPropertyContext<property::KeepLinesTogether> KeepLinesTogetherElement;
+typedef IWORKNumericPropertyContext<property::KeepWithNext> KeepWithNextElement;
+typedef IWORKNumericPropertyContext<property::LeftIndent> LeftIndentElement;
+typedef IWORKNumericPropertyContext<property::Outline> OutlineElement;
+typedef IWORKNumericPropertyContext<property::PageBreakBefore> PageBreakBeforeElement;
+typedef IWORKNumericPropertyContext<property::ParagraphBorderType> ParagraphBorderTypeElement;
+typedef IWORKNumericPropertyContext<property::RightIndent> RightIndentElement;
+typedef IWORKNumericPropertyContext<property::SpaceAfter> SpaceAfterElement;
+typedef IWORKNumericPropertyContext<property::SpaceBefore> SpaceBeforeElement;
+typedef IWORKNumericPropertyContext<property::Strikethru> StrikethruElement;
+typedef IWORKNumericPropertyContext<property::Tracking> TrackingElement;
+typedef IWORKNumericPropertyContext<property::Underline> UnderlineElement;
+typedef IWORKNumericPropertyContext<property::WidowControl> WidowControlElement;
 
 }
 

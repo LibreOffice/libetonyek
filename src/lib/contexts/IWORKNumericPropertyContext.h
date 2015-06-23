@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef IWORKNUMERICPROPERTYBASE_H_INCLUDED
-#define IWORKNUMERICPROPERTYBASE_H_INCLUDED
+#ifndef IWORKNUMERICPROPERTYCONTEXT_H_INCLUDED
+#define IWORKNUMERICPROPERTYCONTEXT_H_INCLUDED
 
 #include "IWORKNumberElement.h"
 #include "IWORKPropertyContext.h"
@@ -17,22 +17,22 @@ namespace libetonyek
 {
 
 template<class Property>
-class IWORKNumericPropertyBase : public IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, IWORKToken::NS_URI_SF | IWORKToken::number>
+class IWORKNumericPropertyContext : public IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, IWORKToken::NS_URI_SF | IWORKToken::number>
 {
   typedef IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, IWORKToken::NS_URI_SF | IWORKToken::number> Parent_t;
 
 public:
-  IWORKNumericPropertyBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+  IWORKNumericPropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
 template<class Property>
-IWORKNumericPropertyBase<Property>::IWORKNumericPropertyBase(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+IWORKNumericPropertyContext<Property>::IWORKNumericPropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : Parent_t(state, propMap)
 {
 }
 
 }
 
-#endif // IWORKNUMERICPROPERTYBASE_H_INCLUDED
+#endif // IWORKNUMERICPROPERTYCONTEXT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
