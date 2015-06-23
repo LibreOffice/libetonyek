@@ -44,6 +44,8 @@ libetonyek_internal_la_SOURCES = \
 	IWORKDocumentInterface.cpp \
 	IWORKDocumentInterface.h \
 	IWORKEnum.h \
+	IWORKFormula.cpp \
+	IWORKFormula.h \
 	IWORKMemoryStream.cpp \
 	IWORKMemoryStream.h \
 	IWORKOutputElements.cpp \

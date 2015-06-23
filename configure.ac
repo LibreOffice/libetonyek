@@ -83,6 +83,8 @@ AC_CHECK_HEADERS(
         boost/any.hpp \
         boost/bind.hpp \
         boost/function.hpp \
+        boost/fusion/adapted/std_pair.hpp \
+        boost/fusion/include/adapt_struct.hpp \
         boost/lexical_cast.hpp \
         boost/logic/tribool.hpp \
         boost/make_shared.hpp \
@@ -94,7 +96,8 @@ AC_CHECK_HEADERS(
         boost/shared_ptr.hpp \
         boost/spirit/include/phoenix.hpp \
         boost/spirit/include/qi.hpp \
-        boost/unordered_map.hpp,
+        boost/unordered_map.hpp \
+        boost/variant/recursive_variant.hpp,
     [],
     [AC_MSG_ERROR([Required boost headers not found.])],
     []
