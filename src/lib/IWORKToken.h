@@ -73,6 +73,7 @@ enum
   element,
   evenPageMaster,
   f,
+  fill,
   filtered,
   filtered_image,
   firstLineIndent,

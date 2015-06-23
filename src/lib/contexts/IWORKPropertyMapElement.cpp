@@ -359,6 +359,7 @@ void LanguageElement::endOfElement()
 namespace
 {
 
+typedef IWORKPropertyContext<property::Fill, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> FillElement;
 typedef IWORKPropertyContext<property::FontColor, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> FontColorElement;
 typedef IWORKPropertyContext<property::FontName, IWORKStringElement, IWORKToken::NS_URI_SF | IWORKToken::string> FontNameElement;
 typedef IWORKPropertyContext<property::LineSpacing, LinespacingElement, IWORKToken::NS_URI_SF | IWORKToken::linespacing> LineSpacingElement;
@@ -411,6 +412,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<BoldElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::capitalization :
     return makeContext<CapitalizationElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::fill :
+    return makeContext<FillElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::firstLineIndent :
     return makeContext<FirstLineIndentElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::fontColor :

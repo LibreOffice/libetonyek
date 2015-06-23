@@ -19,14 +19,18 @@
 #include "IWORKDocumentInterface.h"
 #include "IWORKOutputElements.h"
 #include "IWORKPath.h"
+#include "IWORKProperties.h"
 #include "IWORKShape.h"
 #include "IWORKText.h"
+#include "libetonyek_utils.h"
 
 namespace libetonyek
 {
 
 using boost::make_shared;
 using boost::optional;
+
+using librevenge::RVNGPropertyList;
 
 using std::memcmp;
 using std::string;
@@ -125,6 +129,19 @@ void drawLine(const IWORKLinePtr_t &line, const glm::dmat3 &trafo, IWORKOutputEl
   else
   {
     ETONYEK_DEBUG_MSG(("line is missing head or tail point\n"));
+  }
+}
+
+void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
+{
+  assert(bool(style));
+
+  using namespace property;
+
+  if (style->has<Fill>())
+  {
+    props.insert("draw:fill", "solid");
+    props.insert("draw:fill-color", makeColor(style->get<Fill>()));
   }
 }
 
@@ -598,20 +615,23 @@ void IWORKCollector::drawShape(const IWORKShapePtr_t &shape)
     const glm::dmat3 trafo = m_levelStack.top().m_trafo;
     IWORKOutputElements &elements = m_outputManager.getCurrent();
 
-    // TODO: make style
 
     const IWORKPath path = *shape->m_path * trafo;
 
-    librevenge::RVNGPropertyList props;
-    props.insert("svg:d", path.toWPG());
+    librevenge::RVNGPropertyList styleProps;
+
+    if (bool(shape->m_style))
+      fillGraphicProps(shape->m_style, styleProps);
+
+    librevenge::RVNGPropertyList shapeProps;
 
     librevenge::RVNGPropertyListVector vec;
     path.write(vec);
-    props.insert("svg:d", vec);
-    fillShapeProperties(props);
+    shapeProps.insert("svg:d", vec);
+    fillShapeProperties(shapeProps);
 
-    elements.addSetStyle(librevenge::RVNGPropertyList());
-    elements.addDrawPath(props);
+    elements.addSetStyle(styleProps);
+    elements.addDrawPath(shapeProps);
 
     drawTextBox(shape->m_text, trafo, shape->m_geometry);
   }

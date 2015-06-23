@@ -9,9 +9,13 @@
 
 #include "IWORKShapeContext.h"
 
+#include <boost/optional.hpp>
+
 #include "IWORKCollector.h"
+#include "IWORKDictionary.h"
 #include "IWORKGeometryElement.h"
 #include "IWORKPathElement.h"
+#include "IWORKRefContext.h"
 #include "IWORKTextElement.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
@@ -19,8 +23,52 @@
 namespace libetonyek
 {
 
+namespace
+{
+
+class StyleElement : public IWORKXMLElementContextBase
+{
+public:
+  StyleElement(IWORKXMLParserState &state, IWORKStylePtr_t &style);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  IWORKStylePtr_t &m_style;
+  boost::optional<ID_t> m_ref;
+};
+
+StyleElement::StyleElement(IWORKXMLParserState &state, IWORKStylePtr_t &style)
+  : IWORKXMLElementContextBase(state)
+  , m_style(style)
+  , m_ref()
+{
+}
+
+IWORKXMLContextPtr_t StyleElement::element(const int name)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::style))
+    return makeContext<IWORKRefContext>(getState(), m_ref);
+  return IWORKXMLContextPtr_t();
+}
+
+void StyleElement::endOfElement()
+{
+  if (m_ref)
+  {
+    const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_graphicStyles.find(get(m_ref));
+    if (it != getState().getDictionary().m_graphicStyles.end())
+      m_style = it->second;
+  }
+}
+
+}
+
 IWORKShapeContext::IWORKShapeContext(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
+  , m_style()
 {
 }
 
@@ -41,6 +89,8 @@ IWORKXMLContextPtr_t IWORKShapeContext::element(const int name)
     return makeContext<IWORKGeometryElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::path :
     return makeContext<IWORKPathElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::style :
+    return makeContext<StyleElement>(getState(), m_style);
   case IWORKToken::NS_URI_SF | IWORKToken::text :
     return makeContext<IWORKTextElement>(getState());
   }
@@ -52,6 +102,8 @@ void IWORKShapeContext::endOfElement()
 {
   if (isCollector())
   {
+    if (m_style)
+      getCollector().setGraphicStyle(m_style);
     getCollector().collectShape();
     getCollector().endText();
     getCollector().endLevel();

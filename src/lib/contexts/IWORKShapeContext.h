@@ -10,6 +10,7 @@
 #ifndef IWORKSHAPECONTEXT_H_INCLUDED
 #define IWORKSHAPECONTEXT_H_INCLUDED
 
+#include "IWORKStyle_fwd.h"
 #include "IWORKXMLContextBase.h"
 
 namespace libetonyek
@@ -24,6 +25,9 @@ private:
   virtual void startOfElement();
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
+
+private:
+  IWORKStylePtr_t m_style;
 };
 
 }
