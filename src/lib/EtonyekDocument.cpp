@@ -174,8 +174,9 @@ bool probeNumbersXML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlTe
     {
     case NUM1Token::VERSION_STR_2 :
       version = 2;
-      return true;
+      break;
     }
+    return true;
   }
 
   return false;
