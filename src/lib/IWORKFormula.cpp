@@ -15,7 +15,6 @@
 
 #include <boost/fusion/adapted/std_pair.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
-#include <boost/lexical_cast.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix.hpp>
 #include <boost/variant/recursive_variant.hpp>
@@ -230,62 +229,70 @@ qi::rule<Iterator, char()> unaryLit, binaryLit;
 namespace
 {
 
-struct printer : public boost::static_visitor<string>
+using std::ostringstream;
+
+struct printer : public boost::static_visitor<void>
 {
-  string operator()(double val) const
+  printer(ostringstream &out)
+    : m_out(out)
   {
-    return boost::lexical_cast<string>(val);
   }
 
-  string operator()(const std::string &val) const
+  void operator()(double val) const
   {
-    return val;
+    m_out << val;
   }
 
-  string operator()(const Address &val) const
+  void operator()(const std::string &val) const
   {
-    std::ostringstream out;
+    m_out << val;
+  }
 
+  void operator()(const Address &val) const
+  {
     if (val.m_worksheet)
-      out << get(val.m_worksheet) << '.';
+      m_out << get(val.m_worksheet) << '.';
     if (val.m_table)
-      out << get(val.m_table) << '.';
+      m_out << get(val.m_table) << '.';
     if (val.m_column.m_absolute)
-      out << '$';
-    out << val.m_column.m_coord;
+      m_out << '$';
+    m_out << val.m_column.m_coord;
     if (val.m_row.m_absolute)
-      out << '$';
-    out << val.m_row.m_coord;
-
-    return out.str();
+      m_out << '$';
+    m_out << val.m_row.m_coord;
   }
 
-  string operator()(const AddressRange &val) const
+  void operator()(const AddressRange &val) const
   {
-    return operator()(val.first) + ':' + operator()(val.second);
+    printer p(m_out);
+    p(val.first);
+    m_out << ':';
+    p(val.second);
   }
 
-  string operator()(const recursive_wrapper<UnaryOp> &val) const
+  void operator()(const recursive_wrapper<UnaryOp> &val) const
   {
-    return val.get().m_op + apply_visitor(printer(), val.get().m_expr);
+    m_out << val.get().m_op;
+    apply_visitor(printer(m_out), val.get().m_expr);
   }
 
-  string operator()(const recursive_wrapper<BinaryOp> &val) const
+  void operator()(const recursive_wrapper<BinaryOp> &val) const
   {
-    return apply_visitor(printer(), val.get().m_left) + val.get().m_op + apply_visitor(printer(), val.get().m_right);
+    apply_visitor(printer(m_out), val.get().m_left);
+    m_out << val.get().m_op;
+    apply_visitor(printer(m_out), val.get().m_right);
   }
 
-  string operator()(const recursive_wrapper<Function> &val) const
+  void operator()(const recursive_wrapper<Function> &val) const
   {
-    std::ostringstream out;
-
-    out << val.get().m_name << '(';
+    m_out << val.get().m_name << '(';
     for (vector<Expression>::const_iterator it = val.get().m_args.begin(); it != val.get().m_args.end(); ++it)
-      out << apply_visitor(printer(), *it);
-    out << ')';
-
-    return out.str();
+      apply_visitor(printer(m_out), *it);
+    m_out << ')';
   }
+
+private:
+  ostringstream &m_out;
 };
 
 }
@@ -311,7 +318,10 @@ bool IWORKFormula::parse(const std::string &formula)
 
 const std::string IWORKFormula::toString() const
 {
-  return '=' + apply_visitor(printer(), m_impl->m_formula);
+  ostringstream out;
+  out << '=';
+  apply_visitor(printer(out), m_impl->m_formula);
+  return out.str();
 }
 
 } // namespace libetonyek
