@@ -200,8 +200,9 @@ bool probePagesXML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlText
     {
     case PAG1Token::VERSION_STR_4 :
       version = 4;
-      return true;
+      break;
     }
+    return true;
   }
 
   return false;
