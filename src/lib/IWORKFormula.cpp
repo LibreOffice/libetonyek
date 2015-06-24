@@ -9,6 +9,8 @@
 
 #include "IWORKFormula.h"
 
+#include <algorithm>
+#include <iterator>
 #include <sstream>
 #include <utility>
 #include <vector>
@@ -250,16 +252,9 @@ struct printer : public boost::static_visitor<void>
 
   void operator()(const Address &val) const
   {
-    if (val.m_worksheet)
-      m_out << get(val.m_worksheet) << '.';
-    if (val.m_table)
-      m_out << get(val.m_table) << '.';
-    if (val.m_column.m_absolute)
-      m_out << '$';
-    m_out << val.m_column.m_coord;
-    if (val.m_row.m_absolute)
-      m_out << '$';
-    m_out << val.m_row.m_coord;
+    m_out << '[';
+    formatAddress(val);
+    m_out << ']';
   }
 
   void operator()(const AddressRange &val) const
@@ -289,6 +284,34 @@ struct printer : public boost::static_visitor<void>
     for (vector<Expression>::const_iterator it = val.get().m_args.begin(); it != val.get().m_args.end(); ++it)
       apply_visitor(printer(m_out), *it);
     m_out << ')';
+  }
+
+private:
+  void formatAddress(const Address &val) const
+  {
+    if (val.m_worksheet)
+      m_out << get(val.m_worksheet) << '.';
+    if (val.m_table)
+      m_out << get(val.m_table);
+    m_out  << '.';
+    if (val.m_column.m_absolute)
+      m_out << '$';
+
+    unsigned column = val.m_column.m_coord;
+    vector<char> columnNumerals;
+    columnNumerals.reserve(4);
+    while (column != 0)
+    {
+      if (column > 0)
+        --column;
+      columnNumerals.push_back('A' + column % 26);
+      column /= 26;
+    }
+    copy(columnNumerals.rbegin(), columnNumerals.rend(), std::ostream_iterator<char>(m_out));
+
+    if (val.m_row.m_absolute)
+      m_out << '$';
+    m_out << val.m_row.m_coord;
   }
 
 private:

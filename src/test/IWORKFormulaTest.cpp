@@ -73,42 +73,42 @@ void IWORKFormulaTest::testCellReferences()
   {
     const string testFormula = "=$B$2";
     CPPUNIT_ASSERT(formula.parse(testFormula));
-    CPPUNIT_ASSERT_EQUAL(string("=$2$2"), formula.toString());
+    CPPUNIT_ASSERT_EQUAL(string("=[.$B$2]"), formula.toString());
   }
 
   // column absolute
   {
     const string testFormula = "=$AH91";
     CPPUNIT_ASSERT(formula.parse(testFormula));
-    CPPUNIT_ASSERT_EQUAL(string("=$3491"), formula.toString());
+    CPPUNIT_ASSERT_EQUAL(string("=[.$AH91]"), formula.toString());
   }
 
   // row absolute
   {
     const string testFormula = "=Z$4";
     CPPUNIT_ASSERT(formula.parse(testFormula));
-    CPPUNIT_ASSERT_EQUAL(string("=26$4"), formula.toString());
+    CPPUNIT_ASSERT_EQUAL(string("=[.Z$4]"), formula.toString());
   }
 
   // both row and column relative
   {
     const string testFormula = "=R34";
     CPPUNIT_ASSERT(formula.parse(testFormula));
-    CPPUNIT_ASSERT_EQUAL(string("=1834"), formula.toString());
+    CPPUNIT_ASSERT_EQUAL(string("=[.R34]"), formula.toString());
   }
 
   // sheet with table and cell
   {
     const string testFormula = "=HOME.Table1.B5";
     CPPUNIT_ASSERT(formula.parse(testFormula));
-    CPPUNIT_ASSERT_EQUAL(string("=HOME.Table1.25"), formula.toString());
+    CPPUNIT_ASSERT_EQUAL(string("=[HOME.Table1.B5]"), formula.toString());
   }
 
   // table and cell
   {
     const string testFormula = "=Table1.$B3";
     CPPUNIT_ASSERT(formula.parse(testFormula));
-    // CPPUNIT_ASSERT_EQUAL(string("=Table1.$23"), formula.toString());
+    // CPPUNIT_ASSERT_EQUAL(string("=[Table1.$B3]"), formula.toString());
   }
 
 }
@@ -149,7 +149,7 @@ void IWORKFormulaTest::testOperators()
   {
     const string testFormula = "=-C10";
     CPPUNIT_ASSERT(formula.parse(testFormula));
-    CPPUNIT_ASSERT_EQUAL(string("=-310"), formula.toString());
+    CPPUNIT_ASSERT_EQUAL(string("=-[.C10]"), formula.toString());
   }
 
   //Binary
@@ -170,7 +170,7 @@ void IWORKFormulaTest::testFunctions()
   {
     const string testFormula = "=ABS($B12)";
     CPPUNIT_ASSERT(formula.parse(testFormula));
-    CPPUNIT_ASSERT_EQUAL(string("=ABS($212)"), formula.toString());
+    CPPUNIT_ASSERT_EQUAL(string("=ABS([.$B12])"), formula.toString());
   }
 
   // function with address range
