@@ -53,17 +53,11 @@ void fillSectionPropList(const IWORKStylePtr_t &style, RVNGPropertyList &props)
     {
       RVNGPropertyListVector vec;
 
-      double width = 0;
-      for (IWORKColumns::Columns_t::const_iterator it = columns.m_columns.begin(); it != columns.m_columns.end(); ++it)
-        width += it->m_width;
-
       for (IWORKColumns::Columns_t::const_iterator it = columns.m_columns.begin(); it != columns.m_columns.end(); ++it)
       {
         RVNGPropertyList columnProps;
-        if (width > 0)
-          columnProps.insert("style:rel-width", it->m_width / width, librevenge::RVNG_PERCENT);
-        columnProps.insert("fo:start-indent", pt2in(it->m_spacing));
-        columnProps.insert("fo:end-indent", pt2in(it->m_spacing));
+        // TODO: need to have real width of the section to be able to compute indents.
+        columnProps.insert("style:rel-width", it->m_width, librevenge::RVNG_PERCENT);
         vec.append(columnProps);
       }
       props.insert("style:columns", vec);
