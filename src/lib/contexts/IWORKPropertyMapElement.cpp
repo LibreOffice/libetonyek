@@ -429,6 +429,56 @@ void ColumnsElement::endOfElement()
 namespace
 {
 
+class PaddingElement : public IWORKXMLEmptyContextBase
+{
+public:
+  PaddingElement(IWORKXMLParserState &state, optional<IWORKPadding> &value);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual void endOfElement();
+
+private:
+  optional<IWORKPadding> &m_value;
+  IWORKPadding m_builder;
+};
+
+PaddingElement::PaddingElement(IWORKXMLParserState &state, optional<IWORKPadding> &value)
+  : IWORKXMLEmptyContextBase(state)
+  , m_value(value)
+  , m_builder()
+{
+}
+
+void PaddingElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::bottom :
+    m_builder.m_bottom = try_double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::left :
+    m_builder.m_left = try_double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::right :
+    m_builder.m_right = try_double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::top :
+    m_builder.m_top = try_double_cast(value);
+    break;
+  }
+}
+
+void PaddingElement::endOfElement()
+{
+  m_value = m_builder;
+}
+
+}
+
+namespace
+{
+
 class LanguageElement : public IWORKPropertyContextBase
 {
 public:
@@ -475,6 +525,7 @@ typedef IWORKPropertyContext<property::Columns, ColumnsElement, IWORKToken::NS_U
 typedef IWORKPropertyContext<property::Fill, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> FillElement;
 typedef IWORKPropertyContext<property::FontColor, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> FontColorElement;
 typedef IWORKPropertyContext<property::FontName, IWORKStringElement, IWORKToken::NS_URI_SF | IWORKToken::string> FontNameElement;
+typedef IWORKPropertyContext<property::LayoutMargins, PaddingElement, IWORKToken::NS_URI_SF | IWORKToken::padding> LayoutMarginsElement;
 typedef IWORKPropertyContext<property::LineSpacing, LinespacingElement, IWORKToken::NS_URI_SF | IWORKToken::linespacing> LineSpacingElement;
 typedef IWORKPropertyContext<property::ParagraphFill, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> ParagraphFillElement;
 typedef IWORKPropertyContext<property::ParagraphStroke, StrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke> ParagraphStrokeElement;
@@ -548,6 +599,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<KeepWithNextElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::language :
     return makeContext<LanguageElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::layoutMargins :
+    return makeContext<LayoutMarginsElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::leftIndent :
     return makeContext<LeftIndentElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::lineSpacing :

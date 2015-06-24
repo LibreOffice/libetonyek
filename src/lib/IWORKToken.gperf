@@ -50,6 +50,7 @@ bezier-path,bezier_path
 bezier-ref,bezier_ref
 body-placeholder-ref,body_placeholder_ref
 bold,bold
+bottom,bottom
 butt,butt
 calc-engine,calc_engine
 callout2-path,callout2_path
@@ -141,8 +142,10 @@ layer,layer
 layer-ref,layer_ref
 layers,layers
 layout,layout
+layoutMargins,layoutMargins
 layoutstyle,layoutstyle
 layoutstyle-ref,layoutstyle_ref
+left,left
 leftIndent,leftIndent
 leveled,leveled
 line,line
@@ -169,6 +172,7 @@ oddPageMaster,oddPageMaster
 other-datas,other_datas
 outline,outline
 p,p
+padding,padding
 pageBreakBefore,pageBreakBefore
 pagemaster,pagemaster
 paragraphBorderType,paragraphBorderType
@@ -246,6 +250,7 @@ text-body,text_body
 text-storage,text_storage
 title,title
 title-placeholder-ref,title_placeholder_ref
+top,top
 tracking,tracking
 true,true_
 type,type

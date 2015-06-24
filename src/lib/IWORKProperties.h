@@ -33,6 +33,7 @@ IWORK_DECLARE_PROPERTY(Italic, bool);
 IWORK_DECLARE_PROPERTY(KeepLinesTogether, bool);
 IWORK_DECLARE_PROPERTY(KeepWithNext, bool);
 IWORK_DECLARE_PROPERTY(Language, std::string);
+IWORK_DECLARE_PROPERTY(LayoutMargins, IWORKPadding);
 IWORK_DECLARE_PROPERTY(LeftIndent, double);
 IWORK_DECLARE_PROPERTY(LineSpacing, IWORKLineSpacing);
 IWORK_DECLARE_PROPERTY(Outline, bool);

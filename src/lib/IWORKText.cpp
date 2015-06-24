@@ -70,11 +70,18 @@ void fillSectionPropList(const IWORKStylePtr_t &style, RVNGPropertyList &props)
 
       props.insert("text:dont-balance-text-columns", columns.m_equal ? "false" : "true");
     }
-    else if (columns.m_columns.size() == 1)
-    {
-      props.insert("fo:margin-left", pt2in(columns.m_columns.front().m_spacing));
-      props.insert("fo:margin-right", pt2in(columns.m_columns.front().m_spacing));
-    }
+  }
+
+  if (style->has<LayoutMargins>())
+  {
+    const IWORKPadding &padding = style->get<LayoutMargins>();
+
+    if (padding.m_left)
+      props.insert("fo:margin-left", pt2in(get(padding.m_left)));
+    if (padding.m_right)
+      props.insert("fo:margin-right", pt2in(get(padding.m_right)));
+    if (padding.m_bottom)
+      props.insert("librevenge:margin-bottom", pt2in(get(padding.m_bottom)));
   }
 }
 
