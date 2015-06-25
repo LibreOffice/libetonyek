@@ -51,8 +51,9 @@ typedef std::pair<Address, Address> AddressRange;
 struct Function;
 struct UnaryOp;
 struct BinaryOp;
+struct ParenthesizedExpression;
 
-typedef variant<double, string, Address, AddressRange, recursive_wrapper<UnaryOp>, recursive_wrapper<BinaryOp>, recursive_wrapper<Function> > Expression;
+typedef variant<double, string, Address, AddressRange, recursive_wrapper<UnaryOp>, recursive_wrapper<BinaryOp>, recursive_wrapper<Function>, recursive_wrapper<ParenthesizedExpression> > Expression;
 
 struct UnaryOp
 {
@@ -62,7 +63,7 @@ struct UnaryOp
 
 struct BinaryOp
 {
-  char m_op;
+  string m_op;
   Expression m_left;
   Expression m_right;
 };
@@ -71,6 +72,11 @@ struct Function
 {
   string m_name;
   vector<Expression> m_args;
+};
+
+struct ParenthesizedExpression
+{
+  Expression m_expr;
 };
 
 }
@@ -98,7 +104,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 BOOST_FUSION_ADAPT_STRUCT(
   libetonyek::BinaryOp,
   (libetonyek::Expression, m_left)
-  (char, m_op)
+  (std::string, m_op)
   (libetonyek::Expression, m_right)
 )
 
@@ -106,6 +112,11 @@ BOOST_FUSION_ADAPT_STRUCT(
   libetonyek::Function,
   (std::string, m_name)
   (std::vector<libetonyek::Expression>, m_args)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+  libetonyek::ParenthesizedExpression,
+  (libetonyek::Expression, m_expr)
 )
 
 namespace libetonyek
@@ -149,7 +160,11 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   number %= double_;
   str %= lit('\'') >> +(char_ - '\'') >> '\'';
   unaryLit %= char_('+') | char_('-');
-  binaryLit %= char_('+') | char_('-') | char_('*') | char_('/') | char_('%');
+  binaryLit %=
+    char_('+') | char_('-') | char_('*') | char_('/')
+    | lit("<>") | lit("<=") | lit(">=")
+    | char_('^') | char_('=') | char_('>') | char_('<')
+    ;
 
   row %=
     lit('$') >> attr(true) >> uint_
@@ -178,20 +193,24 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   unaryOp %= unaryLit >> term;
   binaryOp %= term >> binaryLit >> expression;
 
-  function %= +alpha >> '(' >> -(expression % ';') >> ')';
+  function %= +alpha >> '(' >> -(expression % ',') >> ')';
+
+  parenthesizedExpression %= '(' >> expression >> ')';
 
   term %=
     number
     | str
-    | address
     | range
+    | address
     | unaryOp
     | function
+    | parenthesizedExpression
     ;
 
+
   expression %=
-    term
-    | binaryOp
+    binaryOp
+    | term
     ;
 
   formula %= lit('=') >> expression;
@@ -211,10 +230,12 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   expression.name("expression");
   term.name("term");
   formula.name("formula");
+  parenthesizedExpression.name("parenthesized expression");
 }
 
 qi::rule<Iterator, Function()> function;
 qi::rule<Iterator, Expression()> expression, formula, term;
+qi::rule<Iterator, ParenthesizedExpression()> parenthesizedExpression;
 qi::rule<Iterator, Address()> address;
 qi::rule<Iterator, AddressRange()> range;
 qi::rule<Iterator, unsigned()> columnName;
@@ -283,6 +304,13 @@ struct printer : public boost::static_visitor<void>
     m_out << val.get().m_name << '(';
     for (vector<Expression>::const_iterator it = val.get().m_args.begin(); it != val.get().m_args.end(); ++it)
       apply_visitor(printer(m_out), *it);
+    m_out << ')';
+  }
+
+  void operator()(const recursive_wrapper<ParenthesizedExpression> &val) const
+  {
+    m_out << '(';
+    apply_visitor(printer(m_out), val.get().m_expr);
     m_out << ')';
   }
 
@@ -405,7 +433,7 @@ struct collector : public boost::static_visitor<>
     apply_visitor(collector(m_propsVector), val.get().m_left);
     librevenge::RVNGPropertyList props;
     props.insert("librevenge:type", "librevenge-operator");
-    props.insert("librevenge:operator", val.get().m_op);
+    props.insert("librevenge:operator", val.get().m_op.c_str());
     m_propsVector.append(props);
     apply_visitor(collector(m_propsVector), val.get().m_right);
   }
@@ -437,6 +465,22 @@ struct collector : public boost::static_visitor<>
     props3.insert("librevenge:operator", ")");
     m_propsVector.append(props3);
   }
+
+  void operator()(const recursive_wrapper<ParenthesizedExpression> &val) const
+  {
+    librevenge::RVNGPropertyList props;
+    props.insert("librevenge:type", "librevenge-operator");
+    props.insert("librevenge:operator", "(");
+    m_propsVector.append(props);
+
+    apply_visitor(collector(m_propsVector), val.get().m_expr);
+
+    librevenge::RVNGPropertyList props1;
+    props1.insert("librevenge:type", "librevenge-operator");
+    props1.insert("librevenge:operator", ")");
+    m_propsVector.append(props1);
+  }
+
 
 private:
   librevenge::RVNGPropertyListVector &m_propsVector;
