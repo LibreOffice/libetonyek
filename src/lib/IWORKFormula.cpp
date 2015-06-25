@@ -62,7 +62,7 @@ struct UnaryOp
 
 struct BinaryOp
 {
-  char m_op;
+  string m_op;
   Expression m_left;
   Expression m_right;
 };
@@ -98,7 +98,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 BOOST_FUSION_ADAPT_STRUCT(
   libetonyek::BinaryOp,
   (libetonyek::Expression, m_left)
-  (char, m_op)
+  (std::string, m_op)
   (libetonyek::Expression, m_right)
 )
 
@@ -149,7 +149,11 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   number %= double_;
   str %= lit('\'') >> +(char_ - '\'') >> '\'';
   unaryLit %= char_('+') | char_('-');
-  binaryLit %= char_('+') | char_('-') | char_('*') | char_('/') | char_('%');
+  binaryLit %=
+    char_('+') | char_('-') | char_('*') | char_('/')
+    | lit("<>") | lit("<=") | lit(">=")
+    | char_('^') | char_('=') | char_('>') | char_('<')
+    ;
 
   row %=
     lit('$') >> attr(true) >> uint_
@@ -405,7 +409,7 @@ struct collector : public boost::static_visitor<>
     apply_visitor(collector(m_propsVector), val.get().m_left);
     librevenge::RVNGPropertyList props;
     props.insert("librevenge:type", "librevenge-operator");
-    props.insert("librevenge:operator", val.get().m_op);
+    props.insert("librevenge:operator", val.get().m_op.c_str());
     m_propsVector.append(props);
     apply_visitor(collector(m_propsVector), val.get().m_right);
   }

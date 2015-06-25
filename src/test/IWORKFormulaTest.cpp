@@ -126,6 +126,14 @@ void IWORKFormulaTest::testOperators()
   //   CPPUNIT_ASSERT(formula.parse("=B5+B6"));
   //   CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
 
+  // equal
+  // CPPUNIT_ASSERT(formula.parse("=B5=B6"));
+  // CPPUNIT_ASSERT_EQUAL(string("=[.B5]=[.B6]"), formula.toString());
+
+  // not equal
+  // CPPUNIT_ASSERT(formula.parse("=B5<>B6"));
+  // CPPUNIT_ASSERT_EQUAL(string("=[.B5]<>[.B6]"), formula.toString());
+
 }
 
 void IWORKFormulaTest::testFunctions()
