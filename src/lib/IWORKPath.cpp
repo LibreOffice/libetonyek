@@ -266,18 +266,6 @@ void CurveTo::write(RVNGPropertyList &element) const
 
 }
 
-namespace
-{
-
-void doAppendCurveTo(IWORKPath *const path, const std::vector<double> &points)
-{
-  assert(path);
-  assert(points.size() == 6);
-  path->appendCurveTo(points[0], points[1], points[2], points[3], points[4], points[5]);
-}
-
-}
-
 IWORKPath::Element::~Element()
 {
 }
@@ -301,7 +289,7 @@ IWORKPath::IWORKPath(const std::string &path)
 
   const qi::rule<string::const_iterator, ascii::space_type> rule =
     +(
-      ('C' >> qi::repeat(6)[double_])[bind(&doAppendCurveTo, this, qi::_1)]
+      ('C' >> double_ >> double_ >> double_ >> double_ >> double_ >> double_)[bind(&IWORKPath::appendCurveTo, this, qi::_1, qi::_2, qi::_3, qi::_4, qi::_5, qi::_6)]
       | ('M' >> double_ >> double_)[bind(&IWORKPath::appendMoveTo, this, qi::_1, qi::_2)]
       | ('L' >> double_ >> double_)[bind(&IWORKPath::appendLineTo, this, qi::_1, qi::_2)]
       | qi::char_('Z')[bind(&IWORKPath::appendClose, this)]
