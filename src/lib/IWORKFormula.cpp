@@ -52,8 +52,9 @@ struct Function;
 struct PrefixOp;
 struct InfixOp;
 struct PostfixOp;
+struct PExpr;
 
-typedef variant<double, string, Address, AddressRange, recursive_wrapper<PrefixOp>, recursive_wrapper<InfixOp>, recursive_wrapper<PostfixOp>, recursive_wrapper<Function> > Expression;
+typedef variant<double, string, Address, AddressRange, recursive_wrapper<PrefixOp>, recursive_wrapper<InfixOp>, recursive_wrapper<PostfixOp>, recursive_wrapper<Function>, recursive_wrapper<PExpr> > Expression;
 
 struct PrefixOp
 {
@@ -78,6 +79,11 @@ struct Function
 {
   string m_name;
   vector<Expression> m_args;
+};
+
+struct PExpr
+{
+  Expression m_expr;
 };
 
 }
@@ -119,6 +125,11 @@ BOOST_FUSION_ADAPT_STRUCT(
   libetonyek::Function,
   (std::string, m_name)
   (std::vector<libetonyek::Expression>, m_args)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+  libetonyek::PExpr,
+  (libetonyek::Expression, m_expr)
 )
 
 namespace libetonyek
@@ -195,6 +206,8 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
 
   function %= +alpha >> '(' >> -(expression % ',') >> ')';
 
+  pExpr %= '(' >> expression >> ')';
+
   term %=
     number
     | str
@@ -203,6 +216,7 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
     | prefixOp
     | function
     | postfixOp
+    | pExpr
     ;
 
   expression %=
@@ -227,10 +241,12 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   expression.name("expression");
   term.name("term");
   formula.name("formula");
+  pExpr.name("parenthesized expression");
 }
 
 qi::rule<Iterator, Function()> function;
 qi::rule<Iterator, Expression()> expression, formula, term;
+qi::rule<Iterator, PExpr()> pExpr;
 qi::rule<Iterator, Address()> address;
 qi::rule<Iterator, AddressRange()> range;
 qi::rule<Iterator, unsigned()> columnName;
@@ -307,6 +323,13 @@ struct printer : public boost::static_visitor<void>
     m_out << val.get().m_name << '(';
     for (vector<Expression>::const_iterator it = val.get().m_args.begin(); it != val.get().m_args.end(); ++it)
       apply_visitor(printer(m_out), *it);
+    m_out << ')';
+  }
+
+  void operator()(const recursive_wrapper<PExpr> &val) const
+  {
+    m_out << '(';
+    apply_visitor(printer(m_out), val.get().m_expr);
     m_out << ')';
   }
 
@@ -470,6 +493,22 @@ struct collector : public boost::static_visitor<>
     props3.insert("librevenge:operator", ")");
     m_propsVector.append(props3);
   }
+
+  void operator()(const recursive_wrapper<PExpr> &val) const
+  {
+    librevenge::RVNGPropertyList props;
+    props.insert("librevenge:type", "librevenge-operator");
+    props.insert("librevenge:operator", "(");
+    m_propsVector.append(props);
+
+    apply_visitor(collector(m_propsVector), val.get().m_expr);
+
+    librevenge::RVNGPropertyList props1;
+    props1.insert("librevenge:type", "librevenge-operator");
+    props1.insert("librevenge:operator", ")");
+    m_propsVector.append(props1);
+  }
+
 
 private:
   librevenge::RVNGPropertyListVector &m_propsVector;

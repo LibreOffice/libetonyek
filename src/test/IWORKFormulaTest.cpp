@@ -162,6 +162,18 @@ void IWORKFormulaTest::testExpressions()
   CPPUNIT_ASSERT(formula.parse("=HOME.Table1.B6+OFFICE.Table1.B6-WAREHOUSE.Table1.B6"));
   CPPUNIT_ASSERT_EQUAL(string("=[HOME.Table1.B6]+[OFFICE.Table1.B6]-[WAREHOUSE.Table1.B6]"), formula.toString());
 
+  // basic paranthesized
+  // CPPUNIT_ASSERT(formula.parse("=(23)+$B6"));
+  // CPPUNIT_ASSERT_EQUAL(string("=(23)+[.$B6]"), formula.toString());
+
+  // paranthesized with function
+  // CPPUNIT_ASSERT(formula.parse("=(23)+$B6+(ABS(($Z7)))"));
+  // CPPUNIT_ASSERT_EQUAL(string("=(23)+[.$B6]+(ABS(([.$Z7])))"), formula.toString());
+
+  // paranthesize with operators
+  // CPPUNIT_ASSERT(formula.parse("=((-23)+4)*(B7-2)"));
+  // CPPUNIT_ASSERT_EQUAL(string("=((-23)+4)*([.B7]-2)"), formula.toString());
+
   // function with only column
   //   CPPUNIT_ASSERT(formula.parse("=SUM(B)"));
   //   CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
