@@ -178,20 +178,20 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   unaryOp %= unaryLit >> term;
   binaryOp %= term >> binaryLit >> expression;
 
-  function %= +alpha >> '(' >> -(expression % ';') >> ')';
+  function %= +alpha >> '(' >> -(expression % ',') >> ')';
 
   term %=
     number
     | str
-    | address
     | range
+    | address
     | unaryOp
     | function
     ;
 
   expression %=
-    term
-    | binaryOp
+    binaryOp
+    | term
     ;
 
   formula %= lit('=') >> expression;
