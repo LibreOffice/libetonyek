@@ -259,10 +259,11 @@ struct printer : public boost::static_visitor<void>
 
   void operator()(const AddressRange &val) const
   {
-    printer p(m_out);
-    p(val.first);
+    m_out << '[';
+    formatAddress(val.first);
     m_out << ':';
-    p(val.second);
+    formatAddress(val.second);
+    m_out << ']';
   }
 
   void operator()(const recursive_wrapper<UnaryOp> &val) const

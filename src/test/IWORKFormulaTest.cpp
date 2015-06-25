@@ -101,15 +101,15 @@ void IWORKFormulaTest::testAddressRanges()
 
   // range
   CPPUNIT_ASSERT(formula.parse("=$A4:$A81"));
-  // CPPUNIT_ASSERT_EQUAL(string("=[.$A4:.$A81]"), formula.toString());
+  CPPUNIT_ASSERT_EQUAL(string("=[.$A4:.$A81]"), formula.toString());
 
   // sheet with table and cell
   CPPUNIT_ASSERT(formula.parse("=HOME.Table1.B5:HOME.Table1.B20"));
-  // CPPUNIT_ASSERT_EQUAL(string("=[HOME.Table1.B5:HOME.Table1.B20]"), formula.toString());
+  CPPUNIT_ASSERT_EQUAL(string("=[HOME.Table1.B5:HOME.Table1.B20]"), formula.toString());
 
   // table and cell
   CPPUNIT_ASSERT(formula.parse("=Table1.$B3:Table1.$B20"));
-  // CPPUNIT_ASSERT_EQUAL(string("=[Table1.$B3:Table1.$B20]"), formula.toString());
+  CPPUNIT_ASSERT_EQUAL(string("=[Table1.$B3:Table1.$B20]"), formula.toString());
 
 }
 
@@ -138,7 +138,7 @@ void IWORKFormulaTest::testFunctions()
 
   // function with address range
   CPPUNIT_ASSERT(formula.parse("=SUM($B5:$B16)"));
-  // CPPUNIT_ASSERT_EQUAL(string("=SUM([.$B5]:[.$B16])"), formula.toString());
+  CPPUNIT_ASSERT_EQUAL(string("=SUM([.$B5:.$B16])"), formula.toString());
 
   // function with multiple arguments
   CPPUNIT_ASSERT(formula.parse("=COUNTIFS(A1:A38,'>100',A1:A38,'<=200')"));
