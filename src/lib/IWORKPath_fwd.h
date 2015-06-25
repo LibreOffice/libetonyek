@@ -9,6 +9,7 @@
 #ifndef IWORKPATH_FWD_H_INCLUDED
 #define IWORKPATH_FWD_H_INCLUDED
 
+#include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
 
 #include "IWORKTypes_fwd.h"

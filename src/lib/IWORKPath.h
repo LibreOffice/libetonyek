@@ -12,7 +12,6 @@
 
 #include "IWORKPath_fwd.h"
 
-#include <deque>
 #include <string>
 
 #include <glm/glm.hpp>
@@ -28,16 +27,15 @@ class IWORKPath
 {
   friend bool approxEqual(const IWORKPath &left, const IWORKPath &right, const double eps);
 
-public:
-  class Element;
+  struct Impl;
 
+public:
   struct InvalidException {};
 
 public:
   IWORKPath();
   explicit IWORKPath(const std::string &path);
   IWORKPath(const IWORKPath &other);
-  ~IWORKPath();
   IWORKPath &operator=(const IWORKPath &other);
 
   void swap(IWORKPath &other);
@@ -60,8 +58,7 @@ public:
   void write(librevenge::RVNGPropertyListVector &vec) const;
 
 private:
-  std::deque<Element *> m_elements;
-  bool m_closed;
+  boost::shared_ptr<Impl> m_impl;
 };
 
 bool approxEqual(const IWORKPath &left, const IWORKPath &right, double eps = ETONYEK_EPSILON);

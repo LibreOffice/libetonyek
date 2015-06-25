@@ -10,17 +10,20 @@
 #include "IWORKPath.h"
 
 #include <cassert>
+#include <deque>
 #include <utility>
 
-#include <boost/bind.hpp>
-#include <boost/ref.hpp>
-#include <boost/spirit/include/phoenix.hpp>
+#include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/spirit/include/qi.hpp>
+#include <boost/variant.hpp>
 
 #include "libetonyek_utils.h"
 #include "IWORKTypes.h"
 
-using boost::cref;
+namespace phoenix = boost::phoenix;
+
+using boost::apply_visitor;
+using boost::static_visitor;
 
 using librevenge::RVNGPropertyList;
 using librevenge::RVNGPropertyListVector;
@@ -30,174 +33,20 @@ using std::string;
 namespace libetonyek
 {
 
-/** An element of path.
-  */
-class IWORKPath::Element
+struct MoveTo
 {
-public:
-  virtual ~Element() = 0;
-
-  virtual Element *clone() const = 0;
-
-  /** Test whether this element is equal to other.
-    *
-    * @note Because all implementations of this interface are directly
-    * derived from it (i.e., thay have no subclasses), it is enough to
-    * check if @c other has a compatible type, not that @c this and @c
-    * other have the @em same type (which would require double
-    * dispatch).
-    *
-    * @return true if @c this and @c other are equal.
-    */
-  virtual bool approxEqualsTo(const Element *other, double eps) const = 0;
-
-  /** Transform this path element.
-    *
-    * @arg[in] tr the transformation
-    */
-  virtual void transform(const glm::dmat3 &tr) = 0;
-
-  /** Create librevenge representation of this path element.
-   */
-  virtual void write(RVNGPropertyList &element) const = 0;
-};
-
-namespace
-{
-
-class MoveTo : public IWORKPath::Element
-{
-public:
-  MoveTo(double x, double y);
-
-  virtual MoveTo *clone() const;
-
-  virtual bool approxEqualsTo(const Element *other, double eps) const;
-
-  virtual void transform(const glm::dmat3 &tr);
-
-  virtual void write(RVNGPropertyList &element) const;
-
-private:
   double m_x;
   double m_y;
 };
 
-MoveTo::MoveTo(double x, double y)
-  : m_x(x)
-  , m_y(y)
+struct LineTo
 {
-}
-
-MoveTo *MoveTo::clone() const
-{
-  return new MoveTo(*this);
-}
-
-bool MoveTo::approxEqualsTo(const Element *other, const double eps) const
-{
-  const MoveTo *const that = dynamic_cast<const MoveTo *>(other);
-
-  if (that)
-    return approxEqual(m_x, that->m_x, eps) && approxEqual(m_y, that->m_y, eps);
-
-  return false;
-}
-
-void MoveTo::transform(const glm::dmat3 &tr)
-{
-  glm::dvec3 vec = tr * glm::dvec3(m_x, m_y, 1);
-
-  m_x = vec[0];
-  m_y = vec[1];
-
-}
-
-void MoveTo::write(RVNGPropertyList &element) const
-{
-  element.insert("librevenge:path-action", "M");
-  element.insert("svg:x", pt2in(m_x));
-  element.insert("svg:y", pt2in(m_y));
-}
-
-}
-
-namespace
-{
-
-class LineTo : public IWORKPath::Element
-{
-public:
-  LineTo(double x, double y);
-
-  virtual LineTo *clone() const;
-
-  virtual bool approxEqualsTo(const Element *other, double eps) const;
-
-  virtual void transform(const glm::dmat3 &tr);
-
-  virtual void write(RVNGPropertyList &element) const;
-
-private:
   double m_x;
   double m_y;
 };
 
-LineTo::LineTo(const double x, const double y)
-  : m_x(x)
-  , m_y(y)
+struct CurveTo
 {
-}
-
-LineTo *LineTo::clone() const
-{
-  return new LineTo(*this);
-}
-
-bool LineTo::approxEqualsTo(const Element *other, const double eps) const
-{
-  const LineTo *const that = dynamic_cast<const LineTo *>(other);
-
-  if (that)
-    return approxEqual(m_x, that->m_x, eps) && approxEqual(m_y, that->m_y, eps);
-
-  return false;
-}
-
-void LineTo::transform(const glm::dmat3 &tr)
-{
-  glm::dvec3 vec = tr * glm::dvec3(m_x, m_y, 1);
-
-  m_x = vec[0];
-  m_y = vec[1];
-}
-
-void LineTo::write(RVNGPropertyList &element) const
-{
-  element.insert("librevenge:path-action", "L");
-  element.insert("svg:x", pt2in(m_x));
-  element.insert("svg:y", pt2in(m_y));
-}
-
-}
-
-namespace
-{
-
-class CurveTo : public IWORKPath::Element
-{
-public:
-  CurveTo(double x1, double y1, double x2, double y2, double x, double y);
-
-  virtual CurveTo *clone() const;
-
-  virtual bool approxEqualsTo(const Element *other, double eps) const;
-
-  virtual void transform(const glm::dmat3 &tr);
-
-  virtual void write(RVNGPropertyList &element) const;
-
-private:
   double m_x1;
   double m_y1;
   double m_x2;
@@ -206,98 +55,243 @@ private:
   double m_y;
 };
 
-CurveTo::CurveTo(const double x1, const double y1, const double x2, const double y2, const double x, const double y)
-  : m_x1(x1)
-  , m_y1(y1)
-  , m_x2(x2)
-  , m_y2(y2)
-  , m_x(x)
-  , m_y(y)
+typedef boost::variant<MoveTo, LineTo, CurveTo> PathElement_t;
+typedef std::deque<PathElement_t> Path_t;
+
+struct IWORKPath::Impl
+{
+  Impl();
+
+  Path_t m_path;
+  bool m_closed;
+  bool m_segmented;
+};
+
+IWORKPath::Impl::Impl()
+  : m_path()
+  , m_closed(false)
+  , m_segmented(false)
 {
 }
 
-CurveTo *CurveTo::clone() const
-{
-  return new CurveTo(*this);
 }
 
-bool CurveTo::approxEqualsTo(const Element *other, const double eps) const
-{
-  const CurveTo *const that = dynamic_cast<const CurveTo *>(other);
+BOOST_FUSION_ADAPT_STRUCT(
+  libetonyek::MoveTo,
+  (double, m_x)
+  (double, m_y)
+)
 
-  if (that)
-    return approxEqual(m_x1, that->m_x1, eps) && approxEqual(m_y1, that->m_y1, eps)
-           && approxEqual(m_x2, that->m_x2, eps) && approxEqual(m_y2, that->m_y2, eps)
-           && approxEqual(m_x, that->m_x, eps) && approxEqual(m_y, that->m_y, eps)
+BOOST_FUSION_ADAPT_STRUCT(
+  libetonyek::LineTo,
+  (double, m_x)
+  (double, m_y)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+  libetonyek::CurveTo,
+  (double, m_x1)
+  (double, m_y1)
+  (double, m_x2)
+  (double, m_y2)
+  (double, m_x)
+  (double, m_y)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+  libetonyek::IWORKPath::Impl,
+  (libetonyek::Path_t, m_path)
+  (bool, m_closed)
+)
+
+namespace libetonyek
+{
+
+namespace
+{
+
+namespace ascii = boost::spirit::ascii;
+namespace qi = boost::spirit::qi;
+
+template<typename Iterator>
+struct PathGrammar : public qi::grammar<Iterator, IWORKPath::Impl(), ascii::space_type>
+{
+  PathGrammar()
+  : PathGrammar::base_type(path, "path")
+{
+  using qi::attr;
+  using qi::as;
+  using qi::double_;
+  using qi::lit;
+  using qi::omit;
+
+  close = lit('Z');
+
+  move %= 'M' >> double_ >> double_;
+
+  line %= 'L' >> double_ >> double_;
+
+  curve %= 'C' >> double_ >> double_ >> double_ >> double_ >> double_ >> double_;
+
+  path %= as<Path_t>()[move >> +(line | curve)] >> (close >> attr(true) >> omit[move] | attr(false));
+
+  close.name("close");
+  move.name("move");
+  line.name("line");
+  curve.name("curve");
+  path.name("path");
+}
+
+qi::rule<Iterator, IWORKPath::Impl(), ascii::space_type> path;
+qi::rule<Iterator, MoveTo(), ascii::space_type> move;
+qi::rule<Iterator, LineTo(), ascii::space_type> line;
+qi::rule<Iterator, CurveTo(), ascii::space_type> curve;
+qi::rule<Iterator, void(), ascii::space_type> close;
+};
+
+}
+
+namespace
+{
+
+struct Transformer : public static_visitor<void>
+{
+  explicit Transformer(const glm::dmat3 &tr)
+    : m_tr(tr)
+  {
+  }
+
+  template<typename T>
+  void operator()(T &element) const
+  {
+    transform(element.m_x, element.m_y);
+  }
+
+  void operator()(CurveTo &element) const
+  {
+    transform(element.m_x1, element.m_y1);
+    transform(element.m_x2, element.m_y2);
+    transform(element.m_x, element.m_y);
+  }
+
+private:
+  void transform(double &x, double &y) const
+  {
+    glm::dvec3 vec = m_tr * glm::dvec3(x, y, 1);
+
+    x = vec[0];
+    y = vec[1];
+  }
+
+private:
+  const glm::dmat3 &m_tr;
+};
+
+}
+
+namespace
+{
+
+struct Writer : public static_visitor<void>
+{
+  explicit Writer(RVNGPropertyListVector &path)
+    : m_path(path)
+  {
+  }
+
+  void operator()(const MoveTo &element) const
+  {
+    RVNGPropertyList command;
+    command.insert("librevenge:path-action", "M");
+    command.insert("svg:x", pt2in(element.m_x));
+    command.insert("svg:y", pt2in(element.m_y));
+    m_path.append(command);
+  }
+
+  void operator()(const LineTo &element) const
+  {
+    RVNGPropertyList command;
+    command.insert("librevenge:path-action", "L");
+    command.insert("svg:x", pt2in(element.m_x));
+    command.insert("svg:y", pt2in(element.m_y));
+    m_path.append(command);
+  }
+
+  void operator()(const CurveTo &element) const
+  {
+    RVNGPropertyList command;
+    command.insert("librevenge:path-action", "C");
+    command.insert("svg:x", pt2in(element.m_x));
+    command.insert("svg:y", pt2in(element.m_y));
+    command.insert("svg:x1", pt2in(element.m_x1));
+    command.insert("svg:y1", pt2in(element.m_y1));
+    command.insert("svg:x2", pt2in(element.m_x2));
+    command.insert("svg:y2", pt2in(element.m_y2));
+    m_path.append(command);
+  }
+
+private:
+  RVNGPropertyListVector &m_path;
+};
+
+}
+
+namespace
+{
+
+struct Comparator : public static_visitor<bool>
+{
+  explicit Comparator(double eps)
+    : m_eps(eps)
+  {
+  }
+
+  template<typename T, typename U>
+  bool operator()(const T &, const U &) const
+  {
+    return false;
+  }
+
+  template<typename T>
+  bool operator()(const T &left, const T &right) const
+  {
+    return approxEqual(left, right);
+  }
+
+private:
+  template<typename T>
+  bool approxEqual(const T &left, const T &right) const
+  {
+    using libetonyek::approxEqual;
+    return approxEqual(left.m_x, right.m_x, m_eps) && approxEqual(left.m_y, right.m_y, m_eps);
+  }
+
+  bool approxEqual(const CurveTo &left, const CurveTo &right) const
+  {
+    using libetonyek::approxEqual;
+    return approxEqual(left.m_x1, right.m_x1, m_eps) && approxEqual(left.m_y1, right.m_y1, m_eps)
+           && approxEqual(left.m_x2, right.m_x2, m_eps) && approxEqual(left.m_y2, right.m_y2, m_eps)
+           && approxEqual(left.m_x, right.m_x, m_eps) && approxEqual(left.m_y, right.m_y, m_eps)
            ;
+  }
 
-  return false;
-}
+private:
+  const double m_eps;
+};
 
-void CurveTo::transform(const glm::dmat3 &tr)
-{
-  glm::dvec3 vec = tr * glm::dvec3(m_x, m_y, 1);
-
-  m_x = vec[0];
-  m_y = vec[1];
-
-  vec = tr * glm::dvec3(m_x1, m_y1, 1);
-
-  m_x1 = vec[0];
-  m_y1 = vec[1];
-
-  vec = tr * glm::dvec3(m_x2, m_y2, 1);
-
-  m_x2 = vec[0];
-  m_y2 = vec[1];
-
-}
-
-void CurveTo::write(RVNGPropertyList &element) const
-{
-  element.insert("librevenge:path-action", "C");
-  element.insert("svg:x", pt2in(m_x));
-  element.insert("svg:y", pt2in(m_y));
-  element.insert("svg:x1", pt2in(m_x1));
-  element.insert("svg:y1", pt2in(m_y1));
-  element.insert("svg:x2", pt2in(m_x2));
-  element.insert("svg:y2", pt2in(m_y2));
-}
-
-}
-
-IWORKPath::Element::~Element()
-{
 }
 
 IWORKPath::IWORKPath()
-  : m_elements()
-  , m_closed(false)
+  : m_impl(new Impl())
 {
 }
 
 IWORKPath::IWORKPath(const std::string &path)
-  : m_elements()
-  , m_closed(false)
+  : m_impl(new Impl())
 {
-  namespace ascii = boost::spirit::ascii;
-  namespace qi = boost::spirit::qi;
-
-  using boost::phoenix::at_c;
-  using boost::phoenix::bind;
-  using qi::double_;
-
-  const qi::rule<string::const_iterator, ascii::space_type> rule =
-    +(
-      ('C' >> double_ >> double_ >> double_ >> double_ >> double_ >> double_)[bind(&IWORKPath::appendCurveTo, this, qi::_1, qi::_2, qi::_3, qi::_4, qi::_5, qi::_6)]
-      | ('M' >> double_ >> double_)[bind(&IWORKPath::appendMoveTo, this, qi::_1, qi::_2)]
-      | ('L' >> double_ >> double_)[bind(&IWORKPath::appendLineTo, this, qi::_1, qi::_2)]
-      | qi::char_('Z')[bind(&IWORKPath::appendClose, this)]
-    )
-    ;
-
+  PathGrammar<string::const_iterator> grammar;
   string::const_iterator it = path.begin();
-  const bool r = qi::phrase_parse(it, path.end(), rule, ascii::space);
+  const bool r = qi::phrase_parse(it, path.end(), grammar, ascii::space, *m_impl);
 
   if (!r || (path.end() != it))
   {
@@ -307,24 +301,8 @@ IWORKPath::IWORKPath(const std::string &path)
 }
 
 IWORKPath::IWORKPath(const IWORKPath &other)
-  : m_elements()
-  , m_closed(other.m_closed)
+  : m_impl(new Impl(*other.m_impl))
 {
-  try
-  {
-    for (std::deque<Element *>::const_iterator it = other.m_elements.begin(); it != other.m_elements.end(); ++it)
-      m_elements.push_back((*it)->clone());
-  }
-  catch (...)
-  {
-    clear();
-    throw;
-  }
-}
-
-IWORKPath::~IWORKPath()
-{
-  clear();
 }
 
 IWORKPath &IWORKPath::operator=(const IWORKPath &other)
@@ -336,53 +314,71 @@ IWORKPath &IWORKPath::operator=(const IWORKPath &other)
 
 void IWORKPath::swap(IWORKPath &other)
 {
-  using std::swap;
-  swap(m_elements, other.m_elements);
+  m_impl.swap(other.m_impl);
 }
 
 void IWORKPath::clear()
 {
-  for (std::deque<Element *>::const_iterator it = m_elements.begin(); it != m_elements.end(); ++it)
-    delete *it;
-  m_elements.clear();
+  m_impl->m_path.clear();
+  m_impl->m_closed = false;
+  m_impl->m_segmented = false;
 }
 
 void IWORKPath::appendMoveTo(const double x, const double y)
 {
-  if (!m_closed)
-    m_elements.push_back(new MoveTo(x, y));
+  assert(!m_impl->m_closed);
+
+  if (!m_impl->m_path.empty())
+    m_impl->m_segmented = true;
+  MoveTo element;
+  element.m_x = x;
+  element.m_y = y;
+  m_impl->m_path.push_back(element);
 }
 
 void IWORKPath::appendLineTo(const double x, const double y)
 {
-  m_elements.push_back(new LineTo(x, y));
+  assert(!m_impl->m_closed);
+
+  LineTo element;
+  element.m_x = x;
+  element.m_y = y;
+  m_impl->m_path.push_back(element);
 }
 
 void IWORKPath::appendCurveTo(const double x1, const double y1, const double x2, const double y2, const double x, const double y)
 {
-  m_elements.push_back(new CurveTo(x1, y1, x2, y2, x, y));
+  assert(!m_impl->m_closed);
+
+  CurveTo element;
+  element.m_x1 = x1;
+  element.m_y1 = y1;
+  element.m_x2 = x2;
+  element.m_y2 = y2;
+  element.m_x = x;
+  element.m_y = y;
+  m_impl->m_path.push_back(element);
 }
 
 void IWORKPath::appendClose()
 {
-  m_closed = true;
+  assert(!m_impl->m_closed);
+  assert(!m_impl->m_segmented);
+
+  m_impl->m_closed = true;
 }
 
 void IWORKPath::operator*=(const glm::dmat3 &tr)
 {
-  for_each(m_elements.begin(), m_elements.end(), boost::bind(&Element::transform, _1, cref(tr)));
+  for (Path_t::iterator it = m_impl->m_path.begin(); it != m_impl->m_path.end(); ++it)
+    apply_visitor(Transformer(tr), *it);
 }
 
 void IWORKPath::write(librevenge::RVNGPropertyListVector &vec) const
 {
-  for (std::deque<Element *>::const_iterator it = m_elements.begin(); m_elements.end() != it; ++it)
-  {
-    RVNGPropertyList element;
-    (*it)->write(element);
-    vec.append(element);
-  }
-
-  if (m_closed)
+  for (Path_t::const_iterator it = m_impl->m_path.begin(); it != m_impl->m_path.end(); ++it)
+    apply_visitor(Writer(vec), *it);
+  if (m_impl->m_closed)
   {
     librevenge::RVNGPropertyList element;
     element.insert("librevenge:path-action", "Z");
@@ -392,10 +388,17 @@ void IWORKPath::write(librevenge::RVNGPropertyListVector &vec) const
 
 bool approxEqual(const IWORKPath &left, const IWORKPath &right, const double eps)
 {
-  return left.m_elements.size() == right.m_elements.size()
-         && std::equal(left.m_elements.begin(), left.m_elements.end(), right.m_elements.begin(),
-                       boost::bind(&IWORKPath::Element::approxEqualsTo, _1, _2, eps))
-         ;
+  if ((left.m_impl->m_closed != right.m_impl->m_closed)
+      || (left.m_impl->m_path.size() != right.m_impl->m_path.size()))
+    return false;
+  for (Path_t::const_iterator lit = left.m_impl->m_path.begin(), rit = right.m_impl->m_path.begin();
+       lit != left.m_impl->m_path.end();
+       ++lit, ++rit)
+  {
+    if (!apply_visitor(Comparator(eps), *lit, *rit))
+      return false;
+  }
+  return true;
 }
 
 bool operator==(const IWORKPath &left, const IWORKPath &right)
