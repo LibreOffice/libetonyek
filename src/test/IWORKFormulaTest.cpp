@@ -118,13 +118,17 @@ void IWORKFormulaTest::testOperators()
 {
   IWORKFormula formula;
 
-  //Unary
+  // prefix
   CPPUNIT_ASSERT(formula.parse("=-C10"));
   CPPUNIT_ASSERT_EQUAL(string("=-[.C10]"), formula.toString());
 
-  //Binary
+  // infix
   //   CPPUNIT_ASSERT(formula.parse("=B5+B6"));
   //   CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
+
+  // postfix
+  // CPPUNIT_ASSERT(formula.parse("=100%"));
+  // CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
 
 }
 
