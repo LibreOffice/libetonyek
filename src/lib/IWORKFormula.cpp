@@ -64,7 +64,7 @@ struct PrefixOp
 
 struct InfixOp
 {
-  char m_op;
+  string m_op;
   Expression m_left;
   Expression m_right;
 };
@@ -111,7 +111,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 BOOST_FUSION_ADAPT_STRUCT(
   libetonyek::InfixOp,
   (libetonyek::Expression, m_left)
-  (char, m_op)
+  (std::string, m_op)
   (libetonyek::Expression, m_right)
 )
 
@@ -173,7 +173,11 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   number %= double_;
   str %= lit('\'') >> +(char_ - '\'') >> '\'';
   prefixLit %= char_('+') | char_('-');
-  infixLit %= char_('+') | char_('-') | char_('*') | char_('/');
+  infixLit %= 
+    char_('+') | char_('-') | char_('*') | char_('/')
+    | ascii::string("<>") | ascii::string("<=") | ascii::string(">=")
+    | char_('^') | char_('=') | char_('>') | char_('<')
+    ;
   postfixLit %= char_('%');
 
   row %=
@@ -252,11 +256,11 @@ qi::rule<Iterator, AddressRange()> range;
 qi::rule<Iterator, unsigned()> columnName;
 qi::rule<Iterator, Coord()> column, row;
 qi::rule<Iterator, double()> number;
-qi::rule<Iterator, string()> str, table, worksheet;
+qi::rule<Iterator, string()> str, table, worksheet, infixLit;
 qi::rule<Iterator, PrefixOp()> prefixOp;
 qi::rule<Iterator, InfixOp()> infixOp;
 qi::rule<Iterator, PostfixOp()> postfixOp;
-qi::rule<Iterator, char()> prefixLit, infixLit, postfixLit;
+qi::rule<Iterator, char()> prefixLit, postfixLit;
 };
 
 }
@@ -452,7 +456,7 @@ struct collector : public boost::static_visitor<>
     apply_visitor(collector(m_propsVector), val.get().m_left);
     librevenge::RVNGPropertyList props;
     props.insert("librevenge:type", "librevenge-operator");
-    props.insert("librevenge:operator", val.get().m_op);
+    props.insert("librevenge:operator", val.get().m_op.c_str());
     m_propsVector.append(props);
     apply_visitor(collector(m_propsVector), val.get().m_right);
   }
