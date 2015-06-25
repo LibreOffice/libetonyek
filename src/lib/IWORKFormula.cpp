@@ -217,8 +217,6 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
     | function
     | address
     | prefixOp
-    | function
-    | postfixOp
     | pExpr
     ;
 
