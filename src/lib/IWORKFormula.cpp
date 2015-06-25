@@ -193,7 +193,7 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   infixOp %= term >> infixLit >> expression;
   postfixOp %= term >> postfixLit;
 
-  function %= +alpha >> '(' >> -(expression % ';') >> ')';
+  function %= +alpha >> '(' >> -(expression % ',') >> ')';
 
   term %=
     number

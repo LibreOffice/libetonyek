@@ -145,7 +145,7 @@ void IWORKFormulaTest::testFunctions()
   // CPPUNIT_ASSERT_EQUAL(string("=SUM([.$B5]:[.$B16])"), formula.toString());
 
   // function with multiple arguments
-  // CPPUNIT_ASSERT(formula.parse("=COUNTIFS(A1:A38,'>100',A1:A38,'<=200')"));
+  CPPUNIT_ASSERT(formula.parse("=COUNTIFS(A1:A38,'>100',A1:A38,'<=200')"));
   // CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
 
 }
