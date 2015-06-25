@@ -86,12 +86,12 @@ void IWORKFormulaTest::testCellReferences()
   CPPUNIT_ASSERT_EQUAL(string("=[.R34]"), formula.toString());
 
   // sheet with table and cell
-  CPPUNIT_ASSERT(formula.parse("=HOME.Table1.B5"));
-  CPPUNIT_ASSERT_EQUAL(string("=[HOME.Table1.B5]"), formula.toString());
+  CPPUNIT_ASSERT(formula.parse("=Table1::B5"));
+  CPPUNIT_ASSERT_EQUAL(string("=[Table1.B5]"), formula.toString());
 
   // table and cell
-  CPPUNIT_ASSERT(formula.parse("=Table1.$B3"));
-  // CPPUNIT_ASSERT_EQUAL(string("=[Table1.$B3]"), formula.toString());
+  CPPUNIT_ASSERT(formula.parse("=Table1::$B3"));
+  CPPUNIT_ASSERT_EQUAL(string("=[Table1.$B3]"), formula.toString());
 
 }
 
@@ -103,12 +103,8 @@ void IWORKFormulaTest::testAddressRanges()
   //   CPPUNIT_ASSERT(formula.parse("=$A4:$A81"));
   //   CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
 
-  // sheet with table and cell
-  //   CPPUNIT_ASSERT(formula.parse("=HOME.Table1.B5:HOME.Table1.B20"));
-  //   CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
-
   // table and cell
-  //   CPPUNIT_ASSERT(formula.parse("=Table1.$B3:Table1.$B20"));
+  //   CPPUNIT_ASSERT(formula.parse("=Table1::$B3:Table1::$B20"));
   //   CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
 
 }
@@ -155,7 +151,7 @@ void IWORKFormulaTest::testExpressions()
   //   CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
 
   // multiple sheet and table cell operation
-  //   CPPUNIT_ASSERT(formula.parse("=HOME.Table1.B6+OFFICE.Table1.B6-WAREHOUSE.Table1.B6"));
+  //   CPPUNIT_ASSERT(formula.parse("=Table1::B6+Table2::B6-Table3::B6"));
   //   CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
 
   // function with only column
