@@ -49,22 +49,29 @@ struct Address
 typedef std::pair<Address, Address> AddressRange;
 
 struct Function;
-struct UnaryOp;
-struct BinaryOp;
+struct PrefixOp;
+struct InfixOp;
+struct PostfixOp;
 
-typedef variant<double, string, Address, AddressRange, recursive_wrapper<UnaryOp>, recursive_wrapper<BinaryOp>, recursive_wrapper<Function> > Expression;
+typedef variant<double, string, Address, AddressRange, recursive_wrapper<PrefixOp>, recursive_wrapper<InfixOp>, recursive_wrapper<PostfixOp>, recursive_wrapper<Function> > Expression;
 
-struct UnaryOp
+struct PrefixOp
 {
   char m_op;
   Expression m_expr;
 };
 
-struct BinaryOp
+struct InfixOp
 {
   char m_op;
   Expression m_left;
   Expression m_right;
+};
+
+struct PostfixOp
+{
+  char m_op;
+  Expression m_expr;
 };
 
 struct Function
@@ -90,16 +97,22 @@ BOOST_FUSION_ADAPT_STRUCT(
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
-  libetonyek::UnaryOp,
+  libetonyek::PrefixOp,
   (char, m_op)
   (libetonyek::Expression, m_expr)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
-  libetonyek::BinaryOp,
+  libetonyek::InfixOp,
   (libetonyek::Expression, m_left)
   (char, m_op)
   (libetonyek::Expression, m_right)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+  libetonyek::PostfixOp,
+  (libetonyek::Expression, m_expr)
+  (char, m_op)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
@@ -148,8 +161,9 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
 
   number %= double_;
   str %= lit('\'') >> +(char_ - '\'') >> '\'';
-  unaryLit %= char_('+') | char_('-');
-  binaryLit %= char_('+') | char_('-') | char_('*') | char_('/') | char_('%');
+  prefixLit %= char_('+') | char_('-');
+  infixLit %= char_('+') | char_('-') | char_('*') | char_('/');
+  postfixLit %= char_('%');
 
   row %=
     lit('$') >> attr(true) >> uint_
@@ -175,8 +189,9 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
 
   range %= address >> ':' >> address;
 
-  unaryOp %= unaryLit >> term;
-  binaryOp %= term >> binaryLit >> expression;
+  prefixOp %= prefixLit >> term;
+  infixOp %= term >> infixLit >> expression;
+  postfixOp %= term >> postfixLit;
 
   function %= +alpha >> '(' >> -(expression % ';') >> ')';
 
@@ -185,21 +200,22 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
     | str
     | address
     | range
-    | unaryOp
+    | prefixOp
     | function
+    | postfixOp
     ;
 
   expression %=
     term
-    | binaryOp
+    | infixOp
     ;
 
   formula %= lit('=') >> expression;
 
   number.name("number");
   str.name("string");
-  unaryOp.name("unary operator");
-  binaryOp.name("binary operator");
+  prefixOp.name("prefix operator");
+  infixOp.name("infix operator");
   row.name("row");
   column.name("column");
   columnName.name("column name");
@@ -221,9 +237,10 @@ qi::rule<Iterator, unsigned()> columnName;
 qi::rule<Iterator, Coord()> column, row;
 qi::rule<Iterator, double()> number;
 qi::rule<Iterator, string()> str, table, worksheet;
-qi::rule<Iterator, UnaryOp()> unaryOp;
-qi::rule<Iterator, BinaryOp()> binaryOp;
-qi::rule<Iterator, char()> unaryLit, binaryLit;
+qi::rule<Iterator, PrefixOp()> prefixOp;
+qi::rule<Iterator, InfixOp()> infixOp;
+qi::rule<Iterator, PostfixOp()> postfixOp;
+qi::rule<Iterator, char()> prefixLit, infixLit, postfixLit;
 };
 
 }
@@ -265,17 +282,23 @@ struct printer : public boost::static_visitor<void>
     p(val.second);
   }
 
-  void operator()(const recursive_wrapper<UnaryOp> &val) const
+  void operator()(const recursive_wrapper<PrefixOp> &val) const
   {
     m_out << val.get().m_op;
     apply_visitor(printer(m_out), val.get().m_expr);
   }
 
-  void operator()(const recursive_wrapper<BinaryOp> &val) const
+  void operator()(const recursive_wrapper<InfixOp> &val) const
   {
     apply_visitor(printer(m_out), val.get().m_left);
     m_out << val.get().m_op;
     apply_visitor(printer(m_out), val.get().m_right);
+  }
+
+  void operator()(const recursive_wrapper<PostfixOp> &val) const
+  {
+    apply_visitor(printer(m_out), val.get().m_expr);
+    m_out << val.get().m_op;
   }
 
   void operator()(const recursive_wrapper<Function> &val) const
@@ -391,7 +414,7 @@ struct collector : public boost::static_visitor<>
     m_propsVector.append(props);
   }
 
-  void operator()(const recursive_wrapper<UnaryOp> &val) const
+  void operator()(const recursive_wrapper<PrefixOp> &val) const
   {
     librevenge::RVNGPropertyList props;
     props.insert("librevenge:type", "librevenge-operator");
@@ -400,7 +423,7 @@ struct collector : public boost::static_visitor<>
     apply_visitor(collector(m_propsVector), val.get().m_expr);
   }
 
-  void operator()(const recursive_wrapper<BinaryOp> &val) const
+  void operator()(const recursive_wrapper<InfixOp> &val) const
   {
     apply_visitor(collector(m_propsVector), val.get().m_left);
     librevenge::RVNGPropertyList props;
@@ -408,6 +431,15 @@ struct collector : public boost::static_visitor<>
     props.insert("librevenge:operator", val.get().m_op);
     m_propsVector.append(props);
     apply_visitor(collector(m_propsVector), val.get().m_right);
+  }
+
+  void operator()(const recursive_wrapper<PostfixOp> &val) const
+  {
+    apply_visitor(collector(m_propsVector), val.get().m_expr);
+    librevenge::RVNGPropertyList props;
+    props.insert("librevenge:type", "librevenge-operator");
+    props.insert("librevenge:operator", val.get().m_op);
+    m_propsVector.append(props);
   }
 
   void operator()(const recursive_wrapper<Function> &val) const
