@@ -33,6 +33,7 @@ private:
   CPPUNIT_TEST(testOperators);
   CPPUNIT_TEST(testFunctions);
   CPPUNIT_TEST(testExpressions);
+  CPPUNIT_TEST(testInvalid);
   CPPUNIT_TEST_SUITE_END();
 
 private:
@@ -42,6 +43,7 @@ private:
   void testOperators();
   void testFunctions();
   void testExpressions();
+  void testInvalid();
 };
 
 void IWORKFormulaTest::setUp()
@@ -162,6 +164,38 @@ void IWORKFormulaTest::testExpressions()
   //   CPPUNIT_ASSERT(formula.parse("=SUM(B)"));
   //   CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
 
+}
+
+void IWORKFormulaTest::testInvalid()
+{
+  IWORKFormula formula;
+
+  // doesn't start with equal sign
+  CPPUNIT_ASSERT(formula.parse("4") == false);
+
+  // function name with a number
+  CPPUNIT_ASSERT(formula.parse("=FUNC1(B2)") == false);
+
+  // invalid cell reference
+  CPPUNIT_ASSERT(formula.parse("=$B23B") == false);
+
+  // invalid cell range
+  CPPUNIT_ASSERT(formula.parse("=SUM($B2:$B23X)") == false);
+
+  // missing unary operand
+  CPPUNIT_ASSERT(formula.parse("=-") == false);
+
+  // missing binary operand
+  CPPUNIT_ASSERT(formula.parse("=4=") == false);
+
+  // missing paranthesis
+  CPPUNIT_ASSERT(formula.parse("=(23*B3)+(7-2") == false);
+
+  // invalid table cell seperator
+  CPPUNIT_ASSERT(formula.parse("=SHEET1;B5") == false);
+
+  // invalid function argument seperator
+  CPPUNIT_ASSERT(formula.parse("=IF((R1+R2)<45;R1+R2,50)") == false);
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(IWORKFormulaTest);
