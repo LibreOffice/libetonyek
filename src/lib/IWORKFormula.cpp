@@ -183,15 +183,15 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   term %=
     number
     | str
-    | address
     | range
+    | address
     | unaryOp
     | function
     ;
 
   expression %=
-    term
-    | binaryOp
+    binaryOp
+    | term
     ;
 
   formula %= lit('=') >> expression;
