@@ -28,6 +28,7 @@ public:
 private:
   CPPUNIT_TEST_SUITE(IWORKFormulaTest);
   CPPUNIT_TEST(testNumbers);
+  CPPUNIT_TEST(testStrings);
   CPPUNIT_TEST(testCellReferences);
   CPPUNIT_TEST(testAddressRanges);
   CPPUNIT_TEST(testOperators);
@@ -37,6 +38,7 @@ private:
 
 private:
   void testNumbers();
+  void testStrings();
   void testCellReferences();
   void testAddressRanges();
   void testOperators();
@@ -62,6 +64,20 @@ void IWORKFormulaTest::testNumbers()
     CPPUNIT_ASSERT(formula.parse(testFormula));
     CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
   }
+
+}
+
+void IWORKFormulaTest::testStrings()
+{
+  IWORKFormula formula;
+
+  // hello
+  CPPUNIT_ASSERT(formula.parse("=\"hello\""));
+  CPPUNIT_ASSERT_EQUAL(string("=hello"), formula.toString());
+
+  // function
+  CPPUNIT_ASSERT(formula.parse("=NUMBER(\"42\")"));
+  CPPUNIT_ASSERT_EQUAL(string("=NUMBER(42)"), formula.toString());
 
 }
 
