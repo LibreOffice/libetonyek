@@ -43,7 +43,6 @@ struct Address
   Coord m_column;
   Coord m_row;
   optional<string> m_table;
-  optional<string> m_worksheet;
 };
 
 typedef std::pair<Address, Address> AddressRange;
@@ -96,7 +95,6 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 BOOST_FUSION_ADAPT_STRUCT(
   libetonyek::Address,
-  (optional<std::string>, m_worksheet)
   (optional<std::string>, m_table)
   (libetonyek::Coord, m_column)
   (libetonyek::Coord, m_row)
@@ -188,14 +186,12 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
 
   columnName = (+alpha)[_val = bind(parseRowName, _1)];
 
-  worksheet = table.alias();
   // TODO: improve
-  table %= +(char_ - '.');
+  table %= +(char_ - ":");
 
   address %=
-    worksheet >> '.' >> table >> '.' >> column >> row
-    | attr(none) >> table >> '.' >> column >> row
-    | attr(none) >> attr(none) >> column >> row
+    table >> "::" >> column >> row
+    | attr(none) >> column >> row
     ;
 
   range %= address >> ':' >> address;
@@ -234,7 +230,6 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   column.name("column");
   columnName.name("column name");
   table.name("table name");
-  worksheet.name("worksheet name");
   address.name("address");
   range.name("address range");
   function.name("function");
@@ -252,7 +247,7 @@ qi::rule<Iterator, AddressRange()> range;
 qi::rule<Iterator, unsigned()> columnName;
 qi::rule<Iterator, Coord()> column, row;
 qi::rule<Iterator, double()> number;
-qi::rule<Iterator, string()> str, table, worksheet;
+qi::rule<Iterator, string()> str, table;
 qi::rule<Iterator, PrefixOp()> prefixOp;
 qi::rule<Iterator, InfixOp()> infixOp;
 qi::rule<Iterator, PostfixOp()> postfixOp;
@@ -336,8 +331,6 @@ struct printer : public boost::static_visitor<void>
 private:
   void formatAddress(const Address &val) const
   {
-    if (val.m_worksheet)
-      m_out << get(val.m_worksheet) << '.';
     if (val.m_table)
       m_out << get(val.m_table);
     m_out  << '.';
@@ -399,15 +392,8 @@ struct collector : public boost::static_visitor<>
     librevenge::RVNGPropertyList props;
     props.insert("librevenge:type", "librevenge-cell");
 
-    if (val.m_worksheet && val.m_table)
-    {
-      const optional<std::string> sheetTable = get(val.m_worksheet) + '.' + get(val.m_table);
-      props.insert("librevenge:sheet-name", sheetTable);
-    }
-    else if (val.m_table)
+    if (val.m_table)
       props.insert("librevenge:sheet-name", val.m_table);
-    else
-      assert(!val.m_worksheet);
 
     props.insert("librevenge:column-absolute", val.m_column.m_absolute);
     props.insert("librevenge:column", int(val.m_column.m_coord));
