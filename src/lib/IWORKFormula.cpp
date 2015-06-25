@@ -171,7 +171,7 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   using qi::uint_;
 
   number %= double_;
-  str %= lit('\'') >> +(char_ - '\'') >> '\'';
+  str %= lit('\"') >> +(char_ - '\"') >> '\"';
   prefixLit %= char_('+') | char_('-');
   infixLit %= char_('+') | char_('-') | char_('*') | char_('/');
   postfixLit %= char_('%');
