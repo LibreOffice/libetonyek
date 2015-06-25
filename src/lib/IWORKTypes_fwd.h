@@ -9,6 +9,7 @@
 #ifndef IWORKTYPES_FWD_H_INCLUDED
 #define IWORKTYPES_FWD_H_INCLUDED
 
+#include <deque>
 #include <string>
 
 #include <boost/shared_ptr.hpp>
