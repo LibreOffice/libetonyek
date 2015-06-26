@@ -211,12 +211,12 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
     | address
     | prefixOp
     | function
-    | postfixOp
     | pExpr
     ;
 
   expression %=
     infixOp
+    | postfixOp
     | term
     ;
 
