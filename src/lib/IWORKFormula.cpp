@@ -40,8 +40,8 @@ struct Coord
 
 struct Address
 {
-  Coord m_column;
-  Coord m_row;
+  optional<Coord> m_column;
+  optional<Coord> m_row;
   optional<string> m_table;
 };
 
@@ -96,8 +96,8 @@ BOOST_FUSION_ADAPT_STRUCT(
 BOOST_FUSION_ADAPT_STRUCT(
   libetonyek::Address,
   (optional<std::string>, m_table)
-  (libetonyek::Coord, m_column)
-  (libetonyek::Coord, m_row)
+  (optional<libetonyek::Coord>, m_column)
+  (optional<libetonyek::Coord>, m_row)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
@@ -200,7 +200,21 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
     | attr(none) >> column >> row
     ;
 
-  range %= address >> ':' >> address;
+  addressSpecialColumn %=
+    table >> "::" >> column >> attr(none)
+    | attr(none) >> column >> attr(none)
+    ;
+
+  addressSpecialRow %=
+    table >> "::" >> attr(none) >> row
+    | attr(none) >> attr(none) >> row
+    ;
+
+  range %=
+    address >> ':' >> address
+    | addressSpecialColumn >> ':' >> addressSpecialColumn
+    | addressSpecialRow >> ':' >> addressSpecialRow
+    ;
 
   prefixOp %= prefixLit >> term;
   infixOp %= term >> infixLit >> expression;
@@ -217,10 +231,11 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   pExpr %= '(' >> expression >> ')';
 
   term %=
-    number
-    | str
+    str
+    | number
     | function
     | address
+    | addressSpecialColumn
     | prefixOp
     | pExpr
     ;
@@ -254,7 +269,7 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
 qi::rule<Iterator, Function()> function;
 qi::rule<Iterator, Expression()> expression, formula, term, argument;
 qi::rule<Iterator, PExpr()> pExpr;
-qi::rule<Iterator, Address()> address;
+qi::rule<Iterator, Address()> address, addressSpecialColumn, addressSpecialRow;
 qi::rule<Iterator, AddressRange()> range;
 qi::rule<Iterator, unsigned()> columnName;
 qi::rule<Iterator, Coord()> column, row;
@@ -346,24 +361,29 @@ private:
     if (val.m_table)
       m_out << get(val.m_table);
     m_out  << '.';
-    if (val.m_column.m_absolute)
-      m_out << '$';
-
-    unsigned column = val.m_column.m_coord;
-    vector<char> columnNumerals;
-    columnNumerals.reserve(4);
-    while (column != 0)
+    if (val.m_column)
     {
-      if (column > 0)
-        --column;
-      columnNumerals.push_back('A' + column % 26);
-      column /= 26;
-    }
-    copy(columnNumerals.rbegin(), columnNumerals.rend(), std::ostream_iterator<char>(m_out));
+      if (get(val.m_column).m_absolute)
+        m_out << '$';
 
-    if (val.m_row.m_absolute)
-      m_out << '$';
-    m_out << val.m_row.m_coord;
+      unsigned column = get(val.m_column).m_coord;
+      vector<char> columnNumerals;
+      columnNumerals.reserve(4);
+      while (column != 0)
+      {
+        if (column > 0)
+          --column;
+        columnNumerals.push_back('A' + column % 26);
+        column /= 26;
+      }
+      copy(columnNumerals.rbegin(), columnNumerals.rend(), std::ostream_iterator<char>(m_out));
+    }
+    if (val.m_row)
+    {
+      if (get(val.m_row).m_absolute)
+        m_out << '$';
+      m_out << get(val.m_row).m_coord;
+    }
   }
 
 private:
@@ -407,11 +427,17 @@ struct collector : public boost::static_visitor<>
     if (val.m_table)
       props.insert("librevenge:sheet-name", val.m_table);
 
-    props.insert("librevenge:column-absolute", val.m_column.m_absolute);
-    props.insert("librevenge:column", int(val.m_column.m_coord));
+    if (val.m_column)
+    {
+      props.insert("librevenge:column-absolute", get(val.m_column).m_absolute);
+      props.insert("librevenge:column", int(get(val.m_column).m_coord));
+    }
 
-    props.insert("librevenge:row-absolute", val.m_row.m_absolute);
-    props.insert("librevenge:row", int(val.m_row.m_coord));
+    if (val.m_row)
+    {
+      props.insert("librevenge:row-absolute", get(val.m_row).m_absolute);
+      props.insert("librevenge:row", int(get(val.m_row).m_coord));
+    }
 
     m_propsVector.append(props);
   }
@@ -421,18 +447,26 @@ struct collector : public boost::static_visitor<>
     librevenge::RVNGPropertyList props;
     props.insert("librevenge:type", "librevenge-cells");
 
-    props.insert("librevenge:start-column-absolute", val.first.m_column.m_absolute);
-    props.insert("librevenge:start-column", int(val.first.m_column.m_coord));
-
-    props.insert("librevenge:start-row-absolute", val.first.m_row.m_absolute);
-    props.insert("librevenge:start-row", int(val.first.m_row.m_coord));
-
-    props.insert("librevenge:end-column-absolute", val.second.m_column.m_absolute);
-    props.insert("librevenge:end-column", int(val.second.m_column.m_coord));
-
-    props.insert("librevenge:end-row-absolute", val.second.m_row.m_absolute);
-    props.insert("librevenge:end-row", int(val.second.m_row.m_coord));
-
+    if (val.first.m_column)
+    {
+      props.insert("librevenge:start-column-absolute", get(val.first.m_column).m_absolute);
+      props.insert("librevenge:start-column", int(get(val.first.m_column).m_coord));
+    }
+    if (val.first.m_row)
+    {
+      props.insert("librevenge:start-row-absolute", get(val.first.m_row).m_absolute);
+      props.insert("librevenge:start-row", int(get(val.first.m_row).m_coord));
+    }
+    if (val.second.m_column)
+    {
+      props.insert("librevenge:end-column-absolute", get(val.second.m_column).m_absolute);
+      props.insert("librevenge:end-column", int(get(val.second.m_column).m_coord));
+    }
+    if (val.second.m_row)
+    {
+      props.insert("librevenge:end-row-absolute", get(val.second.m_row).m_absolute);
+      props.insert("librevenge:end-row", int(get(val.second.m_row).m_coord));
+    }
     m_propsVector.append(props);
   }
 
