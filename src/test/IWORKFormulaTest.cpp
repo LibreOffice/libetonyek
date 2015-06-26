@@ -185,8 +185,16 @@ void IWORKFormulaTest::testExpressions()
   // CPPUNIT_ASSERT_EQUAL(string("=((-23)+4)*([.B7]-2)"), formula.toString());
 
   // function with only column
-  //   CPPUNIT_ASSERT(formula.parse("=SUM(B)"));
-  //   CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
+  CPPUNIT_ASSERT(formula.parse("=SUM(B)"));
+  // CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
+
+  // function with row range
+  CPPUNIT_ASSERT(formula.parse("=SUM(7:$9)"));
+  // CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
+
+  // function with column range
+  CPPUNIT_ASSERT(formula.parse("=SUM($B:C)"));
+  // CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
 
 }
 
