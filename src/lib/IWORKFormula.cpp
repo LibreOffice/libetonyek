@@ -163,6 +163,7 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   using qi::_1;
   using qi::_val;
   using qi::alpha;
+  using qi::alnum;
   using qi::attr;
   using qi::double_;
   using qi::lit;
@@ -200,7 +201,7 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   infixOp %= term >> infixLit >> expression;
   postfixOp %= term >> postfixLit;
 
-  function %= +alpha >> '(' >> -(expression % ',') >> ')';
+  function %= +alnum >> '(' >> -(expression % ',') >> ')';
 
   pExpr %= '(' >> expression >> ')';
 
@@ -208,9 +209,9 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
     number
     | str
     | range
+    | function
     | address
     | prefixOp
-    | function
     | postfixOp
     | pExpr
     ;

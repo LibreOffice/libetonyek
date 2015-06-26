@@ -156,6 +156,10 @@ void IWORKFormulaTest::testFunctions()
   CPPUNIT_ASSERT(formula.parse("=COUNTIFS(A1:A38,\">100\",A1:A38,\"<=200\")"));
   CPPUNIT_ASSERT_EQUAL(string("=COUNTIFS([.A1:.A38]>100[.A1:.A38]<=200)"), formula.toString());
 
+  // function with number in name
+  CPPUNIT_ASSERT(formula.parse("=HEX2OCT(18)"));
+  CPPUNIT_ASSERT_EQUAL(string("=HEX2OCT(18)"), formula.toString());
+
 }
 
 void IWORKFormulaTest::testExpressions()
