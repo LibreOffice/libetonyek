@@ -188,8 +188,16 @@ void IWORKFormulaTest::testExpressions()
   // CPPUNIT_ASSERT_EQUAL(string("=((-23)+4)*([.B7]-2)"), formula.toString());
 
   // function with only column
-  //   CPPUNIT_ASSERT(formula.parse("=SUM(B)"));
-  //   CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
+  CPPUNIT_ASSERT(formula.parse("=SUM(B)"));
+  // CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
+
+  // function with row range
+  CPPUNIT_ASSERT(formula.parse("=SUM(7:$9)"));
+  // CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
+
+  // function with column range
+  CPPUNIT_ASSERT(formula.parse("=SUM($B:C)"));
+  // CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
 
 }
 
@@ -230,6 +238,13 @@ void IWORKFormulaTest::testInvalid()
   CPPUNIT_ASSERT(!formula.parse("=SUM(-($A4:$A81))"));
   CPPUNIT_ASSERT(!formula.parse("=4+$A4:$A81"));
 
+  // invalid special address
+  CPPUNIT_ASSERT(!formula.parse("=SUM(B:C2)"));
+  CPPUNIT_ASSERT(!formula.parse("=SUM(9:C2)"));
+  CPPUNIT_ASSERT(!formula.parse("=SUM(C2:C)"));
+  CPPUNIT_ASSERT(!formula.parse("=SUM(C2:9)"));
+  CPPUNIT_ASSERT(!formula.parse("=SUM(B:7)"));
+  CPPUNIT_ASSERT(!formula.parse("=SUM(9:B)"));
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(IWORKFormulaTest);
