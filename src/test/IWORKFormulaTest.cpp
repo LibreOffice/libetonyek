@@ -128,9 +128,9 @@ void IWORKFormulaTest::testOperators()
   CPPUNIT_ASSERT(formula.parse("=B5+B6"));
   CPPUNIT_ASSERT_EQUAL(string("=[.B5]+[.B6]"), formula.toString());
 
-  // postfix
-  // CPPUNIT_ASSERT(formula.parse("=100%"));
-  // CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
+  //postfix
+  CPPUNIT_ASSERT(formula.parse("=100%"));
+  CPPUNIT_ASSERT_EQUAL(string("=100%"), formula.toString());
 
 }
 
