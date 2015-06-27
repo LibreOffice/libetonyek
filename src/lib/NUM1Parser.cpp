@@ -11,6 +11,7 @@
 
 #include "libetonyek_xml.h"
 #include "IWORKChainedTokenizer.h"
+#include "IWORKChartInfoElement.h"
 #include "IWORKDiscardContext.h"
 #include "IWORKMetadataElement.h"
 #include "IWORKStylesheetBase.h"
@@ -91,6 +92,8 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   //   return makeContext<StickyNoteElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
     return makeContext<IWORKTabularInfoElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::chart_info :
+    return makeContext<IWORKChartInfoElement>(getState());
     // case IWORKToken::NS_URI_SF | IWORKToken::title_placeholder_ref :
     //   return makeContext<PlaceholderRefContext>(getState(), true);
 
