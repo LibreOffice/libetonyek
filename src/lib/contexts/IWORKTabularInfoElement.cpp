@@ -212,7 +212,7 @@ DuElement::DuElement(IWORKXMLParserState &state)
 namespace
 {
 
-class RnElement : public CellContextBase
+class RnElement : public IWORKXMLEmptyContextBase
 {
 public:
   explicit RnElement(IWORKXMLParserState &state);
@@ -222,7 +222,7 @@ private:
 };
 
 RnElement::RnElement(IWORKXMLParserState &state)
-  : CellContextBase(state)
+  : IWORKXMLEmptyContextBase(state)
 {
 }
 
@@ -233,8 +233,6 @@ void RnElement::attribute(const int name, const char *const value)
   case IWORKToken::v | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
     break;
-  default :
-    CellContextBase::attribute(name, value);
   }
 }
 
@@ -243,7 +241,7 @@ void RnElement::attribute(const int name, const char *const value)
 namespace
 {
 
-class RElement : public CellContextBase
+class RElement : public IWORKXMLElementContextBase
 {
 public:
   explicit RElement(IWORKXMLParserState &state);
@@ -253,7 +251,7 @@ private:
 };
 
 RElement::RElement(IWORKXMLParserState &state)
-  : CellContextBase(state)
+  : IWORKXMLElementContextBase(state)
 {
 }
 
@@ -274,7 +272,7 @@ IWORKXMLContextPtr_t RElement::element(int name)
 namespace
 {
 
-class FoElement : public CellContextBase
+class FoElement : public IWORKXMLEmptyContextBase
 {
 public:
   explicit FoElement(IWORKXMLParserState &state);
@@ -284,7 +282,7 @@ private:
 };
 
 FoElement::FoElement(IWORKXMLParserState &state)
-  : CellContextBase(state)
+  : IWORKXMLEmptyContextBase(state)
 {
 }
 
