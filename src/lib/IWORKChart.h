@@ -10,6 +10,8 @@
 #ifndef IWORKCHART_H_INCLUDED
 #define IWORKCHART_H_INCLUDED
 
+#include <boost/optional.hpp>
+
 #include <deque>
 
 #include <IWORKFormula.h>
@@ -26,9 +28,9 @@ public:
   unsigned m_chartType;
   std::deque<std::string> m_rowNames;
   std::deque<std::string> m_columnNames;
-  std::string m_chartName;
-  std::string m_valueTitle;
-  std::string m_categoryTitle;
+  boost::optional<std::string> m_chartName;
+  boost::optional<std::string> m_valueTitle;
+  boost::optional<std::string> m_categoryTitle;
 
 };
 

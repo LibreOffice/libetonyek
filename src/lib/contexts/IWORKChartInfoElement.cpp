@@ -9,11 +9,12 @@
 
 #include "IWORKChartInfoElement.h"
 
-#include "libetonyek_xml.h"
-// #include "IWORKFormula.h"
 #include "IWORKGeometryElement.h"
-// #include "IWORKStringElement.h"
+#include "IWORKNumberElement.h"
+#include "IWORKStringElement.h"
 #include "IWORKToken.h"
+
+#include "libetonyek_xml.h"
 
 
 namespace libetonyek
@@ -22,63 +23,55 @@ namespace libetonyek
 namespace
 {
 
-// TODO: Handle as same in IWORKTabularInfoELement
-class FoElement : public IWORKXMLElementContextBase
+class MutableArrayElement : public IWORKXMLElementContextBase
 {
 public:
-  explicit FoElement(IWORKXMLParserState &state);
+  explicit MutableArrayElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
 };
 
-FoElement::FoElement(IWORKXMLParserState &state)
+MutableArrayElement::MutableArrayElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
 {
 }
 
-void FoElement::attribute(const int name, const char *)
+IWORKXMLContextPtr_t MutableArrayElement::element(const int)
 {
-  switch (name)
-  {
-  case IWORKToken::fs | IWORKToken::NS_URI_SF :
-  {
-    // IWORKFormula formula;
-    // if (formula.parse(value))
-    //   formula.write(getState().m_tableData->m_formula);
-    // break;
-  }
-  default :
-    break;
-  }
+  // switch (name)
+  // {
+  // case IWORKToken::number | IWORKToken::NS_URI_SF :
+  //   return makeContext<IWORKNumberElement>(getState(), m_value);
+  // }
+
+  return IWORKXMLContextPtr_t();
 }
+
 
 }
 
 namespace
 {
 
-class ChartFormulasElement : public IWORKXMLElementContextBase
+class CachedDataElement : public IWORKXMLElementContextBase
 {
 public:
-  explicit ChartFormulasElement(IWORKXMLParserState &state);
+  explicit CachedDataElement(IWORKXMLParserState &state);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 };
 
-ChartFormulasElement::ChartFormulasElement(IWORKXMLParserState &state)
+CachedDataElement::CachedDataElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
 {
 }
 
-IWORKXMLContextPtr_t ChartFormulasElement::element(const int)
+IWORKXMLContextPtr_t CachedDataElement::element(const int name)
 {
-  // switch (name)
-  // {
-  // case IWORKToken::string | IWORKToken::NS_URI_SF :
-  //   return makeContext<IWORKStringElement>(getState(), m_value);
-  // }
+  if (name == (IWORKToken::mutable_array | IWORKToken::NS_URI_SF))
+    return makeContext<MutableArrayElement>(getState());
 
   return IWORKXMLContextPtr_t();
 }
@@ -91,23 +84,29 @@ namespace
 class ChartRowColumnNamesElement : public IWORKXMLElementContextBase
 {
 public:
-  explicit ChartRowColumnNamesElement(IWORKXMLParserState &state);
+  explicit ChartRowColumnNamesElement(IWORKXMLParserState &state, std::deque<std::string> &rowColumnNames);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
+
+private:
+  std::deque<std::string> m_rowColumnNames;
 };
 
-ChartRowColumnNamesElement::ChartRowColumnNamesElement(IWORKXMLParserState &state)
+ChartRowColumnNamesElement::ChartRowColumnNamesElement(IWORKXMLParserState &state, std::deque<std::string> &rowColumnNames)
   : IWORKXMLElementContextBase(state)
+  , m_rowColumnNames(rowColumnNames)
 {
 }
 
-IWORKXMLContextPtr_t ChartRowColumnNamesElement::element(const int)
+IWORKXMLContextPtr_t ChartRowColumnNamesElement::element(const int name)
 {
   // switch (name)
   // {
   // case IWORKToken::string | IWORKToken::NS_URI_SF :
-  //   return makeContext<IWORKStringElement>(getState(), m_value);
+  //   boost::optional<std::string> value;
+  //   m_rowColumnNames.push_back(get(value));
+  //   return makeContext<IWORKStringElement>(getState(), value);
   // }
 
   return IWORKXMLContextPtr_t();
@@ -121,14 +120,18 @@ namespace
 class FormulaChartModelElement : public IWORKXMLElementContextBase
 {
 public:
-  explicit FormulaChartModelElement(IWORKXMLParserState &state);
+  explicit FormulaChartModelElement(IWORKXMLParserState &state, IWORKChart &chart);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
+
+private:
+  IWORKChart m_chart;
 };
 
-FormulaChartModelElement::FormulaChartModelElement(IWORKXMLParserState &state)
+FormulaChartModelElement::FormulaChartModelElement(IWORKXMLParserState &state, IWORKChart &chart)
   : IWORKXMLElementContextBase(state)
+  , m_chart(chart)
 {
 }
 
@@ -136,26 +139,18 @@ IWORKXMLContextPtr_t FormulaChartModelElement::element(const int name)
 {
   switch (name)
   {
-  // case IWORKToken::chart_data | IWORKToken::NS_URI_SF :
-  //   return makeContext<ChartDataElement>(getState());
   case IWORKToken::chart_column_names | IWORKToken::NS_URI_SF :
-    return makeContext<ChartRowColumnNamesElement>(getState());
+    return makeContext<ChartRowColumnNamesElement>(getState(), m_chart.m_columnNames);
   case IWORKToken::chart_row_names | IWORKToken::NS_URI_SF :
-    return makeContext<ChartRowColumnNamesElement>(getState());
-  // case IWORKToken::chart_name | IWORKToken::NS_URI_SF :
-  //   return makeContext<IWORKStringElement>(getState(), m_value);
-  // case IWORKToken::value_title | IWORKToken::NS_URI_SF :
-  //   return makeContext<IWORKStringElement>(getState(), m_value);
-  // case IWORKToken::category_title | IWORKToken::NS_URI_SF :
-  //   return makeContext<IWORKStringElement>(getState(), m_value);
-  // case IWORKToken::entity_id | IWORKToken::NS_URI_SF :
-  //   return makeContext<IWORKStringElement>(getState(), m_value);
-  case IWORKToken::data_formulas | IWORKToken::NS_URI_SF :
-    return makeContext<ChartFormulasElement>(getState());
-  case IWORKToken::row_label_formulas | IWORKToken::NS_URI_SF :
-    return makeContext<ChartFormulasElement>(getState());
-  case IWORKToken::column_label_formulas | IWORKToken::NS_URI_SF :
-    return makeContext<ChartFormulasElement>(getState());
+    return makeContext<ChartRowColumnNamesElement>(getState(), m_chart.m_rowNames);
+  case IWORKToken::chart_name | IWORKToken::NS_URI_SF :
+    return makeContext<IWORKStringElement>(getState(), m_chart.m_chartName);
+  case IWORKToken::value_title | IWORKToken::NS_URI_SF :
+    return makeContext<IWORKStringElement>(getState(), m_chart.m_valueTitle);
+  case IWORKToken::category_title | IWORKToken::NS_URI_SF :
+    return makeContext<IWORKStringElement>(getState(), m_chart.m_categoryTitle);
+  case IWORKToken::cached_data | IWORKToken::NS_URI_SF :
+    return makeContext<CachedDataElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
@@ -170,14 +165,18 @@ namespace
 class ChartModelObjectElement : public IWORKXMLElementContextBase
 {
 public:
-  explicit ChartModelObjectElement(IWORKXMLParserState &state);
+  explicit ChartModelObjectElement(IWORKXMLParserState &state, IWORKChart &chart);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
+
+private:
+  IWORKChart m_chart;
 };
 
-ChartModelObjectElement::ChartModelObjectElement(IWORKXMLParserState &state)
+ChartModelObjectElement::ChartModelObjectElement(IWORKXMLParserState &state, IWORKChart &chart)
   : IWORKXMLElementContextBase(state)
+  , m_chart(chart)
 {
 }
 
@@ -186,7 +185,7 @@ IWORKXMLContextPtr_t ChartModelObjectElement::element(const int name)
   switch (name)
   {
   case IWORKToken::formula_chart_model | IWORKToken::NS_URI_SF :
-    return makeContext<FormulaChartModelElement>(getState());
+    return makeContext<FormulaChartModelElement>(getState(), m_chart);
   }
 
   return IWORKXMLContextPtr_t();
@@ -220,17 +219,7 @@ IWORKXMLContextPtr_t IWORKChartInfoElement::element(const int name)
   case IWORKToken::geometry | IWORKToken::NS_URI_SF :
     return makeContext<IWORKGeometryElement>(getState());
   case IWORKToken::chart_model_object | IWORKToken::NS_URI_SF :
-    return makeContext<ChartModelObjectElement>(getState());
-  // case IWORKToken::wrap | IWORKToken::NS_URI_SF :
-  //   return makeContext<WrapElement>(getState());
-  // case IWORKToken::style | IWORKToken::NS_URI_SF :
-  //   return makeContext<StyleElement>(getState());
-  // case IWORKToken::chart_legend_info | IWORKToken::NS_URI_SF :
-  //   return makeContext<ChartLegendInfoElement>(getState());
-  // case IWORKToken::original_bounds | IWORKToken::NS_URI_SF :
-  //   return makeContext<BoundsElement>(getState());
-  // case IWORKToken::target_bounds | IWORKToken::NS_URI_SF :
-  //   return makeContext<BoundsElement>(getState());
+    return makeContext<ChartModelObjectElement>(getState(), m_chart);
   }
 
   return IWORKXMLContextPtr_t();

@@ -10,9 +10,9 @@
 #ifndef IWORKCHARTINFOELEMENT_H_INCLUDED
 #define IWORKCHARTINFOELEMENT_H_INCLUDED
 
-#include "IWORKXMLContextBase.h"
-
 #include <IWORKChart.h>
+
+#include "IWORKXMLContextBase.h"
 
 namespace libetonyek
 {
