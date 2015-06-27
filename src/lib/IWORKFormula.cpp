@@ -155,7 +155,7 @@ template<typename Iterator>
 struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
 {
   FormulaGrammar()
-  : FormulaGrammar::base_type(formula)
+  : FormulaGrammar::base_type(formula, "formula")
 {
   using ascii::char_;
   using ascii::string;
