@@ -11,6 +11,7 @@
 
 #include <cassert>
 #include <deque>
+#include <sstream>
 #include <utility>
 
 #include <boost/fusion/include/adapt_struct.hpp>
@@ -281,6 +282,44 @@ private:
 
 }
 
+namespace
+{
+
+using std::ostringstream;
+
+struct SVGPrinter : public static_visitor<void>
+{
+  explicit SVGPrinter(ostringstream &sink)
+    : m_sink(sink)
+  {
+  }
+
+  void operator()(const MoveTo &element) const
+  {
+    m_sink << "M " << element.m_x << ' ' << element.m_y;
+  }
+
+  void operator()(const LineTo &element) const
+  {
+    m_sink << "L " << element.m_x << ' ' << element.m_y;
+  }
+
+  void operator()(const CurveTo &element) const
+  {
+    m_sink
+        << 'C'
+        << ' ' << element.m_x1 << ' ' << element.m_y1
+        << ' ' << element.m_x2 << ' ' << element.m_y2
+        << ' ' << element.m_x << ' ' << element.m_y
+        ;
+  }
+
+private:
+  ostringstream &m_sink;
+};
+
+}
+
 IWORKPath::IWORKPath()
   : m_impl(new Impl())
 {
@@ -372,6 +411,27 @@ void IWORKPath::operator*=(const glm::dmat3 &tr)
 {
   for (Path_t::iterator it = m_impl->m_path.begin(); it != m_impl->m_path.end(); ++it)
     apply_visitor(Transformer(tr), *it);
+}
+
+const std::string IWORKPath::str() const
+{
+  ostringstream sink;
+
+  Path_t::const_iterator it = m_impl->m_path.begin();
+  const Path_t::const_iterator end = m_impl->m_path.end();
+  if (it != end)
+  {
+    apply_visitor(SVGPrinter(sink), *it);
+    for (++it; it != end; ++it)
+    {
+      sink << ' ';
+      apply_visitor(SVGPrinter(sink), *it);
+    }
+    if (m_impl->m_closed)
+      sink << " Z";
+  }
+
+  return sink.str();
 }
 
 void IWORKPath::write(librevenge::RVNGPropertyListVector &vec) const

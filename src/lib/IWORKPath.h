@@ -53,6 +53,12 @@ public:
     */
   void operator*=(const glm::dmat3 &tr);
 
+  /* Create a string representation of this path.
+   *
+   * @return an SVG path representing this.
+   */
+  const std::string str() const;
+
   /** Create librevenge representation of this path.
     */
   void write(librevenge::RVNGPropertyListVector &vec) const;
