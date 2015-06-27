@@ -52,6 +52,7 @@ body-placeholder-ref,body_placeholder_ref
 bold,bold
 bottom,bottom
 butt,butt
+cached-data,cached_data
 calc-engine,calc_engine
 callout2-path,callout2_path
 cap,cap
@@ -60,10 +61,15 @@ cell-style,cell_style
 cell-style-ref,cell_style_ref
 characterstyle,characterstyle
 characterstyle-ref,characterstyle_ref
+chart-column_names,chart_column_names
+chart-row_names,chart_row_names
+chart-info,chart_info
+chart-model-object,chart_model_object
 col-span,col_span
 color,color
 column,column
 columns,columns
+column-label-formulas,column_label_formulas
 comment,comment
 connection-line,connection_line
 connection-path,connection_path
@@ -75,6 +81,7 @@ crbr,crbr
 ct,ct
 d,d
 data,data
+data-formulas,data_formulas
 data-ref,data_ref
 datasource,datasource
 displayname,displayname
@@ -103,6 +110,7 @@ footnote,footnote
 footnote-mark,footnote_mark
 footnotebr,footnotebr
 footnotes,footnotes
+formula-chart-model,formula_chart_model
 frame-h,frame_h
 frame-w,frame_w
 frame-x,frame_x
@@ -164,6 +172,7 @@ metadata,metadata
 miter,miter
 mode,mode
 movie-media,movie_media
+mutable-array,mutable_array
 n,n
 name,name
 naturalSize,naturalSize
@@ -201,6 +210,7 @@ rightIndent,rightIndent
 rn,rn
 row-span,row_span
 rows,rows
+row-label-formulas,row_label_formulas
 s,s
 scalar,scalar
 scalar-path,scalar_path
