@@ -231,20 +231,20 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   formula %= lit('=') >> expression;
 
   number.name("number");
-  str.name("string");
-  prefixOp.name("prefix operator");
-  infixOp.name("infix operator");
+  str.name("str");
+  prefixOp.name("prefixOp");
+  infixOp.name("infixOp");
   row.name("row");
   column.name("column");
-  columnName.name("column name");
-  table.name("table name");
+  columnName.name("columnName");
+  table.name("table");
   address.name("address");
-  range.name("address range");
+  range.name("range");
   function.name("function");
   expression.name("expression");
   term.name("term");
   formula.name("formula");
-  pExpr.name("parenthesized expression");
+  pExpr.name("pExpr");
 }
 
 qi::rule<Iterator, Function()> function;
