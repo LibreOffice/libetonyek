@@ -105,7 +105,11 @@ void CellContextBase::emitCell(const bool covered)
     if (covered)
       getCollector().collectCoveredTableCell(tableData->m_row, tableData->m_column);
     else
-      getCollector().collectTableCell(tableData->m_row, tableData->m_column, tableData->m_content, get_optional_value_or(tableData->m_rowSpan, 1), get_optional_value_or(tableData->m_columnSpan, 1));
+      getCollector().collectTableCell(
+        tableData->m_row, tableData->m_column,
+        tableData->m_content,
+        get_optional_value_or(tableData->m_rowSpan, 1), get_optional_value_or(tableData->m_columnSpan, 1)
+      );
   }
 
   // reset cell attributes
