@@ -71,46 +71,48 @@ void CellContextBase::endOfElement()
 
 void CellContextBase::emitCell(const bool covered)
 {
+  const IWORKTableDataPtr_t tableData = getState().m_tableData;
+
   // determine the cell's position
-  if (getState().m_tableData->m_cellMove)
+  if (tableData->m_cellMove)
   {
-    const unsigned ct = get(getState().m_tableData->m_cellMove);
+    const unsigned ct = get(tableData->m_cellMove);
     if (0x80 > ct)
     {
-      getState().m_tableData->m_column += ct;
+      tableData->m_column += ct;
     }
     else
     {
-      ++getState().m_tableData->m_row;
-      getState().m_tableData->m_column -= (0x100 - ct);
+      ++tableData->m_row;
+      tableData->m_column -= (0x100 - ct);
     }
   }
   else
   {
-    ++getState().m_tableData->m_column;
-    if (getState().m_tableData->m_columnSizes.size() == getState().m_tableData->m_column)
+    ++tableData->m_column;
+    if (tableData->m_columnSizes.size() == tableData->m_column)
     {
-      getState().m_tableData->m_column = 0;
-      ++getState().m_tableData->m_row;
+      tableData->m_column = 0;
+      ++tableData->m_row;
     }
   }
-  assert(getState().m_tableData->m_columnSizes.size() > getState().m_tableData->m_column);
-  assert(getState().m_tableData->m_rowSizes.size() > getState().m_tableData->m_row);
+  assert(tableData->m_columnSizes.size() > tableData->m_column);
+  assert(tableData->m_rowSizes.size() > tableData->m_row);
 
   // send the cell to collector
   if (isCollector())
   {
     if (covered)
-      getCollector().collectCoveredTableCell(getState().m_tableData->m_row, getState().m_tableData->m_column);
+      getCollector().collectCoveredTableCell(tableData->m_row, tableData->m_column);
     else
-      getCollector().collectTableCell(getState().m_tableData->m_row, getState().m_tableData->m_column, getState().m_tableData->m_content, get_optional_value_or(getState().m_tableData->m_rowSpan, 1), get_optional_value_or(getState().m_tableData->m_columnSpan, 1));
+      getCollector().collectTableCell(tableData->m_row, tableData->m_column, tableData->m_content, get_optional_value_or(tableData->m_rowSpan, 1), get_optional_value_or(tableData->m_columnSpan, 1));
   }
 
   // reset cell attributes
-  getState().m_tableData->m_columnSpan.reset();
-  getState().m_tableData->m_rowSpan.reset();
-  getState().m_tableData->m_cellMove.reset();
-  getState().m_tableData->m_content.reset();
+  tableData->m_columnSpan.reset();
+  tableData->m_rowSpan.reset();
+  tableData->m_cellMove.reset();
+  tableData->m_content.reset();
 }
 
 }
