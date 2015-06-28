@@ -9,6 +9,7 @@
 
 #include "IWORKChartInfoElement.h"
 
+#include "libetonyek_xml.h"
 // #include "IWORKFormula.h"
 #include "IWORKGeometryElement.h"
 // #include "IWORKStringElement.h"
@@ -195,6 +196,7 @@ IWORKXMLContextPtr_t ChartModelObjectElement::element(const int name)
 
 IWORKChartInfoElement::IWORKChartInfoElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
+  , m_chart()
 {
 }
 
@@ -202,12 +204,12 @@ void IWORKChartInfoElement::startOfElement()
 {
 }
 
-void IWORKChartInfoElement::attribute(const int name, const char *)
+void IWORKChartInfoElement::attribute(const int name, const char *value)
 {
   switch (name)
   {
-  // case IWORKToken::chart_type | IWORKToken::NS_URI_SF :
-  // break;
+  case IWORKToken::chart_type | IWORKToken::NS_URI_SF :
+    m_chart.m_chartType = int_cast(value);
   }
 }
 
@@ -217,7 +219,6 @@ IWORKXMLContextPtr_t IWORKChartInfoElement::element(const int name)
   {
   case IWORKToken::geometry | IWORKToken::NS_URI_SF :
     return makeContext<IWORKGeometryElement>(getState());
-    break;
   case IWORKToken::chart_model_object | IWORKToken::NS_URI_SF :
     return makeContext<ChartModelObjectElement>(getState());
   // case IWORKToken::wrap | IWORKToken::NS_URI_SF :

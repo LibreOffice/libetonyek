@@ -12,6 +12,8 @@
 
 #include "IWORKXMLContextBase.h"
 
+#include <IWORKChart.h>
+
 namespace libetonyek
 {
 
@@ -27,6 +29,8 @@ private:
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
+public:
+  IWORKChart m_chart;
 };
 
 }

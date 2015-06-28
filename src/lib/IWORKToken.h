@@ -56,6 +56,7 @@ enum
   chart_row_names,
   chart_info,
   chart_model_object,
+  chart_type,
   color,
   column,
   columns,
