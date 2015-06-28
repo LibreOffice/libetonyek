@@ -60,6 +60,11 @@ cell-style,cell_style
 cell-style-ref,cell_style_ref
 characterstyle,characterstyle
 characterstyle-ref,characterstyle_ref
+chart-column_names,chart_column_names
+chart-row_names,chart_row_names
+chart-info,chart_info
+chart-model-object,chart_model_object
+chart-type,chart_type
 col-span,col_span
 color,color
 column,column
