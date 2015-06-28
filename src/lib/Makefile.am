@@ -35,6 +35,8 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
 libetonyek_internal_la_SOURCES = \
 	IWORKChainedTokenizer.cpp \
 	IWORKChainedTokenizer.h \
+	IWORKChart.cpp \
+	IWORKChart.h \
 	IWORKCollector.cpp \
 	IWORKCollector.h \
 	IWORKDictionary.cpp \
