@@ -206,14 +206,18 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   infixOp %= term >> infixLit >> expression;
   postfixOp %= term >> postfixLit;
 
-  function %= +alnum >> '(' >> -(expression % ',') >> ')';
+  function %= +alnum >> '(' >> -(argument % ',') >> ')';
 
-  pExpr %= '(' >> expression >> ')';
+  argument =
+    range
+    | expression
+    ;
+
+  pExpr %= '(' >> argument >> ')';
 
   term %=
     number
     | str
-    | range
     | function
     | address
     | prefixOp
@@ -243,10 +247,11 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   term.name("term");
   formula.name("formula");
   pExpr.name("pExpr");
+  argument.name("argument");
 }
 
 qi::rule<Iterator, Function()> function;
-qi::rule<Iterator, Expression()> expression, formula, term;
+qi::rule<Iterator, Expression()> expression, formula, term, argument;
 qi::rule<Iterator, PExpr()> pExpr;
 qi::rule<Iterator, Address()> address;
 qi::rule<Iterator, AddressRange()> range;
