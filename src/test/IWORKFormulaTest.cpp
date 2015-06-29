@@ -30,7 +30,6 @@ private:
   CPPUNIT_TEST(testNumbers);
   CPPUNIT_TEST(testStrings);
   CPPUNIT_TEST(testCellReferences);
-  CPPUNIT_TEST(testAddressRanges);
   CPPUNIT_TEST(testOperators);
   CPPUNIT_TEST(testFunctions);
   CPPUNIT_TEST(testExpressions);
@@ -41,7 +40,6 @@ private:
   void testNumbers();
   void testStrings();
   void testCellReferences();
-  void testAddressRanges();
   void testOperators();
   void testFunctions();
   void testExpressions();
@@ -109,21 +107,6 @@ void IWORKFormulaTest::testCellReferences()
 
 }
 
-void IWORKFormulaTest::testAddressRanges()
-{
-  IWORKFormula formula;
-
-  // range
-  CPPUNIT_ASSERT(formula.parse("=$A4:$A81"));
-  CPPUNIT_ASSERT_EQUAL(string("=[.$A4:.$A81]"), formula.toString());
-
-  // table and cell
-  CPPUNIT_ASSERT(formula.parse("=Table1::$B3:Table1::$B20"));
-  CPPUNIT_ASSERT_EQUAL(string("=[Table1.$B3:Table1.$B20]"), formula.toString());
-
-}
-
-
 void IWORKFormulaTest::testOperators()
 {
   IWORKFormula formula;
@@ -161,6 +144,14 @@ void IWORKFormulaTest::testFunctions()
   // function with address range
   CPPUNIT_ASSERT(formula.parse("=SUM($B5:$B16)"));
   CPPUNIT_ASSERT_EQUAL(string("=SUM([.$B5:.$B16])"), formula.toString());
+
+  // function with address range in paranthesis
+  CPPUNIT_ASSERT(formula.parse("=SUM(($B5:$B16))"));
+  CPPUNIT_ASSERT_EQUAL(string("=SUM([.$B5:.$B16])"), formula.toString());
+
+  //function with address range table and cell
+  CPPUNIT_ASSERT(formula.parse("=SUM(Table1::$B3:Table1::$B20)"));
+  CPPUNIT_ASSERT_EQUAL(string("=SUM([Table1.$B3:Table1.$B20])"), formula.toString());
 
   // function with multiple arguments
   CPPUNIT_ASSERT(formula.parse("=COUNTIFS(A1:A38,\">100\",A1:A38,\"<=200\")"));
@@ -229,6 +220,16 @@ void IWORKFormulaTest::testInvalid()
 
   // invalid function argument seperator
   CPPUNIT_ASSERT(!formula.parse("=IF((R1+R2)<45;R1+R2,50)"));
+
+  // address range not allowed in arbitrary context
+  CPPUNIT_ASSERT(!formula.parse("=$A4:$A81"));
+  CPPUNIT_ASSERT(!formula.parse("=($A4:$A81)"));
+  CPPUNIT_ASSERT(!formula.parse("=-$A4:$A81"));
+  CPPUNIT_ASSERT(!formula.parse("=$A4:$A81%"));
+  CPPUNIT_ASSERT(!formula.parse("=SUM($A4:$A81%)"));
+  CPPUNIT_ASSERT(!formula.parse("=SUM(-($A4:$A81))"));
+  CPPUNIT_ASSERT(!formula.parse("=4+$A4:$A81"));
+
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(IWORKFormulaTest);
