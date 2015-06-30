@@ -10,9 +10,12 @@
 #ifndef IWORKXMLPARSERSTATE_H_INCLUDED
 #define IWORKXMLPARSERSTATE_H_INCLUDED
 
+#include <boost/optional/optional.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/unordered_map.hpp>
 
 #include "IWORKStylesheet.h"
+#include "IWORKTypes.h"
 #include "IWORKTypes_fwd.h"
 
 namespace libetonyek
@@ -43,6 +46,7 @@ public:
   // When false, nothing should be sent to collector. This is used to
   // gather referenceable entities in skipped parts of the file.
   bool m_enableCollector;
+  IWORKTableNameMap_t m_tableNameMap;
 
 private:
   IWORKParser &m_parser;

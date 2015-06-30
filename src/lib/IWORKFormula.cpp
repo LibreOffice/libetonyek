@@ -268,6 +268,7 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   pExpr.name("pExpr");
   argument.name("argument");
   rangeSpecial.name("rangeSpecial");
+
 }
 
 qi::rule<Iterator, Function()> function;
@@ -568,7 +569,7 @@ IWORKFormula::IWORKFormula()
 {
 }
 
-bool IWORKFormula::parse(const std::string &formula)
+bool IWORKFormula::parse(const std::string &formula, optional<IWORKTableNameMap_t &> tableNameMap)
 {
   FormulaGrammar<string::const_iterator> grammar;
   string::const_iterator it = formula.begin();

@@ -28,6 +28,7 @@ namespace libetonyek
 
 using boost::lexical_cast;
 using boost::optional;
+using std::string;
 
 namespace
 {
@@ -299,7 +300,7 @@ void FoElement::attribute(const int name, const char *const value)
   case IWORKToken::fs | IWORKToken::NS_URI_SF :
   {
     IWORKFormula formula;
-    if (formula.parse(value))
+    if (formula.parse(value, getState().m_tableNameMap))
       formula.write(getState().m_tableData->m_formula);
     break;
   }
@@ -870,12 +871,38 @@ public:
   explicit TabularModelElement(IWORKXMLParserState &state);
 
 private:
+  virtual void attribute(int name, const char *value);
+  virtual void endOfAttributes();
   virtual IWORKXMLContextPtr_t element(int name);
+
+private:
+  boost::optional<string> m_tableName;
+  boost::optional<string> m_tableId;
+
 };
 
 TabularModelElement::TabularModelElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
 {
+}
+
+void TabularModelElement::attribute(const int name, const char *value)
+{
+  switch (name)
+  {
+  case IWORKToken::name | IWORKToken::NS_URI_SF :
+    m_tableName = value;
+    break;
+  case IWORKToken::id | IWORKToken::NS_URI_SF :
+    m_tableId = "SFTGlobalID_" + string(value);
+    break;
+  }
+}
+
+void TabularModelElement::endOfAttributes()
+{
+  if (m_tableId && m_tableName)
+    getState().m_tableNameMap[get(m_tableId)] = get(m_tableName);
 }
 
 IWORKXMLContextPtr_t TabularModelElement::element(const int name)
