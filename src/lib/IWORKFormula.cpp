@@ -351,7 +351,11 @@ struct printer : public boost::static_visitor<void>
   {
     m_out << val.get().m_name << '(';
     for (vector<Expression>::const_iterator it = val.get().m_args.begin(); it != val.get().m_args.end(); ++it)
+    {
+      if (it != val.get().m_args.begin())
+        m_out << ';';
       apply_visitor(printer(m_out), *it);
+    }
     m_out << ')';
   }
 
