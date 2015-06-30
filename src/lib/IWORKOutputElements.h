@@ -20,6 +20,7 @@ namespace libetonyek
 {
 
 class IWORKDocumentInterface;
+class IWORKFormula;
 class IWORKOutputElement;
 
 class IWORKOutputElements
@@ -62,6 +63,7 @@ public:
   void addInsertSpace();
   void addInsertTab();
   void addInsertText(const librevenge::RVNGString &text);
+  void addInsertSpecialFormula(const IWORKFormula &formula, const librevenge::RVNGPropertyListVector &propList);
   void addOpenComment(const librevenge::RVNGPropertyList &propList);
   void addOpenEndnote(const librevenge::RVNGPropertyList &propList);
   void addOpenFooter(const librevenge::RVNGPropertyList &propList);

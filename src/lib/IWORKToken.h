@@ -104,6 +104,7 @@ enum
   headers,
   headline_style,
   href,
+  id,
   image,
   image_media,
   intratopicbr,

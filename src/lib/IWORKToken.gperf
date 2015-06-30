@@ -129,6 +129,7 @@ horizontal-gridline-styles,horizontal_gridline_styles
 href,href
 http://developer.apple.com/namespaces/sf,NS_URI_SF
 http://developer.apple.com/namespaces/sfa,NS_URI_SFA
+id,id
 ident,ident
 image,image
 image-media,image_media

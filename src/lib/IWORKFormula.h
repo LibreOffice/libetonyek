@@ -12,9 +12,14 @@
 
 #include <string>
 
+#include <boost/optional/optional.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/unordered_map.hpp>
 
 #include <libetonyek_utils.h>
+
+#include "IWORKOutputElements.h"
+#include "IWORKTypes.h"
 
 namespace libetonyek
 {
@@ -26,7 +31,7 @@ class IWORKFormula
 public:
   IWORKFormula();
 
-  bool parse(const std::string &formula);
+  bool parse(const std::string &formula, boost::optional<IWORKTableNameMap_t &> tableNameMap = boost::optional<IWORKTableNameMap_t &>());
 
   const std::string toString() const;
 
@@ -34,6 +39,7 @@ public:
 
 private:
   boost::shared_ptr<Impl> m_impl;
+  IWORKOutputElements m_elements;
 };
 
 } // namespace libetonyek

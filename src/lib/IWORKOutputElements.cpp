@@ -275,6 +275,19 @@ private:
   librevenge::RVNGString m_text;
 };
 
+class InsertSpecialFormulaElement : public IWORKOutputElement
+{
+public:
+  InsertSpecialFormulaElement(const IWORKFormula &formula, const librevenge::RVNGPropertyListVector &propList)
+    : m_formula(formula)
+    , m_propList(propList) {}
+  ~InsertSpecialFormulaElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+private:
+  const IWORKFormula &m_formula;
+  librevenge::RVNGPropertyListVector m_propList;
+};
+
 class OpenCommentElement : public IWORKOutputElement
 {
 public:
@@ -663,6 +676,10 @@ void InsertTextElement::write(IWORKDocumentInterface *iface) const
     iface->insertText(m_text);
 }
 
+void InsertSpecialFormulaElement::write(IWORKDocumentInterface *iface) const
+{
+}
+
 void OpenCommentElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
@@ -950,6 +967,11 @@ void IWORKOutputElements::addInsertTab()
 void IWORKOutputElements::addInsertText(const librevenge::RVNGString &text)
 {
   m_elements.push_back(make_shared<InsertTextElement>(text));
+}
+
+void IWORKOutputElements::addInsertSpecialFormula(const IWORKFormula &formula, const librevenge::RVNGPropertyListVector &propList)
+{
+  m_elements.push_back(make_shared<InsertSpecialFormulaElement>(formula, propList));
 }
 
 void IWORKOutputElements::addOpenComment(const librevenge::RVNGPropertyList &propList)
