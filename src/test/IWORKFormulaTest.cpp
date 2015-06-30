@@ -155,7 +155,7 @@ void IWORKFormulaTest::testFunctions()
 
   // function with multiple arguments
   CPPUNIT_ASSERT(formula.parse("=COUNTIFS(A1:A38,\">100\",A1:A38,\"<=200\")"));
-  CPPUNIT_ASSERT_EQUAL(string("=COUNTIFS([.A1:.A38]>100[.A1:.A38]<=200)"), formula.toString());
+  CPPUNIT_ASSERT_EQUAL(string("=COUNTIFS([.A1:.A38];>100;[.A1:.A38];<=200)"), formula.toString());
 
   // function with number in name
   CPPUNIT_ASSERT(formula.parse("=HEX2OCT(18)"));
@@ -168,24 +168,24 @@ void IWORKFormulaTest::testExpressions()
   IWORKFormula formula;
 
   // if-else
-  // CPPUNIT_ASSERT(formula.parse("=IF((R1+R2)<45,R1+R2,50)"));
-  // CPPUNIT_ASSERT_EQUAL(testFormula, formula.toString());
+  CPPUNIT_ASSERT(formula.parse("=IF((R1+R2)<45,R1+R2,50)"));
+  CPPUNIT_ASSERT_EQUAL(string("=IF(([.R1]+[.R2])<45;[.R1]+[.R2];50)"), formula.toString());
 
   // multiple sheet and table cell operation
   CPPUNIT_ASSERT(formula.parse("=Table1::B6+Table2::B6-Table3::B6"));
   CPPUNIT_ASSERT_EQUAL(string("=[Table1.B6]+[Table2.B6]-[Table3.B6]"), formula.toString());
 
   // basic paranthesized
-  // CPPUNIT_ASSERT(formula.parse("=(23)+$B6"));
-  // CPPUNIT_ASSERT_EQUAL(string("=(23)+[.$B6]"), formula.toString());
+  CPPUNIT_ASSERT(formula.parse("=(23)+$B6"));
+  CPPUNIT_ASSERT_EQUAL(string("=(23)+[.$B6]"), formula.toString());
 
   // paranthesized with function
-  // CPPUNIT_ASSERT(formula.parse("=(23)+$B6+(ABS(($Z7)))"));
-  // CPPUNIT_ASSERT_EQUAL(string("=(23)+[.$B6]+(ABS(([.$Z7])))"), formula.toString());
+  CPPUNIT_ASSERT(formula.parse("=(23)+$B6+(ABS(($Z7)))"));
+  CPPUNIT_ASSERT_EQUAL(string("=(23)+[.$B6]+(ABS(([.$Z7])))"), formula.toString());
 
   // paranthesize with operators
-  // CPPUNIT_ASSERT(formula.parse("=((-23)+4)*(B7-2)"));
-  // CPPUNIT_ASSERT_EQUAL(string("=((-23)+4)*([.B7]-2)"), formula.toString());
+  CPPUNIT_ASSERT(formula.parse("=((-23)+4)*(B7-2)"));
+  CPPUNIT_ASSERT_EQUAL(string("=((-23)+4)*([.B7]-2)"), formula.toString());
 
   // function with only column
   CPPUNIT_ASSERT(formula.parse("=SUM(B)"));
