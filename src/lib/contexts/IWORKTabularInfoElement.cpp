@@ -14,7 +14,7 @@
 #include "libetonyek_xml.h"
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
-#include "IWORKFormula.h"
+#include "IWORKFoElement.h"
 #include "IWORKGeometryElement.h"
 #include "IWORKTextBodyElement.h"
 #include "IWORKToken.h"
@@ -278,41 +278,6 @@ IWORKXMLContextPtr_t RElement::element(int name)
 namespace
 {
 
-class FoElement : public IWORKXMLEmptyContextBase
-{
-public:
-  explicit FoElement(IWORKXMLParserState &state);
-
-private:
-  virtual void attribute(int name, const char *value);
-};
-
-FoElement::FoElement(IWORKXMLParserState &state)
-  : IWORKXMLEmptyContextBase(state)
-{
-}
-
-void FoElement::attribute(const int name, const char *const value)
-{
-  switch (name)
-  {
-  case IWORKToken::fs | IWORKToken::NS_URI_SF :
-  {
-    IWORKFormula formula;
-    if (formula.parse(value))
-      formula.write(getState().m_tableData->m_formula);
-    break;
-  }
-  default :
-    break;
-  }
-}
-
-}
-
-namespace
-{
-
 class FElement : public CellContextBase
 {
 public:
@@ -332,7 +297,7 @@ IWORKXMLContextPtr_t FElement::element(int name)
   switch (name)
   {
   case IWORKToken::fo | IWORKToken::NS_URI_SF :
-    return makeContext<FoElement>(getState());
+    return makeContext<IWORKFoElement>(getState());
     break;
   case IWORKToken::r | IWORKToken::NS_URI_SF :
     return makeContext<RElement>(getState());
