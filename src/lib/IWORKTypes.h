@@ -97,6 +97,7 @@ typedef std::deque<IWORKTabStop> IWORKTabStops_t;
 typedef boost::unordered_map<ID_t, IWORKTabStops_t> IWORKTabStopsMap_t;
 typedef mdds::flat_segment_tree<unsigned, IWORKStylePtr_t> IWORKGridLine_t;
 typedef std::vector<IWORKGridLine_t> IWORKGridLineList_t;
+typedef boost::unordered_map<std::string, std::string> IWORKTableNameMap_t;
 
 struct IWORKLine
 {

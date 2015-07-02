@@ -21,6 +21,7 @@ IWORKXMLParserState::IWORKXMLParserState(IWORKParser &parser, IWORKCollector &co
   : m_tableData()
   , m_stylesheet()
   , m_enableCollector(true)
+  , m_tableNameMap()
   , m_parser(parser)
   , m_collector(collector)
   , m_dict(dict)
