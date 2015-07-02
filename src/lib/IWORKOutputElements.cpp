@@ -297,6 +297,19 @@ private:
   librevenge::RVNGPropertyList m_propList;
 };
 
+class OpenFormulaCellElement : public IWORKOutputElement
+{
+public:
+  OpenFormulaCellElement(const librevenge::RVNGPropertyListVector &propListVector, const Cell &cell)
+    : m_propListVector(propListVector)
+    , m_cell(cell) {}
+  ~OpenFormulaCellElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+private:
+  librevenge::RVNGPropertyListVector m_propListVector;
+  const Cell &m_cell;
+};
+
 class OpenFooterElement : public IWORKOutputElement
 {
 public:
@@ -675,6 +688,10 @@ void OpenEndnoteElement::write(IWORKDocumentInterface *iface) const
     iface->openEndnote(m_propList);
 }
 
+void OpenFormulaCellElement::write(IWORKDocumentInterface *iface) const
+{
+}
+
 void OpenFooterElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
@@ -960,6 +977,11 @@ void IWORKOutputElements::addOpenComment(const librevenge::RVNGPropertyList &pro
 void IWORKOutputElements::addOpenEndnote(const librevenge::RVNGPropertyList &propList)
 {
   m_elements.push_back(make_shared<OpenEndnoteElement>(propList));
+}
+
+void IWORKOutputElements::addOpenFormulaCell(const librevenge::RVNGPropertyListVector &propListVector, const Cell &cell)
+{
+  m_elements.push_back(make_shared<OpenFormulaCellElement>(propListVector, cell));
 }
 
 void IWORKOutputElements::addOpenFooter(const librevenge::RVNGPropertyList &propList)
