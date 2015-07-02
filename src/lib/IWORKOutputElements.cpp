@@ -12,6 +12,7 @@
 #include <boost/make_shared.hpp>
 
 #include "IWORKDocumentInterface.h"
+#include "IWORKFormula.h"
 
 namespace libetonyek
 {
@@ -295,6 +296,21 @@ public:
   void write(IWORKDocumentInterface *iface) const;
 private:
   librevenge::RVNGPropertyList m_propList;
+};
+
+class OpenFormulaCellElement : public IWORKOutputElement
+{
+public:
+  OpenFormulaCellElement(const librevenge::RVNGPropertyList &propList, const IWORKFormula &formula, const IWORKTableNameMap_t &tableNameMap)
+    : m_propList(propList)
+    , m_formula(formula)
+    , m_tableNameMap(tableNameMap) {}
+  ~OpenFormulaCellElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+private:
+  librevenge::RVNGPropertyList m_propList;
+  const IWORKFormula &m_formula;
+  const IWORKTableNameMap_t &m_tableNameMap;
 };
 
 class OpenFooterElement : public IWORKOutputElement
@@ -675,6 +691,14 @@ void OpenEndnoteElement::write(IWORKDocumentInterface *iface) const
     iface->openEndnote(m_propList);
 }
 
+void OpenFormulaCellElement::write(IWORKDocumentInterface *iface) const
+{
+  librevenge::RVNGPropertyListVector propsVector;
+  m_formula.write(propsVector, m_tableNameMap);
+  if (iface)
+    iface->openTableCell(m_propList);
+}
+
 void OpenFooterElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
@@ -960,6 +984,11 @@ void IWORKOutputElements::addOpenComment(const librevenge::RVNGPropertyList &pro
 void IWORKOutputElements::addOpenEndnote(const librevenge::RVNGPropertyList &propList)
 {
   m_elements.push_back(make_shared<OpenEndnoteElement>(propList));
+}
+
+void IWORKOutputElements::addOpenFormulaCell(const librevenge::RVNGPropertyList &propList, const IWORKFormula &formula, const IWORKTableNameMap_t &tableNameMap)
+{
+  m_elements.push_back(make_shared<OpenFormulaCellElement>(propList, formula, tableNameMap));
 }
 
 void IWORKOutputElements::addOpenFooter(const librevenge::RVNGPropertyList &propList)

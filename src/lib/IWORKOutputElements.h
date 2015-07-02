@@ -13,6 +13,7 @@
 #include <deque>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/unordered_map.hpp>
 
 #include <librevenge/librevenge.h>
 
@@ -20,7 +21,10 @@ namespace libetonyek
 {
 
 class IWORKDocumentInterface;
+class IWORKFormula;
 class IWORKOutputElement;
+typedef boost::unordered_map<std::string, std::string> IWORKTableNameMap_t;
+
 
 class IWORKOutputElements
 {
@@ -64,6 +68,7 @@ public:
   void addInsertText(const librevenge::RVNGString &text);
   void addOpenComment(const librevenge::RVNGPropertyList &propList);
   void addOpenEndnote(const librevenge::RVNGPropertyList &propList);
+  void addOpenFormulaCell(const librevenge::RVNGPropertyList &propList, const IWORKFormula &formula, const IWORKTableNameMap_t &tableNameMap);
   void addOpenFooter(const librevenge::RVNGPropertyList &propList);
   void addOpenFootnote(const librevenge::RVNGPropertyList &propList);
   void addOpenFrame(const librevenge::RVNGPropertyList &propList);

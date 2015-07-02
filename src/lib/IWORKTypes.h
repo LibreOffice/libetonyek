@@ -185,6 +185,7 @@ struct IWORKTableData
   unsigned m_row;
   unsigned m_numColumns;
   unsigned m_numRows;
+  bool m_formulaCell;
 
   boost::optional<unsigned> m_columnSpan;
   boost::optional<unsigned> m_rowSpan;
