@@ -30,7 +30,7 @@ void IWORKFoElement::attribute(const int name, const char *const value)
   {
     IWORKFormula formula;
     if (formula.parse(value))
-      formula.write(getState().m_tableData->m_formula);
+      getState().m_tableData->m_formulaCell = true;
     break;
   }
   default :

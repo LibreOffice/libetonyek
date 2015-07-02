@@ -585,7 +585,7 @@ const std::string IWORKFormula::toString() const
   return out.str();
 }
 
-void IWORKFormula::write(librevenge::RVNGPropertyListVector &formula)
+void IWORKFormula::write(librevenge::RVNGPropertyListVector &formula, const IWORKTableNameMap_t &/*tableNameMap*/) const
 {
   apply_visitor(collector(formula), m_impl->m_formula);
 }
