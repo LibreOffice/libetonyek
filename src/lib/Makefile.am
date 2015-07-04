@@ -155,6 +155,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKBrContext.h \
 	contexts/IWORKColorElement.cpp \
 	contexts/IWORKColorElement.h \
+	contexts/IWORKChartInfoElement.cpp \
+	contexts/IWORKChartInfoElement.h \
 	contexts/IWORKDataElement.cpp \
 	contexts/IWORKDataElement.h \
 	contexts/IWORKFoElement.cpp \
