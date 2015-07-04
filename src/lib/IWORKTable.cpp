@@ -48,6 +48,8 @@ IWORKTable::Cell::Cell()
   , m_columnSpan(1)
   , m_rowSpan(1)
   , m_covered(false)
+  , m_formulaCell(false)
+  , m_formula()
 {
 }
 
@@ -57,6 +59,7 @@ IWORKTable::IWORKTable()
   , m_rowSizes()
   , m_verticalLines()
   , m_horizontalLines()
+  , m_tableNameMap()
 {
 }
 
@@ -75,7 +78,12 @@ void IWORKTable::setBorders(const IWORKGridLineList_t &verticalLines, const IWOR
   m_horizontalLines = horizontalLines;
 }
 
-void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWORKOutputElements &content, const unsigned columnSpan, const unsigned rowSpan)
+void IWORKTable::setTableNameMap(const IWORKTableNameMapPtr_t &tableNameMap)
+{
+  m_tableNameMap = tableNameMap;
+}
+
+void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWORKOutputElements &content, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const bool formulaCell)
 {
   if ((m_rowSizes.size() <= row) || (m_columnSizes.size() <= column))
     return;
@@ -84,6 +92,8 @@ void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWO
   cell.m_content = content;
   cell.m_columnSpan = columnSpan;
   cell.m_rowSpan = rowSpan;
+  cell.m_formula = formula;
+  cell.m_formulaCell = formulaCell;
   m_table[row][column] = cell;
 }
 
@@ -149,7 +159,10 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
         if (1 < cell.m_rowSpan)
           cellProps.insert("table:number-rows-spanned", numeric_cast<int>(cell.m_rowSpan));
 
-        elements.addOpenTableCell(cellProps);
+        if (cell.m_formulaCell)
+          elements.addOpenFormulaCell(cellProps, get(cell.m_formula), m_tableNameMap);
+        else
+          elements.addOpenTableCell(cellProps);
 
         if (!cell.m_content.empty())
           elements.append(cell.m_content);
