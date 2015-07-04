@@ -23,6 +23,7 @@
 #include "IWORKEnum.h"
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle_fwd.h"
+#include "IWORKFormula.h"
 
 namespace libetonyek
 {
@@ -184,13 +185,12 @@ struct IWORKTableData
   unsigned m_row;
   unsigned m_numColumns;
   unsigned m_numRows;
-  bool m_formulaCell;
 
   boost::optional<unsigned> m_columnSpan;
   boost::optional<unsigned> m_rowSpan;
   boost::optional<unsigned> m_cellMove;
   boost::optional<std::string> m_content;
-  librevenge::RVNGPropertyListVector m_formula;
+  IWORKFormula m_formula;
   IWORKGridLineList_t m_horizontalLines;
   IWORKGridLineList_t m_verticalLines;
 };

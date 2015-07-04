@@ -407,8 +407,9 @@ namespace
 struct collector : public boost::static_visitor<>
 {
 
-  explicit collector(librevenge::RVNGPropertyListVector &propsVector)
+  explicit collector(librevenge::RVNGPropertyListVector &propsVector, const IWORKTableNameMap_t &tableNameMap)
     : m_propsVector(propsVector)
+    , m_tableNameMap(tableNameMap)
   { }
 
   void operator()(double val) const
@@ -434,7 +435,11 @@ struct collector : public boost::static_visitor<>
     props.insert("librevenge:type", "librevenge-cell");
 
     if (val.m_table)
-      props.insert("librevenge:sheet-name", val.m_table);
+    {
+      const IWORKTableNameMap_t::const_iterator it = m_tableNameMap.find(get(val.m_table));
+      if (m_tableNameMap.end() != it)
+        props.insert("librevenge:sheet-name", (it->second).c_str());
+    }
 
     if (val.m_column)
     {
@@ -485,22 +490,22 @@ struct collector : public boost::static_visitor<>
     props.insert("librevenge:type", "librevenge-operator");
     props.insert("librevenge:operator", val.get().m_op);
     m_propsVector.append(props);
-    apply_visitor(collector(m_propsVector), val.get().m_expr);
+    apply_visitor(collector(m_propsVector, m_tableNameMap), val.get().m_expr);
   }
 
   void operator()(const recursive_wrapper<InfixOp> &val) const
   {
-    apply_visitor(collector(m_propsVector), val.get().m_left);
+    apply_visitor(collector(m_propsVector, m_tableNameMap), val.get().m_left);
     librevenge::RVNGPropertyList props;
     props.insert("librevenge:type", "librevenge-operator");
     props.insert("librevenge:operator", val.get().m_op.c_str());
     m_propsVector.append(props);
-    apply_visitor(collector(m_propsVector), val.get().m_right);
+    apply_visitor(collector(m_propsVector, m_tableNameMap), val.get().m_right);
   }
 
   void operator()(const recursive_wrapper<PostfixOp> &val) const
   {
-    apply_visitor(collector(m_propsVector), val.get().m_expr);
+    apply_visitor(collector(m_propsVector, m_tableNameMap), val.get().m_expr);
     librevenge::RVNGPropertyList props;
     props.insert("librevenge:type", "librevenge-operator");
     props.insert("librevenge:operator", val.get().m_op);
@@ -527,7 +532,7 @@ struct collector : public boost::static_visitor<>
     {
       if (it != val.get().m_args.begin())
         m_propsVector.append(props);
-      apply_visitor(collector(m_propsVector), *it);
+      apply_visitor(collector(m_propsVector, m_tableNameMap), *it);
     }
     librevenge::RVNGPropertyList props3;
     props3.insert("librevenge:type", "librevenge-operator");
@@ -542,7 +547,7 @@ struct collector : public boost::static_visitor<>
     props.insert("librevenge:operator", "(");
     m_propsVector.append(props);
 
-    apply_visitor(collector(m_propsVector), val.get().m_expr);
+    apply_visitor(collector(m_propsVector, m_tableNameMap), val.get().m_expr);
 
     librevenge::RVNGPropertyList props1;
     props1.insert("librevenge:type", "librevenge-operator");
@@ -553,7 +558,7 @@ struct collector : public boost::static_visitor<>
 
 private:
   librevenge::RVNGPropertyListVector &m_propsVector;
-
+  const IWORKTableNameMap_t &m_tableNameMap;
 };
 
 }
@@ -585,9 +590,9 @@ const std::string IWORKFormula::str() const
   return out.str();
 }
 
-void IWORKFormula::write(librevenge::RVNGPropertyListVector &formula, const IWORKTableNameMap_t &/*tableNameMap*/) const
+void IWORKFormula::write(librevenge::RVNGPropertyListVector &formula, const IWORKTableNameMap_t &tableNameMap) const
 {
-  apply_visitor(collector(formula), m_impl->m_formula);
+  apply_visitor(collector(formula, tableNameMap), m_impl->m_formula);
 }
 
 } // namespace libetonyek

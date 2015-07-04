@@ -109,7 +109,8 @@ void CellContextBase::emitCell(const bool covered)
       getCollector().collectTableCell(
         tableData->m_row, tableData->m_column,
         tableData->m_content,
-        get_optional_value_or(tableData->m_rowSpan, 1), get_optional_value_or(tableData->m_columnSpan, 1)
+        get_optional_value_or(tableData->m_rowSpan, 1), get_optional_value_or(tableData->m_columnSpan, 1),
+        tableData->m_formula, getState().m_tableNameMap
       );
   }
 

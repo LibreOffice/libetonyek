@@ -28,6 +28,8 @@ class IWORKTable
     unsigned m_columnSpan;
     unsigned m_rowSpan;
     bool m_covered;
+    boost::optional<IWORKFormula> m_formula;
+    boost::optional<IWORKTableNameMap_t> m_tableNameMap;
 
     Cell();
   };
@@ -40,7 +42,7 @@ public:
 
   void setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowSizes_t &rowSizes);
   void setBorders(const IWORKGridLineList_t &verticalLines, const IWORKGridLineList_t &horizontalLines);
-  void insertCell(unsigned column, unsigned row, const IWORKOutputElements &content = IWORKOutputElements(), unsigned columnSpan = 1, unsigned rowSpan = 1);
+  void insertCell(unsigned column, unsigned row, const IWORKOutputElements &content = IWORKOutputElements(), unsigned columnSpan = 1, unsigned rowSpan = 1, const boost::optional<IWORKFormula> &formula = IWORKFormula(), const boost::optional<IWORKTableNameMap_t> &tableNameMap = IWORKTableNameMap_t());
   void insertCoveredCell(unsigned column, unsigned row);
 
   void draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements);

@@ -84,7 +84,7 @@ public:
 
   void collectTableSizes(const IWORKRowSizes_t &rowSizes, const IWORKColumnSizes_t &columnSizes);
   void collectTableBorders(const IWORKGridLineList_t &verticalLines, const IWORKGridLineList_t &horizontalLines);
-  void collectTableCell(unsigned row, unsigned column, const boost::optional<std::string> &content, unsigned rowSpan, unsigned columnSpan);
+  void collectTableCell(unsigned row, unsigned column, const boost::optional<std::string> &content, unsigned rowSpan, unsigned columnSpan,  const boost::optional<IWORKFormula> &formula, const boost::optional<IWORKTableNameMap_t> &tableNameMap);
   void collectCoveredTableCell(unsigned row, unsigned column);
   void collectTableRow();
   void collectTable();
