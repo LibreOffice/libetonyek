@@ -301,7 +301,7 @@ private:
 class OpenFormulaCellElement : public IWORKOutputElement
 {
 public:
-  OpenFormulaCellElement(const librevenge::RVNGPropertyList &propList, const IWORKFormula &formula, const IWORKTableNameMap_t &tableNameMap)
+  OpenFormulaCellElement(const librevenge::RVNGPropertyList &propList, const IWORKFormula &formula, const IWORKTableNameMapPtr_t &tableNameMap)
     : m_propList(propList)
     , m_formula(formula)
     , m_tableNameMap(tableNameMap) {}
@@ -310,7 +310,7 @@ public:
 private:
   librevenge::RVNGPropertyList m_propList;
   const IWORKFormula &m_formula;
-  const IWORKTableNameMap_t &m_tableNameMap;
+  const IWORKTableNameMapPtr_t &m_tableNameMap;
 };
 
 class OpenFooterElement : public IWORKOutputElement
@@ -986,7 +986,7 @@ void IWORKOutputElements::addOpenEndnote(const librevenge::RVNGPropertyList &pro
   m_elements.push_back(make_shared<OpenEndnoteElement>(propList));
 }
 
-void IWORKOutputElements::addOpenFormulaCell(const librevenge::RVNGPropertyList &propList, const IWORKFormula &formula, const IWORKTableNameMap_t &tableNameMap)
+void IWORKOutputElements::addOpenFormulaCell(const librevenge::RVNGPropertyList &propList, const IWORKFormula &formula, const IWORKTableNameMapPtr_t &tableNameMap)
 {
   m_elements.push_back(make_shared<OpenFormulaCellElement>(propList, formula, tableNameMap));
 }

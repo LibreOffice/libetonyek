@@ -379,7 +379,7 @@ void IWORKCollector::collectTableBorders(const IWORKGridLineList_t &verticalLine
   m_currentTable.setBorders(verticalLines, horizontalLines);
 }
 
-void IWORKCollector::collectTableCell(const unsigned row, const unsigned column, const boost::optional<std::string> &content, const unsigned rowSpan, const unsigned columnSpan)
+void IWORKCollector::collectTableCell(const unsigned row, const unsigned column, const boost::optional<std::string> &content, const unsigned rowSpan, const unsigned columnSpan, const boost::optional<IWORKFormula> &formula)
 {
   IWORKOutputElements elements;
 
@@ -400,7 +400,7 @@ void IWORKCollector::collectTableCell(const unsigned row, const unsigned column,
     m_textStack.top().reset();
   }
 
-  m_currentTable.insertCell(column, row, elements, columnSpan, rowSpan);
+  m_currentTable.insertCell(column, row, elements, columnSpan, rowSpan, formula);
 }
 
 void IWORKCollector::collectCoveredTableCell(const unsigned row, const unsigned column)
@@ -416,6 +416,11 @@ void IWORKCollector::collectTableRow()
 void IWORKCollector::collectTable()
 {
   drawTable();
+}
+
+void IWORKCollector::setTableNameMap(const IWORKTableNameMapPtr_t &tableNameMap)
+{
+  m_currentTable.setTableNameMap(tableNameMap);
 }
 
 void IWORKCollector::collectMetadata(const IWORKMetadata &metadata)
