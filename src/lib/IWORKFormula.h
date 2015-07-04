@@ -29,7 +29,7 @@ public:
 
   bool parse(const std::string &formula);
 
-  const std::string toString() const;
+  const std::string str() const;
 
   void write(librevenge::RVNGPropertyListVector &formula, const IWORKTableNameMap_t &tableNameMap) const;
 

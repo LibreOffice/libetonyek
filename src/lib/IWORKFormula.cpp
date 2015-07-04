@@ -577,7 +577,7 @@ bool IWORKFormula::parse(const std::string &formula)
   return r && (it == end);
 }
 
-const std::string IWORKFormula::toString() const
+const std::string IWORKFormula::str() const
 {
   ostringstream out;
   out << '=';
