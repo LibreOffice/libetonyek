@@ -14,9 +14,8 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <libetonyek_utils.h>
-
 #include "IWORKTypes.h"
+#include "libetonyek_utils.h"
 
 namespace libetonyek
 {
