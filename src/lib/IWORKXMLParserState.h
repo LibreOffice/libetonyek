@@ -44,7 +44,7 @@ public:
   // When false, nothing should be sent to collector. This is used to
   // gather referenceable entities in skipped parts of the file.
   bool m_enableCollector;
-  IWORKTableNameMap_t m_tableNameMap;
+  IWORKTableNameMapPtr_t m_tableNameMap;
 
 private:
   IWORKParser &m_parser;

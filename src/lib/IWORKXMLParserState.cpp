@@ -9,6 +9,8 @@
 
 #include "IWORKXMLParserState.h"
 
+#include <boost/make_shared.hpp>
+
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKParser.h"
@@ -21,7 +23,7 @@ IWORKXMLParserState::IWORKXMLParserState(IWORKParser &parser, IWORKCollector &co
   : m_tableData()
   , m_stylesheet()
   , m_enableCollector(true)
-  , m_tableNameMap()
+  , m_tableNameMap(boost::make_shared<IWORKTableNameMap_t>())
   , m_parser(parser)
   , m_collector(collector)
   , m_dict(dict)

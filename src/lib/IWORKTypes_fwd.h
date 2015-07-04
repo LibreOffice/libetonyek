@@ -30,6 +30,8 @@ typedef boost::unordered_map<ID_t, IWORKOutputID_t> IWORKOutputMap_t;
 
 typedef boost::unordered_map<std::string, std::string> IWORKTableNameMap_t;
 
+typedef boost::shared_ptr<IWORKTableNameMap_t> IWORKTableNameMapPtr_t;
+
 struct IWORKSize;
 struct IWORKPosition;
 

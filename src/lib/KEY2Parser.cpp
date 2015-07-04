@@ -1287,7 +1287,10 @@ PresentationElement::PresentationElement(KEY2ParserState &state)
 void PresentationElement::startOfElement()
 {
   if (isCollector())
+  {
     getCollector().startDocument();
+    getCollector().setTableNameMap(getState().m_tableNameMap);
+  }
 }
 
 void PresentationElement::attribute(const int name, const char *const value)

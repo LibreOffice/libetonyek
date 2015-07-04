@@ -14,7 +14,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include "IWORKTypes.h"
+#include "IWORKTypes_fwd.h"
 #include "libetonyek_utils.h"
 
 namespace libetonyek
@@ -31,7 +31,7 @@ public:
 
   const std::string str() const;
 
-  void write(librevenge::RVNGPropertyListVector &formula, const IWORKTableNameMap_t &tableNameMap) const;
+  void write(librevenge::RVNGPropertyListVector &formula, const IWORKTableNameMapPtr_t &tableNameMap) const;
 
 private:
   boost::shared_ptr<Impl> m_impl;
