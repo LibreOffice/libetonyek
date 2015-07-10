@@ -186,6 +186,18 @@ IWORKColumns::IWORKColumns()
 {
 }
 
+IWORKNumberFormat::IWORKNumberFormat()
+  : m_type(0)
+  , m_string()
+  , m_decimalPlaces(0)
+  , m_currencyCode()
+  , m_negativeStyle(0)
+  , m_thousandsSeperator(false)
+  , m_fractionAccuracy(0)
+  , m_accountingStyle(false)
+{
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
