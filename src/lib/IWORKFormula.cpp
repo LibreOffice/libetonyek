@@ -293,9 +293,9 @@ namespace
 
 using std::ostringstream;
 
-struct printer : public boost::static_visitor<void>
+struct Printer : public boost::static_visitor<void>
 {
-  printer(ostringstream &out)
+  Printer(ostringstream &out)
     : m_out(out)
   {
   }
@@ -329,19 +329,19 @@ struct printer : public boost::static_visitor<void>
   void operator()(const recursive_wrapper<PrefixOp> &val) const
   {
     m_out << val.get().m_op;
-    apply_visitor(printer(m_out), val.get().m_expr);
+    apply_visitor(Printer(m_out), val.get().m_expr);
   }
 
   void operator()(const recursive_wrapper<InfixOp> &val) const
   {
-    apply_visitor(printer(m_out), val.get().m_left);
+    apply_visitor(Printer(m_out), val.get().m_left);
     m_out << val.get().m_op;
-    apply_visitor(printer(m_out), val.get().m_right);
+    apply_visitor(Printer(m_out), val.get().m_right);
   }
 
   void operator()(const recursive_wrapper<PostfixOp> &val) const
   {
-    apply_visitor(printer(m_out), val.get().m_expr);
+    apply_visitor(Printer(m_out), val.get().m_expr);
     m_out << val.get().m_op;
   }
 
@@ -352,7 +352,7 @@ struct printer : public boost::static_visitor<void>
     {
       if (it != val.get().m_args.begin())
         m_out << ';';
-      apply_visitor(printer(m_out), *it);
+      apply_visitor(Printer(m_out), *it);
     }
     m_out << ')';
   }
@@ -360,7 +360,7 @@ struct printer : public boost::static_visitor<void>
   void operator()(const recursive_wrapper<PExpr> &val) const
   {
     m_out << '(';
-    apply_visitor(printer(m_out), val.get().m_expr);
+    apply_visitor(Printer(m_out), val.get().m_expr);
     m_out << ')';
   }
 
@@ -404,10 +404,10 @@ private:
 namespace
 {
 
-struct collector : public boost::static_visitor<>
+struct Collector : public boost::static_visitor<>
 {
 
-  explicit collector(librevenge::RVNGPropertyListVector &propsVector, const IWORKTableNameMapPtr_t &tableNameMap)
+  explicit Collector(librevenge::RVNGPropertyListVector &propsVector, const IWORKTableNameMapPtr_t &tableNameMap)
     : m_propsVector(propsVector)
     , m_tableNameMap(tableNameMap)
   { }
@@ -492,22 +492,22 @@ struct collector : public boost::static_visitor<>
     props.insert("librevenge:type", "librevenge-operator");
     props.insert("librevenge:operator", val.get().m_op);
     m_propsVector.append(props);
-    apply_visitor(collector(m_propsVector, m_tableNameMap), val.get().m_expr);
+    apply_visitor(Collector(m_propsVector, m_tableNameMap), val.get().m_expr);
   }
 
   void operator()(const recursive_wrapper<InfixOp> &val) const
   {
-    apply_visitor(collector(m_propsVector, m_tableNameMap), val.get().m_left);
+    apply_visitor(Collector(m_propsVector, m_tableNameMap), val.get().m_left);
     librevenge::RVNGPropertyList props;
     props.insert("librevenge:type", "librevenge-operator");
     props.insert("librevenge:operator", val.get().m_op.c_str());
     m_propsVector.append(props);
-    apply_visitor(collector(m_propsVector, m_tableNameMap), val.get().m_right);
+    apply_visitor(Collector(m_propsVector, m_tableNameMap), val.get().m_right);
   }
 
   void operator()(const recursive_wrapper<PostfixOp> &val) const
   {
-    apply_visitor(collector(m_propsVector, m_tableNameMap), val.get().m_expr);
+    apply_visitor(Collector(m_propsVector, m_tableNameMap), val.get().m_expr);
     librevenge::RVNGPropertyList props;
     props.insert("librevenge:type", "librevenge-operator");
     props.insert("librevenge:operator", val.get().m_op);
@@ -534,7 +534,7 @@ struct collector : public boost::static_visitor<>
     {
       if (it != val.get().m_args.begin())
         m_propsVector.append(props);
-      apply_visitor(collector(m_propsVector, m_tableNameMap), *it);
+      apply_visitor(Collector(m_propsVector, m_tableNameMap), *it);
     }
     librevenge::RVNGPropertyList props3;
     props3.insert("librevenge:type", "librevenge-operator");
@@ -549,7 +549,7 @@ struct collector : public boost::static_visitor<>
     props.insert("librevenge:operator", "(");
     m_propsVector.append(props);
 
-    apply_visitor(collector(m_propsVector, m_tableNameMap), val.get().m_expr);
+    apply_visitor(Collector(m_propsVector, m_tableNameMap), val.get().m_expr);
 
     librevenge::RVNGPropertyList props1;
     props1.insert("librevenge:type", "librevenge-operator");
@@ -588,13 +588,13 @@ const std::string IWORKFormula::str() const
 {
   ostringstream out;
   out << '=';
-  apply_visitor(printer(out), m_impl->m_formula);
+  apply_visitor(Printer(out), m_impl->m_formula);
   return out.str();
 }
 
 void IWORKFormula::write(librevenge::RVNGPropertyListVector &formula, const IWORKTableNameMapPtr_t &tableNameMap) const
 {
-  apply_visitor(collector(formula, tableNameMap), m_impl->m_formula);
+  apply_visitor(Collector(formula, tableNameMap), m_impl->m_formula);
 }
 
 } // namespace libetonyek
