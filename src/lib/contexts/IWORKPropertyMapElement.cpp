@@ -602,6 +602,69 @@ void SFTCellStylePropertyNumberFormatElement::endOfElement()
 
 }
 
+namespace
+{
+
+class DateTimeFormatElement : public IWORKXMLEmptyContextBase
+{
+public:
+  DateTimeFormatElement(IWORKXMLParserState &state, IWORKDateTimeFormat &dateTimeFormat);
+
+private:
+  virtual void attribute(int name, const char *value);
+
+private:
+  IWORKDateTimeFormat &m_dateTimeFormat;
+};
+
+DateTimeFormatElement::DateTimeFormatElement(IWORKXMLParserState &state, IWORKDateTimeFormat &dateTimeFormat)
+  : IWORKXMLEmptyContextBase(state)
+  , m_dateTimeFormat(dateTimeFormat)
+{
+}
+
+void DateTimeFormatElement::attribute(const int name, const char *const value)
+{
+  if ((IWORKToken::NS_URI_SF | IWORKToken::fmt) == name)
+    m_dateTimeFormat.m_format = value;
+}
+
+}
+
+namespace
+{
+
+class SFTCellStylePropertyDateTimeFormatElement : public IWORKPropertyContextBase
+{
+public:
+  SFTCellStylePropertyDateTimeFormatElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  IWORKDateTimeFormat m_dateTimeFormat;
+};
+
+SFTCellStylePropertyDateTimeFormatElement::SFTCellStylePropertyDateTimeFormatElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : IWORKPropertyContextBase(state, propMap)
+  , m_dateTimeFormat()
+{
+}
+
+IWORKXMLContextPtr_t SFTCellStylePropertyDateTimeFormatElement::element(const int name)
+{
+  if ((IWORKToken::NS_URI_SF | IWORKToken::date_format) == name)
+    return makeContext<DateTimeFormatElement>(getState(), m_dateTimeFormat);
+  return IWORKXMLContextPtr_t();
+}
+
+void SFTCellStylePropertyDateTimeFormatElement::endOfElement()
+{
+}
+
+}
 
 namespace
 {
@@ -704,6 +767,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<RightIndentElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyNumberFormat :
     return makeContext<SFTCellStylePropertyNumberFormatElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyDateTimeFormat :
+    return makeContext<SFTCellStylePropertyDateTimeFormatElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTStrokeProperty :
     return makeContext<SFTStrokePropertyElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceAfter :

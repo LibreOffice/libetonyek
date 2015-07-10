@@ -196,6 +196,11 @@ IWORKNumberFormat::IWORKNumberFormat()
 {
 }
 
+IWORKDateTimeFormat::IWORKDateTimeFormat()
+  : m_format()
+{
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
