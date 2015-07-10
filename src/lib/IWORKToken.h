@@ -32,6 +32,7 @@ enum
   sfa,
 
   // elements
+  SFTCellStylePropertyNumberFormat,
   SFTStrokeProperty,
   alignment,
   anon_styles,
@@ -99,6 +100,12 @@ enum
   footnotes,
   footnotebr,
   footnote_mark,
+  format_decimal_places,
+  format_currency_code,
+  format_negative_style,
+  format_show_thousands_separator,
+  format_fraction_accuracy,
+  format_use_accounting_style,
   formula_chart_model,
   fs,
   g,
@@ -147,6 +154,7 @@ enum
   n,
   naturalSize,
   number,
+  number_format,
   oddPageMaster,
   other_datas,
   outline,

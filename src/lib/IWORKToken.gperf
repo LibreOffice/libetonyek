@@ -31,6 +31,7 @@ __multilingual,__multilingual
 1414088262,_1414088262
 ID,ID
 IDREF,IDREF
+SFTCellStylePropertyNumberFormat,SFTCellStylePropertyNumberFormat
 SFTStrokeProperty, SFTStrokeProperty
 a,a
 align,align
@@ -113,6 +114,12 @@ footnote,footnote
 footnote-mark,footnote_mark
 footnotebr,footnotebr
 footnotes,footnotes
+format-decimal-places,format_decimal_places
+format-currency-code,format_currency_code
+format-negative-style,format_negative_style
+format-show-thousands-separator,format_show_thousands_separator
+format-fraction-accuracy,format_fraction_accuracy
+format-use-accounting-style,format_use_accounting_style
 formula-chart-model,formula_chart_model
 frame-h,frame_h
 frame-w,frame_w
@@ -183,6 +190,7 @@ naturalSize,naturalSize
 number,number
 numcols, numcols
 numrows, numrows
+number-format,number_format
 oddPageMaster,oddPageMaster
 other-datas,other_datas
 outline,outline
