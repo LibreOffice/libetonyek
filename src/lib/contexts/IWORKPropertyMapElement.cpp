@@ -521,6 +521,70 @@ void LanguageElement::endOfElement()
 namespace
 {
 
+class NumberFormatElement : public IWORKXMLEmptyContextBase
+{
+public:
+  NumberFormatElement(IWORKXMLParserState &state, optional<IWORKNumberFormat> &value);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual void endOfElement();
+
+private:
+  optional<IWORKNumberFormat> &m_value;
+  IWORKNumberFormat m_builder;
+};
+
+NumberFormatElement::NumberFormatElement(IWORKXMLParserState &state, optional<IWORKNumberFormat> &value)
+  : IWORKXMLEmptyContextBase(state)
+  , m_value(value)
+  , m_builder()
+{
+}
+
+void NumberFormatElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::format_type :
+    m_builder.m_type = double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::format_string :
+    m_builder.m_string = value;
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::format_decimal_places :
+    m_builder.m_decimalPlaces = double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::format_currency_code :
+    m_builder.m_currencyCode = value;
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::format_negative_style :
+    m_builder.m_negativeStyle = double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::format_show_thousands_separator :
+    m_builder.m_thousandsSeperator = bool_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::format_fraction_accuracy :
+    m_builder.m_fractionAccuracy = double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::format_use_accounting_style :
+    m_builder.m_accountingStyle = bool_cast(value);
+    break;
+  }
+}
+
+void NumberFormatElement::endOfElement()
+{
+  m_value = m_builder;
+}
+
+}
+
+
+
+namespace
+{
+
 typedef IWORKPropertyContext<property::Columns, ColumnsElement, IWORKToken::NS_URI_SF | IWORKToken::columns> ColumnsProperty;
 typedef IWORKPropertyContext<property::Fill, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> FillElement;
 typedef IWORKPropertyContext<property::FontColor, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> FontColorElement;
@@ -529,6 +593,7 @@ typedef IWORKPropertyContext<property::LayoutMargins, PaddingElement, IWORKToken
 typedef IWORKPropertyContext<property::LineSpacing, LinespacingElement, IWORKToken::NS_URI_SF | IWORKToken::linespacing> LineSpacingElement;
 typedef IWORKPropertyContext<property::ParagraphFill, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> ParagraphFillElement;
 typedef IWORKPropertyContext<property::ParagraphStroke, StrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke> ParagraphStrokeElement;
+typedef IWORKPropertyContext<property::SFTCellStylePropertyNumberFormat, NumberFormatElement, IWORKToken::NS_URI_SF | IWORKToken::number_format> SFTCellStylePropertyNumberFormatElement;
 typedef IWORKPropertyContext<property::SFTStrokeProperty, StrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke> SFTStrokePropertyElement;
 typedef IWORKPropertyContext<property::Stroke, StrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke> StrokeProperty;
 typedef IWORKPropertyContext<property::TextBackground, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> TextBackgroundElement;
@@ -617,6 +682,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<ParagraphStrokeElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::rightIndent :
     return makeContext<RightIndentElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyNumberFormat :
+    return makeContext<SFTCellStylePropertyNumberFormatElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTStrokeProperty :
     return makeContext<SFTStrokePropertyElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceAfter :

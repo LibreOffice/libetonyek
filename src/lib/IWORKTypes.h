@@ -234,6 +234,21 @@ struct IWORKColumns
   Columns_t m_columns;
 };
 
+struct IWORKNumberFormat
+{
+  IWORKNumberFormat();
+
+  double m_type;
+  std::string m_string;
+  double m_decimalPlaces;
+  std::string m_currencyCode;
+  double m_negativeStyle;
+  bool m_thousandsSeperator;
+  double m_fractionAccuracy;
+  bool m_accountingStyle;
+};
+
+
 }
 
 #endif //  IWORKTYPES_H_INCLUDED
