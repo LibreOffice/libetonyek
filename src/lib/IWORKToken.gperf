@@ -32,6 +32,7 @@ __multilingual,__multilingual
 ID,ID
 IDREF,IDREF
 SFTCellStylePropertyNumberFormat,SFTCellStylePropertyNumberFormat
+SFTCellStylePropertyDateTimeFormat,SFTCellStylePropertyDateTimeFormat
 SFTStrokeProperty, SFTStrokeProperty
 a,a
 align,align
@@ -88,6 +89,7 @@ data,data
 data-formulas,data_formulas
 data-ref,data_ref
 datasource,datasource
+date-format,date_format
 displayname,displayname
 double,double_
 drawables,drawables
@@ -104,6 +106,7 @@ filtered,filtered
 filtered-image,filtered_image
 firstLineIndent,firstLineIndent
 firstPageMaster,firstPageMaster
+fmt,fmt
 fo,fo
 fontColor,fontColor
 fontName,fontName

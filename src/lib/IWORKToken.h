@@ -33,6 +33,7 @@ enum
 
   // elements
   SFTCellStylePropertyNumberFormat,
+  SFTCellStylePropertyDateTimeFormat,
   SFTStrokeProperty,
   alignment,
   anon_styles,
@@ -78,6 +79,7 @@ enum
   data_formulas,
   data_ref,
   datasource,
+  date_format,
   drawable_shape,
   drawables,
   du,
@@ -90,6 +92,7 @@ enum
   filtered_image,
   firstLineIndent,
   firstPageMaster,
+  fmt,
   fo,
   fontColor,
   fontName,

@@ -580,6 +580,42 @@ void NumberFormatElement::endOfElement()
 
 }
 
+namespace
+{
+
+class DateTimeFormatElement : public IWORKXMLEmptyContextBase
+{
+public:
+  DateTimeFormatElement(IWORKXMLParserState &state, optional<IWORKDateTimeFormat> &value);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual void endOfElement();
+
+private:
+  optional<IWORKDateTimeFormat> &m_value;
+  IWORKDateTimeFormat m_builder;
+};
+
+DateTimeFormatElement::DateTimeFormatElement(IWORKXMLParserState &state, optional<IWORKDateTimeFormat> &value)
+  : IWORKXMLEmptyContextBase(state)
+  , m_value(value)
+  , m_builder()
+{
+}
+
+void DateTimeFormatElement::attribute(const int name, const char *const value)
+{
+  if ((IWORKToken::NS_URI_SF | IWORKToken::fmt) == name)
+    m_builder.m_format = value;
+}
+
+void DateTimeFormatElement::endOfElement()
+{
+  m_value = m_builder;
+}
+
+}
 
 
 namespace
@@ -593,6 +629,7 @@ typedef IWORKPropertyContext<property::LayoutMargins, PaddingElement, IWORKToken
 typedef IWORKPropertyContext<property::LineSpacing, LinespacingElement, IWORKToken::NS_URI_SF | IWORKToken::linespacing> LineSpacingElement;
 typedef IWORKPropertyContext<property::ParagraphFill, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> ParagraphFillElement;
 typedef IWORKPropertyContext<property::ParagraphStroke, StrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke> ParagraphStrokeElement;
+typedef IWORKPropertyContext<property::SFTCellStylePropertyDateTimeFormat, DateTimeFormatElement, IWORKToken::NS_URI_SF | IWORKToken::date_format> SFTCellStylePropertyDateTimeFormatElement;
 typedef IWORKPropertyContext<property::SFTCellStylePropertyNumberFormat, NumberFormatElement, IWORKToken::NS_URI_SF | IWORKToken::number_format> SFTCellStylePropertyNumberFormatElement;
 typedef IWORKPropertyContext<property::SFTStrokeProperty, StrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke> SFTStrokePropertyElement;
 typedef IWORKPropertyContext<property::Stroke, StrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke> StrokeProperty;
@@ -684,6 +721,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<RightIndentElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyNumberFormat :
     return makeContext<SFTCellStylePropertyNumberFormatElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyDateTimeFormat :
+    return makeContext<SFTCellStylePropertyDateTimeFormatElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTStrokeProperty :
     return makeContext<SFTStrokePropertyElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceAfter :

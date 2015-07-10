@@ -248,6 +248,12 @@ struct IWORKNumberFormat
   bool m_accountingStyle;
 };
 
+struct IWORKDateTimeFormat
+{
+  IWORKDateTimeFormat();
+
+  std::string m_format;
+};
 
 }
 
