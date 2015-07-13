@@ -42,6 +42,9 @@ protected:
   virtual void endOfElement();
 
   void emitCell(const bool covered = false);
+
+private:
+  IWORKStylePtr_t m_style;
 };
 
 CellContextBase::CellContextBase(IWORKXMLParserState &state)
@@ -61,6 +64,11 @@ void CellContextBase::attribute(const int name, const char *const value)
     break;
   case IWORKToken::row_span | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_rowSpan = lexical_cast<unsigned>(value);
+    break;
+  case IWORKToken::s | IWORKToken::NS_URI_SF :
+    const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_cellStyles.find(value);
+    if (getState().getDictionary().m_cellStyles.end() != it)
+      m_style = it->second;
     break;
   }
 }
@@ -112,6 +120,9 @@ void CellContextBase::emitCell(const bool covered)
         get_optional_value_or(tableData->m_rowSpan, 1), get_optional_value_or(tableData->m_columnSpan, 1),
         tableData->m_formula
       );
+
+    if (m_style)
+      getCollector().collectStyle(m_style);
   }
 
   // reset cell attributes
