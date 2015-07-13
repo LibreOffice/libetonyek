@@ -56,6 +56,8 @@ IWORKXMLContextPtr_t IWORKDiscardContext::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::bezier :
     return makeContext<IWORKBezierElement>(m_state);
+  case IWORKToken::NS_URI_SF | IWORKToken::cell_style :
+    return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::characterstyle :
     return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_characterStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::data :

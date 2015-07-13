@@ -13,7 +13,8 @@ namespace libetonyek
 {
 
 IWORKDictionary::IWORKDictionary()
-  : m_characterStyles()
+  : m_cellStyles()
+  , m_characterStyles()
   , m_graphicStyles()
   , m_layoutStyles()
   , m_paragraphStyles()

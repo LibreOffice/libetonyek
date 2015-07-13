@@ -36,6 +36,7 @@ struct IWORKDictionary
 {
   IWORKDictionary();
 
+  IWORKStyleMap_t m_cellStyles;
   IWORKStyleMap_t m_characterStyles;
   IWORKStyleMap_t m_graphicStyles;
   IWORKStyleMap_t m_layoutStyles;
