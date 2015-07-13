@@ -62,6 +62,11 @@ void CellContextBase::attribute(const int name, const char *const value)
   case IWORKToken::row_span | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_rowSpan = lexical_cast<unsigned>(value);
     break;
+  case IWORKToken::s | IWORKToken::NS_URI_SF :
+    const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_cellStyles.find(value);
+    if (getState().getDictionary().m_cellStyles.end() != it)
+      getState().m_tableData->m_style = it->second;
+    break;
   }
 }
 
@@ -110,7 +115,7 @@ void CellContextBase::emitCell(const bool covered)
         tableData->m_row, tableData->m_column,
         tableData->m_content,
         get_optional_value_or(tableData->m_rowSpan, 1), get_optional_value_or(tableData->m_columnSpan, 1),
-        tableData->m_formula
+        tableData->m_formula, tableData->m_style
       );
   }
 

@@ -49,6 +49,7 @@ IWORKTable::Cell::Cell()
   , m_rowSpan(1)
   , m_covered(false)
   , m_formula()
+  , m_style()
 {
 }
 
@@ -82,7 +83,7 @@ void IWORKTable::setTableNameMap(const IWORKTableNameMapPtr_t &tableNameMap)
   m_tableNameMap = tableNameMap;
 }
 
-void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWORKOutputElements &content, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula)
+void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWORKOutputElements &content, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style)
 {
   if ((m_rowSizes.size() <= row) || (m_columnSizes.size() <= column))
     return;
@@ -92,6 +93,7 @@ void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWO
   cell.m_columnSpan = columnSpan;
   cell.m_rowSpan = rowSpan;
   cell.m_formula = formula;
+  cell.m_style = style;
   m_table[row][column] = cell;
 }
 

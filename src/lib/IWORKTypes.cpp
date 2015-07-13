@@ -154,6 +154,7 @@ IWORKTableData::IWORKTableData()
   , m_formula()
   , m_horizontalLines()
   , m_verticalLines()
+  , m_style()
 {
 }
 

@@ -193,6 +193,7 @@ struct IWORKTableData
   boost::optional<IWORKFormula> m_formula;
   IWORKGridLineList_t m_horizontalLines;
   IWORKGridLineList_t m_verticalLines;
+  IWORKStylePtr_t m_style;
 };
 
 struct IWORKStroke
