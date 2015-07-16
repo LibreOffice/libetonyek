@@ -196,6 +196,8 @@ IWORKNumberFormat::IWORKNumberFormat()
   , m_thousandsSeperator(false)
   , m_fractionAccuracy(0)
   , m_accountingStyle(false)
+  , m_base(0)
+  , m_basePlaces(0)
 {
 }
 

@@ -117,6 +117,8 @@ footnote,footnote
 footnote-mark,footnote_mark
 footnotebr,footnotebr
 footnotes,footnotes
+format-base,format_base
+format-base-places,format_base_places
 format-type,format_type
 format-string,format_string
 format-decimal-places,format_decimal_places

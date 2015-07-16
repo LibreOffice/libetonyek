@@ -247,6 +247,8 @@ struct IWORKNumberFormat
   bool m_thousandsSeperator;
   double m_fractionAccuracy;
   bool m_accountingStyle;
+  double m_base;
+  double m_basePlaces;
 };
 
 struct IWORKDateTimeFormat

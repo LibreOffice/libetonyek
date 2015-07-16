@@ -570,6 +570,12 @@ void NumberFormatElement::attribute(const int name, const char *const value)
   case IWORKToken::NS_URI_SF | IWORKToken::format_use_accounting_style :
     m_builder.m_accountingStyle = bool_cast(value);
     break;
+  case IWORKToken::NS_URI_SF | IWORKToken::format_base :
+    m_builder.m_base = double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::format_base_places :
+    m_builder.m_basePlaces = double_cast(value);
+    break;
   }
 }
 

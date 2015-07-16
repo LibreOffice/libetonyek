@@ -103,6 +103,8 @@ enum
   footnotes,
   footnotebr,
   footnote_mark,
+  format_base,
+  format_base_places,
   format_type,
   format_string,
   format_decimal_places,
