@@ -60,6 +60,7 @@ callout2-path,callout2_path
 cap,cap
 capitalization,capitalization
 category-title,category_title
+cell-date,cell_date
 cell-style,cell_style
 cell-style-ref,cell_style_ref
 characterstyle,characterstyle

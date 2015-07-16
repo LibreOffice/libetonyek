@@ -11,6 +11,8 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include <time.h>
+
 #include "libetonyek_xml.h"
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
@@ -197,11 +199,28 @@ class DElement : public CellContextBase
 {
 public:
   explicit DElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
 };
 
 DElement::DElement(IWORKXMLParserState &state)
   : CellContextBase(state)
 {
+}
+
+void DElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::cell_date | IWORKToken::NS_URI_SF :
+    // Numbers timestamp starts from 01 Jan 2001 00:00:00
+    std::time_t t = 978307200 + lexical_cast<double>(value);
+    char time_buf[21];
+    strftime(time_buf, 21, "%Y-%m-%dT%H:%S:%MZ", gmtime(&t));
+    getState().m_tableData->m_content = time_buf;
+    break;
+  }
 }
 
 }
