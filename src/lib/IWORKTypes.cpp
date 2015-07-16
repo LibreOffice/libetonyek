@@ -155,6 +155,7 @@ IWORKTableData::IWORKTableData()
   , m_horizontalLines()
   , m_verticalLines()
   , m_style()
+  , m_type(IWORK_NUMBER_FORMAT_NUMBER)
 {
 }
 
