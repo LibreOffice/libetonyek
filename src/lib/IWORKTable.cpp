@@ -41,6 +41,63 @@ void writeBorder(librevenge::RVNGPropertyList &props, const char *name, IWORKGri
   }
 }
 
+void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStylePtr_t &style, const unsigned type)
+{
+  using namespace property;
+
+  switch (type)
+  {
+  case 0: // number
+  case 1: // string
+    if (style->has<SFTCellStylePropertyNumberFormat>())
+    {
+      const IWORKNumberFormat &format = style->get<SFTCellStylePropertyNumberFormat>();
+
+      if (style->getIdent())
+        props.insert("librevenge:name", style->getIdent());
+
+      switch (int(format.m_type))
+      {
+      case 1 : // currency
+        props.insert("librevenge:value-type", "currency");
+        props.insert("number:currency-style", format.m_currencyCode.c_str());
+      case 2 : // percentage
+        props.insert("librevenge:value-type", "percentage");
+        props.insert("number:decimal-places", format.m_decimalPlaces);
+      case 3 : // scientific
+        props.insert("librevenge:value-type", "scientific");
+        props.insert("number:decimal-places", format.m_decimalPlaces);
+      case 4 : // fraction
+      case 5 : // numeralBase // TODO :: Convert to base 10 in content
+        props.insert("librevenge:value-type", "float");
+        props.insert("number:decimal-places", format.m_decimalPlaces);
+      default : // automatic/number/text
+        if (type)
+        {
+          props.insert("librevenge:value-type", "string");
+        }
+        else
+        {
+          props.insert("librevenge:value-type", "float");
+          props.insert("number:decimal-places", format.m_decimalPlaces);
+        }
+      }
+    }
+    break;
+  case 2: // dateTime
+    if (style->has<SFTCellStylePropertyDateTimeFormat>())
+    {
+      if (style->getIdent())
+        props.insert("librevenge:name", style->getIdent());
+      props.insert("librevenge:value-type", "date");
+    }
+    break;
+  case 3: // duration
+  default:
+    break;
+  }
+}
+
 }
 
 IWORKTable::Cell::Cell()
@@ -50,6 +107,7 @@ IWORKTable::Cell::Cell()
   , m_covered(false)
   , m_formula()
   , m_style()
+  , m_type(0)
 {
 }
 
@@ -83,7 +141,7 @@ void IWORKTable::setTableNameMap(const IWORKTableNameMapPtr_t &tableNameMap)
   m_tableNameMap = tableNameMap;
 }
 
-void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWORKOutputElements &content, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style)
+void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWORKOutputElements &content, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, const unsigned type)
 {
   if ((m_rowSizes.size() <= row) || (m_columnSizes.size() <= column))
     return;
@@ -94,6 +152,7 @@ void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWO
   cell.m_rowSpan = rowSpan;
   cell.m_formula = formula;
   cell.m_style = style;
+  cell.m_type = type;
   m_table[row][column] = cell;
 }
 
@@ -158,6 +217,9 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
           cellProps.insert("table:number-columns-spanned", numeric_cast<int>(cell.m_columnSpan));
         if (1 < cell.m_rowSpan)
           cellProps.insert("table:number-rows-spanned", numeric_cast<int>(cell.m_rowSpan));
+
+        if (cell.m_style)
+          writeCellFormat(cellProps, cell.m_style, cell.m_type);
 
         if (cell.m_formula)
           elements.addOpenFormulaCell(cellProps, get(cell.m_formula), m_tableNameMap);

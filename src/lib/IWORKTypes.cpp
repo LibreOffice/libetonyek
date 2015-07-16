@@ -140,6 +140,11 @@ IWORKLineSpacing::IWORKLineSpacing(const double value, const bool relative)
 {
 }
 
+//Type
+// string: 1
+// dateTime: 2
+// duration: 3
+
 IWORKTableData::IWORKTableData()
   : m_columnSizes()
   , m_rowSizes()
@@ -155,6 +160,7 @@ IWORKTableData::IWORKTableData()
   , m_horizontalLines()
   , m_verticalLines()
   , m_style()
+  , m_type(0)
 {
 }
 

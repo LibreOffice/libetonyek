@@ -194,6 +194,7 @@ struct IWORKTableData
   IWORKGridLineList_t m_horizontalLines;
   IWORKGridLineList_t m_verticalLines;
   IWORKStylePtr_t m_style;
+  unsigned m_type;
 };
 
 struct IWORKStroke
