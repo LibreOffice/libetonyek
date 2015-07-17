@@ -13,6 +13,7 @@
 #include "IWORKChainedTokenizer.h"
 #include "IWORKChartInfoElement.h"
 #include "IWORKDiscardContext.h"
+#include "IWORKGroupElement.h"
 #include "IWORKMediaElement.h"
 #include "IWORKMetadataElement.h"
 #include "IWORKShapeContext.h"
@@ -80,8 +81,8 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   //   return makeContext<PlaceholderRefContext>(getState(), false);
   // case IWORKToken::NS_URI_SF | IWORKToken::connection_line :
   //   return makeContext<ConnectionLineElement>(getState());
-  // case IWORKToken::NS_URI_SF | IWORKToken::group :
-  //   return makeContext<GroupElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::group :
+    return makeContext<IWORKGroupElement>(getState());
   // case IWORKToken::NS_URI_SF | IWORKToken::image :
   //   return makeContext<ImageElement>(getState());
   // case IWORKToken::NS_URI_SF | IWORKToken::line :

@@ -16,6 +16,9 @@
 #include "IWORKChainedTokenizer.h"
 #include "IWORKDiscardContext.h"
 #include "IWORKGeometryElement.h"
+#include "IWORKGroupElement.h"
+#include "IWORKImageElement.h"
+#include "IWORKLineElement.h"
 #include "IWORKMediaElement.h"
 #include "IWORKPath.h"
 #include "IWORKPathElement.h"
@@ -363,132 +366,6 @@ void ImageElement::endOfElement()
 namespace
 {
 
-class LineElement : public KEY2XMLElementContextBase
-{
-public:
-  explicit LineElement(KEY2ParserState &state);
-
-private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  optional<IWORKPosition> m_head;
-  optional<IWORKPosition> m_tail;
-};
-
-LineElement::LineElement(KEY2ParserState &state)
-  : KEY2XMLElementContextBase(state)
-{
-}
-
-void LineElement::startOfElement()
-{
-  if (isCollector())
-    getCollector().startLevel();
-}
-
-IWORKXMLContextPtr_t LineElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::geometry :
-    return makeContext<IWORKGeometryElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::head :
-    return makeContext<IWORKPositionElement>(getState(), m_head);
-  case IWORKToken::NS_URI_SF | IWORKToken::tail :
-    return makeContext<IWORKPositionElement>(getState(), m_tail);
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-void LineElement::endOfElement()
-{
-  IWORKLinePtr_t line(new IWORKLine());
-  if (m_head)
-  {
-    line->m_x1 = get(m_head).m_x;
-    line->m_y1 = get(m_head).m_y;
-  }
-  if (m_tail)
-  {
-    line->m_x2 = get(m_tail).m_x;
-    line->m_y2 = get(m_tail).m_y;
-  }
-  if (isCollector())
-  {
-    getCollector().collectLine(line);
-    getCollector().endLevel();
-  }
-}
-
-}
-
-namespace
-{
-
-class GroupElement : public KEY2XMLElementContextBase
-{
-public:
-  explicit GroupElement(KEY2ParserState &state);
-
-private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-};
-
-GroupElement::GroupElement(KEY2ParserState &state)
-  : KEY2XMLElementContextBase(state)
-{
-}
-
-void GroupElement::startOfElement()
-{
-  if (isCollector())
-  {
-    getCollector().startLevel();
-    getCollector().startGroup();
-  }
-}
-
-IWORKXMLContextPtr_t GroupElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::geometry :
-    return makeContext<IWORKGeometryElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::group :
-    return makeContext<GroupElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::image :
-    return makeContext<ImageElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::line :
-    return makeContext<LineElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::media :
-    return makeContext<IWORKMediaElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::shape :
-    return makeContext<IWORKShapeContext>(getState());
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-void GroupElement::endOfElement()
-{
-  if (isCollector())
-  {
-    getCollector().endGroup();
-    getCollector().endLevel();
-  }
-}
-
-}
-
-namespace
-{
-
 class PlaceholderRefContext : public KEY2XMLEmptyContextBase
 {
 public:
@@ -653,11 +530,11 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::connection_line :
     return makeContext<ConnectionLineElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::group :
-    return makeContext<GroupElement>(getState());
+    return makeContext<IWORKGroupElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::image :
     return makeContext<ImageElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::line :
-    return makeContext<LineElement>(getState());
+    return makeContext<IWORKLineElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::media :
     return makeContext<IWORKMediaElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::shape :
