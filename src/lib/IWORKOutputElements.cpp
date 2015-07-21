@@ -301,7 +301,7 @@ private:
 class OpenFormulaCellElement : public IWORKOutputElement
 {
 public:
-  OpenFormulaCellElement(const librevenge::RVNGPropertyList &propList, const IWORKFormula &formula, const IWORKTableNameMapPtr_t &tableNameMap)
+  OpenFormulaCellElement(const librevenge::RVNGPropertyList &propList, const boost::optional<IWORKFormula> &formula, const IWORKTableNameMapPtr_t &tableNameMap)
     : m_propList(propList)
     , m_formula(formula)
     , m_tableNameMap(tableNameMap) {}
@@ -309,7 +309,7 @@ public:
   void write(IWORKDocumentInterface *iface) const;
 private:
   librevenge::RVNGPropertyList m_propList;
-  const IWORKFormula &m_formula;
+  const boost::optional<IWORKFormula> &m_formula;
   const IWORKTableNameMapPtr_t &m_tableNameMap;
 };
 
@@ -694,7 +694,8 @@ void OpenEndnoteElement::write(IWORKDocumentInterface *iface) const
 void OpenFormulaCellElement::write(IWORKDocumentInterface *iface) const
 {
   librevenge::RVNGPropertyListVector propsVector;
-  m_formula.write(propsVector, m_tableNameMap);
+  if (m_formula)
+    m_formula->write(propsVector, m_tableNameMap);
   if (iface)
     iface->openTableCell(m_propList);
 }
@@ -986,7 +987,7 @@ void IWORKOutputElements::addOpenEndnote(const librevenge::RVNGPropertyList &pro
   m_elements.push_back(make_shared<OpenEndnoteElement>(propList));
 }
 
-void IWORKOutputElements::addOpenFormulaCell(const librevenge::RVNGPropertyList &propList, const IWORKFormula &formula, const IWORKTableNameMapPtr_t &tableNameMap)
+void IWORKOutputElements::addOpenFormulaCell(const librevenge::RVNGPropertyList &propList, const boost::optional<IWORKFormula> &formula, const IWORKTableNameMapPtr_t &tableNameMap)
 {
   m_elements.push_back(make_shared<OpenFormulaCellElement>(propList, formula, tableNameMap));
 }
