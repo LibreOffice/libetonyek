@@ -214,11 +214,14 @@ void DElement::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::cell_date | IWORKToken::NS_URI_SF :
-    std::time_t t = ETONYEK_EPOCH_BEGIN + lexical_cast<unsigned>(value);
+    std::time_t t;
+    t = ETONYEK_EPOCH_BEGIN + lexical_cast<unsigned>(value);
     char time_buf[21];
     strftime(time_buf, 21, "%Y-%m-%dT%H:%S:%MZ", gmtime(&t));
     getState().m_tableData->m_content = value;
     break;
+  default :
+    CellContextBase::attribute(name, value);
   }
 }
 
