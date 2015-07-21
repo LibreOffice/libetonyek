@@ -220,7 +220,7 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
           writeCellFormat(cellProps, cell.m_style, cell.m_type);
 
         if (cell.m_formula)
-          elements.addOpenFormulaCell(cellProps, get(cell.m_formula), m_tableNameMap);
+          elements.addOpenFormulaCell(cellProps, cell.m_formula, m_tableNameMap);
         else
           elements.addOpenTableCell(cellProps);
 
