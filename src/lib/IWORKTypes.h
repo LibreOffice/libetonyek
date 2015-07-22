@@ -240,7 +240,7 @@ struct IWORKNumberFormat
 {
   IWORKNumberFormat();
 
-  double m_type;
+  IWORKCellNumberType m_type;
   std::string m_string;
   double m_decimalPlaces;
   std::string m_currencyCode;

@@ -547,7 +547,7 @@ void NumberFormatElement::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::format_type :
-    m_builder.m_type = double_cast(value);
+    m_builder.m_type = get(IWORKNumberConverter<IWORKCellNumberType>::convert(value));
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::format_string :
     m_builder.m_string = value;

@@ -189,7 +189,7 @@ IWORKColumns::IWORKColumns()
 }
 
 IWORKNumberFormat::IWORKNumberFormat()
-  : m_type(0)
+  : m_type(IWORK_CELL_NUMBER_TYPE_DOUBLE)
   , m_string()
   , m_decimalPlaces(0)
   , m_currencyCode()
