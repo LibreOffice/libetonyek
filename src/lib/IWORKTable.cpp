@@ -55,23 +55,21 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStylePtr_t 
       if (style->getIdent())
         props.insert("librevenge:name", style->getIdent());
 
-      switch (int(format.m_type))
+      switch (format.m_type)
       {
-      case 1 : // currency
+      case IWORK_CELL_NUMBER_TYPE_CURRENCY :
         props.insert("librevenge:value-type", "currency");
         props.insert("number:currency-style", format.m_currencyCode.c_str());
         break;
-      case 2 : // percentage
+      case IWORK_CELL_NUMBER_TYPE_PERCENTAGE :
         props.insert("librevenge:value-type", "percentage");
         props.insert("number:decimal-places", format.m_decimalPlaces);
         break;
-      case 3 : // scientific
+      case IWORK_CELL_NUMBER_TYPE_SCIENTIFIC :
         props.insert("librevenge:value-type", "scientific");
         props.insert("number:decimal-places", format.m_decimalPlaces);
         break;
-      case 4 : // fraction
-      case 5 : // numeralBase
-      default : // automatic/number/text
+      case IWORK_CELL_NUMBER_TYPE_DOUBLE :
         props.insert("librevenge:value-type", "double");
         props.insert("number:decimal-places", format.m_decimalPlaces);
         break;

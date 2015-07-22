@@ -109,6 +109,30 @@ optional<IWORKCapitalization> IWORKNumberConverter<IWORKCapitalization>::convert
   return none;
 }
 
+optional<IWORKCellNumberType> IWORKNumberConverter<IWORKCellNumberType>::convert(const char *const value)
+{
+  const optional<int> numberFormat(try_int_cast(value));
+  if (numberFormat)
+  {
+    switch (get(numberFormat))
+    {
+    case 1 :
+      return IWORK_CELL_NUMBER_TYPE_CURRENCY;
+    case 2 :
+      return IWORK_CELL_NUMBER_TYPE_PERCENTAGE;
+    case 3 :
+      return IWORK_CELL_NUMBER_TYPE_SCIENTIFIC;
+    case 4 :
+    case 5 :
+    default :
+      return IWORK_CELL_NUMBER_TYPE_DOUBLE;
+    }
+  }
+
+  return none;
+}
+
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
