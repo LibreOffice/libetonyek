@@ -37,6 +37,60 @@ IWORKShape::IWORKShape()
 namespace
 {
 
+class ShapeObject : public IWORKObject
+{
+public:
+  ShapeObject(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo);
+  virtual ~ShapeObject();
+
+private:
+  virtual void draw(IWORKDocumentInterface *document);
+
+private:
+  const IWORKShapePtr_t m_shape;
+  const IWORKTransformation m_trafo;
+};
+
+ShapeObject::ShapeObject(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo)
+  : m_shape(shape)
+  , m_trafo(trafo)
+{
+}
+
+ShapeObject::~ShapeObject()
+{
+}
+
+void ShapeObject::draw(IWORKDocumentInterface *const document)
+{
+  if (bool(m_shape) && bool(m_shape->m_path))
+  {
+    // TODO: make style
+
+    const IWORKPath path = *m_shape->m_path * m_trafo;
+
+    librevenge::RVNGPropertyList props;
+    props.insert("svg:d", path.toWPG());
+
+    document->setStyle(librevenge::RVNGPropertyList());
+    document->drawPath(props);
+
+    if (bool(m_shape->m_text))
+      makeObject(m_shape->m_text, m_trafo)->draw(document);
+  }
+}
+
+}
+
+IWORKObjectPtr_t makeObject(const IWORKShapePtr_t &shape, const IWORKTransformation &trafo)
+{
+  const IWORKObjectPtr_t object(new ShapeObject(shape, trafo));
+  return object;
+}
+
+namespace
+{
+
 struct Point
 {
   double x;
@@ -195,9 +249,33 @@ IWORKPathPtr_t makeRoundedRectanglePath(const IWORKSize &size, const double radi
   // user space canvas: [-1:1] x [-1:1]
 
   // TODO: draw rounded corners
-  (void) radius;
+  const double angle = etonyek_two_pi / 8;
+  Point p;
+  points.push_back(Point(-1,-1));
+  for (unsigned i = 1; i <4; ++i)
+  {
+    Point pt(point);
+    const IWORKTransformation rot(rotate(i * angle));
+    
+    
+    switch(i){
+      case 1:
+      points.push(Point(pt.x +1,pt.y));
+      break;
+      case 2:
+      points.push(Point(pt.x+1,pt.y+1));
+      break;
+      case 3:
+      points.push(Point(pt.x,pt.y+1));
+      break;
+      default:
+      }
+      rot(pt.x, pt.y);
+    points.push_back(pt);
+  }
+  //(void) radius;
 
-  deque<Point> points = rotatePoint(Point(1, 1), 4);
+  //deque<Point> points = rotatePoint(Point(1, 1), 4);
 
   transform(points, scale(size.m_width, size.m_height) * scale(0.5, 0.5) * translate(1, 1));
   const IWORKPathPtr_t path = makePolyLine(points);
@@ -277,29 +355,64 @@ IWORKPathPtr_t makeStarPath(const IWORKSize &size, const unsigned points, const 
   return path;
 }
 
+//Added Support for some new shapes in Keynote 6.2
+
+//Draw Circle
+IWORKPathPtr_t makeCircle(const IWORKSize &size,const double centreX,const double centreY, const double radius)
+{
+  
+  const MAX_EDGES = 5000; 
+  const deque<Point> points = rotatePoint(Point(0 + radius,0),MAX_EDGES);
+  transform(points,translate(centreX,centreY)*translate(1,1)*scale(0.5,0.5)*scale(size.m_width,size.m_height));
+  const IWORKPathPtr_t path = makePolyLine(points);
+
+  return path;
+}
+
 IWORKPathPtr_t makeConnectionPath(const IWORKSize &size, const double middleX, const double middleY)
 {
-  // TODO: implement me
-  (void) size;
-  (void) middleX;
-  (void) middleY;
-  return IWORKPathPtr_t();
+  
+  deque<Point> points;
+  points.push_back(Point(-1,-1));
+  points.push_back(Point(middleX,middleY));
+  points.push_back(Point(1,1));
+  transform(points,translate(centreX,centreY)*translate(1,1)*scale(0.5,0.5)*scale(size.m_width,size.m_height));
+  const IWORKPathPtr_t path = makePolyLine(points);
+  return path;
 }
 
 IWORKPathPtr_t makeCalloutPath(const IWORKSize &size, const double radius, const double tailSize, const double tailX, const double tailY)
 {
   // user space canvas: [-1:1] x [-1:1]
 
-  // TODO: draw correctly instead of just approximating
-  (void) radius;
-  (void) tailSize;
-  (void) tailX;
-  (void) tailY;
-
-  deque<Point> points = rotatePoint(Point(-1, -1), 4);
+  deque<Point> points;
+  const double angle = etonyek_two_pi / 8;
+  Point p;
+  points.push_back(Point(-1,-1));
+  for (unsigned i = 1; i <4; ++i)
+  {
+    Point pt(point);
+    const IWORKTransformation rot(rotate(i * angle));
+    switch(i){
+      case 1:
+      points.push(Point(pt.x +1,pt.y));
+      break;
+      case 2:
+      points.push(Point(pt.x+1,pt.y+1));
+      break;
+      case 3:
+      points.push(Point(pt.x,pt.y+1));
+      break;
+      default:
+      break;
+      }
+      rot(pt.x, pt.y);
+    points.push_back(pt);
+  }
   points.push_back(Point(-1, 0.5));
   points.push_back(Point(-2, 0));
   points.push_back(Point(-1, -0.5));
+
 
   // create the path
   transform(points, scale(size.m_width, size.m_height) * scale(0.5, 0.5) * translate(1, 1));
@@ -310,8 +423,15 @@ IWORKPathPtr_t makeCalloutPath(const IWORKSize &size, const double radius, const
 
 IWORKPathPtr_t makeQuoteBubblePath(const IWORKSize &size, const double radius, const double tailSize, const double tailX, const double tailY)
 {
-  // TODO: really draw this instead of just approximating
-  return makeCalloutPath(size, radius, tailSize, tailX, tailY);
+      const MAX_EDGES = 5000; 
+      deque<Point> points = rotatePoint(Point(0 + radius,0),MAX_EDGES);
+      transform(points,scale(0.7,1));
+      deque<Point> inner_points(points);
+      transform(inner_points,scale(0.5,0.5));
+      inner_points.push_back(Point(tailX,tailY));
+      transform(inner_points, translate(1, 1) * scale(0.5, 0.5) * scale(size.m_width, size.m_height));
+      const IWORKPathPtr_t path = makePolyLine(inner_points);
+
 }
 
 }
