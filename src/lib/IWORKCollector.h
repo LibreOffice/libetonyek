@@ -87,7 +87,7 @@ public:
   void collectTableCell(unsigned row, unsigned column, const boost::optional<std::string> &content, unsigned rowSpan, unsigned columnSpan,  const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, IWORKCellType type);
   void collectCoveredTableCell(unsigned row, unsigned column);
   void collectTableRow();
-  void collectTable();
+  virtual void collectTable();
   void setTableNameMap(const IWORKTableNameMapPtr_t &tableNameMap);
 
   void collectMetadata(const IWORKMetadata &metadata);

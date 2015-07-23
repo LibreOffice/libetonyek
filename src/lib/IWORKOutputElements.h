@@ -70,7 +70,7 @@ public:
   void addInsertText(const librevenge::RVNGString &text);
   void addOpenComment(const librevenge::RVNGPropertyList &propList);
   void addOpenEndnote(const librevenge::RVNGPropertyList &propList);
-  void addOpenFormulaCell(const librevenge::RVNGPropertyList &propList, const boost::optional<IWORKFormula> &formula, const IWORKTableNameMapPtr_t &tableNameMap);
+  void addOpenFormulaCell(const librevenge::RVNGPropertyList &propList, const boost::optional<IWORKFormula> formula, const IWORKTableNameMapPtr_t &tableNameMap);
   void addOpenFooter(const librevenge::RVNGPropertyList &propList);
   void addOpenFootnote(const librevenge::RVNGPropertyList &propList);
   void addOpenFrame(const librevenge::RVNGPropertyList &propList);

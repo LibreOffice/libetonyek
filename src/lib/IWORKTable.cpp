@@ -204,7 +204,7 @@ void IWORKTable::insertCoveredCell(const unsigned column, const unsigned row)
   m_table[row][column] = cell;
 }
 
-void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements)
+void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements, const IWORKOutputElements &media)
 {
   librevenge::RVNGPropertyListVector columnSizes;
 
@@ -272,6 +272,10 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
     }
     elements.addCloseTableRow();
   }
+
+  if (!media.empty())
+    elements.append(media);
+
   elements.addCloseTable();
 }
 

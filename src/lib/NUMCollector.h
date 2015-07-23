@@ -23,16 +23,22 @@ public:
   explicit NUMCollector(IWORKDocumentInterface *document);
 
   // collector functions
+  void collectTable();
 
   // helper functions
   void startDocument();
   void endDocument();
+  void drawTables();
 
 private:
   virtual void drawTable();
   virtual void drawMedia(double x, double y, double w, double h, const std::string &mimetype, const librevenge::RVNGBinaryData &data);
   virtual void fillShapeProperties(librevenge::RVNGPropertyList &props);
   virtual void drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox);
+
+private:
+  std::deque<IWORKTable> m_tables;
+  IWORKOutputElements m_media;
 };
 
 } // namespace libetonyek
