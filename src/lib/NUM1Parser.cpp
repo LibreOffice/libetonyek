@@ -56,6 +56,9 @@ private:
   virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
+
+private:
+  bool m_table;
 };
 
 DrawablesElement::DrawablesElement(NUM1ParserState &state)
@@ -65,6 +68,8 @@ DrawablesElement::DrawablesElement(NUM1ParserState &state)
 
 void DrawablesElement::startOfElement()
 {
+  m_table = false;
+
   if (isCollector())
     getCollector().startLevel();
 }
@@ -94,6 +99,7 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   // case IWORKToken::NS_URI_SF | IWORKToken::sticky_note :
   //   return makeContext<StickyNoteElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
+    m_table = true;
     return makeContext<IWORKTabularInfoElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::chart_info :
     return makeContext<IWORKChartInfoElement>(getState());
@@ -108,7 +114,12 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
 void DrawablesElement::endOfElement()
 {
   if (isCollector())
+  {
+    if (m_table)
+      getCollector().collectTable();
+
     getCollector().endLevel();
+  }
 }
 
 }

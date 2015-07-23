@@ -44,14 +44,22 @@ void NUMCollector::drawMedia(
   const double x, const double y, const double w, const double h,
   const std::string &mimetype, const librevenge::RVNGBinaryData &data)
 {
-  // TODO: implement me
-  (void) x;
-  (void) y;
-  (void) w;
-  (void) h;
-  (void) mimetype;
-  (void) data;
-  (void) x;
+  librevenge::RVNGPropertyList frameProps;
+  frameProps.insert("svg:x", pt2in(x));
+  frameProps.insert("svg:y", pt2in(y));
+  frameProps.insert("svg:width", pt2in(w));
+  frameProps.insert("svg:height", pt2in(h));
+
+  librevenge::RVNGPropertyList binaryObjectProps;
+  binaryObjectProps.insert("librevenge:mime-type", mimetype.c_str());
+  binaryObjectProps.insert("office:binary-data", data);
+
+  IWORKOutputElements elements;
+  elements.addOpenFrame(frameProps);
+  elements.addInsertBinaryObject(binaryObjectProps);
+  elements.addCloseFrame();
+
+  m_currentTable.insertObject(elements);
 }
 
 void NUMCollector::fillShapeProperties(librevenge::RVNGPropertyList &props)

@@ -940,11 +940,7 @@ IWORKXMLContextPtr_t IWORKTabularInfoElement::element(const int name)
 void IWORKTabularInfoElement::endOfElement()
 {
   if (isCollector())
-  {
-    getCollector().collectTable();
-
     getCollector().endLevel();
-  }
 }
 
 }
