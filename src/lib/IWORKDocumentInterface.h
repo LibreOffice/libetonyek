@@ -156,6 +156,9 @@ public:
   virtual void insertColorAnimation(const librevenge::RVNGPropertyList &propList) = 0;
   virtual void insertAnimation(const librevenge::RVNGPropertyList &propList) = 0;
   virtual void insertEffect(const librevenge::RVNGPropertyList &propList) = 0;
+
+  virtual void startGraphic(const librevenge::RVNGPropertyList &propList) = 0;
+  virtual void endGraphic() = 0;
 };
 
 }

@@ -156,6 +156,9 @@ public:
   virtual void insertAnimation(const librevenge::RVNGPropertyList &propList);
   virtual void insertEffect(const librevenge::RVNGPropertyList &propList);
 
+  virtual void startGraphic(const librevenge::RVNGPropertyList &propList);
+  virtual void endGraphic();
+
 private:
   librevenge::RVNGTextInterface *const m_iface;
 };

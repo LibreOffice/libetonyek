@@ -195,6 +195,14 @@ private:
   librevenge::RVNGPropertyList m_propList;
 };
 
+class EndGraphicElement : public IWORKOutputElement
+{
+public:
+  EndGraphicElement() {}
+  ~EndGraphicElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+};
+
 class EndLayerElement : public IWORKOutputElement
 {
 public:
@@ -478,6 +486,17 @@ private:
   librevenge::RVNGPropertyList m_propList;
 };
 
+class StartGraphicElement : public IWORKOutputElement
+{
+public:
+  StartGraphicElement(const librevenge::RVNGPropertyList &propList) :
+    m_propList(propList) {}
+  ~StartGraphicElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
 class StartLayerElement : public IWORKOutputElement
 {
 public:
@@ -623,6 +642,12 @@ void DrawPolylineElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
     iface->drawPolyline(m_propList);
+}
+
+void EndGraphicElement::write(IWORKDocumentInterface *const iface) const
+{
+  if (iface)
+    iface->endGraphic();
 }
 
 void EndLayerElement::write(IWORKDocumentInterface *const iface) const
@@ -789,6 +814,12 @@ void SetStyleElement::write(IWORKDocumentInterface *iface) const
     iface->setStyle(m_propList);
 }
 
+void StartGraphicElement::write(IWORKDocumentInterface *const iface) const
+{
+  if (iface)
+    iface->startGraphic(m_propList);
+}
+
 void StartLayerElement::write(IWORKDocumentInterface *const iface) const
 {
   if (iface)
@@ -931,6 +962,11 @@ void IWORKOutputElements::addDrawPolyline(const librevenge::RVNGPropertyList &pr
   m_elements.push_back(make_shared<DrawPolylineElement>(propList));
 }
 
+void IWORKOutputElements::addEndGraphic()
+{
+  m_elements.push_back(make_shared<EndGraphicElement>());
+}
+
 void IWORKOutputElements::addEndLayer()
 {
   m_elements.push_back(make_shared<EndLayerElement>());
@@ -1064,6 +1100,11 @@ void IWORKOutputElements::addOpenUnorderedListLevel(const librevenge::RVNGProper
 void IWORKOutputElements::addSetStyle(const librevenge::RVNGPropertyList &propList)
 {
   m_elements.push_back(make_shared<SetStyleElement>(propList));
+}
+
+void IWORKOutputElements::addStartGraphic(const librevenge::RVNGPropertyList &propList)
+{
+  m_elements.push_back(make_shared<StartGraphicElement>(propList));
 }
 
 void IWORKOutputElements::addStartLayer(const librevenge::RVNGPropertyList &propList)

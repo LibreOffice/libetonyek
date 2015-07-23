@@ -551,6 +551,15 @@ void IWORKPresentationRedirector::insertEffect(const librevenge::RVNGPropertyLis
     m_iface->insertEffect(propList);
 }
 
+void IWORKPresentationRedirector::startGraphic(const librevenge::RVNGPropertyList &propList)
+{
+  assert(0);
+}
+void IWORKPresentationRedirector::endGraphic()
+{
+  assert(0);
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

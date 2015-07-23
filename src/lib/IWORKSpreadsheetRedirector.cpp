@@ -437,6 +437,17 @@ void IWORKSpreadsheetRedirector::insertEffect(const librevenge::RVNGPropertyList
   assert(0);
 }
 
+void IWORKSpreadsheetRedirector::startGraphic(const librevenge::RVNGPropertyList &/*propList*/)
+{
+  assert(0);
+}
+
+void IWORKSpreadsheetRedirector::endGraphic()
+{
+  assert(0);
+}
+
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

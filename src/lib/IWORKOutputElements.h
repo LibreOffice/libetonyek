@@ -58,6 +58,7 @@ public:
   void addDrawGraphicObject(const librevenge::RVNGPropertyList &propList);
   void addDrawPath(const librevenge::RVNGPropertyList &propList);
   void addDrawPolyline(const librevenge::RVNGPropertyList &propList);
+  void addEndGraphic();
   void addEndLayer();
   void addEndNotes();
   void addEndTextObject();
@@ -85,6 +86,7 @@ public:
   void addOpenTableRow(const librevenge::RVNGPropertyList &propList);
   void addOpenUnorderedListLevel(const librevenge::RVNGPropertyList &propList);
   void addSetStyle(const librevenge::RVNGPropertyList &propList);
+  void addStartGraphic(const librevenge::RVNGPropertyList &propList);
   void addStartLayer(const librevenge::RVNGPropertyList &propList);
   void addStartNotes(const librevenge::RVNGPropertyList &propList);
   void addStartTextObject(const librevenge::RVNGPropertyList &propList);
