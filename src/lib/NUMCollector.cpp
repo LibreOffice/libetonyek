@@ -36,22 +36,42 @@ void NUMCollector::endDocument()
 
 void NUMCollector::drawTable()
 {
-  librevenge::RVNGPropertyList props;
-  m_currentTable.draw(props, m_outputManager.getCurrent());
+}
+
+void NUMCollector::drawTables()
+{
+  for (std::deque<IWORKTable>::iterator it = m_tables.begin(); m_tables.end() != it; ++it)
+  {
+    librevenge::RVNGPropertyList props;
+    if (it == m_tables.begin())
+      it->draw(props, m_outputManager.getCurrent(), m_media);
+    else
+      it->draw(props, m_outputManager.getCurrent());
+  }
+}
+
+void NUMCollector::collectTable()
+{
+  m_tables.push_back(m_currentTable);
 }
 
 void NUMCollector::drawMedia(
   const double x, const double y, const double w, const double h,
   const std::string &mimetype, const librevenge::RVNGBinaryData &data)
 {
-  // TODO: implement me
-  (void) x;
-  (void) y;
-  (void) w;
-  (void) h;
-  (void) mimetype;
-  (void) data;
-  (void) x;
+  librevenge::RVNGPropertyList frameProps;
+  frameProps.insert("svg:x", pt2in(x));
+  frameProps.insert("svg:y", pt2in(y));
+  frameProps.insert("svg:width", pt2in(w));
+  frameProps.insert("svg:height", pt2in(h));
+
+  librevenge::RVNGPropertyList binaryObjectProps;
+  binaryObjectProps.insert("librevenge:mime-type", mimetype.c_str());
+  binaryObjectProps.insert("office:binary-data", data);
+
+  m_media.addOpenFrame(frameProps);
+  m_media.addInsertBinaryObject(binaryObjectProps);
+  m_media.addCloseFrame();
 }
 
 void NUMCollector::fillShapeProperties(librevenge::RVNGPropertyList &props)

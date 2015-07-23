@@ -108,7 +108,10 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
 void DrawablesElement::endOfElement()
 {
   if (isCollector())
+  {
+    getCollector().drawTables();
     getCollector().endLevel();
+  }
 }
 
 }

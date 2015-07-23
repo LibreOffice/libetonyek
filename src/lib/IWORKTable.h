@@ -48,7 +48,7 @@ public:
   void insertCell(unsigned column, unsigned row, const boost::optional<std::string> &value = boost::none, const IWORKOutputElements &content = IWORKOutputElements(), unsigned columnSpan = 1, unsigned rowSpan = 1, const boost::optional<IWORKFormula> &formula = boost::none, const IWORKStylePtr_t &style = IWORKStylePtr_t(), IWORKCellType type = IWORK_CELL_TYPE_TEXT);
   void insertCoveredCell(unsigned column, unsigned row);
 
-  void draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements);
+  void draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements, const IWORKOutputElements &media = IWORKOutputElements());
 
 private:
   Table_t m_table;
