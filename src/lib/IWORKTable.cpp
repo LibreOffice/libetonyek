@@ -114,6 +114,7 @@ IWORKTable::IWORKTable()
   , m_verticalLines()
   , m_horizontalLines()
   , m_tableNameMap()
+  , m_mediaObjects()
 {
 }
 
@@ -160,6 +161,11 @@ void IWORKTable::insertCoveredCell(const unsigned column, const unsigned row)
   Cell cell;
   cell.m_covered = true;
   m_table[row][column] = cell;
+}
+
+void IWORKTable::insertObject(const IWORKOutputElements &elements)
+{
+  m_mediaObjects.append(elements);
 }
 
 void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements)
@@ -230,6 +236,9 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
     }
     elements.addCloseTableRow();
   }
+
+  elements.append(m_mediaObjects);
+
   elements.addCloseTable();
 }
 
