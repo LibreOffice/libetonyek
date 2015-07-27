@@ -31,6 +31,7 @@ class IWORKTable
     boost::optional<IWORKFormula> m_formula;
     IWORKStylePtr_t m_style;
     IWORKCellType m_type;
+    boost::optional<std::string> m_value;
 
     Cell();
   };
@@ -44,7 +45,7 @@ public:
   void setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowSizes_t &rowSizes);
   void setBorders(const IWORKGridLineList_t &verticalLines, const IWORKGridLineList_t &horizontalLines);
   void setTableNameMap(const IWORKTableNameMapPtr_t &tableNameMap);
-  void insertCell(unsigned column, unsigned row, const IWORKOutputElements &content = IWORKOutputElements(), unsigned columnSpan = 1, unsigned rowSpan = 1, const boost::optional<IWORKFormula> &formula = boost::none, const IWORKStylePtr_t &style = IWORKStylePtr_t(), IWORKCellType type = IWORK_CELL_TYPE_TEXT);
+  void insertCell(unsigned column, unsigned row, const boost::optional<std::string> &value = boost::none, const IWORKOutputElements &content = IWORKOutputElements(), unsigned columnSpan = 1, unsigned rowSpan = 1, const boost::optional<IWORKFormula> &formula = boost::none, const IWORKStylePtr_t &style = IWORKStylePtr_t(), IWORKCellType type = IWORK_CELL_TYPE_TEXT);
   void insertCoveredCell(unsigned column, unsigned row);
 
   void draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements);

@@ -250,6 +250,7 @@ void DElement::attribute(const int name, const char *const value)
     char time_buf[21];
     strftime(time_buf, 21, "%Y-%m-%dT%H:%S:%MZ", gmtime(&t));
     getState().m_tableData->m_content = value;
+    getState().m_tableData->m_type = IWORK_CELL_TYPE_DATE_TIME;
     break;
   }
   default :
@@ -408,6 +409,7 @@ void NElement::attribute(const int name, const char *const value)
   {
   case IWORKToken::v | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
+    getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
     break;
   default :
     CellContextBase::attribute(name, value);
@@ -507,6 +509,7 @@ void CtElement::attribute(const int name, const char *const value)
   {
   case IWORKToken::s | IWORKToken::NS_URI_SFA :
     getState().m_tableData->m_content = value;
+    getState().m_tableData->m_type = IWORK_CELL_TYPE_TEXT;
     break;
   default :
     break;
