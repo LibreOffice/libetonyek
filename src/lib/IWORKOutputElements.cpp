@@ -694,10 +694,14 @@ void OpenEndnoteElement::write(IWORKDocumentInterface *iface) const
 void OpenFormulaCellElement::write(IWORKDocumentInterface *iface) const
 {
   librevenge::RVNGPropertyListVector propsVector;
+  librevenge::RVNGPropertyList cellProps(m_propList);
   if (m_formula)
+  {
     m_formula->write(propsVector, m_tableNameMap);
+    cellProps.insert("librevenge:formula", propsVector);
+  }
   if (iface)
-    iface->openTableCell(m_propList);
+    iface->openTableCell(cellProps);
 }
 
 void OpenFooterElement::write(IWORKDocumentInterface *iface) const
