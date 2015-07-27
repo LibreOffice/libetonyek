@@ -383,7 +383,7 @@ void IWORKCollector::collectTableCell(const unsigned row, const unsigned column,
 {
   IWORKOutputElements elements;
 
-  if (bool(content))
+  if (bool(content) && type == IWORK_CELL_TYPE_TEXT)
   {
     assert(m_textStack.empty() || m_textStack.top()->empty());
 
@@ -400,7 +400,7 @@ void IWORKCollector::collectTableCell(const unsigned row, const unsigned column,
     m_textStack.top().reset();
   }
 
-  m_currentTable.insertCell(column, row, elements, columnSpan, rowSpan, formula, style, type);
+  m_currentTable.insertCell(column, row, content, elements, columnSpan, rowSpan, formula, style, type);
 }
 
 void IWORKCollector::collectCoveredTableCell(const unsigned row, const unsigned column)
