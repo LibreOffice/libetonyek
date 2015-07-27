@@ -41,19 +41,22 @@ void writeBorder(librevenge::RVNGPropertyList &props, const char *name, IWORKGri
   }
 }
 
-void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStylePtr_t &style, const IWORKCellType type)
+void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStylePtr_t &style, const IWORKCellType type, const boost::optional<std::string> &value)
 {
   using namespace property;
 
   switch (type)
   {
   case IWORK_CELL_TYPE_NUMBER :
-    if (style->has<SFTCellStylePropertyNumberFormat>())
+    if (style->has<SFTCellStylePropertyNumberFormat>() && value)
     {
       const IWORKNumberFormat &format = style->get<SFTCellStylePropertyNumberFormat>();
 
       if (style->getIdent())
         props.insert("librevenge:name", style->getIdent());
+
+      if (value)
+        props.insert("librevenge:value", get(value).c_str());
 
       switch (format.m_type)
       {
@@ -77,7 +80,7 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStylePtr_t 
     }
     break;
   case IWORK_CELL_TYPE_DATE_TIME :
-    if (style->has<SFTCellStylePropertyDateTimeFormat>())
+    if (style->has<SFTCellStylePropertyDateTimeFormat>() && value)
     {
       if (style->getIdent())
         props.insert("librevenge:name", style->getIdent());
@@ -89,7 +92,8 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStylePtr_t 
   case IWORK_CELL_TYPE_TEXT :
   default:
     //TODO: librevenge:name ?
-    props.insert("librevenge:value-type", "string");
+    if (value)
+      props.insert("librevenge:value-type", "string");
     break;
   }
 }
@@ -104,6 +108,7 @@ IWORKTable::Cell::Cell()
   , m_formula()
   , m_style()
   , m_type(IWORK_CELL_TYPE_TEXT)
+  , m_value()
 {
 }
 
@@ -138,7 +143,7 @@ void IWORKTable::setTableNameMap(const IWORKTableNameMapPtr_t &tableNameMap)
   m_tableNameMap = tableNameMap;
 }
 
-void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWORKOutputElements &content, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, const IWORKCellType type)
+void IWORKTable::insertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const IWORKOutputElements &content, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, const IWORKCellType type)
 {
   if ((m_rowSizes.size() <= row) || (m_columnSizes.size() <= column))
     return;
@@ -150,6 +155,7 @@ void IWORKTable::insertCell(const unsigned column, const unsigned row, const IWO
   cell.m_formula = formula;
   cell.m_style = style;
   cell.m_type = type;
+  cell.m_value = value;
   m_table[row][column] = cell;
 }
 
@@ -221,7 +227,7 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
           cellProps.insert("table:number-rows-spanned", numeric_cast<int>(cell.m_rowSpan));
 
         if (cell.m_style)
-          writeCellFormat(cellProps, cell.m_style, cell.m_type);
+          writeCellFormat(cellProps, cell.m_style, cell.m_type, cell.m_value);
 
         if (cell.m_formula)
           elements.addOpenFormulaCell(cellProps, cell.m_formula, m_tableNameMap);
