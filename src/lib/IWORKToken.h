@@ -52,6 +52,7 @@ enum
   callout2_path,
   capitalization,
   category_title,
+  cb,
   cell_date,
   cell_style,
   cell_style_ref,

@@ -195,6 +195,36 @@ IWORKXMLContextPtr_t ColumnsElement::element(const int name)
 namespace
 {
 
+class CbElement : public CellContextBase
+{
+public:
+  explicit CbElement(IWORKXMLParserState &state);
+private:
+  virtual void attribute(int name, const char *value);
+};
+
+CbElement::CbElement(IWORKXMLParserState &state)
+  : CellContextBase(state)
+{
+}
+
+void CbElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::v | IWORKToken::NS_URI_SF :
+    getState().m_tableData->m_content = value;
+    break;
+  default :
+    CellContextBase::attribute(name, value);
+  }
+}
+
+}
+
+namespace
+{
+
 class DElement : public CellContextBase
 {
 public:
@@ -579,6 +609,8 @@ IWORKXMLContextPtr_t DatasourceElement::element(const int name)
 {
   switch (name)
   {
+  case IWORKToken::cb | IWORKToken::NS_URI_SF :
+    return makeContext<CbElement>(getState());
   case IWORKToken::d | IWORKToken::NS_URI_SF :
     return makeContext<DElement>(getState());
   case IWORKToken::du | IWORKToken::NS_URI_SF :
