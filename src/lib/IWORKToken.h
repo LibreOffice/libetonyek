@@ -200,6 +200,7 @@ enum
   shape,
   size,
   sl,
+  st,
   slide_style,
   so,
   spaceAfter,
