@@ -201,6 +201,7 @@ enum
   self_contained_movie,
   shape,
   size,
+  sl,
   slide_style,
   so,
   spaceAfter,
