@@ -190,6 +190,7 @@ lnbr,lnbr
 locked,locked
 mark,mark
 media,media
+menu-choices,menu_choices
 metadata,metadata
 miter,miter
 mode,mode
@@ -220,11 +221,13 @@ path,path
 pattern,pattern
 placeholder-style,placeholder_style
 placeholder-style-ref,placeholder_style_ref
+pm,pm
 point,point
 point-path,point_path
 pos,pos
 position,position
 property-map,property_map
+proxied-cell-ref,proxied_cell_ref
 proxy-master-layer,proxy_master_layer
 r,r
 relative,relative
