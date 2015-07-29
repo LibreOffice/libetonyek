@@ -456,6 +456,37 @@ void SElement::endOfElement()
 namespace
 {
 
+class SlElement : public CellContextBase
+{
+public:
+  explicit SlElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+};
+
+SlElement::SlElement(IWORKXMLParserState &state)
+  : CellContextBase(state)
+{
+}
+
+void SlElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::v | IWORKToken::NS_URI_SF :
+    getState().m_tableData->m_content = value;
+    break;
+  default :
+    CellContextBase::attribute(name, value);
+  }
+}
+
+}
+
+namespace
+{
+
 class SoElement : public IWORKXMLElementContextBase
 {
 public:
@@ -624,6 +655,8 @@ IWORKXMLContextPtr_t DatasourceElement::element(const int name)
     return makeContext<NElement>(getState());
   case IWORKToken::s | IWORKToken::NS_URI_SF :
     return makeContext<SElement>(getState());
+  case IWORKToken::sl | IWORKToken::NS_URI_SF :
+    return makeContext<SlElement>(getState());
   case IWORKToken::t | IWORKToken::NS_URI_SF :
     return makeContext<TElement>(getState());
   }
