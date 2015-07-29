@@ -126,6 +126,7 @@ void CellContextBase::emitCell(const bool covered)
   tableData->m_rowSpan.reset();
   tableData->m_cellMove.reset();
   tableData->m_content.reset();
+  tableData->m_formula.reset();
 }
 
 }
