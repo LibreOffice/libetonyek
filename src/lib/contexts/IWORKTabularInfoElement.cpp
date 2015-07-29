@@ -487,6 +487,37 @@ void SlElement::attribute(const int name, const char *const value)
 namespace
 {
 
+class StElement : public CellContextBase
+{
+public:
+  explicit StElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+};
+
+StElement::StElement(IWORKXMLParserState &state)
+  : CellContextBase(state)
+{
+}
+
+void StElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::v | IWORKToken::NS_URI_SF :
+    getState().m_tableData->m_content = value;
+    break;
+  default :
+    CellContextBase::attribute(name, value);
+  }
+}
+
+}
+
+namespace
+{
+
 class SoElement : public IWORKXMLElementContextBase
 {
 public:
@@ -656,6 +687,8 @@ IWORKXMLContextPtr_t DatasourceElement::element(const int name)
   case IWORKToken::s | IWORKToken::NS_URI_SF :
     return makeContext<SElement>(getState());
   case IWORKToken::sl | IWORKToken::NS_URI_SF :
+    return makeContext<SlElement>(getState());
+  case IWORKToken::st | IWORKToken::NS_URI_SF :
     return makeContext<SlElement>(getState());
   case IWORKToken::t | IWORKToken::NS_URI_SF :
     return makeContext<TElement>(getState());
