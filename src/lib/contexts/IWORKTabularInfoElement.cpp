@@ -438,6 +438,191 @@ void NElement::attribute(const int name, const char *const value)
 namespace
 {
 
+class PmCtElement : public IWORKXMLEmptyContextBase
+{
+public:
+  explicit PmCtElement(IWORKXMLParserState &state, IWORKContentMap_t &contentMap, std::string &id);
+
+private:
+  virtual void attribute(int name, const char *value);
+
+private:
+  IWORKContentMap_t &m_contentMap;
+  std::string &m_id;
+};
+
+PmCtElement::PmCtElement(IWORKXMLParserState &state, IWORKContentMap_t &contentMap, std::string &id)
+  : IWORKXMLEmptyContextBase(state)
+  , m_contentMap(contentMap)
+  , m_id(id)
+{
+}
+
+void PmCtElement::attribute(const int name, const char *const value)
+{
+  if (name == (IWORKToken::s | IWORKToken::NS_URI_SFA))
+    m_contentMap[m_id] = value;
+}
+
+}
+
+namespace
+{
+
+class PmTElement : public IWORKXMLEmptyContextBase
+{
+public:
+  explicit PmTElement(IWORKXMLParserState &state, IWORKContentMap_t &contentMap);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+
+private:
+  IWORKContentMap_t &m_contentMap;
+  std::string m_id;
+};
+
+PmTElement::PmTElement(IWORKXMLParserState &state, IWORKContentMap_t &contentMap)
+  : IWORKXMLEmptyContextBase(state)
+  , m_contentMap(contentMap)
+  , m_id()
+{
+}
+
+void PmTElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::ID | IWORKToken::NS_URI_SFA :
+    m_id = value;
+  }
+}
+
+IWORKXMLContextPtr_t PmTElement::element(const int name)
+{
+  if (name == (IWORKToken::ct | IWORKToken::NS_URI_SF))
+    return makeContext<PmCtElement>(getState(), m_contentMap, m_id);
+
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
+class MenuChoicesElement : public IWORKXMLElementContextBase
+{
+public:
+  explicit MenuChoicesElement(IWORKXMLParserState &state, IWORKContentMap_t &contentMap);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+
+private:
+  IWORKContentMap_t &m_contentMap;
+};
+
+MenuChoicesElement::MenuChoicesElement(IWORKXMLParserState &state, IWORKContentMap_t &contentMap)
+  : IWORKXMLElementContextBase(state)
+  , m_contentMap(contentMap)
+{
+}
+
+IWORKXMLContextPtr_t MenuChoicesElement::element(int name)
+{
+  if (name == (IWORKToken::t | IWORKToken::NS_URI_SF))
+    return makeContext<PmTElement>(getState(), m_contentMap);
+
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
+class ProxiedCellRefElement : public IWORKXMLEmptyContextBase
+{
+public:
+  explicit ProxiedCellRefElement(IWORKXMLParserState &state, boost::optional<std::string> &id);
+
+private:
+  virtual void attribute(int name, const char *value);
+
+private:
+  boost::optional<std::string> &m_id;
+};
+
+ProxiedCellRefElement::ProxiedCellRefElement(IWORKXMLParserState &state, boost::optional<std::string> &id)
+  : IWORKXMLEmptyContextBase(state)
+  , m_id(id)
+{
+}
+
+void ProxiedCellRefElement::attribute(const int name, const char *const value)
+{
+  if (name == (IWORKToken::IDREF | IWORKToken::NS_URI_SFA))
+    m_id = value;
+}
+
+}
+
+namespace
+{
+
+class PmElement : public CellContextBase
+{
+public:
+  explicit PmElement(IWORKXMLParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  IWORKContentMap_t m_contentMap;
+  boost::optional<std::string> m_id;
+};
+
+PmElement::PmElement(IWORKXMLParserState &state)
+  : CellContextBase(state)
+  , m_contentMap()
+{
+}
+
+IWORKXMLContextPtr_t PmElement::element(int name)
+{
+  switch (name)
+  {
+  case IWORKToken::menu_choices | IWORKToken::NS_URI_SF :
+    return makeContext<MenuChoicesElement>(getState(), m_contentMap);
+    break;
+  case IWORKToken::proxied_cell_ref | IWORKToken::NS_URI_SF :
+    return makeContext<ProxiedCellRefElement>(getState(), m_id);
+    break;
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void PmElement::endOfElement()
+{
+  if (m_id)
+  {
+    const IWORKContentMap_t::const_iterator it = m_contentMap.find(get(m_id));
+    if (m_contentMap.end() != it)
+      getState().m_tableData->m_content = it->second;
+  }
+}
+
+
+}
+
+namespace
+{
+
 class SElement : public CellContextBase
 {
 public:
@@ -706,6 +891,8 @@ IWORKXMLContextPtr_t DatasourceElement::element(const int name)
     return makeContext<GElement>(getState());
   case IWORKToken::n | IWORKToken::NS_URI_SF :
     return makeContext<NElement>(getState());
+  case IWORKToken::pm | IWORKToken::NS_URI_SF :
+    return makeContext<PmElement>(getState());
   case IWORKToken::s | IWORKToken::NS_URI_SF :
     return makeContext<SElement>(getState());
   case IWORKToken::sl | IWORKToken::NS_URI_SF :
