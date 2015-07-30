@@ -889,8 +889,6 @@ IWORKXMLContextPtr_t DatasourceElement::element(const int name)
     return makeContext<DuElement>(getState());
   case IWORKToken::f | IWORKToken::NS_URI_SF :
     return makeContext<FElement>(getState());
-  case IWORKToken::g | IWORKToken::NS_URI_SF :
-    return makeContext<GElement>(getState());
   case IWORKToken::n | IWORKToken::NS_URI_SF :
     return makeContext<NElement>(getState());
   case IWORKToken::pm | IWORKToken::NS_URI_SF :
@@ -903,6 +901,9 @@ IWORKXMLContextPtr_t DatasourceElement::element(const int name)
     return makeContext<SlElement>(getState());
   case IWORKToken::t | IWORKToken::NS_URI_SF :
     return makeContext<TElement>(getState());
+  case IWORKToken::g | IWORKToken::NS_URI_SF :
+  default :
+    return makeContext<GElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
