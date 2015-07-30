@@ -553,28 +553,28 @@ void NumberFormatElement::attribute(const int name, const char *const value)
     m_builder.m_string = value;
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::format_decimal_places :
-    m_builder.m_decimalPlaces = double_cast(value);
+    m_builder.m_decimalPlaces = int_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::format_currency_code :
     m_builder.m_currencyCode = value;
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::format_negative_style :
-    m_builder.m_negativeStyle = double_cast(value);
+    m_builder.m_negativeStyle = int_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::format_show_thousands_separator :
     m_builder.m_thousandsSeperator = bool_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::format_fraction_accuracy :
-    m_builder.m_fractionAccuracy = double_cast(value);
+    m_builder.m_fractionAccuracy = int_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::format_use_accounting_style :
     m_builder.m_accountingStyle = bool_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::format_base :
-    m_builder.m_base = double_cast(value);
+    m_builder.m_base = int_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::format_base_places :
-    m_builder.m_basePlaces = double_cast(value);
+    m_builder.m_basePlaces = int_cast(value);
     break;
   }
 }

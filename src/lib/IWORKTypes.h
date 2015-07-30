@@ -242,14 +242,14 @@ struct IWORKNumberFormat
 
   IWORKCellNumberType m_type;
   std::string m_string;
-  double m_decimalPlaces;
+  int m_decimalPlaces;
   std::string m_currencyCode;
-  double m_negativeStyle;
+  int m_negativeStyle;
   bool m_thousandsSeperator;
-  double m_fractionAccuracy;
+  int m_fractionAccuracy;
   bool m_accountingStyle;
-  double m_base;
-  double m_basePlaces;
+  int m_base;
+  int m_basePlaces;
 };
 
 struct IWORKDateTimeFormat
