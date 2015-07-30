@@ -495,6 +495,7 @@ void SlElement::attribute(const int name, const char *const value)
   {
   case IWORKToken::v | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
+    getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
     break;
   default :
     CellContextBase::attribute(name, value);
@@ -526,6 +527,7 @@ void StElement::attribute(const int name, const char *const value)
   {
   case IWORKToken::v | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
+    getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
     break;
   default :
     CellContextBase::attribute(name, value);
