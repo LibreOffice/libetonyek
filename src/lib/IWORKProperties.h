@@ -43,6 +43,7 @@ IWORK_DECLARE_PROPERTY(ParagraphFill, IWORKColor);
 IWORK_DECLARE_PROPERTY(ParagraphStroke, IWORKStroke);
 IWORK_DECLARE_PROPERTY(RightIndent, double);
 IWORK_DECLARE_PROPERTY(SFTCellStylePropertyDateTimeFormat, IWORKDateTimeFormat);
+IWORK_DECLARE_PROPERTY(SFTCellStylePropertyDurationFormat, IWORKDurationFormat);
 IWORK_DECLARE_PROPERTY(SFTCellStylePropertyNumberFormat, IWORKNumberFormat);
 IWORK_DECLARE_PROPERTY(SFTStrokeProperty, IWORKStroke);
 IWORK_DECLARE_PROPERTY(SpaceAfter, double);

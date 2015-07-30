@@ -87,6 +87,18 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStylePtr_t 
     }
     break;
   case IWORK_CELL_TYPE_DURATION :
+    if (style->has<SFTCellStylePropertyDurationFormat>() && value)
+    {
+      // TODO: How to insert format and convert?
+      // const IWORKDurationFormat &format = style->get<SFTCellStylePropertyDurationFormat>();
+      // props.insert("librevenge:format",format.m_format.c_str());
+
+      props.insert("librevenge:value", get(value).c_str());
+      props.insert("librevenge:value-type", "time");
+
+      if (style->getIdent())
+        props.insert("librevenge:name", style->getIdent());
+    }
     break;
   case IWORK_CELL_TYPE_TEXT :
   default:

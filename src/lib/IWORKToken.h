@@ -34,6 +34,7 @@ enum
   // elements
   SFTCellStylePropertyNumberFormat,
   SFTCellStylePropertyDateTimeFormat,
+  SFTCellStylePropertyDurationFormat,
   SFTStrokeProperty,
   alignment,
   anon_styles,
@@ -85,6 +86,7 @@ enum
   drawable_shape,
   drawables,
   du,
+  duration_format,
   editable_bezier_path,
   element,
   evenPageMaster,

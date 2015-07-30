@@ -259,6 +259,13 @@ struct IWORKDateTimeFormat
   std::string m_format;
 };
 
+struct IWORKDurationFormat
+{
+  IWORKDurationFormat();
+
+  std::string m_format;
+};
+
 }
 
 #endif //  IWORKTYPES_H_INCLUDED

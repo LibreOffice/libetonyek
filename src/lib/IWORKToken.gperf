@@ -33,6 +33,7 @@ ID,ID
 IDREF,IDREF
 SFTCellStylePropertyNumberFormat,SFTCellStylePropertyNumberFormat
 SFTCellStylePropertyDateTimeFormat,SFTCellStylePropertyDateTimeFormat
+SFTCellStylePropertyDurationFormat,SFTCellStylePropertyDurationFormat
 SFTStrokeProperty, SFTStrokeProperty
 a,a
 align,align
@@ -97,6 +98,7 @@ double,double_
 drawables,drawables
 drawable-shape,drawable_shape
 du,du
+duration-format,duration_format
 editable-bezier-path,editable_bezier_path
 element,element
 equal-columns,equal_columns

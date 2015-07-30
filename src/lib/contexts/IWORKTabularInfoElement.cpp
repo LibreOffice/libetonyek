@@ -267,11 +267,27 @@ class DuElement : public CellContextBase
 {
 public:
   explicit DuElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
 };
 
 DuElement::DuElement(IWORKXMLParserState &state)
   : CellContextBase(state)
 {
+}
+
+void DuElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::du | IWORKToken::NS_URI_SF :
+    getState().m_tableData->m_content = value;
+    getState().m_tableData->m_type = IWORK_CELL_TYPE_DURATION;
+    break;
+  default :
+    CellContextBase::attribute(name, value);
+  }
 }
 
 }
