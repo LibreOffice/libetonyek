@@ -127,6 +127,8 @@ void CellContextBase::emitCell(const bool covered)
   tableData->m_cellMove.reset();
   tableData->m_content.reset();
   tableData->m_formula.reset();
+  tableData->m_style.reset();
+  tableData->m_type = IWORK_CELL_TYPE_TEXT;
 }
 
 }
