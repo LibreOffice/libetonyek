@@ -191,6 +191,7 @@ enum
   r,
   rightIndent,
   rn,
+  rt,
   rows,
   row_label_formulas,
   s,

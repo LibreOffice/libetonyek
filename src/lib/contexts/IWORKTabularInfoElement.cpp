@@ -296,6 +296,84 @@ void DuElement::attribute(const int name, const char *const value)
 namespace
 {
 
+class SoElement : public IWORKXMLElementContextBase
+{
+public:
+  explicit SoElement(IWORKXMLParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+SoElement::SoElement(IWORKXMLParserState &state)
+  : IWORKXMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t SoElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::text_body | IWORKToken::NS_URI_SF :
+    return makeContext<IWORKTextBodyElement>(getState());
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
+class CtElement : public IWORKXMLElementContextBase
+{
+public:
+  explicit CtElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+CtElement::CtElement(IWORKXMLParserState &state)
+  : IWORKXMLElementContextBase(state)
+{
+}
+
+void CtElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::s | IWORKToken::NS_URI_SFA :
+    getState().m_tableData->m_content = value;
+    getState().m_tableData->m_type = IWORK_CELL_TYPE_TEXT;
+    break;
+  default :
+    break;
+  }
+}
+
+IWORKXMLContextPtr_t CtElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::so | IWORKToken::NS_URI_SF :
+    if (getState().m_tableData->m_content)
+    {
+      ETONYEK_DEBUG_MSG(("found a text cell with both simple and formatted content\n"));
+    }
+    return makeContext<SoElement>(getState());
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
 class RnElement : public IWORKXMLEmptyContextBase
 {
 public:
@@ -325,6 +403,36 @@ void RnElement::attribute(const int name, const char *const value)
 namespace
 {
 
+class RtElement : public IWORKXMLEmptyContextBase
+{
+public:
+  explicit RtElement(IWORKXMLParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+RtElement::RtElement(IWORKXMLParserState &state)
+  : IWORKXMLEmptyContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t RtElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::ct | IWORKToken::NS_URI_SF :
+    return makeContext<CtElement>(getState());
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
 class RElement : public IWORKXMLElementContextBase
 {
 public:
@@ -345,6 +453,9 @@ IWORKXMLContextPtr_t RElement::element(int name)
   {
   case IWORKToken::rn | IWORKToken::NS_URI_SF :
     return makeContext<RnElement>(getState());
+    break;
+  case IWORKToken::rt | IWORKToken::NS_URI_SF :
+    return makeContext<RtElement>(getState());
     break;
   }
 
@@ -532,84 +643,6 @@ void StElement::attribute(const int name, const char *const value)
   default :
     CellContextBase::attribute(name, value);
   }
-}
-
-}
-
-namespace
-{
-
-class SoElement : public IWORKXMLElementContextBase
-{
-public:
-  explicit SoElement(IWORKXMLParserState &state);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-};
-
-SoElement::SoElement(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
-{
-}
-
-IWORKXMLContextPtr_t SoElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::text_body | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKTextBodyElement>(getState());
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-}
-
-namespace
-{
-
-class CtElement : public IWORKXMLElementContextBase
-{
-public:
-  explicit CtElement(IWORKXMLParserState &state);
-
-private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-};
-
-CtElement::CtElement(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
-{
-}
-
-void CtElement::attribute(const int name, const char *const value)
-{
-  switch (name)
-  {
-  case IWORKToken::s | IWORKToken::NS_URI_SFA :
-    getState().m_tableData->m_content = value;
-    getState().m_tableData->m_type = IWORK_CELL_TYPE_TEXT;
-    break;
-  default :
-    break;
-  }
-}
-
-IWORKXMLContextPtr_t CtElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::so | IWORKToken::NS_URI_SF :
-    if (getState().m_tableData->m_content)
-    {
-      ETONYEK_DEBUG_MSG(("found a text cell with both simple and formatted content\n"));
-    }
-    return makeContext<SoElement>(getState());
-  }
-
-  return IWORKXMLContextPtr_t();
 }
 
 }
