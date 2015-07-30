@@ -100,6 +100,13 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStylePtr_t 
         props.insert("librevenge:name", style->getIdent());
     }
     break;
+  case IWORK_CELL_TYPE_BOOL:
+    if (value)
+    {
+      props.insert("librevenge:value", get(value).c_str());
+      props.insert("librevenge:value-type", "bool");
+    }
+    break;
   case IWORK_CELL_TYPE_TEXT :
   default:
     //TODO: librevenge:name ?
