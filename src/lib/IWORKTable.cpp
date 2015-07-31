@@ -13,6 +13,7 @@
 
 #include <glm/glm.hpp>
 
+#include "libetonyek_xml.h"
 #include "libetonyek_utils.h"
 #include "IWORKDocumentInterface.h"
 #include "IWORKProperties.h"
@@ -93,8 +94,11 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStylePtr_t 
       // const IWORKDurationFormat &format = style->get<SFTCellStylePropertyDurationFormat>();
       // props.insert("librevenge:format",format.m_format.c_str());
 
-      props.insert("librevenge:value", get(value).c_str());
+      const int seconds = int_cast(get(value).c_str());
       props.insert("librevenge:value-type", "time");
+      props.insert("librevenge:hours", seconds / 3600);
+      props.insert("librevenge:minutes", (seconds % 3600) / 60);
+      props.insert("librevenge:seconds", (seconds % 3600) % 60);
 
       if (style->getIdent())
         props.insert("librevenge:name", style->getIdent());
