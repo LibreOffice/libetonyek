@@ -9,6 +9,8 @@
 
 #include "IWORKTable.h"
 
+#include <ctime>
+
 #include <boost/numeric/conversion/cast.hpp>
 
 #include <glm/glm.hpp>
@@ -85,6 +87,18 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStylePtr_t 
       if (style->getIdent())
         props.insert("librevenge:name", style->getIdent());
       props.insert("librevenge:value-type", "date");
+
+      const double seconds = double_cast(get(value).c_str());
+      const std::time_t t = ETONYEK_EPOCH_BEGIN + seconds;
+      struct tm *const time = gmtime(&t);
+
+      props.insert("librevenge:day", time->tm_mday);
+      props.insert("librevenge:month", time->tm_mon + 1);
+      props.insert("librevenge:year", time->tm_year + 1900);
+      props.insert("librevenge:hours", time->tm_hour);
+      props.insert("librevenge:minutes", time->tm_min);
+      props.insert("librevenge:seconds", time->tm_sec);
+
     }
     break;
   case IWORK_CELL_TYPE_DURATION :
