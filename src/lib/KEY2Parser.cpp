@@ -1256,14 +1256,27 @@ class DiscardContext : public KEY2XMLContextBase<IWORKDiscardContext>
 {
 public:
   explicit DiscardContext(KEY2ParserState &state);
+  ~DiscardContext();
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
+
+private:
+  KEY2ParserState &m_state;
+  IWORKStylesheetPtr_t m_savedStylesheet;
 };
 
 DiscardContext::DiscardContext(KEY2ParserState &state)
   : KEY2XMLContextBase<IWORKDiscardContext>(state)
+  , m_state(state)
+  , m_savedStylesheet()
 {
+}
+
+DiscardContext::~DiscardContext()
+{
+  if (bool(m_savedStylesheet))
+    m_state.m_stylesheet = m_savedStylesheet;
 }
 
 IWORKXMLContextPtr_t DiscardContext::element(const int name)
@@ -1273,6 +1286,12 @@ IWORKXMLContextPtr_t DiscardContext::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style :
     return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_placeholderStyles);
   case KEY2Token::NS_URI_KEY | KEY2Token::stylesheet :
+    if (!m_savedStylesheet)
+    {
+      // this can only happen in a broken document
+      m_savedStylesheet = m_state.m_stylesheet;
+      m_state.m_stylesheet.reset();
+    }
     return makeContext<StylesheetElement>(getState());
   }
 
