@@ -83,7 +83,7 @@ void IWORKStyleContext::endOfElement()
   const IWORKStylePtr_t style(new IWORKStyle(m_props, m_ident, m_parentIdent));
   if (getId() && bool(m_styleMap))
     (*m_styleMap)[get(getId())] = style;
-  if (m_ident && !m_nested)
+  if (m_ident && !m_nested && getState().m_stylesheet)
     getState().m_stylesheet->m_styles[get(m_ident)] = style;
   if (isCollector())
     getCollector().collectStyle(style);
