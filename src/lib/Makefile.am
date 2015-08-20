@@ -261,6 +261,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKSizeElement.h \
 	contexts/IWORKSpanElement.cpp \
 	contexts/IWORKSpanElement.h \
+	contexts/IWORKStringDequeElement.cpp \
+	contexts/IWORKStringDequeElement.h \
 	contexts/IWORKStringElement.cpp \
 	contexts/IWORKStringElement.h \
 	contexts/IWORKStyleContext.cpp \

@@ -11,6 +11,7 @@
 
 #include "IWORKGeometryElement.h"
 #include "IWORKNumberElement.h"
+#include "IWORKStringDequeElement.h"
 #include "IWORKStringElement.h"
 #include "IWORKToken.h"
 
@@ -93,8 +94,11 @@ ChartRowColumnNamesElement::ChartRowColumnNamesElement(IWORKXMLParserState &stat
 {
 }
 
-IWORKXMLContextPtr_t ChartRowColumnNamesElement::element(const int /*name*/)
+IWORKXMLContextPtr_t ChartRowColumnNamesElement::element(const int name)
 {
+  if((IWORKToken::string | IWORKToken::NS_URI_SF) == name)
+    return makeContext<IWORKStringDequeElement>(getState(), m_rowColumnNames);
+
   return IWORKXMLContextPtr_t();
 }
 
