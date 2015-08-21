@@ -19,6 +19,7 @@
 #include <glm/glm.hpp>
 
 #include "libetonyek_utils.h"
+#include "IWORKChart.h"
 #include "IWORKPath_fwd.h"
 #include "IWORKShape.h"
 #include "IWORKStyle.h"
@@ -88,6 +89,7 @@ public:
   void collectCoveredTableCell(unsigned row, unsigned column);
   void collectTableRow();
   void collectTable();
+  void collectChart(const IWORKChart &chart);
   void setTableNameMap(const IWORKTableNameMapPtr_t &tableNameMap);
 
   void collectMetadata(const IWORKMetadata &metadata);
@@ -152,6 +154,7 @@ protected:
 
   std::stack<IWORKTextPtr_t> m_textStack;
   IWORKTable m_currentTable;
+  IWORKChart m_currentChart;
 
   IWORKHeaderFooterMap_t m_headers;
   IWORKHeaderFooterMap_t m_footers;

@@ -22,6 +22,10 @@ IWORKChart::IWORKChart()
 {
 }
 
+void IWORKChart::draw(const librevenge::RVNGPropertyList &/*chartProps*/, IWORKOutputElements &/*elements*/)
+{
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
