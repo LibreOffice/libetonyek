@@ -41,6 +41,8 @@ public:
   bool empty() const;
 
   void addCloseComment();
+  void addCloseChart();
+  void addCloseChartTextObject();
   void addCloseEndnote();
   void addCloseFooter();
   void addCloseFootnote();
@@ -69,6 +71,8 @@ public:
   void addInsertTab();
   void addInsertText(const librevenge::RVNGString &text);
   void addOpenComment(const librevenge::RVNGPropertyList &propList);
+  void addOpenChart(const librevenge::RVNGPropertyList &propList);
+  void addOpenChartTextObject(const librevenge::RVNGPropertyList &propList);
   void addOpenEndnote(const librevenge::RVNGPropertyList &propList);
   void addOpenFormulaCell(const librevenge::RVNGPropertyList &propList, const boost::optional<IWORKFormula> &formula, const IWORKTableNameMapPtr_t &tableNameMap);
   void addOpenFooter(const librevenge::RVNGPropertyList &propList);

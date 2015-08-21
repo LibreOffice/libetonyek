@@ -22,8 +22,15 @@ IWORKChart::IWORKChart()
 {
 }
 
-void IWORKChart::draw(const librevenge::RVNGPropertyList &/*chartProps*/, IWORKOutputElements &/*elements*/)
+void IWORKChart::draw(const librevenge::RVNGPropertyList &chartProps, IWORKOutputElements &elements)
 {
+  elements.addOpenChart(chartProps);
+
+  librevenge::RVNGPropertyList chartTextProps;
+  elements.addOpenChartTextObject(chartTextProps);
+  elements.addCloseChartTextObject();
+
+  elements.addCloseChart();
 }
 
 }

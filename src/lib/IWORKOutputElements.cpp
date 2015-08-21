@@ -42,6 +42,22 @@ public:
   void write(IWORKDocumentInterface *iface) const;
 };
 
+class CloseChartElement : public IWORKOutputElement
+{
+public:
+  CloseChartElement() {}
+  ~CloseChartElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+};
+
+class CloseChartTextObjectElement : public IWORKOutputElement
+{
+public:
+  CloseChartTextObjectElement() {}
+  ~CloseChartTextObjectElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+};
+
 class CloseEndnoteElement : public IWORKOutputElement
 {
 public:
@@ -287,6 +303,28 @@ private:
   librevenge::RVNGPropertyList m_propList;
 };
 
+class OpenChartElement : public IWORKOutputElement
+{
+public:
+  OpenChartElement(const librevenge::RVNGPropertyList &propList) :
+    m_propList(propList) {}
+  ~OpenChartElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
+class OpenChartTextObjectElement : public IWORKOutputElement
+{
+public:
+  OpenChartTextObjectElement(const librevenge::RVNGPropertyList &propList) :
+    m_propList(propList) {}
+  ~OpenChartTextObjectElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
 class OpenEndnoteElement : public IWORKOutputElement
 {
 public:
@@ -517,6 +555,18 @@ void CloseCommentElement::write(IWORKDocumentInterface *iface) const
     iface->closeComment();
 }
 
+void CloseChartElement::write(IWORKDocumentInterface *iface) const
+{
+  if (iface)
+    iface->closeChart();
+}
+
+void CloseChartTextObjectElement::write(IWORKDocumentInterface *iface) const
+{
+  if (iface)
+    iface->closeChartTextObject();
+}
+
 void CloseEndnoteElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
@@ -685,6 +735,18 @@ void OpenCommentElement::write(IWORKDocumentInterface *iface) const
     iface->openComment(m_propList);
 }
 
+void OpenChartElement::write(IWORKDocumentInterface *iface) const
+{
+  if (iface)
+    iface->openChart(m_propList);
+}
+
+void OpenChartTextObjectElement::write(IWORKDocumentInterface *iface) const
+{
+  if (iface)
+    iface->openChartTextObject(m_propList);
+}
+
 void OpenEndnoteElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
@@ -848,6 +910,16 @@ void IWORKOutputElements::addCloseComment()
   m_elements.push_back(make_shared<CloseCommentElement>());
 }
 
+void IWORKOutputElements::addCloseChart()
+{
+  m_elements.push_back(make_shared<CloseChartElement>());
+}
+
+void IWORKOutputElements::addCloseChartTextObject()
+{
+  m_elements.push_back(make_shared<CloseChartTextObjectElement>());
+}
+
 void IWORKOutputElements::addCloseEndnote()
 {
   m_elements.push_back(make_shared<CloseEndnoteElement>());
@@ -986,6 +1058,16 @@ void IWORKOutputElements::addInsertText(const librevenge::RVNGString &text)
 void IWORKOutputElements::addOpenComment(const librevenge::RVNGPropertyList &propList)
 {
   m_elements.push_back(make_shared<OpenCommentElement>(propList));
+}
+
+void IWORKOutputElements::addOpenChart(const librevenge::RVNGPropertyList &propList)
+{
+  m_elements.push_back(make_shared<OpenChartElement>(propList));
+}
+
+void IWORKOutputElements::addOpenChartTextObject(const librevenge::RVNGPropertyList &propList)
+{
+  m_elements.push_back(make_shared<OpenChartTextObjectElement>(propList));
 }
 
 void IWORKOutputElements::addOpenEndnote(const librevenge::RVNGPropertyList &propList)
