@@ -189,6 +189,7 @@ IWORKCollector::IWORKCollector(IWORKDocumentInterface *const document)
   , m_newStyles()
   , m_textStack()
   , m_currentTable()
+  , m_currentChart()
   , m_headers()
   , m_footers()
   , m_currentPath()
@@ -436,6 +437,13 @@ void IWORKCollector::collectHeader(const std::string &name)
 void IWORKCollector::collectFooter(const std::string &name)
 {
   collectHeaderFooter(name, m_footers);
+}
+
+void IWORKCollector::collectChart(const IWORKChart &chart)
+{
+  m_currentChart = chart;
+  librevenge::RVNGPropertyList props;
+  m_currentChart.draw(props, m_outputManager.getCurrent());
 }
 
 void IWORKCollector::startDocument()

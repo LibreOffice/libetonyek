@@ -15,6 +15,8 @@
 
 #include <boost/optional.hpp>
 
+#include "IWORKOutputElements.h"
+
 namespace libetonyek
 {
 
@@ -30,6 +32,8 @@ public:
   boost::optional<std::string> m_chartName;
   boost::optional<std::string> m_valueTitle;
   boost::optional<std::string> m_categoryTitle;
+
+  void draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements);
 
 };
 
