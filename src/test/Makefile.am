@@ -28,6 +28,7 @@ test_SOURCES = \
 	IWORKStyleStackTest.cpp \
 	IWORKTokenizerBaseTest.cpp \
 	IWORKTransformationTest.cpp \
+	LibetonyekUtilsTest.cpp \
 	TestProperties.cpp \
 	TestProperties.h \
 	test.cpp
