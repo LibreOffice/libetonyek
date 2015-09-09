@@ -42,7 +42,7 @@ IWORKMemoryStream::IWORKMemoryStream(const RVNGInputStreamPtr_t &input, const un
   read(input, length);
 }
 
-IWORKMemoryStream::IWORKMemoryStream(std::vector<unsigned char> &data)
+IWORKMemoryStream::IWORKMemoryStream(const std::vector<unsigned char> &data)
   : m_data(0)
   , m_length(data.size())
   , m_pos(0)

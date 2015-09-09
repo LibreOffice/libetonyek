@@ -147,6 +147,42 @@ int64_t readSVar(const RVNGInputStreamPtr_t &input)
   return mod ? -int64_t(val) : int64_t(val);
 }
 
+unsigned long getLength(const RVNGInputStreamPtr_t &input)
+{
+  if (!input)
+    throw EndOfStreamException();
+
+  const long orig = input->tell();
+  long end = 0;
+
+  if (input->seek(0, librevenge::RVNG_SEEK_END) == 0)
+  {
+    end = input->tell();
+  }
+  else
+  {
+    // RVNG_SEEK_END does not work. Use the harder way.
+    if (input->seek(0, librevenge::RVNG_SEEK_SET) != 0)
+      throw EndOfStreamException();
+    while (!input->isEnd())
+    {
+      readU8(input);
+      ++end;
+    }
+  }
+  assert(end >= 0);
+
+  if (input->seek(orig, librevenge::RVNG_SEEK_SET) != 0)
+    throw EndOfStreamException();
+
+  return static_cast<unsigned long>(end);
+}
+
+unsigned long getRemainingLength(const RVNGInputStreamPtr_t &input)
+{
+  return getLength(input) - static_cast<unsigned long>(input->tell());
+}
+
 bool approxEqual(const double x, const double y, const double eps)
 {
   return std::fabs(x - y) < eps;

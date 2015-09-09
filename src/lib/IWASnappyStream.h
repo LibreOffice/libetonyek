@@ -7,36 +7,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef IWORKMEMORYSTREAM_H_INCLUDED
-#define IWORKMEMORYSTREAM_H_INCLUDED
+#ifndef IWASNAPPYSTREAM_H_INCLUDED
+#define IWASNAPPYSTREAM_H_INCLUDED
 
-#include <vector>
+#include <librevenge-stream/librevenge-stream.h>
 
 #include "libetonyek_utils.h"
 
 namespace libetonyek
 {
 
-class IWORKMemoryStream : public librevenge::RVNGInputStream
+class IWASnappyStream : public librevenge::RVNGInputStream
 {
-  // -Weffc++
-  IWORKMemoryStream(const IWORKMemoryStream &other);
-  IWORKMemoryStream &operator=(const IWORKMemoryStream &other);
-
 public:
-  explicit IWORKMemoryStream(const RVNGInputStreamPtr_t &input);
-  IWORKMemoryStream(const RVNGInputStreamPtr_t &input, unsigned length);
-  explicit IWORKMemoryStream(const std::vector<unsigned char> &data);
-  IWORKMemoryStream(const unsigned char *data, unsigned length);
-  ~IWORKMemoryStream();
+  IWASnappyStream(const RVNGInputStreamPtr_t &stream);
+  ~IWASnappyStream();
 
   bool isStructured();
   unsigned subStreamCount();
   const char *subStreamName(unsigned id);
-  bool existsSubStream(const char *)
-  {
-    return false;
-  }
+  bool existsSubStream(const char *name);
+
   librevenge::RVNGInputStream *getSubStreamByName(const char *name);
   librevenge::RVNGInputStream *getSubStreamById(unsigned id);
 
@@ -46,17 +37,11 @@ public:
   bool isEnd();
 
 private:
-  void assign(const unsigned char *data, unsigned length);
-  void read(const RVNGInputStreamPtr_t &input, unsigned length);
-
-private:
-  const unsigned char *m_data;
-  long m_length;
-  long m_pos;
+  RVNGInputStreamPtr_t m_stream;
 };
 
 }
 
-#endif // IWORKMEMORYSTREAM_H_INCLUDED
+#endif // IWASNAPPYSTREAM_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

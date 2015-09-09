@@ -33,6 +33,8 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
 	EtonyekDocument.cpp
 
 libetonyek_internal_la_SOURCES = \
+	IWASnappyStream.cpp \
+	IWASnappyStream.h \
 	IWORKChainedTokenizer.cpp \
 	IWORKChainedTokenizer.h \
 	IWORKChart.cpp \
