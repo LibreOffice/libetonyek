@@ -19,6 +19,7 @@ test_LDADD = \
 	$(XML_LIBS)
 
 test_SOURCES = \
+	IWASnappyStreamTest.cpp \
 	IWORKChainedTokenizerTest.cpp \
 	IWORKFormulaTest.cpp \
 	IWORKPathTest.cpp \
