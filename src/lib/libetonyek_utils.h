@@ -106,6 +106,9 @@ uint16_t readU16(const RVNGInputStreamPtr_t &input, bool bigEndian=false);
 uint32_t readU32(const RVNGInputStreamPtr_t &input, bool bigEndian=false);
 uint64_t readU64(const RVNGInputStreamPtr_t &input, bool bigEndian=false);
 
+uint64_t readUVar(const RVNGInputStreamPtr_t &input);
+int64_t readSVar(const RVNGInputStreamPtr_t &input);
+
 /** Test two floating point numbers for equality.
   *
   * @arg[in] x first number

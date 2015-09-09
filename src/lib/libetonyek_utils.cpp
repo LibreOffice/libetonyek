@@ -8,10 +8,19 @@
  */
 
 #include "libetonyek_utils.h"
+
+#include <cmath>
+#include <limits>
+#include <stdexcept>
+
 #include "IWORKTypes.h"
 
 namespace libetonyek
 {
+
+using std::numeric_limits;
+using std::vector;
+using std::range_error;
 
 namespace
 {
@@ -82,6 +91,60 @@ uint64_t readU64(const RVNGInputStreamPtr_t &input, bool bigEndian)
     return (uint64_t)p[0]|((uint64_t)p[1]<<8)|((uint64_t)p[2]<<16)|((uint64_t)p[3]<<24)|((uint64_t)p[4]<<32)|((uint64_t)p[5]<<40)|((uint64_t)p[6]<<48)|((uint64_t)p[7]<<56);
   }
   throw EndOfStreamException();
+}
+
+uint64_t readUVar(const RVNGInputStreamPtr_t &input)
+{
+  if (!input || input->isEnd())
+    throw EndOfStreamException();
+
+  vector<unsigned char> bytes;
+  bytes.reserve(8);
+
+  bool cont = true;
+  while (!input->isEnd() && cont)
+  {
+    const unsigned char c = readU8(input);
+    bytes.push_back(c & ~0x80);
+    cont = c & 0x80;
+  }
+
+  if (cont && input->isEnd())
+    throw EndOfStreamException();
+
+  uint64_t value = 0;
+
+  for (vector<unsigned char>::const_reverse_iterator it = bytes.rbegin(); it != bytes.rend(); ++it)
+  {
+    if (numeric_limits<uint64_t>::max() >> 7 < value) // overflow
+      throw range_error("Number too big");
+    if (numeric_limits<uint64_t>::max() - (value << 7) < *it) // overflow
+      throw range_error("Number too big");
+    value = (value << 7) + *it;
+  }
+
+  return value;
+}
+
+int64_t readSVar(const RVNGInputStreamPtr_t &input)
+{
+  const uint64_t encoded = readUVar(input);
+  const unsigned mod = encoded % 2;
+
+  const uint64_t val = (encoded / 2 + mod);
+
+  // sanity check
+  if (!mod && (val > uint64_t(numeric_limits<int64_t>::max())))
+    throw range_error("Number too big");
+  assert(-numeric_limits<int64_t>::max() == numeric_limits<int64_t>::min() + 1);
+  if (mod && (val > 0) && (val - 1 > uint64_t(std::abs(numeric_limits<int64_t>::min() + 1))))
+    throw range_error("Number too small");
+
+  // special handling, as the abs. value of minimal int64_t number doesn't fit into int64_t
+  if (mod && (val > 0) && (val - 1 == uint64_t(std::abs(numeric_limits<int64_t>::min() + 1))))
+    return numeric_limits<int64_t>::min();
+
+  return mod ? -int64_t(val) : int64_t(val);
 }
 
 bool approxEqual(const double x, const double y, const double eps)
