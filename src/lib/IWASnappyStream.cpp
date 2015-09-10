@@ -212,6 +212,11 @@ const char *IWASnappyStream::subStreamName(unsigned)
   return 0;
 }
 
+bool IWASnappyStream::existsSubStream(const char *)
+{
+  return false;
+}
+
 librevenge::RVNGInputStream *IWASnappyStream::getSubStreamByName(const char *)
 {
   return 0;
