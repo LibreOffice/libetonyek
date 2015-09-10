@@ -308,9 +308,9 @@ IWORKText::IWORKText(const bool discardEmptyContent)
   , m_sectionOpened(false)
   , m_currentParaStyle()
   , m_paraOpened(false)
-    // FIXME: This will work fine when encountering real empty text block, i.e., with a single
-    // empty paragraph. But it will cause a loss of a leading empty paragraph otherwise. It is
-    // good enough for now, though.
+  // FIXME: This will work fine when encountering real empty text block, i.e., with a single
+  // empty paragraph. But it will cause a loss of a leading empty paragraph otherwise. It is
+  // good enough for now, though.
   , m_ignoreEmptyPara(discardEmptyContent)
   , m_currentSpanStyle()
   , m_spanOpened(false)
