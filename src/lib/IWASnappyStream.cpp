@@ -74,7 +74,9 @@ unsigned long readVarlen(const RVNGInputStreamPtr_t &input)
 
 void appendRef(Data &data, const unsigned offset, const unsigned length)
 {
-  if (length > data.m_data.size() - data.m_blockStart) // we don't have enough uncompressed data in the current block
+  if (offset == 0)
+    throw CompressionException();
+  if (offset > data.m_data.size() - data.m_blockStart) // we don't have enough uncompressed data in the current block
     throw CompressionException();
 
   data.m_data.resize(data.m_data.size() + length);
@@ -117,12 +119,11 @@ bool uncompressBlock(const RVNGInputStreamPtr_t &input, const unsigned long leng
       unsigned runLength = 0;
       if ((c & 0xf0) == 0xf0)
       {
-        const unsigned count = (c >> 2) & 0x3;
-        if (count >= 4)
-        {
-          ETONYEK_DEBUG_MSG(("uncompressBlock: Invalid number of count bytes: %u\n", count));
-        }
-        for (unsigned shift = 8; shift <= 8 * count; shift += 8)
+        const unsigned count = ((c >> 2) & 0x3) + 1;
+        assert(count > 0);
+        assert(count <= 4);
+        runLength = unsigned(readU8(input)) + 1;
+        for (unsigned shift = 8; shift < 8 * count; shift += 8)
         {
           const unsigned b = readU8(input);
           runLength += b << shift;
