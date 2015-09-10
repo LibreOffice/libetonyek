@@ -61,6 +61,14 @@ enum CheckType
   CHECK_TYPE_ANY = CHECK_TYPE_KEYNOTE | CHECK_TYPE_NUMBERS | CHECK_TYPE_PAGES
 };
 
+enum Format
+{
+  FORMAT_UNKNOWN,
+  FORMAT_XML1,
+  FORMAT_XML2,
+  FORMAT_BINARY
+};
+
 struct DetectionInfo
 {
   DetectionInfo();
@@ -69,7 +77,7 @@ struct DetectionInfo
   RVNGInputStreamPtr_t m_package;
   EtonyekDocument::Confidence m_confidence;
   EtonyekDocument::Type m_type;
-  unsigned m_version;
+  Format m_format;
 };
 
 DetectionInfo::DetectionInfo()
@@ -77,42 +85,22 @@ DetectionInfo::DetectionInfo()
   , m_package()
   , m_confidence(EtonyekDocument::CONFIDENCE_NONE)
   , m_type(EtonyekDocument::TYPE_UNKNOWN)
-  , m_version(0)
+  , m_format(FORMAT_UNKNOWN)
 {
 }
 
-typedef bool (*ProbeXMLFun_t)(const RVNGInputStreamPtr_t &, unsigned &, xmlTextReaderPtr);
+typedef bool (*ProbeXMLFun_t)(const RVNGInputStreamPtr_t &, Format &, xmlTextReaderPtr);
 
-
-std::string queryAttribute(xmlTextReaderPtr reader, const int name, const int ns, const IWORKTokenizer &tokenizer)
-{
-  if (xmlTextReaderHasAttributes(reader))
-  {
-    int ret = xmlTextReaderMoveToFirstAttribute(reader);
-    while (1 == ret)
-    {
-      const int id = tokenizer.getQualifiedId(char_cast(xmlTextReaderConstLocalName(reader)), char_cast(xmlTextReaderConstNamespaceUri(reader)));
-      if ((ns | name) == id)
-        return char_cast(xmlTextReaderConstValue(reader));
-
-      ret = xmlTextReaderMoveToNextAttribute(reader);
-    }
-  }
-
-  return "";
-}
-
-
-bool probeKeynote1XML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlTextReaderPtr reader)
+bool probeKeynote1XML(const RVNGInputStreamPtr_t &input, Format &format, xmlTextReaderPtr reader)
 {
   // TODO: implement me
   (void) input;
-  (void) version;
+  (void) format;
   (void) reader;
   return false;
 }
 
-bool probeKeynote2XML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlTextReaderPtr reader)
+bool probeKeynote2XML(const RVNGInputStreamPtr_t &input, Format &format, xmlTextReaderPtr reader)
 {
   if (input->isEnd())
     return false;
@@ -121,42 +109,29 @@ bool probeKeynote2XML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlT
   assert(reader);
 
   const int id = tokenizer.getQualifiedId(char_cast(xmlTextReaderConstLocalName(reader)), char_cast(xmlTextReaderConstNamespaceUri(reader)));
-
   if ((KEY2Token::NS_URI_KEY | KEY2Token::presentation) == id)
   {
-    const std::string v = queryAttribute(reader, KEY2Token::version, KEY2Token::NS_URI_KEY, tokenizer);
-
-    switch (tokenizer.getId(v.c_str()))
-    {
-    case KEY2Token::VERSION_STR_2 :
-      version = 2;
-      return true;
-    case KEY2Token::VERSION_STR_3 :
-      version = 3;
-      return true;
-    case KEY2Token::VERSION_STR_4 :
-      version = 4;
-      return true;
-    case KEY2Token::VERSION_STR_5 :
-      version = 5;
-      return true;
-    }
+    format = FORMAT_XML2;
+    return true;
   }
 
   return false;
 }
 
-bool probeKeynoteXML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlTextReaderPtr reader)
+bool probeKeynoteXML(const RVNGInputStreamPtr_t &input, Format &format, xmlTextReaderPtr reader)
 {
-  if (probeKeynote2XML(input, version, reader))
+  if (probeKeynote2XML(input, format, reader))
     return true;
 
   input->seek(0, RVNG_SEEK_SET);
 
-  return probeKeynote1XML(input, version, reader);
+  if (probeKeynote1XML(input, format, reader))
+    return true;
+
+  return false;
 }
 
-bool probeNumbersXML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlTextReaderPtr reader)
+bool probeNumbersXML(const RVNGInputStreamPtr_t &input, Format &format, xmlTextReaderPtr reader)
 {
   if (input->isEnd())
     return false;
@@ -165,24 +140,16 @@ bool probeNumbersXML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlTe
   assert(reader);
 
   const int id = tokenizer.getQualifiedId(char_cast(xmlTextReaderConstLocalName(reader)), char_cast(xmlTextReaderConstNamespaceUri(reader)));
-
   if ((NUM1Token::NS_URI_LS | NUM1Token::document) == id)
   {
-    const std::string v = queryAttribute(reader, NUM1Token::version, NUM1Token::NS_URI_LS, tokenizer);
-
-    switch (tokenizer.getId(v.c_str()))
-    {
-    case NUM1Token::VERSION_STR_2 :
-      version = 2;
-      break;
-    }
+    format = FORMAT_XML2;
     return true;
   }
 
   return false;
 }
 
-bool probePagesXML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlTextReaderPtr reader)
+bool probePagesXML(const RVNGInputStreamPtr_t &input, Format &format, xmlTextReaderPtr reader)
 {
   if (input->isEnd())
     return false;
@@ -191,17 +158,9 @@ bool probePagesXML(const RVNGInputStreamPtr_t &input, unsigned &version, xmlText
   assert(reader);
 
   const int id = tokenizer.getQualifiedId(char_cast(xmlTextReaderConstLocalName(reader)), char_cast(xmlTextReaderConstNamespaceUri(reader)));
-
   if ((PAG1Token::NS_URI_SL | PAG1Token::document) == id)
   {
-    const std::string v = queryAttribute(reader, PAG1Token::version, PAG1Token::NS_URI_SL, tokenizer);
-
-    switch (tokenizer.getId(v.c_str()))
-    {
-    case PAG1Token::VERSION_STR_4 :
-      version = 4;
-      break;
-    }
+    format = FORMAT_XML2;
     return true;
   }
 
@@ -224,7 +183,7 @@ bool probeXMLImpl(const RVNGInputStreamPtr_t &input, const ProbeXMLFun_t probe, 
   if (1 != ret)
     return false;
 
-  if (probe(input, info.m_version, reader.get()))
+  if (probe(input, info.m_format, reader.get()))
   {
     info.m_type = type;
     return true;
@@ -453,14 +412,14 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   assert(TYPE_UNKNOWN != info.m_type);
   assert(CONFIDENCE_NONE != info.m_confidence);
   assert(bool(info.m_input));
-  assert(0 != info.m_version);
+  assert(FORMAT_UNKNOWN != info.m_format);
 
   info.m_input->seek(0, librevenge::RVNG_SEEK_SET);
 
   KEYDictionary dict;
   IWORKPresentationRedirector redirector(generator);
   KEYCollector collector(&redirector);
-  const shared_ptr<IWORKParser> parser = makeKeynoteParser(info.m_version, info.m_input, info.m_package, collector, dict);
+  const shared_ptr<IWORKParser> parser = makeKeynoteParser(info.m_format, info.m_input, info.m_package, collector, dict);
   return parser->parse();
 }
 catch (...)
@@ -481,7 +440,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   assert(TYPE_UNKNOWN != info.m_type);
   assert(CONFIDENCE_NONE != info.m_confidence);
   assert(bool(info.m_input));
-  assert(0 != info.m_version);
+  assert(FORMAT_UNKNOWN != info.m_format);
 
   info.m_input->seek(0, librevenge::RVNG_SEEK_SET);
 
@@ -509,7 +468,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   assert(TYPE_UNKNOWN != info.m_type);
   assert(CONFIDENCE_NONE != info.m_confidence);
   assert(bool(info.m_input));
-  assert(0 != info.m_version);
+  assert(FORMAT_UNKNOWN != info.m_format);
 
   info.m_input->seek(0, librevenge::RVNG_SEEK_SET);
 
