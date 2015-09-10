@@ -65,19 +65,19 @@ struct DetectionInfo
 {
   DetectionInfo();
 
-  RVNGInputStreamPtr_t input;
-  RVNGInputStreamPtr_t package;
-  EtonyekDocument::Confidence confidence;
-  EtonyekDocument::Type type;
-  unsigned version;
+  RVNGInputStreamPtr_t m_input;
+  RVNGInputStreamPtr_t m_package;
+  EtonyekDocument::Confidence m_confidence;
+  EtonyekDocument::Type m_type;
+  unsigned m_version;
 };
 
 DetectionInfo::DetectionInfo()
-  : input()
-  , package()
-  , confidence(EtonyekDocument::CONFIDENCE_NONE)
-  , type(EtonyekDocument::TYPE_UNKNOWN)
-  , version(0)
+  : m_input()
+  , m_package()
+  , m_confidence(EtonyekDocument::CONFIDENCE_NONE)
+  , m_type(EtonyekDocument::TYPE_UNKNOWN)
+  , m_version(0)
 {
 }
 
@@ -224,9 +224,9 @@ bool probeXMLImpl(const RVNGInputStreamPtr_t &input, const ProbeXMLFun_t probe, 
   if (1 != ret)
     return false;
 
-  if (probe(input, info.version, reader.get()))
+  if (probe(input, info.m_version, reader.get()))
   {
-    info.type = type;
+    info.m_type = type;
     return true;
   }
 
@@ -239,12 +239,12 @@ bool probeXML(const ProbeXMLFun_t probe, const EtonyekDocument::Type type, tribo
   {
     try
     {
-      const RVNGInputStreamPtr_t uncompressed(new IWORKZlibStream(info.input));
+      const RVNGInputStreamPtr_t uncompressed(new IWORKZlibStream(info.m_input));
       isGzipped = true;
 
       if (probeXMLImpl(uncompressed, probe, type, info))
       {
-        info.input = uncompressed;
+        info.m_input = uncompressed;
         return true;
       }
       else
@@ -260,24 +260,24 @@ bool probeXML(const ProbeXMLFun_t probe, const EtonyekDocument::Type type, tribo
       isGzipped = false;
     }
 
-    info.input->seek(0, RVNG_SEEK_SET);
+    info.m_input->seek(0, RVNG_SEEK_SET);
   }
 
   assert(isGzipped == false);
 
-  return probeXMLImpl(info.input, probe, type, info);
+  return probeXMLImpl(info.m_input, probe, type, info);
 }
 
 bool detect(const RVNGInputStreamPtr_t &input, unsigned checkTypes, DetectionInfo &info)
 {
-  info.confidence = EtonyekDocument::CONFIDENCE_SUPPORTED_PART;
+  info.m_confidence = EtonyekDocument::CONFIDENCE_SUPPORTED_PART;
   bool isXML = true;
   tribool isGzipped = indeterminate;
   tribool isKeynote1 = indeterminate;
 
   if (input->isStructured())
   {
-    info.package = input;
+    info.m_package = input;
 
     // check which format it might be
     if (CHECK_TYPE_KEYNOTE & checkTypes)
@@ -287,28 +287,28 @@ bool detect(const RVNGInputStreamPtr_t &input, unsigned checkTypes, DetectionInf
         checkTypes = CHECK_TYPE_KEYNOTE;
         isGzipped = false;
         isKeynote1 = false;
-        info.input.reset(input->getSubStreamByName("index.apxl"));
+        info.m_input.reset(input->getSubStreamByName("index.apxl"));
       }
       else if (input->existsSubStream("index.apxl.gz"))
       {
         checkTypes = CHECK_TYPE_KEYNOTE;
         isGzipped = true;
         isKeynote1 = false;
-        info.input.reset(input->getSubStreamByName("index.apxl.gz"));
+        info.m_input.reset(input->getSubStreamByName("index.apxl.gz"));
       }
       else if (input->existsSubStream("presentation.apxl"))
       {
         checkTypes = CHECK_TYPE_KEYNOTE;
         isGzipped = false;
         isKeynote1 = true;
-        info.input.reset(input->getSubStreamByName("presentation.apxl"));
+        info.m_input.reset(input->getSubStreamByName("presentation.apxl"));
       }
       else if (input->existsSubStream("presentation.apxl.gz"))
       {
         checkTypes = CHECK_TYPE_KEYNOTE;
         isGzipped = true;
         isKeynote1 = true;
-        info.input.reset(input->getSubStreamByName("presentation.apxl.gz"));
+        info.m_input.reset(input->getSubStreamByName("presentation.apxl.gz"));
       }
     }
 
@@ -318,47 +318,47 @@ bool detect(const RVNGInputStreamPtr_t &input, unsigned checkTypes, DetectionInf
       {
         checkTypes &= (CHECK_TYPE_NUMBERS | CHECK_TYPE_PAGES);
         isGzipped = false;
-        info.input.reset(input->getSubStreamByName("index.xml"));
+        info.m_input.reset(input->getSubStreamByName("index.xml"));
       }
       else if (input->existsSubStream("index.xml.gz"))
       {
         checkTypes &= (CHECK_TYPE_NUMBERS | CHECK_TYPE_PAGES);
         isGzipped = false;
-        info.input.reset(input->getSubStreamByName("index.xml.gz"));
+        info.m_input.reset(input->getSubStreamByName("index.xml.gz"));
       }
     }
 
-    if (!info.input && (CHECK_TYPE_ANY & checkTypes))
+    if (!info.m_input && (CHECK_TYPE_ANY & checkTypes))
     {
       if (input->existsSubStream("Index.zip"))
       {
         isXML = false;
-        info.input.reset(input->getSubStreamByName("Index.zip"));
+        info.m_input.reset(input->getSubStreamByName("Index.zip"));
       }
     }
 
-    if (!info.input)
+    if (!info.m_input)
     {
       // nothing detected
       // TODO: this might also be Index.zip...
       return EtonyekDocument::CONFIDENCE_NONE;
     }
 
-    info.confidence = EtonyekDocument::CONFIDENCE_EXCELLENT; // this is either a valid package of a false positive
+    info.m_confidence = EtonyekDocument::CONFIDENCE_EXCELLENT; // this is either a valid package of a false positive
   }
   else
   {
-    info.input = input;
+    info.m_input = input;
   }
 
-  assert(bool(info.input));
+  assert(bool(info.m_input));
 
   if (isXML)
   {
     assert(CHECK_TYPE_ANY & checkTypes);
-    assert(!info.input->isStructured());
+    assert(!info.m_input->isStructured());
 
-    info.input->seek(0, RVNG_SEEK_SET);
+    info.m_input->seek(0, RVNG_SEEK_SET);
 
     if (CHECK_TYPE_KEYNOTE & checkTypes)
     {
@@ -366,7 +366,7 @@ bool detect(const RVNGInputStreamPtr_t &input, unsigned checkTypes, DetectionInf
       if (probeXML(probe, EtonyekDocument::TYPE_KEYNOTE, isGzipped, info))
         return true;
 
-      info.input->seek(0, RVNG_SEEK_SET);
+      info.m_input->seek(0, RVNG_SEEK_SET);
     }
 
     if (CHECK_TYPE_NUMBERS & checkTypes)
@@ -374,7 +374,7 @@ bool detect(const RVNGInputStreamPtr_t &input, unsigned checkTypes, DetectionInf
       if (probeXML(probeNumbersXML, EtonyekDocument::TYPE_NUMBERS, isGzipped, info))
         return true;
 
-      info.input->seek(0, RVNG_SEEK_SET);
+      info.m_input->seek(0, RVNG_SEEK_SET);
     }
 
     if (CHECK_TYPE_PAGES & checkTypes)
@@ -424,13 +424,13 @@ ETONYEKAPI EtonyekDocument::Confidence EtonyekDocument::isSupported(librevenge::
 
   if (detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), CHECK_TYPE_ANY, info))
   {
-    assert(TYPE_UNKNOWN != info.type);
-    assert(CONFIDENCE_NONE != info.confidence);
-    assert(bool(info.input));
+    assert(TYPE_UNKNOWN != info.m_type);
+    assert(CONFIDENCE_NONE != info.m_confidence);
+    assert(bool(info.m_input));
 
     if (type)
-      *type = info.type;
-    return info.confidence;
+      *type = info.m_type;
+    return info.m_confidence;
   }
 
   return CONFIDENCE_NONE;
@@ -450,17 +450,17 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), CHECK_TYPE_KEYNOTE, info))
     return false;
 
-  assert(TYPE_UNKNOWN != info.type);
-  assert(CONFIDENCE_NONE != info.confidence);
-  assert(bool(info.input));
-  assert(0 != info.version);
+  assert(TYPE_UNKNOWN != info.m_type);
+  assert(CONFIDENCE_NONE != info.m_confidence);
+  assert(bool(info.m_input));
+  assert(0 != info.m_version);
 
-  info.input->seek(0, librevenge::RVNG_SEEK_SET);
+  info.m_input->seek(0, librevenge::RVNG_SEEK_SET);
 
   KEYDictionary dict;
   IWORKPresentationRedirector redirector(generator);
   KEYCollector collector(&redirector);
-  const shared_ptr<IWORKParser> parser = makeKeynoteParser(info.version, info.input, info.package, collector, dict);
+  const shared_ptr<IWORKParser> parser = makeKeynoteParser(info.m_version, info.m_input, info.m_package, collector, dict);
   return parser->parse();
 }
 catch (...)
@@ -478,17 +478,17 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), CHECK_TYPE_NUMBERS, info))
     return false;
 
-  assert(TYPE_UNKNOWN != info.type);
-  assert(CONFIDENCE_NONE != info.confidence);
-  assert(bool(info.input));
-  assert(0 != info.version);
+  assert(TYPE_UNKNOWN != info.m_type);
+  assert(CONFIDENCE_NONE != info.m_confidence);
+  assert(bool(info.m_input));
+  assert(0 != info.m_version);
 
-  info.input->seek(0, librevenge::RVNG_SEEK_SET);
+  info.m_input->seek(0, librevenge::RVNG_SEEK_SET);
 
   IWORKSpreadsheetRedirector redirector(document);
   NUMCollector collector(&redirector);
   NUMDictionary dict;
-  NUM1Parser parser(info.input, info.package, collector, &dict);
+  NUM1Parser parser(info.m_input, info.m_package, collector, &dict);
   return parser.parse();
 }
 catch (...)
@@ -506,17 +506,17 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), CHECK_TYPE_PAGES, info))
     return false;
 
-  assert(TYPE_UNKNOWN != info.type);
-  assert(CONFIDENCE_NONE != info.confidence);
-  assert(bool(info.input));
-  assert(0 != info.version);
+  assert(TYPE_UNKNOWN != info.m_type);
+  assert(CONFIDENCE_NONE != info.m_confidence);
+  assert(bool(info.m_input));
+  assert(0 != info.m_version);
 
-  info.input->seek(0, librevenge::RVNG_SEEK_SET);
+  info.m_input->seek(0, librevenge::RVNG_SEEK_SET);
 
   IWORKTextRedirector redirector(document);
   PAGCollector collector(&redirector);
   PAGDictionary dict;
-  PAG1Parser parser(info.input, info.package, collector, &dict);
+  PAG1Parser parser(info.m_input, info.m_package, collector, &dict);
   return parser.parse();
 }
 catch (...)
