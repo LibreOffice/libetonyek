@@ -18,6 +18,7 @@
 
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"
+#include "IWASnappyStream.h"
 #include "IWORKPresentationRedirector.h"
 #include "IWORKSpreadsheetRedirector.h"
 #include "IWORKTextRedirector.h"
@@ -126,15 +127,23 @@ bool probeXML(DetectionInfo &info)
   return false;
 }
 
+bool probeBinary(DetectionInfo &info)
+{
+  (void) info;
+  return false;
+}
+
 RVNGInputStreamPtr_t getSubStream(const RVNGInputStreamPtr_t &input, const char *const name)
 {
   return RVNGInputStreamPtr_t(input->getSubStreamByName(name));
 }
 
-RVNGInputStreamPtr_t getUncompressedSubStream(const RVNGInputStreamPtr_t &input, const char *const name) try
+RVNGInputStreamPtr_t getUncompressedSubStream(const RVNGInputStreamPtr_t &input, const char *const name, bool snappy = false) try
 {
   const RVNGInputStreamPtr_t compressed(input->getSubStreamByName(name));
   assert(bool(compressed));
+  if (snappy)
+    return RVNGInputStreamPtr_t(new IWASnappyStream(compressed));
   return RVNGInputStreamPtr_t(new IWORKZlibStream(compressed));
 }
 catch (...)
@@ -199,10 +208,23 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
 
     if ((info.m_format == FORMAT_BINARY) || (info.m_format == FORMAT_UNKNOWN))
     {
-      if (input->existsSubStream("Index.zip"))
+      if (input->existsSubStream("Document.iwa"))
       {
+        info.m_package.reset();
         info.m_format = FORMAT_BINARY;
-        info.m_input = getSubStream(input, "Index.zip");
+        info.m_input = getUncompressedSubStream(input, "Document.iwa", true);
+      }
+      else if (input->existsSubStream("Index.zip"))
+      {
+        const RVNGInputStreamPtr_t index = getSubStream(input, "Index.zip");
+        if (index->isStructured())
+        {
+          if (index->existsSubStream("Document.iwa"))
+          {
+            info.m_format = FORMAT_BINARY;
+            info.m_input = getUncompressedSubStream(input, "Document.iwa", true);
+          }
+        }
       }
     }
   }
@@ -223,15 +245,13 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
     assert(!info.m_input->isStructured());
     info.m_input->seek(0, RVNG_SEEK_SET);
 
+    bool supported = false;
     if (info.m_format == FORMAT_BINARY)
-    {
-      // TODO: detect type in binary format
-    }
+      supported = probeBinary(info);
     else
-    {
-      if (probeXML(info))
-        info.m_confidence = bool(info.m_package) ? EtonyekDocument::CONFIDENCE_EXCELLENT : EtonyekDocument::CONFIDENCE_SUPPORTED_PART;
-    }
+      supported = probeXML(info);
+    if (supported)
+      info.m_confidence = bool(info.m_package) ? EtonyekDocument::CONFIDENCE_EXCELLENT : EtonyekDocument::CONFIDENCE_SUPPORTED_PART;
   }
 
   if (info.m_confidence != EtonyekDocument::CONFIDENCE_NONE)
