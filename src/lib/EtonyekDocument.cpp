@@ -234,6 +234,13 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
     }
   }
 
+  if (info.m_confidence != EtonyekDocument::CONFIDENCE_NONE)
+  {
+    assert(EtonyekDocument::TYPE_UNKNOWN != info.m_type);
+    assert(FORMAT_UNKNOWN != info.m_format);
+    assert(bool(info.m_input));
+  }
+
   return info.m_confidence != EtonyekDocument::CONFIDENCE_NONE;
 }
 
@@ -270,11 +277,6 @@ ETONYEKAPI EtonyekDocument::Confidence EtonyekDocument::isSupported(librevenge::
 
   if (detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), info))
   {
-    assert(TYPE_UNKNOWN != info.m_type);
-    assert(FORMAT_UNKNOWN != info.m_format);
-    assert(CONFIDENCE_NONE != info.m_confidence);
-    assert(bool(info.m_input));
-
     if (type)
       *type = info.m_type;
     return info.m_confidence;
@@ -296,11 +298,6 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), info))
     return false;
-
-  assert(TYPE_UNKNOWN != info.m_type);
-  assert(CONFIDENCE_NONE != info.m_confidence);
-  assert(bool(info.m_input));
-  assert(FORMAT_UNKNOWN != info.m_format);
 
   info.m_input->seek(0, librevenge::RVNG_SEEK_SET);
 
@@ -325,11 +322,6 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), info))
     return false;
 
-  assert(TYPE_UNKNOWN != info.m_type);
-  assert(CONFIDENCE_NONE != info.m_confidence);
-  assert(bool(info.m_input));
-  assert(FORMAT_UNKNOWN != info.m_format);
-
   info.m_input->seek(0, librevenge::RVNG_SEEK_SET);
 
   IWORKSpreadsheetRedirector redirector(document);
@@ -352,11 +344,6 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), info))
     return false;
-
-  assert(TYPE_UNKNOWN != info.m_type);
-  assert(CONFIDENCE_NONE != info.m_confidence);
-  assert(bool(info.m_input));
-  assert(FORMAT_UNKNOWN != info.m_format);
 
   info.m_input->seek(0, librevenge::RVNG_SEEK_SET);
 
