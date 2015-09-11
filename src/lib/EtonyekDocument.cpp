@@ -13,7 +13,6 @@
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/logic/tribool.hpp>
 
 #include <libxml/xmlreader.h>
 
@@ -38,8 +37,6 @@
 #include "PAG1Token.h"
 #include "PAGDictionary.h"
 
-using boost::logic::indeterminate;
-using boost::logic::tribool;
 using boost::scoped_ptr;
 using boost::shared_ptr;
 using std::string;
@@ -52,15 +49,6 @@ namespace libetonyek
 namespace
 {
 
-enum CheckType
-{
-  CHECK_TYPE_NONE = 0,
-  CHECK_TYPE_KEYNOTE = 1 << 1,
-  CHECK_TYPE_NUMBERS = 1 << 2,
-  CHECK_TYPE_PAGES = 1 << 3,
-  CHECK_TYPE_ANY = CHECK_TYPE_KEYNOTE | CHECK_TYPE_NUMBERS | CHECK_TYPE_PAGES
-};
-
 enum Format
 {
   FORMAT_UNKNOWN,
@@ -71,7 +59,7 @@ enum Format
 
 struct DetectionInfo
 {
-  DetectionInfo();
+  explicit DetectionInfo(EtonyekDocument::Type type = EtonyekDocument::TYPE_UNKNOWN);
 
   RVNGInputStreamPtr_t m_input;
   RVNGInputStreamPtr_t m_package;
@@ -80,96 +68,35 @@ struct DetectionInfo
   Format m_format;
 };
 
-DetectionInfo::DetectionInfo()
+DetectionInfo::DetectionInfo(const EtonyekDocument::Type type)
   : m_input()
   , m_package()
   , m_confidence(EtonyekDocument::CONFIDENCE_NONE)
-  , m_type(EtonyekDocument::TYPE_UNKNOWN)
+  , m_type(type)
   , m_format(FORMAT_UNKNOWN)
 {
 }
 
-typedef bool (*ProbeXMLFun_t)(const RVNGInputStreamPtr_t &, Format &, xmlTextReaderPtr);
-
-bool probeKeynote1XML(const RVNGInputStreamPtr_t &input, Format &format, xmlTextReaderPtr reader)
+bool probeXMLFormat(const Format format, const EtonyekDocument::Type type, const int docId,
+                    const IWORKTokenizer &tokenizer, const char *const name, const char *const ns,
+                    DetectionInfo &info)
 {
-  // TODO: implement me
-  (void) input;
-  (void) format;
-  (void) reader;
-  return false;
-}
-
-bool probeKeynote2XML(const RVNGInputStreamPtr_t &input, Format &format, xmlTextReaderPtr reader)
-{
-  if (input->isEnd())
-    return false;
-
-  const IWORKTokenizer &tokenizer(KEY2Token::getTokenizer());
-  assert(reader);
-
-  const int id = tokenizer.getQualifiedId(char_cast(xmlTextReaderConstLocalName(reader)), char_cast(xmlTextReaderConstNamespaceUri(reader)));
-  if ((KEY2Token::NS_URI_KEY | KEY2Token::presentation) == id)
+  if (((info.m_format == format) || (info.m_format == FORMAT_UNKNOWN))
+      && ((info.m_type == type) || info.m_type == EtonyekDocument::TYPE_UNKNOWN))
   {
-    format = FORMAT_XML2;
-    return true;
+    if (tokenizer.getQualifiedId(name, ns) == docId)
+    {
+      info.m_format = format;
+      info.m_type = type;
+      return true;
+    }
   }
-
   return false;
 }
 
-bool probeKeynoteXML(const RVNGInputStreamPtr_t &input, Format &format, xmlTextReaderPtr reader)
+bool probeXML(DetectionInfo &info)
 {
-  if (probeKeynote2XML(input, format, reader))
-    return true;
-
-  input->seek(0, RVNG_SEEK_SET);
-
-  if (probeKeynote1XML(input, format, reader))
-    return true;
-
-  return false;
-}
-
-bool probeNumbersXML(const RVNGInputStreamPtr_t &input, Format &format, xmlTextReaderPtr reader)
-{
-  if (input->isEnd())
-    return false;
-
-  const IWORKTokenizer &tokenizer(NUM1Token::getTokenizer());
-  assert(reader);
-
-  const int id = tokenizer.getQualifiedId(char_cast(xmlTextReaderConstLocalName(reader)), char_cast(xmlTextReaderConstNamespaceUri(reader)));
-  if ((NUM1Token::NS_URI_LS | NUM1Token::document) == id)
-  {
-    format = FORMAT_XML2;
-    return true;
-  }
-
-  return false;
-}
-
-bool probePagesXML(const RVNGInputStreamPtr_t &input, Format &format, xmlTextReaderPtr reader)
-{
-  if (input->isEnd())
-    return false;
-
-  const IWORKTokenizer &tokenizer(PAG1Token::getTokenizer());
-  assert(reader);
-
-  const int id = tokenizer.getQualifiedId(char_cast(xmlTextReaderConstLocalName(reader)), char_cast(xmlTextReaderConstNamespaceUri(reader)));
-  if ((PAG1Token::NS_URI_SL | PAG1Token::document) == id)
-  {
-    format = FORMAT_XML2;
-    return true;
-  }
-
-  return false;
-}
-
-bool probeXMLImpl(const RVNGInputStreamPtr_t &input, const ProbeXMLFun_t probe, const EtonyekDocument::Type type, DetectionInfo &info)
-{
-  const shared_ptr<xmlTextReader> reader(xmlReaderForIO(readFromStream, closeStream, input.get(), "", 0, 0), xmlFreeTextReader);
+  const shared_ptr<xmlTextReader> reader(xmlReaderForIO(readFromStream, closeStream, info.m_input.get(), "", 0, 0), xmlFreeTextReader);
   if (!reader)
     return false;
 
@@ -183,171 +110,131 @@ bool probeXMLImpl(const RVNGInputStreamPtr_t &input, const ProbeXMLFun_t probe, 
   if (1 != ret)
     return false;
 
-  if (probe(input, info.m_format, reader.get()))
-  {
-    info.m_type = type;
+  const char *const name = char_cast(xmlTextReaderConstLocalName(reader.get()));
+  const char *const ns = char_cast(xmlTextReaderConstNamespaceUri(reader.get()));
+
+  if (probeXMLFormat(FORMAT_XML2, EtonyekDocument::TYPE_KEYNOTE, KEY2Token::NS_URI_KEY | KEY2Token::presentation,
+                     KEY2Token::getTokenizer(), name, ns, info))
     return true;
-  }
+  if (probeXMLFormat(FORMAT_XML2, EtonyekDocument::TYPE_NUMBERS, NUM1Token::NS_URI_LS | NUM1Token::document,
+                     NUM1Token::getTokenizer(), name, ns, info))
+    return true;
+  if (probeXMLFormat(FORMAT_XML2, EtonyekDocument::TYPE_PAGES, PAG1Token::NS_URI_SL | PAG1Token::document,
+                     PAG1Token::getTokenizer(), name, ns, info))
+    return true;
 
   return false;
 }
 
-bool probeXML(const ProbeXMLFun_t probe, const EtonyekDocument::Type type, tribool &isGzipped, DetectionInfo &info)
+RVNGInputStreamPtr_t getSubStream(const RVNGInputStreamPtr_t &input, const char *const name)
 {
-  if (isGzipped || indeterminate(isGzipped))
-  {
-    try
-    {
-      const RVNGInputStreamPtr_t uncompressed(new IWORKZlibStream(info.m_input));
-      isGzipped = true;
-
-      if (probeXMLImpl(uncompressed, probe, type, info))
-      {
-        info.m_input = uncompressed;
-        return true;
-      }
-      else
-      {
-        return false; // compressed, but invalid format
-      }
-    }
-    catch (...)
-    {
-      if (isGzipped) // decompression failed? most probably a broken file...
-        return false;
-
-      isGzipped = false;
-    }
-
-    info.m_input->seek(0, RVNG_SEEK_SET);
-  }
-
-  assert(isGzipped == false);
-
-  return probeXMLImpl(info.m_input, probe, type, info);
+  return RVNGInputStreamPtr_t(input->getSubStreamByName(name));
 }
 
-bool detect(const RVNGInputStreamPtr_t &input, unsigned checkTypes, DetectionInfo &info)
+RVNGInputStreamPtr_t getUncompressedSubStream(const RVNGInputStreamPtr_t &input, const char *const name) try
 {
-  info.m_confidence = EtonyekDocument::CONFIDENCE_SUPPORTED_PART;
-  bool isXML = true;
-  tribool isGzipped = indeterminate;
-  tribool isKeynote1 = indeterminate;
+  const RVNGInputStreamPtr_t compressed(input->getSubStreamByName(name));
+  assert(bool(compressed));
+  return RVNGInputStreamPtr_t(new IWORKZlibStream(compressed));
+}
+catch (...)
+{
+  return RVNGInputStreamPtr_t();
+}
 
+bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
+{
   if (input->isStructured())
   {
     info.m_package = input;
 
-    // check which format it might be
-    if (CHECK_TYPE_KEYNOTE & checkTypes)
+    if ((info.m_format == FORMAT_XML2) || (info.m_format == FORMAT_UNKNOWN))
     {
-      if (input->existsSubStream("index.apxl"))
+      if ((info.m_type == EtonyekDocument::TYPE_KEYNOTE) || (info.m_type == EtonyekDocument::TYPE_UNKNOWN))
       {
-        checkTypes = CHECK_TYPE_KEYNOTE;
-        isGzipped = false;
-        isKeynote1 = false;
-        info.m_input.reset(input->getSubStreamByName("index.apxl"));
+        if (input->existsSubStream("index.apxl"))
+        {
+          info.m_format = FORMAT_XML2;
+          info.m_type = EtonyekDocument::TYPE_KEYNOTE;
+          info.m_input = getSubStream(input, "index.apxl");
+        }
+        else if (input->existsSubStream("index.apxl.gz"))
+        {
+          info.m_format = FORMAT_XML2;
+          info.m_type = EtonyekDocument::TYPE_KEYNOTE;
+          info.m_input = getUncompressedSubStream(input, "index.apxl.gz");
+        }
       }
-      else if (input->existsSubStream("index.apxl.gz"))
+
+      if ((info.m_type == EtonyekDocument::TYPE_NUMBERS) || (info.m_type == EtonyekDocument::TYPE_PAGES) || (info.m_type == EtonyekDocument::TYPE_UNKNOWN))
       {
-        checkTypes = CHECK_TYPE_KEYNOTE;
-        isGzipped = true;
-        isKeynote1 = false;
-        info.m_input.reset(input->getSubStreamByName("index.apxl.gz"));
+        if (input->existsSubStream("index.xml"))
+        {
+          info.m_format = FORMAT_XML2;
+          info.m_input = getSubStream(input, "index.xml");
+        }
+        else if (input->existsSubStream("index.xml.gz"))
+        {
+          info.m_format = FORMAT_XML2;
+          info.m_input = getUncompressedSubStream(input, "index.xml.gz");
+        }
       }
-      else if (input->existsSubStream("presentation.apxl"))
+    }
+
+    if ((info.m_format == FORMAT_XML1) || (info.m_format == FORMAT_UNKNOWN))
+    {
+      if (input->existsSubStream("presentation.apxl"))
       {
-        checkTypes = CHECK_TYPE_KEYNOTE;
-        isGzipped = false;
-        isKeynote1 = true;
-        info.m_input.reset(input->getSubStreamByName("presentation.apxl"));
+        info.m_type = EtonyekDocument::TYPE_KEYNOTE;
+        info.m_format = FORMAT_XML1;
+        info.m_input = getSubStream(input, "presentation.apxl");
       }
       else if (input->existsSubStream("presentation.apxl.gz"))
       {
-        checkTypes = CHECK_TYPE_KEYNOTE;
-        isGzipped = true;
-        isKeynote1 = true;
-        info.m_input.reset(input->getSubStreamByName("presentation.apxl.gz"));
+        info.m_type = EtonyekDocument::TYPE_KEYNOTE;
+        info.m_format = FORMAT_XML1;
+        info.m_input = getUncompressedSubStream(input, "presentation.apxl.gz");
       }
     }
 
-    if ((CHECK_TYPE_NUMBERS | CHECK_TYPE_PAGES) & checkTypes)
-    {
-      if (input->existsSubStream("index.xml"))
-      {
-        checkTypes &= (CHECK_TYPE_NUMBERS | CHECK_TYPE_PAGES);
-        isGzipped = false;
-        info.m_input.reset(input->getSubStreamByName("index.xml"));
-      }
-      else if (input->existsSubStream("index.xml.gz"))
-      {
-        checkTypes &= (CHECK_TYPE_NUMBERS | CHECK_TYPE_PAGES);
-        isGzipped = true;
-        info.m_input.reset(input->getSubStreamByName("index.xml.gz"));
-      }
-    }
-
-    if (!info.m_input && (CHECK_TYPE_ANY & checkTypes))
+    if ((info.m_format == FORMAT_BINARY) || (info.m_format == FORMAT_UNKNOWN))
     {
       if (input->existsSubStream("Index.zip"))
       {
-        isXML = false;
-        info.m_input.reset(input->getSubStreamByName("Index.zip"));
+        info.m_format = FORMAT_BINARY;
+        info.m_input = getSubStream(input, "Index.zip");
       }
     }
-
-    if (!info.m_input)
-    {
-      // nothing detected
-      // TODO: this might also be Index.zip...
-      return EtonyekDocument::CONFIDENCE_NONE;
-    }
-
-    info.m_confidence = EtonyekDocument::CONFIDENCE_EXCELLENT; // this is either a valid package of a false positive
   }
   else
   {
-    info.m_input = input;
+    try
+    {
+      info.m_input.reset(new IWORKZlibStream(input));
+    }
+    catch (...)
+    {
+      info.m_input = input;
+    }
   }
 
-  assert(bool(info.m_input));
-
-  if (isXML)
+  if (bool(info.m_input))
   {
-    assert(CHECK_TYPE_ANY & checkTypes);
     assert(!info.m_input->isStructured());
-
     info.m_input->seek(0, RVNG_SEEK_SET);
 
-    if (CHECK_TYPE_KEYNOTE & checkTypes)
+    if (info.m_format == FORMAT_BINARY)
     {
-      const ProbeXMLFun_t probe = (isKeynote1 ? probeKeynote1XML : ((!isKeynote1) ? probeKeynote2XML : probeKeynoteXML));
-      if (probeXML(probe, EtonyekDocument::TYPE_KEYNOTE, isGzipped, info))
-        return true;
-
-      info.m_input->seek(0, RVNG_SEEK_SET);
+      // TODO: detect type in binary format
     }
-
-    if (CHECK_TYPE_NUMBERS & checkTypes)
+    else
     {
-      if (probeXML(probeNumbersXML, EtonyekDocument::TYPE_NUMBERS, isGzipped, info))
-        return true;
-
-      info.m_input->seek(0, RVNG_SEEK_SET);
-    }
-
-    if (CHECK_TYPE_PAGES & checkTypes)
-    {
-      if (probeXML(probePagesXML, EtonyekDocument::TYPE_PAGES, isGzipped, info))
-        return true;
+      if (probeXML(info))
+        info.m_confidence = bool(info.m_package) ? EtonyekDocument::CONFIDENCE_EXCELLENT : EtonyekDocument::CONFIDENCE_SUPPORTED_PART;
     }
   }
-  else
-  {
-    // TODO: detect type in binary format
-  }
 
-  return EtonyekDocument::CONFIDENCE_NONE;
+  return info.m_confidence != EtonyekDocument::CONFIDENCE_NONE;
 }
 
 }
@@ -381,9 +268,10 @@ ETONYEKAPI EtonyekDocument::Confidence EtonyekDocument::isSupported(librevenge::
 
   DetectionInfo info;
 
-  if (detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), CHECK_TYPE_ANY, info))
+  if (detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), info))
   {
     assert(TYPE_UNKNOWN != info.m_type);
+    assert(FORMAT_UNKNOWN != info.m_format);
     assert(CONFIDENCE_NONE != info.m_confidence);
     assert(bool(info.m_input));
 
@@ -404,9 +292,9 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   if (!input || !generator)
     return false;
 
-  DetectionInfo info;
+  DetectionInfo info(EtonyekDocument::TYPE_KEYNOTE);
 
-  if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), CHECK_TYPE_KEYNOTE, info))
+  if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), info))
     return false;
 
   assert(TYPE_UNKNOWN != info.m_type);
@@ -432,9 +320,9 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   if (!input || !document)
     return false;
 
-  DetectionInfo info;
+  DetectionInfo info(EtonyekDocument::TYPE_NUMBERS);
 
-  if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), CHECK_TYPE_NUMBERS, info))
+  if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), info))
     return false;
 
   assert(TYPE_UNKNOWN != info.m_type);
@@ -460,9 +348,9 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   if (!input || !document)
     return false;
 
-  DetectionInfo info;
+  DetectionInfo info(EtonyekDocument::TYPE_PAGES);
 
-  if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), CHECK_TYPE_PAGES, info))
+  if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), info))
     return false;
 
   assert(TYPE_UNKNOWN != info.m_type);
