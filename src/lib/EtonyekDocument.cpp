@@ -282,7 +282,7 @@ bool detect(const RVNGInputStreamPtr_t &input, unsigned checkTypes, DetectionInf
       else if (input->existsSubStream("index.xml.gz"))
       {
         checkTypes &= (CHECK_TYPE_NUMBERS | CHECK_TYPE_PAGES);
-        isGzipped = false;
+        isGzipped = true;
         info.m_input.reset(input->getSubStreamByName("index.xml.gz"));
       }
     }
