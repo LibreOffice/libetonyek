@@ -239,6 +239,10 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
     assert(EtonyekDocument::TYPE_UNKNOWN != info.m_type);
     assert(FORMAT_UNKNOWN != info.m_format);
     assert(bool(info.m_input));
+    if (info.m_confidence == EtonyekDocument::CONFIDENCE_EXCELLENT)
+    {
+      assert(bool(info.m_package));
+    }
   }
 
   return info.m_confidence != EtonyekDocument::CONFIDENCE_NONE;
