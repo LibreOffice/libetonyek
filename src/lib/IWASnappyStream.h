@@ -20,7 +20,7 @@ namespace libetonyek
 class IWASnappyStream : public librevenge::RVNGInputStream
 {
 public:
-  IWASnappyStream(const RVNGInputStreamPtr_t &stream);
+  explicit IWASnappyStream(const RVNGInputStreamPtr_t &stream);
   ~IWASnappyStream();
 
   bool isStructured();
