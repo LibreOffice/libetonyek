@@ -211,6 +211,21 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
   {
     info.m_package = input;
 
+    if ((info.m_format == FORMAT_BINARY) || (info.m_format == FORMAT_UNKNOWN))
+    {
+      RVNGInputStreamPtr_t binaryInput(input);
+      const bool isPackage(binaryInput->existsSubStream("Metadata/DocumentIdentifier"));
+      if (binaryInput->existsSubStream("Index.zip"))
+        binaryInput = getSubStream(binaryInput, "Index.zip");
+      if (binaryInput->existsSubStream("Index/Document.iwa"))
+      {
+        if (!isPackage)
+          info.m_package.reset();
+        info.m_format = FORMAT_BINARY;
+        info.m_input = getUncompressedSubStream(binaryInput, "Index/Document.iwa", true);
+      }
+    }
+
     if ((info.m_format == FORMAT_XML2) || (info.m_format == FORMAT_UNKNOWN))
     {
       if ((info.m_type == EtonyekDocument::TYPE_KEYNOTE) || (info.m_type == EtonyekDocument::TYPE_UNKNOWN))
@@ -257,21 +272,6 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
         info.m_type = EtonyekDocument::TYPE_KEYNOTE;
         info.m_format = FORMAT_XML1;
         info.m_input = getUncompressedSubStream(input, "presentation.apxl.gz");
-      }
-    }
-
-    if ((info.m_format == FORMAT_BINARY) || (info.m_format == FORMAT_UNKNOWN))
-    {
-      RVNGInputStreamPtr_t binaryInput(input);
-      const bool isPackage(binaryInput->existsSubStream("Metadata/DocumentIdentifier"));
-      if (binaryInput->existsSubStream("Index.zip"))
-        binaryInput = getSubStream(binaryInput, "Index.zip");
-      if (binaryInput->existsSubStream("Index/Document.iwa"))
-      {
-        if (!isPackage)
-          info.m_package.reset();
-        info.m_format = FORMAT_BINARY;
-        info.m_input = getUncompressedSubStream(binaryInput, "Index/Document.iwa", true);
       }
     }
   }
