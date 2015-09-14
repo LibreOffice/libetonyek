@@ -39,6 +39,17 @@ void assertCompressed(const string &message, const unsigned char *const expected
   CPPUNIT_ASSERT_MESSAGE(message + ": content", std::equal(expected, expected + expectedSize, uncompressed));
 }
 
+void assertCompressedFull(const string &message, const unsigned char *const expected, const size_t expectedSize, const unsigned char *const compressed, const size_t compressedSize)
+{
+  const RVNGInputStreamPtr_t stream(new IWORKMemoryStream(compressed, compressedSize));
+  IWASnappyStream uncompressedStream(stream);
+  unsigned long uncompressedSize = 0;
+  const unsigned char *const uncompressed = uncompressedStream.read(expectedSize, uncompressedSize);
+  CPPUNIT_ASSERT_EQUAL_MESSAGE(message + ": size", expectedSize, uncompressedSize);
+  CPPUNIT_ASSERT_MESSAGE(message + ": input exhausted", uncompressedStream.isEnd());
+  CPPUNIT_ASSERT_MESSAGE(message + ": content", std::equal(expected, expected + expectedSize, uncompressed));
+}
+
 void assertAnyException(const string &message, const unsigned char *const compressed, const size_t compressedSize)
 {
   const RVNGInputStreamPtr_t stream(new IWORKMemoryStream(compressed, compressedSize));
@@ -64,13 +75,15 @@ public:
 
 private:
   CPPUNIT_TEST_SUITE(IWASnappyStreamTest);
-  CPPUNIT_TEST(testSimple);
+  CPPUNIT_TEST(testBlock);
   CPPUNIT_TEST(testInvalid);
+  CPPUNIT_TEST(testFull);
   CPPUNIT_TEST_SUITE_END();
 
 private:
-  void testSimple();
+  void testBlock();
   void testInvalid();
+  void testFull();
 };
 
 void IWASnappyStreamTest::setUp()
@@ -83,7 +96,7 @@ void IWASnappyStreamTest::tearDown()
 
 #define BYTES(b) (reinterpret_cast<const unsigned char *>(b)), (sizeof(b) - 1)
 
-void IWASnappyStreamTest::testSimple()
+void IWASnappyStreamTest::testBlock()
 {
   // assertCompressed("empty", BYTES(""), BYTES("\x1\x0"));
   assertCompressed("literal run", BYTES("a"), BYTES("\x1\x0\x61"));
@@ -109,6 +122,11 @@ void IWASnappyStreamTest::testInvalid()
   assertAnyException("Too short literal run", BYTES("\x4\x10\x61"));
   assertAnyException("Near reference without any data", BYTES("\x1\x5\x0"));
   assertAnyException("Far reference without any data", BYTES("\x1\x2\x1\x0"));
+}
+
+void IWASnappyStreamTest::testFull()
+{
+  assertCompressedFull("literal run", BYTES("a"), BYTES("\x0\x3\x0\x0\x1\x0\x61"));
 }
 
 #undef BYTES
