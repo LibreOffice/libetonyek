@@ -44,34 +44,6 @@ Data::Data(vector<unsigned char> &data)
 {
 }
 
-unsigned long readVarlen(const RVNGInputStreamPtr_t &input)
-{
-  vector<unsigned char> bytes;
-  bytes.reserve(8);
-
-  bool cont = true;
-  while (!input->isEnd() && cont)
-  {
-    const unsigned char c = readU8(input);
-    bytes.push_back(c & ~0x80);
-    cont = c & 0x80;
-  }
-
-  if (cont && input->isEnd())
-    throw CompressionException();
-
-  unsigned long value = 0;
-
-  for (vector<unsigned char>::const_reverse_iterator it = bytes.rbegin(); it != bytes.rend(); ++it)
-  {
-    if (std::numeric_limits<unsigned long>::max() - value < *it) // overflow
-      throw CompressionException();
-    value += *it;
-  }
-
-  return value;
-}
-
 void appendRef(Data &data, const unsigned offset, const unsigned length)
 {
   if (offset == 0)
@@ -104,7 +76,7 @@ bool uncompressBlock(const RVNGInputStreamPtr_t &input, const unsigned long leng
 {
   Data data(uncompressed);
 
-  const unsigned long uncompressedLength = readVarlen(input);
+  const unsigned long uncompressedLength = readUVar(input);
   const size_t maxSize = size_t((std::min)(2 * length, uncompressedLength)); // don't want unbounded allocation
   size_t newSize = data.m_data.size() + maxSize;
   data.m_data.reserve(newSize);
