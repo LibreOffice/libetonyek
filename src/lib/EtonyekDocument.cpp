@@ -262,21 +262,16 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
 
     if ((info.m_format == FORMAT_BINARY) || (info.m_format == FORMAT_UNKNOWN))
     {
-      if (input->existsSubStream("Index/Document.iwa"))
+      RVNGInputStreamPtr_t binaryInput(input);
+      const bool isPackage(binaryInput->existsSubStream("Metadata/DocumentIdentifier"));
+      if (binaryInput->existsSubStream("Index.zip"))
+        binaryInput = getSubStream(binaryInput, "Index.zip");
+      if (binaryInput->existsSubStream("Index/Document.iwa"))
       {
-        if (!input->existsSubStream("Metadata/DocumentIdentifier"))
+        if (!isPackage)
           info.m_package.reset();
         info.m_format = FORMAT_BINARY;
-        info.m_input = getUncompressedSubStream(input, "Index/Document.iwa", true);
-      }
-      else if (input->existsSubStream("Index.zip"))
-      {
-        const RVNGInputStreamPtr_t index = getSubStream(input, "Index.zip");
-        if (index->isStructured() && index->existsSubStream("Index/Document.iwa"))
-        {
-          info.m_format = FORMAT_BINARY;
-          info.m_input = getUncompressedSubStream(index, "Index/Document.iwa", true);
-        }
+        info.m_input = getUncompressedSubStream(binaryInput, "Index/Document.iwa", true);
       }
     }
   }
