@@ -175,7 +175,9 @@ RVNGInputStreamPtr_t uncompress(const RVNGInputStreamPtr_t &input)
 
   while (!input->isEnd())
   {
-    const unsigned long blockLength = readVarlen(input);
+    readU8(input);
+    const unsigned long blockLength = readU16(input);
+    readU8(input);
     if (!uncompressBlock(input, (std::min)(blockLength, getRemainingLength(input)), data))
       throw CompressionException();
   }
