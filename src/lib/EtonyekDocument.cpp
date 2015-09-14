@@ -11,6 +11,7 @@
 
 #include <cassert>
 
+#include <boost/optional.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -38,6 +39,7 @@
 #include "PAG1Token.h"
 #include "PAGDictionary.h"
 
+using boost::optional;
 using boost::scoped_ptr;
 using boost::shared_ptr;
 using std::string;
@@ -129,7 +131,59 @@ bool probeXML(DetectionInfo &info)
 
 bool probeBinary(DetectionInfo &info)
 {
-  (void) info;
+  const RVNGInputStreamPtr_t &input = info.m_input;
+  const uint64_t headerLen = readUVar(input);
+  if (headerLen < 8)
+    return false;
+
+  optional<uint64_t> id;
+  optional<uint64_t> format;
+
+  const uint64_t headerEnd = uint64_t(input->tell()) + headerLen;
+  while (!input->isEnd() && uint64_t(input->tell()) < headerEnd)
+  {
+    const uint64_t c = readUVar(input);
+    const uint64_t field = c >> 3;
+    const uint64_t type = c & 0x7;
+    if ((field == 1) && (type == 0))
+    {
+      id = readUVar(input);
+    }
+    else if ((field == 2) && (type == 2))
+    {
+      const uint64_t msgLen = readUVar(input);
+      const uint64_t msgEnd = input->tell() + msgLen;
+      while (!input->isEnd() && uint64_t(input->tell()) < msgEnd)
+      {
+        const uint64_t c2 = readUVar(input);
+        const uint64_t field2 = c2 >> 3;
+        const uint64_t type2 = c2 & 0x7;
+        if ((field2 == 1) && (type2 == 0))
+          format = readUVar(input);
+      }
+    }
+  }
+
+  EtonyekDocument::Type detected = EtonyekDocument::TYPE_UNKNOWN;
+
+  if (id && format && (get(id) == 1))
+  {
+    switch (get(format))
+    {
+    case 1 :
+      detected = EtonyekDocument::TYPE_KEYNOTE;
+      break;
+    case 10000 :
+      detected = EtonyekDocument::TYPE_PAGES;
+      break;
+    }
+  }
+
+  if ((info.m_type == EtonyekDocument::TYPE_UNKNOWN) || (info.m_type == detected))
+  {
+    info.m_type = detected;
+    return true;
+  }
   return false;
 }
 
@@ -208,22 +262,19 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
 
     if ((info.m_format == FORMAT_BINARY) || (info.m_format == FORMAT_UNKNOWN))
     {
-      if (input->existsSubStream("Document.iwa"))
+      if (input->existsSubStream("Index/Document.iwa"))
       {
         info.m_package.reset();
         info.m_format = FORMAT_BINARY;
-        info.m_input = getUncompressedSubStream(input, "Document.iwa", true);
+        info.m_input = getUncompressedSubStream(input, "Index/Document.iwa", true);
       }
       else if (input->existsSubStream("Index.zip"))
       {
         const RVNGInputStreamPtr_t index = getSubStream(input, "Index.zip");
-        if (index->isStructured())
+        if (index->isStructured() && index->existsSubStream("Index/Document.iwa"))
         {
-          if (index->existsSubStream("Document.iwa"))
-          {
-            info.m_format = FORMAT_BINARY;
-            info.m_input = getUncompressedSubStream(input, "Document.iwa", true);
-          }
+          info.m_format = FORMAT_BINARY;
+          info.m_input = getUncompressedSubStream(index, "Index/Document.iwa", true);
         }
       }
     }
