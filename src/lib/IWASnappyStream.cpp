@@ -86,7 +86,7 @@ bool uncompressBlock(const RVNGInputStreamPtr_t &input, const unsigned long leng
     const unsigned char c = readU8(input);
     switch (c & 0x3)
     {
-    case 0: // a run of literals
+    case 0 : // a run of literals
     {
       unsigned runLength = 0;
       if ((c & 0xf0) == 0xf0)
@@ -112,7 +112,7 @@ bool uncompressBlock(const RVNGInputStreamPtr_t &input, const unsigned long leng
       data.m_data.insert(data.m_data.end(), bytes, bytes + runLength);
       break;
     }
-    case 1: // near ref
+    case 1 : // near ref
     {
       const unsigned runLength = ((c >> 2) & 0x7) + 4;
       const unsigned high = c >> 5;
@@ -121,7 +121,7 @@ bool uncompressBlock(const RVNGInputStreamPtr_t &input, const unsigned long leng
       appendRef(data, offset, runLength);
       break;
     }
-    case 2: // far ref
+    case 2 : // far ref
     {
       const unsigned runLength = (c >> 2) + 1;
       const unsigned low = readU8(input);
@@ -130,10 +130,10 @@ bool uncompressBlock(const RVNGInputStreamPtr_t &input, const unsigned long leng
       appendRef(data, offset, runLength);
       break;
     }
-    case 3: // unknown
+    case 3 : // unknown
       ETONYEK_DEBUG_MSG(("uncompressBlock: Found an unexpected mark value 3\n"));
       return false;
-    default:
+    default :
       assert(0);
     }
   }
