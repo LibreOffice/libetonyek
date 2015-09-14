@@ -264,7 +264,8 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
     {
       if (input->existsSubStream("Index/Document.iwa"))
       {
-        info.m_package.reset();
+        if (!input->existsSubStream("Metadata/DocumentIdentifier"))
+          info.m_package.reset();
         info.m_format = FORMAT_BINARY;
         info.m_input = getUncompressedSubStream(input, "Index/Document.iwa", true);
       }
