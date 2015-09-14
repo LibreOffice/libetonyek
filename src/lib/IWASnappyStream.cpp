@@ -198,6 +198,13 @@ IWASnappyStream::~IWASnappyStream()
 {
 }
 
+RVNGInputStreamPtr_t IWASnappyStream::uncompressBlock(const RVNGInputStreamPtr_t &block)
+{
+  vector<unsigned char> data;
+  libetonyek::uncompressBlock(block, getLength(block), data);
+  return boost::make_shared<IWORKMemoryStream>(data);
+}
+
 bool IWASnappyStream::isStructured()
 {
   return false;

@@ -31,11 +31,11 @@ namespace
 void assertCompressed(const string &message, const unsigned char *const expected, const size_t expectedSize, const unsigned char *const compressed, const size_t compressedSize)
 {
   const RVNGInputStreamPtr_t stream(new IWORKMemoryStream(compressed, compressedSize));
-  IWASnappyStream uncompressedStream(stream);
+  const RVNGInputStreamPtr_t uncompressedStream(IWASnappyStream::uncompressBlock(stream));
   unsigned long uncompressedSize = 0;
-  const unsigned char *const uncompressed = uncompressedStream.read(expectedSize, uncompressedSize);
+  const unsigned char *const uncompressed = uncompressedStream->read(expectedSize, uncompressedSize);
   CPPUNIT_ASSERT_EQUAL_MESSAGE(message + ": size", expectedSize, uncompressedSize);
-  CPPUNIT_ASSERT_MESSAGE(message + ": input exhausted", uncompressedStream.isEnd());
+  CPPUNIT_ASSERT_MESSAGE(message + ": input exhausted", uncompressedStream->isEnd());
   CPPUNIT_ASSERT_MESSAGE(message + ": content", std::equal(expected, expected + expectedSize, uncompressed));
 }
 
@@ -86,29 +86,29 @@ void IWASnappyStreamTest::tearDown()
 void IWASnappyStreamTest::testSimple()
 {
   // assertCompressed("empty", BYTES(""), BYTES("\x1\x0"));
-  assertCompressed("literal run", BYTES("a"), BYTES("\x3\x1\x0\x61"));
-  assertCompressed("literal run", BYTES("ab"), BYTES("\x4\x2\x4\x61\x62"));
-  assertCompressed("long literal run", BYTES("ab"), BYTES("\x5\x2\xf0\x1\x61\x62"));
-  assertCompressed("very long literal run", BYTES("ab"), BYTES("\x5\x2\xf4\x1\x0\x61\x62"));
-  assertCompressed("extra long literal run", BYTES("ab"), BYTES("\x5\x2\xf8\x1\x0\x0\x61\x62"));
+  assertCompressed("literal run", BYTES("a"), BYTES("\x1\x0\x61"));
+  assertCompressed("literal run", BYTES("ab"), BYTES("\x2\x4\x61\x62"));
+  assertCompressed("long literal run", BYTES("ab"), BYTES("\x2\xf0\x1\x61\x62"));
+  assertCompressed("very long literal run", BYTES("ab"), BYTES("\x2\xf4\x1\x0\x61\x62"));
+  assertCompressed("extra long literal run", BYTES("ab"), BYTES("\x2\xf8\x1\x0\x0\x61\x62"));
   assertCompressed("near reference",
-                   BYTES("abcdabcd"), BYTES("\x8\x8\xc\x61\x62\x63\x64\x1\x4"));
+                   BYTES("abcdabcd"), BYTES("\x8\xc\x61\x62\x63\x64\x1\x4"));
   assertCompressed("near reference of length 5",
-                   BYTES("abcdeabcde"), BYTES("\x9\xa\x10\x61\x62\x63\x64\x65\x5\x5"));
+                   BYTES("abcdeabcde"), BYTES("\xa\x10\x61\x62\x63\x64\x65\x5\x5"));
   assertCompressed("near reference to the middle of a run",
-                   BYTES("abcdefbcde"), BYTES("\xa\xa\x14\x61\x62\x63\x64\x65\x66\x1\x5"));
+                   BYTES("abcdefbcde"), BYTES("\xa\x14\x61\x62\x63\x64\x65\x66\x1\x5"));
   assertCompressed("repeated near reference",
-                   BYTES("abcbcbcb"), BYTES("\x7\x8\x8\x61\x62\x63\x5\x2"));
-  assertCompressed("far reference", BYTES("aa"), BYTES("\x6\x2\x0\x61\x2\x1\x0"));
+                   BYTES("abcbcbcb"), BYTES("\x8\x8\x61\x62\x63\x5\x2"));
+  assertCompressed("far reference", BYTES("aa"), BYTES("\x2\x0\x61\x2\x1\x0"));
   assertCompressed("far reference of length 2",
-                   BYTES("abab"), BYTES("\x7\x4\x4\x61\x62\x6\x2\x0"));
+                   BYTES("abab"), BYTES("\x4\x4\x61\x62\x6\x2\x0"));
 }
 
 void IWASnappyStreamTest::testInvalid()
 {
-  assertAnyException("Too short literal run", BYTES("\x3\x4\x10\x61"));
-  assertAnyException("Near reference without any data", BYTES("\x3\x1\x5\x0"));
-  assertAnyException("Far reference without any data", BYTES("\x4\x1\x2\x1\x0"));
+  assertAnyException("Too short literal run", BYTES("\x4\x10\x61"));
+  assertAnyException("Near reference without any data", BYTES("\x1\x5\x0"));
+  assertAnyException("Far reference without any data", BYTES("\x1\x2\x1\x0"));
 }
 
 #undef BYTES

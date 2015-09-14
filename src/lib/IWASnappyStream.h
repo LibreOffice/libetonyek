@@ -23,6 +23,9 @@ public:
   explicit IWASnappyStream(const RVNGInputStreamPtr_t &stream);
   ~IWASnappyStream();
 
+  // for unit tests
+  static RVNGInputStreamPtr_t uncompressBlock(const RVNGInputStreamPtr_t &block);
+
   bool isStructured();
   unsigned subStreamCount();
   const char *subStreamName(unsigned id);
