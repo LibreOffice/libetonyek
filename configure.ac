@@ -322,6 +322,7 @@ AC_ARG_ENABLE([tests],
 )
 AS_IF([test "x$enable_tests" = "xyes"], [
     PKG_CHECK_MODULES([CPPUNIT], [cppunit])
+    PKG_CHECK_MODULES([REVENGE_STREAM],[librevenge-stream-0.0])
 ], [])
 AC_SUBST([CPPUNIT_CFLAGS])
 AC_SUBST([CPPUNIT_LIBS])

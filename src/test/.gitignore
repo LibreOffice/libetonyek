@@ -1,8 +1,10 @@
 Makefile
 Makefile.in
+detection
 test
 .libs
 .deps
+*.a
 *.lo
 *.log
 *.o
