@@ -7,13 +7,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "NUMDictionary.h"
+#include "PAG1Dictionary.h"
 
 namespace libetonyek
 {
 
-NUMDictionary::NUMDictionary()
+PAG1Dictionary::PAG1Dictionary()
   : IWORKDictionary()
+  , m_attachments()
+  , m_sectionStyles()
 {
 }
 

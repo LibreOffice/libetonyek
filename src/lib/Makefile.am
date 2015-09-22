@@ -110,6 +110,8 @@ libetonyek_internal_la_SOURCES = \
 	KEY1Parser.h \
 	KEY1Token.cpp \
 	KEY1Token.h \
+	KEY2Dictionary.cpp \
+	KEY2Dictionary.h \
 	KEY2Parser.cpp \
 	KEY2Parser.h \
 	KEY2ParserState.cpp \
@@ -119,11 +121,11 @@ libetonyek_internal_la_SOURCES = \
 	KEY2XMLContextBase.h \
 	KEYCollector.cpp \
 	KEYCollector.h \
-	KEYDictionary.cpp \
-	KEYDictionary.h \
 	KEYTypes.cpp \
 	KEYTypes.h \
 	KEYTypes_fwd.h \
+	NUM1Dictionary.cpp \
+	NUM1Dictionary.h \
 	NUM1Parser.cpp \
 	NUM1Parser.h \
 	NUM1ParserState.cpp \
@@ -133,8 +135,8 @@ libetonyek_internal_la_SOURCES = \
 	NUM1XMLContextBase.h \
 	NUMCollector.cpp \
 	NUMCollector.h \
-	NUMDictionary.cpp \
-	NUMDictionary.h \
+	PAG1Dictionary.cpp \
+	PAG1Dictionary.h \
 	PAG1Parser.cpp \
 	PAG1Parser.h \
 	PAG1ParserState.cpp \
@@ -144,8 +146,6 @@ libetonyek_internal_la_SOURCES = \
 	PAG1XMLContextBase.h \
 	PAGCollector.cpp \
 	PAGCollector.h \
-	PAGDictionary.cpp \
-	PAGDictionary.h \
 	PAGEnum.h \
 	PAGProperties.cpp \
 	PAGProperties.h \

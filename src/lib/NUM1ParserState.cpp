@@ -9,14 +9,14 @@
 
 #include "NUM1ParserState.h"
 
+#include "NUM1Dictionary.h"
 #include "NUM1Parser.h"
 #include "NUMCollector.h"
-#include "NUMDictionary.h"
 
 namespace libetonyek
 {
 
-NUM1ParserState::NUM1ParserState(NUM1Parser &parser, NUMCollector &collector, NUMDictionary &dict)
+NUM1ParserState::NUM1ParserState(NUM1Parser &parser, NUMCollector &collector, NUM1Dictionary &dict)
   : IWORKXMLParserState(parser, collector, dict)
   , m_collector(collector)
   , m_dict(dict)
@@ -28,7 +28,7 @@ NUMCollector &NUM1ParserState::getCollector()
   return m_collector;
 }
 
-NUMDictionary &NUM1ParserState::getDictionary()
+NUM1Dictionary &NUM1ParserState::getDictionary()
 {
   return m_dict;
 }

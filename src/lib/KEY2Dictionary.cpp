@@ -7,21 +7,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef NUMDICTIONARY_H_INCLUDED
-#define NUMDICTIONARY_H_INCLUDED
-
-#include "IWORKDictionary.h"
+#include "KEY2Dictionary.h"
 
 namespace libetonyek
 {
 
-struct NUMDictionary : public IWORKDictionary
+KEY2Dictionary::KEY2Dictionary()
+  : IWORKDictionary()
+  , m_placeholderStyles()
+  , m_bodyPlaceholders()
+  , m_titlePlaceholders()
 {
-  NUMDictionary();
-};
-
 }
 
-#endif //  NUMDICTIONARY_H_INCLUDED
+}
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

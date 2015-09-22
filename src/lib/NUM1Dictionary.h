@@ -7,18 +7,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "PAGDictionary.h"
+#ifndef NUM1DICTIONARY_H_INCLUDED
+#define NUM1DICTIONARY_H_INCLUDED
+
+#include "IWORKDictionary.h"
 
 namespace libetonyek
 {
 
-PAGDictionary::PAGDictionary()
-  : IWORKDictionary()
-  , m_attachments()
-  , m_sectionStyles()
+struct NUM1Dictionary : public IWORKDictionary
 {
-}
+  NUM1Dictionary();
+};
 
 }
+
+#endif //  NUM1DICTIONARY_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

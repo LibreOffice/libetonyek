@@ -17,7 +17,7 @@ namespace libetonyek
 
 class NUM1Parser;
 class NUMCollector;
-struct NUMDictionary;
+struct NUM1Dictionary;
 
 class NUM1ParserState : public IWORKXMLParserState
 {
@@ -26,14 +26,14 @@ class NUM1ParserState : public IWORKXMLParserState
   NUM1ParserState &operator=(const NUM1ParserState &);
 
 public:
-  NUM1ParserState(NUM1Parser &parser, NUMCollector &collector, NUMDictionary &dict);
+  NUM1ParserState(NUM1Parser &parser, NUMCollector &collector, NUM1Dictionary &dict);
 
   NUMCollector &getCollector();
-  NUMDictionary &getDictionary();
+  NUM1Dictionary &getDictionary();
 
 private:
   NUMCollector &m_collector;
-  NUMDictionary &m_dict;
+  NUM1Dictionary &m_dict;
 };
 
 }

@@ -7,19 +7,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "KEYDictionary.h"
+#ifndef PAG1DICTIONARY_H_INCLUDED
+#define PAG1DICTIONARY_H_INCLUDED
+
+#include "IWORKDictionary.h"
+#include "PAGTypes.h"
 
 namespace libetonyek
 {
 
-KEYDictionary::KEYDictionary()
-  : IWORKDictionary()
-  , m_placeholderStyles()
-  , m_bodyPlaceholders()
-  , m_titlePlaceholders()
+struct PAG1Dictionary : public IWORKDictionary
 {
-}
+  PAG1Dictionary();
+
+  PAGAttachmentMap_t m_attachments;
+
+  IWORKStyleMap_t m_sectionStyles;
+};
 
 }
+
+#endif //  PAG1DICTIONARY_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

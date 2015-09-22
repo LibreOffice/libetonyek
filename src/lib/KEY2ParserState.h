@@ -17,7 +17,7 @@ namespace libetonyek
 
 class KEY2Parser;
 class KEYCollector;
-struct KEYDictionary;
+struct KEY2Dictionary;
 
 class KEY2ParserState : public IWORKXMLParserState
 {
@@ -26,13 +26,13 @@ class KEY2ParserState : public IWORKXMLParserState
   KEY2ParserState &operator=(const KEY2ParserState &);
 
 public:
-  KEY2ParserState(KEY2Parser &parser, KEYCollector &collector, KEYDictionary &dict);
+  KEY2ParserState(KEY2Parser &parser, KEYCollector &collector, KEY2Dictionary &dict);
 
-  KEYDictionary &getDictionary();
+  KEY2Dictionary &getDictionary();
   KEYCollector &getCollector();
 
 private:
-  KEYDictionary &m_dict;
+  KEY2Dictionary &m_dict;
   KEYCollector &m_collector;
 };
 

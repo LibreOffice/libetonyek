@@ -25,12 +25,12 @@
 #include "IWORKStylesContext.h"
 #include "IWORKStylesheetBase.h"
 #include "IWORKToken.h"
+#include "PAG1Dictionary.h"
 #include "PAG1StyleContext.h"
 #include "PAG1TextStorageElement.h"
 #include "PAG1Token.h"
 #include "PAG1XMLContextBase.h"
 #include "PAGCollector.h"
-#include "PAGDictionary.h"
 #include "PAGTypes.h"
 #include "libetonyek_xml.h"
 
@@ -653,7 +653,7 @@ IWORKXMLContextPtr_t DiscardContext::element(const int name)
 
 }
 
-PAG1Parser::PAG1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGCollector &collector, PAGDictionary *const dict)
+PAG1Parser::PAG1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGCollector &collector, PAG1Dictionary *const dict)
   : IWORKParser(input, package)
   , m_state(*this, collector, *dict)
 {

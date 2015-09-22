@@ -26,18 +26,18 @@
 #include "IWORKTokenizer.h"
 #include "IWORKZlibStream.h"
 #include "KEY1Parser.h"
+#include "KEY2Dictionary.h"
 #include "KEY2Parser.h"
 #include "KEY2Token.h"
 #include "KEYCollector.h"
-#include "KEYDictionary.h"
 #include "NUMCollector.h"
-#include "NUMDictionary.h"
+#include "NUM1Dictionary.h"
 #include "NUM1Parser.h"
 #include "NUM1Token.h"
 #include "PAGCollector.h"
+#include "PAG1Dictionary.h"
 #include "PAG1Parser.h"
 #include "PAG1Token.h"
-#include "PAGDictionary.h"
 
 using boost::optional;
 using boost::scoped_ptr;
@@ -327,7 +327,7 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
 namespace
 {
 
-shared_ptr<IWORKParser> makeKeynoteParser(const unsigned version, const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector &collector, KEYDictionary &dict)
+shared_ptr<IWORKParser> makeKeynoteParser(const unsigned version, const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector &collector, KEY2Dictionary &dict)
 {
   shared_ptr<IWORKParser> parser;
 
@@ -379,7 +379,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   info.m_input->seek(0, librevenge::RVNG_SEEK_SET);
 
-  KEYDictionary dict;
+  KEY2Dictionary dict;
   IWORKPresentationRedirector redirector(generator);
   KEYCollector collector(&redirector);
   const shared_ptr<IWORKParser> parser = makeKeynoteParser(info.m_format, info.m_input, info.m_package, collector, dict);
@@ -404,7 +404,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   IWORKSpreadsheetRedirector redirector(document);
   NUMCollector collector(&redirector);
-  NUMDictionary dict;
+  NUM1Dictionary dict;
   NUM1Parser parser(info.m_input, info.m_package, collector, &dict);
   return parser.parse();
 }
@@ -427,7 +427,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   IWORKTextRedirector redirector(document);
   PAGCollector collector(&redirector);
-  PAGDictionary dict;
+  PAG1Dictionary dict;
   PAG1Parser parser(info.m_input, info.m_package, collector, &dict);
   return parser.parse();
 }

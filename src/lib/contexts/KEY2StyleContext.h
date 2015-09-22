@@ -21,8 +21,6 @@
 namespace libetonyek
 {
 
-struct KEYDictionary;
-
 class KEY2StyleContext : public KEY2XMLElementContextBase
 {
 public:

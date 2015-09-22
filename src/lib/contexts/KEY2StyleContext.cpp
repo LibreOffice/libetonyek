@@ -11,10 +11,10 @@
 
 #include "libetonyek_xml.h"
 #include "IWORKPropertyMapElement.h"
+#include "KEY2Dictionary.h"
 #include "KEY2ParserState.h"
 #include "KEY2Token.h"
 #include "KEYCollector.h"
-#include "KEYDictionary.h"
 #include "KEYTypes.h"
 
 namespace libetonyek

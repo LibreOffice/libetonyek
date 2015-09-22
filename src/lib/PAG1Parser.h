@@ -17,12 +17,12 @@ namespace libetonyek
 {
 
 class PAGCollector;
-struct PAGDictionary;
+struct PAG1Dictionary;
 
 class PAG1Parser: public IWORKParser
 {
 public:
-  PAG1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGCollector &collector, PAGDictionary *dict);
+  PAG1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, PAGCollector &collector, PAG1Dictionary *dict);
   virtual ~PAG1Parser();
 
 private:

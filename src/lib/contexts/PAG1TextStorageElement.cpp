@@ -23,10 +23,10 @@
 #include "IWORKTabularInfoElement.h"
 #include "IWORKTextBodyElement.h"
 #include "IWORKToken.h"
+#include "PAG1Dictionary.h"
 #include "PAG1FootnotesElement.h"
 #include "PAG1ParserState.h"
 #include "PAGCollector.h"
-#include "PAGDictionary.h"
 #include "libetonyek_xml.h"
 
 namespace libetonyek

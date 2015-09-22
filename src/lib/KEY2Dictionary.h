@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYDICTIONARY_H_INCLUDED
-#define KEYDICTIONARY_H_INCLUDED
+#ifndef KEY1DICTIONARY_H_INCLUDED
+#define KEY1DICTIONARY_H_INCLUDED
 
 #include "IWORKDictionary.h"
 #include "KEYTypes.h"
@@ -30,7 +30,7 @@ namespace libetonyek
   * styles, therefore we do not handle them separately. (We might do
   * that in the future, to ensure correctness of the format.)
   */
-struct KEYDictionary : public IWORKDictionary
+struct KEY2Dictionary : public IWORKDictionary
 {
   IWORKStyleMap_t m_placeholderStyles;
 
@@ -39,11 +39,11 @@ struct KEYDictionary : public IWORKDictionary
 
   KEYLayerMap_t m_layers;
 
-  KEYDictionary();
+  KEY2Dictionary();
 };
 
 }
 
-#endif //  KEYDICTIONARY_H_INCLUDED
+#endif //  KEY1DICTIONARY_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

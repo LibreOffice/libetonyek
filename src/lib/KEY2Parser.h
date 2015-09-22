@@ -17,12 +17,12 @@ namespace libetonyek
 {
 
 class KEYCollector;
-struct KEYDictionary;
+struct KEY2Dictionary;
 
 class KEY2Parser : public IWORKParser
 {
 public:
-  KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector &collector, KEYDictionary &dict);
+  KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector &collector, KEY2Dictionary &dict);
   virtual ~KEY2Parser();
 
 private:

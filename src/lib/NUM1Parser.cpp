@@ -437,7 +437,7 @@ IWORKXMLContextPtr_t DiscardContext::element(const int name)
 
 }
 
-NUM1Parser::NUM1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector &collector, NUMDictionary *const dict)
+NUM1Parser::NUM1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector &collector, NUM1Dictionary *const dict)
   : IWORKParser(input, package)
   , m_state(*this, collector, *dict)
 {

@@ -37,12 +37,12 @@
 #include "IWORKTextStorageElement.h"
 #include "IWORKToken.h"
 #include "IWORKTypes.h"
+#include "KEY2Dictionary.h"
 #include "KEY2ParserState.h"
 #include "KEY2StyleContext.h"
 #include "KEY2Token.h"
 #include "KEY2XMLContextBase.h"
 #include "KEYCollector.h"
-#include "KEYDictionary.h"
 #include "KEYTypes.h"
 
 using boost::get_optional_value_or;
@@ -388,7 +388,7 @@ void PlaceholderRefContext::endOfElement()
 {
   if (getRef() && isCollector())
   {
-    KEYDictionary &dict = getState().getDictionary();
+    KEY2Dictionary &dict = getState().getDictionary();
     KEYPlaceholderMap_t &placeholderMap = m_title ? dict.m_titlePlaceholders : dict.m_bodyPlaceholders;
     const KEYPlaceholderMap_t::const_iterator it = placeholderMap.find(get(getRef()));
     if (placeholderMap.end() != it)
@@ -779,7 +779,7 @@ void PlaceholderContext::endOfElement()
     const KEYPlaceholderPtr_t placeholder = getCollector().collectTextPlaceholder(style, m_title);
     if (bool(placeholder) && getId())
     {
-      KEYDictionary &dict = getState().getDictionary();
+      KEY2Dictionary &dict = getState().getDictionary();
       KEYPlaceholderMap_t &placeholderMap = m_title ? dict.m_titlePlaceholders : dict.m_bodyPlaceholders;
       placeholderMap[get(getId())] = placeholder;
     }
@@ -1300,7 +1300,7 @@ IWORKXMLContextPtr_t DiscardContext::element(const int name)
 
 }
 
-KEY2Parser::KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector &collector, KEYDictionary &dict)
+KEY2Parser::KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector &collector, KEY2Dictionary &dict)
   : IWORKParser(input, package)
   , m_state(*this, collector, dict)
 {

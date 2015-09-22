@@ -18,9 +18,9 @@
 #include "libetonyek_utils.h"
 #include "IWORKDocumentInterface.h"
 #include "IWORKOutputElements.h"
+#include "IWORKPath.h"
 #include "IWORKProperties.h"
 #include "IWORKText.h"
-#include "KEYDictionary.h"
 
 namespace libetonyek
 {
