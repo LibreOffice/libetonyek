@@ -62,7 +62,7 @@ void assertUnsupportedPackage(const string &name)
 }
 
 static const EtonyekDocument::Confidence EXCELLENT = EtonyekDocument::CONFIDENCE_EXCELLENT;
-  static const EtonyekDocument::Confidence SUPPORTED_PART = EtonyekDocument::CONFIDENCE_SUPPORTED_PART;
+static const EtonyekDocument::Confidence SUPPORTED_PART = EtonyekDocument::CONFIDENCE_SUPPORTED_PART;
 
 }
 
