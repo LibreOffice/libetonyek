@@ -25,6 +25,9 @@ test_LDADD = \
 	$(XML_LIBS)
 
 test_SOURCES = \
+	IWAFieldTest.cpp \
+	IWAMessageTest.cpp \
+	IWAReaderTest.cpp \
 	IWASnappyStreamTest.cpp \
 	IWORKChainedTokenizerTest.cpp \
 	IWORKFormulaTest.cpp \
