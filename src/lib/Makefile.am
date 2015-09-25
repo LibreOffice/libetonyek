@@ -33,6 +33,12 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
 	EtonyekDocument.cpp
 
 libetonyek_internal_la_SOURCES = \
+	IWAField.cpp \
+	IWAField.h \
+	IWAMessage.cpp \
+	IWAMessage.h \
+	IWAReader.cpp \
+	IWAReader.h \
 	IWASnappyStream.cpp \
 	IWASnappyStream.h \
 	IWORKChainedTokenizer.cpp \

@@ -147,6 +147,28 @@ int64_t readSVar(const RVNGInputStreamPtr_t &input)
   return mod ? -int64_t(val) : int64_t(val);
 }
 
+double readDouble(const RVNGInputStreamPtr_t &input)
+{
+  union
+  {
+    uint64_t u;
+    double d;
+  } convert;
+  convert.u = readU64(input);
+  return convert.d;
+}
+
+float readFloat(const RVNGInputStreamPtr_t &input)
+{
+  union
+  {
+    uint32_t u;
+    float f;
+  } convert;
+  convert.u = readU32(input);
+  return convert.f;
+}
+
 unsigned long getLength(const RVNGInputStreamPtr_t &input)
 {
   if (!input)
