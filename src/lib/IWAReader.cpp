@@ -76,6 +76,12 @@ std::string String::read(const RVNGInputStreamPtr_t &input, const unsigned long 
 
 IWAMessage Message::read(const RVNGInputStreamPtr_t &input, const unsigned long length)
 {
+  const long start = input->tell();
+  const uint64_t msgLength = readUVar(input);
+  if (static_cast<unsigned long>(input->tell() - start) > length)
+    throw ParseError();
+  if (msgLength > length - uint64_t(int64_t(input->tell() - start)))
+    throw ParseError();
   return IWAMessage(input, length);
 }
 
