@@ -102,7 +102,13 @@ void IWAMessageTest::testSimple()
 
 void IWAMessageTest::testNestedMessage()
 {
-  // TODO: add
+  IWAMessage msg(makeStream(BYTES("\xa\x6\x8\x4\x12\x2\x10\xa")), 8); // {1: {1: uint32, 2: {2: uint32}}}
+  CPPUNIT_ASSERT_NO_THROW(msg.message(1));
+  CPPUNIT_ASSERT_NO_THROW(msg.message(1).get().uint32(1));
+  CPPUNIT_ASSERT_EQUAL(4u, msg.message(1).get().uint32(1).get());
+  CPPUNIT_ASSERT_NO_THROW(msg.message(1).get().message(2));
+  CPPUNIT_ASSERT_NO_THROW(msg.message(1).get().message(2).get().uint32(2));
+  CPPUNIT_ASSERT_EQUAL(10u, msg.message(1).get().message(2).get().uint32(2).get());
 }
 
 
