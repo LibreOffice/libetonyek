@@ -19,6 +19,7 @@
 
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"
+#include "IWAMessage.h"
 #include "IWASnappyStream.h"
 #include "IWORKPresentationRedirector.h"
 #include "IWORKSpreadsheetRedirector.h"
@@ -131,44 +132,17 @@ bool probeXML(DetectionInfo &info)
 
 bool probeBinary(DetectionInfo &info)
 {
-  const RVNGInputStreamPtr_t &input = info.m_input;
-  const uint64_t headerLen = readUVar(input);
+  const uint64_t headerLen = readUVar(info.m_input);
   if (headerLen < 8)
     return false;
 
-  optional<uint64_t> id;
-  optional<uint64_t> format;
-
-  const uint64_t headerEnd = uint64_t(input->tell()) + headerLen;
-  while (!input->isEnd() && uint64_t(input->tell()) < headerEnd)
-  {
-    const uint64_t c = readUVar(input);
-    const uint64_t field = c >> 3;
-    const uint64_t type = c & 0x7;
-    if ((field == 1) && (type == 0))
-    {
-      id = readUVar(input);
-    }
-    else if ((field == 2) && (type == 2))
-    {
-      const uint64_t msgLen = readUVar(input);
-      const uint64_t msgEnd = input->tell() + msgLen;
-      while (!input->isEnd() && uint64_t(input->tell()) < msgEnd)
-      {
-        const uint64_t c2 = readUVar(input);
-        const uint64_t field2 = c2 >> 3;
-        const uint64_t type2 = c2 & 0x7;
-        if ((field2 == 1) && (type2 == 0))
-          format = readUVar(input);
-      }
-    }
-  }
-
   EtonyekDocument::Type detected = EtonyekDocument::TYPE_UNKNOWN;
 
-  if (id && format && (get(id) == 1))
+  const IWAMessage header(info.m_input, headerLen);
+
+  if (header.uint32(1) && header.message(2) && header.message(2).uint32(1) && (header.uint32(1).get() == 1))
   {
-    switch (get(format))
+    switch (header.message(2).uint32(1).get())
     {
     case 1 :
       // The app-specific object types for Keynote and Numbers overlap.
