@@ -43,6 +43,7 @@ private:
   CPPUNIT_TEST_SUITE(IWAMessageTest);
   CPPUNIT_TEST(testSimple);
   CPPUNIT_TEST(testNestedMessage);
+  CPPUNIT_TEST(testMessageSimpleAccess);
   CPPUNIT_TEST(testMissingFields);
   CPPUNIT_TEST(testRepeated);
   CPPUNIT_TEST(testPacked);
@@ -52,6 +53,7 @@ private:
 private:
   void testSimple();
   void testNestedMessage();
+  void testMessageSimpleAccess();
   void testMissingFields();
   void testRepeated();
   void testPacked();
@@ -111,6 +113,30 @@ void IWAMessageTest::testNestedMessage()
   CPPUNIT_ASSERT_EQUAL(10u, msg.message(1).get().message(2).get().uint32(2).get());
 }
 
+void IWAMessageTest::testMessageSimpleAccess()
+{
+  const RVNGInputStreamPtr_t input(
+    makeStream(BYTES(
+                 "\xa\x17" // 1: {
+                 "\x8\x4" // 1: uint64 = 4
+                 "\x11\x2\x0\x0\x0\x0\x0\x0\x0" // 2: fixed64 = 2
+                 "\x1a\x5hello" // 3: string = "hello"
+                 "\x25\x20\x0\x0\x0" // 4: fixed32 = 32
+                 // }
+               ))
+  );
+  const IWAMessage msg(input, 25);
+  CPPUNIT_ASSERT_NO_THROW(msg.message(1));
+  CPPUNIT_ASSERT_NO_THROW(msg.message(1).uint64(1));
+  CPPUNIT_ASSERT(msg.message(1).uint64(1));
+  CPPUNIT_ASSERT_EQUAL(uint64_t(4), msg.message(1).uint64(1).get());
+  CPPUNIT_ASSERT_NO_THROW(msg.message(1).fixed64(2));
+  CPPUNIT_ASSERT(msg.message(1).fixed64(2));
+  CPPUNIT_ASSERT_EQUAL(uint64_t(2), msg.message(1).fixed64(2).get());
+  CPPUNIT_ASSERT_NO_THROW(msg.message(1).string(3));
+  CPPUNIT_ASSERT(msg.message(1).string(3));
+  CPPUNIT_ASSERT_EQUAL(string("hello"), msg.message(1).string(3).get());
+}
 
 void IWAMessageTest::testMissingFields()
 {

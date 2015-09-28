@@ -136,10 +136,28 @@ typedef detail::IWAFieldImpl<IWAField::TAG_FIXED64, uint64_t, IWAReader::Fixed64
 typedef detail::IWAFieldImpl<IWAField::TAG_DOUBLE, double, IWAReader::Double> IWADoubleField;
 
 typedef detail::IWAFieldImpl<IWAField::TAG_STRING, std::string, IWAReader::String> IWAStringField;
-typedef detail::IWAFieldImpl<IWAField::TAG_MESSAGE, IWAMessage, IWAReader::Message> IWAMessageField;
 
 typedef detail::IWAFieldImpl<IWAField::TAG_FIXED32, uint32_t, IWAReader::Fixed32> IWAFixed32Field;
 typedef detail::IWAFieldImpl<IWAField::TAG_FLOAT, float, IWAReader::Float> IWAFloatField;
+
+class IWAMessageField : public detail::IWAFieldImpl<IWAField::TAG_MESSAGE, IWAMessage, IWAReader::Message>
+{
+public:
+  IWAUInt32Field &uint32(std::size_t field) const;
+  IWAUInt64Field &uint64(std::size_t field) const;
+  IWASInt32Field &sint32(std::size_t field) const;
+  IWASInt64Field &sint64(std::size_t field) const;
+  IWABoolField &bool_(std::size_t field) const;
+
+  IWAFixed64Field &fixed64(std::size_t field) const;
+  IWADoubleField &double_(std::size_t field) const;
+
+  IWAStringField &string(std::size_t field) const;
+  IWAMessageField &message(std::size_t field) const;
+
+  IWAFixed32Field &fixed32(std::size_t field) const;
+  IWAFloatField &float_(std::size_t field) const;
+};
 
 }
 

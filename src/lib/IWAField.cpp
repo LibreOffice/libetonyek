@@ -8,6 +8,7 @@
  */
 
 #include "IWAField.h"
+#include "IWAMessage.h"
 
 namespace libetonyek
 {
@@ -25,6 +26,62 @@ bool IWAField::operator!() const
 {
   return !is();
 }
+
+IWAUInt32Field &IWAMessageField::uint32(const std::size_t field) const
+{
+  return get().uint32(field);
+}
+
+IWAUInt64Field &IWAMessageField::uint64(const std::size_t field) const
+{
+  return get().uint64(field);
+}
+
+IWASInt32Field &IWAMessageField::sint32(const std::size_t field) const
+{
+  return get().sint32(field);
+}
+
+IWASInt64Field &IWAMessageField::sint64(const std::size_t field) const
+{
+  return get().sint64(field);
+}
+
+IWABoolField &IWAMessageField::bool_(const std::size_t field) const
+{
+  return get().bool_(field);
+}
+
+IWAFixed64Field &IWAMessageField::fixed64(const std::size_t field) const
+{
+  return get().fixed64(field);
+}
+
+IWADoubleField &IWAMessageField::double_(const std::size_t field) const
+{
+  return get().double_(field);
+}
+
+IWAStringField &IWAMessageField::string(const std::size_t field) const
+{
+  return get().string(field);
+}
+
+IWAMessageField &IWAMessageField::message(const std::size_t field) const
+{
+  return get().message(field);
+}
+
+IWAFixed32Field &IWAMessageField::fixed32(const std::size_t field) const
+{
+  return get().fixed32(field);
+}
+
+IWAFloatField &IWAMessageField::float_(const std::size_t field) const
+{
+  return get().float_(field);
+}
+
 
 }
 
