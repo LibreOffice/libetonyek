@@ -37,6 +37,9 @@ libetonyek_internal_la_SOURCES = \
 	IWAField.h \
 	IWAMessage.cpp \
 	IWAMessage.h \
+	IWAObjectType.h \
+	IWAParser.cpp \
+	IWAParser.h \
 	IWAReader.cpp \
 	IWAReader.h \
 	IWASnappyStream.cpp \
