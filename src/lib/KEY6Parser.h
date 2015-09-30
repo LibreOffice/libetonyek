@@ -25,6 +25,8 @@ public:
 private:
   virtual bool parseDocument();
 
+  bool parsePresentation(unsigned id);
+
 private:
   KEYCollector &m_collector;
 };

@@ -52,6 +52,8 @@ public:
 protected:
   boost::optional<IWAMessage> queryObject(unsigned id, unsigned type = 0) const;
 
+  static boost::optional<unsigned> readRef(const IWAMessage &msg, unsigned field);
+
 private:
   virtual bool parseDocument() = 0;
 

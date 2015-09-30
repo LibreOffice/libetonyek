@@ -18,6 +18,8 @@ namespace KEY6ObjectType
 
 enum
 {
+  Document = 1,
+  Presentation = 2
 };
 
 }

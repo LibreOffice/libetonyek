@@ -8,10 +8,14 @@
 
 #include "KEY6Parser.h"
 
+#include "IWAMessage.h"
+#include "KEY6ObjectType.h"
 #include "KEYCollector.h"
 
 namespace libetonyek
 {
+
+using boost::optional;
 
 KEY6Parser::KEY6Parser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package, KEYCollector &collector)
   : IWAParser(fragments, package, collector)
@@ -21,7 +25,24 @@ KEY6Parser::KEY6Parser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStr
 
 bool KEY6Parser::parseDocument()
 {
+  const optional<IWAMessage> msg(queryObject(1, KEY6ObjectType::Document));
+  if (msg)
+  {
+    const optional<unsigned> presRef(readRef(get(msg), 2));
+    if (presRef)
+      return parsePresentation(get(presRef));
+  }
   return false;
+}
+
+bool KEY6Parser::parsePresentation(const unsigned id)
+{
+  const optional<IWAMessage> msg(queryObject(id, KEY6ObjectType::Presentation));
+  if (!msg)
+    return false;
+  m_collector.startDocument();
+  m_collector.endDocument();
+  return true;
 }
 
 }

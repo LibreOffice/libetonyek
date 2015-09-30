@@ -81,6 +81,13 @@ boost::optional<IWAMessage> IWAParser::queryObject(const unsigned id, const unsi
   return boost::none;
 }
 
+boost::optional<unsigned> IWAParser::readRef(const IWAMessage &msg, const unsigned field)
+{
+  if (msg.message(field))
+    return msg.message(field).uint32(1);
+  return boost::none;
+}
+
 void IWAParser::parseObjectIndex()
 {
   if (!m_fragments->existsSubStream("Index/Metadata.iwa"))
