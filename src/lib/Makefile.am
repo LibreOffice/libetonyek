@@ -251,8 +251,7 @@ libetonyek_internal_la_SOURCES = \
 	libetonyek_utils.cpp \
 	libetonyek_utils.h \
 	libetonyek_xml.cpp \
-	libetonyek_xml.h \
-	$(BUILT_SOURCES)
+	libetonyek_xml.h
 
 if OS_WIN32
 
@@ -274,7 +273,10 @@ MAINTAINERCLEANFILES = $(BUILT_SOURCES)
 
 # These may be in the builddir too
 BUILD_EXTRA_DIST = \
+	$(BUILT_SOURCES) \
 	libetonyek.rc
+
+DISTCLEANFILES = libetonyek.rc
 
 %.inc : %.gperf
 	if $(GPERF) $(GPERFFLAGS) --language C++ $< > $@.tmp; then \

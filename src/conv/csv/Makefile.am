@@ -21,6 +21,7 @@ EXTRA_DIST = \
 	$(numbers2csv_SOURCES) \
 	numbers2csv.rc.in
 
-# These may be in the builddir too
 BUILD_EXTRA_DIST = \
 	numbers2csv.rc
+
+DISTCLEANFILES = numbers2csv.rc
