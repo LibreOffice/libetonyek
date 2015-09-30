@@ -22,6 +22,7 @@ class IWAMessage
 {
 public:
   IWAMessage(const RVNGInputStreamPtr_t &input, unsigned long length);
+  IWAMessage(const RVNGInputStreamPtr_t &input, long start, long end);
 
   IWAUInt32Field &uint32(std::size_t field) const;
   IWAUInt64Field &uint64(std::size_t field) const;
@@ -61,6 +62,8 @@ private:
   typedef std::map<unsigned, Field> FieldList_t;
 
 private:
+  void parse(unsigned long length);
+
   template<typename FieldT>
   FieldT &getField(std::size_t field, WireType wireType, IWAField::Tag tag) const;
 

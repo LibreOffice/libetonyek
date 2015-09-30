@@ -37,63 +37,75 @@ IWAMessage::IWAMessage(const RVNGInputStreamPtr_t &input, unsigned long length)
   : m_input(input)
   , m_fields()
 {
-  const long startPos = input->tell();
-  try
+  parse(length);
+}
+
+IWAMessage::IWAMessage(const RVNGInputStreamPtr_t &input, const long start, const long end)
+  : m_input()
+  , m_fields()
+{
+  assert(end >= start);
+
+  if (input->seek(start, librevenge::RVNG_SEEK_SET) == 0)
+    parse(static_cast<unsigned long>(end - start));
+}
+
+void IWAMessage::parse(const unsigned long length) try
+{
+  const long startPos = m_input->tell();
+  while (!m_input->isEnd() && (length > static_cast<unsigned long>(m_input->tell() - startPos)))
   {
-    while (!input->isEnd() && (length > static_cast<unsigned long>(input->tell() - startPos)))
+    const unsigned spec = unsigned(readUVar(m_input));
+    const unsigned wireType = spec & 0x7;
+
+    const long start = m_input->tell();
+
+    switch (wireType)
     {
-      const unsigned spec = unsigned(readUVar(input));
-      const unsigned wireType = spec & 0x7;
-
-      const long start = input->tell();
-
-      switch (wireType)
-      {
-      case 0:
-        readUVar(input);
-        break;
-      case 1:
-        readU64(input);
-        break;
-      case 2:
-      {
-        const uint64_t len = readUVar(input);
-        if (input->seek(len, librevenge::RVNG_SEEK_CUR) != 0)
-          throw ParseError();
-        break;
-      }
-      case 5:
-        readU32(input);
-        break;
-      default:
-        ETONYEK_DEBUG_MSG(("IWAMessage::IWAMessage: unexpected wire type %d\n", wireType));
+    case 0:
+      readUVar(m_input);
+      break;
+    case 1:
+      readU64(m_input);
+      break;
+    case 2:
+    {
+      const uint64_t len = readUVar(m_input);
+      if (m_input->seek(len, librevenge::RVNG_SEEK_CUR) != 0)
         throw ParseError();
-      }
+      break;
+    }
+    case 5:
+      readU32(m_input);
+      break;
+    default:
+      ETONYEK_DEBUG_MSG(("IWAMessage::IWAMessage: unexpected wire type %d\n", wireType));
+      throw ParseError();
+    }
 
-      long end = input->tell();
-      if (length >= static_cast<unsigned long>(end - start))
+    long end = m_input->tell();
+    if (length >= static_cast<unsigned long>(end - start))
+    {
+      const unsigned field = spec >> 3;
+      FieldList_t::iterator it = m_fields.find(field);
+      if ((it != m_fields.end()) && (it->second.m_wireType != WireType(wireType)))
       {
-        const unsigned field = spec >> 3;
-        FieldList_t::iterator it = m_fields.find(field);
-        if ((it != m_fields.end()) && (it->second.m_wireType != WireType(wireType)))
-        {
-          ETONYEK_DEBUG_MSG(("IWAMessage::IWAMessage: wire type %d of field %d does not match previously seen %d\n", wireType, field, it->second.m_wireType));
-          continue;
-        }
-        if (it == m_fields.end())
-          it = m_fields.insert(make_pair(field, Field(WireType(wireType)))).first;
-        assert(it != m_fields.end());
-        it->second.m_pieces.push_back(make_pair(start, end));
+        ETONYEK_DEBUG_MSG(("IWAMessage::IWAMessage: wire type %d of field %d does not match previously seen %d\n", wireType, field, it->second.m_wireType));
+        continue;
       }
+      if (it == m_fields.end())
+        it = m_fields.insert(make_pair(field, Field(WireType(wireType)))).first;
+      assert(it != m_fields.end());
+      it->second.m_pieces.push_back(make_pair(start, end));
     }
   }
-  catch (...)
-  {
-    // The format is quite robust: a small damage like a bit flip
-    // cannot break more than a single message and there is a good
-    // chance that it will not affect parsing significantly. So we try
-    // to get as much data as possible, ignoring parsing errors.
-  }
+}
+catch (...)
+{
+  // The format is quite robust: a small damage like a bit flip
+  // cannot break more than a single message and there is a good
+  // chance that it will not affect parsing significantly. So we try
+  // to get as much data as possible, ignoring parsing errors.
 }
 
 IWAUInt32Field &IWAMessage::uint32(const std::size_t field) const
