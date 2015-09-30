@@ -13,6 +13,7 @@
 #include <deque>
 #include <stdexcept>
 
+#include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include "IWAReader.h"
@@ -91,6 +92,11 @@ public:
     return m_values.size();
   }
 
+  operator const std::deque<value_type> &() const
+  {
+    return m_values;
+  }
+
   virtual bool is() const
   {
     return !m_values.empty();
@@ -108,6 +114,11 @@ public:
     if (m_values.empty())
       throw std::logic_error("the field is unset");
     return m_values[0];
+  }
+
+  operator boost::optional<value_type>() const
+  {
+    return m_values.empty() ? boost::none : boost::make_optional(m_values.front());
   }
 
   virtual void parse(const RVNGInputStreamPtr_t &input, const unsigned long length)

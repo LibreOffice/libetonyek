@@ -7,6 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <algorithm>
 #include <stdexcept>
 
 #include <boost/make_shared.hpp>
@@ -43,12 +44,16 @@ private:
   CPPUNIT_TEST(testEmpty);
   CPPUNIT_TEST(testParse);
   CPPUNIT_TEST(testParsePacked);
+  CPPUNIT_TEST(testOptional);
+  CPPUNIT_TEST(testRepeated);
   CPPUNIT_TEST_SUITE_END();
 
 private:
   void testEmpty();
   void testParse();
   void testParsePacked();
+  void testOptional();
+  void testRepeated();
 };
 
 void IWAFieldTest::setUp()
@@ -117,6 +122,25 @@ void IWAFieldTest::testParsePacked()
   // optional
   CPPUNIT_ASSERT(field.is());
   CPPUNIT_ASSERT_EQUAL(uint64_t(1), field.get());
+}
+
+void IWAFieldTest::testOptional()
+{
+  IWAUInt64Field field;
+  CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x1\x4")), 2));
+  const boost::optional<uint64_t> &value = field;
+  CPPUNIT_ASSERT(value);
+  CPPUNIT_ASSERT_EQUAL(uint64_t(1), get(value));
+}
+
+void IWAFieldTest::testRepeated()
+{
+  IWAUInt64Field field;
+  CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x1\x4\x8")), 3));
+  const uint64_t expected[] = {1, 4, 8};
+  const std::deque<uint64_t> &values = field;
+  CPPUNIT_ASSERT_EQUAL(ETONYEK_NUM_ELEMENTS(expected), values.size());
+  CPPUNIT_ASSERT(std::equal(values.begin(), values.end(), expected));
 }
 
 #undef BYTES
