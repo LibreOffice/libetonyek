@@ -30,6 +30,7 @@
 #include "KEY2Dictionary.h"
 #include "KEY2Parser.h"
 #include "KEY2Token.h"
+#include "KEY6Parser.h"
 #include "KEYCollector.h"
 #include "NUMCollector.h"
 #include "NUM1Dictionary.h"
@@ -353,11 +354,22 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   info.m_input->seek(0, librevenge::RVNG_SEEK_SET);
 
-  KEY2Dictionary dict;
   IWORKPresentationRedirector redirector(generator);
   KEYCollector collector(&redirector);
-  const shared_ptr<IWORKParser> parser = makeKeynoteParser(info.m_format, info.m_input, info.m_package, collector, dict);
-  return parser->parse();
+  if (info.m_format == FORMAT_XML2)
+  {
+    KEY2Dictionary dict;
+    const shared_ptr<IWORKParser> parser = makeKeynoteParser(info.m_format, info.m_input, info.m_package, collector, dict);
+    return parser->parse();
+  }
+  else if (info.m_format == FORMAT_BINARY)
+  {
+    KEY6Parser parser(info.m_package, info.m_package, collector);
+    return parser.parse();
+  }
+
+  ETONYEK_DEBUG_MSG(("EtonyekDocument::parse: unhandled format %d\n", info.m_format));
+  return false;
 }
 catch (...)
 {

@@ -128,6 +128,9 @@ libetonyek_internal_la_SOURCES = \
 	KEY2Token.cpp \
 	KEY2Token.h \
 	KEY2XMLContextBase.h \
+	KEY6ObjectType.h \
+	KEY6Parser.cpp \
+	KEY6Parser.h \
 	KEYCollector.cpp \
 	KEYCollector.h \
 	KEYTypes.cpp \
