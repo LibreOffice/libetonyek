@@ -41,7 +41,7 @@ IWAMessage::IWAMessage(const RVNGInputStreamPtr_t &input, unsigned long length)
 }
 
 IWAMessage::IWAMessage(const RVNGInputStreamPtr_t &input, const long start, const long end)
-  : m_input()
+  : m_input(input)
   , m_fields()
 {
   assert(end >= start);
@@ -52,6 +52,8 @@ IWAMessage::IWAMessage(const RVNGInputStreamPtr_t &input, const long start, cons
 
 void IWAMessage::parse(const unsigned long length) try
 {
+  assert(bool(m_input));
+
   const long startPos = m_input->tell();
   while (!m_input->isEnd() && (length > static_cast<unsigned long>(m_input->tell() - startPos)))
   {
