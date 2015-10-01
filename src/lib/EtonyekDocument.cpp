@@ -68,6 +68,7 @@ struct DetectionInfo
 
   RVNGInputStreamPtr_t m_input;
   RVNGInputStreamPtr_t m_package;
+  RVNGInputStreamPtr_t m_fragments;
   EtonyekDocument::Confidence m_confidence;
   EtonyekDocument::Type m_type;
   Format m_format;
@@ -76,6 +77,7 @@ struct DetectionInfo
 DetectionInfo::DetectionInfo(const EtonyekDocument::Type type)
   : m_input()
   , m_package()
+  , m_fragments()
   , m_confidence(EtonyekDocument::CONFIDENCE_NONE)
   , m_type(type)
   , m_format(FORMAT_UNKNOWN)
@@ -197,6 +199,7 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
       const bool isPackage(binaryInput->existsSubStream("Metadata/DocumentIdentifier"));
       if (binaryInput->existsSubStream("Index.zip"))
         binaryInput = getSubStream(binaryInput, "Index.zip");
+      info.m_fragments = binaryInput;
       if (binaryInput->existsSubStream("Index/Document.iwa"))
       {
         if (!isPackage)
@@ -364,7 +367,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
   }
   else if (info.m_format == FORMAT_BINARY)
   {
-    KEY6Parser parser(info.m_package, info.m_package, collector);
+    KEY6Parser parser(info.m_fragments, info.m_package, collector);
     return parser.parse();
   }
 
