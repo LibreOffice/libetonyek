@@ -33,6 +33,7 @@ class IWAParser
 public:
   struct ObjectRecord
   {
+    ObjectRecord();
     ObjectRecord(const RVNGInputStreamPtr_t &stream, unsigned type, long pos, unsigned long headerLen, unsigned long dataLen);
 
     RVNGInputStreamPtr_t m_stream;
