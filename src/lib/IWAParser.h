@@ -60,6 +60,7 @@ private:
 private:
   void parseObjectIndex();
 
+  void scanFragment(unsigned id);
   void scanFragment(unsigned id, const RVNGInputStreamPtr_t &stream);
 
 private:
@@ -67,7 +68,7 @@ private:
   const RVNGInputStreamPtr_t m_package;
   IWORKCollector &m_collector;
 
-  mutable FileMap_t m_fragmentMap;
+  FileMap_t m_fragmentMap;
   mutable RecordMap_t m_fragmentObjectMap;
   FileMap_t m_fileMap;
 };

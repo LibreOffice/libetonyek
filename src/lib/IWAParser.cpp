@@ -54,30 +54,13 @@ boost::optional<IWAMessage> IWAParser::queryObject(const unsigned id, const unsi
   if (recIt == m_fragmentObjectMap.end())
     return boost::none;
   if (!recIt->second.second.m_stream)
+    const_cast<IWAParser *>(this)->scanFragment(recIt->second.first);
+  if (recIt->second.second.m_stream)
   {
-    // scan the fragment file
-    const FileMap_t::iterator fragmentIt = m_fragmentMap.find(recIt->second.first);
-    if (fragmentIt == m_fragmentMap.end())
-      return boost::none;
-
-    if (!m_fragments->existsSubStream(fragmentIt->second.first.c_str()))
-    {
-      ETONYEK_DEBUG_MSG(("IWAParser::queryObject: file %s does not exist\n", fragmentIt->second.first.c_str()));
-      m_fragmentMap.erase(fragmentIt); // avoid unnecessary repeats of the lookup
-      return boost::none;
-    }
-    const RVNGInputStreamPtr_t stream(m_fragments->getSubStreamByName(fragmentIt->second.first.c_str()));
-    assert(bool(stream));
-    assert(!fragmentIt->second.second); // this could only happen if the fragment file had already been scanned
-    fragmentIt->second.second = stream;
-    const_cast<IWAParser *>(this)->scanFragment(fragmentIt->first, fragmentIt->second.second);
+    const ObjectRecord &objRecord = recIt->second.second;
+    if ((objRecord.m_type == type) || (type == 0))
+      return IWAMessage(objRecord.m_stream, objRecord.m_dataRange.first, objRecord.m_dataRange.second);
   }
-
-  if (!recIt->second.second.m_stream)
-    return boost::none;
-  const ObjectRecord &objRecord = recIt->second.second;
-  if ((objRecord.m_type == type) || (type == 0))
-    return IWAMessage(objRecord.m_stream, objRecord.m_dataRange.first, objRecord.m_dataRange.second);
   return boost::none;
 }
 
@@ -97,6 +80,28 @@ void IWAParser::parseObjectIndex()
   }
 
   const RVNGInputStreamPtr_t input(m_fragments->getSubStreamByName("Index/Metadata.iwa"));
+}
+
+void IWAParser::scanFragment(const unsigned id)
+{
+  // scan the fragment file
+  const FileMap_t::iterator fragmentIt = m_fragmentMap.find(id);
+  if (fragmentIt != m_fragmentMap.end())
+  {
+    assert(!fragmentIt->second.second); // this could only happen if the fragment file had already been scanned
+    if (m_fragments->existsSubStream(fragmentIt->second.first.c_str()))
+    {
+      const RVNGInputStreamPtr_t stream(m_fragments->getSubStreamByName(fragmentIt->second.first.c_str()));
+      assert(bool(stream));
+      fragmentIt->second.second = stream;
+      scanFragment(fragmentIt->first, fragmentIt->second.second);
+    }
+    else
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::scanFragment: file %s does not exist\n", fragmentIt->second.first.c_str()));
+      m_fragmentMap.erase(fragmentIt); // avoid unnecessary repeats of the lookup
+    }
+  }
 }
 
 void IWAParser::scanFragment(const unsigned id, const RVNGInputStreamPtr_t &stream)
