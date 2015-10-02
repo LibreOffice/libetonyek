@@ -105,11 +105,11 @@ void IWAMessageTest::testSimple()
 void IWAMessageTest::testNestedMessage()
 {
   IWAMessage msg(makeStream(BYTES("\xa\x6\x8\x4\x12\x2\x10\xa")), 8); // {1: {1: uint32, 2: {2: uint32}}}
-  CPPUNIT_ASSERT_NO_THROW(msg.message(1));
-  CPPUNIT_ASSERT_NO_THROW(msg.message(1).get().uint32(1));
+  CPPUNIT_ASSERT(msg.message(1));
+  CPPUNIT_ASSERT(msg.message(1).get().uint32(1));
   CPPUNIT_ASSERT_EQUAL(4u, msg.message(1).get().uint32(1).get());
-  CPPUNIT_ASSERT_NO_THROW(msg.message(1).get().message(2));
-  CPPUNIT_ASSERT_NO_THROW(msg.message(1).get().message(2).get().uint32(2));
+  CPPUNIT_ASSERT(msg.message(1).get().message(2));
+  CPPUNIT_ASSERT(msg.message(1).get().message(2).get().uint32(2));
   CPPUNIT_ASSERT_EQUAL(10u, msg.message(1).get().message(2).get().uint32(2).get());
 }
 
@@ -127,6 +127,7 @@ void IWAMessageTest::testMessageSimpleAccess()
   );
   const IWAMessage msg(input, 25);
   CPPUNIT_ASSERT_NO_THROW(msg.message(1));
+  CPPUNIT_ASSERT(msg.message(1));
   CPPUNIT_ASSERT_NO_THROW(msg.message(1).uint64(1));
   CPPUNIT_ASSERT(msg.message(1).uint64(1));
   CPPUNIT_ASSERT_EQUAL(uint64_t(4), msg.message(1).uint64(1).get());
@@ -152,7 +153,7 @@ void IWAMessageTest::testMissingFields()
 void IWAMessageTest::testRepeated()
 {
   IWAMessage msg(makeStream(BYTES("\x8\x4\x8\x8\x8\x10")), 6);
-  CPPUNIT_ASSERT_NO_THROW(msg.uint64(1));
+  CPPUNIT_ASSERT(msg.uint64(1));
   CPPUNIT_ASSERT_EQUAL(size_t(3), msg.uint64(1).size());
   CPPUNIT_ASSERT_EQUAL(uint64_t(4), msg.uint64(1)[0]);
   CPPUNIT_ASSERT_EQUAL(uint64_t(8), msg.uint64(1)[1]);
@@ -162,7 +163,7 @@ void IWAMessageTest::testRepeated()
 void IWAMessageTest::testPacked()
 {
   IWAMessage msg(makeStream(BYTES("\xa\x3\x1\x2\x3")), 5);
-  CPPUNIT_ASSERT_NO_THROW(msg.uint64(1));
+  CPPUNIT_ASSERT(msg.uint64(1));
   CPPUNIT_ASSERT_EQUAL(size_t(3), msg.uint64(1).size());
   CPPUNIT_ASSERT_EQUAL(uint64_t(1), msg.uint64(1)[0]);
   CPPUNIT_ASSERT_EQUAL(uint64_t(2), msg.uint64(1)[1]);
