@@ -63,7 +63,10 @@ boost::optional<IWAMessage> IWAParser::queryObject(const unsigned id, const unsi
 {
   const RecordMap_t::const_iterator recIt = m_fragmentObjectMap.find(id);
   if (recIt == m_fragmentObjectMap.end())
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::queryObject: object %u not found\n", id));
     return boost::none;
+  }
   if (!recIt->second.second.m_stream)
     const_cast<IWAParser *>(this)->scanFragment(recIt->second.first);
   if (recIt->second.second.m_stream)
@@ -71,6 +74,7 @@ boost::optional<IWAMessage> IWAParser::queryObject(const unsigned id, const unsi
     const ObjectRecord &objRecord = recIt->second.second;
     if ((objRecord.m_type == type) || (type == 0))
       return IWAMessage(objRecord.m_stream, objRecord.m_dataRange.first, objRecord.m_dataRange.second);
+    ETONYEK_DEBUG_MSG(("IWAParser::queryObject: type mismatch for object %u, got %u expected %u\n", id, objRecord.m_type, type));
   }
   return boost::none;
 }
