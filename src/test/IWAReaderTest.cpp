@@ -61,9 +61,8 @@ void IWAReaderTest::testString()
 {
   using namespace IWAReader;
 
-  CPPUNIT_ASSERT_EQUAL(string("hello"), String::read(makeStream(BYTES("\x5hello")), 6));
-  CPPUNIT_ASSERT_EQUAL(string("hello"), String::read(makeStream(BYTES("\x85\x0hello")), 7));
-  CPPUNIT_ASSERT_EQUAL(string("hello"), String::read(makeStream(BYTES("\x5hello world")), 6));
+  CPPUNIT_ASSERT_EQUAL(string("hello"), String::read(makeStream(BYTES("hello")), 5));
+  CPPUNIT_ASSERT_EQUAL(string("hello"), String::read(makeStream(BYTES("hello world")), 5));
 }
 
 #undef BYTES

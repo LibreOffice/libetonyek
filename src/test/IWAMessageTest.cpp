@@ -48,6 +48,7 @@ private:
   CPPUNIT_TEST(testRepeated);
   CPPUNIT_TEST(testPacked);
   CPPUNIT_TEST(testInvalidInput);
+  CPPUNIT_TEST(testNestedMessageWithTrailingData);
   CPPUNIT_TEST_SUITE_END();
 
 private:
@@ -58,6 +59,7 @@ private:
   void testRepeated();
   void testPacked();
   void testInvalidInput();
+  void testNestedMessageWithTrailingData();
 };
 
 void IWAMessageTest::setUp()
@@ -173,6 +175,21 @@ void IWAMessageTest::testPacked()
 void IWAMessageTest::testInvalidInput()
 {
   // TODO: add
+}
+
+void IWAMessageTest::testNestedMessageWithTrailingData()
+{
+  const RVNGInputStreamPtr_t input(makeStream(BYTES("\x8\x4\x12\x2\x10\x5" "\x18\x2"))); // {1: uint32, 2: {2: uint32}}
+  CPPUNIT_ASSERT_NO_THROW(IWAMessage(input, 6));
+  CPPUNIT_ASSERT_EQUAL(6L, input->tell());
+  input->seek(0, librevenge::RVNG_SEEK_SET);
+  const IWAMessage msg(input, 6);
+  CPPUNIT_ASSERT(msg.uint32(1));
+  CPPUNIT_ASSERT_EQUAL(uint32_t(4), msg.uint32(1).get());
+  CPPUNIT_ASSERT(msg.message(2));
+  CPPUNIT_ASSERT(msg.message(2).uint32(2));
+  CPPUNIT_ASSERT_EQUAL(uint32_t(5), msg.message(2).uint32(2).get());
+  CPPUNIT_ASSERT(!msg.message(2).uint32(3));
 }
 
 #undef BYTES

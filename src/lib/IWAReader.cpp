@@ -61,27 +61,15 @@ double Double::read(const RVNGInputStreamPtr_t &input, unsigned long)
 
 std::string String::read(const RVNGInputStreamPtr_t &input, const unsigned long length)
 {
-  const long start = input->tell();
-  const uint64_t strLength = readUVar(input);
-  if (static_cast<unsigned long>(input->tell() - start) > length)
-    throw ParseError();
-  if (strLength > length - uint64_t(int64_t(input->tell() - start)))
-    throw ParseError();
   unsigned long readBytes(0);
-  const unsigned char *const bytes = input->read(strLength, readBytes);
-  if (readBytes < strLength)
+  const unsigned char *const bytes = input->read(length, readBytes);
+  if (readBytes < length)
     throw ParseError();
-  return std::string(reinterpret_cast<const char *>(bytes), std::size_t(strLength));
+  return std::string(reinterpret_cast<const char *>(bytes), std::size_t(length));
 }
 
 IWAMessage Message::read(const RVNGInputStreamPtr_t &input, const unsigned long length)
 {
-  const long start = input->tell();
-  const uint64_t msgLength = readUVar(input);
-  if (static_cast<unsigned long>(input->tell() - start) > length)
-    throw ParseError();
-  if (msgLength > length - uint64_t(int64_t(input->tell() - start)))
-    throw ParseError();
   return IWAMessage(input, length);
 }
 

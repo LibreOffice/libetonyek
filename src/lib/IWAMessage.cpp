@@ -62,7 +62,7 @@ void IWAMessage::parse(const unsigned long length) try
     const unsigned spec = unsigned(readUVar(m_input));
     const unsigned wireType = spec & 0x7;
 
-    const long start = m_input->tell();
+    long start = m_input->tell();
 
     switch (wireType)
     {
@@ -75,6 +75,7 @@ void IWAMessage::parse(const unsigned long length) try
     case 2:
     {
       const uint64_t len = readUVar(m_input);
+      start = m_input->tell(); // the field parser expects just the actual data
       if (m_input->seek(len, librevenge::RVNG_SEEK_CUR) != 0)
         throw ParseError();
       break;
@@ -87,8 +88,8 @@ void IWAMessage::parse(const unsigned long length) try
       throw ParseError();
     }
 
-    long end = m_input->tell();
-    if (length >= static_cast<unsigned long>(end - start))
+    const long end = m_input->tell();
+    if (length >= static_cast<unsigned long>(end - startPos))
     {
       const unsigned field = spec >> 3;
       FieldList_t::iterator it = m_fields.find(field);
@@ -178,13 +179,9 @@ FieldT &IWAMessage::getField(const std::size_t field, const WireType wireType, c
     return dummy;
   }
 
-  bool isPacked = false;
-
   if (fieldIt->second.m_wireType != wireType)
   {
-    if (fieldIt->second.m_wireType == WIRE_TYPE_LENGTH_DELIMITED)
-      isPacked = true;
-    else
+    if (fieldIt->second.m_wireType != WIRE_TYPE_LENGTH_DELIMITED)
       throw AccessError();
   }
 
@@ -199,8 +196,6 @@ FieldT &IWAMessage::getField(const std::size_t field, const WireType wireType, c
     for (std::deque<InputRange_t>::const_iterator it = fieldIt->second.m_pieces.begin(); it != fieldIt->second.m_pieces.end(); ++it)
     {
       m_input->seek(it->first, librevenge::RVNG_SEEK_SET);
-      if (isPacked)
-        readUVar(m_input); // skip the length
       fieldIt->second.m_realField->parse(m_input, static_cast<unsigned long>(it->second - m_input->tell()));
     }
   }
