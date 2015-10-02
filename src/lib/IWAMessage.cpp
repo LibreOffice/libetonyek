@@ -37,6 +37,8 @@ IWAMessage::IWAMessage(const RVNGInputStreamPtr_t &input, unsigned long length)
   : m_input(input)
   , m_fields()
 {
+  assert(length > 0);
+
   parse(length);
 }
 
@@ -44,7 +46,7 @@ IWAMessage::IWAMessage(const RVNGInputStreamPtr_t &input, const long start, cons
   : m_input(input)
   , m_fields()
 {
-  assert(end >= start);
+  assert(end > start);
 
   if (input->seek(start, librevenge::RVNG_SEEK_SET) == 0)
     parse(static_cast<unsigned long>(end - start));
