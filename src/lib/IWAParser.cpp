@@ -164,10 +164,9 @@ void IWAParser::scanFragment(const unsigned id, const RVNGInputStreamPtr_t &stre
       const uint64_t dataLen = header.message(2).uint64(3).get();
       if (header.uint32(1))
       {
-        const RecordMap_t::iterator recIt = m_fragmentObjectMap.find(header.uint32(1).get());
-        const optional<unsigned> type = header.uint32(1);
-        if (recIt != m_fragmentObjectMap.end())
-          recIt->second.second = ObjectRecord(stream, get_optional_value_or(type, 0), start, long(headerLen), long(dataLen));
+        const optional<unsigned> type = header.message(2).uint32(1);
+        const ObjectRecord rec(stream, get_optional_value_or(type, 0), start, long(headerLen), long(dataLen));
+        m_fragmentObjectMap[header.uint32(1).get()] = make_pair(id, rec);
       }
       if (stream->seek(start + long(headerLen) + long(dataLen), librevenge::RVNG_SEEK_SET) != 0)
         break;
