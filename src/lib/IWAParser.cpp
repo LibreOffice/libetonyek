@@ -74,7 +74,7 @@ boost::optional<IWAMessage> IWAParser::queryObject(const unsigned id, const unsi
     const ObjectRecord &objRecord = recIt->second.second;
     if ((objRecord.m_type == type) || (type == 0))
       return IWAMessage(objRecord.m_stream, objRecord.m_dataRange.first, objRecord.m_dataRange.second);
-    ETONYEK_DEBUG_MSG(("IWAParser::queryObject: type mismatch for object %u, got %u expected %u\n", id, objRecord.m_type, type));
+    ETONYEK_DEBUG_MSG(("IWAParser::queryObject: type mismatch for object %u: expected %u, got %u\n", id, type, objRecord.m_type));
   }
   return boost::none;
 }
@@ -84,6 +84,21 @@ boost::optional<unsigned> IWAParser::readRef(const IWAMessage &msg, const unsign
   if (msg.message(field))
     return msg.message(field).uint32(1);
   return boost::none;
+}
+
+std::deque<unsigned> IWAParser::readRefs(const IWAMessage &msg, const unsigned field)
+{
+  std::deque<unsigned> refs;
+  if (msg.message(field))
+  {
+    const std::deque<IWAMessage> &objs = msg.message(field);
+    for (std::deque<IWAMessage>::const_iterator it = objs.begin(); it != objs.end(); ++it)
+    {
+      if (it->uint32(1))
+        refs.push_back(it->uint32(1).get());
+    }
+  }
+  return refs;
 }
 
 void IWAParser::parseObjectIndex()

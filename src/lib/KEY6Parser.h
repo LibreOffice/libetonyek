@@ -26,6 +26,8 @@ private:
   virtual bool parseDocument();
 
   bool parsePresentation(unsigned id);
+  bool parseSlideList(unsigned id);
+  bool parseSlide(unsigned id, bool master);
 
 private:
   KEYCollector &m_collector;

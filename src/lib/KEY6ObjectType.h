@@ -19,7 +19,9 @@ namespace KEY6ObjectType
 enum
 {
   Document = 1,
-  Presentation = 2
+  Presentation = 2,
+  SlideList = 4,
+  Slide = 5
 };
 
 }
