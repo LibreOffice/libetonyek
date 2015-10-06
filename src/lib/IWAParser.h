@@ -18,11 +18,11 @@
 #include <boost/unordered_map.hpp>
 
 #include "libetonyek_utils.h"
+#include "IWAMessage.h"
 
 namespace libetonyek
 {
 
-class IWAMessage;
 class IWORKCollector;
 
 class IWAParser
@@ -52,8 +52,28 @@ public:
   bool parse();
 
 protected:
-  boost::optional<IWAMessage> queryObject(unsigned id, unsigned type = 0) const;
+  class ObjectMessage
+  {
+  public:
+    ObjectMessage(IWAParser &parser, unsigned id, unsigned type = 0);
+    ~ObjectMessage();
 
+    operator bool() const;
+    const IWAMessage &get() const;
+
+    friend const IWAMessage &get(const ObjectMessage &msg)
+    {
+      return msg.get();
+    }
+
+  private:
+    IWAParser &m_parser;
+    boost::optional<IWAMessage> m_message;
+    const unsigned m_id;
+  };
+  friend class ObjectMessage;
+
+protected:
   static boost::optional<unsigned> readRef(const IWAMessage &msg, unsigned field);
   static std::deque<unsigned> readRefs(const IWAMessage &msg, unsigned field);
 
@@ -61,6 +81,8 @@ private:
   virtual bool parseDocument() = 0;
 
 private:
+  void queryObject(unsigned id, unsigned type, boost::optional<IWAMessage> &msg) const;
+
   void parseObjectIndex();
 
   void scanFragment(unsigned id);
@@ -74,6 +96,8 @@ private:
   FileMap_t m_fragmentMap;
   mutable RecordMap_t m_fragmentObjectMap;
   FileMap_t m_fileMap;
+
+  std::deque<unsigned> m_visited;
 };
 
 }

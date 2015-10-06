@@ -33,7 +33,7 @@ KEY6Parser::KEY6Parser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStr
 
 bool KEY6Parser::parseDocument()
 {
-  const optional<IWAMessage> msg(queryObject(1, KEY6ObjectType::Document));
+  const ObjectMessage msg(*this, 1, KEY6ObjectType::Document);
   if (msg)
   {
     const optional<unsigned> presRef(readRef(get(msg), 2));
@@ -45,7 +45,7 @@ bool KEY6Parser::parseDocument()
 
 bool KEY6Parser::parsePresentation(const unsigned id)
 {
-  const optional<IWAMessage> msg(queryObject(id, KEY6ObjectType::Presentation));
+  const ObjectMessage msg(*this, id, KEY6ObjectType::Presentation);
   if (!msg)
     return false;
 
@@ -69,7 +69,7 @@ bool KEY6Parser::parsePresentation(const unsigned id)
 
 bool KEY6Parser::parseSlideList(const unsigned id)
 {
-  const optional<IWAMessage> msg(queryObject(id, KEY6ObjectType::SlideList));
+  const ObjectMessage msg(*this, id, KEY6ObjectType::SlideList);
   if (!msg)
     return false;
 
@@ -82,7 +82,7 @@ bool KEY6Parser::parseSlideList(const unsigned id)
 
 bool KEY6Parser::parseSlide(const unsigned id, const bool master)
 {
-  const optional<IWAMessage> msg(queryObject(id, KEY6ObjectType::Slide));
+  const ObjectMessage msg(*this, id, KEY6ObjectType::Slide);
   if (!msg)
     return false;
 

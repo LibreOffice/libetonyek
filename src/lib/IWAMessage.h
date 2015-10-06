@@ -68,7 +68,7 @@ private:
   FieldT &getField(std::size_t field, WireType wireType, IWAField::Tag tag) const;
 
 private:
-  const RVNGInputStreamPtr_t m_input;
+  RVNGInputStreamPtr_t m_input;
   mutable FieldList_t m_fields;
 };
 

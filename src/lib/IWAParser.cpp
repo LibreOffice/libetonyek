@@ -10,12 +10,10 @@
 #include "IWAParser.h"
 
 #include <cassert>
-#include <deque>
 
 #include <boost/make_shared.hpp>
 #include <boost/optional.hpp>
 
-#include "IWAMessage.h"
 #include "IWASnappyStream.h"
 
 namespace libetonyek
@@ -59,13 +57,47 @@ bool IWAParser::parse()
   return parseDocument();
 }
 
-boost::optional<IWAMessage> IWAParser::queryObject(const unsigned id, const unsigned type) const
+IWAParser::ObjectMessage::ObjectMessage(IWAParser &parser, const unsigned id, const unsigned type)
+  : m_parser(parser)
+  , m_message()
+  , m_id(id)
+{
+  std::deque<unsigned>::const_iterator it = find(m_parser.m_visited.begin(), m_parser.m_visited.end(), m_id);
+  if (it == m_parser.m_visited.end())
+  {
+    m_parser.queryObject(m_id, type, m_message);
+    if (m_message)
+      m_parser.m_visited.push_back(m_id);
+  }
+}
+
+IWAParser::ObjectMessage::~ObjectMessage()
+{
+  if (m_message)
+  {
+    assert(!m_parser.m_visited.empty());
+    assert(m_parser.m_visited.back() == m_id);
+    m_parser.m_visited.pop_back();
+  }
+}
+
+IWAParser::ObjectMessage::operator bool() const
+{
+  return bool(m_message);
+}
+
+const IWAMessage &IWAParser::ObjectMessage::get() const
+{
+  return m_message.get();
+}
+
+void IWAParser::queryObject(const unsigned id, const unsigned type, boost::optional<IWAMessage> &msg) const
 {
   const RecordMap_t::const_iterator recIt = m_fragmentObjectMap.find(id);
   if (recIt == m_fragmentObjectMap.end())
   {
     ETONYEK_DEBUG_MSG(("IWAParser::queryObject: object %u not found\n", id));
-    return boost::none;
+    return;
   }
   if (!recIt->second.second.m_stream)
     const_cast<IWAParser *>(this)->scanFragment(recIt->second.first);
@@ -73,10 +105,14 @@ boost::optional<IWAMessage> IWAParser::queryObject(const unsigned id, const unsi
   {
     const ObjectRecord &objRecord = recIt->second.second;
     if ((objRecord.m_type == type) || (type == 0))
-      return IWAMessage(objRecord.m_stream, objRecord.m_dataRange.first, objRecord.m_dataRange.second);
-    ETONYEK_DEBUG_MSG(("IWAParser::queryObject: type mismatch for object %u: expected %u, got %u\n", id, type, objRecord.m_type));
+    {
+      msg = IWAMessage(objRecord.m_stream, objRecord.m_dataRange.first, objRecord.m_dataRange.second);
+    }
+    else
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::queryObject: type mismatch for object %u: expected %u, got %u\n", id, type, objRecord.m_type));
+    }
   }
-  return boost::none;
 }
 
 boost::optional<unsigned> IWAParser::readRef(const IWAMessage &msg, const unsigned field)
