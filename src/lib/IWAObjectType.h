@@ -18,6 +18,7 @@ namespace IWAObjectType
 
 enum
 {
+  DrawableShape = 2011
 };
 
 }

@@ -24,6 +24,8 @@ namespace libetonyek
 {
 
 class IWORKCollector;
+struct IWORKPosition;
+struct IWORKSize;
 
 class IWAParser
 {
@@ -76,6 +78,10 @@ protected:
 protected:
   static boost::optional<unsigned> readRef(const IWAMessage &msg, unsigned field);
   static std::deque<unsigned> readRefs(const IWAMessage &msg, unsigned field);
+  static boost::optional<IWORKPosition> readPosition(const IWAMessage &msg, unsigned field);
+  static boost::optional<IWORKSize> readSize(const IWAMessage &msg, unsigned field);
+
+  bool parseDrawableShape(unsigned id);
 
 private:
   virtual bool parseDocument() = 0;

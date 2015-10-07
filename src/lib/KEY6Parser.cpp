@@ -92,17 +92,27 @@ bool KEY6Parser::parseSlide(const unsigned id, const bool master)
   const optional<unsigned> &masterRef = readRef(get(msg), 17);
   if (masterRef)
     parseSlide(get(masterRef), true);
+
   m_collector.startLayer();
 
   // const optional<unsigned> &styleRef = readRef(get(msg), 1);
   // const optional<unsigned> &titlePlaceholderRef = readRef(get(msg), 5);
   // const optional<unsigned> &bodyPlaceholderRef = readRef(get(msg), 6);
-  // const deque<unsigned> &shapeRefs = readRefs(get(msg), 7);
+
+  const deque<unsigned> &shapeRefs = readRefs(get(msg), 7);
+  for_each(shapeRefs.begin(), shapeRefs.end(), bind(&KEY6Parser::parseDrawableShape, this, _1));
+
   // const optional<unsigned> &noteRef = readRef(get(msg), 27);
 
+  const KEYLayerPtr_t layer = m_collector.collectLayer();
   m_collector.endLayer();
+  m_collector.insertLayer(layer);
+
   if (!master)
+  {
+    m_collector.collectPage();
     m_collector.endPage();
+  }
 
   return true;
 }

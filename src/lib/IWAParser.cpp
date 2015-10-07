@@ -14,7 +14,11 @@
 #include <boost/make_shared.hpp>
 #include <boost/optional.hpp>
 
+#include "IWAObjectType.h"
 #include "IWASnappyStream.h"
+#include "IWORKCollector.h"
+#include "IWORKPath.h"
+#include "IWORKTypes.h"
 
 namespace libetonyek
 {
@@ -135,6 +139,206 @@ std::deque<unsigned> IWAParser::readRefs(const IWAMessage &msg, const unsigned f
     }
   }
   return refs;
+}
+
+boost::optional<IWORKPosition> IWAParser::readPosition(const IWAMessage &msg, const unsigned field)
+{
+  if (msg.message(field))
+  {
+    const optional<float> &x = msg.message(field).float_(1);
+    const optional<float> &y = msg.message(field).float_(2);
+    return IWORKPosition(get_optional_value_or(x, 0), get_optional_value_or(y, 0));
+  }
+  return boost::none;
+}
+
+boost::optional<IWORKSize> IWAParser::readSize(const IWAMessage &msg, const unsigned field)
+{
+  if (msg.message(field))
+  {
+    const optional<float> &w = msg.message(field).float_(1);
+    const optional<float> &h = msg.message(field).float_(2);
+    return IWORKSize(get_optional_value_or(w, 0), get_optional_value_or(h, 0));
+  }
+  return boost::none;
+}
+
+bool IWAParser::parseDrawableShape(const unsigned id)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::DrawableShape);
+  if (!msg)
+    return false;
+
+  m_collector.startLevel();
+  m_collector.startText();
+
+  const optional<IWAMessage> &shape = get(msg).message(1);
+  if (shape)
+  {
+    const optional<IWAMessage> &placement = get(shape).message(1);
+    if (placement)
+    {
+      const IWORKGeometryPtr_t geometry(new IWORKGeometry());
+
+      const optional<IWAMessage> &g = get(placement).message(1);
+      if (g)
+      {
+        const optional<IWORKPosition> &pos = readPosition(get(g), 1);
+        if (pos)
+          geometry->m_position = get(pos);
+        const optional<IWORKSize> &size = readSize(get(g), 2);
+        if (size)
+        {
+          geometry->m_naturalSize = get(size);
+          geometry->m_size = get(size);
+        }
+        // const optional<unsigned> &trafo = get(g).uint32(3);
+        geometry->m_angle = get(g).float_(4);
+      }
+      geometry->m_aspectRatioLocked = get(placement).bool_(7);
+
+      m_collector.collectGeometry(geometry);
+    }
+
+    // const optional<unsigned> styleRef = readRef(get(shape), 2);
+
+    const optional<IWAMessage> &path = get(shape).message(3);
+    if (path)
+    {
+      if (get(path).message(3)) // point path
+      {
+        const IWAMessage &pointPath = get(path).message(3).get();
+        const optional<unsigned> &type = pointPath.uint32(1);
+        const optional<IWORKPosition> &point = readPosition(pointPath, 2);
+        const optional<IWORKSize> &size = readSize(pointPath, 3);
+        if (type && point && size)
+        {
+          switch (get(type))
+          {
+          case 0 :
+          case 10 :
+            m_collector.collectArrowPath(get(size), get(point).m_x, get(point).m_y, get(type) == 10);
+            break;
+          case 100 :
+            m_collector.collectStarPath(get(size), get(point).m_x, get(point).m_y);
+            break;
+          default :
+            ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unknown point path type %u\n", get(type)));
+            break;
+          }
+        }
+      }
+      else if (get(path).message(4)) // scalar path
+      {
+        const IWAMessage &scalarPath = get(path).message(4).get();
+        const optional<unsigned> &type = scalarPath.uint32(1);
+        const optional<float> &value = scalarPath.float_(2);
+        const optional<IWORKSize> &size = readSize(scalarPath, 3);
+        if (type && value && size)
+        {
+          switch (get(type))
+          {
+          case 0 :
+            m_collector.collectRoundedRectanglePath(get(size), get(value));
+            break;
+          case 1 :
+            m_collector.collectPolygonPath(get(size), get(value));
+            break;
+          default :
+            ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unknown scalar path type %u\n", get(type)));
+            break;
+          }
+        }
+      }
+      else if (get(path).message(5)) // bezier path
+      {
+        const optional<IWAMessage> &bezier = get(path).message(5).get().message(3);
+        if (bezier)
+        {
+          const IWORKPathPtr_t bezierPath(new IWORKPath());
+          const deque<IWAMessage> &elements = get(bezier).message(1);
+          bool closed = false;
+          bool closingMove = false;
+          for (deque<IWAMessage>::const_iterator it = elements.begin(); it != elements.end() && !closed; ++it)
+          {
+            const optional<unsigned> &type = it->uint32(1);
+            if (type)
+            {
+              switch (get(type))
+              {
+              case 1 :
+              case 2 :
+              {
+                const optional<IWORKPosition> &coords = readPosition(*it, 2);
+                if (!coords)
+                {
+                  ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: missing coordinates for %c element\n", get(type) == 1 ? 'M' : 'L'));
+                  break;
+                }
+                if (closed)
+                {
+                  if (closingMove)
+                  {
+                    ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unexpected bezier path element after the closing move\n"));
+                  }
+                  else if (get(type) != 1)
+                  {
+                    ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unexpected element %cafter close\n", get(type)));
+                  }
+                  closingMove = true;
+                }
+                else
+                {
+                  if (get(type) == 1)
+                    bezierPath->appendMoveTo(get(coords).m_x, get(coords).m_y);
+                  else
+                    bezierPath->appendLineTo(get(coords).m_x, get(coords).m_y);
+                }
+                break;
+              }
+              case 5 :
+                bezierPath->appendClose();
+                closed = true;
+                break;
+              default :
+                ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unknown bezier path element type %u\n", get(type)));
+              }
+            }
+          }
+          m_collector.collectBezier(bezierPath);
+          m_collector.collectBezierPath();
+        }
+      }
+      else if (get(path).message(6)) // callout2 path
+      {
+        const IWAMessage &callout2Path = get(path).message(6).get();
+        const optional<IWORKSize> &size = readSize(callout2Path, 1);
+        const optional<IWORKPosition> &tailPos = readPosition(callout2Path, 2);
+        const optional<float> &tailSize = callout2Path.float_(3);
+        if (size && tailPos && tailSize)
+        {
+          const optional<float> &cornerRadius = callout2Path.float_(4);
+          const optional<bool> &tailAtCenter = callout2Path.bool_(5);
+          m_collector.collectCalloutPath(get(size), get_optional_value_or(cornerRadius, 0),
+                                         get(tailSize), get(tailPos).m_x, get(tailPos).m_y,
+                                         get_optional_value_or(tailAtCenter, false));
+        }
+      }
+      else if (get(path).message(7)) // connection path
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: connection path is not supported yet\n"));
+      }
+    }
+
+    m_collector.collectShape();
+  }
+
+  // const optional<unsigned> &textRef = readRef(get(msg), 2);
+
+  m_collector.endText();
+  m_collector.endLevel();
+
+  return true;
 }
 
 void IWAParser::parseObjectIndex()
