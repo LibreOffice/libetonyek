@@ -128,10 +128,13 @@ void IWAFieldTest::testOptional()
 {
   {
     IWAUInt64Field field;
+    CPPUNIT_ASSERT_EQUAL(uint64_t(4), get_optional_value_or(field, 4));
     CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x1\x4")), 2));
     const boost::optional<uint64_t> &value = field;
     CPPUNIT_ASSERT(value);
     CPPUNIT_ASSERT_EQUAL(uint64_t(1), get(value));
+    CPPUNIT_ASSERT_EQUAL(uint64_t(1), get(field));
+    CPPUNIT_ASSERT_EQUAL(uint64_t(1), get_optional_value_or(field, 4));
   }
 
   {

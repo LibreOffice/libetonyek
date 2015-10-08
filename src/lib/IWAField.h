@@ -177,6 +177,24 @@ private:
 
 }
 
+template<IWAField::Tag TagV, typename ValueT, typename Reader>
+const ValueT &get(const detail::IWAFieldImpl<TagV, ValueT, Reader> &field)
+{
+  return field.get();
+}
+
+template<IWAField::Tag TagV, typename ValueT, typename Reader>
+const ValueT &get_optional_value_or(const detail::IWAFieldImpl<TagV, ValueT, Reader> &field, const ValueT &value)
+{
+  return bool(field) ? field.get() : value;
+}
+
+template<IWAField::Tag TagV, typename ValueT, typename Reader, typename DefaultValueT>
+const ValueT get_optional_value_or(const detail::IWAFieldImpl<TagV, ValueT, Reader> &field, const DefaultValueT &value)
+{
+  return bool(field) ? field.get() : ValueT(value);
+}
+
 typedef detail::IWAFieldImpl<IWAField::TAG_UINT32, uint32_t, IWAReader::UInt32> IWAUInt32Field;
 typedef detail::IWAFieldImpl<IWAField::TAG_UINT64, uint64_t, IWAReader::UInt64> IWAUInt64Field;
 typedef detail::IWAFieldImpl<IWAField::TAG_SINT32, int32_t, IWAReader::SInt32> IWASInt32Field;
