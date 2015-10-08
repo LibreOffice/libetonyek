@@ -215,7 +215,7 @@ bool IWAParser::parseDrawableShape(const unsigned id)
         {
           switch (get(type))
           {
-          case 0 :
+          case 1 :
           case 10 :
             m_collector.collectArrowPath(get(size), get(point).m_x, get(point).m_y, get(type) == 10);
             break;
