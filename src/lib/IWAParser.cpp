@@ -296,6 +296,34 @@ bool IWAParser::parseDrawableShape(const unsigned id)
                 }
                 break;
               }
+              case 4 :
+              {
+                if (it->message(2))
+                {
+                  const std::deque<IWAMessage> &positions = it->message(2);
+                  if (positions.size() >= 3)
+                  {
+                    if (positions.size() > 3)
+                    {
+                      ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: a curve has got %u control coords\n", unsigned(positions.size())));
+                    }
+                    const optional<float> &x = positions[0].float_(1);
+                    const optional<float> &y = positions[0].float_(2);
+                    const optional<float> &x1 = positions[1].float_(1);
+                    const optional<float> &y1 = positions[1].float_(2);
+                    const optional<float> &x2 = positions[2].float_(1);
+                    const optional<float> &y2 = positions[2].float_(2);
+                    bezierPath->appendCurveTo(get_optional_value_or(x, 0), get_optional_value_or(y, 0),
+                                              get_optional_value_or(x1, 0), get_optional_value_or(y1, 0),
+                                              get_optional_value_or(x2, 0), get_optional_value_or(y2, 0));
+                  }
+                  else
+                  {
+                    ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: %u is not enough coords for a curve\n", unsigned(positions.size())));
+                  }
+                }
+                break;
+              }
               case 5 :
                 bezierPath->appendClose();
                 closed = true;
