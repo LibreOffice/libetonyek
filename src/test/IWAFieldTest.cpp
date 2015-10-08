@@ -126,11 +126,23 @@ void IWAFieldTest::testParsePacked()
 
 void IWAFieldTest::testOptional()
 {
-  IWAUInt64Field field;
-  CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x1\x4")), 2));
-  const boost::optional<uint64_t> &value = field;
-  CPPUNIT_ASSERT(value);
-  CPPUNIT_ASSERT_EQUAL(uint64_t(1), get(value));
+  {
+    IWAUInt64Field field;
+    CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x1\x4")), 2));
+    const boost::optional<uint64_t> &value = field;
+    CPPUNIT_ASSERT(value);
+    CPPUNIT_ASSERT_EQUAL(uint64_t(1), get(value));
+  }
+
+  {
+    IWASInt32Field field;
+    CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x3")), 1));
+    CPPUNIT_ASSERT(field);
+    CPPUNIT_ASSERT_EQUAL(int32_t(-2), field.get());
+    const boost::optional<int64_t> value = field;
+    CPPUNIT_ASSERT(value);
+    CPPUNIT_ASSERT_EQUAL(int64_t(-2), get(value));
+  }
 }
 
 void IWAFieldTest::testRepeated()

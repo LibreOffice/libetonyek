@@ -121,6 +121,12 @@ public:
     return m_values.empty() ? boost::none : boost::make_optional(m_values.front());
   }
 
+  template<typename U>
+  operator boost::optional<U>() const
+  {
+    return m_values.empty() ? boost::none : boost::optional<U>(m_values.front());
+  }
+
   virtual void parse(const RVNGInputStreamPtr_t &input, const unsigned long length)
   {
     const long start = input->tell();
