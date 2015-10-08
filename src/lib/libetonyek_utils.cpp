@@ -10,6 +10,8 @@
 #include "libetonyek_utils.h"
 
 #include <cmath>
+#include <cstdarg>
+#include <cstdio>
 #include <limits>
 #include <stdexcept>
 
@@ -32,6 +34,16 @@ void checkStream(const RVNGInputStreamPtr_t &input)
 }
 
 }
+
+#ifdef DEBUG
+void debugPrint(const char *const format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  std::vfprintf(stderr, format, args);
+  va_end(args);
+}
+#endif
 
 uint8_t readU8(const RVNGInputStreamPtr_t &input, bool /* bigEndian */)
 {
