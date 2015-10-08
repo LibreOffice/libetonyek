@@ -71,16 +71,38 @@ namespace detail
 template<IWAField::Tag TagV, typename ValueT, typename Reader>
 class IWAFieldImpl : public IWAField
 {
+  typedef std::deque<ValueT> container_type;
+
 public:
   typedef ValueT value_type;
   typedef ValueT &reference_type;
   typedef const ValueT &const_reference_type;
+  typedef typename container_type::const_iterator const_iterator;
+  typedef typename container_type::const_reverse_iterator const_reverse_iterator;
 
 public:
+  // classification
+
   virtual IWAField::Tag tag() const
   {
     return TagV;
   }
+
+  // optional interface
+
+  virtual bool is() const
+  {
+    return !m_values.empty();
+  }
+
+  const_reference_type get() const
+  {
+    if (m_values.empty())
+      throw std::logic_error("the field is unset");
+    return m_values[0];
+  }
+
+  // container interface
 
   virtual bool empty() const
   {
@@ -92,16 +114,6 @@ public:
     return m_values.size();
   }
 
-  operator const std::deque<value_type> &() const
-  {
-    return m_values;
-  }
-
-  virtual bool is() const
-  {
-    return !m_values.empty();
-  }
-
   const_reference_type operator[](const std::size_t index) const
   {
     if (index >= m_values.size())
@@ -109,11 +121,31 @@ public:
     return m_values[index];
   }
 
-  const_reference_type get() const
+  const_iterator begin() const
   {
-    if (m_values.empty())
-      throw std::logic_error("the field is unset");
-    return m_values[0];
+    return m_values.begin();
+  }
+
+  const_iterator end() const
+  {
+    return m_values.end();
+  }
+
+  const_reverse_iterator rbegin() const
+  {
+    return m_values.rbegin();
+  }
+
+  const_reverse_iterator rend() const
+  {
+    return m_values.rend();
+  }
+
+  // automatic conversions
+
+  operator const std::deque<value_type> &() const
+  {
+    return m_values;
   }
 
   operator boost::optional<value_type>() const
@@ -126,6 +158,8 @@ public:
   {
     return m_values.empty() ? boost::none : boost::optional<U>(m_values.front());
   }
+
+  // initialization
 
   virtual void parse(const RVNGInputStreamPtr_t &input, const unsigned long length)
   {
