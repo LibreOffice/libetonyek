@@ -122,7 +122,7 @@ void IWAParser::queryObject(const unsigned id, const unsigned type, boost::optio
 boost::optional<unsigned> IWAParser::readRef(const IWAMessage &msg, const unsigned field)
 {
   if (msg.message(field))
-    return msg.message(field).uint32(1);
+    return msg.message(field).uint32(1).optional();
   return boost::none;
 }
 
@@ -131,7 +131,7 @@ std::deque<unsigned> IWAParser::readRefs(const IWAMessage &msg, const unsigned f
   std::deque<unsigned> refs;
   if (msg.message(field))
   {
-    const std::deque<IWAMessage> &objs = msg.message(field);
+    const std::deque<IWAMessage> &objs = msg.message(field).repeated();
     for (std::deque<IWAMessage>::const_iterator it = objs.begin(); it != objs.end(); ++it)
     {
       if (it->uint32(1))
@@ -145,8 +145,8 @@ boost::optional<IWORKPosition> IWAParser::readPosition(const IWAMessage &msg, co
 {
   if (msg.message(field))
   {
-    const optional<float> &x = msg.message(field).float_(1);
-    const optional<float> &y = msg.message(field).float_(2);
+    const optional<float> &x = msg.message(field).float_(1).optional();
+    const optional<float> &y = msg.message(field).float_(2).optional();
     return IWORKPosition(get_optional_value_or(x, 0), get_optional_value_or(y, 0));
   }
   return boost::none;
@@ -156,8 +156,8 @@ boost::optional<IWORKSize> IWAParser::readSize(const IWAMessage &msg, const unsi
 {
   if (msg.message(field))
   {
-    const optional<float> &w = msg.message(field).float_(1);
-    const optional<float> &h = msg.message(field).float_(2);
+    const optional<float> &w = msg.message(field).float_(1).optional();
+    const optional<float> &h = msg.message(field).float_(2).optional();
     return IWORKSize(get_optional_value_or(w, 0), get_optional_value_or(h, 0));
   }
   return boost::none;
@@ -172,15 +172,15 @@ bool IWAParser::parseDrawableShape(const unsigned id)
   m_collector.startLevel();
   m_collector.startText();
 
-  const optional<IWAMessage> &shape = get(msg).message(1);
+  const optional<IWAMessage> &shape = get(msg).message(1).optional();
   if (shape)
   {
-    const optional<IWAMessage> &placement = get(shape).message(1);
+    const optional<IWAMessage> &placement = get(shape).message(1).optional();
     if (placement)
     {
       const IWORKGeometryPtr_t geometry(new IWORKGeometry());
 
-      const optional<IWAMessage> &g = get(placement).message(1);
+      const optional<IWAMessage> &g = get(placement).message(1).optional();
       if (g)
       {
         const optional<IWORKPosition> &pos = readPosition(get(g), 1);
@@ -193,22 +193,22 @@ bool IWAParser::parseDrawableShape(const unsigned id)
           geometry->m_size = get(size);
         }
         // const optional<unsigned> &trafo = get(g).uint32(3);
-        geometry->m_angle = get(g).float_(4);
+        geometry->m_angle = get(g).float_(4).optional();
       }
-      geometry->m_aspectRatioLocked = get(placement).bool_(7);
+      geometry->m_aspectRatioLocked = get(placement).bool_(7).optional();
 
       m_collector.collectGeometry(geometry);
     }
 
     // const optional<unsigned> styleRef = readRef(get(shape), 2);
 
-    const optional<IWAMessage> &path = get(shape).message(3);
+    const optional<IWAMessage> &path = get(shape).message(3).optional();
     if (path)
     {
       if (get(path).message(3)) // point path
       {
         const IWAMessage &pointPath = get(path).message(3).get();
-        const optional<unsigned> &type = pointPath.uint32(1);
+        const optional<unsigned> &type = pointPath.uint32(1).optional();
         const optional<IWORKPosition> &point = readPosition(pointPath, 2);
         const optional<IWORKSize> &size = readSize(pointPath, 3);
         if (type && point && size)
@@ -231,8 +231,8 @@ bool IWAParser::parseDrawableShape(const unsigned id)
       else if (get(path).message(4)) // scalar path
       {
         const IWAMessage &scalarPath = get(path).message(4).get();
-        const optional<unsigned> &type = scalarPath.uint32(1);
-        const optional<float> &value = scalarPath.float_(2);
+        const optional<unsigned> &type = scalarPath.uint32(1).optional();
+        const optional<float> &value = scalarPath.float_(2).optional();
         const optional<IWORKSize> &size = readSize(scalarPath, 3);
         if (type && value && size)
         {
@@ -252,16 +252,16 @@ bool IWAParser::parseDrawableShape(const unsigned id)
       }
       else if (get(path).message(5)) // bezier path
       {
-        const optional<IWAMessage> &bezier = get(path).message(5).get().message(3);
+        const optional<IWAMessage> &bezier = get(path).message(5).get().message(3).optional();
         if (bezier)
         {
           const IWORKPathPtr_t bezierPath(new IWORKPath());
-          const deque<IWAMessage> &elements = get(bezier).message(1);
+          const deque<IWAMessage> &elements = get(bezier).message(1).repeated();
           bool closed = false;
           bool closingMove = false;
           for (deque<IWAMessage>::const_iterator it = elements.begin(); it != elements.end() && !closed; ++it)
           {
-            const optional<unsigned> &type = it->uint32(1);
+            const optional<unsigned> &type = it->uint32(1).optional();
             if (type)
             {
               switch (get(type))
@@ -300,19 +300,19 @@ bool IWAParser::parseDrawableShape(const unsigned id)
               {
                 if (it->message(2))
                 {
-                  const std::deque<IWAMessage> &positions = it->message(2);
+                  const std::deque<IWAMessage> &positions = it->message(2).repeated();
                   if (positions.size() >= 3)
                   {
                     if (positions.size() > 3)
                     {
                       ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: a curve has got %u control coords\n", unsigned(positions.size())));
                     }
-                    const optional<float> &x = positions[0].float_(1);
-                    const optional<float> &y = positions[0].float_(2);
-                    const optional<float> &x1 = positions[1].float_(1);
-                    const optional<float> &y1 = positions[1].float_(2);
-                    const optional<float> &x2 = positions[2].float_(1);
-                    const optional<float> &y2 = positions[2].float_(2);
+                    const optional<float> &x = positions[0].float_(1).optional();
+                    const optional<float> &y = positions[0].float_(2).optional();
+                    const optional<float> &x1 = positions[1].float_(1).optional();
+                    const optional<float> &y1 = positions[1].float_(2).optional();
+                    const optional<float> &x2 = positions[2].float_(1).optional();
+                    const optional<float> &y2 = positions[2].float_(2).optional();
                     bezierPath->appendCurveTo(get_optional_value_or(x, 0), get_optional_value_or(y, 0),
                                               get_optional_value_or(x1, 0), get_optional_value_or(y1, 0),
                                               get_optional_value_or(x2, 0), get_optional_value_or(y2, 0));
@@ -342,11 +342,11 @@ bool IWAParser::parseDrawableShape(const unsigned id)
         const IWAMessage &callout2Path = get(path).message(6).get();
         const optional<IWORKSize> &size = readSize(callout2Path, 1);
         const optional<IWORKPosition> &tailPos = readPosition(callout2Path, 2);
-        const optional<float> &tailSize = callout2Path.float_(3);
+        const optional<float> &tailSize = callout2Path.float_(3).optional();
         if (size && tailPos && tailSize)
         {
-          const optional<float> &cornerRadius = callout2Path.float_(4);
-          const optional<bool> &tailAtCenter = callout2Path.bool_(5);
+          const optional<float> &cornerRadius = callout2Path.float_(4).optional();
+          const optional<bool> &tailAtCenter = callout2Path.bool_(5).optional();
           m_collector.collectCalloutPath(get(size), get_optional_value_or(cornerRadius, 0),
                                          get(tailSize), get(tailPos).m_x, get(tailPos).m_y,
                                          get_optional_value_or(tailAtCenter, false));
@@ -385,7 +385,7 @@ void IWAParser::parseObjectIndex()
     const ObjectRecord &rec = indexIt->second.second;
     assert(bool(rec.m_stream));
     const IWAMessage objectIndex(rec.m_stream, rec.m_dataRange.first, rec.m_dataRange.second);
-    const deque<IWAMessage> &fragments = objectIndex.message(3);
+    const deque<IWAMessage> &fragments = objectIndex.message(3).repeated();
     for (deque<IWAMessage>::const_iterator it = fragments.begin(); it != fragments.end(); ++it)
     {
       if (it->uint32(1) && (it->string(2) || it->string(3)))
@@ -394,14 +394,14 @@ void IWAParser::parseObjectIndex()
         m_fragmentMap[it->uint32(1).get()] = make_pair("Index/" + it->string(pathIdx).get() + ".iwa", RVNGInputStreamPtr_t());
         m_fragmentObjectMap[it->uint32(1).get()] = make_pair(it->uint32(1).get(), ObjectRecord());
       }
-      const deque<IWAMessage> &refs = it->message(6);
+      const deque<IWAMessage> &refs = it->message(6).repeated();
       for (deque<IWAMessage>::const_iterator refIt = refs.begin(); refIt != refs.end(); ++refIt)
       {
         if (refIt->uint32(1) && refIt->uint32(2))
           m_fragmentObjectMap[refIt->uint32(2).get()] = make_pair(refIt->uint32(1).get(), ObjectRecord());
       }
     }
-    const deque<IWAMessage> &files = objectIndex.message(4);
+    const deque<IWAMessage> &files = objectIndex.message(4).repeated();
     for (deque<IWAMessage>::const_iterator it = files.begin(); it != files.end(); ++it)
     {
       if (it->uint32(1) && it->string(3))
@@ -447,7 +447,7 @@ void IWAParser::scanFragment(const unsigned id, const RVNGInputStreamPtr_t &stre
       const uint64_t dataLen = header.message(2).uint64(3).get();
       if (header.uint32(1))
       {
-        const optional<unsigned> type = header.message(2).uint32(1);
+        const optional<unsigned> type = header.message(2).uint32(1).optional();
         const ObjectRecord rec(stream, get_optional_value_or(type, 0), start, long(headerLen), long(dataLen));
         m_fragmentObjectMap[header.uint32(1).get()] = make_pair(id, rec);
       }

@@ -130,7 +130,7 @@ void IWAFieldTest::testOptional()
     IWAUInt64Field field;
     CPPUNIT_ASSERT_EQUAL(uint64_t(4), get_optional_value_or(field, 4));
     CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x1\x4")), 2));
-    const boost::optional<uint64_t> &value = field;
+    const boost::optional<uint64_t> &value = field.optional();
     CPPUNIT_ASSERT(value);
     CPPUNIT_ASSERT_EQUAL(uint64_t(1), get(value));
     CPPUNIT_ASSERT_EQUAL(uint64_t(1), get(field));
@@ -142,7 +142,7 @@ void IWAFieldTest::testOptional()
     CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x3")), 1));
     CPPUNIT_ASSERT(field);
     CPPUNIT_ASSERT_EQUAL(int32_t(-2), field.get());
-    const boost::optional<int64_t> value = field;
+    const boost::optional<int64_t> value(field.optional());
     CPPUNIT_ASSERT(value);
     CPPUNIT_ASSERT_EQUAL(int64_t(-2), get(value));
   }
@@ -153,7 +153,7 @@ void IWAFieldTest::testRepeated()
   IWAUInt64Field field;
   CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x1\x4\x8")), 3));
   const uint64_t expected[] = {1, 4, 8};
-  const std::deque<uint64_t> &values = field;
+  const std::deque<uint64_t> &values = field.repeated();
   CPPUNIT_ASSERT_EQUAL(ETONYEK_NUM_ELEMENTS(expected), values.size());
   CPPUNIT_ASSERT(std::equal(values.begin(), values.end(), expected));
   CPPUNIT_ASSERT(std::equal(field.begin(), field.end(), expected));

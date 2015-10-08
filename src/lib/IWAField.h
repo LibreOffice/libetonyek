@@ -141,22 +141,16 @@ public:
     return m_values.rend();
   }
 
-  // automatic conversions
+  // conversions
 
-  operator const std::deque<value_type> &() const
+  const std::deque<value_type> &repeated() const
   {
     return m_values;
   }
 
-  operator boost::optional<value_type>() const
+  const boost::optional<value_type> optional() const
   {
     return m_values.empty() ? boost::none : boost::make_optional(m_values.front());
-  }
-
-  template<typename U>
-  operator boost::optional<U>() const
-  {
-    return m_values.empty() ? boost::none : boost::optional<U>(m_values.front());
   }
 
   // initialization

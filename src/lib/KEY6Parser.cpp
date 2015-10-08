@@ -50,7 +50,7 @@ bool KEY6Parser::parsePresentation(const unsigned id)
     return false;
 
   m_collector.startDocument();
-  const optional<IWAMessage> size = get(msg).message(4);
+  const optional<IWAMessage> size = get(msg).message(4).optional();
   if (size && get(size).float_(1) && get(size).float_(2))
     m_collector.collectPresentationSize(IWORKSize(get(size).float_(1).get(), get(size).float_(2).get()));
   optional<unsigned> slideListRef;
