@@ -27,9 +27,8 @@ class IWORKPath
 {
   friend bool approxEqual(const IWORKPath &left, const IWORKPath &right, const double eps);
 
-  struct Impl;
-
 public:
+  struct Impl;
   struct InvalidException {};
 
 public:
