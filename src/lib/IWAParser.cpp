@@ -65,13 +65,25 @@ IWAParser::ObjectMessage::ObjectMessage(IWAParser &parser, const unsigned id, co
   : m_parser(parser)
   , m_message()
   , m_id(id)
+  , m_type(0)
 {
   std::deque<unsigned>::const_iterator it = find(m_parser.m_visited.begin(), m_parser.m_visited.end(), m_id);
   if (it == m_parser.m_visited.end())
   {
-    m_parser.queryObject(m_id, type, m_message);
-    if (m_message)
-      m_parser.m_visited.push_back(m_id);
+    optional<IWAMessage> msg;
+    m_parser.queryObject(m_id, m_type, msg);
+    if (msg)
+    {
+      if ((m_type == type) || (type == 0))
+      {
+        m_message = msg;
+        m_parser.m_visited.push_back(m_id);
+      }
+      else
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::ObjectMessage::ObjectMessage: type mismatch for object %u: expected %u, got %u\n", id, type, m_type));
+      }
+    }
   }
 }
 
@@ -95,7 +107,12 @@ const IWAMessage &IWAParser::ObjectMessage::get() const
   return m_message.get();
 }
 
-void IWAParser::queryObject(const unsigned id, const unsigned type, boost::optional<IWAMessage> &msg) const
+unsigned IWAParser::ObjectMessage::getType() const
+{
+  return m_type;
+}
+
+void IWAParser::queryObject(const unsigned id, unsigned &type, boost::optional<IWAMessage> &msg) const
 {
   const RecordMap_t::const_iterator recIt = m_fragmentObjectMap.find(id);
   if (recIt == m_fragmentObjectMap.end())
@@ -108,14 +125,8 @@ void IWAParser::queryObject(const unsigned id, const unsigned type, boost::optio
   if (recIt->second.second.m_stream)
   {
     const ObjectRecord &objRecord = recIt->second.second;
-    if ((objRecord.m_type == type) || (type == 0))
-    {
-      msg = IWAMessage(objRecord.m_stream, objRecord.m_dataRange.first, objRecord.m_dataRange.second);
-    }
-    else
-    {
-      ETONYEK_DEBUG_MSG(("IWAParser::queryObject: type mismatch for object %u: expected %u, got %u\n", id, type, objRecord.m_type));
-    }
+    msg = IWAMessage(objRecord.m_stream, objRecord.m_dataRange.first, objRecord.m_dataRange.second);
+    type = objRecord.m_type;
   }
 }
 

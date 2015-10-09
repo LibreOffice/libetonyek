@@ -63,6 +63,8 @@ protected:
     operator bool() const;
     const IWAMessage &get() const;
 
+    unsigned getType() const;
+
     friend const IWAMessage &get(const ObjectMessage &msg)
     {
       return msg.get();
@@ -72,6 +74,7 @@ protected:
     IWAParser &m_parser;
     boost::optional<IWAMessage> m_message;
     const unsigned m_id;
+    unsigned m_type;
   };
   friend class ObjectMessage;
 
@@ -87,7 +90,7 @@ private:
   virtual bool parseDocument() = 0;
 
 private:
-  void queryObject(unsigned id, unsigned type, boost::optional<IWAMessage> &msg) const;
+  void queryObject(unsigned id, unsigned &type, boost::optional<IWAMessage> &msg) const;
 
   void parseObjectIndex();
 
