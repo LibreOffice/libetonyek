@@ -192,7 +192,21 @@ bool IWAParser::parseDrawableShape(const unsigned id)
           geometry->m_naturalSize = get(size);
           geometry->m_size = get(size);
         }
-        // const optional<unsigned> &trafo = get(g).uint32(3);
+
+        if (get(g).uint32(3))
+        {
+          switch (get(get(g).uint32(3)))
+          {
+          case 3 : // normal
+            break;
+          case 7 : // horizontal flip
+            geometry->m_horizontalFlip = true;
+            break;
+          default :
+            ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unknown transformation %u\n", get(get(g).uint32(3))));
+            break;
+          }
+        }
         geometry->m_angle = get(g).float_(4).optional();
       }
       geometry->m_aspectRatioLocked = get(placement).bool_(7).optional();
