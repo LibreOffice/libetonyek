@@ -207,7 +207,8 @@ bool IWAParser::parseDrawableShape(const unsigned id)
             break;
           }
         }
-        geometry->m_angle = get(g).float_(4).optional();
+        if (get(g).float_(4))
+          geometry->m_angle = deg2rad(get(get(g).float_(4)));
       }
       geometry->m_aspectRatioLocked = get(placement).bool_(7).optional();
 
