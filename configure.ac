@@ -39,6 +39,7 @@ AC_PROG_EGREP
 AC_PROG_SED
 
 AM_MISSING_PROG([GPERF], [gperf])
+AX_CXX_COMPILE_STDCXX_11([noext])
 
 # ===============
 # Find librevenge
@@ -119,7 +120,7 @@ AC_SUBST([GLM_CFLAGS])
 # =========
 # Find mdds
 # =========
-PKG_CHECK_MODULES([MDDS],[mdds])
+PKG_CHECK_MODULES([MDDS],[mdds-1.0])
 AC_MSG_CHECKING([checking if mdds::flat_segment_tree can store values of any type])
 old_CPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$MDDS_CFLAGS $CPPFLAGS"
@@ -131,7 +132,7 @@ mdds::flat_segment_tree<int, Value> tree(0, 4, Value());
     AC_MSG_RESULT([yes])
 ], [
     AC_MSG_RESULT([no])
-    AC_MSG_ERROR([please install mdds >= 0.12.1])
+    AC_MSG_ERROR([please install mdds-1.0 >= 1.0.0])
 ])
 CPPFLAGS="$old_CPPFLAGS"
 
