@@ -11,6 +11,7 @@
 
 #include <cassert>
 
+#include <boost/bind.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/optional.hpp>
 
@@ -174,57 +175,34 @@ boost::optional<IWORKSize> IWAParser::readSize(const IWAMessage &msg, const unsi
   return boost::none;
 }
 
-bool IWAParser::parseDrawableShape(const unsigned id)
+bool IWAParser::dispatchShape(const unsigned id)
 {
-  const ObjectMessage msg(*this, id, IWAObjectType::DrawableShape);
+  const ObjectMessage msg(*this, id);
   if (!msg)
     return false;
 
+  switch (msg.getType())
+  {
+  case IWAObjectType::DrawableShape :
+    return parseDrawableShape(get(msg));
+  case IWAObjectType::Group :
+    return parseGroup(get(msg));
+  }
+
+  return false;
+}
+
+bool IWAParser::parseDrawableShape(const IWAMessage &msg)
+{
   m_collector.startLevel();
   m_collector.startText();
 
-  const optional<IWAMessage> &shape = get(msg).message(1).optional();
+  const optional<IWAMessage> &shape = msg.message(1).optional();
   if (shape)
   {
     const optional<IWAMessage> &placement = get(shape).message(1).optional();
     if (placement)
-    {
-      const IWORKGeometryPtr_t geometry(new IWORKGeometry());
-
-      const optional<IWAMessage> &g = get(placement).message(1).optional();
-      if (g)
-      {
-        const optional<IWORKPosition> &pos = readPosition(get(g), 1);
-        if (pos)
-          geometry->m_position = get(pos);
-        const optional<IWORKSize> &size = readSize(get(g), 2);
-        if (size)
-        {
-          geometry->m_naturalSize = get(size);
-          geometry->m_size = get(size);
-        }
-
-        if (get(g).uint32(3))
-        {
-          switch (get(get(g).uint32(3)))
-          {
-          case 3 : // normal
-            break;
-          case 7 : // horizontal flip
-            geometry->m_horizontalFlip = true;
-            break;
-          default :
-            ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unknown transformation %u\n", get(get(g).uint32(3))));
-            break;
-          }
-        }
-        if (get(g).float_(4))
-          geometry->m_angle = deg2rad(get(get(g).float_(4)));
-      }
-      geometry->m_aspectRatioLocked = get(placement).bool_(7).optional();
-
-      m_collector.collectGeometry(geometry);
-    }
+      parseShapePlacement(get(placement));
 
     // const optional<unsigned> styleRef = readRef(get(shape), 2);
 
@@ -387,10 +365,68 @@ bool IWAParser::parseDrawableShape(const unsigned id)
     m_collector.collectShape();
   }
 
-  // const optional<unsigned> &textRef = readRef(get(msg), 2);
+  // const optional<unsigned> &textRef = readRef(msg, 2);
 
   m_collector.endText();
   m_collector.endLevel();
+
+  return true;
+}
+
+bool IWAParser::parseGroup(const IWAMessage &msg)
+{
+  if (msg.message(1))
+    parseShapePlacement(get(msg.message(1)));
+  if (!msg.message(2).empty())
+  {
+    m_collector.startLevel();
+    m_collector.startGroup();
+    const deque<unsigned> &shapeRefs = readRefs(msg, 2);
+    std::for_each(shapeRefs.begin(), shapeRefs.end(), bind(&IWAParser::dispatchShape, this, _1));
+    m_collector.endGroup();
+    m_collector.endLevel();
+  }
+
+  return true;
+}
+
+bool IWAParser::parseShapePlacement(const IWAMessage &msg)
+{
+  const IWORKGeometryPtr_t geometry(new IWORKGeometry());
+
+  const optional<IWAMessage> &g = msg.message(1).optional();
+  if (g)
+  {
+    const optional<IWORKPosition> &pos = readPosition(get(g), 1);
+    if (pos)
+      geometry->m_position = get(pos);
+    const optional<IWORKSize> &size = readSize(get(g), 2);
+    if (size)
+    {
+      geometry->m_naturalSize = get(size);
+      geometry->m_size = get(size);
+    }
+
+    if (get(g).uint32(3))
+    {
+      switch (get(get(g).uint32(3)))
+      {
+      case 3 : // normal
+        break;
+      case 7 : // horizontal flip
+        geometry->m_horizontalFlip = true;
+        break;
+      default :
+        ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unknown transformation %u\n", get(get(g).uint32(3))));
+        break;
+      }
+    }
+    if (get(g).float_(4))
+      geometry->m_angle = deg2rad(get(get(g).float_(4)));
+  }
+  geometry->m_aspectRatioLocked = msg.bool_(7).optional();
+
+  m_collector.collectGeometry(geometry);
 
   return true;
 }

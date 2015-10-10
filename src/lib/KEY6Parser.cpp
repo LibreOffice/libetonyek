@@ -100,7 +100,7 @@ bool KEY6Parser::parseSlide(const unsigned id, const bool master)
   // const optional<unsigned> &bodyPlaceholderRef = readRef(get(msg), 6);
 
   const deque<unsigned> &shapeRefs = readRefs(get(msg), 7);
-  for_each(shapeRefs.begin(), shapeRefs.end(), bind(&KEY6Parser::parseDrawableShape, this, _1));
+  for_each(shapeRefs.begin(), shapeRefs.end(), bind(&KEY6Parser::dispatchShape, this, _1));
 
   // const optional<unsigned> &noteRef = readRef(get(msg), 27);
 
