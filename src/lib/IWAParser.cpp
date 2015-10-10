@@ -10,6 +10,7 @@
 #include "IWAParser.h"
 
 #include <cassert>
+#include <utility>
 
 #include <boost/bind.hpp>
 #include <boost/make_shared.hpp>
@@ -31,6 +32,28 @@ using std::deque;
 using std::make_pair;
 using std::pair;
 using std::string;
+
+namespace
+{
+
+bool samePoint(const optional<IWORKPosition> &point1, const optional<IWORKPosition> &point2)
+{
+  if (point1 && point2)
+    return approxEqual(get(point1).m_x, get(point2).m_x) && approxEqual(get(point1).m_y, get(point2).m_y);
+  return true;
+}
+
+const IWORKPosition &selectPoint(const optional<IWORKPosition> &point1, const optional<IWORKPosition> &point2, const optional<IWORKPosition> &point3)
+{
+  assert(point1 || point2 || point3);
+  if (point1)
+    return get(point1);
+  else if (point2)
+    return get(point2);
+  return get(point3);
+}
+
+}
 
 IWAParser::ObjectRecord::ObjectRecord()
   : m_stream()
@@ -359,6 +382,43 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
       else if (get(path).message(7)) // connection path
       {
         ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: connection path is not supported yet\n"));
+      }
+      else if (get(path).message(8)) // editable path
+      {
+        const IWAMessageField &pathPoints = get(get(path).message(8)).message(1);
+        if (pathPoints && !pathPoints.message(1).empty())
+        {
+          const IWORKPathPtr_t editablePath(new IWORKPath());
+          const IWAMessageField &points = pathPoints.message(1);
+          for (IWAMessageField::const_iterator it = points.begin(); it != points.end(); ++it)
+          {
+            const optional<IWORKPosition> &point1 = readPosition(*it, 1);
+            const optional<IWORKPosition> &point2 = readPosition(*it, 2);
+            const optional<IWORKPosition> &point3 = readPosition(*it, 3);
+            if (!point1 && !point2 && !point3)
+            {
+              ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: no control points for point %u\n", unsigned(std::distance(points.begin(), it))));
+              continue;
+            }
+            if (samePoint(point1, point2) && samePoint(point2, point3))
+            {
+              // insert a straight line
+              const IWORKPosition &point = selectPoint(point1, point2, point3);
+              if (it == points.begin())
+                editablePath->appendMoveTo(point.m_x, point.m_y);
+              else
+                editablePath->appendLineTo(point.m_x, point.m_y);
+            }
+            else
+            {
+              // TODO: insert a curve
+            }
+          }
+          if (pathPoints.bool_(2) && get(pathPoints.bool_(2)))
+            editablePath->appendClose();
+          m_collector.collectBezier(editablePath);
+          m_collector.collectBezierPath();
+        }
       }
     }
 
