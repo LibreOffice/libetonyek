@@ -22,6 +22,16 @@ IWORKStyle::IWORKStyle(const IWORKPropertyMap &props, const boost::optional<std:
 {
 }
 
+IWORKStyle::IWORKStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const IWORKStylePtr_t &parent)
+  : m_props(props)
+  , m_ident(ident)
+  , m_parentIdent()
+  , m_parent(parent)
+{
+  if (m_parent)
+    m_props.setParent(&m_parent->getPropertyMap());
+}
+
 bool IWORKStyle::link(const IWORKStylesheetPtr_t &stylesheet)
 {
   if (m_parent || !m_parentIdent)

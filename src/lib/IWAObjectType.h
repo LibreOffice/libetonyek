@@ -20,6 +20,8 @@ enum
 {
   Text = 2001,
   DrawableShape = 2011,
+  CharacterStyle = 2021,
+  ParagraphStyle = 2022,
   Group = 3008
 };
 

@@ -295,7 +295,13 @@ bool IWAParser::parseText(const unsigned id)
       for (IWAMessageField::const_iterator it = get(msg).message(5).message(1).begin(); it != get(msg).message(5).message(1).end(); ++it)
       {
         if (it->uint32(1) && (get(it->uint32(1)) < length))
-          paras.insert(paras.end(), make_pair(get(it->uint32(1)), IWORKStylePtr_t()));
+        {
+          IWORKStylePtr_t style;
+          const optional<unsigned> &styleRef = readRef(*it, 2);
+          if (styleRef)
+            style = queryParagraphStyle(get(styleRef));
+          paras.insert(paras.end(), make_pair(get(it->uint32(1)), style));
+        }
       }
     }
 
@@ -305,7 +311,13 @@ bool IWAParser::parseText(const unsigned id)
       for (IWAMessageField::const_iterator it = get(msg).message(8).message(1).begin(); it != get(msg).message(8).message(1).end(); ++it)
       {
         if (it->uint32(1) && (get(it->uint32(1)) < length))
-          spans.insert(spans.end(), make_pair(get(it->uint32(1)), IWORKStylePtr_t()));
+        {
+          IWORKStylePtr_t style;
+          const optional<unsigned> &styleRef = readRef(*it, 2);
+          if (styleRef)
+            style = queryCharacterStyle(get(styleRef));
+          spans.insert(spans.end(), make_pair(get(it->uint32(1)), style));
+        }
       }
     }
 
@@ -346,6 +358,29 @@ bool IWAParser::parseText(const unsigned id)
   }
 
   return true;
+}
+
+const IWORKStylePtr_t IWAParser::queryStyle(const unsigned id, StyleMap_t &styleMap, StyleParseFun_t parseStyle) const
+{
+  StyleMap_t::const_iterator it = styleMap.find(id);
+  if (it == styleMap.end())
+  {
+    IWORKStylePtr_t style;
+    (const_cast<IWAParser *>(this)->*parseStyle)(id, style);
+    it = styleMap.insert(make_pair(id, style)).first;
+  }
+  assert(it != styleMap.end());
+  return it->second;
+}
+
+const IWORKStylePtr_t IWAParser::queryCharacterStyle(const unsigned id) const
+{
+  return queryStyle(id, m_charStyles, &IWAParser::parseCharacterStyle);
+}
+
+const IWORKStylePtr_t IWAParser::queryParagraphStyle(const unsigned id) const
+{
+  return queryStyle(id, m_charStyles, &IWAParser::parseParagraphStyle);
 }
 
 bool IWAParser::parseDrawableShape(const IWAMessage &msg)
@@ -730,6 +765,67 @@ void IWAParser::scanFragment(const unsigned id, const RVNGInputStreamPtr_t &stre
       m_fragmentObjectMap.erase(curIt);
     }
   }
+}
+
+void IWAParser::parseCharacterStyle(const unsigned id, IWORKStylePtr_t &style)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::CharacterStyle);
+  if (!msg)
+    return;
+
+  optional<string> name;
+  IWORKStylePtr_t parent;
+  const IWAMessageField &styleInfo = get(msg).message(1);
+  if (styleInfo)
+  {
+    name = styleInfo.string(2).optional();
+    const optional<unsigned> &parentRef = readRef(get(styleInfo), 3);
+    if (parentRef)
+      parent = queryCharacterStyle(get(parentRef));
+  }
+
+  IWORKPropertyMap props;
+  if (get(msg).message(11))
+    parseCharacterProperties(get(get(msg).message(11)), props);
+
+  style = make_shared<IWORKStyle>(props, name, parent);
+}
+
+void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::ParagraphStyle);
+  if (!msg)
+    return;
+
+  optional<string> name;
+  IWORKStylePtr_t parent;
+  const IWAMessageField &styleInfo = get(msg).message(1);
+  if (styleInfo)
+  {
+    name = styleInfo.string(2).optional();
+    const optional<unsigned> &parentRef = readRef(get(styleInfo), 3);
+    if (parentRef)
+      parent = queryCharacterStyle(get(parentRef));
+  }
+
+  IWORKPropertyMap props;
+  if (get(msg).message(11))
+    parseCharacterProperties(get(get(msg).message(11)), props);
+  if (get(msg).message(12))
+  {
+    const IWAMessage &paraProps = get(get(msg).message(12));
+    (void) paraProps;
+    // TODO: parse
+  }
+
+  style = make_shared<IWORKStyle>(props, name, parent);
+}
+
+void IWAParser::parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props)
+{
+  (void) msg;
+  (void) props;
+  // TODO: parse
 }
 
 }

@@ -29,6 +29,7 @@ class IWORKStyle
 {
 public:
   IWORKStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const boost::optional<std::string> &parentIdent);
+  IWORKStyle(const IWORKPropertyMap &props, const boost::optional<std::string> &ident, const IWORKStylePtr_t &parent);
 
   /** Find the parent style by its ID.
     *

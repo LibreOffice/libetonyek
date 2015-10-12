@@ -19,11 +19,13 @@
 
 #include "libetonyek_utils.h"
 #include "IWAMessage.h"
+#include "IWORKStyle_fwd.h"
 
 namespace libetonyek
 {
 
 class IWORKCollector;
+class IWORKPropertyMap;
 struct IWORKPosition;
 struct IWORKSize;
 
@@ -78,6 +80,9 @@ protected:
   };
   friend class ObjectMessage;
 
+  typedef std::map<unsigned, IWORKStylePtr_t> StyleMap_t;
+  typedef void (IWAParser::*StyleParseFun_t)(unsigned, IWORKStylePtr_t &);
+
 protected:
   static boost::optional<unsigned> readRef(const IWAMessage &msg, unsigned field);
   static std::deque<unsigned> readRefs(const IWAMessage &msg, unsigned field);
@@ -88,6 +93,11 @@ protected:
   bool parseText(unsigned id);
 
   bool parseDrawableShape(const IWAMessage &msg);
+
+  const IWORKStylePtr_t queryCharacterStyle(unsigned id) const;
+  const IWORKStylePtr_t queryParagraphStyle(unsigned id) const;
+
+  const IWORKStylePtr_t queryStyle(unsigned id, StyleMap_t &styleMap, StyleParseFun_t parse) const;
 
 private:
   virtual bool parseDocument() = 0;
@@ -100,8 +110,12 @@ private:
   void scanFragment(unsigned id);
   void scanFragment(unsigned id, const RVNGInputStreamPtr_t &stream);
 
+  void parseCharacterStyle(unsigned id, IWORKStylePtr_t &style);
+  void parseParagraphStyle(unsigned id, IWORKStylePtr_t &style);
+
   bool parseGroup(const IWAMessage &msg);
   bool parseShapePlacement(const IWAMessage &msg);
+  void parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props);
 
 private:
   const RVNGInputStreamPtr_t m_fragments;
@@ -113,6 +127,9 @@ private:
   FileMap_t m_fileMap;
 
   std::deque<unsigned> m_visited;
+
+  mutable StyleMap_t m_charStyles;
+  mutable StyleMap_t m_paraStyles;
 };
 
 }
