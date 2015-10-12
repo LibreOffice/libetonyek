@@ -96,8 +96,15 @@ bool KEY6Parser::parseSlide(const unsigned id, const bool master)
   m_collector.startLayer();
 
   // const optional<unsigned> &styleRef = readRef(get(msg), 1);
-  // const optional<unsigned> &titlePlaceholderRef = readRef(get(msg), 5);
-  // const optional<unsigned> &bodyPlaceholderRef = readRef(get(msg), 6);
+  if (!master)
+  {
+    const optional<unsigned> &titlePlaceholderRef = readRef(get(msg), 5);
+    if (titlePlaceholderRef)
+      parsePlaceholder(get(titlePlaceholderRef));
+    const optional<unsigned> &bodyPlaceholderRef = readRef(get(msg), 6);
+    if (bodyPlaceholderRef)
+      parsePlaceholder(get(bodyPlaceholderRef));
+  }
 
   const deque<unsigned> &shapeRefs = readRefs(get(msg), 7);
   for_each(shapeRefs.begin(), shapeRefs.end(), bind(&KEY6Parser::dispatchShape, this, _1));
@@ -112,6 +119,29 @@ bool KEY6Parser::parseSlide(const unsigned id, const bool master)
   {
     m_collector.collectPage();
     m_collector.endPage();
+  }
+
+  return true;
+}
+
+bool KEY6Parser::parsePlaceholder(const unsigned id)
+{
+  const ObjectMessage msg(*this, id, KEY6ObjectType::Placeholder);
+  if (!msg)
+    return false;
+
+  if (get(msg).uint32(2))
+  {
+    switch (get(get(msg).uint32(2)))
+    {
+    case 2 : // title
+    case 3 : // body
+    {
+      if (get(msg).message(1))
+        parseDrawableShape(get(get(msg).message(1)));
+      break;
+    }
+    }
   }
 
   return true;

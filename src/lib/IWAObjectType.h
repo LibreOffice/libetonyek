@@ -18,6 +18,7 @@ namespace IWAObjectType
 
 enum
 {
+  Text = 2001,
   DrawableShape = 2011,
   Group = 3008
 };

@@ -10,6 +10,7 @@
 #include "IWAParser.h"
 
 #include <cassert>
+#include <map>
 #include <utility>
 
 #include <boost/bind.hpp>
@@ -30,6 +31,7 @@ using boost::optional;
 
 using std::deque;
 using std::make_pair;
+using std::map;
 using std::pair;
 using std::string;
 
@@ -51,6 +53,68 @@ const IWORKPosition &selectPoint(const optional<IWORKPosition> &point1, const op
   else if (point2)
     return get(point2);
   return get(point3);
+}
+
+void mergeTextSpans(const map<unsigned, IWORKStylePtr_t> &paras,
+                    const map<unsigned, IWORKStylePtr_t> &spans,
+                    const map<unsigned, string> &langs,
+                    map<unsigned, pair<IWORKStylePtr_t, IWORKStylePtr_t> > &merged)
+{
+  merged[0] = make_pair(IWORKStylePtr_t(), IWORKStylePtr_t());
+  for (map<unsigned, IWORKStylePtr_t>::const_iterator it = paras.begin(); it != paras.end(); ++it)
+    merged[it->first].first = it->second;
+  for (map<unsigned, IWORKStylePtr_t>::const_iterator it = spans.begin(); it != spans.end(); ++it)
+    merged[it->first].second = it->second;
+  for (map<unsigned, string>::const_iterator it = langs.begin(); it != langs.end(); ++it)
+  {
+    map<unsigned, pair<IWORKStylePtr_t, IWORKStylePtr_t> >::iterator mergedIt = merged.lower_bound(it->first);
+    if (mergedIt == merged.end())
+      mergedIt = merged.insert(merged.end(), make_pair(it->first, make_pair(IWORKStylePtr_t(), IWORKStylePtr_t())));
+    // TODO: create a new char. style with the language and make the
+    // current char. style parent of it
+    IWORKStylePtr_t langStyle;
+    mergedIt->second.second = langStyle;
+  }
+}
+
+void flushText(string &text, IWORKCollector &collector)
+{
+  if (!text.empty())
+  {
+    collector.collectText(text);
+    text.clear();
+  }
+}
+
+void writeText(const string &text, const unsigned start, const unsigned end, const bool endPara, IWORKCollector &collector)
+{
+  assert(end <= text.size());
+
+  string buf;
+  for (unsigned i = start; i < end; ++i)
+  {
+    switch (text[i])
+    {
+    case '\t' :
+      flushText(buf, collector);
+      collector.collectTab();
+      break;
+    case '\r' :
+      flushText(buf, collector);
+      collector.collectLineBreak();
+      break;
+    case '\n' :
+      flushText(buf, collector);
+      if (endPara && i != end - 1) // ignore the newline that ends the paragraph
+        collector.collectLineBreak();
+      break;
+    default :
+      buf.push_back(text[i]);
+      break;
+    }
+  }
+
+  flushText(buf, collector);
 }
 
 }
@@ -213,6 +277,75 @@ bool IWAParser::dispatchShape(const unsigned id)
   }
 
   return false;
+}
+
+bool IWAParser::parseText(const unsigned id)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::Text);
+  if (!msg)
+    return false;
+
+  const IWAStringField &text = get(msg).string(3);
+  if (text)
+  {
+    const size_t length = get(text).size();
+    map<unsigned, IWORKStylePtr_t> paras;
+    if (get(msg).message(5))
+    {
+      for (IWAMessageField::const_iterator it = get(msg).message(5).message(1).begin(); it != get(msg).message(5).message(1).end(); ++it)
+      {
+        if (it->uint32(1) && (get(it->uint32(1)) < length))
+          paras.insert(paras.end(), make_pair(get(it->uint32(1)), IWORKStylePtr_t()));
+      }
+    }
+
+    map<unsigned, IWORKStylePtr_t> spans;
+    if (get(msg).message(8))
+    {
+      for (IWAMessageField::const_iterator it = get(msg).message(8).message(1).begin(); it != get(msg).message(8).message(1).end(); ++it)
+      {
+        if (it->uint32(1) && (get(it->uint32(1)) < length))
+          spans.insert(spans.end(), make_pair(get(it->uint32(1)), IWORKStylePtr_t()));
+      }
+    }
+
+    map<unsigned, string> langs;
+    if (get(msg).message(19))
+    {
+      for (IWAMessageField::const_iterator it = get(msg).message(19).message(1).begin(); it != get(msg).message(19).message(1).end(); ++it)
+      {
+        if (it->uint32(1))
+          langs.insert(langs.end(), make_pair(get(it->uint32(1)), string()));
+      }
+    }
+
+    map<unsigned, pair<IWORKStylePtr_t, IWORKStylePtr_t> > textSpans;
+    mergeTextSpans(paras, spans, langs, textSpans);
+
+    for (map<unsigned, pair<IWORKStylePtr_t, IWORKStylePtr_t> >::const_iterator it = textSpans.begin(); it != textSpans.end();)
+    {
+      if (bool(it->second.first))
+        m_collector.startParagraph(it->second.first);
+      m_collector.openSpan(it->second.second);
+      const unsigned start = it->first;
+      ++it;
+      if (it == textSpans.end())
+      {
+        writeText(get(text), start, length, true, m_collector);
+        m_collector.closeSpan();
+        m_collector.endParagraph();
+      }
+      else
+      {
+        writeText(get(text), start, it->first, bool(it->second.first), m_collector);
+        m_collector.closeSpan();
+        if (bool(it->second.first))
+          m_collector.endParagraph();
+      }
+    }
+  }
+
+  return true;
 }
 
 bool IWAParser::parseDrawableShape(const IWAMessage &msg)
@@ -421,11 +554,14 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
         }
       }
     }
-
-    m_collector.collectShape();
   }
 
-  // const optional<unsigned> &textRef = readRef(msg, 2);
+  const optional<unsigned> &textRef = readRef(msg, 2);
+  if (textRef)
+    parseText(get(textRef));
+
+  if (shape || textRef)
+    m_collector.collectShape();
 
   m_collector.endText();
   m_collector.endLevel();

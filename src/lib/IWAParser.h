@@ -85,6 +85,9 @@ protected:
   static boost::optional<IWORKSize> readSize(const IWAMessage &msg, unsigned field);
 
   bool dispatchShape(unsigned id);
+  bool parseText(unsigned id);
+
+  bool parseDrawableShape(const IWAMessage &msg);
 
 private:
   virtual bool parseDocument() = 0;
@@ -97,7 +100,6 @@ private:
   void scanFragment(unsigned id);
   void scanFragment(unsigned id, const RVNGInputStreamPtr_t &stream);
 
-  bool parseDrawableShape(const IWAMessage &msg);
   bool parseGroup(const IWAMessage &msg);
   bool parseShapePlacement(const IWAMessage &msg);
 
