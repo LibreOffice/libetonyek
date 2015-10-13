@@ -134,8 +134,8 @@ IWORKWrap::IWORKWrap()
 {
 }
 
-IWORKLineSpacing::IWORKLineSpacing(const double value, const bool relative)
-  : m_value(value)
+IWORKLineSpacing::IWORKLineSpacing(const double amount, const bool relative)
+  : m_amount(amount)
   , m_relative(relative)
 {
 }

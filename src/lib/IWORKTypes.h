@@ -168,9 +168,9 @@ struct IWORKWrap
 
 struct IWORKLineSpacing
 {
-  IWORKLineSpacing(double value, bool relative);
+  IWORKLineSpacing(double amount, bool relative);
 
-  double m_value;
+  double m_amount;
   bool m_relative;
 };
 
