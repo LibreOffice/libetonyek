@@ -841,8 +841,53 @@ void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
   if (get(msg).message(12))
   {
     const IWAMessage &paraProps = get(get(msg).message(12));
-    (void) paraProps;
-    // TODO: parse
+    using namespace property;
+
+    if (paraProps.uint32(1))
+      putEnum<Alignment>(props, get(paraProps.uint32(1)));
+    if (paraProps.float_(7))
+      props.put<FirstLineIndent>(get(paraProps.float_(7)));
+    if (paraProps.float_(11))
+      props.put<LeftIndent>(get(paraProps.float_(11)));
+    if (paraProps.message(13))
+    {
+      if (paraProps.message(13).float_(2))
+        props.put<LineSpacing>(IWORKLineSpacing(get(paraProps.message(13).float_(2)), false));
+    }
+    if (paraProps.float_(19))
+      props.put<RightIndent>(get(paraProps.float_(19)));
+    if (paraProps.float_(20))
+      props.put<SpaceAfter>(get(paraProps.float_(20)));
+    if (paraProps.float_(21))
+      props.put<SpaceBefore>(get(paraProps.float_(21)));
+    if (paraProps.message(23))
+    {
+      IWORKTabStops_t tabs;
+      const IWAMessageField &tabStops = paraProps.message(23).message(1);
+      for (IWAMessageField::const_iterator it = tabStops.begin(); it != tabStops.message(1).end(); ++it)
+      {
+        if (it->float_(1))
+          tabs.push_back(IWORKTabStop(get(it->float_(1))));
+      }
+    }
+    if (paraProps.message(32))
+    {
+      const IWAMessage &paraStroke = get(paraProps.message(32));
+      if (paraStroke.float_(2))
+      {
+        IWORKStroke stroke;
+        stroke.m_width = get(paraStroke.float_(2));
+        const optional<IWORKColor> &color = readColor(paraStroke, 1);
+        if (color)
+          stroke.m_color = get(color);
+        if (paraStroke.message(6))
+        {
+          const deque<float> &elements = paraStroke.message(6).float_(4).repeated();
+          for (deque<float>::const_iterator it = elements.begin(); it != elements.end(); ++it)
+            stroke.m_pattern.push_back(*it);
+        }
+      }
+    }
   }
 
   style = make_shared<IWORKStyle>(props, name, parent);
