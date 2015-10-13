@@ -126,7 +126,11 @@ void IWASnappyStreamTest::testInvalid()
 
 void IWASnappyStreamTest::testFull()
 {
-  assertCompressedFull("literal run", BYTES("a"), BYTES("\x0\x3\x0\x0\x1\x0\x61"));
+  assertCompressedFull("a single block", BYTES("a"), BYTES("\x0\x3\x0\x0\x1\x0\x61"));
+  assertCompressedFull("two blocks", BYTES("ab"), BYTES(
+                         "\x0\x3\x0\x0\x1\x0\x61" // block 1
+                         "\x0\x3\x0\x0\x1\x0\x62" // block 2
+                       ));
 }
 
 #undef BYTES
