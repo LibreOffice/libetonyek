@@ -22,12 +22,14 @@ template<> \
 struct IWORKNumberConverter<type> \
 { \
 static boost::optional<type> convert (const char *value); \
+static boost::optional<type> convert (unsigned value); \
 }
 
 template<typename T>
 struct IWORKNumberConverter
 {
   static boost::optional<T> convert(const char *value);
+  static boost::optional<T> convert(unsigned value);
 };
 
 IWORK_DECLARE_NUMBER_CONVERTER(bool);

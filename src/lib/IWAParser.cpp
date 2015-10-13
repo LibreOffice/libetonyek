@@ -20,7 +20,9 @@
 #include "IWAObjectType.h"
 #include "IWASnappyStream.h"
 #include "IWORKCollector.h"
+#include "IWORKNumberConverter.h"
 #include "IWORKPath.h"
+#include "IWORKProperties.h"
 #include "IWORKTypes.h"
 
 namespace libetonyek
@@ -115,6 +117,21 @@ void writeText(const string &text, const unsigned start, const unsigned end, con
   }
 
   flushText(buf, collector);
+}
+
+template<typename T>
+optional<T> convert(const unsigned value)
+{
+  return IWORKNumberConverter<T>::convert(value);
+}
+
+template<typename P>
+void putEnum(IWORKPropertyMap &props, const unsigned value)
+{
+  typedef typename IWORKPropertyInfo<P>::ValueType ValueType;
+  const optional<ValueType> &converted = IWORKNumberConverter<ValueType>::convert(value);
+  if (converted)
+    props.put<P>(get(converted));
 }
 
 }
@@ -258,6 +275,16 @@ boost::optional<IWORKSize> IWAParser::readSize(const IWAMessage &msg, const unsi
     const optional<float> &w = msg.message(field).float_(1).optional();
     const optional<float> &h = msg.message(field).float_(2).optional();
     return IWORKSize(get_optional_value_or(w, 0), get_optional_value_or(h, 0));
+  }
+  return boost::none;
+}
+
+boost::optional<IWORKColor> IWAParser::readColor(const IWAMessage &msg, const unsigned field)
+{
+  if (msg.message(field))
+  {
+    if (msg.float_(3) && msg.float_(4) && msg.float_(5) && msg.float_(6))
+      return IWORKColor(get(msg.float_(3)), get(msg.float_(4)), get(msg.float_(5)), get(msg.float_(6)));
   }
   return boost::none;
 }
@@ -823,9 +850,33 @@ void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
 
 void IWAParser::parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props)
 {
-  (void) msg;
-  (void) props;
-  // TODO: parse
+  using namespace property;
+
+  if (msg.bool_(1))
+    props.put<Bold>(get(msg.bool_(1)));
+  if (msg.bool_(2))
+    props.put<Italic>(get(msg.bool_(2)));
+  if (msg.float_(3))
+    props.put<FontSize>(get(msg.float_(3)));
+  if (msg.string(5))
+    props.put<FontName>(get(msg.string(5)));
+  const optional<IWORKColor> &fontColor = readColor(msg, 7);
+  if (fontColor)
+    props.put<FontColor>(get(fontColor));
+  if (msg.uint32(10))
+    putEnum<Baseline>(props, get(msg.uint32(10)));
+  if (msg.bool_(11))
+    props.put<Underline>(get(msg.bool_(11)));
+  if (msg.bool_(12))
+    props.put<Strikethru>(get(msg.bool_(12)));
+  if (msg.uint32(13))
+    putEnum<Capitalization>(props, get(msg.uint32(13)));
+  if (msg.float_(14))
+    props.put<BaselineShift>(get(msg.float_(14)));
+  if (msg.float_(19))
+    props.put<Outline>(get(msg.float_(19)));
+  if (msg.float_(27))
+    props.put<Tracking>(get(msg.float_(27)));
 }
 
 }

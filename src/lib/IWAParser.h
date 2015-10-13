@@ -88,6 +88,7 @@ protected:
   static std::deque<unsigned> readRefs(const IWAMessage &msg, unsigned field);
   static boost::optional<IWORKPosition> readPosition(const IWAMessage &msg, unsigned field);
   static boost::optional<IWORKSize> readSize(const IWAMessage &msg, unsigned field);
+  static boost::optional<IWORKColor> readColor(const IWAMessage &msg, unsigned field);
 
   bool dispatchShape(unsigned id);
   bool parseText(unsigned id);
