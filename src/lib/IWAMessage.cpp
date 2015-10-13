@@ -113,63 +113,63 @@ catch (...)
   // to get as much data as possible, ignoring parsing errors.
 }
 
-IWAUInt32Field &IWAMessage::uint32(const std::size_t field) const
+const IWAUInt32Field &IWAMessage::uint32(const std::size_t field) const
 {
   return getField<IWAUInt32Field>(field, WIRE_TYPE_VARINT, IWAField::TAG_UINT32);
 }
 
-IWAUInt64Field &IWAMessage::uint64(const std::size_t field) const
+const IWAUInt64Field &IWAMessage::uint64(const std::size_t field) const
 {
   return getField<IWAUInt64Field>(field, WIRE_TYPE_VARINT, IWAField::TAG_UINT64);
 }
 
-IWASInt32Field &IWAMessage::sint32(const std::size_t field) const
+const IWASInt32Field &IWAMessage::sint32(const std::size_t field) const
 {
   return getField<IWASInt32Field>(field, WIRE_TYPE_VARINT, IWAField::TAG_SINT32);
 }
 
-IWASInt64Field &IWAMessage::sint64(const std::size_t field) const
+const IWASInt64Field &IWAMessage::sint64(const std::size_t field) const
 {
   return getField<IWASInt64Field>(field, WIRE_TYPE_VARINT, IWAField::TAG_SINT64);
 }
 
-IWABoolField &IWAMessage::bool_(const std::size_t field) const
+const IWABoolField &IWAMessage::bool_(const std::size_t field) const
 {
   return getField<IWABoolField>(field, WIRE_TYPE_VARINT, IWAField::TAG_BOOL);
 }
 
-IWAFixed64Field &IWAMessage::fixed64(const std::size_t field) const
+const IWAFixed64Field &IWAMessage::fixed64(const std::size_t field) const
 {
   return getField<IWAFixed64Field>(field, WIRE_TYPE_64_BIT, IWAField::TAG_FIXED64);
 }
 
-IWADoubleField &IWAMessage::double_(const std::size_t field) const
+const IWADoubleField &IWAMessage::double_(const std::size_t field) const
 {
   return getField<IWADoubleField>(field, WIRE_TYPE_64_BIT, IWAField::TAG_DOUBLE);
 }
 
-IWAStringField &IWAMessage::string(const std::size_t field) const
+const IWAStringField &IWAMessage::string(const std::size_t field) const
 {
   return getField<IWAStringField>(field, WIRE_TYPE_LENGTH_DELIMITED, IWAField::TAG_STRING);
 }
 
-IWAMessageField &IWAMessage::message(const std::size_t field) const
+const IWAMessageField &IWAMessage::message(const std::size_t field) const
 {
   return getField<IWAMessageField>(field, WIRE_TYPE_LENGTH_DELIMITED, IWAField::TAG_MESSAGE);
 }
 
-IWAFixed32Field &IWAMessage::fixed32(const std::size_t field) const
+const IWAFixed32Field &IWAMessage::fixed32(const std::size_t field) const
 {
   return getField<IWAFixed32Field>(field, WIRE_TYPE_32_BIT, IWAField::TAG_FIXED32);
 }
 
-IWAFloatField &IWAMessage::float_(const std::size_t field) const
+const IWAFloatField &IWAMessage::float_(const std::size_t field) const
 {
   return getField<IWAFloatField>(field, WIRE_TYPE_32_BIT, IWAField::TAG_FLOAT);
 }
 
 template<typename FieldT>
-FieldT &IWAMessage::getField(const std::size_t field, const WireType wireType, const IWAField::Tag tag) const
+const FieldT &IWAMessage::getField(const std::size_t field, const WireType wireType, const IWAField::Tag tag) const
 {
   const FieldList_t::iterator fieldIt = m_fields.find(field);
 

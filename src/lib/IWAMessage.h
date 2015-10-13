@@ -24,20 +24,20 @@ public:
   IWAMessage(const RVNGInputStreamPtr_t &input, unsigned long length);
   IWAMessage(const RVNGInputStreamPtr_t &input, long start, long end);
 
-  IWAUInt32Field &uint32(std::size_t field) const;
-  IWAUInt64Field &uint64(std::size_t field) const;
-  IWASInt32Field &sint32(std::size_t field) const;
-  IWASInt64Field &sint64(std::size_t field) const;
-  IWABoolField &bool_(std::size_t field) const;
+  const IWAUInt32Field &uint32(std::size_t field) const;
+  const IWAUInt64Field &uint64(std::size_t field) const;
+  const IWASInt32Field &sint32(std::size_t field) const;
+  const IWASInt64Field &sint64(std::size_t field) const;
+  const IWABoolField &bool_(std::size_t field) const;
 
-  IWAFixed64Field &fixed64(std::size_t field) const;
-  IWADoubleField &double_(std::size_t field) const;
+  const IWAFixed64Field &fixed64(std::size_t field) const;
+  const IWADoubleField &double_(std::size_t field) const;
 
-  IWAStringField &string(std::size_t field) const;
-  IWAMessageField &message(std::size_t field) const;
+  const IWAStringField &string(std::size_t field) const;
+  const IWAMessageField &message(std::size_t field) const;
 
-  IWAFixed32Field &fixed32(std::size_t field) const;
-  IWAFloatField &float_(std::size_t field) const;
+  const IWAFixed32Field &fixed32(std::size_t field) const;
+  const IWAFloatField &float_(std::size_t field) const;
 
 private:
   enum WireType
@@ -65,7 +65,7 @@ private:
   void parse(unsigned long length);
 
   template<typename FieldT>
-  FieldT &getField(std::size_t field, WireType wireType, IWAField::Tag tag) const;
+  const FieldT &getField(std::size_t field, WireType wireType, IWAField::Tag tag) const;
 
 private:
   RVNGInputStreamPtr_t m_input;
