@@ -281,10 +281,11 @@ boost::optional<IWORKSize> IWAParser::readSize(const IWAMessage &msg, const unsi
 
 boost::optional<IWORKColor> IWAParser::readColor(const IWAMessage &msg, const unsigned field)
 {
-  if (msg.message(field))
+  const IWAMessageField &color = msg.message(field);
+  if (color)
   {
-    if (msg.float_(3) && msg.float_(4) && msg.float_(5) && msg.float_(6))
-      return IWORKColor(get(msg.float_(3)), get(msg.float_(4)), get(msg.float_(5)), get(msg.float_(6)));
+    if (color.float_(3) && color.float_(4) && color.float_(5))
+      return IWORKColor(get(color.float_(3)), get(color.float_(4)), get(color.float_(5)), get_optional_value_or(color.float_(6), 0));
   }
   return boost::none;
 }
