@@ -11,8 +11,10 @@
 #include <algorithm>
 
 #include <boost/bind.hpp>
+#include <boost/make_shared.hpp>
 
 #include "IWAMessage.h"
+#include "IWORKProperties.h"
 #include "KEY6ObjectType.h"
 #include "KEYCollector.h"
 
@@ -20,6 +22,8 @@ namespace libetonyek
 {
 
 using boost::bind;
+using boost::make_shared;
+using boost::none;
 using boost::optional;
 
 using std::deque;
@@ -132,15 +136,41 @@ bool KEY6Parser::parsePlaceholder(const unsigned id)
 
   if (get(msg).uint32(2))
   {
-    switch (get(get(msg).uint32(2)))
+    const unsigned type = get(get(msg).uint32(2));
+    switch (type)
     {
     case 2 : // title
     case 3 : // body
     {
-      if (get(msg).message(1))
-        parseDrawableShape(get(get(msg).message(1)));
+      const IWAMessageField &drawableShape = get(msg).message(1);
+      if (drawableShape)
+      {
+        const IWAMessageField &shape = get(drawableShape).message(1);
+        const optional<unsigned> &textRef = readRef(get(drawableShape), 2);
+        if (shape && textRef)
+        {
+          m_collector.startLevel();
+          IWORKGeometryPtr_t geometry;
+          const IWAMessageField &placement = get(shape).message(1);
+          if (placement)
+            parseShapePlacement(get(placement), geometry);
+          m_collector.startText();
+          parseText(get(textRef));
+          IWORKPropertyMap props;
+          if (bool(geometry))
+            props.put<property::Geometry>(geometry);
+          const IWORKStylePtr_t style = make_shared<IWORKStyle>(props, none, none);
+          const KEYPlaceholderPtr_t &placeholder = m_collector.collectTextPlaceholder(style, type == 2);
+          m_collector.endText();
+          m_collector.insertTextPlaceholder(placeholder);
+          m_collector.endLevel();
+        }
+      }
       break;
     }
+    default :
+      ETONYEK_DEBUG_MSG(("KEY6Parser::parsePlaceholder: unhandled placeholder type %u\n", type));
+      break;
     }
   }
 

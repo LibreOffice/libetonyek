@@ -648,9 +648,9 @@ bool IWAParser::parseGroup(const IWAMessage &msg)
   return true;
 }
 
-bool IWAParser::parseShapePlacement(const IWAMessage &msg)
+bool IWAParser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry)
 {
-  const IWORKGeometryPtr_t geometry(new IWORKGeometry());
+  geometry = make_shared<IWORKGeometry>();
 
   const optional<IWAMessage> &g = msg.message(1).optional();
   if (g)
@@ -684,9 +684,15 @@ bool IWAParser::parseShapePlacement(const IWAMessage &msg)
   }
   geometry->m_aspectRatioLocked = msg.bool_(7).optional();
 
-  m_collector.collectGeometry(geometry);
-
   return true;
+}
+
+bool IWAParser::parseShapePlacement(const IWAMessage &msg)
+{
+  IWORKGeometryPtr_t geometry;
+  const bool retval = parseShapePlacement(msg, geometry);
+  m_collector.collectGeometry(geometry);
+  return retval;
 }
 
 void IWAParser::parseObjectIndex()

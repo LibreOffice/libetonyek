@@ -93,7 +93,7 @@ protected:
   bool dispatchShape(unsigned id);
   bool parseText(unsigned id);
 
-  bool parseDrawableShape(const IWAMessage &msg);
+  bool parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry);
 
   const IWORKStylePtr_t queryCharacterStyle(unsigned id) const;
   const IWORKStylePtr_t queryParagraphStyle(unsigned id) const;
@@ -114,6 +114,7 @@ private:
   void parseCharacterStyle(unsigned id, IWORKStylePtr_t &style);
   void parseParagraphStyle(unsigned id, IWORKStylePtr_t &style);
 
+  bool parseDrawableShape(const IWAMessage &msg);
   bool parseGroup(const IWAMessage &msg);
   bool parseShapePlacement(const IWAMessage &msg);
   void parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props);
