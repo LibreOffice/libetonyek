@@ -832,7 +832,7 @@ void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
     name = styleInfo.string(2).optional();
     const optional<unsigned> &parentRef = readRef(get(styleInfo), 3);
     if (parentRef)
-      parent = queryCharacterStyle(get(parentRef));
+      parent = queryParagraphStyle(get(parentRef));
   }
 
   IWORKPropertyMap props;
