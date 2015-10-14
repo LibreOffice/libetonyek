@@ -732,7 +732,7 @@ void IWAParser::parseObjectIndex()
     for (deque<IWAMessage>::const_iterator it = files.begin(); it != files.end(); ++it)
     {
       if (it->uint32(1) && it->string(3))
-        m_fileMap[it->uint32(1).get()] = make_pair(it->string(3).get(), RVNGInputStreamPtr_t());
+        m_fileMap[it->uint32(1).get()] = make_pair("Data/" + it->string(3).get(), RVNGInputStreamPtr_t());
     }
   }
 }
