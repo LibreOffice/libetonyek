@@ -105,6 +105,7 @@ private:
 
 private:
   void queryObject(unsigned id, unsigned &type, boost::optional<IWAMessage> &msg) const;
+  const RVNGInputStreamPtr_t queryFile(unsigned id) const;
 
   void parseObjectIndex();
 
@@ -118,6 +119,7 @@ private:
   bool parseGroup(const IWAMessage &msg);
   bool parseShapePlacement(const IWAMessage &msg);
   void parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props);
+  bool parseImage(const IWAMessage &msg);
 
 private:
   const RVNGInputStreamPtr_t m_fragments;
@@ -126,7 +128,7 @@ private:
 
   FileMap_t m_fragmentMap;
   mutable RecordMap_t m_fragmentObjectMap;
-  FileMap_t m_fileMap;
+  mutable FileMap_t m_fileMap;
 
   std::deque<unsigned> m_visited;
 

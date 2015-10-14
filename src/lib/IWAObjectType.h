@@ -22,6 +22,7 @@ enum
   DrawableShape = 2011,
   CharacterStyle = 2021,
   ParagraphStyle = 2022,
+  Image = 3005,
   Group = 3008
 };
 

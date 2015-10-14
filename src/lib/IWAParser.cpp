@@ -235,6 +235,31 @@ void IWAParser::queryObject(const unsigned id, unsigned &type, boost::optional<I
   }
 }
 
+const RVNGInputStreamPtr_t IWAParser::queryFile(const unsigned id) const
+{
+  const FileMap_t::iterator it = m_fileMap.find(id);
+
+  if (it == m_fileMap.end())
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::queryFile: file %u not found\n", id));
+    return RVNGInputStreamPtr_t();
+  }
+
+  if (!it->second.second)
+  {
+    if (!m_package->existsSubStream(it->second.first.c_str()))
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::queryFile: file %s does not exist\n", it->second.first.c_str()));
+      m_fileMap.erase(it); // avoid further attempts to find the same file
+      return RVNGInputStreamPtr_t();
+    }
+    it->second.second.reset(m_package->getSubStreamByName(it->second.first.c_str()));
+  }
+
+  assert(bool(it->second.second));
+  return it->second.second;
+}
+
 boost::optional<unsigned> IWAParser::readRef(const IWAMessage &msg, const unsigned field)
 {
   if (msg.message(field))
@@ -302,6 +327,8 @@ bool IWAParser::dispatchShape(const unsigned id)
     return parseDrawableShape(get(msg));
   case IWAObjectType::Group :
     return parseGroup(get(msg));
+  case IWAObjectType::Image :
+    return parseImage(get(msg));
   }
 
   return false;
@@ -929,6 +956,46 @@ void IWAParser::parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap
     props.put<Outline>(get(msg.float_(19)));
   if (msg.float_(27))
     props.put<Tracking>(get(msg.float_(27)));
+}
+
+bool IWAParser::parseImage(const IWAMessage &msg)
+{
+  optional<unsigned> imageRef;
+
+  const optional<unsigned> &filteredRef = readRef(msg, 15);
+  if (filteredRef)
+  {
+    imageRef = filteredRef;
+  }
+  else
+  {
+    // FIXME: this is speculative
+    const optional<unsigned> &fileRef1 = readRef(msg, 13);
+    if (fileRef1)
+      imageRef = fileRef1;
+    else
+      imageRef = readRef(msg, 11);
+  }
+
+  m_collector.startLevel();
+  if (msg.message(1))
+    parseShapePlacement(get(msg.message(1)));
+
+  const IWORKMediaContentPtr_t content = make_shared<IWORKMediaContent>();
+  if (imageRef)
+  {
+    const IWORKDataPtr_t data = make_shared<IWORKData>();
+    data->m_stream = queryFile(get(imageRef));
+    content->m_data = data;
+  }
+  content->m_size = readSize(msg, 9);
+  if (!content->m_size)
+    content->m_size = readSize(msg, 4);
+
+  m_collector.collectMedia(content);
+  m_collector.endLevel();
+
+  return true;
 }
 
 }
