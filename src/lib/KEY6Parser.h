@@ -29,6 +29,7 @@ private:
   bool parseSlideList(unsigned id);
   bool parseSlide(unsigned id, bool master);
   bool parsePlaceholder(unsigned id);
+  void parseNotes(unsigned id);
 
 private:
   KEYCollector &m_collector;

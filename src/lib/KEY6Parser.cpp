@@ -113,7 +113,9 @@ bool KEY6Parser::parseSlide(const unsigned id, const bool master)
   const deque<unsigned> &shapeRefs = readRefs(get(msg), 7);
   for_each(shapeRefs.begin(), shapeRefs.end(), bind(&KEY6Parser::dispatchShape, this, _1));
 
-  // const optional<unsigned> &noteRef = readRef(get(msg), 27);
+  const optional<unsigned> &notesRef = readRef(get(msg), 27);
+  if (notesRef)
+    parseNotes(get(notesRef));
 
   const KEYLayerPtr_t layer = m_collector.collectLayer();
   m_collector.endLayer();
@@ -175,6 +177,22 @@ bool KEY6Parser::parsePlaceholder(const unsigned id)
   }
 
   return true;
+}
+
+void KEY6Parser::parseNotes(const unsigned id)
+{
+  const ObjectMessage msg(*this, id, KEY6ObjectType::Notes);
+  if (!msg)
+    return;
+
+  const optional<unsigned> &textRef = readRef(get(msg), 1);
+  if (textRef)
+  {
+    m_collector.startText();
+    parseText(get(textRef));
+    m_collector.collectNote();
+    m_collector.endText();
+  }
 }
 
 }

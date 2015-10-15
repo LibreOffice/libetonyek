@@ -22,7 +22,8 @@ enum
   Presentation = 2,
   SlideList = 4,
   Slide = 5,
-  Placeholder = 7
+  Placeholder = 7,
+  Notes = 15
 };
 
 }
