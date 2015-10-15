@@ -29,6 +29,7 @@ namespace libetonyek
 {
 
 using boost::make_shared;
+using boost::none;
 using boost::optional;
 
 using std::deque;
@@ -347,14 +348,18 @@ bool IWAParser::parseText(const unsigned id)
     map<unsigned, IWORKStylePtr_t> paras;
     if (get(msg).message(5))
     {
+      IWORKStylePtr_t style = make_shared<IWORKStyle>(IWORKPropertyMap(), none, none);
       for (IWAMessageField::const_iterator it = get(msg).message(5).message(1).begin(); it != get(msg).message(5).message(1).end(); ++it)
       {
         if (it->uint32(1) && (get(it->uint32(1)) < length))
         {
-          IWORKStylePtr_t style;
           const optional<unsigned> &styleRef = readRef(*it, 2);
           if (styleRef)
-            style = queryParagraphStyle(get(styleRef));
+          {
+            const IWORKStylePtr_t &newStyle = queryParagraphStyle(get(styleRef));
+            if (bool(newStyle))
+              style = newStyle;
+          }
           paras.insert(paras.end(), make_pair(get(it->uint32(1)), style));
         }
       }
