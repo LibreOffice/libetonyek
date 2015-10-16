@@ -1003,6 +1003,23 @@ bool IWAParser::parseImage(const IWAMessage &msg)
   return true;
 }
 
+void IWAParser::parseComment(const unsigned id)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::Comment);
+  if (!msg)
+    return;
+
+  if (get(msg).string(1))
+  {
+    m_collector.startParagraph(make_shared<IWORKStyle>(IWORKPropertyMap(), none, none));
+    m_collector.openSpan(IWORKStylePtr_t());
+    const string &text = get(get(msg).string(1));
+    writeText(text, 0, text.size(), false, m_collector);
+    m_collector.closeSpan();
+    m_collector.endParagraph();
+  }
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

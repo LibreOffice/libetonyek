@@ -20,10 +20,12 @@ enum
 {
   Text = 2001,
   DrawableShape = 2011,
+  StickyNote = 2014,
   CharacterStyle = 2021,
   ParagraphStyle = 2022,
   Image = 3005,
-  Group = 3008
+  Group = 3008,
+  Comment = 3056
 };
 
 }

@@ -92,6 +92,7 @@ protected:
 
   bool dispatchShape(unsigned id);
   bool parseText(unsigned id);
+  void parseComment(unsigned id);
 
   bool parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry);
 

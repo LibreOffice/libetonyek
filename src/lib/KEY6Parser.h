@@ -25,11 +25,15 @@ public:
 private:
   virtual bool parseDocument();
 
+  bool dispatchShape(unsigned id);
+
   bool parsePresentation(unsigned id);
   bool parseSlideList(unsigned id);
   bool parseSlide(unsigned id, bool master);
   bool parsePlaceholder(unsigned id);
   void parseNotes(unsigned id);
+
+  bool parseStickyNote(const IWAMessage &msg);
 
 private:
   KEYCollector &m_collector;

@@ -14,6 +14,7 @@
 #include <boost/make_shared.hpp>
 
 #include "IWAMessage.h"
+#include "IWAObjectType.h"
 #include "IWORKProperties.h"
 #include "KEY6ObjectType.h"
 #include "KEYCollector.h"
@@ -193,6 +194,45 @@ void KEY6Parser::parseNotes(const unsigned id)
     m_collector.collectNote();
     m_collector.endText();
   }
+}
+
+bool KEY6Parser::dispatchShape(const unsigned id)
+{
+  {
+    const ObjectMessage msg(*this, id);
+    if (!msg)
+      return false;
+
+    if (msg.getType() == IWAObjectType::StickyNote)
+      return parseStickyNote(get(msg));
+  }
+
+  return IWAParser::dispatchShape(id);
+}
+
+bool KEY6Parser::parseStickyNote(const IWAMessage &msg)
+{
+  m_collector.startLevel();
+  m_collector.startText();
+
+  if (msg.message(1))
+  {
+    const optional<unsigned> &textRef = readRef(get(msg.message(1)), 2);
+    if (textRef)
+      parseText(get(textRef));
+  }
+  else
+  {
+    const optional<unsigned> &commentRef = readRef(msg, 2);
+    if (commentRef)
+      parseComment(get(commentRef));
+  }
+
+  m_collector.collectStickyNote();
+  m_collector.endText();
+  m_collector.endLevel();
+
+  return true;
 }
 
 }
