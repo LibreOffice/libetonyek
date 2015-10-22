@@ -56,7 +56,7 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStylePtr_t 
       const IWORKNumberFormat &format = style->get<SFTCellStylePropertyNumberFormat>();
 
       if (style->getIdent())
-        props.insert("librevenge:name", style->getIdent());
+        props.insert("librevenge:name", get(style->getIdent()).c_str());
 
       props.insert("librevenge:value", get(value).c_str());
 
@@ -85,7 +85,7 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStylePtr_t 
     if (style->has<SFTCellStylePropertyDateTimeFormat>() && value)
     {
       if (style->getIdent())
-        props.insert("librevenge:name", style->getIdent());
+        props.insert("librevenge:name", get(style->getIdent()).c_str());
       props.insert("librevenge:value-type", "date");
 
       const double seconds = double_cast(get(value).c_str());
@@ -115,7 +115,7 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStylePtr_t 
       props.insert("librevenge:seconds", (seconds % 3600) % 60);
 
       if (style->getIdent())
-        props.insert("librevenge:name", style->getIdent());
+        props.insert("librevenge:name", get(style->getIdent()).c_str());
     }
     break;
   case IWORK_CELL_TYPE_BOOL:
