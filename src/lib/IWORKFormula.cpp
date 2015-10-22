@@ -440,7 +440,7 @@ struct Collector : public boost::static_visitor<>
       if (m_tableNameMap->end() != it)
         props.insert("librevenge:sheet-name", (it->second).c_str());
       else
-        props.insert("librevenge:sheet-name", val.m_table);
+        props.insert("librevenge:sheet-name", get(val.m_table));
     }
 
     if (val.m_column)
