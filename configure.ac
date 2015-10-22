@@ -102,7 +102,7 @@ AC_CHECK_HEADERS(
         boost/spirit/include/phoenix.hpp \
         boost/spirit/include/qi.hpp \
         boost/unordered_map.hpp \
-        boost/variant/recursive_variant.hpp,
+        boost/variant/recursive_variant.hpp \
         boost/variant/variant.hpp,
     [],
     [AC_MSG_ERROR([Required boost headers not found.])],
