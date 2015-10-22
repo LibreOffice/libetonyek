@@ -995,7 +995,7 @@ void IWORKOutputElements::addOpenEndnote(const librevenge::RVNGPropertyList &pro
 
 void IWORKOutputElements::addOpenFormulaCell(const librevenge::RVNGPropertyList &propList, const boost::optional<IWORKFormula> &formula, const IWORKTableNameMapPtr_t &tableNameMap)
 {
-  m_elements.push_back(make_shared<OpenFormulaCellElement>(propList, formula, tableNameMap));
+  m_elements.push_back(boost::shared_ptr<OpenFormulaCellElement>(new OpenFormulaCellElement(propList, formula, tableNameMap)));
 }
 
 void IWORKOutputElements::addOpenFooter(const librevenge::RVNGPropertyList &propList)
