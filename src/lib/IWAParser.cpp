@@ -854,7 +854,7 @@ void IWAParser::parseCharacterStyle(const unsigned id, IWORKStylePtr_t &style)
   if (get(msg).message(11))
     parseCharacterProperties(get(get(msg).message(11)), props);
 
-  style = make_shared<IWORKStyle>(props, name, parent);
+  style.reset(new IWORKStyle(props, name, parent));
 }
 
 void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
@@ -929,7 +929,7 @@ void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
     }
   }
 
-  style = make_shared<IWORKStyle>(props, name, parent);
+  style.reset(new IWORKStyle(props, name, parent));
 }
 
 void IWAParser::parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props)
