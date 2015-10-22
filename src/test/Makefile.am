@@ -14,6 +14,7 @@ test_CPPFLAGS = \
 	$(CPPUNIT_CFLAGS) \
 	$(XML_CFLAGS) \
 	$(GLM_CFLAGS) \
+	$(MDDS_CFLAGS) \
 	$(DEBUG_CXXFLAGS)
 
 test_LDFLAGS = -L$(top_builddir)/src/lib
