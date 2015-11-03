@@ -899,10 +899,10 @@ void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
       props.put<SpaceAfter>(get(paraProps.float_(20)));
     if (paraProps.float_(21))
       props.put<SpaceBefore>(get(paraProps.float_(21)));
-    if (paraProps.message(23))
+    if (paraProps.message(25))
     {
       IWORKTabStops_t tabs;
-      const IWAMessageField &tabStops = paraProps.message(23).message(1);
+      const IWAMessageField &tabStops = paraProps.message(25).message(1);
       for (IWAMessageField::const_iterator it = tabStops.begin(); it != tabStops.message(1).end(); ++it)
       {
         if (it->float_(1))
