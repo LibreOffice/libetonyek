@@ -884,8 +884,17 @@ void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
 
     if (paraProps.uint32(1))
       putEnum<Alignment>(props, get(paraProps.uint32(1)));
+    const optional<IWORKColor> &fillColor = readColor(paraProps, 6);
+    if (fillColor)
+      props.put<ParagraphFill>(get(fillColor));
     if (paraProps.float_(7))
       props.put<FirstLineIndent>(get(paraProps.float_(7)));
+    if (paraProps.bool_(8))
+      props.put<Hyphenate>(get(paraProps.bool_(8)));
+    if (paraProps.bool_(9))
+      props.put<KeepLinesTogether>(get(paraProps.bool_(9)));
+    if (paraProps.bool_(10))
+      props.put<KeepWithNext>(get(paraProps.bool_(10)));
     if (paraProps.float_(11))
       props.put<LeftIndent>(get(paraProps.float_(11)));
     if (paraProps.message(13))
@@ -893,6 +902,10 @@ void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
       if (paraProps.message(13).float_(2))
         props.put<LineSpacing>(IWORKLineSpacing(get(paraProps.message(13).float_(2)), false));
     }
+    if (paraProps.bool_(14))
+      props.put<PageBreakBefore>(get(paraProps.bool_(14)));
+    if (paraProps.uint32(15))
+      putEnum<ParagraphBorderType>(props, get(paraProps.uint32(15)));
     if (paraProps.float_(19))
       props.put<RightIndent>(get(paraProps.float_(19)));
     if (paraProps.float_(20))
@@ -909,6 +922,8 @@ void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
           tabs.push_back(IWORKTabStop(get(it->float_(1))));
       }
     }
+    if (paraProps.bool_(26))
+      props.put<WidowControl>(get(paraProps.bool_(26)));
     if (paraProps.message(32))
     {
       const IWAMessage &paraStroke = get(paraProps.message(32));

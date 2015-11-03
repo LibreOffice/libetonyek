@@ -241,6 +241,8 @@ librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, cons
     const bool enableWidows = styleStack.has<WidowControl>() && !styleStack.get<WidowControl>();
     props.insert("orphans", enableWidows ? "0" : "2");
     props.insert("widows", enableWidows ? "0" : "2");
+    if (styleStack.has<Hyphenate>())
+      props.insert("fo:hyphenate", styleStack.get<Hyphenate>());
 
     if (styleStack.has<Tabs>())
     {
