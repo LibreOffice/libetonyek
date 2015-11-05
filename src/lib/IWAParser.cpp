@@ -316,6 +316,65 @@ boost::optional<IWORKColor> IWAParser::readColor(const IWAMessage &msg, const un
   return boost::none;
 }
 
+void IWAParser::readStroke(const IWAMessage &msg, IWORKStroke &stroke)
+{
+  const optional<IWORKColor> &color = readColor(msg, 1);
+  if (color)
+    stroke.m_color = get(color);
+  stroke.m_width = get(msg.float_(2));
+  if (msg.uint32(3))
+  {
+    const optional<IWORKLineCap> &cap = convert<IWORKLineCap>(get(msg.uint32(3)));
+    if (cap)
+      stroke.m_cap = get(cap);
+  }
+  if (msg.uint32(4))
+  {
+    const optional<IWORKLineJoin> &join = convert<IWORKLineJoin>(get(msg.uint32(4)));
+    if (join)
+      stroke.m_join = get(join);
+  }
+  if (msg.message(6))
+  {
+    const deque<float> &elements = msg.message(6).float_(4).repeated();
+    for (deque<float>::const_iterator it = elements.begin(); it != elements.end(); ++it)
+      stroke.m_pattern.push_back(*it);
+  }
+}
+
+void IWAParser::readFill(const IWAMessage &msg, IWORKFill &fill)
+{
+  const optional<IWORKColor> &color = readColor(msg, 1);
+  if (color)
+  {
+    fill = get(color);
+  }
+  else if (msg.message(2))
+  {
+    IWORKGradient gradient;
+    readGradient(get(msg.message(2)), gradient);
+    fill = gradient;
+  }
+  else if (msg.message(3))
+  {
+    // TODO: read fill image
+  }
+}
+
+void IWAParser::readGradient(const IWAMessage &msg, IWORKGradient &gradient)
+{
+  // TODO: read gradient
+  (void) msg;
+  (void) gradient;
+}
+
+void IWAParser::readShadow(const IWAMessage &msg, IWORKShadow &shadow)
+{
+  // TODO: read shadow
+  (void) msg;
+  (void) shadow;
+}
+
 bool IWAParser::dispatchShape(const unsigned id)
 {
   const ObjectMessage msg(*this, id);
@@ -441,6 +500,11 @@ const IWORKStylePtr_t IWAParser::queryCharacterStyle(const unsigned id) const
 const IWORKStylePtr_t IWAParser::queryParagraphStyle(const unsigned id) const
 {
   return queryStyle(id, m_paraStyles, &IWAParser::parseParagraphStyle);
+}
+
+const IWORKStylePtr_t IWAParser::queryGraphicStyle(const unsigned id) const
+{
+  return queryStyle(id, m_graphicStyles, &IWAParser::parseGraphicStyle);
 }
 
 bool IWAParser::parseDrawableShape(const IWAMessage &msg)
@@ -926,22 +990,65 @@ void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
       props.put<WidowControl>(get(paraProps.bool_(26)));
     if (paraProps.message(32))
     {
-      const IWAMessage &paraStroke = get(paraProps.message(32));
-      if (paraStroke.float_(2))
+      IWORKStroke stroke;
+      readStroke(get(paraProps.message(32)), stroke);
+      props.put<ParagraphStroke>(stroke);
+    }
+  }
+
+  style.reset(new IWORKStyle(props, name, parent));
+}
+
+void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::GraphicStyle);
+  if (!msg)
+    return;
+
+  optional<string> name;
+  IWORKStylePtr_t parent;
+  IWORKPropertyMap props;
+
+  using namespace property;
+
+  if (get(msg).message(1))
+  {
+    const IWAMessageField &styleInfo = get(msg).message(1).message(1);
+    if (styleInfo)
+    {
+      name = styleInfo.string(2).optional();
+      const optional<unsigned> &parentRef = readRef(get(styleInfo), 3);
+      if (parentRef)
+        parent = queryGraphicStyle(get(parentRef));
+    }
+
+    const IWAMessageField &styleProps = get(msg).message(1).message(11);
+    if (styleProps)
+    {
+      if (styleProps.message(1))
+      {
+        // TODO: fill
+      }
+      if (styleProps.message(2))
       {
         IWORKStroke stroke;
-        stroke.m_width = get(paraStroke.float_(2));
-        const optional<IWORKColor> &color = readColor(paraStroke, 1);
-        if (color)
-          stroke.m_color = get(color);
-        if (paraStroke.message(6))
+        readStroke(get(styleProps.message(2)), stroke);
+        props.put<Stroke>(stroke);
+        if (styleProps.message(3))
         {
-          const deque<float> &elements = paraStroke.message(6).float_(4).repeated();
-          for (deque<float>::const_iterator it = elements.begin(); it != elements.end(); ++it)
-            stroke.m_pattern.push_back(*it);
+          // TODO: opacity
+        }
+        if (styleProps.message(4))
+        {
+          // TODO: shadow
         }
       }
     }
+  }
+
+  if (get(msg).message(11))
+  {
+    // TODO: layout props
   }
 
   style.reset(new IWORKStyle(props, name, parent));

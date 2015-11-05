@@ -16,6 +16,7 @@
 #include <string>
 
 #include <boost/optional.hpp>
+#include <boost/variant.hpp>
 
 #include <mdds/flat_segment_tree.hpp>
 
@@ -206,6 +207,45 @@ struct IWORKStroke
   IWORKLineJoin m_join;
   IWORKLineCap m_cap;
   std::deque<double> m_pattern;
+};
+
+struct IWORKGradientStop
+{
+  IWORKGradientStop();
+
+  IWORKColor m_color;
+  double m_fraction;
+  double m_inflection;
+};
+
+struct IWORKGradient
+{
+  IWORKGradient();
+
+  IWORKGradientType m_type;
+  std::deque<IWORKGradientStop> m_stops;
+  double m_opacity;
+};
+
+struct IWORKFillImage
+{
+  IWORKFillImage();
+
+  IWORKFillImageType m_type;
+  IWORKColor m_color;
+  IWORKSize m_size;
+  std::string m_path;
+};
+
+typedef boost::variant<IWORKColor, IWORKGradient, IWORKFillImage> IWORKFill;
+
+struct IWORKShadow
+{
+  IWORKShadow();
+
+  IWORKColor m_color;
+  IWORKPosition m_offset;
+  double m_opacity;
 };
 
 struct IWORKMetadata

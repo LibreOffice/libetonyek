@@ -20,14 +20,13 @@
 #include "libetonyek_utils.h"
 #include "IWAMessage.h"
 #include "IWORKStyle_fwd.h"
+#include "IWORKTypes.h"
 
 namespace libetonyek
 {
 
 class IWORKCollector;
 class IWORKPropertyMap;
-struct IWORKPosition;
-struct IWORKSize;
 
 class IWAParser
 {
@@ -89,6 +88,10 @@ protected:
   static boost::optional<IWORKPosition> readPosition(const IWAMessage &msg, unsigned field);
   static boost::optional<IWORKSize> readSize(const IWAMessage &msg, unsigned field);
   static boost::optional<IWORKColor> readColor(const IWAMessage &msg, unsigned field);
+  static void readStroke(const IWAMessage &msg, IWORKStroke &stroke);
+  static void readFill(const IWAMessage &msg, IWORKFill &fill);
+  static void readGradient(const IWAMessage &msg, IWORKGradient &gradient);
+  static void readShadow(const IWAMessage &msg, IWORKShadow &shadow);
 
   bool dispatchShape(unsigned id);
   bool parseText(unsigned id);
@@ -98,6 +101,7 @@ protected:
 
   const IWORKStylePtr_t queryCharacterStyle(unsigned id) const;
   const IWORKStylePtr_t queryParagraphStyle(unsigned id) const;
+  const IWORKStylePtr_t queryGraphicStyle(unsigned id) const;
 
   const IWORKStylePtr_t queryStyle(unsigned id, StyleMap_t &styleMap, StyleParseFun_t parse) const;
 
@@ -115,6 +119,7 @@ private:
 
   void parseCharacterStyle(unsigned id, IWORKStylePtr_t &style);
   void parseParagraphStyle(unsigned id, IWORKStylePtr_t &style);
+  void parseGraphicStyle(unsigned id, IWORKStylePtr_t &style);
 
   bool parseDrawableShape(const IWAMessage &msg);
   bool parseGroup(const IWAMessage &msg);
@@ -135,6 +140,7 @@ private:
 
   mutable StyleMap_t m_charStyles;
   mutable StyleMap_t m_paraStyles;
+  mutable StyleMap_t m_graphicStyles;
 };
 
 }
