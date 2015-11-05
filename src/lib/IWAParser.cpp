@@ -440,7 +440,7 @@ const IWORKStylePtr_t IWAParser::queryCharacterStyle(const unsigned id) const
 
 const IWORKStylePtr_t IWAParser::queryParagraphStyle(const unsigned id) const
 {
-  return queryStyle(id, m_charStyles, &IWAParser::parseParagraphStyle);
+  return queryStyle(id, m_paraStyles, &IWAParser::parseParagraphStyle);
 }
 
 bool IWAParser::parseDrawableShape(const IWAMessage &msg)
