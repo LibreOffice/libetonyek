@@ -244,7 +244,8 @@ struct IWORKShadow
   IWORKShadow();
 
   IWORKColor m_color;
-  IWORKPosition m_offset;
+  double m_angle;
+  double m_offset;
   double m_opacity;
 };
 

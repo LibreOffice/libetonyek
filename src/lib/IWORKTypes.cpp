@@ -168,6 +168,14 @@ IWORKStroke::IWORKStroke()
 {
 }
 
+IWORKShadow::IWORKShadow()
+  : m_color()
+  , m_angle(0)
+  , m_offset(0)
+  , m_opacity(0)
+{
+}
+
 IWORKMetadata::IWORKMetadata()
   : m_title()
   , m_author()

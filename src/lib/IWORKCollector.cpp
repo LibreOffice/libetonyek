@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <cstring>
 
 #include <boost/bind.hpp>
@@ -170,6 +171,18 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
     default :
       props.insert("svg:stroke-linejoin", "none");
     }
+  }
+
+  if (style->has<Shadow>())
+  {
+    const IWORKShadow &shadow = style->get<Shadow>();
+
+    props.insert("draw:shadow", "visible");
+    props.insert("draw:shadow-color", makeColor(shadow.m_color));
+    props.insert("draw:shadow-opacity", shadow.m_opacity);
+    const double angle = deg2rad(shadow.m_angle);
+    props.insert("draw:shadow-offset-x", shadow.m_offset * std::cos(angle));
+    props.insert("draw:shadow-offset-y", shadow.m_offset * std::sin(angle));
   }
 }
 
