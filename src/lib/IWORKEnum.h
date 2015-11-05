@@ -56,7 +56,8 @@ enum IWORKCapitalization
 enum IWORKLineCap
 {
   IWORK_LINE_CAP_NONE,
-  IWORK_LINE_CAP_BUTT
+  IWORK_LINE_CAP_BUTT,
+  IWORK_LINE_CAP_ROUND,
 };
 
 enum IWORKLineJoin

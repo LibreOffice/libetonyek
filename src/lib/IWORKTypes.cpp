@@ -168,6 +168,28 @@ IWORKStroke::IWORKStroke()
 {
 }
 
+IWORKGradientStop::IWORKGradientStop()
+  : m_color()
+  , m_fraction()
+  , m_inflection()
+{
+}
+
+IWORKGradient::IWORKGradient()
+  : m_type(IWORK_GRADIENT_TYPE_LINEAR)
+  , m_stops()
+  , m_opacity(0)
+{
+}
+
+IWORKFillImage::IWORKFillImage()
+  : m_type(IWORK_FILL_IMAGE_TYPE_ORIGINAL_SIZE)
+  , m_color()
+  , m_size()
+  , m_path()
+{
+}
+
 IWORKShadow::IWORKShadow()
   : m_color()
   , m_angle(0)

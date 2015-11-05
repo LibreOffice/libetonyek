@@ -324,15 +324,30 @@ void IWAParser::readStroke(const IWAMessage &msg, IWORKStroke &stroke)
   stroke.m_width = get(msg.float_(2));
   if (msg.uint32(3))
   {
-    const optional<IWORKLineCap> &cap = convert<IWORKLineCap>(get(msg.uint32(3)));
-    if (cap)
-      stroke.m_cap = get(cap);
+    switch (get(msg.uint32(3)))
+    {
+    default :
+      ETONYEK_DEBUG_MSG(("IWAParser::readStroke: unknown cap value: %u", get(msg.uint32(3))));
+    // fall-through intended
+    case 0 :
+      stroke.m_cap = IWORK_LINE_CAP_BUTT;
+      break;
+    case 1 :
+      stroke.m_cap = IWORK_LINE_CAP_ROUND;
+      break;
+    }
   }
   if (msg.uint32(4))
   {
-    const optional<IWORKLineJoin> &join = convert<IWORKLineJoin>(get(msg.uint32(4)));
-    if (join)
-      stroke.m_join = get(join);
+    switch (get(msg.uint32(4)))
+    {
+    default :
+      ETONYEK_DEBUG_MSG(("IWAParser::readStroke: unknown join value: %u", get(msg.uint32(4))));
+    // fall-through intended
+    case 0 :
+      stroke.m_join = IWORK_LINE_JOIN_MITER;
+      break;
+    }
   }
   if (msg.message(6))
   {
