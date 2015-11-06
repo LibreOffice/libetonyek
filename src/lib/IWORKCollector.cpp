@@ -170,7 +170,39 @@ struct FillWriter : public boost::static_visitor<void>
 
   void operator()(const IWORKFillImage &bitmap) const
   {
-    (void) bitmap;
+    bool filled = false;
+
+    if (bitmap.m_stream)
+    {
+      const unsigned long length = getLength(bitmap.m_stream);
+      unsigned long readBytes = 0;
+      const unsigned char *const bytes = bitmap.m_stream->read(length, readBytes);
+      if (readBytes == length)
+      {
+        m_props.insert("draw:fill", "bitmap");
+        m_props.insert("office:binary-data", librevenge::RVNGBinaryData(bytes, length));
+        switch (bitmap.m_type)
+        {
+        case IWORK_FILL_IMAGE_TYPE_ORIGINAL_SIZE :
+          m_props.insert("style:repeat", "no-repeat");
+          break;
+        case IWORK_FILL_IMAGE_TYPE_STRETCH :
+        case IWORK_FILL_IMAGE_TYPE_SCALE_TO_FILL :
+        case IWORK_FILL_IMAGE_TYPE_SCALE_TO_FIT :
+          m_props.insert("style:repeat", "stretch");
+          break;
+        case IWORK_FILL_IMAGE_TYPE_TILE :
+          m_props.insert("style:repeat", "repeat");
+          break;
+        }
+        m_props.insert("draw:fill-image-width", bitmap.m_size.m_width);
+        m_props.insert("draw:fill-image-height", bitmap.m_size.m_height);
+        filled = true;
+      }
+    }
+
+    if (!filled && bitmap.m_color)
+      (*this)(get(bitmap.m_color));
   }
 
 private:

@@ -186,7 +186,7 @@ IWORKFillImage::IWORKFillImage()
   : m_type(IWORK_FILL_IMAGE_TYPE_ORIGINAL_SIZE)
   , m_color()
   , m_size()
-  , m_path()
+  , m_stream()
 {
 }
 

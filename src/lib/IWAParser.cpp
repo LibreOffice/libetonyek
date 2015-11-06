@@ -372,7 +372,40 @@ void IWAParser::readFill(const IWAMessage &msg, IWORKFill &fill)
   }
   else if (msg.message(3))
   {
-    // TODO: read fill image
+    IWORKFillImage bitmap;
+    if (msg.message(3).uint32(2))
+    {
+      switch (get(msg.message(3).uint32(2)))
+      {
+      default :
+        ETONYEK_DEBUG_MSG(("IWAParser::readFill: unknown bitmap fill type: %u", get(msg.message(3).uint32(2))));
+      // fall-through intended
+      case 0 :
+        bitmap.m_type = IWORK_FILL_IMAGE_TYPE_ORIGINAL_SIZE;
+        break;
+      case 1 :
+        bitmap.m_type = IWORK_FILL_IMAGE_TYPE_STRETCH;
+        break;
+      case 2 :
+        bitmap.m_type = IWORK_FILL_IMAGE_TYPE_TILE;
+        break;
+      case 3 :
+        bitmap.m_type = IWORK_FILL_IMAGE_TYPE_SCALE_TO_FILL;
+        break;
+      case 4 :
+        bitmap.m_type = IWORK_FILL_IMAGE_TYPE_SCALE_TO_FIT;
+        break;
+      }
+    }
+    const optional<IWORKColor> &bitmapColor = readColor(get(msg.message(3)), 3);
+    if (bitmapColor)
+      bitmap.m_color = get(bitmapColor);
+    const optional<IWORKSize> &size = readSize(get(msg.message(3)), 4);
+    if (size)
+      bitmap.m_size = get(size);
+    const optional<unsigned> &fileRef = readRef(get(msg.message(3)), 6);
+    if (fileRef)
+      bitmap.m_stream = queryFile(get(fileRef));
   }
 }
 

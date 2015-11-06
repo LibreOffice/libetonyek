@@ -89,7 +89,7 @@ protected:
   static boost::optional<IWORKSize> readSize(const IWAMessage &msg, unsigned field);
   static boost::optional<IWORKColor> readColor(const IWAMessage &msg, unsigned field);
   static void readStroke(const IWAMessage &msg, IWORKStroke &stroke);
-  static void readFill(const IWAMessage &msg, IWORKFill &fill);
+  void readFill(const IWAMessage &msg, IWORKFill &fill);
   static void readGradient(const IWAMessage &msg, IWORKGradient &gradient);
   static void readShadow(const IWAMessage &msg, IWORKShadow &shadow);
 

@@ -232,9 +232,9 @@ struct IWORKFillImage
   IWORKFillImage();
 
   IWORKFillImageType m_type;
-  IWORKColor m_color;
+  boost::optional<IWORKColor> m_color;
   IWORKSize m_size;
-  std::string m_path;
+  RVNGInputStreamPtr_t m_stream;
 };
 
 typedef boost::variant<IWORKColor, IWORKGradient, IWORKFillImage> IWORKFill;
