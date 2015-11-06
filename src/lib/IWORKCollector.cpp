@@ -133,6 +133,33 @@ void drawLine(const IWORKLinePtr_t &line, const glm::dmat3 &trafo, IWORKOutputEl
   }
 }
 
+struct FillWriter : public boost::static_visitor<void>
+{
+  explicit FillWriter(RVNGPropertyList &props)
+    : m_props(props)
+  {
+  }
+
+  void operator()(const IWORKColor &color) const
+  {
+    m_props.insert("draw:fill", "solid");
+    m_props.insert("draw:fill-color", makeColor(color));
+  }
+
+  void operator()(const IWORKGradient &gradient) const
+  {
+    (void) gradient;
+  }
+
+  void operator()(const IWORKFillImage &bitmap) const
+  {
+    (void) bitmap;
+  }
+
+private:
+  RVNGPropertyList &m_props;
+};
+
 void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
 {
   assert(bool(style));
@@ -141,8 +168,7 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
 
   if (style->has<Fill>())
   {
-    props.insert("draw:fill", "solid");
-    props.insert("draw:fill-color", makeColor(style->get<Fill>()));
+    apply_visitor(FillWriter(props), style->get<Fill>());
   }
 
   if (style->has<Stroke>())

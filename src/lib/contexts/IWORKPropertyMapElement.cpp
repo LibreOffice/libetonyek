@@ -337,6 +337,58 @@ void StrokeElement::endOfElement()
 namespace
 {
 
+class FillElement : public IWORKXMLElementContextBase
+{
+public:
+  FillElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  IWORKPropertyMap &m_propMap;
+  optional<IWORKColor> m_color;
+  optional<IWORKGradient> m_gradient;
+  optional<IWORKFillImage> m_bitmap;
+};
+
+FillElement::FillElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : IWORKXMLElementContextBase(state)
+  , m_propMap(propMap)
+  , m_color()
+  , m_gradient()
+  , m_bitmap()
+{
+}
+
+IWORKXMLContextPtr_t FillElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::color :
+    return makeContext<IWORKColorElement>(getState(), m_color);
+    // TODO: handle gradient and bitmap fill
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void FillElement::endOfElement()
+{
+  if (m_color)
+    m_propMap.put<property::Fill>(get(m_color));
+  else if (m_gradient)
+    m_propMap.put<property::Fill>(get(m_gradient));
+  else if (m_bitmap)
+    m_propMap.put<property::Fill>(get(m_bitmap));
+}
+
+}
+
+namespace
+{
+
 class ColumnElement : public IWORKXMLEmptyContextBase
 {
 public:
@@ -665,7 +717,6 @@ namespace
 {
 
 typedef IWORKPropertyContext<property::Columns, ColumnsElement, IWORKToken::NS_URI_SF | IWORKToken::columns> ColumnsProperty;
-typedef IWORKPropertyContext<property::Fill, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> FillElement;
 typedef IWORKPropertyContext<property::FontColor, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> FontColorElement;
 typedef IWORKPropertyContext<property::FontName, IWORKStringElement, IWORKToken::NS_URI_SF | IWORKToken::string> FontNameElement;
 typedef IWORKPropertyContext<property::LayoutMargins, PaddingElement, IWORKToken::NS_URI_SF | IWORKToken::padding> LayoutMarginsElement;
