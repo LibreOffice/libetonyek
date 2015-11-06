@@ -148,7 +148,24 @@ struct FillWriter : public boost::static_visitor<void>
 
   void operator()(const IWORKGradient &gradient) const
   {
-    (void) gradient;
+    if (gradient.m_stops.empty())
+      return;
+    m_props.insert("draw:fill", "gradient");
+    switch (gradient.m_type)
+    {
+    case IWORK_GRADIENT_TYPE_LINEAR :
+      m_props.insert("draw:style", "linear");
+      break;
+    case IWORK_GRADIENT_TYPE_RADIAL :
+      m_props.insert("draw:style", "radial");
+      break;
+    }
+    // TODO: use svg:linearGradient/svg:radialGradient?
+    m_props.insert("draw:start-color", makeColor(gradient.m_stops.front().m_color));
+    m_props.insert("draw:start-intensity", gradient.m_stops.front().m_fraction);
+    m_props.insert("draw:end-color", makeColor(gradient.m_stops.back().m_color));
+    m_props.insert("draw:end-intensity", gradient.m_stops.back().m_fraction);
+    m_props.insert("draw:angle", gradient.m_angle);
   }
 
   void operator()(const IWORKFillImage &bitmap) const

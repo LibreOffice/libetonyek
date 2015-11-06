@@ -224,7 +224,7 @@ struct IWORKGradient
 
   IWORKGradientType m_type;
   std::deque<IWORKGradientStop> m_stops;
-  double m_opacity;
+  double m_angle;
 };
 
 struct IWORKFillImage

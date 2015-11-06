@@ -178,7 +178,7 @@ IWORKGradientStop::IWORKGradientStop()
 IWORKGradient::IWORKGradient()
   : m_type(IWORK_GRADIENT_TYPE_LINEAR)
   , m_stops()
-  , m_opacity(0)
+  , m_angle(0)
 {
 }
 

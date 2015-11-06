@@ -378,9 +378,34 @@ void IWAParser::readFill(const IWAMessage &msg, IWORKFill &fill)
 
 void IWAParser::readGradient(const IWAMessage &msg, IWORKGradient &gradient)
 {
-  // TODO: read gradient
-  (void) msg;
-  (void) gradient;
+  if (msg.uint32(1))
+  {
+    switch (get(msg.uint32(1)))
+    {
+    default :
+      ETONYEK_DEBUG_MSG(("IWAParser::readGradient: unknown gradient type: %u", get(msg.uint32(1))));
+    // fall-through intended
+    case 0 :
+      gradient.m_type = IWORK_GRADIENT_TYPE_LINEAR;
+      break;
+    case 1 :
+      gradient.m_type = IWORK_GRADIENT_TYPE_RADIAL;
+      break;
+    }
+  }
+  for (IWAMessageField::const_iterator it = msg.message(2).begin(); it != msg.message(2).end(); ++it)
+  {
+    IWORKGradientStop stop;
+    const optional<IWORKColor> &color = readColor(*it, 1);
+    if (color)
+      stop.m_color = get(color);
+    if (it->float_(2))
+      stop.m_fraction = get(it->float_(2));
+    if (it->float_(3))
+      stop.m_inflection = get(it->float_(3));
+  }
+  if (msg.message(5) && msg.message(5).float_(2))
+    gradient.m_angle = get(msg.message(5).float_(2));
 }
 
 void IWAParser::readShadow(const IWAMessage &msg, IWORKShadow &shadow)
