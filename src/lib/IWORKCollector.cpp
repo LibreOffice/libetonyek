@@ -161,6 +161,9 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
     case IWORK_LINE_CAP_BUTT :
       props.insert("svg:stroke-linecap", "butt");
       break;
+    case IWORK_LINE_CAP_ROUND :
+      props.insert("svg:stroke-linecap", "round");
+      break;
     }
 
     switch (stroke.m_join)
