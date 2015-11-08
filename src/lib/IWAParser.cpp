@@ -1106,7 +1106,9 @@ void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
     {
       if (styleProps.message(1))
       {
-        // TODO: fill
+        IWORKFill fill;
+        readFill(get(styleProps.message(1)), fill);
+        props.put<Fill>(fill);
       }
       if (styleProps.message(2))
       {
@@ -1114,10 +1116,8 @@ void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
         readStroke(get(styleProps.message(2)), stroke);
         props.put<Stroke>(stroke);
       }
-      if (styleProps.message(3))
-      {
-        // TODO: opacity
-      }
+      if (styleProps.float_(3))
+        props.put<Opacity>(get(styleProps.float_(3)));
       if (styleProps.message(4))
       {
         IWORKShadow shadow;
