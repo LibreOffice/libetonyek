@@ -443,9 +443,15 @@ void IWAParser::readGradient(const IWAMessage &msg, IWORKGradient &gradient)
 
 void IWAParser::readShadow(const IWAMessage &msg, IWORKShadow &shadow)
 {
-  // TODO: read shadow
-  (void) msg;
-  (void) shadow;
+  const optional<IWORKColor> &color = readColor(msg, 1);
+  if (color)
+    shadow.m_color = get(color);
+  if (msg.float_(2))
+    shadow.m_angle = get(msg.float_(2));
+  if (msg.float_(3))
+    shadow.m_offset = get(msg.float_(3));
+  if (msg.float_(5))
+    shadow.m_opacity = get(msg.float_(5));
 }
 
 bool IWAParser::dispatchShape(const unsigned id)
