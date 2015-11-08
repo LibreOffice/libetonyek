@@ -1113,24 +1113,24 @@ void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
         IWORKStroke stroke;
         readStroke(get(styleProps.message(2)), stroke);
         props.put<Stroke>(stroke);
-        if (styleProps.message(3))
-        {
-          // TODO: opacity
-        }
-        if (styleProps.message(4))
-        {
-          IWORKShadow shadow;
-          const optional<IWORKColor> &color = readColor(get(styleProps.message(4)), 1);
-          if (color)
-            shadow.m_color = get(color);
-          if (styleProps.message(4).float_(2))
-            shadow.m_angle = get(styleProps.message(4).float_(2));
-          if (styleProps.message(4).float_(3))
-            shadow.m_offset = get(styleProps.message(4).float_(3));
-          if (styleProps.message(4).float_(5))
-            shadow.m_opacity = get(styleProps.message(4).float_(5));
-          props.put<Shadow>(shadow);
-        }
+      }
+      if (styleProps.message(3))
+      {
+        // TODO: opacity
+      }
+      if (styleProps.message(4))
+      {
+        IWORKShadow shadow;
+        const optional<IWORKColor> &color = readColor(get(styleProps.message(4)), 1);
+        if (color)
+          shadow.m_color = get(color);
+        if (styleProps.message(4).float_(2))
+          shadow.m_angle = get(styleProps.message(4).float_(2));
+        if (styleProps.message(4).float_(3))
+          shadow.m_offset = get(styleProps.message(4).float_(3));
+        if (styleProps.message(4).float_(5))
+          shadow.m_opacity = get(styleProps.message(4).float_(5));
+        props.put<Shadow>(shadow);
       }
     }
   }
