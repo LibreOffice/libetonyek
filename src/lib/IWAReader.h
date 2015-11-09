@@ -62,6 +62,11 @@ struct String
   static std::string read(const RVNGInputStreamPtr_t &input, unsigned long length);
 };
 
+struct Bytes
+{
+  static const RVNGInputStreamPtr_t read(const RVNGInputStreamPtr_t &input, unsigned long length);
+};
+
 struct Message
 {
   static IWAMessage read(const RVNGInputStreamPtr_t &input, unsigned long length);

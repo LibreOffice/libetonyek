@@ -199,6 +199,7 @@ typedef detail::IWAFieldImpl<IWAField::TAG_FIXED64, uint64_t, IWAReader::Fixed64
 typedef detail::IWAFieldImpl<IWAField::TAG_DOUBLE, double, IWAReader::Double> IWADoubleField;
 
 typedef detail::IWAFieldImpl<IWAField::TAG_STRING, std::string, IWAReader::String> IWAStringField;
+typedef detail::IWAFieldImpl<IWAField::TAG_BYTES, RVNGInputStreamPtr_t, IWAReader::Bytes> IWABytesField;
 
 typedef detail::IWAFieldImpl<IWAField::TAG_FIXED32, uint32_t, IWAReader::Fixed32> IWAFixed32Field;
 typedef detail::IWAFieldImpl<IWAField::TAG_FLOAT, float, IWAReader::Float> IWAFloatField;
@@ -216,6 +217,7 @@ public:
   const IWADoubleField &double_(std::size_t field) const;
 
   const IWAStringField &string(std::size_t field) const;
+  const IWABytesField &bytes(std::size_t field) const;
   const IWAMessageField &message(std::size_t field) const;
 
   const IWAFixed32Field &fixed32(std::size_t field) const;

@@ -153,6 +153,11 @@ const IWAStringField &IWAMessage::string(const std::size_t field) const
   return getField<IWAStringField>(field, WIRE_TYPE_LENGTH_DELIMITED, IWAField::TAG_STRING);
 }
 
+const IWABytesField &IWAMessage::bytes(const std::size_t field) const
+{
+  return getField<IWABytesField>(field, WIRE_TYPE_LENGTH_DELIMITED, IWAField::TAG_BYTES);
+}
+
 const IWAMessageField &IWAMessage::message(const std::size_t field) const
 {
   return getField<IWAMessageField>(field, WIRE_TYPE_LENGTH_DELIMITED, IWAField::TAG_MESSAGE);

@@ -14,6 +14,7 @@
 
 #include "IWAReader.h"
 #include "IWORKMemoryStream.h"
+#include "libetonyek_utils.h"
 
 using namespace libetonyek;
 
@@ -41,10 +42,12 @@ public:
 private:
   CPPUNIT_TEST_SUITE(IWAReaderTest);
   CPPUNIT_TEST(testString);
+  CPPUNIT_TEST(testBytes);
   CPPUNIT_TEST_SUITE_END();
 
 private:
   void testString();
+  void testBytes();
 };
 
 void IWAReaderTest::setUp()
@@ -63,6 +66,14 @@ void IWAReaderTest::testString()
 
   CPPUNIT_ASSERT_EQUAL(string("hello"), String::read(makeStream(BYTES("hello")), 5));
   CPPUNIT_ASSERT_EQUAL(string("hello"), String::read(makeStream(BYTES("hello world")), 5));
+}
+
+void IWAReaderTest::testBytes()
+{
+  const RVNGInputStreamPtr_t input(IWAReader::Bytes::read(makeStream(BYTES("\x78\x56\x34\x12")), 4));
+  CPPUNIT_ASSERT(!input->isEnd());
+  CPPUNIT_ASSERT_EQUAL(4ul, getLength(input));
+  CPPUNIT_ASSERT_EQUAL(0x12345678u, readU32(input));
 }
 
 #undef BYTES

@@ -34,6 +34,7 @@ public:
   const IWADoubleField &double_(std::size_t field) const;
 
   const IWAStringField &string(std::size_t field) const;
+  const IWABytesField &bytes(std::size_t field) const;
   const IWAMessageField &message(std::size_t field) const;
 
   const IWAFixed32Field &fixed32(std::size_t field) const;

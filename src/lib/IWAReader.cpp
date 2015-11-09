@@ -9,7 +9,10 @@
 
 #include "IWAReader.h"
 
+#include <boost/make_shared.hpp>
+
 #include "IWAMessage.h"
+#include "IWORKMemoryStream.h"
 
 namespace libetonyek
 {
@@ -66,6 +69,15 @@ std::string String::read(const RVNGInputStreamPtr_t &input, const unsigned long 
   if (readBytes < length)
     throw ParseError();
   return std::string(reinterpret_cast<const char *>(bytes), std::size_t(length));
+}
+
+const RVNGInputStreamPtr_t Bytes::read(const RVNGInputStreamPtr_t &input, const unsigned long length)
+{
+  unsigned long readBytes(0);
+  const unsigned char *const bytes = input->read(length, readBytes);
+  if (readBytes < length)
+    throw ParseError();
+  return boost::make_shared<IWORKMemoryStream>(bytes, std::size_t(length));
 }
 
 IWAMessage Message::read(const RVNGInputStreamPtr_t &input, const unsigned long length)
