@@ -9,6 +9,7 @@
 
 #include "IWAParser.h"
 
+#include <algorithm>
 #include <cassert>
 #include <map>
 #include <utility>
@@ -135,6 +136,40 @@ void putEnum(IWORKPropertyMap &props, const unsigned value)
     props.put<P>(get(converted));
 }
 
+void parseColumnOffsets(const RVNGInputStreamPtr_t &input, const unsigned length, deque<optional<unsigned> > &offsets)
+{
+  try
+  {
+    while (!input->isEnd())
+    {
+      const unsigned offset = readU16(input);
+      if (offset - 4 >= length)
+        offsets.push_back(none);
+      else
+        offsets.push_back(offset);
+    }
+  }
+  catch (...)
+  {
+    // ignore failure to read the last word: it can only happen in a broken file
+  }
+  // TODO: check that the valid offsets are sorted in ascending order
+}
+
+deque<double> makeSizes(const mdds::flat_segment_tree<unsigned, float> &sizes)
+{
+  deque<double> out(sizes.max_key(), sizes.default_value());
+  for (mdds::flat_segment_tree<unsigned, float>::const_iterator it = sizes.begin(); it != sizes.end();)
+  {
+    const deque<double>::iterator start(out.begin() + it->first);
+    const double size = it->second;
+    ++it;
+    const deque<double>::iterator end(it == sizes.end() ? out.end() : out.begin() + it->first);
+    std::fill(start, end, size);
+  }
+  return out;
+}
+
 }
 
 IWAParser::ObjectRecord::ObjectRecord()
@@ -151,6 +186,24 @@ IWAParser::ObjectRecord::ObjectRecord(const RVNGInputStreamPtr_t &stream, const 
   , m_type(type)
   , m_headerRange(pos, pos + long(headerLen))
   , m_dataRange(m_headerRange.second, m_headerRange.second + long(dataLen))
+{
+}
+
+IWAParser::TableHeader::TableHeader(const unsigned count)
+  : m_sizes(0, count, 0)
+  , m_hidden(0, count, false)
+{
+}
+
+IWAParser::TableInfo::TableInfo(const unsigned columns, const unsigned rows)
+  : m_columns(columns)
+  , m_rows(rows)
+  , m_columnHeader(columns)
+  , m_rowHeader(rows)
+  , m_simpleTextList()
+  , m_cellStyleList()
+  , m_formattedTextList()
+  , m_commentList()
 {
 }
 
@@ -468,6 +521,8 @@ bool IWAParser::dispatchShape(const unsigned id)
     return parseGroup(get(msg));
   case IWAObjectType::Image :
     return parseImage(get(msg));
+  case IWAObjectType::TabularInfo :
+    return parseTabularInfo(get(msg));
   }
 
   return false;
@@ -1228,6 +1283,201 @@ void IWAParser::parseComment(const unsigned id)
     writeText(text, 0, text.size(), false, m_collector);
     m_collector.closeSpan();
     m_collector.endParagraph();
+  }
+}
+
+bool IWAParser::parseTabularInfo(const IWAMessage &msg)
+{
+  if (msg.message(1))
+    parseShapePlacement(get(msg.message(1)));
+  const optional<unsigned> &modelRef = readRef(msg, 2);
+  if (modelRef)
+    parseTabularModel(get(modelRef));
+  return bool(modelRef);
+}
+
+void IWAParser::parseTabularModel(const unsigned id)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::TabularModel);
+  if (!msg)
+    return;
+
+  const IWAUInt32Field &rows = get(msg).uint32(6);
+  const IWAUInt32Field &columns = get(msg).uint32(7);
+  if (!rows || !columns)
+    return;
+
+  m_currentTable.reset(new TableInfo(get(columns), get(rows)));
+
+  if (get(msg).message(4))
+  {
+    const IWAMessage &grid = get(get(msg).message(4));
+
+    if (grid.message(1))
+    {
+      const optional<unsigned> &rowHeadersRef = readRef(get(grid.message(1)), 2);
+      if (rowHeadersRef)
+        parseHeaders(get(rowHeadersRef), m_currentTable->m_rowHeader);
+    }
+    const optional<unsigned> &columnHeadersRef = readRef(grid, 2);
+    if (columnHeadersRef)
+      parseHeaders(get(columnHeadersRef), m_currentTable->m_columnHeader);
+
+    const optional<unsigned> &simpleTextListRef = readRef(grid, 4);
+    if (simpleTextListRef)
+      parseDataList(get(simpleTextListRef), m_currentTable->m_simpleTextList);
+    const optional<unsigned> &cellStyleListRef = readRef(grid, 5);
+    if (cellStyleListRef)
+      parseDataList(get(cellStyleListRef), m_currentTable->m_cellStyleList);
+    const optional<unsigned> &paraTextListRef = readRef(grid, 17);
+    if (paraTextListRef)
+      parseDataList(get(paraTextListRef), m_currentTable->m_formattedTextList);
+    const optional<unsigned> &commentListRef = readRef(grid, 19);
+    if (commentListRef)
+      parseDataList(get(commentListRef), m_currentTable->m_commentList);
+
+    m_collector.collectTableSizes(makeSizes(m_currentTable->m_rowHeader.m_sizes), makeSizes(m_currentTable->m_columnHeader.m_sizes));
+
+    if (grid.message(3) && grid.message(3).message(1))
+    {
+      const optional<unsigned> &tileRef = readRef(get(grid.message(3).message(1)), 2);
+      if (tileRef)
+        parseTile(get(tileRef));
+    }
+
+    m_collector.collectTable();
+  }
+
+  m_currentTable.reset();
+}
+
+void IWAParser::parseDataList(const unsigned id, DataList_t &dataList)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::DataList);
+  if (!msg)
+    return;
+
+  for (IWAMessageField::const_iterator it = get(msg).message(3).begin(); it != get(msg).message(3).end(); ++it)
+  {
+    if (it->uint32(1))
+      dataList[get(it->uint32(1))] = &*it;
+  }
+}
+
+void IWAParser::parseTile(const unsigned id)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::Tile);
+  if (!msg)
+    return;
+
+  // rows must be fed to the collector in order
+  typedef map<unsigned, const IWAMessage *> Rows_t;
+  Rows_t rows;
+
+  // save rows
+  for (IWAMessageField::const_iterator it = get(msg).message(5).begin(); it != get(msg).message(5).end(); ++it)
+  {
+    if (!it->uint32(1) || !it->bytes(3) || !it->bytes(4))
+      continue;
+    const unsigned row = get(it->uint32(1));
+    if (row >= m_currentTable->m_rows)
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseTile: invalid row: %u\n", row));
+      continue;
+    }
+    rows[row] = &*it;
+  }
+
+  // process rows
+  Rows_t::const_iterator lastIt = rows.begin();
+  for (Rows_t::const_iterator it = rows.begin(); it != rows.end(); lastIt = it++)
+  {
+    // handle empty rows which might exist between this row and the previous non-empty one
+    for (size_t i = it->first - lastIt->first; i != 0; --i)
+      m_collector.collectTableRow();
+
+    const RVNGInputStreamPtr_t &input = get(it->second->bytes(3));
+    unsigned length = unsigned(getLength(input));
+    if (length >= 0xffff)
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseTile: invalid column data length: %u\n", length));
+      length = 0xffff;
+    }
+
+    deque<optional<unsigned> > offsets;
+    parseColumnOffsets(get(it->second->bytes(4)), length, offsets);
+
+    for (deque<optional<unsigned> >::const_iterator offIt = offsets.begin(); offIt != offsets.end(); ++offIt)
+    {
+      if (!*offIt)
+        continue;
+      input->seek(get(*offIt) + 4, librevenge::RVNG_SEEK_SET);
+      try
+      {
+        const unsigned flags = readU16(input);
+        input->seek(6, librevenge::RVNG_SEEK_CUR);
+
+        IWORKCellType cellType = IWORK_CELL_TYPE_TEXT;
+        IWORKStylePtr_t cellStyle;
+        optional<string> text;
+
+        if (flags & 0x2)
+          readU32(input); // style
+        if (flags & 0x4)
+          readU32(input); // format
+        if (flags & 0x8)
+          readU32(input); // formula
+        if (flags & 0x10)
+          readU32(input); // simple text
+        if (flags & 0x1000)
+          readU32(input); // comment
+        if (flags & 0x20)
+        {
+          // TODO: parse value
+          readU64(input);
+        }
+        if (flags & 0x40)
+        {
+          // TODO: parse value
+          readU64(input);
+        }
+        if (flags & 0x200)
+          readU32(input); // formatted text
+
+        const unsigned column = offIt - offsets.begin();
+        m_collector.collectTableCell(it->first, column, text, 1, 1, none, cellStyle, cellType);
+      }
+      catch (...)
+      {
+        // ignore failure to read the last record
+      }
+    }
+
+    m_collector.collectTableRow();
+  }
+}
+
+void IWAParser::parseHeaders(const unsigned id, TableHeader &header)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::Headers);
+  if (!msg)
+    return;
+
+  for (IWAMessageField::const_iterator it = get(msg).message(2).begin(); it != get(msg).message(2).end(); ++it)
+  {
+    if (it->uint32(1))
+    {
+      const unsigned index = it->uint32(1);
+      if (index >= header.m_sizes.max_key())
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::parseHeaders: invalid row/column index %u\n", index));
+        continue;
+      }
+      if (it->uint32(2))
+        header.m_sizes.insert_back(index, index + 1, get(it->uint32(2)));
+      if (it->bool_(3))
+        header.m_hidden.insert_back(index, index + 1, get(it->bool_(3)));
+    }
   }
 }
 

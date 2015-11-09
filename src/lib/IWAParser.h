@@ -15,7 +15,10 @@
 #include <string>
 
 #include <boost/optional.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
+
+#include <mdds/flat_segment_tree.hpp>
 
 #include "libetonyek_utils.h"
 #include "IWAMessage.h"
@@ -106,6 +109,33 @@ protected:
   const IWORKStylePtr_t queryStyle(unsigned id, StyleMap_t &styleMap, StyleParseFun_t parse) const;
 
 private:
+  typedef std::map<unsigned, const IWAMessage *> DataList_t;
+
+  struct TableHeader
+  {
+    TableHeader(unsigned count);
+
+    mdds::flat_segment_tree<unsigned, float> m_sizes;
+    mdds::flat_segment_tree<unsigned, bool> m_hidden;
+  };
+
+  struct TableInfo
+  {
+    TableInfo(unsigned columns, unsigned rows);
+
+    const unsigned m_columns;
+    const unsigned m_rows;
+
+    TableHeader m_columnHeader;
+    TableHeader m_rowHeader;
+
+    DataList_t m_simpleTextList;
+    DataList_t m_cellStyleList;
+    DataList_t m_formattedTextList;
+    DataList_t m_commentList;
+  };
+
+private:
   virtual bool parseDocument() = 0;
 
 private:
@@ -121,11 +151,17 @@ private:
   void parseParagraphStyle(unsigned id, IWORKStylePtr_t &style);
   void parseGraphicStyle(unsigned id, IWORKStylePtr_t &style);
 
+  void parseTabularModel(unsigned id);
+  void parseDataList(unsigned id, DataList_t &dataList);
+  void parseTile(unsigned id);
+  void parseHeaders(unsigned id, TableHeader &header);
+
   bool parseDrawableShape(const IWAMessage &msg);
   bool parseGroup(const IWAMessage &msg);
   bool parseShapePlacement(const IWAMessage &msg);
   void parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props);
   bool parseImage(const IWAMessage &msg);
+  bool parseTabularInfo(const IWAMessage &msg);
 
 private:
   const RVNGInputStreamPtr_t m_fragments;
@@ -141,6 +177,8 @@ private:
   mutable StyleMap_t m_charStyles;
   mutable StyleMap_t m_paraStyles;
   mutable StyleMap_t m_graphicStyles;
+
+  boost::shared_ptr<TableInfo> m_currentTable;
 };
 
 }

@@ -26,7 +26,12 @@ enum
   GraphicStyle = 2025,
   Image = 3005,
   Group = 3008,
-  Comment = 3056
+  Comment = 3056,
+  TabularInfo = 6000,
+  TabularModel = 6001,
+  Tile = 6002,
+  DataList = 6005,
+  Headers = 6006
 };
 
 }
