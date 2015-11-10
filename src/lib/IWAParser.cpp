@@ -1467,7 +1467,7 @@ void IWAParser::parseHeaders(const unsigned id, TableHeader &header)
   {
     if (it->uint32(1))
     {
-      const unsigned index = it->uint32(1);
+      const unsigned index = get(it->uint32(1));
       if (index >= header.m_sizes.max_key())
       {
         ETONYEK_DEBUG_MSG(("IWAParser::parseHeaders: invalid row/column index %u\n", index));
