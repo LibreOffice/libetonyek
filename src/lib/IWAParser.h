@@ -17,6 +17,7 @@
 #include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
+#include <boost/variant.hpp>
 
 #include <mdds/flat_segment_tree.hpp>
 
@@ -109,7 +110,7 @@ protected:
   const IWORKStylePtr_t queryStyle(unsigned id, StyleMap_t &styleMap, StyleParseFun_t parse) const;
 
 private:
-  typedef std::map<unsigned, const IWAMessage *> DataList_t;
+  typedef std::map<unsigned, boost::variant<std::string, unsigned> > DataList_t;
 
   struct TableHeader
   {

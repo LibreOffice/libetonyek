@@ -1357,10 +1357,38 @@ void IWAParser::parseDataList(const unsigned id, DataList_t &dataList)
   if (!msg)
     return;
 
+  // TODO: it would likely to be more robust to parse everything.
+  if (!get(msg).uint32(1))
+    return;
+
+  const unsigned type = get(get(msg).uint32(1));
   for (IWAMessageField::const_iterator it = get(msg).message(3).begin(); it != get(msg).message(3).end(); ++it)
   {
-    if (it->uint32(1))
-      dataList[get(it->uint32(1))] = &*it;
+    if (!it->uint32(1))
+      continue;
+    const unsigned index = get(it->uint32(1));
+    switch (type)
+    {
+    case 1 :
+      if (it->string(3))
+        dataList[index] = get(it->string(3));
+      break;
+    case 4 :
+      if (it->uint32(4))
+        dataList[index] = get(it->uint32(4));
+      break;
+    case 9 :
+      if (it->uint32(9))
+        dataList[index] = get(it->uint32(9));
+      break;
+    case 10 :
+      if (it->uint32(10))
+        dataList[index] = get(it->uint32(10));
+      break;
+    default :
+      ETONYEK_DEBUG_MSG(("IWAParser::parseDataList: unknown data list type %u\n", type));
+      break;
+    }
   }
 }
 
@@ -1428,7 +1456,15 @@ void IWAParser::parseTile(const unsigned id)
         if (flags & 0x8)
           readU32(input); // formula
         if (flags & 0x10)
-          readU32(input); // simple text
+        {
+          const unsigned textId = readU32(input);
+          const DataList_t::const_iterator listIt = m_currentTable->m_simpleTextList.find(textId);
+          if (listIt != m_currentTable->m_simpleTextList.end())
+          {
+            if (const string *const s = boost::get<string>(&listIt->second))
+              text = *s;
+          }
+        }
         if (flags & 0x1000)
           readU32(input); // comment
         if (flags & 0x20)
@@ -1442,8 +1478,15 @@ void IWAParser::parseTile(const unsigned id)
           readU64(input);
         }
         if (flags & 0x200)
-          readU32(input); // formatted text
-
+        {
+          const unsigned textId = readU32(input);
+          const DataList_t::const_iterator listIt = m_currentTable->m_formattedTextList.find(textId);
+          if (listIt != m_currentTable->m_formattedTextList.end())
+          {
+            if (const unsigned *const ref = boost::get<unsigned>(&listIt->second))
+              parseText(*ref);
+          }
+        }
         const unsigned column = offIt - offsets.begin();
         m_collector.collectTableCell(it->first, column, text, 1, 1, none, cellStyle, cellType);
       }
