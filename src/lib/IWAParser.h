@@ -106,6 +106,7 @@ protected:
   const IWORKStylePtr_t queryCharacterStyle(unsigned id) const;
   const IWORKStylePtr_t queryParagraphStyle(unsigned id) const;
   const IWORKStylePtr_t queryGraphicStyle(unsigned id) const;
+  const IWORKStylePtr_t queryCellStyle(unsigned id) const;
 
   const IWORKStylePtr_t queryStyle(unsigned id, StyleMap_t &styleMap, StyleParseFun_t parse) const;
 
@@ -151,6 +152,7 @@ private:
   void parseCharacterStyle(unsigned id, IWORKStylePtr_t &style);
   void parseParagraphStyle(unsigned id, IWORKStylePtr_t &style);
   void parseGraphicStyle(unsigned id, IWORKStylePtr_t &style);
+  void parseCellStyle(unsigned id, IWORKStylePtr_t &style);
 
   void parseTabularModel(unsigned id);
   void parseDataList(unsigned id, DataList_t &dataList);
@@ -178,6 +180,7 @@ private:
   mutable StyleMap_t m_charStyles;
   mutable StyleMap_t m_paraStyles;
   mutable StyleMap_t m_graphicStyles;
+  mutable StyleMap_t m_cellStyles;
 
   boost::shared_ptr<TableInfo> m_currentTable;
 };

@@ -132,6 +132,22 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStylePtr_t 
       props.insert("librevenge:value-type", "string");
     break;
   }
+
+  if (style->has<TopBorder>())
+    props.insert("fo:border-top", makeBorder(style->get<TopBorder>()));
+  if (style->has<BottomBorder>())
+    props.insert("fo:border-bottom", makeBorder(style->get<BottomBorder>()));
+  if (style->has<LeftBorder>())
+    props.insert("fo:border-left", makeBorder(style->get<LeftBorder>()));
+  if (style->has<RightBorder>())
+    props.insert("fo:border-right", makeBorder(style->get<RightBorder>()));
+
+  if (style->has<Fill>())
+  {
+    // TODO: add support for style:background-image to libodfgen
+    if (const IWORKColor *const color = boost::get<IWORKColor>(&style->get<Fill>()))
+      props.insert("fo:background-color", makeColor(*color));
+  }
 }
 
 }
@@ -235,6 +251,8 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
       cellProps.insert("librevenge:column", numeric_cast<int>(c));
       cellProps.insert("librevenge:row", numeric_cast<int>(r));
       cellProps.insert("fo:vertical-align", "middle");
+
+      using namespace property;
 
       if (r < m_horizontalLines.size())
         writeBorder(cellProps, "fo:border-top", m_horizontalLines[r], c);

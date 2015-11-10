@@ -30,6 +30,7 @@ enum
   TabularInfo = 6000,
   TabularModel = 6001,
   Tile = 6002,
+  CellStyle = 6004,
   DataList = 6005,
   Headers = 6006
 };

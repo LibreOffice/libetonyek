@@ -641,6 +641,11 @@ const IWORKStylePtr_t IWAParser::queryGraphicStyle(const unsigned id) const
   return queryStyle(id, m_graphicStyles, &IWAParser::parseGraphicStyle);
 }
 
+const IWORKStylePtr_t IWAParser::queryCellStyle(const unsigned id) const
+{
+  return queryStyle(id, m_cellStyles, &IWAParser::parseCellStyle);
+}
+
 bool IWAParser::parseDrawableShape(const IWAMessage &msg)
 {
   m_collector.startLevel();
@@ -1198,6 +1203,65 @@ void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
   style.reset(new IWORKStyle(props, name, parent));
 }
 
+void IWAParser::parseCellStyle(const unsigned id, IWORKStylePtr_t &style)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::CellStyle);
+  if (!msg)
+    return;
+
+  optional<string> name;
+  IWORKStylePtr_t parent;
+  IWORKPropertyMap props;
+
+  using namespace property;
+
+  const IWAMessageField &styleInfo = get(msg).message(1);
+  if (styleInfo)
+  {
+    name = styleInfo.string(2).optional();
+    const optional<unsigned> &parentRef = readRef(get(styleInfo), 3);
+    if (parentRef)
+      parent = queryCellStyle(get(parentRef));
+  }
+
+  if (get(msg).message(11))
+  {
+    const IWAMessage &properties = get(get(msg).message(1));
+    if (properties.message(1))
+    {
+      IWORKFill fill;
+      readFill(get(properties.message(1)), fill);
+      props.put<Fill>(fill);
+    }
+    if (properties.message(10))
+    {
+      IWORKStroke stroke;
+      readStroke(get(properties.message(10)), stroke);
+      props.put<TopBorder>(stroke);
+    }
+    if (properties.message(11))
+    {
+      IWORKStroke stroke;
+      readStroke(get(properties.message(11)), stroke);
+      props.put<RightBorder>(stroke);
+    }
+    if (properties.message(12))
+    {
+      IWORKStroke stroke;
+      readStroke(get(properties.message(12)), stroke);
+      props.put<BottomBorder>(stroke);
+    }
+    if (properties.message(13))
+    {
+      IWORKStroke stroke;
+      readStroke(get(properties.message(13)), stroke);
+      props.put<LeftBorder>(stroke);
+    }
+  }
+
+  style.reset(new IWORKStyle(props, name, parent));
+}
+
 void IWAParser::parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props)
 {
   using namespace property;
@@ -1450,7 +1514,15 @@ void IWAParser::parseTile(const unsigned id)
         optional<string> text;
 
         if (flags & 0x2)
-          readU32(input); // style
+        {
+          const unsigned styleId = readU32(input);
+          const DataList_t::const_iterator listIt = m_currentTable->m_cellStyleList.find(styleId);
+          if (listIt != m_currentTable->m_cellStyleList.end())
+          {
+            if (const unsigned *const ref = boost::get<unsigned>(&listIt->second))
+              cellStyle = queryCellStyle(*ref);
+          }
+        }
         if (flags & 0x4)
           readU32(input); // format
         if (flags & 0x8)
