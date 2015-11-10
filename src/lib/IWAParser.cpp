@@ -1473,8 +1473,8 @@ void IWAParser::parseHeaders(const unsigned id, TableHeader &header)
         ETONYEK_DEBUG_MSG(("IWAParser::parseHeaders: invalid row/column index %u\n", index));
         continue;
       }
-      if (it->uint32(2))
-        header.m_sizes.insert_back(index, index + 1, get(it->uint32(2)));
+      if (it->float_(2))
+        header.m_sizes.insert_back(index, index + 1, get(it->float_(2)));
       if (it->bool_(3))
         header.m_hidden.insert_back(index, index + 1, get(it->bool_(3)));
     }
