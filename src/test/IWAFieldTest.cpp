@@ -8,6 +8,7 @@
  */
 
 #include <algorithm>
+#include <iterator>
 #include <stdexcept>
 
 #include <boost/make_shared.hpp>
@@ -156,6 +157,7 @@ void IWAFieldTest::testRepeated()
   const std::deque<uint64_t> &values = field.repeated();
   CPPUNIT_ASSERT_EQUAL(ETONYEK_NUM_ELEMENTS(expected), values.size());
   CPPUNIT_ASSERT(std::equal(values.begin(), values.end(), expected));
+  CPPUNIT_ASSERT_EQUAL(ETONYEK_NUM_ELEMENTS(expected), std::size_t(std::distance(field.begin(), field.end())));
   CPPUNIT_ASSERT(std::equal(field.begin(), field.end(), expected));
 }
 
