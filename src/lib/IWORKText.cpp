@@ -304,8 +304,9 @@ void IWORKText::draw(IWORKOutputElements &elements)
   elements.append(m_elements);
 }
 
-IWORKText::IWORKText(const bool discardEmptyContent)
+IWORKText::IWORKText(const bool discardEmptyContent, const IWORKStylePtr_t &defaultParaStyle, const IWORKStylePtr_t &defaultLayoutStyle)
   : m_styleStack()
+  , m_defaultLayoutStyle(defaultLayoutStyle)
   , m_elements()
   , m_sectionOpened(false)
   , m_currentParaStyle()
@@ -319,6 +320,7 @@ IWORKText::IWORKText(const bool discardEmptyContent)
   , m_pendingSpanClose(false)
   , m_inSpan(false)
 {
+  m_styleStack.push(defaultParaStyle);
 }
 
 void IWORKText::openLayout(const IWORKStylePtr_t &style)

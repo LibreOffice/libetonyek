@@ -50,6 +50,8 @@ IWORK_DECLARE_PROPERTY(RightIndent, double);
 IWORK_DECLARE_PROPERTY(SFTCellStylePropertyDateTimeFormat, IWORKDateTimeFormat);
 IWORK_DECLARE_PROPERTY(SFTCellStylePropertyDurationFormat, IWORKDurationFormat);
 IWORK_DECLARE_PROPERTY(SFTCellStylePropertyNumberFormat, IWORKNumberFormat);
+IWORK_DECLARE_PROPERTY(SFTCellStylePropertyLayoutStyle, IWORKStylePtr_t);
+IWORK_DECLARE_PROPERTY(SFTCellStylePropertyParagraphStyle, IWORKStylePtr_t);
 IWORK_DECLARE_PROPERTY(SFTStrokeProperty, IWORKStroke);
 IWORK_DECLARE_PROPERTY(Shadow, IWORKShadow);
 IWORK_DECLARE_PROPERTY(SpaceAfter, double);

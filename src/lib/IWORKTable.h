@@ -52,7 +52,7 @@ public:
 
   void draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements);
 
-  void getMergedCellStyle(unsigned column, unsigned row, IWORKStyleStack &style);
+  void getDefaultCellStyle(unsigned column, unsigned row, IWORKStyleStack &style);
 
 private:
   Table_t m_table;

@@ -27,7 +27,7 @@ class IWORKText
 {
 
 public:
-  explicit IWORKText(bool discardEmptyContent);
+  explicit IWORKText(bool discardEmptyContent, const IWORKStylePtr_t &defaultParaStyle = IWORKStylePtr_t(), const IWORKStylePtr_t &defaultLayoutStyle = IWORKStylePtr_t());
 
   void openLayout(const IWORKStylePtr_t &style);
   void closeLayout();
@@ -63,6 +63,7 @@ private:
 
 private:
   IWORKStyleStack m_styleStack;
+  const IWORKStylePtr_t m_defaultLayoutStyle;
 
   IWORKOutputElements m_elements;
 

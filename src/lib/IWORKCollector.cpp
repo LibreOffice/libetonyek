@@ -514,6 +514,11 @@ void IWORKCollector::setTableNameMap(const IWORKTableNameMapPtr_t &tableNameMap)
   m_currentTable.setTableNameMap(tableNameMap);
 }
 
+void IWORKCollector::getDefaultCellStyle(unsigned row, unsigned column, IWORKStyleStack &styleStack)
+{
+  m_currentTable.getDefaultCellStyle(column, row, styleStack);
+}
+
 void IWORKCollector::collectMetadata(const IWORKMetadata &metadata)
 {
   m_metadata = metadata;
@@ -621,9 +626,9 @@ void IWORKCollector::closeLink()
   m_textStack.top()->closeLink();
 }
 
-void IWORKCollector::startText(bool discardEmptyContent)
+void IWORKCollector::startText(bool discardEmptyContent, const IWORKStylePtr_t &defaultParaStyle, const IWORKStylePtr_t &defaultLayoutStyle)
 {
-  m_textStack.push(make_shared<IWORKText>(discardEmptyContent));
+  m_textStack.push(make_shared<IWORKText>(discardEmptyContent, defaultParaStyle, defaultLayoutStyle));
 }
 
 void IWORKCollector::endText()

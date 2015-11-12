@@ -89,6 +89,7 @@ public:
   void collectTableRow();
   void collectTable();
   void setTableNameMap(const IWORKTableNameMapPtr_t &tableNameMap);
+  void getDefaultCellStyle(unsigned row, unsigned column, IWORKStyleStack &styleStack);
 
   void collectMetadata(const IWORKMetadata &metadata);
 
@@ -109,7 +110,7 @@ public:
   void closeSpan();
   void openLink(const std::string &url);
   void closeLink();
-  void startText(bool discardEmptyContent = false);
+  void startText(bool discardEmptyContent = false, const IWORKStylePtr_t &defaultParaStyle = IWORKStylePtr_t(), const IWORKStylePtr_t &defaultLayoutStyle = IWORKStylePtr_t());
   void endText();
 
   void startLevel();

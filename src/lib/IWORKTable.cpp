@@ -316,7 +316,8 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
           cellProps.insert("table:number-rows-spanned", numeric_cast<int>(cell.m_rowSpan));
 
         IWORKStyleStack style;
-        getMergedCellStyle(c, r, style);
+        getDefaultCellStyle(c, r, style);
+        style.push(cell.m_style);
         writeCellFormat(cellProps, style, cell.m_type, cell.m_style ? cell.m_style->getIdent() : none, cell.m_value);
         writeCellStyle(cellProps, style);
 
@@ -336,7 +337,7 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
   elements.addCloseTable();
 }
 
-void IWORKTable::getMergedCellStyle(const unsigned column, const unsigned row, IWORKStyleStack &style)
+void IWORKTable::getDefaultCellStyle(const unsigned column, const unsigned row, IWORKStyleStack &style)
 {
   if (m_bandedRows && (row % 2 == 1))
     style.push(m_defaultBandedBodyCellStyle);
@@ -348,8 +349,6 @@ void IWORKTable::getMergedCellStyle(const unsigned column, const unsigned row, I
     style.push(m_defaultRowFooterCellStyle);
   if (column < m_headerColumns)
     style.push(m_defaultColumnHeaderCellStyle);
-  if ((row < m_table.size()) && (column < m_table[row].size()))
-    style.push(m_table[row][column].m_style);
 }
 
 }

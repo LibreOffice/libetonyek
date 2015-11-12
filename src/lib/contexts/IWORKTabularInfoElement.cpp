@@ -18,6 +18,7 @@
 #include "IWORKDictionary.h"
 #include "IWORKFoElement.h"
 #include "IWORKGeometryElement.h"
+#include "IWORKProperties.h"
 #include "IWORKRefContext.h"
 #include "IWORKTextBodyElement.h"
 #include "IWORKToken.h"
@@ -819,7 +820,18 @@ TElement::TElement(IWORKXMLParserState &state)
 void TElement::startOfElement()
 {
   if (isCollector())
-    getCollector().startText();
+  {
+    IWORKStyleStack styleStack;
+    getCollector().getDefaultCellStyle(getState().m_tableData->m_row, getState().m_tableData->m_column, styleStack);
+    styleStack.push(getState().m_tableData->m_style);
+    IWORKStylePtr_t defaultParaStyle;
+    if (styleStack.has<property::SFTCellStylePropertyParagraphStyle>())
+      defaultParaStyle = styleStack.get<property::SFTCellStylePropertyParagraphStyle>();
+    IWORKStylePtr_t defaultLayoutStyle;
+    if (styleStack.has<property::SFTCellStylePropertyLayoutStyle>())
+      defaultLayoutStyle = styleStack.get<property::SFTCellStylePropertyLayoutStyle>();
+    getCollector().startText(false, defaultParaStyle, defaultLayoutStyle);
+  }
 }
 
 IWORKXMLContextPtr_t TElement::element(const int name)
