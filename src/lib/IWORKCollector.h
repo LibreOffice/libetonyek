@@ -25,7 +25,6 @@
 #include "IWORKStyleStack.h"
 #include "IWORKStylesheet.h"
 #include "IWORKTable.h"
-#include "IWORKText_fwd.h"
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 #include "IWORKOutputManager.h"
@@ -35,6 +34,7 @@ namespace libetonyek
 
 class IWORKDocumentInterface;
 class IWORKPropertyMap;
+class IWORKText;
 struct IWORKSize;
 
 class IWORKCollector
@@ -78,10 +78,6 @@ public:
 
   void collectStylesheet(const IWORKStylesheetPtr_t &stylesheet);
 
-  void collectText(const std::string &text);
-  void collectTab();
-  void collectLineBreak();
-
   void collectTableSizes(const IWORKRowSizes_t &rowSizes, const IWORKColumnSizes_t &columnSizes);
   void collectTableBorders(const IWORKGridLineList_t &verticalLines, const IWORKGridLineList_t &horizontalLines);
   void collectTableCell(unsigned row, unsigned column, const boost::optional<std::string> &content, unsigned rowSpan, unsigned columnSpan,  const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, IWORKCellType type);
@@ -97,22 +93,15 @@ public:
   void collectHeader(const std::string &name);
   void collectFooter(const std::string &name);
 
+  void collectText(const boost::shared_ptr<IWORKText> &text);
+
   void startDocument();
   void endDocument();
 
   void startGroup();
   void endGroup();
 
-  void startLayout(const IWORKStylePtr_t &style);
-  void endLayout();
-  void startParagraph(const IWORKStylePtr_t &style);
-  void endParagraph();
-  void openSpan(const IWORKStylePtr_t &style);
-  void closeSpan();
-  void openLink(const std::string &url);
-  void closeLink();
-  void startText(bool discardEmptyContent = false, const IWORKStylePtr_t &defaultParaStyle = IWORKStylePtr_t(), const IWORKStylePtr_t &defaultLayoutStyle = IWORKStylePtr_t());
-  void endText();
+  boost::shared_ptr<IWORKText> createText(bool discardEmptyContent = false, const IWORKStylePtr_t &defaultParaStyle = IWORKStylePtr_t(), const IWORKStylePtr_t &defaultLayoutStyle = IWORKStylePtr_t());
 
   void startLevel();
   void endLevel();
@@ -152,7 +141,7 @@ protected:
 
   std::deque<IWORKStylePtr_t> m_newStyles;
 
-  std::stack<IWORKTextPtr_t> m_textStack;
+  boost::shared_ptr<IWORKText> m_currentText;
   IWORKTable m_currentTable;
 
   IWORKHeaderFooterMap_t m_headers;

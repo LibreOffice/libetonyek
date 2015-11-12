@@ -16,6 +16,7 @@
 #include "IWAMessage.h"
 #include "IWAObjectType.h"
 #include "IWORKProperties.h"
+#include "IWORKText.h"
 #include "KEY6ObjectType.h"
 #include "KEYCollector.h"
 
@@ -157,14 +158,17 @@ bool KEY6Parser::parsePlaceholder(const unsigned id)
           const IWAMessageField &placement = get(shape).message(1);
           if (placement)
             parseShapePlacement(get(placement), geometry);
-          m_collector.startText();
+          assert(!m_currentText);
+          m_currentText = m_collector.createText();
           parseText(get(textRef));
+          if (!m_currentText->empty())
+            m_collector.collectText(m_currentText);
+          m_currentText.reset();
           IWORKPropertyMap props;
           if (bool(geometry))
             props.put<property::Geometry>(geometry);
           const IWORKStylePtr_t style = make_shared<IWORKStyle>(props, none, none);
           const KEYPlaceholderPtr_t &placeholder = m_collector.collectTextPlaceholder(style, type == 2);
-          m_collector.endText();
           m_collector.insertTextPlaceholder(placeholder);
           m_collector.endLevel();
         }
@@ -189,10 +193,12 @@ void KEY6Parser::parseNotes(const unsigned id)
   const optional<unsigned> &textRef = readRef(get(msg), 1);
   if (textRef)
   {
-    m_collector.startText();
+    assert(!m_currentText);
+    m_currentText = m_collector.createText();
     parseText(get(textRef));
+    m_collector.collectText(m_currentText);
+    m_currentText.reset();
     m_collector.collectNote();
-    m_collector.endText();
   }
 }
 
@@ -213,23 +219,33 @@ bool KEY6Parser::dispatchShape(const unsigned id)
 bool KEY6Parser::parseStickyNote(const IWAMessage &msg)
 {
   m_collector.startLevel();
-  m_collector.startText();
+  assert(!m_currentText);
 
   if (msg.message(1))
   {
     const optional<unsigned> &textRef = readRef(get(msg.message(1)), 2);
     if (textRef)
+    {
+      m_currentText = m_collector.createText();
       parseText(get(textRef));
+    }
   }
   else
   {
     const optional<unsigned> &commentRef = readRef(msg, 2);
     if (commentRef)
+    {
+      m_currentText = m_collector.createText();
       parseComment(get(commentRef));
+    }
   }
 
+  if (bool(m_currentText))
+  {
+    m_collector.collectText(m_currentText);
+    m_currentText.reset();
+  }
   m_collector.collectStickyNote();
-  m_collector.endText();
   m_collector.endLevel();
 
   return true;

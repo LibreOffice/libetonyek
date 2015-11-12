@@ -22,6 +22,7 @@ namespace libetonyek
 class IWORKCollector;
 struct IWORKDictionary;
 class IWORKParser;
+class IWORKText;
 class IWORKTokenizer;
 
 class IWORKXMLParserState
@@ -45,6 +46,7 @@ public:
   // gather referenceable entities in skipped parts of the file.
   bool m_enableCollector;
   IWORKTableNameMapPtr_t m_tableNameMap;
+  boost::shared_ptr<IWORKText> m_currentText;
 
 private:
   IWORKParser &m_parser;

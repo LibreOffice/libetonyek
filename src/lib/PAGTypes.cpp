@@ -29,6 +29,8 @@ PAGFootnoteState::PAGFootnoteState()
   : m_firstTextAfterMark(false)
   , m_pending(false)
   , m_mark()
+  , m_footnotes()
+  , m_nextFootnote(m_footnotes.end())
 {
 }
 

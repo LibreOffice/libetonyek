@@ -14,6 +14,7 @@
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKParser.h"
+#include "IWORKText.h"
 #include "IWORKTypes.h"
 
 namespace libetonyek
@@ -24,6 +25,7 @@ IWORKXMLParserState::IWORKXMLParserState(IWORKParser &parser, IWORKCollector &co
   , m_stylesheet()
   , m_enableCollector(true)
   , m_tableNameMap(boost::make_shared<IWORKTableNameMap_t>())
+  , m_currentText()
   , m_parser(parser)
   , m_collector(collector)
   , m_dict(dict)

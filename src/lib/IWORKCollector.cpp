@@ -278,7 +278,7 @@ IWORKCollector::IWORKCollector(IWORKDocumentInterface *const document)
   , m_levelStack()
   , m_stylesheetStack()
   , m_newStyles()
-  , m_textStack()
+  , m_currentText()
   , m_currentTable()
   , m_headers()
   , m_footers()
@@ -294,7 +294,7 @@ IWORKCollector::~IWORKCollector()
   assert(0 == m_groupLevel);
 
   assert(!m_currentPath);
-  assert(m_textStack.empty());
+  assert(!m_currentText);
 }
 
 void IWORKCollector::collectStyle(const IWORKStylePtr_t &style)
@@ -348,7 +348,6 @@ void IWORKCollector::collectLine(const IWORKLinePtr_t &line)
 void IWORKCollector::collectShape()
 {
   assert(!m_levelStack.empty());
-  assert(!m_textStack.empty());
 
   const IWORKShapePtr_t shape(new IWORKShape());
 
@@ -362,10 +361,10 @@ void IWORKCollector::collectShape()
   shape->m_geometry = m_levelStack.top().m_geometry;
   m_levelStack.top().m_geometry.reset();
 
-  if (bool(m_textStack.top()))
+  if (bool(m_currentText))
   {
-    shape->m_text = m_textStack.top();
-    m_textStack.top().reset();
+    shape->m_text = m_currentText;
+    m_currentText.reset();
   }
 
   shape->m_style = m_levelStack.top().m_graphicStyle;
@@ -436,30 +435,6 @@ void IWORKCollector::collectStylesheet(const IWORKStylesheetPtr_t &stylesheet)
   m_newStyles.clear();
 }
 
-void IWORKCollector::collectText(const std::string &text)
-{
-  assert(!m_textStack.empty());
-  assert(bool(m_textStack.top()));
-
-  m_textStack.top()->insertText(text);
-}
-
-void IWORKCollector::collectTab()
-{
-  assert(!m_textStack.empty());
-  assert(bool(m_textStack.top()));
-
-  m_textStack.top()->insertTab();
-}
-
-void IWORKCollector::collectLineBreak()
-{
-  assert(!m_textStack.empty());
-  assert(bool(m_textStack.top()));
-
-  m_textStack.top()->insertLineBreak();
-}
-
 void IWORKCollector::collectTableSizes(const IWORKRowSizes_t &rowSizes, const IWORKColumnSizes_t &columnSizes)
 {
   m_currentTable.setSizes(columnSizes, rowSizes);
@@ -476,8 +451,6 @@ void IWORKCollector::collectTableCell(const unsigned row, const unsigned column,
 
   if (bool(content) && type == IWORK_CELL_TYPE_TEXT)
   {
-    assert(m_textStack.empty() || m_textStack.top()->empty());
-
     librevenge::RVNGPropertyList props;
     elements.addOpenParagraph(props);
     elements.addOpenSpan(props);
@@ -485,11 +458,11 @@ void IWORKCollector::collectTableCell(const unsigned row, const unsigned column,
     elements.addCloseSpan();
     elements.addCloseParagraph();
   }
-  else if (!m_textStack.empty() && bool(m_textStack.top()))
+  else if (bool(m_currentText))
   {
-    m_textStack.top()->draw(elements);
-    m_textStack.top().reset();
+    m_currentText->draw(elements);
   }
+  m_currentText.reset();
 
   m_currentTable.insertCell(column, row, content, elements, columnSpan, rowSpan, formula, style, type);
 }
@@ -534,6 +507,12 @@ void IWORKCollector::collectFooter(const std::string &name)
   collectHeaderFooter(name, m_footers);
 }
 
+void IWORKCollector::collectText(const boost::shared_ptr<IWORKText> &text)
+{
+  assert(!m_currentText);
+  m_currentText = text;
+}
+
 void IWORKCollector::startDocument()
 {
   m_document->startDocument(librevenge::RVNGPropertyList());
@@ -545,7 +524,7 @@ void IWORKCollector::endDocument()
   assert(0 == m_groupLevel);
 
   assert(!m_currentPath);
-  assert(m_textStack.empty());
+  assert(!m_currentText);
 
   m_document->endDocument();
 }
@@ -562,80 +541,9 @@ void IWORKCollector::endGroup()
   --m_groupLevel;
 }
 
-void IWORKCollector::startLayout(const IWORKStylePtr_t &style)
+boost::shared_ptr<IWORKText> IWORKCollector::createText(bool discardEmptyContent, const IWORKStylePtr_t &defaultParaStyle, const IWORKStylePtr_t &defaultLayoutStyle)
 {
-  assert(!m_textStack.empty());
-  assert(bool(m_textStack.top()));
-
-  m_textStack.top()->openLayout(style);
-}
-
-void IWORKCollector::endLayout()
-{
-  assert(!m_textStack.empty());
-  assert(bool(m_textStack.top()));
-
-  m_textStack.top()->closeLayout();
-}
-
-void IWORKCollector::startParagraph(const IWORKStylePtr_t &style)
-{
-  assert(!m_textStack.empty());
-  assert(bool(m_textStack.top()));
-
-  m_textStack.top()->openParagraph(style);
-}
-
-void IWORKCollector::endParagraph()
-{
-  assert(!m_textStack.empty());
-  assert(bool(m_textStack.top()));
-
-  m_textStack.top()->closeParagraph();
-}
-
-void IWORKCollector::openSpan(const IWORKStylePtr_t &style)
-{
-  assert(!m_textStack.empty());
-  assert(bool(m_textStack.top()));
-
-  m_textStack.top()->openSpan(style);
-}
-
-void IWORKCollector::closeSpan()
-{
-  assert(!m_textStack.empty());
-  assert(bool(m_textStack.top()));
-
-  m_textStack.top()->closeSpan();
-}
-
-void IWORKCollector::openLink(const std::string &url)
-{
-  assert(!m_textStack.empty());
-  assert(bool(m_textStack.top()));
-
-  m_textStack.top()->openLink(url);
-}
-
-void IWORKCollector::closeLink()
-{
-  assert(!m_textStack.empty());
-  assert(bool(m_textStack.top()));
-
-  m_textStack.top()->closeLink();
-}
-
-void IWORKCollector::startText(bool discardEmptyContent, const IWORKStylePtr_t &defaultParaStyle, const IWORKStylePtr_t &defaultLayoutStyle)
-{
-  m_textStack.push(make_shared<IWORKText>(discardEmptyContent, defaultParaStyle, defaultLayoutStyle));
-}
-
-void IWORKCollector::endText()
-{
-  assert(!m_textStack.empty());
-
-  m_textStack.pop();
+  return make_shared<IWORKText>(discardEmptyContent, defaultParaStyle, defaultLayoutStyle);
 }
 
 void IWORKCollector::setTableStyle(const IWORKStylePtr_t &style)
@@ -692,17 +600,17 @@ void IWORKCollector::resolveStyle(IWORKStyle &style)
 
 void IWORKCollector::collectHeaderFooter(const std::string &name, IWORKHeaderFooterMap_t &map)
 {
-  assert(!m_textStack.empty());
-  assert(bool(m_textStack.top()));
-
   IWORKOutputElements &elements = map[name];
   if (!elements.empty())
   {
     ETONYEK_DEBUG_MSG(("header '%s' already exists, overwriting\n", name.c_str()));
     elements.clear();
   }
-  m_textStack.top()->draw(elements);
-  m_textStack.top().reset();
+  if (bool(m_currentText))
+  {
+    m_currentText->draw(elements);
+    m_currentText.reset();
+  }
 }
 
 void IWORKCollector::fillMetadata(librevenge::RVNGPropertyList &props)

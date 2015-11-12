@@ -109,8 +109,6 @@ PAGCollector::PAGCollector(IWORKDocumentInterface *const document)
   : IWORKCollector(document)
   , m_currentSection()
   , m_firstPageSpan(true)
-  , m_footnotes()
-  , m_nextFootnote(m_footnotes.end())
   , m_pageGroups()
   , m_page(0)
   , m_attachmentPosition()
@@ -130,58 +128,9 @@ void PAGCollector::collectTextBody()
   flushPageSpan(false);
 }
 
-void PAGCollector::collectAttachment(const IWORKOutputID_t &id, const bool block)
-{
-  assert(!m_textStack.empty());
-  assert(bool(m_textStack.top()));
-
-  if (block)
-    m_textStack.top()->insertBlockContent(getOutputManager().get(id));
-  else
-    m_textStack.top()->insertInlineContent(getOutputManager().get(id));
-}
-
 void PAGCollector::collectAttachmentPosition(const IWORKPosition &position)
 {
   m_attachmentPosition = position;
-}
-
-void PAGCollector::insertFootnote()
-{
-  assert(!m_textStack.empty());
-  assert(bool(m_textStack.top()));
-
-  if (m_nextFootnote != m_footnotes.end())
-  {
-    m_textStack.top()->insertInlineContent(*m_nextFootnote);
-    ++m_nextFootnote;
-  }
-}
-
-void PAGCollector::collectFootnote(const std::string &mark)
-{
-  assert(!m_textStack.empty());
-
-  const bool firstFootnote = m_footnotes.empty();
-  m_footnotes.push_back(IWORKOutputElements());
-  if (bool(m_textStack.top()))
-  {
-    RVNGPropertyList props;
-    if (!mark.empty())
-      props.insert("text:label", mark.c_str());
-    if (m_pubInfo.m_footnoteKind == PAG_FOOTNOTE_KIND_FOOTNOTE)
-      m_footnotes.back().addOpenFootnote(props);
-    else
-      m_footnotes.back().addOpenEndnote(props);
-    m_textStack.top()->draw(m_footnotes.back());
-    if (m_pubInfo.m_footnoteKind == PAG_FOOTNOTE_KIND_FOOTNOTE)
-      m_footnotes.back().addCloseFootnote();
-    else
-      m_footnotes.back().addCloseEndnote();
-    m_textStack.top().reset(new IWORKText(false));
-  }
-  if (firstFootnote) // We can init. insertion iterator now
-    m_nextFootnote = m_footnotes.begin();
 }
 
 void PAGCollector::openSection(const std::string &style, const double width, const double height, const double horizontalMargin, const double verticalMargin)
@@ -349,8 +298,6 @@ void PAGCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &tra
 
 void PAGCollector::flushPageSpan(const bool writeEmpty)
 {
-  assert(!m_textStack.empty());
-
   if (m_firstPageSpan)
   {
     RVNGPropertyList metadata;
@@ -379,10 +326,10 @@ void PAGCollector::flushPageSpan(const bool writeEmpty)
 
   IWORKOutputElements text;
 
-  if (bool(m_textStack.top()))
+  if (bool(m_currentText))
   {
-    m_textStack.top()->draw(text);
-    m_textStack.top().reset(new IWORKText(false));
+    m_currentText->draw(text);
+    m_currentText.reset();
   }
 
   if (!text.empty() || writeEmpty)
@@ -406,6 +353,11 @@ void PAGCollector::writePageGroupsObjects()
 {
   for (PageGroupsMap_t::const_iterator it = m_pageGroups.begin(); it != m_pageGroups.end(); ++it)
     getOutputManager().get(it->second).write(m_document);
+}
+
+PAGFootnoteKind PAGCollector::getFootnoteKind() const
+{
+  return m_pubInfo.m_footnoteKind;
 }
 
 }

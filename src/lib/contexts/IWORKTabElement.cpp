@@ -9,7 +9,7 @@
 
 #include "IWORKTabElement.h"
 
-#include "IWORKCollector.h"
+#include "IWORKText.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
@@ -22,8 +22,8 @@ IWORKTabElement::IWORKTabElement(IWORKXMLParserState &state)
 
 void IWORKTabElement::endOfElement()
 {
-  if (isCollector())
-    getCollector().collectTab();
+  if (bool(getState().m_currentText))
+    getState().m_currentText->insertTab();
 }
 
 }

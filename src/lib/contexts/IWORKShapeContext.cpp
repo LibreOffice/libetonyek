@@ -9,6 +9,8 @@
 
 #include "IWORKShapeContext.h"
 
+#include <cassert>
+
 #include <boost/optional.hpp>
 
 #include "IWORKCollector.h"
@@ -77,7 +79,8 @@ void IWORKShapeContext::startOfElement()
   if (isCollector())
   {
     getCollector().startLevel();
-    getCollector().startText();
+    assert(!getState().m_currentText);
+    getState().m_currentText = getCollector().createText();
   }
 }
 
@@ -104,8 +107,9 @@ void IWORKShapeContext::endOfElement()
   {
     if (m_style)
       getCollector().setGraphicStyle(m_style);
+    getCollector().collectText(getState().m_currentText);
+    getState().m_currentText.reset();
     getCollector().collectShape();
-    getCollector().endText();
     getCollector().endLevel();
   }
 }

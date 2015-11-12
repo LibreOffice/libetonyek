@@ -10,11 +10,13 @@
 #ifndef PAGTYPES_H_INCLUDED
 #define PAGTYPES_H_INCLUDED
 
+#include <deque>
 #include <string>
 
 #include <boost/optional.hpp>
 #include <boost/unordered_map.hpp>
 
+#include "IWORKOutputElements.h"
 #include "IWORKTypes_fwd.h"
 #include "PAGEnum.h"
 
@@ -45,6 +47,9 @@ struct PAGFootnoteState
   bool m_firstTextAfterMark;
   bool m_pending;
   std::string m_mark;
+
+  std::deque<IWORKOutputElements> m_footnotes;
+  std::deque<IWORKOutputElements>::const_iterator m_nextFootnote;
 };
 
 struct PAGAttachment

@@ -9,9 +9,12 @@
 
 #include "PAG1TextStorageElement.h"
 
+#include <cassert>
 #include <string>
 
 #include <boost/optional.hpp>
+
+#include <librevenge/librevenge.h>
 
 #include "IWORKLayoutElement.h"
 #include "IWORKLinkElement.h"
@@ -21,6 +24,7 @@
 #include "IWORKRefContext.h"
 #include "IWORKSpanElement.h"
 #include "IWORKTabularInfoElement.h"
+#include "IWORKText.h"
 #include "IWORKTextBodyElement.h"
 #include "IWORKToken.h"
 #include "PAG1Dictionary.h"
@@ -189,8 +193,12 @@ FootnoteElement::FootnoteElement(PAG1ParserState &state)
 
 void FootnoteElement::endOfElement()
 {
-  if (isCollector())
-    getCollector().insertFootnote();
+  if (getState().m_footnoteState.m_nextFootnote != getState().m_footnoteState.m_footnotes.end())
+  {
+    if (bool(getState().m_currentText))
+      getState().m_currentText->insertInlineContent(*getState().m_footnoteState.m_nextFootnote);
+    ++getState().m_footnoteState.m_nextFootnote;
+  }
 }
 
 }
@@ -433,20 +441,47 @@ void PElement::endOfElement()
 {
   if (m_ref && isCollector())
   {
+    assert(getState().m_currentText);
+
     const PAGAttachmentMap_t::const_iterator it = getState().getDictionary().m_attachments.find(get(m_ref));
     if (it != getState().getDictionary().m_attachments.end())
-      getCollector().collectAttachment(it->second.m_id, it->second.m_block);
+    {
+      const IWORKOutputElements &content = getCollector().getOutputManager().get(it->second.m_id);
+      if (it->second.m_block)
+        getState().m_currentText->insertBlockContent(content);
+      else
+        getState().m_currentText->insertInlineContent(content);
+    }
   }
 
   IWORKPElement::endOfElement();
 
   if (getState().m_footnoteState.m_pending)
   {
-    if (isCollector())
-      getCollector().collectFootnote(getState().m_footnoteState.m_mark);
-    getState().m_footnoteState.m_pending = false;
-    getState().m_footnoteState.m_firstTextAfterMark = false;
-    getState().m_footnoteState.m_mark.clear();
+    PAGFootnoteState &fs = getState().m_footnoteState;
+    const bool firstFootnote = fs.m_footnotes.empty();
+    fs.m_footnotes.push_back(IWORKOutputElements());
+    if (firstFootnote) // We can init. insertion iterator now
+      fs.m_nextFootnote = fs.m_footnotes.begin();
+    librevenge::RVNGPropertyList props;
+    if (!fs.m_mark.empty())
+      props.insert("text:label", fs.m_mark.c_str());
+    if (getCollector().getFootnoteKind() == PAG_FOOTNOTE_KIND_FOOTNOTE)
+      fs.m_footnotes.back().addOpenFootnote(props);
+    else
+      fs.m_footnotes.back().addOpenEndnote(props);
+    getState().m_currentText->draw(fs.m_footnotes.back());
+    // prepare for possible next footnote
+    // TODO: introduce IN_FOOTNOTES state and move this to startOfElement
+    getState().m_currentText = getCollector().createText(false);
+    if (getCollector().getFootnoteKind() == PAG_FOOTNOTE_KIND_FOOTNOTE)
+      fs.m_footnotes.back().addCloseFootnote();
+    else
+      fs.m_footnotes.back().addCloseEndnote();
+
+    fs.m_pending = false;
+    fs.m_firstTextAfterMark = false;
+    fs.m_mark.clear();
   }
 }
 
@@ -493,6 +528,7 @@ public:
 private:
   void open();
 
+  virtual void startOfElement();
   virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
@@ -528,6 +564,20 @@ void SectionElement::open()
   m_opened = true;
 }
 
+void SectionElement::startOfElement()
+{
+  if (isCollector())
+  {
+    // This should not happen in normal files, but better be safe than sorry
+    if (bool(getState().m_currentText) && !getState().m_currentText->empty())
+    {
+      getCollector().collectText(getState().m_currentText);
+      getState().m_currentText = getCollector().createText();
+      getCollector().collectTextBody();
+    }
+  }
+}
+
 void SectionElement::attribute(const int name, const char *const value)
 {
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::style))
@@ -553,6 +603,9 @@ void SectionElement::endOfElement()
   {
     if (!m_opened)
       open();
+    getCollector().collectText(getState().m_currentText);
+    // In case there's non-section text following. Again, this should not happen in normal files.
+    getState().m_currentText = getCollector().createText();
     getCollector().closeSection();
   }
 }
@@ -659,8 +712,8 @@ IWORKXMLContextPtr_t PAG1TextStorageElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::text_body :
     if (!m_textOpened)
     {
-      if (isCollector())
-        getCollector().startText();
+      assert(!getState().m_currentText);
+      getState().m_currentText = getCollector().createText();
       m_textOpened = true;
     }
     return makeContext<TextBodyElement>(getState());
@@ -674,8 +727,13 @@ void PAG1TextStorageElement::endOfElement()
   if (isCollector() && m_textOpened)
   {
     if (!m_footnotes)
+    {
+      assert(getState().m_currentText);
+      if (bool(getState().m_currentText) && !getState().m_currentText->empty())
+        getCollector().collectText(getState().m_currentText);
       getCollector().collectTextBody();
-    getCollector().endText();
+    }
+    getState().m_currentText.reset();
   }
 
   PAG1XMLContextBase<IWORKTextStorageElement>::endOfElement();

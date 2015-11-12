@@ -9,8 +9,8 @@
 
 #include "IWORKLinkElement.h"
 
-#include "IWORKCollector.h"
 #include "IWORKSpanElement.h"
+#include "IWORKText.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 
@@ -27,8 +27,8 @@ void IWORKLinkElement::attribute(const int name, const char *const value)
 {
   if (IWORKToken::href == name)
   {
-    if (isCollector())
-      getCollector().openLink(value);
+    if (bool(getState().m_currentText))
+      getState().m_currentText->openLink(value);
     m_opened = true;
   }
 }
@@ -46,14 +46,14 @@ IWORKXMLContextPtr_t IWORKLinkElement::element(const int name)
 
 void IWORKLinkElement::text(const char *const value)
 {
-  if (isCollector())
-    getCollector().collectText(value);
+  if (bool(getState().m_currentText))
+    getState().m_currentText->insertText(value);
 }
 
 void IWORKLinkElement::endOfElement()
 {
-  if (m_opened && isCollector())
-    getCollector().closeLink();
+  if (m_opened && bool(getState().m_currentText))
+    getState().m_currentText->closeLink();
 }
 
 }

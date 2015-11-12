@@ -9,7 +9,7 @@
 
 #include "IWORKBrContext.h"
 
-#include "IWORKCollector.h"
+#include "IWORKText.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
@@ -22,8 +22,8 @@ IWORKBrContext::IWORKBrContext(IWORKXMLParserState &state)
 
 void IWORKBrContext::endOfElement()
 {
-  if (isCollector())
-    getCollector().collectLineBreak();
+  if (bool(getState().m_currentText))
+    getState().m_currentText->insertLineBreak();
 }
 
 }

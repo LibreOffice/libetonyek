@@ -10,9 +10,9 @@
 #include "IWORKSpanElement.h"
 
 #include "IWORKBrContext.h"
-#include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKTabElement.h"
+#include "IWORKText.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 
@@ -60,22 +60,22 @@ IWORKXMLContextPtr_t IWORKSpanElement::element(const int name)
 void IWORKSpanElement::text(const char *const value)
 {
   ensureOpened();
-  if (isCollector())
-    getCollector().collectText(value);
+  if (bool(getState().m_currentText))
+    getState().m_currentText->insertText(value);
 }
 
 void IWORKSpanElement::endOfElement()
 {
-  if (m_opened && isCollector())
-    getCollector().closeSpan();
+  if (m_opened && bool(getState().m_currentText))
+    getState().m_currentText->closeSpan();
 }
 
 void IWORKSpanElement::ensureOpened()
 {
   if (!m_opened)
   {
-    if (isCollector())
-      getCollector().openSpan(m_style);
+    if (bool(getState().m_currentText))
+      getState().m_currentText->openSpan(m_style);
     m_opened = true;
   }
 }

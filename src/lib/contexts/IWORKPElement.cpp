@@ -10,12 +10,12 @@
 #include "IWORKPElement.h"
 
 #include "IWORKBrContext.h"
-#include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKLinkElement.h"
 #include "IWORKSpanElement.h"
 #include "IWORKStyle.h"
 #include "IWORKTabElement.h"
+#include "IWORKText.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 
@@ -67,23 +67,23 @@ IWORKXMLContextPtr_t IWORKPElement::element(const int name)
 void IWORKPElement::text(const char *const value)
 {
   ensureOpened();
-  if (isCollector())
-    getCollector().collectText(value);
+  if (bool(getState().m_currentText))
+    getState().m_currentText->insertText(value);
 }
 
 void IWORKPElement::endOfElement()
 {
   ensureOpened();
-  if (isCollector())
-    getCollector().endParagraph();
+  if (bool(getState().m_currentText))
+    getState().m_currentText->closeParagraph();
 }
 
 void IWORKPElement::ensureOpened()
 {
   if (!m_opened)
   {
-    if (isCollector())
-      getCollector().startParagraph(m_style);
+    if (bool(getState().m_currentText))
+      getState().m_currentText->openParagraph(m_style);
     m_opened = true;
   }
 }

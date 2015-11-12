@@ -32,6 +32,7 @@
 #include "IWORKStylesContext.h"
 #include "IWORKStylesheetBase.h"
 #include "IWORKTabularInfoElement.h"
+#include "IWORKText.h"
 #include "IWORKTextElement.h"
 #include "IWORKTextBodyElement.h"
 #include "IWORKTextStorageElement.h"
@@ -460,7 +461,8 @@ void StickyNoteElement::startOfElement()
 {
   if (isCollector())
   {
-    getCollector().startText();
+    assert(!getState().m_currentText);
+    getState().m_currentText = getCollector().createText();
     getCollector().startLevel();
   }
 }
@@ -482,10 +484,11 @@ void StickyNoteElement::endOfElement()
 {
   if (isCollector())
   {
+    getCollector().collectText(getState().m_currentText);
+    getState().m_currentText.reset();
     getCollector().collectStickyNote();
 
     getCollector().endLevel();
-    getCollector().endText();
   }
 }
 
@@ -745,7 +748,10 @@ PlaceholderContext::PlaceholderContext(KEY2ParserState &state, const bool title)
 void PlaceholderContext::startOfElement()
 {
   if (isCollector())
-    getCollector().startText();
+  {
+    assert(!getState().m_currentText);
+    getState().m_currentText = getCollector().createText();
+  }
 }
 
 IWORKXMLContextPtr_t PlaceholderContext::element(const int name)
@@ -776,6 +782,10 @@ void PlaceholderContext::endOfElement()
         style = it->second;
     }
 
+    if (bool(getState().m_currentText) && !getState().m_currentText->empty())
+      getCollector().collectText(getState().m_currentText);
+    getState().m_currentText.reset();
+
     const KEYPlaceholderPtr_t placeholder = getCollector().collectTextPlaceholder(style, m_title);
     if (bool(placeholder) && getId())
     {
@@ -783,7 +793,6 @@ void PlaceholderContext::endOfElement()
       KEYPlaceholderMap_t &placeholderMap = m_title ? dict.m_titlePlaceholders : dict.m_bodyPlaceholders;
       placeholderMap[get(getId())] = placeholder;
     }
-    getCollector().endText();
   }
 }
 
@@ -979,7 +988,10 @@ NotesElement::NotesElement(KEY2ParserState &state)
 void NotesElement::startOfElement()
 {
   if (isCollector())
-    getCollector().startText();
+  {
+    assert(!getState().m_currentText);
+    getState().m_currentText = getCollector().createText();
+  }
 }
 
 IWORKXMLContextPtr_t NotesElement::element(const int name)
@@ -997,8 +1009,9 @@ void NotesElement::endOfElement()
 {
   if (isCollector())
   {
+    getCollector().collectText(getState().m_currentText);
+    getState().m_currentText.reset();
     getCollector().collectNote();
-    getCollector().endText();
   }
 }
 

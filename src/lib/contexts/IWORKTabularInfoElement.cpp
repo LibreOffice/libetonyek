@@ -9,9 +9,10 @@
 
 #include "IWORKTabularInfoElement.h"
 
-#include <boost/lexical_cast.hpp>
-
+#include <cassert>
 #include <ctime>
+
+#include <boost/lexical_cast.hpp>
 
 #include "libetonyek_xml.h"
 #include "IWORKCollector.h"
@@ -115,6 +116,8 @@ void CellContextBase::emitCell(const bool covered)
     if (covered)
       getCollector().collectCoveredTableCell(tableData->m_row, tableData->m_column);
     else
+      // TODO: Handle simple text content already in parser, instead of passing it
+      // into the collector.
       getCollector().collectTableCell(
         tableData->m_row, tableData->m_column,
         tableData->m_content,
@@ -821,6 +824,8 @@ void TElement::startOfElement()
 {
   if (isCollector())
   {
+    // TODO: This will have to be moved to the parent class, so all
+    // cells get the correct style, not only text cells.
     IWORKStyleStack styleStack;
     getCollector().getDefaultCellStyle(getState().m_tableData->m_row, getState().m_tableData->m_column, styleStack);
     styleStack.push(getState().m_tableData->m_style);
@@ -830,7 +835,8 @@ void TElement::startOfElement()
     IWORKStylePtr_t defaultLayoutStyle;
     if (styleStack.has<property::SFTCellStylePropertyLayoutStyle>())
       defaultLayoutStyle = styleStack.get<property::SFTCellStylePropertyLayoutStyle>();
-    getCollector().startText(false, defaultParaStyle, defaultLayoutStyle);
+    assert(!getState().m_currentText);
+    getState().m_currentText = getCollector().createText(false, defaultParaStyle, defaultLayoutStyle);
   }
 }
 
@@ -847,10 +853,12 @@ IWORKXMLContextPtr_t TElement::element(const int name)
 
 void TElement::endOfElement()
 {
-  emitCell();
-
   if (isCollector())
-    getCollector().endText();
+  {
+    getCollector().collectText(getState().m_currentText);
+    getState().m_currentText.reset();
+  }
+  emitCell();
 }
 
 }

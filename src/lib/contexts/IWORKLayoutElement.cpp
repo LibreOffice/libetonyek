@@ -9,10 +9,10 @@
 
 #include "IWORKLayoutElement.h"
 
-#include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKPElement.h"
 #include "IWORKStyle.h"
+#include "IWORKText.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 
@@ -51,8 +51,8 @@ void IWORKLayoutElement::endOfElement()
 {
   if (m_opened)
   {
-    if (isCollector())
-      getCollector().endLayout();
+    if (bool(getState().m_currentText))
+      getState().m_currentText->closeLayout();
   }
 }
 
@@ -60,8 +60,8 @@ void IWORKLayoutElement::open()
 {
   assert(!m_opened);
 
-  if (isCollector())
-    getCollector().startLayout(m_style);
+  if (bool(getState().m_currentText))
+    getState().m_currentText->openLayout(m_style);
   m_opened = true;
 }
 

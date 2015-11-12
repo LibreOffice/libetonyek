@@ -107,9 +107,6 @@ void KEYCollector::collectPage()
 
 KEYPlaceholderPtr_t KEYCollector::collectTextPlaceholder(const IWORKStylePtr_t &style, const bool title)
 {
-  assert(!m_textStack.empty());
-  assert(bool(m_textStack.top()));
-
   KEYPlaceholderPtr_t placeholder(new KEYPlaceholder());
   placeholder->m_title = title;
   placeholder->m_style = style;
@@ -123,10 +120,9 @@ KEYPlaceholderPtr_t KEYCollector::collectTextPlaceholder(const IWORKStylePtr_t &
 
     m_styleStack.pop();
   }
-  if (!m_textStack.top()->empty())
-    placeholder->m_text = m_textStack.top();
+  placeholder->m_text = m_currentText;
 
-  m_textStack.top().reset();
+  m_currentText.reset();
 
   return placeholder;
 }
@@ -151,17 +147,16 @@ void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
 
 void KEYCollector::collectNote()
 {
-  assert(!m_textStack.empty());
-  assert(bool(m_textStack.top()));
-
-  m_textStack.top()->draw(m_notes);
-  m_textStack.top().reset();
+  if (bool(m_currentText))
+  {
+    m_currentText->draw(m_notes);
+    m_currentText.reset();
+  }
 }
 
 void KEYCollector::collectStickyNote()
 {
   assert(!m_levelStack.empty());
-  assert(!m_textStack.empty());
 
   librevenge::RVNGPropertyList props;
 
@@ -173,15 +168,15 @@ void KEYCollector::collectStickyNote()
     props.insert("svg:height", pt2in(m_levelStack.top().m_geometry->m_naturalSize.m_height));
   }
 
-  if (bool(m_textStack.top()))
+  if (bool(m_currentText))
   {
     m_stickyNotes.addOpenComment(props);
-    m_textStack.top()->draw(m_stickyNotes);
+    m_currentText->draw(m_stickyNotes);
+    m_currentText.reset();
     m_stickyNotes.addCloseComment();
   }
 
   m_levelStack.top().m_geometry.reset();
-  m_textStack.top().reset();
 }
 
 void KEYCollector::startDocument()

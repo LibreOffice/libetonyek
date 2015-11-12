@@ -49,9 +49,6 @@ public:
   void collectAttachment(const IWORKOutputID_t &id, bool block);
   void collectAttachmentPosition(const IWORKPosition &position);
 
-  void collectFootnote(const std::string &mark);
-  void insertFootnote();
-
   void openPageGroup(const boost::optional<int> &page);
   void closePageGroup();
 
@@ -62,6 +59,8 @@ public:
 
   void openAttachments();
   void closeAttachments();
+
+  PAGFootnoteKind getFootnoteKind() const;
 
 private:
   virtual void drawTable();
@@ -75,9 +74,6 @@ private:
 private:
   Section m_currentSection;
   bool m_firstPageSpan;
-
-  std::deque<IWORKOutputElements> m_footnotes;
-  std::deque<IWORKOutputElements>::const_iterator m_nextFootnote;
 
   PAGPublicationInfo m_pubInfo;
 

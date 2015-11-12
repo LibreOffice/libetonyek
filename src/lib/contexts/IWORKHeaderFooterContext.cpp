@@ -9,6 +9,8 @@
 
 #include "IWORKHeaderFooterContext.h"
 
+#include <cassert>
+
 #include "IWORKCollector.h"
 #include "IWORKTextStorageElement.h"
 #include "IWORKToken.h"
@@ -27,7 +29,10 @@ IWORKHeaderFooterContext::IWORKHeaderFooterContext(IWORKXMLParserState &state, c
 void IWORKHeaderFooterContext::startOfElement()
 {
   if (isCollector())
-    getCollector().startText(true);
+  {
+    assert(!getState().m_currentText);
+    getState().m_currentText = getCollector().createText(true);
+  }
 }
 
 void IWORKHeaderFooterContext::attribute(const int name, const char *const value)
@@ -49,9 +54,10 @@ void IWORKHeaderFooterContext::endOfElement()
 {
   if (isCollector())
   {
+    getCollector().collectText(getState().m_currentText);
+    getState().m_currentText.reset();
     if (m_name)
       m_collect(get(m_name));
-    getCollector().endText();
   }
 }
 

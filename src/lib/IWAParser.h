@@ -31,6 +31,7 @@ namespace libetonyek
 
 class IWORKCollector;
 class IWORKPropertyMap;
+class IWORKText;
 
 class IWAParser
 {
@@ -109,6 +110,9 @@ protected:
   const IWORKStylePtr_t queryCellStyle(unsigned id) const;
 
   const IWORKStylePtr_t queryStyle(unsigned id, StyleMap_t &styleMap, StyleParseFun_t parse) const;
+
+protected:
+  boost::shared_ptr<IWORKText> m_currentText;
 
 private:
   typedef std::map<unsigned, boost::variant<std::string, unsigned> > DataList_t;

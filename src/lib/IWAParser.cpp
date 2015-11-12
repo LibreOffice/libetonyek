@@ -24,6 +24,7 @@
 #include "IWORKNumberConverter.h"
 #include "IWORKPath.h"
 #include "IWORKProperties.h"
+#include "IWORKText.h"
 #include "IWORKTypes.h"
 
 namespace libetonyek
@@ -81,16 +82,16 @@ void mergeTextSpans(const map<unsigned, IWORKStylePtr_t> &paras,
   }
 }
 
-void flushText(string &text, IWORKCollector &collector)
+void flushText(string &text, IWORKText &collector)
 {
   if (!text.empty())
   {
-    collector.collectText(text);
+    collector.insertText(text);
     text.clear();
   }
 }
 
-void writeText(const string &text, const unsigned start, const unsigned end, const bool endPara, IWORKCollector &collector)
+void writeText(const string &text, const unsigned start, const unsigned end, const bool endPara, IWORKText &collector)
 {
   assert(end <= text.size());
 
@@ -101,16 +102,16 @@ void writeText(const string &text, const unsigned start, const unsigned end, con
     {
     case '\t' :
       flushText(buf, collector);
-      collector.collectTab();
+      collector.insertTab();
       break;
     case '\r' :
       flushText(buf, collector);
-      collector.collectLineBreak();
+      collector.insertLineBreak();
       break;
     case '\n' :
       flushText(buf, collector);
       if (endPara && i != end - 1) // ignore the newline that ends the paragraph
-        collector.collectLineBreak();
+        collector.insertLineBreak();
       break;
     default :
       buf.push_back(text[i]);
@@ -530,6 +531,8 @@ bool IWAParser::dispatchShape(const unsigned id)
 
 bool IWAParser::parseText(const unsigned id)
 {
+  assert(bool(m_currentText));
+
   const ObjectMessage msg(*this, id, IWAObjectType::Text);
   if (!msg)
     return false;
@@ -590,22 +593,22 @@ bool IWAParser::parseText(const unsigned id)
     for (map<unsigned, pair<IWORKStylePtr_t, IWORKStylePtr_t> >::const_iterator it = textSpans.begin(); it != textSpans.end();)
     {
       if (bool(it->second.first))
-        m_collector.startParagraph(it->second.first);
-      m_collector.openSpan(it->second.second);
+        m_currentText->openParagraph(it->second.first);
+      m_currentText->openSpan(it->second.second);
       const unsigned start = it->first;
       ++it;
       if (it == textSpans.end())
       {
-        writeText(get(text), start, length, true, m_collector);
-        m_collector.closeSpan();
-        m_collector.endParagraph();
+        writeText(get(text), start, length, true, *m_currentText);
+        m_currentText->closeSpan();
+        m_currentText->closeParagraph();
       }
       else
       {
-        writeText(get(text), start, it->first, bool(it->second.first), m_collector);
-        m_collector.closeSpan();
+        writeText(get(text), start, it->first, bool(it->second.first), *m_currentText);
+        m_currentText->closeSpan();
         if (bool(it->second.first))
-          m_collector.endParagraph();
+          m_currentText->closeParagraph();
       }
     }
   }
@@ -649,7 +652,6 @@ const IWORKStylePtr_t IWAParser::queryCellStyle(const unsigned id) const
 bool IWAParser::parseDrawableShape(const IWAMessage &msg)
 {
   m_collector.startLevel();
-  m_collector.startText();
 
   const optional<IWAMessage> &shape = msg.message(1).optional();
   if (shape)
@@ -856,12 +858,15 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
 
   const optional<unsigned> &textRef = readRef(msg, 2);
   if (textRef)
+  {
+    m_currentText = m_collector.createText();
     parseText(get(textRef));
+  }
 
   if (shape || textRef)
     m_collector.collectShape();
+  m_currentText.reset();
 
-  m_collector.endText();
   m_collector.endLevel();
 
   return true;
@@ -1335,18 +1340,20 @@ bool IWAParser::parseImage(const IWAMessage &msg)
 
 void IWAParser::parseComment(const unsigned id)
 {
+  assert(bool(m_currentText));
+
   const ObjectMessage msg(*this, id, IWAObjectType::Comment);
   if (!msg)
     return;
 
   if (get(msg).string(1))
   {
-    m_collector.startParagraph(make_shared<IWORKStyle>(IWORKPropertyMap(), none, none));
-    m_collector.openSpan(IWORKStylePtr_t());
+    m_currentText->openParagraph(make_shared<IWORKStyle>(IWORKPropertyMap(), none, none));
+    m_currentText->openSpan(IWORKStylePtr_t());
     const string &text = get(get(msg).string(1));
-    writeText(text, 0, text.size(), false, m_collector);
-    m_collector.closeSpan();
-    m_collector.endParagraph();
+    writeText(text, 0, text.size(), false, *m_currentText);
+    m_currentText->closeSpan();
+    m_currentText->closeParagraph();
   }
 }
 
