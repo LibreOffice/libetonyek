@@ -638,6 +638,11 @@ void IWORKCollector::endText()
   m_textStack.pop();
 }
 
+void IWORKCollector::setTableStyle(const IWORKStylePtr_t &style)
+{
+  m_currentTable.setStyle(style);
+}
+
 void IWORKCollector::startLevel()
 {
   glm::dmat3 currentTrafo;

@@ -44,6 +44,7 @@ class IWORKTable
 public:
   IWORKTable();
 
+  void setStyle(const IWORKStylePtr_t &style);
   void setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowSizes_t &rowSizes);
   void setBorders(const IWORKGridLineList_t &verticalLines, const IWORKGridLineList_t &horizontalLines);
   void setTableNameMap(const IWORKTableNameMapPtr_t &tableNameMap);
@@ -56,6 +57,7 @@ public:
 
 private:
   Table_t m_table;
+  IWORKStylePtr_t m_style;
   IWORKColumnSizes_t m_columnSizes;
   IWORKRowSizes_t m_rowSizes;
   IWORKGridLineList_t m_verticalLines;

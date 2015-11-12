@@ -214,6 +214,21 @@ IWORKTable::IWORKTable()
 {
 }
 
+void IWORKTable::setStyle(const IWORKStylePtr_t &style)
+{
+  m_style = style;
+
+  using namespace property;
+  if (style->has<SFTDefaultBodyCellStyleProperty>())
+    m_defaultBodyCellStyle = style->get<SFTDefaultBodyCellStyleProperty>();
+  if (style->has<SFTDefaultHeaderRowCellStyleProperty>())
+    m_defaultRowHeaderCellStyle = style->get<SFTDefaultHeaderRowCellStyleProperty>();
+  if (style->has<SFTDefaultHeaderColumnCellStyleProperty>())
+    m_defaultColumnHeaderCellStyle = style->get<SFTDefaultHeaderColumnCellStyleProperty>();
+  if (style->has<SFTDefaultFooterRowCellStyleProperty>())
+    m_defaultRowFooterCellStyle = style->get<SFTDefaultFooterRowCellStyleProperty>();
+}
+
 void IWORKTable::setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowSizes_t &rowSizes)
 {
   m_columnSizes = columnSizes;

@@ -89,6 +89,7 @@ public:
   void collectTableRow();
   void collectTable();
   void setTableNameMap(const IWORKTableNameMapPtr_t &tableNameMap);
+  void setTableStyle(const IWORKStylePtr_t &style);
   void getDefaultCellStyle(unsigned row, unsigned column, IWORKStyleStack &styleStack);
 
   void collectMetadata(const IWORKMetadata &metadata);
