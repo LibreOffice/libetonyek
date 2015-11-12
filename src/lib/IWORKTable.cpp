@@ -132,6 +132,11 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStylePtr_t 
       props.insert("librevenge:value-type", "string");
     break;
   }
+}
+
+void writeCellStyle(librevenge::RVNGPropertyList &props, const IWORKStylePtr_t &style)
+{
+  using namespace property;
 
   if (style->has<TopBorder>())
     props.insert("fo:border-top", makeBorder(style->get<TopBorder>()));
@@ -275,7 +280,10 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
           cellProps.insert("table:number-rows-spanned", numeric_cast<int>(cell.m_rowSpan));
 
         if (cell.m_style)
+        {
           writeCellFormat(cellProps, cell.m_style, cell.m_type, cell.m_value);
+          writeCellStyle(cellProps, cell.m_style);
+        }
 
         if (cell.m_formula)
           elements.addOpenFormulaCell(cellProps, get(cell.m_formula), m_tableNameMap);
