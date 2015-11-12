@@ -53,6 +53,12 @@ public:
     */
   void push();
 
+  /** Push a style onto the active styles stack.
+    *
+    * The previous top style becomes a dynamic parent @c style.
+    */
+  void push(const IWORKStylePtr_t &style);
+
   /** Pop a style from the active styles stack.
     */
   void pop();

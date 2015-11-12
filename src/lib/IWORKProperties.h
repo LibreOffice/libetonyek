@@ -61,6 +61,7 @@ IWORK_DECLARE_PROPERTY(TextBackground, IWORKColor);
 IWORK_DECLARE_PROPERTY(TopBorder, IWORKStroke);
 IWORK_DECLARE_PROPERTY(Tracking, double);
 IWORK_DECLARE_PROPERTY(Underline, bool);
+IWORK_DECLARE_PROPERTY(VerticalAlignment, IWORKVerticalAlignment);
 IWORK_DECLARE_PROPERTY(WidowControl, bool);
 
 }

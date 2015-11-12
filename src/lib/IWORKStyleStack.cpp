@@ -32,6 +32,11 @@ void IWORKStyleStack::push()
   m_stack.push_front(IWORKStylePtr_t());
 }
 
+void IWORKStyleStack::push(const IWORKStylePtr_t &style)
+{
+  m_stack.push_front(style);
+}
+
 void IWORKStyleStack::pop()
 {
   m_stack.pop_front();

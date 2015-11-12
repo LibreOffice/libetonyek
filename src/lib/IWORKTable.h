@@ -20,6 +20,8 @@
 namespace libetonyek
 {
 
+class IWORKStyleStack;
+
 class IWORKTable
 {
   struct Cell
@@ -50,6 +52,8 @@ public:
 
   void draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements);
 
+  void getMergedCellStyle(unsigned column, unsigned row, IWORKStyleStack &style);
+
 private:
   Table_t m_table;
   IWORKColumnSizes_t m_columnSizes;
@@ -57,6 +61,21 @@ private:
   IWORKGridLineList_t m_verticalLines;
   IWORKGridLineList_t m_horizontalLines;
   IWORKTableNameMapPtr_t m_tableNameMap;
+
+  unsigned m_rows;
+  unsigned m_columns;
+  unsigned m_headerRows;
+  unsigned m_footerRows;
+  unsigned m_headerColumns;
+  bool m_bandedRows;
+  bool m_headerRowsRepeated;
+  bool m_headerColumnsRepeated;
+
+  IWORKStylePtr_t m_defaultBodyCellStyle;
+  IWORKStylePtr_t m_defaultBandedBodyCellStyle;
+  IWORKStylePtr_t m_defaultRowHeaderCellStyle;
+  IWORKStylePtr_t m_defaultRowFooterCellStyle;
+  IWORKStylePtr_t m_defaultColumnHeaderCellStyle;
 };
 
 }
