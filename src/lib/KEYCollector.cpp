@@ -20,6 +20,7 @@
 #include "IWORKOutputElements.h"
 #include "IWORKPath.h"
 #include "IWORKProperties.h"
+#include "IWORKTable.h"
 #include "IWORKText.h"
 
 namespace libetonyek
@@ -263,6 +264,7 @@ void KEYCollector::endLayer()
 
 void KEYCollector::drawTable()
 {
+  assert(bool(m_currentTable));
   assert(!m_levelStack.empty());
 
   librevenge::RVNGPropertyList tableProps;
@@ -286,7 +288,7 @@ void KEYCollector::drawTable()
     tableProps.insert("svg:height", pt2in(vec[1]));
   }
 
-  m_currentTable.draw(tableProps, m_outputManager.getCurrent());
+  m_currentTable->draw(tableProps, m_outputManager.getCurrent());
 }
 
 void KEYCollector::drawMedia(

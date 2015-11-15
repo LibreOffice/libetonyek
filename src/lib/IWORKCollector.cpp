@@ -22,6 +22,7 @@
 #include "IWORKPath.h"
 #include "IWORKProperties.h"
 #include "IWORKShape.h"
+#include "IWORKTable.h"
 #include "IWORKText.h"
 #include "libetonyek_utils.h"
 
@@ -278,8 +279,8 @@ IWORKCollector::IWORKCollector(IWORKDocumentInterface *const document)
   , m_levelStack()
   , m_stylesheetStack()
   , m_newStyles()
-  , m_currentText()
   , m_currentTable()
+  , m_currentText()
   , m_headers()
   , m_footers()
   , m_currentPath()
@@ -435,63 +436,6 @@ void IWORKCollector::collectStylesheet(const IWORKStylesheetPtr_t &stylesheet)
   m_newStyles.clear();
 }
 
-void IWORKCollector::collectTableSizes(const IWORKRowSizes_t &rowSizes, const IWORKColumnSizes_t &columnSizes)
-{
-  m_currentTable.setSizes(columnSizes, rowSizes);
-}
-
-void IWORKCollector::collectTableBorders(const IWORKGridLineList_t &verticalLines, const IWORKGridLineList_t &horizontalLines)
-{
-  m_currentTable.setBorders(verticalLines, horizontalLines);
-}
-
-void IWORKCollector::collectTableCell(const unsigned row, const unsigned column, const boost::optional<std::string> &content, const unsigned rowSpan, const unsigned columnSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, const IWORKCellType type)
-{
-  IWORKOutputElements elements;
-
-  if (bool(content) && type == IWORK_CELL_TYPE_TEXT)
-  {
-    librevenge::RVNGPropertyList props;
-    elements.addOpenParagraph(props);
-    elements.addOpenSpan(props);
-    elements.addInsertText(librevenge::RVNGString(get(content).c_str()));
-    elements.addCloseSpan();
-    elements.addCloseParagraph();
-  }
-  else if (bool(m_currentText))
-  {
-    m_currentText->draw(elements);
-  }
-  m_currentText.reset();
-
-  m_currentTable.insertCell(column, row, content, elements, columnSpan, rowSpan, formula, style, type);
-}
-
-void IWORKCollector::collectCoveredTableCell(const unsigned row, const unsigned column)
-{
-  m_currentTable.insertCoveredCell(column, row);
-}
-
-void IWORKCollector::collectTableRow()
-{
-  // nothing needed
-}
-
-void IWORKCollector::collectTable()
-{
-  drawTable();
-}
-
-void IWORKCollector::setTableNameMap(const IWORKTableNameMapPtr_t &tableNameMap)
-{
-  m_currentTable.setTableNameMap(tableNameMap);
-}
-
-void IWORKCollector::getDefaultCellStyle(unsigned row, unsigned column, IWORKStyleStack &styleStack)
-{
-  m_currentTable.getDefaultCellStyle(column, row, styleStack);
-}
-
 void IWORKCollector::collectMetadata(const IWORKMetadata &metadata)
 {
   m_metadata = metadata;
@@ -505,6 +449,14 @@ void IWORKCollector::collectHeader(const std::string &name)
 void IWORKCollector::collectFooter(const std::string &name)
 {
   collectHeaderFooter(name, m_footers);
+}
+
+void IWORKCollector::collectTable(const boost::shared_ptr<IWORKTable> &table)
+{
+  assert(!m_currentTable);
+  m_currentTable = table;
+  drawTable();
+  m_currentTable.reset();
 }
 
 void IWORKCollector::collectText(const boost::shared_ptr<IWORKText> &text)
@@ -541,14 +493,14 @@ void IWORKCollector::endGroup()
   --m_groupLevel;
 }
 
+boost::shared_ptr<IWORKTable> IWORKCollector::createTable() const
+{
+  return make_shared<IWORKTable>();
+}
+
 boost::shared_ptr<IWORKText> IWORKCollector::createText(bool discardEmptyContent, const IWORKStylePtr_t &defaultParaStyle, const IWORKStylePtr_t &defaultLayoutStyle) const
 {
   return make_shared<IWORKText>(discardEmptyContent, defaultParaStyle, defaultLayoutStyle);
-}
-
-void IWORKCollector::setTableStyle(const IWORKStylePtr_t &style)
-{
-  m_currentTable.setStyle(style);
 }
 
 void IWORKCollector::startLevel()

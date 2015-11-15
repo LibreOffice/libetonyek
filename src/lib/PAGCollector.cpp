@@ -15,6 +15,7 @@
 
 #include "IWORKDocumentInterface.h"
 #include "IWORKOutputElements.h"
+#include "IWORKTable.h"
 #include "IWORKText.h"
 #include "PAGProperties.h"
 
@@ -198,6 +199,7 @@ void PAGCollector::closePageGroup()
 
 void PAGCollector::drawTable()
 {
+  assert(bool(m_currentTable));
   assert(!m_levelStack.empty());
 
   librevenge::RVNGPropertyList props;
@@ -212,7 +214,7 @@ void PAGCollector::drawTable()
     props.insert("style:width", pt2in(dim[0]));
   }
 
-  m_currentTable.draw(props, m_outputManager.getCurrent());
+  m_currentTable->draw(props, m_outputManager.getCurrent());
 }
 
 void PAGCollector::drawMedia(

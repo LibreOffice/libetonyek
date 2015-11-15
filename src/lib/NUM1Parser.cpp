@@ -332,10 +332,7 @@ DocumentElement::DocumentElement(NUM1ParserState &state)
 void DocumentElement::startOfElement()
 {
   if (isCollector())
-  {
     getCollector().startDocument();
-    getCollector().setTableNameMap(getState().m_tableNameMap);
-  }
 }
 
 void DocumentElement::attribute(const int name, const char *const value)

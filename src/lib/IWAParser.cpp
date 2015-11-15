@@ -24,6 +24,7 @@
 #include "IWORKNumberConverter.h"
 #include "IWORKPath.h"
 #include "IWORKProperties.h"
+#include "IWORKTable.h"
 #include "IWORKText.h"
 #include "IWORKTypes.h"
 
@@ -33,6 +34,7 @@ namespace libetonyek
 using boost::make_shared;
 using boost::none;
 using boost::optional;
+using boost::shared_ptr;
 
 using std::deque;
 using std::make_pair;
@@ -196,8 +198,9 @@ IWAParser::TableHeader::TableHeader(const unsigned count)
 {
 }
 
-IWAParser::TableInfo::TableInfo(const unsigned columns, const unsigned rows)
-  : m_columns(columns)
+IWAParser::TableInfo::TableInfo(const shared_ptr<IWORKTable> &table, const unsigned columns, const unsigned rows)
+  : m_table(table)
+  , m_columns(columns)
   , m_rows(rows)
   , m_columnHeader(columns)
   , m_rowHeader(rows)
@@ -1378,7 +1381,8 @@ void IWAParser::parseTabularModel(const unsigned id)
   if (!rows || !columns)
     return;
 
-  m_currentTable.reset(new TableInfo(get(columns), get(rows)));
+  m_currentTable.reset(new TableInfo(m_collector.createTable(), get(columns), get(rows)));
+  m_currentTable->m_table->setTableNameMap(m_tableNameMap);
 
   if (get(msg).message(4))
   {
@@ -1407,7 +1411,7 @@ void IWAParser::parseTabularModel(const unsigned id)
     if (commentListRef)
       parseDataList(get(commentListRef), m_currentTable->m_commentList);
 
-    m_collector.collectTableSizes(makeSizes(m_currentTable->m_rowHeader.m_sizes), makeSizes(m_currentTable->m_columnHeader.m_sizes));
+    m_currentTable->m_table->setSizes(makeSizes(m_currentTable->m_columnHeader.m_sizes), makeSizes(m_currentTable->m_rowHeader.m_sizes));
 
     if (grid.message(3) && grid.message(3).message(1))
     {
@@ -1416,7 +1420,7 @@ void IWAParser::parseTabularModel(const unsigned id)
         parseTile(get(tileRef));
     }
 
-    m_collector.collectTable();
+    m_collector.collectTable(m_currentTable->m_table);
   }
 
   m_currentTable.reset();
@@ -1488,13 +1492,8 @@ void IWAParser::parseTile(const unsigned id)
   }
 
   // process rows
-  Rows_t::const_iterator lastIt = rows.begin();
-  for (Rows_t::const_iterator it = rows.begin(); it != rows.end(); lastIt = it++)
+  for (Rows_t::const_iterator it = rows.begin(); it != rows.end(); ++it)
   {
-    // handle empty rows which might exist between this row and the previous non-empty one
-    for (size_t i = it->first - lastIt->first; i != 0; --i)
-      m_collector.collectTableRow();
-
     const RVNGInputStreamPtr_t &input = get(it->second->bytes(3));
     unsigned length = unsigned(getLength(input));
     if (length >= 0xffff)
@@ -1567,15 +1566,30 @@ void IWAParser::parseTile(const unsigned id)
           }
         }
         const unsigned column = offIt - offsets.begin();
-        m_collector.collectTableCell(it->first, column, text, 1, 1, none, cellStyle, cellType);
+        // TODO: handle text
+        IWORKOutputElements elements;
+
+        if (bool(text))
+        {
+          librevenge::RVNGPropertyList props;
+          elements.addOpenParagraph(props);
+          elements.addOpenSpan(props);
+          elements.addInsertText(librevenge::RVNGString(get(text).c_str()));
+          elements.addCloseSpan();
+          elements.addCloseParagraph();
+        }
+        else if (bool(m_currentText))
+        {
+          m_currentText->draw(elements);
+        }
+        m_currentText.reset();
+        m_currentTable->m_table->insertCell(column, it->first, text, elements, 1, 1, none, cellStyle, cellType);
       }
       catch (...)
       {
         // ignore failure to read the last record
       }
     }
-
-    m_collector.collectTableRow();
   }
 }
 

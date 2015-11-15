@@ -31,6 +31,7 @@ namespace libetonyek
 
 class IWORKCollector;
 class IWORKPropertyMap;
+class IWORKTable;
 class IWORKText;
 
 class IWAParser
@@ -127,7 +128,9 @@ private:
 
   struct TableInfo
   {
-    TableInfo(unsigned columns, unsigned rows);
+    TableInfo(const boost::shared_ptr<IWORKTable> &table, unsigned columns, unsigned rows);
+
+    boost::shared_ptr<IWORKTable> m_table;
 
     const unsigned m_columns;
     const unsigned m_rows;
@@ -186,6 +189,7 @@ private:
   mutable StyleMap_t m_graphicStyles;
   mutable StyleMap_t m_cellStyles;
 
+  IWORKTableNameMapPtr_t m_tableNameMap;
   boost::shared_ptr<TableInfo> m_currentTable;
 };
 

@@ -10,6 +10,7 @@
 #include "NUMCollector.h"
 
 #include "IWORKDocumentInterface.h"
+#include "IWORKTable.h"
 
 namespace libetonyek
 {
@@ -36,8 +37,9 @@ void NUMCollector::endDocument()
 
 void NUMCollector::drawTable()
 {
+  assert(bool(m_currentTable));
   librevenge::RVNGPropertyList props;
-  m_currentTable.draw(props, m_outputManager.getCurrent());
+  m_currentTable->draw(props, m_outputManager.getCurrent());
 }
 
 void NUMCollector::drawMedia(

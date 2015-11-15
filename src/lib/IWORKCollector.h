@@ -24,7 +24,6 @@
 #include "IWORKStyle.h"
 #include "IWORKStyleStack.h"
 #include "IWORKStylesheet.h"
-#include "IWORKTable.h"
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 #include "IWORKOutputManager.h"
@@ -34,6 +33,7 @@ namespace libetonyek
 
 class IWORKDocumentInterface;
 class IWORKPropertyMap;
+class IWORKTable;
 class IWORKText;
 struct IWORKSize;
 
@@ -78,21 +78,12 @@ public:
 
   void collectStylesheet(const IWORKStylesheetPtr_t &stylesheet);
 
-  void collectTableSizes(const IWORKRowSizes_t &rowSizes, const IWORKColumnSizes_t &columnSizes);
-  void collectTableBorders(const IWORKGridLineList_t &verticalLines, const IWORKGridLineList_t &horizontalLines);
-  void collectTableCell(unsigned row, unsigned column, const boost::optional<std::string> &content, unsigned rowSpan, unsigned columnSpan,  const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, IWORKCellType type);
-  void collectCoveredTableCell(unsigned row, unsigned column);
-  void collectTableRow();
-  void collectTable();
-  void setTableNameMap(const IWORKTableNameMapPtr_t &tableNameMap);
-  void setTableStyle(const IWORKStylePtr_t &style);
-  void getDefaultCellStyle(unsigned row, unsigned column, IWORKStyleStack &styleStack);
-
   void collectMetadata(const IWORKMetadata &metadata);
 
   void collectHeader(const std::string &name);
   void collectFooter(const std::string &name);
 
+  void collectTable(const boost::shared_ptr<IWORKTable> &table);
   void collectText(const boost::shared_ptr<IWORKText> &text);
 
   void startDocument();
@@ -101,6 +92,7 @@ public:
   void startGroup();
   void endGroup();
 
+  boost::shared_ptr<IWORKTable> createTable() const;
   boost::shared_ptr<IWORKText> createText(bool discardEmptyContent = false, const IWORKStylePtr_t &defaultParaStyle = IWORKStylePtr_t(), const IWORKStylePtr_t &defaultLayoutStyle = IWORKStylePtr_t()) const;
 
   void startLevel();
@@ -141,8 +133,8 @@ protected:
 
   std::deque<IWORKStylePtr_t> m_newStyles;
 
+  boost::shared_ptr<IWORKTable> m_currentTable;
   boost::shared_ptr<IWORKText> m_currentText;
-  IWORKTable m_currentTable;
 
   IWORKHeaderFooterMap_t m_headers;
   IWORKHeaderFooterMap_t m_footers;

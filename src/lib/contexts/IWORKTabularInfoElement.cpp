@@ -21,6 +21,8 @@
 #include "IWORKGeometryElement.h"
 #include "IWORKProperties.h"
 #include "IWORKRefContext.h"
+#include "IWORKTable.h"
+#include "IWORKText.h"
 #include "IWORKTextBodyElement.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
@@ -111,19 +113,40 @@ void CellContextBase::emitCell(const bool covered)
   assert(tableData->m_rowSizes.size() > tableData->m_row);
 
   // send the cell to collector
-  if (isCollector())
+  if (bool(getState().m_currentTable))
   {
     if (covered)
-      getCollector().collectCoveredTableCell(tableData->m_row, tableData->m_column);
+    {
+      getState().m_currentTable->insertCoveredCell(tableData->m_column, tableData->m_row);
+    }
     else
+    {
       // TODO: Handle simple text content already in parser, instead of passing it
       // into the collector.
-      getCollector().collectTableCell(
-        tableData->m_row, tableData->m_column,
-        tableData->m_content,
-        get_optional_value_or(tableData->m_rowSpan, 1), get_optional_value_or(tableData->m_columnSpan, 1),
+      IWORKOutputElements elements;
+
+      if (bool(tableData->m_content) && tableData->m_type == IWORK_CELL_TYPE_TEXT)
+      {
+        librevenge::RVNGPropertyList props;
+        elements.addOpenParagraph(props);
+        elements.addOpenSpan(props);
+        elements.addInsertText(librevenge::RVNGString(get(tableData->m_content).c_str()));
+        elements.addCloseSpan();
+        elements.addCloseParagraph();
+      }
+      else if (bool(getState().m_currentText))
+      {
+        getState().m_currentText->draw(elements);
+      }
+      getState().m_currentText.reset();
+
+      getState().m_currentTable->insertCell(
+        tableData->m_column, tableData->m_row,
+        tableData->m_content, elements,
+        get_optional_value_or(tableData->m_columnSpan, 1), get_optional_value_or(tableData->m_rowSpan, 1),
         tableData->m_formula, tableData->m_style, tableData->m_type
       );
+    }
   }
 
   // reset cell attributes
@@ -812,7 +835,6 @@ public:
 private:
   virtual void startOfElement();
   virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
 };
 
 TElement::TElement(IWORKXMLParserState &state)
@@ -827,7 +849,7 @@ void TElement::startOfElement()
     // TODO: This will have to be moved to the parent class, so all
     // cells get the correct style, not only text cells.
     IWORKStyleStack styleStack;
-    getCollector().getDefaultCellStyle(getState().m_tableData->m_row, getState().m_tableData->m_column, styleStack);
+    getState().m_currentTable->getDefaultCellStyle(getState().m_tableData->m_row, getState().m_tableData->m_column, styleStack);
     styleStack.push(getState().m_tableData->m_style);
     IWORKStylePtr_t defaultParaStyle;
     if (styleStack.has<property::SFTCellStylePropertyParagraphStyle>())
@@ -849,16 +871,6 @@ IWORKXMLContextPtr_t TElement::element(const int name)
   }
 
   return IWORKXMLContextPtr_t();
-}
-
-void TElement::endOfElement()
-{
-  if (isCollector())
-  {
-    getCollector().collectText(getState().m_currentText);
-    getState().m_currentText.reset();
-  }
-  emitCell();
 }
 
 }
@@ -886,10 +898,10 @@ DatasourceElement::DatasourceElement(IWORKXMLParserState &state)
 
 void DatasourceElement::startOfElement()
 {
-  if (isCollector())
+  if (bool(getState().m_currentTable))
   {
-    getCollector().collectTableSizes(getState().m_tableData->m_rowSizes, getState().m_tableData->m_columnSizes);
-    getCollector().collectTableBorders(getState().m_tableData->m_verticalLines, getState().m_tableData->m_horizontalLines);
+    getState().m_currentTable->setSizes(getState().m_tableData->m_columnSizes, getState().m_tableData->m_rowSizes);
+    getState().m_currentTable->setBorders(getState().m_tableData->m_verticalLines, getState().m_tableData->m_horizontalLines);
   }
 }
 
@@ -1245,6 +1257,9 @@ IWORKTabularInfoElement::IWORKTabularInfoElement(IWORKXMLParserState &state)
 void IWORKTabularInfoElement::startOfElement()
 {
   getState().m_tableData.reset(new IWORKTableData());
+  assert(!getState().m_currentTable);
+  getState().m_currentTable = getCollector().createTable();
+  getState().m_currentTable->setTableNameMap(getState().m_tableNameMap);
   if (isCollector())
     getCollector().startLevel();
 }
@@ -1267,7 +1282,8 @@ void IWORKTabularInfoElement::endOfElement()
 {
   if (isCollector())
   {
-    getCollector().collectTable();
+    getCollector().collectTable(getState().m_currentTable);
+    getState().m_currentTable.reset();
 
     getCollector().endLevel();
   }
