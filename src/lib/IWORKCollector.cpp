@@ -541,7 +541,7 @@ void IWORKCollector::endGroup()
   --m_groupLevel;
 }
 
-boost::shared_ptr<IWORKText> IWORKCollector::createText(bool discardEmptyContent, const IWORKStylePtr_t &defaultParaStyle, const IWORKStylePtr_t &defaultLayoutStyle)
+boost::shared_ptr<IWORKText> IWORKCollector::createText(bool discardEmptyContent, const IWORKStylePtr_t &defaultParaStyle, const IWORKStylePtr_t &defaultLayoutStyle) const
 {
   return make_shared<IWORKText>(discardEmptyContent, defaultParaStyle, defaultLayoutStyle);
 }
