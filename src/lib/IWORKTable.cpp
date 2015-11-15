@@ -9,6 +9,7 @@
 
 #include "IWORKTable.h"
 
+#include <cassert>
 #include <ctime>
 
 #include <boost/numeric/conversion/cast.hpp>
@@ -191,13 +192,13 @@ IWORKTable::Cell::Cell()
 {
 }
 
-IWORKTable::IWORKTable()
-  : m_table()
+IWORKTable::IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap)
+  : m_tableNameMap(tableNameMap)
+  , m_table()
   , m_columnSizes()
   , m_rowSizes()
   , m_verticalLines()
   , m_horizontalLines()
-  , m_tableNameMap()
   , m_rows(0)
   , m_columns(0)
   , m_headerRows(0)
@@ -206,18 +207,39 @@ IWORKTable::IWORKTable()
   , m_bandedRows(false)
   , m_headerRowsRepeated(false)
   , m_headerColumnsRepeated(false)
-  , m_defaultBodyCellStyle()
-  , m_defaultBandedBodyCellStyle()
-  , m_defaultRowHeaderCellStyle()
-  , m_defaultRowFooterCellStyle()
-  , m_defaultColumnHeaderCellStyle()
 {
+}
+
+void IWORKTable::setSize(const unsigned columns, const unsigned rows)
+{
+  m_columns = columns;
+  m_rows = rows;
+}
+
+void IWORKTable::setHeaders(const unsigned headerColumns, const unsigned headerRows, const unsigned footerRows)
+{
+  m_headerColumns = headerColumns;
+  m_headerRows = headerRows;
+  m_footerRows = footerRows;
+}
+
+void IWORKTable::setBandedRows(const bool banded)
+{
+  m_bandedRows = banded;
+}
+
+void IWORKTable::setRepeated(const bool columns, const bool rows)
+{
+  m_headerColumnsRepeated = columns;
+  m_headerRowsRepeated = rows;
 }
 
 void IWORKTable::setStyle(const IWORKStylePtr_t &style)
 {
   m_style = style;
 
+  // TODO: move to caller
+#if 0
   using namespace property;
   if (style->has<SFTDefaultBodyCellStyleProperty>())
     m_defaultBodyCellStyle = style->get<SFTDefaultBodyCellStyleProperty>();
@@ -227,6 +249,7 @@ void IWORKTable::setStyle(const IWORKStylePtr_t &style)
     m_defaultColumnHeaderCellStyle = style->get<SFTDefaultHeaderColumnCellStyleProperty>();
   if (style->has<SFTDefaultFooterRowCellStyleProperty>())
     m_defaultRowFooterCellStyle = style->get<SFTDefaultFooterRowCellStyleProperty>();
+#endif
 }
 
 void IWORKTable::setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowSizes_t &rowSizes)
@@ -242,11 +265,6 @@ void IWORKTable::setBorders(const IWORKGridLineList_t &verticalLines, const IWOR
 {
   m_verticalLines = verticalLines;
   m_horizontalLines = horizontalLines;
-}
-
-void IWORKTable::setTableNameMap(const IWORKTableNameMapPtr_t &tableNameMap)
-{
-  m_tableNameMap = tableNameMap;
 }
 
 void IWORKTable::insertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const IWORKOutputElements &content, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, const IWORKCellType type)
@@ -331,7 +349,7 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
           cellProps.insert("table:number-rows-spanned", numeric_cast<int>(cell.m_rowSpan));
 
         IWORKStyleStack style;
-        getDefaultCellStyle(c, r, style);
+        style.push(getDefaultCellStyle(c, r));
         style.push(cell.m_style);
         writeCellFormat(cellProps, style, cell.m_type, cell.m_style ? cell.m_style->getIdent() : none, cell.m_value);
         writeCellStyle(cellProps, style);
@@ -352,18 +370,51 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
   elements.addCloseTable();
 }
 
-void IWORKTable::getDefaultCellStyle(const unsigned column, const unsigned row, IWORKStyleStack &style)
+void IWORKTable::setDefaultCellStyle(const CellType type, const IWORKStylePtr_t &style)
 {
-  if (m_bandedRows && (row % 2 == 1))
-    style.push(m_defaultBandedBodyCellStyle);
+  assert(type < ETONYEK_NUM_ELEMENTS(m_defaultCellStyles));
+  m_defaultCellStyles[type] = style;
+}
+
+void IWORKTable::setDefaultLayoutStyle(const CellType type, const IWORKStylePtr_t &style)
+{
+  assert(type < ETONYEK_NUM_ELEMENTS(m_defaultLayoutStyles));
+  m_defaultLayoutStyles[type] = style;
+}
+
+void IWORKTable::setDefaultParagraphStyle(const CellType type, const IWORKStylePtr_t &style)
+{
+  assert(type < ETONYEK_NUM_ELEMENTS(m_defaultParaStyles));
+  m_defaultParaStyles[type] = style;
+}
+
+IWORKStylePtr_t IWORKTable::getDefaultCellStyle(unsigned column, unsigned row) const
+{
+  return getDefaultStyle(column, row, m_defaultCellStyles);
+}
+
+IWORKStylePtr_t IWORKTable::getDefaultLayoutStyle(unsigned column, unsigned row) const
+{
+  return getDefaultStyle(column, row, m_defaultLayoutStyles);
+}
+
+IWORKStylePtr_t IWORKTable::getDefaultParagraphStyle(unsigned column, unsigned row) const
+{
+  return getDefaultStyle(column, row, m_defaultParaStyles);
+}
+
+IWORKStylePtr_t IWORKTable::getDefaultStyle(const unsigned column, const unsigned row, const IWORKStylePtr_t *const group) const
+{
+  if ((row < m_headerRows) && bool(group[CELL_TYPE_ROW_HEADER]))
+    return group[CELL_TYPE_ROW_HEADER];
+  else if (((m_rows - row) < m_footerRows) && bool(group[CELL_TYPE_ROW_FOOTER]))
+    return group[CELL_TYPE_ROW_FOOTER];
+  else if ((column < m_headerColumns) && bool(group[CELL_TYPE_COLUMN_HEADER]))
+    return group[CELL_TYPE_COLUMN_HEADER];
+  else if (m_bandedRows && (row % 2 == 1) && bool(group[CELL_TYPE_ALTERNATE_BODY]))
+    return group[CELL_TYPE_ALTERNATE_BODY];
   else
-    style.push(m_defaultBodyCellStyle);
-  if (row < m_headerRows)
-    style.push(m_defaultRowHeaderCellStyle);
-  else if ((m_rows - row) < m_footerRows)
-    style.push(m_defaultRowFooterCellStyle);
-  if (column < m_headerColumns)
-    style.push(m_defaultColumnHeaderCellStyle);
+    return group[CELL_TYPE_BODY];
 }
 
 }

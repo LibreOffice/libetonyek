@@ -31,6 +31,7 @@ namespace libetonyek
 
 using boost::make_shared;
 using boost::optional;
+using boost::shared_ptr;
 
 using librevenge::RVNGPropertyList;
 
@@ -493,9 +494,9 @@ void IWORKCollector::endGroup()
   --m_groupLevel;
 }
 
-boost::shared_ptr<IWORKTable> IWORKCollector::createTable() const
+boost::shared_ptr<IWORKTable> IWORKCollector::createTable(const IWORKTableNameMapPtr_t &tableNameMap) const
 {
-  return make_shared<IWORKTable>();
+  return shared_ptr<IWORKTable>(new IWORKTable(tableNameMap));
 }
 
 boost::shared_ptr<IWORKText> IWORKCollector::createText(bool discardEmptyContent, const IWORKStylePtr_t &defaultParaStyle, const IWORKStylePtr_t &defaultLayoutStyle) const

@@ -1381,8 +1381,7 @@ void IWAParser::parseTabularModel(const unsigned id)
   if (!rows || !columns)
     return;
 
-  m_currentTable.reset(new TableInfo(m_collector.createTable(), get(columns), get(rows)));
-  m_currentTable->m_table->setTableNameMap(m_tableNameMap);
+  m_currentTable.reset(new TableInfo(m_collector.createTable(m_tableNameMap), get(columns), get(rows)));
 
   if (get(msg).message(4))
   {

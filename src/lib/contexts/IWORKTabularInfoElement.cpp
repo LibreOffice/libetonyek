@@ -849,7 +849,7 @@ void TElement::startOfElement()
     // TODO: This will have to be moved to the parent class, so all
     // cells get the correct style, not only text cells.
     IWORKStyleStack styleStack;
-    getState().m_currentTable->getDefaultCellStyle(getState().m_tableData->m_row, getState().m_tableData->m_column, styleStack);
+    styleStack.push(getState().m_currentTable->getDefaultCellStyle(getState().m_tableData->m_row, getState().m_tableData->m_column));
     styleStack.push(getState().m_tableData->m_style);
     IWORKStylePtr_t defaultParaStyle;
     if (styleStack.has<property::SFTCellStylePropertyParagraphStyle>())
@@ -1258,8 +1258,7 @@ void IWORKTabularInfoElement::startOfElement()
 {
   getState().m_tableData.reset(new IWORKTableData());
   assert(!getState().m_currentTable);
-  getState().m_currentTable = getCollector().createTable();
-  getState().m_currentTable->setTableNameMap(getState().m_tableNameMap);
+  getState().m_currentTable = getCollector().createTable(getState().m_tableNameMap);
   if (isCollector())
     getCollector().startLevel();
 }
