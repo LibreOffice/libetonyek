@@ -93,7 +93,7 @@ public:
   void endGroup();
 
   boost::shared_ptr<IWORKTable> createTable(const IWORKTableNameMapPtr_t &tableNameMap) const;
-  boost::shared_ptr<IWORKText> createText(bool discardEmptyContent = false, const IWORKStylePtr_t &defaultParaStyle = IWORKStylePtr_t(), const IWORKStylePtr_t &defaultLayoutStyle = IWORKStylePtr_t()) const;
+  boost::shared_ptr<IWORKText> createText(bool discardEmptyContent = false) const;
 
   void startLevel();
   void endLevel();

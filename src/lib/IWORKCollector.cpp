@@ -499,9 +499,9 @@ boost::shared_ptr<IWORKTable> IWORKCollector::createTable(const IWORKTableNameMa
   return shared_ptr<IWORKTable>(new IWORKTable(tableNameMap));
 }
 
-boost::shared_ptr<IWORKText> IWORKCollector::createText(bool discardEmptyContent, const IWORKStylePtr_t &defaultParaStyle, const IWORKStylePtr_t &defaultLayoutStyle) const
+boost::shared_ptr<IWORKText> IWORKCollector::createText(bool discardEmptyContent) const
 {
-  return make_shared<IWORKText>(discardEmptyContent, defaultParaStyle, defaultLayoutStyle);
+  return make_shared<IWORKText>(discardEmptyContent);
 }
 
 void IWORKCollector::startLevel()

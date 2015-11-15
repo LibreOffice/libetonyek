@@ -304,9 +304,9 @@ void IWORKText::draw(IWORKOutputElements &elements)
   elements.append(m_elements);
 }
 
-IWORKText::IWORKText(const bool discardEmptyContent, const IWORKStylePtr_t &defaultParaStyle, const IWORKStylePtr_t &defaultLayoutStyle)
-  : m_styleStack()
-  , m_defaultLayoutStyle(defaultLayoutStyle)
+IWORKText::IWORKText(const bool discardEmptyContent)
+  : m_layoutStyleStack()
+  , m_paraStyleStack()
   , m_elements()
   , m_sectionOpened(false)
   , m_currentParaStyle()
@@ -320,7 +320,16 @@ IWORKText::IWORKText(const bool discardEmptyContent, const IWORKStylePtr_t &defa
   , m_pendingSpanClose(false)
   , m_inSpan(false)
 {
-  m_styleStack.push(defaultParaStyle);
+}
+
+void IWORKText::pushLayoutStyle(const IWORKStylePtr_t &style)
+{
+  m_layoutStyleStack.push(style);
+}
+
+void IWORKText::pushParagraphStyle(const IWORKStylePtr_t &style)
+{
+  m_paraStyleStack.push(style);
 }
 
 void IWORKText::openLayout(const IWORKStylePtr_t &style)
@@ -441,11 +450,11 @@ void IWORKText::doOpenPara()
 {
   assert(!m_paraOpened);
 
-  const librevenge::RVNGPropertyList paraProps(makeParaPropList(m_currentParaStyle, m_styleStack));
+  const librevenge::RVNGPropertyList paraProps(makeParaPropList(m_currentParaStyle, m_paraStyleStack));
   m_elements.addOpenParagraph(paraProps);
   m_paraOpened = true;
-  m_styleStack.push();
-  m_styleStack.set(m_currentParaStyle);
+  m_paraStyleStack.push();
+  m_paraStyleStack.set(m_currentParaStyle);
 }
 
 void IWORKText::doClosePara()
@@ -457,7 +466,7 @@ void IWORKText::doClosePara()
 
   m_elements.addCloseParagraph();
   m_paraOpened = false;
-  m_styleStack.pop();
+  m_paraStyleStack.pop();
 }
 
 void IWORKText::doOpenSpan()
@@ -468,7 +477,7 @@ void IWORKText::doOpenSpan()
     doOpenPara();
   assert(m_paraOpened);
 
-  const librevenge::RVNGPropertyList props(makeCharPropList(m_currentSpanStyle, m_styleStack));
+  const librevenge::RVNGPropertyList props(makeCharPropList(m_currentSpanStyle, m_paraStyleStack));
   m_elements.addOpenSpan(props);
   m_spanOpened = true;
 }

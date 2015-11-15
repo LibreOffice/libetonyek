@@ -848,17 +848,16 @@ void TElement::startOfElement()
   {
     // TODO: This will have to be moved to the parent class, so all
     // cells get the correct style, not only text cells.
+    assert(!getState().m_currentText);
+    getState().m_currentText = getCollector().createText(false);
     IWORKStyleStack styleStack;
     styleStack.push(getState().m_currentTable->getDefaultCellStyle(getState().m_tableData->m_row, getState().m_tableData->m_column));
     styleStack.push(getState().m_tableData->m_style);
-    IWORKStylePtr_t defaultParaStyle;
-    if (styleStack.has<property::SFTCellStylePropertyParagraphStyle>())
-      defaultParaStyle = styleStack.get<property::SFTCellStylePropertyParagraphStyle>();
-    IWORKStylePtr_t defaultLayoutStyle;
-    if (styleStack.has<property::SFTCellStylePropertyLayoutStyle>())
-      defaultLayoutStyle = styleStack.get<property::SFTCellStylePropertyLayoutStyle>();
-    assert(!getState().m_currentText);
-    getState().m_currentText = getCollector().createText(false, defaultParaStyle, defaultLayoutStyle);
+    using namespace property;
+    if (styleStack.has<SFTCellStylePropertyParagraphStyle>())
+      getState().m_currentText->pushParagraphStyle(styleStack.get<SFTCellStylePropertyParagraphStyle>());
+    if (styleStack.has<SFTCellStylePropertyLayoutStyle>())
+      getState().m_currentText->pushLayoutStyle(styleStack.get<SFTCellStylePropertyLayoutStyle>());
   }
 }
 
