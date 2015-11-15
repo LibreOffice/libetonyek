@@ -39,15 +39,13 @@ namespace libetonyek
 namespace
 {
 
-void fillSectionPropList(const IWORKStylePtr_t &style, RVNGPropertyList &props)
+void fillSectionPropList(const IWORKStyleStack &style, RVNGPropertyList &props)
 {
-  assert(bool(style));
-
   using namespace property;
 
-  if (style->has<Columns>())
+  if (style.has<Columns>())
   {
-    const IWORKColumns &columns = style->get<Columns>();
+    const IWORKColumns &columns = style.get<Columns>();
 
     if (columns.m_columns.size() > 1)
     {
@@ -66,9 +64,9 @@ void fillSectionPropList(const IWORKStylePtr_t &style, RVNGPropertyList &props)
     }
   }
 
-  if (style->has<LayoutMargins>())
+  if (style.has<LayoutMargins>())
   {
-    const IWORKPadding &padding = style->get<LayoutMargins>();
+    const IWORKPadding &padding = style.get<LayoutMargins>();
 
     if (padding.m_left)
       props.insert("fo:margin-left", pt2in(get(padding.m_left)));
@@ -79,7 +77,7 @@ void fillSectionPropList(const IWORKStylePtr_t &style, RVNGPropertyList &props)
   }
 }
 
-void fillCharPropList(librevenge::RVNGPropertyList &props, const IWORKStyleStack &style)
+void fillCharPropList(const IWORKStyleStack &style, librevenge::RVNGPropertyList &props)
 {
   using namespace property;
 
@@ -164,137 +162,113 @@ void fillCharPropList(librevenge::RVNGPropertyList &props, const IWORKStyleStack
   }
 }
 
-librevenge::RVNGPropertyList makeCharPropList(const IWORKStylePtr_t &style, const IWORKStyleStack &context)
-{
-  librevenge::RVNGPropertyList props;
-
-  IWORKStyleStack styleStack(context);
-  styleStack.push();
-  styleStack.set(style);
-
-  fillCharPropList(props, styleStack);
-
-  return props;
-}
-
-librevenge::RVNGPropertyList makeParaPropList(const IWORKStylePtr_t &style, const IWORKStyleStack &context)
+void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props)
 {
   using namespace property;
 
-  librevenge::RVNGPropertyList props;
-
-  if (bool(style))
+  if (styleStack.has<Alignment>())
   {
-    IWORKStyleStack styleStack(context);
-    styleStack.push();
-    styleStack.set(style);
-
-    if (styleStack.has<Alignment>())
+    const IWORKAlignment &alignment(styleStack.get<Alignment>());
+    switch (alignment)
     {
-      const IWORKAlignment &alignment(styleStack.get<Alignment>());
-      switch (alignment)
-      {
-      case IWORK_ALIGNMENT_LEFT :
-        props.insert("fo:text-align", "left");
-        break;
-      case IWORK_ALIGNMENT_RIGHT :
-        props.insert("fo:text-align", "right");
-        break;
-      case IWORK_ALIGNMENT_CENTER :
-        props.insert("fo:text-align", "center");
-        break;
-      case IWORK_ALIGNMENT_JUSTIFY :
-        props.insert("fo:text-align", "justify");
-        break;
-      }
+    case IWORK_ALIGNMENT_LEFT :
+      props.insert("fo:text-align", "left");
+      break;
+    case IWORK_ALIGNMENT_RIGHT :
+      props.insert("fo:text-align", "right");
+      break;
+    case IWORK_ALIGNMENT_CENTER :
+      props.insert("fo:text-align", "center");
+      break;
+    case IWORK_ALIGNMENT_JUSTIFY :
+      props.insert("fo:text-align", "justify");
+      break;
     }
-
-    if (styleStack.has<LineSpacing>())
-    {
-      const IWORKLineSpacing &spacing = styleStack.get<LineSpacing>();
-      if (spacing.m_relative)
-        props.insert("fo:line-height", spacing.m_amount, librevenge::RVNG_PERCENT);
-      else
-        props.insert("fo:line-height", pt2in(spacing.m_amount));
-    }
-
-    if (styleStack.has<ParagraphFill>())
-      props.insert("fo:background-color", makeColor(styleStack.get<ParagraphFill>()));
-
-    if (styleStack.has<LeftIndent>())
-      props.insert("fo:padding-left", pt2in(styleStack.get<LeftIndent>()));
-    if (styleStack.has<RightIndent>())
-      props.insert("fo:padding-right", pt2in(styleStack.get<RightIndent>()));
-    if (styleStack.has<FirstLineIndent>())
-      props.insert("fo:text-indent", pt2in(styleStack.get<FirstLineIndent>()));
-
-    if (styleStack.has<SpaceBefore>())
-      props.insert("fo:padding-top", pt2in(styleStack.get<SpaceBefore>()));
-    if (styleStack.has<SpaceAfter>())
-      props.insert("fo:padding-bottom", pt2in(styleStack.get<SpaceAfter>()));
-
-    if (styleStack.has<KeepLinesTogether>() && styleStack.get<KeepLinesTogether>())
-      props.insert("fo:keep-together", "always");
-    if (styleStack.has<KeepWithNext>() && styleStack.get<KeepWithNext>())
-      props.insert("fo:keep-with-next", "always");
-    // Orphans and widows are covered by a single setting. The number of lines is not adjustable.
-    const bool enableWidows = styleStack.has<WidowControl>() && !styleStack.get<WidowControl>();
-    props.insert("orphans", enableWidows ? "0" : "2");
-    props.insert("widows", enableWidows ? "0" : "2");
-    if (styleStack.has<Hyphenate>())
-      props.insert("fo:hyphenate", styleStack.get<Hyphenate>());
-
-    if (styleStack.has<Tabs>())
-    {
-      librevenge::RVNGPropertyListVector tabs;
-
-      const IWORKTabStops_t &tabStops = styleStack.get<Tabs>();
-      for (IWORKTabStops_t::const_iterator it = tabStops.begin(); tabStops.end() != it; ++it)
-      {
-        librevenge::RVNGPropertyList tab;
-        tab.insert("style:position", pt2in(it->m_pos));
-        tab.insert("style:type", "left");
-        tabs.append(tab);
-      }
-
-      props.insert("librevenge:tab-stops", tabs);
-    }
-
-    if (styleStack.has<ParagraphBorderType>())
-    {
-      librevenge::RVNGString border;
-
-      if (styleStack.has<ParagraphStroke>())
-      {
-        const IWORKStroke &stroke = styleStack.get<ParagraphStroke>();
-        border = makeBorder(stroke);
-      }
-
-      switch (styleStack.get<ParagraphBorderType>())
-      {
-      case IWORK_BORDER_TYPE_TOP :
-        props.insert("fo:border-top", border);
-        break;
-      case IWORK_BORDER_TYPE_BOTTOM :
-        props.insert("fo:border-bottom", border);
-        break;
-      case IWORK_BORDER_TYPE_TOP_AND_BOTTOM :
-        props.insert("fo:border-top", border);
-        props.insert("fo:border-bottom", border);
-        break;
-      case IWORK_BORDER_TYPE_ALL :
-        props.insert("fo:border", border);
-        break;
-      default :
-        break;
-      }
-    }
-
-    if (styleStack.has<PageBreakBefore>())
-      props.insert("fo:break-before", "page");
   }
 
-  return props;
+  if (styleStack.has<LineSpacing>())
+  {
+    const IWORKLineSpacing &spacing = styleStack.get<LineSpacing>();
+    if (spacing.m_relative)
+      props.insert("fo:line-height", spacing.m_amount, librevenge::RVNG_PERCENT);
+    else
+      props.insert("fo:line-height", pt2in(spacing.m_amount));
+  }
+
+  if (styleStack.has<ParagraphFill>())
+    props.insert("fo:background-color", makeColor(styleStack.get<ParagraphFill>()));
+
+  if (styleStack.has<LeftIndent>())
+    props.insert("fo:padding-left", pt2in(styleStack.get<LeftIndent>()));
+  if (styleStack.has<RightIndent>())
+    props.insert("fo:padding-right", pt2in(styleStack.get<RightIndent>()));
+  if (styleStack.has<FirstLineIndent>())
+    props.insert("fo:text-indent", pt2in(styleStack.get<FirstLineIndent>()));
+
+  if (styleStack.has<SpaceBefore>())
+    props.insert("fo:padding-top", pt2in(styleStack.get<SpaceBefore>()));
+  if (styleStack.has<SpaceAfter>())
+    props.insert("fo:padding-bottom", pt2in(styleStack.get<SpaceAfter>()));
+
+  if (styleStack.has<KeepLinesTogether>() && styleStack.get<KeepLinesTogether>())
+    props.insert("fo:keep-together", "always");
+  if (styleStack.has<KeepWithNext>() && styleStack.get<KeepWithNext>())
+    props.insert("fo:keep-with-next", "always");
+  // Orphans and widows are covered by a single setting. The number of lines is not adjustable.
+  const bool enableWidows = styleStack.has<WidowControl>() && !styleStack.get<WidowControl>();
+  props.insert("orphans", enableWidows ? "0" : "2");
+  props.insert("widows", enableWidows ? "0" : "2");
+  if (styleStack.has<Hyphenate>())
+    props.insert("fo:hyphenate", styleStack.get<Hyphenate>());
+
+  if (styleStack.has<Tabs>())
+  {
+    librevenge::RVNGPropertyListVector tabs;
+
+    const IWORKTabStops_t &tabStops = styleStack.get<Tabs>();
+    for (IWORKTabStops_t::const_iterator it = tabStops.begin(); tabStops.end() != it; ++it)
+    {
+      librevenge::RVNGPropertyList tab;
+      tab.insert("style:position", pt2in(it->m_pos));
+      tab.insert("style:type", "left");
+      tabs.append(tab);
+    }
+
+    props.insert("librevenge:tab-stops", tabs);
+  }
+
+  if (styleStack.has<ParagraphBorderType>())
+  {
+    librevenge::RVNGString border;
+
+    if (styleStack.has<ParagraphStroke>())
+    {
+      const IWORKStroke &stroke = styleStack.get<ParagraphStroke>();
+      border = makeBorder(stroke);
+    }
+
+    switch (styleStack.get<ParagraphBorderType>())
+    {
+    case IWORK_BORDER_TYPE_TOP :
+      props.insert("fo:border-top", border);
+      break;
+    case IWORK_BORDER_TYPE_BOTTOM :
+      props.insert("fo:border-bottom", border);
+      break;
+    case IWORK_BORDER_TYPE_TOP_AND_BOTTOM :
+      props.insert("fo:border-top", border);
+      props.insert("fo:border-bottom", border);
+      break;
+    case IWORK_BORDER_TYPE_ALL :
+      props.insert("fo:border", border);
+      break;
+    default :
+      break;
+    }
+  }
+
+  if (styleStack.has<PageBreakBefore>())
+    props.insert("fo:break-before", "page");
 }
 
 }
@@ -336,10 +310,13 @@ void IWORKText::openLayout(const IWORKStylePtr_t &style)
 {
   assert(!m_paraOpened);
 
+  m_layoutStyleStack.push(style);
+
+  // TODO: Should a section be always created? Maybe check if the property-list is non-empty?
   if (bool(style))
   {
     RVNGPropertyList props;
-    fillSectionPropList(style, props);
+    fillSectionPropList(m_layoutStyleStack, props);
     m_elements.addOpenSection(props);
     m_sectionOpened = true;
   }
@@ -351,6 +328,7 @@ void IWORKText::closeLayout()
 
   if (m_sectionOpened)
     m_elements.addCloseSection();
+  m_layoutStyleStack.pop();
 }
 
 void IWORKText::openParagraph(const IWORKStylePtr_t &style)
@@ -450,11 +428,11 @@ void IWORKText::doOpenPara()
 {
   assert(!m_paraOpened);
 
-  const librevenge::RVNGPropertyList paraProps(makeParaPropList(m_currentParaStyle, m_paraStyleStack));
+  m_paraStyleStack.push(m_currentParaStyle);
+  librevenge::RVNGPropertyList paraProps;
+  fillParaPropList(m_paraStyleStack, paraProps);
   m_elements.addOpenParagraph(paraProps);
   m_paraOpened = true;
-  m_paraStyleStack.push();
-  m_paraStyleStack.set(m_currentParaStyle);
 }
 
 void IWORKText::doClosePara()
@@ -477,7 +455,10 @@ void IWORKText::doOpenSpan()
     doOpenPara();
   assert(m_paraOpened);
 
-  const librevenge::RVNGPropertyList props(makeCharPropList(m_currentSpanStyle, m_paraStyleStack));
+  librevenge::RVNGPropertyList props;
+  IWORKStyleStack styleStack(m_paraStyleStack);
+  styleStack.push(m_currentSpanStyle);
+  fillCharPropList(styleStack, props);
   m_elements.addOpenSpan(props);
   m_spanOpened = true;
 }
