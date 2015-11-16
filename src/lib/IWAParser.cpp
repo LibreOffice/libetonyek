@@ -1382,6 +1382,7 @@ void IWAParser::parseTabularModel(const unsigned id)
     return;
 
   m_currentTable.reset(new TableInfo(m_collector.createTable(m_tableNameMap), get(columns), get(rows)));
+  m_currentTable->m_table->setSize(get(columns), get(rows));
 
   optional<unsigned> tileRef;
 
@@ -1417,6 +1418,16 @@ void IWAParser::parseTabularModel(const unsigned id)
     if (grid.message(3) && grid.message(3).message(1))
       tileRef = readRef(get(grid.message(3).message(1)), 2);
   }
+
+  m_currentTable->m_table->setHeaders(
+    get_optional_value_or(get(msg).uint32(10).optional(), 0),
+    get_optional_value_or(get(msg).uint32(9).optional(), 0),
+    get_optional_value_or(get(msg).uint32(11).optional(), 0)
+  );
+  m_currentTable->m_table->setRepeated(
+    get_optional_value_or(get(msg).bool_(13).optional(), false)
+    get_optional_value_or(get(msg).bool_(12).optional(), false),
+  );
 
   // default cell styles
   optional<unsigned> styleRef = readRef(get(msg), 18);
