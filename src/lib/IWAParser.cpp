@@ -202,6 +202,7 @@ IWAParser::TableInfo::TableInfo(const shared_ptr<IWORKTable> &table, const unsig
   : m_table(table)
   , m_columns(columns)
   , m_rows(rows)
+  , m_style()
   , m_columnHeader(columns)
   , m_rowHeader(rows)
   , m_simpleTextList()
@@ -650,6 +651,11 @@ const IWORKStylePtr_t IWAParser::queryGraphicStyle(const unsigned id) const
 const IWORKStylePtr_t IWAParser::queryCellStyle(const unsigned id) const
 {
   return queryStyle(id, m_cellStyles, &IWAParser::parseCellStyle);
+}
+
+const IWORKStylePtr_t IWAParser::queryTableStyle(const unsigned id) const
+{
+  return queryStyle(id, m_tableStyles, &IWAParser::parseTableStyle);
 }
 
 bool IWAParser::parseDrawableShape(const IWAMessage &msg)
@@ -1270,6 +1276,48 @@ void IWAParser::parseCellStyle(const unsigned id, IWORKStylePtr_t &style)
   style.reset(new IWORKStyle(props, name, parent));
 }
 
+void IWAParser::parseTableStyle(const unsigned id, IWORKStylePtr_t &style)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::TableStyle);
+  if (!msg)
+    return;
+
+  optional<string> name;
+  IWORKStylePtr_t parent;
+  IWORKPropertyMap props;
+
+  using namespace property;
+
+  const IWAMessageField &styleInfo = get(msg).message(1);
+  if (styleInfo)
+  {
+    name = styleInfo.string(2).optional();
+    const optional<unsigned> &parentRef = readRef(get(styleInfo), 3);
+    if (parentRef)
+      parent = queryCellStyle(get(parentRef));
+  }
+
+  if (get(msg).message(11))
+  {
+    const IWAMessage &properties = get(get(msg).message(1));
+
+    if (properties.bool_(1))
+      props.put<SFTTableBandedRowsProperty>(get(properties.bool_(1)));
+    if (properties.message(2))
+    {
+      IWORKFill fill;
+      readFill(get(properties.message(2)), fill);
+      props.put<SFTTableBandedCellFillProperty>(fill);
+    }
+    if (properties.bool_(22))
+      props.put<SFTAutoResizeProperty>(get(properties.bool_(22)));
+    if (properties.string(41))
+      props.put<FontName>(get(properties.string(41)));
+  }
+
+  style.reset(new IWORKStyle(props, name, parent));
+}
+
 void IWAParser::parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props)
 {
   using namespace property;
@@ -1384,6 +1432,23 @@ void IWAParser::parseTabularModel(const unsigned id)
   m_currentTable.reset(new TableInfo(m_collector.createTable(m_tableNameMap), get(columns), get(rows)));
   m_currentTable->m_table->setSize(get(columns), get(rows));
 
+  IWORKStylePtr_t tableStyle;
+  const optional<unsigned> tableStyleRef = readRef(get(msg), 3);
+  if (tableStyleRef)
+    tableStyle = queryTableStyle(get(tableStyleRef));
+  if (bool(tableStyle))
+  {
+    m_currentTable->m_style = tableStyle;
+    m_currentTable->m_table->setStyle(tableStyle);
+
+    if (tableStyle->has<property::SFTTableBandedCellFillProperty>())
+    {
+      IWORKPropertyMap props;
+      props.put<property::Fill>(tableStyle->get<property::SFTTableBandedCellFillProperty>());
+      m_currentTable->m_table->setDefaultCellStyle(IWORKTable::CELL_TYPE_ALTERNATE_BODY, make_shared<IWORKStyle>(props, none, none));
+    }
+  }
+
   optional<unsigned> tileRef;
 
   if (get(msg).message(4))
@@ -1425,9 +1490,11 @@ void IWAParser::parseTabularModel(const unsigned id)
     get_optional_value_or(get(msg).uint32(11).optional(), 0)
   );
   m_currentTable->m_table->setRepeated(
-    get_optional_value_or(get(msg).bool_(13).optional(), false)
-    get_optional_value_or(get(msg).bool_(12).optional(), false),
+    get_optional_value_or(get(msg).bool_(13).optional(), false),
+    get_optional_value_or(get(msg).bool_(12).optional(), false)
   );
+  if (bool(tableStyle) && tableStyle->has<property::SFTTableBandedRowsProperty>())
+    m_currentTable->m_table->setBandedRows(tableStyle->get<property::SFTTableBandedRowsProperty>());
 
   // default cell styles
   optional<unsigned> styleRef = readRef(get(msg), 18);
@@ -1641,7 +1708,16 @@ void IWAParser::parseTile(const unsigned id)
       // 2. Create cell content
       m_currentText = m_collector.createText();
 
-      // TODO: 2a. Get default font from table style
+      // 2a. Get default font from table style
+      if (m_currentTable->m_style)
+      {
+        IWORKPropertyMap defaultProps;
+        if (m_currentTable->m_style->has<property::FontName>())
+        {
+          defaultProps.put<property::FontName>(m_currentTable->m_style->get<property::FontName>());
+          m_currentText->pushParagraphStyle(make_shared<IWORKStyle>(defaultProps, none, none));
+        }
+      }
 
       // 2b. Set default para and layout style
       m_currentText->pushLayoutStyle(m_currentTable->m_table->getDefaultLayoutStyle(column, row));
