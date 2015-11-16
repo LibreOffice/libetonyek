@@ -32,13 +32,13 @@ public:
   void pushLayoutStyle(const IWORKStylePtr_t &style);
   void pushParagraphStyle(const IWORKStylePtr_t &style);
 
-  void openLayout(const IWORKStylePtr_t &style);
+  void openLayout(const IWORKStylePtr_t &style = IWORKStylePtr_t());
   void closeLayout();
 
-  void openParagraph(const IWORKStylePtr_t &style);
+  void openParagraph(const IWORKStylePtr_t &style = IWORKStylePtr_t());
   void closeParagraph();
 
-  void openSpan(const IWORKStylePtr_t &style);
+  void openSpan(const IWORKStylePtr_t &style = IWORKStylePtr_t());
   void closeSpan();
 
   void openLink(const std::string &url);
