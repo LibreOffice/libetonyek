@@ -1383,6 +1383,8 @@ void IWAParser::parseTabularModel(const unsigned id)
 
   m_currentTable.reset(new TableInfo(m_collector.createTable(m_tableNameMap), get(columns), get(rows)));
 
+  optional<unsigned> tileRef;
+
   if (get(msg).message(4))
   {
     const IWAMessage &grid = get(get(msg).message(4));
@@ -1413,15 +1415,41 @@ void IWAParser::parseTabularModel(const unsigned id)
     m_currentTable->m_table->setSizes(makeSizes(m_currentTable->m_columnHeader.m_sizes), makeSizes(m_currentTable->m_rowHeader.m_sizes));
 
     if (grid.message(3) && grid.message(3).message(1))
-    {
-      const optional<unsigned> &tileRef = readRef(get(grid.message(3).message(1)), 2);
-      if (tileRef)
-        parseTile(get(tileRef));
-    }
-
-    m_collector.collectTable(m_currentTable->m_table);
+      tileRef = readRef(get(grid.message(3).message(1)), 2);
   }
 
+  // default cell styles
+  optional<unsigned> styleRef = readRef(get(msg), 18);
+  if (styleRef)
+    m_currentTable->m_table->setDefaultCellStyle(IWORKTable::CELL_TYPE_BODY, queryCellStyle(get(styleRef)));
+  styleRef = readRef(get(msg), 19);
+  if (styleRef)
+    m_currentTable->m_table->setDefaultCellStyle(IWORKTable::CELL_TYPE_ROW_HEADER, queryCellStyle(get(styleRef)));
+  styleRef = readRef(get(msg), 20);
+  if (styleRef)
+    m_currentTable->m_table->setDefaultCellStyle(IWORKTable::CELL_TYPE_COLUMN_HEADER, queryCellStyle(get(styleRef)));
+  styleRef = readRef(get(msg), 21);
+  if (styleRef)
+    m_currentTable->m_table->setDefaultCellStyle(IWORKTable::CELL_TYPE_ROW_FOOTER, queryCellStyle(get(styleRef)));
+
+  // default para styles
+  styleRef = readRef(get(msg), 24);
+  if (styleRef)
+    m_currentTable->m_table->setDefaultParagraphStyle(IWORKTable::CELL_TYPE_BODY, queryParagraphStyle(get(styleRef)));
+  styleRef = readRef(get(msg), 25);
+  if (styleRef)
+    m_currentTable->m_table->setDefaultParagraphStyle(IWORKTable::CELL_TYPE_ROW_HEADER, queryParagraphStyle(get(styleRef)));
+  styleRef = readRef(get(msg), 26);
+  if (styleRef)
+    m_currentTable->m_table->setDefaultParagraphStyle(IWORKTable::CELL_TYPE_COLUMN_HEADER, queryParagraphStyle(get(styleRef)));
+  styleRef = readRef(get(msg), 27);
+  if (styleRef)
+    m_currentTable->m_table->setDefaultParagraphStyle(IWORKTable::CELL_TYPE_ROW_FOOTER, queryParagraphStyle(get(styleRef)));
+
+  // handle table
+  if (tileRef)
+    parseTile(get(tileRef));
+  m_collector.collectTable(m_currentTable->m_table);
   m_currentTable.reset();
 }
 
@@ -1509,16 +1537,23 @@ void IWAParser::parseTile(const unsigned id)
       if (!*offIt)
         continue;
 
+      const unsigned column = offIt - offsets.begin();
+      const unsigned row = it->first;
+
       IWORKCellType cellType = IWORK_CELL_TYPE_TEXT;
       IWORKStylePtr_t cellStyle;
       optional<string> text;
+      optional<unsigned> textRef;
 
+      // 1. Read the cell record
+      // NOTE: The structure of the record is still not completely understood,
+      // so we catch possible over-reading exceptions and continue.
       try
       {
         input->seek(get(*offIt) + 4, librevenge::RVNG_SEEK_SET);
         const unsigned flags = readU16(input);
         input->seek(6, librevenge::RVNG_SEEK_CUR);
-        if (flags & 0x2)
+        if (flags & 0x2) // cell style
         {
           const unsigned styleId = readU32(input);
           const DataList_t::const_iterator listIt = m_currentTable->m_cellStyleList.find(styleId);
@@ -1528,11 +1563,11 @@ void IWAParser::parseTile(const unsigned id)
               cellStyle = queryCellStyle(*ref);
           }
         }
-        if (flags & 0x4)
-          readU32(input); // format
-        if (flags & 0x8)
-          readU32(input); // formula
-        if (flags & 0x10)
+        if (flags & 0x4) // format
+          readU32(input);
+        if (flags & 0x8) // formula
+          readU32(input);
+        if (flags & 0x10) // simple text
         {
           const unsigned textId = readU32(input);
           const DataList_t::const_iterator listIt = m_currentTable->m_simpleTextList.find(textId);
@@ -1542,53 +1577,86 @@ void IWAParser::parseTile(const unsigned id)
               text = *s;
           }
         }
-        if (flags & 0x1000)
-          readU32(input); // comment
-        if (flags & 0x20)
+        if (flags & 0x1000) // comment
+          readU32(input);
+        if (flags & 0x20) // number
         {
           // TODO: parse value
           readU64(input);
         }
-        if (flags & 0x40)
+        if (flags & 0x40) // date
         {
           // TODO: parse value
           readU64(input);
         }
-        if (flags & 0x200)
+        if (flags & 0x200) // formatted text
         {
           const unsigned textId = readU32(input);
           const DataList_t::const_iterator listIt = m_currentTable->m_formattedTextList.find(textId);
           if (listIt != m_currentTable->m_formattedTextList.end())
           {
             if (const unsigned *const ref = boost::get<unsigned>(&listIt->second))
-              parseText(*ref);
+              textRef = *ref;
           }
         }
+
+        assert(!m_currentText);
+        m_currentText = m_collector.createText();
+
+        if (bool(text))
+        {
+          m_currentText->openParagraph();
+          m_currentText->openSpan();
+          m_currentText->insertText(get(text));
+          m_currentText->closeSpan();
+          m_currentText->closeParagraph();
+        }
+        else if (textRef)
+        {
+          parseText(get(textRef));
+        }
+
+        IWORKOutputElements elements;
+        m_currentText->draw(elements);
+        m_currentText.reset();
+
+        m_currentTable->m_table->insertCell(column, it->first, text, elements, 1, 1, none, cellStyle, cellType);
       }
       catch (...)
       {
         // ignore failure to read the last record
       }
 
-      const unsigned column = offIt - offsets.begin();
-      // TODO: handle text
-      IWORKOutputElements elements;
+      // 2. Create cell content
+      m_currentText = m_collector.createText();
 
+      // TODO: 2a. Get default font from table style
+
+      // 2b. Set default para and layout style
+      m_currentText->pushLayoutStyle(m_currentTable->m_table->getDefaultLayoutStyle(column, row));
+      m_currentText->pushParagraphStyle(m_currentTable->m_table->getDefaultParagraphStyle(column, row));
+
+      // 2c. Insert text
       if (bool(text))
       {
-        librevenge::RVNGPropertyList props;
-        elements.addOpenParagraph(props);
-        elements.addOpenSpan(props);
-        elements.addInsertText(librevenge::RVNGString(get(text).c_str()));
-        elements.addCloseSpan();
-        elements.addCloseParagraph();
+        m_currentText->openParagraph();
+        m_currentText->openSpan();
+        // TODO: handle embedded spaces and tabs (I assume line breaks are not allowed)
+        m_currentText->insertText(get(text));
+        m_currentText->closeSpan();
+        m_currentText->closeParagraph();
       }
-      else if (bool(m_currentText))
+      else if (textRef)
       {
-        m_currentText->draw(elements);
+        parseText(get(textRef));
       }
+
+      IWORKOutputElements elements;
+      m_currentText->draw(elements);
       m_currentText.reset();
-      m_currentTable->m_table->insertCell(column, it->first, text, elements, 1, 1, none, cellStyle, cellType);
+
+      // 3. Insert the cell
+      m_currentTable->m_table->insertCell(column, row, text, elements, 1, 1, none, cellStyle, cellType);
     }
   }
 }
