@@ -1508,16 +1508,16 @@ void IWAParser::parseTile(const unsigned id)
     {
       if (!*offIt)
         continue;
-      input->seek(get(*offIt) + 4, librevenge::RVNG_SEEK_SET);
+
+      IWORKCellType cellType = IWORK_CELL_TYPE_TEXT;
+      IWORKStylePtr_t cellStyle;
+      optional<string> text;
+
       try
       {
+        input->seek(get(*offIt) + 4, librevenge::RVNG_SEEK_SET);
         const unsigned flags = readU16(input);
         input->seek(6, librevenge::RVNG_SEEK_CUR);
-
-        IWORKCellType cellType = IWORK_CELL_TYPE_TEXT;
-        IWORKStylePtr_t cellStyle;
-        optional<string> text;
-
         if (flags & 0x2)
         {
           const unsigned styleId = readU32(input);
@@ -1564,30 +1564,31 @@ void IWAParser::parseTile(const unsigned id)
               parseText(*ref);
           }
         }
-        const unsigned column = offIt - offsets.begin();
-        // TODO: handle text
-        IWORKOutputElements elements;
-
-        if (bool(text))
-        {
-          librevenge::RVNGPropertyList props;
-          elements.addOpenParagraph(props);
-          elements.addOpenSpan(props);
-          elements.addInsertText(librevenge::RVNGString(get(text).c_str()));
-          elements.addCloseSpan();
-          elements.addCloseParagraph();
-        }
-        else if (bool(m_currentText))
-        {
-          m_currentText->draw(elements);
-        }
-        m_currentText.reset();
-        m_currentTable->m_table->insertCell(column, it->first, text, elements, 1, 1, none, cellStyle, cellType);
       }
       catch (...)
       {
         // ignore failure to read the last record
       }
+
+      const unsigned column = offIt - offsets.begin();
+      // TODO: handle text
+      IWORKOutputElements elements;
+
+      if (bool(text))
+      {
+        librevenge::RVNGPropertyList props;
+        elements.addOpenParagraph(props);
+        elements.addOpenSpan(props);
+        elements.addInsertText(librevenge::RVNGString(get(text).c_str()));
+        elements.addCloseSpan();
+        elements.addCloseParagraph();
+      }
+      else if (bool(m_currentText))
+      {
+        m_currentText->draw(elements);
+      }
+      m_currentText.reset();
+      m_currentTable->m_table->insertCell(column, it->first, text, elements, 1, 1, none, cellStyle, cellType);
     }
   }
 }
