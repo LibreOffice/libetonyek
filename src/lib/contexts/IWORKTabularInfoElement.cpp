@@ -968,9 +968,9 @@ void VectorStyleRefElement::attribute(const int name, const char *const value)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::start_index :
     m_startIndex = int_cast(value);
+    break;
   case IWORKToken::NS_URI_SF | IWORKToken::stop_index :
     m_stopIndex = int_cast(value);
-  default :
     break;
   }
 }
