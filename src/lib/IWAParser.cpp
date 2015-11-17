@@ -741,9 +741,20 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
             const optional<unsigned> &type = it->uint32(1).optional();
             if (type)
             {
+              if (closed && closingMove)
+              {
+                ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unexpected element %c after the closing move\n", get(type)));
+                break;
+              }
               switch (get(type))
               {
               case 1 :
+                if (closed)
+                {
+                  closingMove = true;
+                  break;
+                }
+              // fall-through intended
               case 2 :
               {
                 const optional<IWORKPosition> &coords = readPosition(*it, 2);
@@ -752,25 +763,10 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
                   ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: missing coordinates for %c element\n", get(type) == 1 ? 'M' : 'L'));
                   break;
                 }
-                if (closed)
-                {
-                  if (closingMove)
-                  {
-                    ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unexpected bezier path element after the closing move\n"));
-                  }
-                  else if (get(type) != 1)
-                  {
-                    ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unexpected element %c after close\n", get(type)));
-                  }
-                  closingMove = true;
-                }
+                if (get(type) == 1)
+                  bezierPath->appendMoveTo(get(coords).m_x, get(coords).m_y);
                 else
-                {
-                  if (get(type) == 1)
-                    bezierPath->appendMoveTo(get(coords).m_x, get(coords).m_y);
-                  else
-                    bezierPath->appendLineTo(get(coords).m_x, get(coords).m_y);
-                }
+                  bezierPath->appendLineTo(get(coords).m_x, get(coords).m_y);
                 break;
               }
               case 4 :
