@@ -851,7 +851,7 @@ void TElement::startOfElement()
     assert(!getState().m_currentText);
     getState().m_currentText = getCollector().createText(false);
     IWORKStyleStack styleStack;
-    styleStack.push(getState().m_currentTable->getDefaultCellStyle(getState().m_tableData->m_row, getState().m_tableData->m_column));
+    styleStack.push(getState().m_currentTable->getDefaultCellStyle(getState().m_tableData->m_column, getState().m_tableData->m_row));
     styleStack.push(getState().m_tableData->m_style);
     using namespace property;
     if (styleStack.has<SFTCellStylePropertyParagraphStyle>())
