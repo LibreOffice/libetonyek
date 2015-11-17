@@ -760,7 +760,7 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
                   }
                   else if (get(type) != 1)
                   {
-                    ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unexpected element %cafter close\n", get(type)));
+                    ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unexpected element %c after close\n", get(type)));
                   }
                   closingMove = true;
                 }
