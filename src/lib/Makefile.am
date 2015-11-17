@@ -272,7 +272,7 @@ EXTRA_DIST = \
 	PAG1Token.gperf \
 	libetonyek.rc.in
 
-MAINTAINERCLEANFILES = $(BUILT_SOURCES)
+MOSTLYCLEANFILES = $(BUILT_SOURCES)
 
 # These may be in the builddir too
 BUILD_EXTRA_DIST = \
