@@ -61,7 +61,11 @@ bool KEY6Parser::parsePresentation(const unsigned id)
     m_collector.collectPresentationSize(IWORKSize(get(size).float_(1).get(), get(size).float_(2).get()));
   optional<unsigned> slideListRef;
   if (get(msg).message(3))
+  {
     slideListRef = readRef(get(msg).message(3).get(), 1);
+    if (!slideListRef)
+      slideListRef = readRef(get(msg).message(3).get(), 2);
+  }
   bool success = true;
   if (slideListRef)
   {
