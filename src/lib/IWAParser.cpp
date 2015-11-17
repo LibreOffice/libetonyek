@@ -1248,7 +1248,7 @@ void IWAParser::parseCellStyle(const unsigned id, IWORKStylePtr_t &style)
 
   if (get(msg).message(11))
   {
-    const IWAMessage &properties = get(get(msg).message(1));
+    const IWAMessage &properties = get(get(msg).message(11));
     if (properties.message(1))
     {
       IWORKFill fill;
