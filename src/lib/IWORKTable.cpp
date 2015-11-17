@@ -176,6 +176,19 @@ void writeCellStyle(librevenge::RVNGPropertyList &props, const IWORKStyleStack &
     if (const IWORKColor *const color = boost::get<IWORKColor>(&style.get<Fill>()))
       props.insert("fo:background-color", makeColor(*color));
   }
+
+  if (style.has<Padding>())
+  {
+    const IWORKPadding &padding = style.get<Padding>();
+    if (padding.m_left)
+      props.insert("fo:padding-left", get(padding.m_left));
+    if (padding.m_right)
+      props.insert("fo:padding-right", get(padding.m_right));
+    if (padding.m_top)
+      props.insert("fo:padding-top", get(padding.m_top));
+    if (padding.m_bottom)
+      props.insert("fo:padding-bottom", get(padding.m_bottom));
+  }
 }
 
 }

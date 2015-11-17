@@ -80,10 +80,10 @@ struct IWORKColor
 
 struct IWORKPadding
 {
-  boost::optional<int> m_top;
-  boost::optional<int> m_right;
-  boost::optional<int> m_bottom;
-  boost::optional<int> m_left;
+  boost::optional<double> m_top;
+  boost::optional<double> m_right;
+  boost::optional<double> m_bottom;
+  boost::optional<double> m_left;
 
   IWORKPadding();
 };

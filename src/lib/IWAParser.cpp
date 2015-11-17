@@ -512,6 +512,14 @@ void IWAParser::readShadow(const IWAMessage &msg, IWORKShadow &shadow)
     shadow.m_opacity = get(msg.float_(5));
 }
 
+void IWAParser::readPadding(const IWAMessage &msg, IWORKPadding &padding)
+{
+  padding.m_left = msg.float_(1).optional();
+  padding.m_top = msg.float_(2).optional();
+  padding.m_right = msg.float_(3).optional();
+  padding.m_bottom = msg.float_(4).optional();
+}
+
 bool IWAParser::dispatchShape(const unsigned id)
 {
   const ObjectMessage msg(*this, id);
@@ -1246,6 +1254,12 @@ void IWAParser::parseCellStyle(const unsigned id, IWORKStylePtr_t &style)
       IWORKFill fill;
       readFill(get(properties.message(1)), fill);
       props.put<Fill>(fill);
+    }
+    if (properties.message(9))
+    {
+      IWORKPadding padding;
+      readPadding(get(properties.message(9)), padding);
+      props.put<Padding>(padding);
     }
     if (properties.message(10))
     {

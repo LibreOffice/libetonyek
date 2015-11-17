@@ -98,6 +98,7 @@ protected:
   void readFill(const IWAMessage &msg, IWORKFill &fill);
   static void readGradient(const IWAMessage &msg, IWORKGradient &gradient);
   static void readShadow(const IWAMessage &msg, IWORKShadow &shadow);
+  static void readPadding(const IWAMessage &msg, IWORKPadding &padding);
 
   bool dispatchShape(unsigned id);
   bool parseText(unsigned id);
