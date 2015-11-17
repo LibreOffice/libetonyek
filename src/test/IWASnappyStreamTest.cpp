@@ -8,6 +8,7 @@
  */
 
 #include <algorithm>
+#include <cassert>
 #include <string>
 
 #include <boost/make_shared.hpp>
@@ -34,6 +35,7 @@ void assertCompressed(const string &message, const unsigned char *const expected
   const RVNGInputStreamPtr_t uncompressedStream(IWASnappyStream::uncompressBlock(stream));
   unsigned long uncompressedSize = 0;
   const unsigned char *const uncompressed = uncompressedStream->read(expectedSize, uncompressedSize);
+  assert(uncompressed);
   CPPUNIT_ASSERT_EQUAL_MESSAGE(message + ": size", expectedSize, uncompressedSize);
   CPPUNIT_ASSERT_MESSAGE(message + ": input exhausted", uncompressedStream->isEnd());
   CPPUNIT_ASSERT_MESSAGE(message + ": content", std::equal(expected, expected + expectedSize, uncompressed));
@@ -45,6 +47,7 @@ void assertCompressedFull(const string &message, const unsigned char *const expe
   IWASnappyStream uncompressedStream(stream);
   unsigned long uncompressedSize = 0;
   const unsigned char *const uncompressed = uncompressedStream.read(expectedSize, uncompressedSize);
+  assert(uncompressed);
   CPPUNIT_ASSERT_EQUAL_MESSAGE(message + ": size", expectedSize, uncompressedSize);
   CPPUNIT_ASSERT_MESSAGE(message + ": input exhausted", uncompressedStream.isEnd());
   CPPUNIT_ASSERT_MESSAGE(message + ": content", std::equal(expected, expected + expectedSize, uncompressed));
