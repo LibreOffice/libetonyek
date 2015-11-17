@@ -87,7 +87,7 @@ EXTRA_DIST = \
 	data/pages5-package.pages \
 	data/pages5.zip \
 	data/unsupported \
-	data/unsupported1.pages \
+	data/unsupported1.package \
 	data/unsupported2.package \
 	data/unsupported.xml \
 	data/unsupported.zip
