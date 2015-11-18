@@ -78,7 +78,7 @@ void LibetonyekUtilsTest::testReadSVar()
   CPPUNIT_ASSERT_EQUAL(int64_t(1), readSVar(makeStream("\x2", 1)));
   CPPUNIT_ASSERT_EQUAL(int64_t(-2), readSVar(makeStream("\x3", 1)));
   CPPUNIT_ASSERT_EQUAL(int64_t(0x7fffffffL), readSVar(makeStream("\xfe\xff\xff\xff\xf", 5)));
-  CPPUNIT_ASSERT_EQUAL(int64_t(-0x80000000L), readSVar(makeStream("\xff\xff\xff\xff\xf", 5)));
+  CPPUNIT_ASSERT_EQUAL(int64_t(numeric_limits<int32_t>::min()), readSVar(makeStream("\xff\xff\xff\xff\xf", 5)));
   CPPUNIT_ASSERT_EQUAL(numeric_limits<int64_t>::max(), readSVar(makeStream("\xfe\xff\xff\xff\xff\xff\xff\xff\xff\x1", 10)));
   CPPUNIT_ASSERT_EQUAL(numeric_limits<int64_t>::min(), readSVar(makeStream("\xff\xff\xff\xff\xff\xff\xff\xff\xff\x1", 10)));
   CPPUNIT_ASSERT_THROW(readSVar(makeStream("\x80\x80\x80\x80\x80\x80\x80\x80\x80\x2", 10)), std::range_error);
