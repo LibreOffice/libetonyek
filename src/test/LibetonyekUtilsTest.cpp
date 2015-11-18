@@ -73,12 +73,12 @@ void LibetonyekUtilsTest::tearDown()
 
 void LibetonyekUtilsTest::testReadSVar()
 {
-  CPPUNIT_ASSERT_EQUAL(0L, readSVar(makeStream("\x0", 1)));
-  CPPUNIT_ASSERT_EQUAL(-1L, readSVar(makeStream("\x1", 1)));
-  CPPUNIT_ASSERT_EQUAL(1L, readSVar(makeStream("\x2", 1)));
-  CPPUNIT_ASSERT_EQUAL(-2L, readSVar(makeStream("\x3", 1)));
-  CPPUNIT_ASSERT_EQUAL(0x7fffffffL, readSVar(makeStream("\xfe\xff\xff\xff\xf", 5)));
-  CPPUNIT_ASSERT_EQUAL(-0x80000000L, readSVar(makeStream("\xff\xff\xff\xff\xf", 5)));
+  CPPUNIT_ASSERT_EQUAL(int64_t(0), readSVar(makeStream("\x0", 1)));
+  CPPUNIT_ASSERT_EQUAL(int64_t(-1), readSVar(makeStream("\x1", 1)));
+  CPPUNIT_ASSERT_EQUAL(int64_t(1), readSVar(makeStream("\x2", 1)));
+  CPPUNIT_ASSERT_EQUAL(int64_t(-2), readSVar(makeStream("\x3", 1)));
+  CPPUNIT_ASSERT_EQUAL(int64_t(0x7fffffffL), readSVar(makeStream("\xfe\xff\xff\xff\xf", 5)));
+  CPPUNIT_ASSERT_EQUAL(int64_t(-0x80000000L), readSVar(makeStream("\xff\xff\xff\xff\xf", 5)));
   CPPUNIT_ASSERT_EQUAL(numeric_limits<int64_t>::max(), readSVar(makeStream("\xfe\xff\xff\xff\xff\xff\xff\xff\xff\x1", 10)));
   CPPUNIT_ASSERT_EQUAL(numeric_limits<int64_t>::min(), readSVar(makeStream("\xff\xff\xff\xff\xff\xff\xff\xff\xff\x1", 10)));
   CPPUNIT_ASSERT_THROW(readSVar(makeStream("\x80\x80\x80\x80\x80\x80\x80\x80\x80\x2", 10)), std::range_error);
@@ -90,12 +90,12 @@ void LibetonyekUtilsTest::testReadSVar()
 
 void LibetonyekUtilsTest::testReadUVar()
 {
-  CPPUNIT_ASSERT_EQUAL(0UL, readUVar(makeStream("\x0", 1)));
-  CPPUNIT_ASSERT_EQUAL(1UL, readUVar(makeStream("\x1", 1)));
-  CPPUNIT_ASSERT_EQUAL(0x7fUL, readUVar(makeStream("\x7f", 1)));
-  CPPUNIT_ASSERT_EQUAL(0x80UL, readUVar(makeStream("\x80\x1", 2)));
-  CPPUNIT_ASSERT_EQUAL(0x81UL, readUVar(makeStream("\x81\x1", 2)));
-  CPPUNIT_ASSERT_EQUAL(0x12345678UL, readUVar(makeStream("\xf8\xac\xd1\x91\x01", 5)));
+  CPPUNIT_ASSERT_EQUAL(uint64_t(0), readUVar(makeStream("\x0", 1)));
+  CPPUNIT_ASSERT_EQUAL(uint64_t(1), readUVar(makeStream("\x1", 1)));
+  CPPUNIT_ASSERT_EQUAL(uint64_t(0x7f), readUVar(makeStream("\x7f", 1)));
+  CPPUNIT_ASSERT_EQUAL(uint64_t(0x80), readUVar(makeStream("\x80\x1", 2)));
+  CPPUNIT_ASSERT_EQUAL(uint64_t(0x81), readUVar(makeStream("\x81\x1", 2)));
+  CPPUNIT_ASSERT_EQUAL(uint64_t(0x12345678UL), readUVar(makeStream("\xf8\xac\xd1\x91\x01", 5)));
   CPPUNIT_ASSERT_EQUAL(numeric_limits<uint64_t>::max(), readUVar(makeStream("\xff\xff\xff\xff\xff\xff\xff\xff\xff\x1", 10)));
   CPPUNIT_ASSERT_THROW(readUVar(makeStream("\x80\x80\x80\x80\x80\x80\x80\x80\x80\x2", 10)), std::range_error);
   CPPUNIT_ASSERT_THROW(readUVar(makeEmptyStream()), EndOfStreamException);
