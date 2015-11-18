@@ -62,7 +62,7 @@ void appendRef(Data &data, const unsigned offset, const unsigned length)
   }
   else // the run is inserted repeatedly
   {
-    while (end - dest >= offset) // as long as the whole run fits
+    while (size_t(end - dest) >= offset) // as long as the whole run fits
     {
       std::copy(src, src + offset, dest);
       dest += offset;
