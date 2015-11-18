@@ -13,6 +13,7 @@
 #include <deque>
 #include <stdexcept>
 
+#include <boost/container/deque.hpp>
 #include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -71,7 +72,7 @@ namespace detail
 template<IWAField::Tag TagV, typename ValueT, typename Reader>
 class IWAFieldImpl : public IWAField
 {
-  typedef std::deque<ValueT> container_type;
+  typedef boost::container::deque<ValueT> container_type;
 
 public:
   typedef ValueT value_type;
@@ -143,9 +144,11 @@ public:
 
   // conversions
 
-  const std::deque<value_type> &repeated() const
+  // TODO: remove this or replace direct use of std::deque by a typedef
+  const std::deque<value_type> repeated() const
   {
-    return m_values;
+    const std::deque<value_type> values(m_values.begin(), m_values.end());
+    return values;
   }
 
   const boost::optional<value_type> optional() const
@@ -166,7 +169,7 @@ public:
   }
 
 private:
-  std::deque<ValueT> m_values;
+  container_type m_values;
 };
 
 }
