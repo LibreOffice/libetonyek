@@ -270,15 +270,11 @@ EXTRA_DIST = \
 	KEY2Token.gperf \
 	NUM1Token.gperf \
 	PAG1Token.gperf \
-	libetonyek.rc.in
+	libetonyek.rc.in \
+	libetonyek.rc \
+	$(BUILT_SOURCES)
 
 MOSTLYCLEANFILES = $(BUILT_SOURCES)
-
-# These may be in the builddir too
-BUILD_EXTRA_DIST = \
-	$(BUILT_SOURCES) \
-	libetonyek.rc
-
 DISTCLEANFILES = libetonyek.rc
 
 %.inc : %.gperf
