@@ -14,6 +14,7 @@
 #include <map>
 #include <string>
 
+#include <boost/function.hpp>
 #include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
@@ -86,7 +87,7 @@ protected:
   friend class ObjectMessage;
 
   typedef std::map<unsigned, IWORKStylePtr_t> StyleMap_t;
-  typedef void (IWAParser::*StyleParseFun_t)(unsigned, IWORKStylePtr_t &);
+  typedef boost::function<void(unsigned, IWORKStylePtr_t &)> StyleParseFun_t;
 
 protected:
   static boost::optional<unsigned> readRef(const IWAMessage &msg, unsigned field);

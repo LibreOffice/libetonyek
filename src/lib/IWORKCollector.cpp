@@ -218,9 +218,7 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
   using namespace property;
 
   if (style->has<Fill>())
-  {
     apply_visitor(FillWriter(props), style->get<Fill>());
-  }
 
   if (style->has<Stroke>())
   {
@@ -646,6 +644,11 @@ void IWORKCollector::drawShape(const IWORKShapePtr_t &shape)
 
     drawTextBox(shape->m_text, trafo, shape->m_geometry);
   }
+}
+
+void IWORKCollector::writeFill(const IWORKFill &fill, librevenge::RVNGPropertyList &props)
+{
+  apply_visitor(FillWriter(props), fill);
 }
 
 } // namespace libetonyek

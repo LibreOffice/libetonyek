@@ -31,6 +31,7 @@
 namespace libetonyek
 {
 
+using boost::bind;
 using boost::make_shared;
 using boost::none;
 using boost::optional;
@@ -634,7 +635,7 @@ const IWORKStylePtr_t IWAParser::queryStyle(const unsigned id, StyleMap_t &style
   if (it == styleMap.end())
   {
     IWORKStylePtr_t style;
-    (const_cast<IWAParser *>(this)->*parseStyle)(id, style);
+    parseStyle(id, style);
     it = styleMap.insert(make_pair(id, style)).first;
   }
   assert(it != styleMap.end());
@@ -643,27 +644,27 @@ const IWORKStylePtr_t IWAParser::queryStyle(const unsigned id, StyleMap_t &style
 
 const IWORKStylePtr_t IWAParser::queryCharacterStyle(const unsigned id) const
 {
-  return queryStyle(id, m_charStyles, &IWAParser::parseCharacterStyle);
+  return queryStyle(id, m_charStyles, bind(&IWAParser::parseCharacterStyle, const_cast<IWAParser *>(this), _1, _2));
 }
 
 const IWORKStylePtr_t IWAParser::queryParagraphStyle(const unsigned id) const
 {
-  return queryStyle(id, m_paraStyles, &IWAParser::parseParagraphStyle);
+  return queryStyle(id, m_paraStyles, bind(&IWAParser::parseParagraphStyle, const_cast<IWAParser *>(this), _1, _2));
 }
 
 const IWORKStylePtr_t IWAParser::queryGraphicStyle(const unsigned id) const
 {
-  return queryStyle(id, m_graphicStyles, &IWAParser::parseGraphicStyle);
+  return queryStyle(id, m_graphicStyles, bind(&IWAParser::parseGraphicStyle, const_cast<IWAParser *>(this), _1, _2));
 }
 
 const IWORKStylePtr_t IWAParser::queryCellStyle(const unsigned id) const
 {
-  return queryStyle(id, m_cellStyles, &IWAParser::parseCellStyle);
+  return queryStyle(id, m_cellStyles, bind(&IWAParser::parseCellStyle, const_cast<IWAParser *>(this), _1, _2));
 }
 
 const IWORKStylePtr_t IWAParser::queryTableStyle(const unsigned id) const
 {
-  return queryStyle(id, m_tableStyles, &IWAParser::parseTableStyle);
+  return queryStyle(id, m_tableStyles, bind(&IWAParser::parseTableStyle, const_cast<IWAParser *>(this), _1, _2));
 }
 
 bool IWAParser::parseDrawableShape(const IWAMessage &msg)

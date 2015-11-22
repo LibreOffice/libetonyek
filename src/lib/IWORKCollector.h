@@ -109,6 +109,8 @@ public:
 protected:
   void fillMetadata(librevenge::RVNGPropertyList &props);
 
+  static void writeFill(const IWORKFill &fill, librevenge::RVNGPropertyList &props);
+
 private:
   void pushStyle(const IWORKStylePtr_t &style);
   void resolveStyle(IWORKStyle &style);

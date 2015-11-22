@@ -35,8 +35,14 @@ private:
 
   bool parseStickyNote(const IWAMessage &msg);
 
+  const IWORKStylePtr_t querySlideStyle(unsigned id) const;
+
+  void parseSlideStyle(unsigned id, IWORKStylePtr_t &style);
+
 private:
   KEYCollector &m_collector;
+
+  mutable StyleMap_t m_slideStyles;
 };
 
 }

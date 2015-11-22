@@ -41,6 +41,8 @@ public:
 
   void collectStickyNote();
 
+  void setSlideStyle(const IWORKStylePtr_t &style);
+
   // helper functions
 
   void startDocument();
@@ -57,17 +59,24 @@ public:
   void endLayer();
 
 private:
+  struct Slide
+  {
+    IWORKOutputElements m_content;
+    boost::shared_ptr<IWORKStyle> m_style;
+  };
+
+private:
   virtual void drawTable();
   virtual void drawMedia(double x, double y, double w, double h, const std::string &mimetype, const librevenge::RVNGBinaryData &data);
   virtual void fillShapeProperties(librevenge::RVNGPropertyList &props);
   virtual void drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox);
 
-  void writeSlide(const IWORKOutputElements &content);
+  void writeSlide(const Slide &slide);
 
 private:
   IWORKSize m_size;
 
-  std::deque<IWORKOutputElements> m_slides;
+  std::deque<Slide> m_slides;
   IWORKOutputElements m_notes;
   IWORKOutputElements m_stickyNotes;
 

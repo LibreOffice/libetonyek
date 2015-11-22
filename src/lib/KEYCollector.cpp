@@ -78,10 +78,10 @@ void KEYCollector::insertLayer(const KEYLayerPtr_t &layer)
       librevenge::RVNGPropertyList props;
       props.insert("svg:id", m_layerCount);
 
-      m_slides.back().addStartLayer(props);
+      m_slides.back().m_content.addStartLayer(props);
       if (layer->m_outputId)
-        m_slides.back().append(getOutputManager().get(get(layer->m_outputId)));
-      m_slides.back().addEndLayer();
+        m_slides.back().m_content.append(getOutputManager().get(get(layer->m_outputId)));
+      m_slides.back().m_content.addEndLayer();
     }
   }
   else
@@ -98,11 +98,11 @@ void KEYCollector::collectPage()
   {
     if (!m_notes.empty())
     {
-      m_slides.back().addStartNotes(librevenge::RVNGPropertyList());
-      m_slides.back().append(m_notes);
-      m_slides.back().addEndNotes();
+      m_slides.back().m_content.addStartNotes(librevenge::RVNGPropertyList());
+      m_slides.back().m_content.append(m_notes);
+      m_slides.back().m_content.addEndNotes();
     }
-    m_slides.back().append(m_stickyNotes);
+    m_slides.back().m_content.append(m_stickyNotes);
   }
 }
 
@@ -180,6 +180,15 @@ void KEYCollector::collectStickyNote()
   m_levelStack.top().m_geometry.reset();
 }
 
+void KEYCollector::setSlideStyle(const IWORKStylePtr_t &style)
+{
+  if (m_pageOpened)
+  {
+    assert(!m_slides.empty());
+    m_slides.back().m_style = style;
+  }
+}
+
 void KEYCollector::startDocument()
 {
   IWORKCollector::startDocument();
@@ -224,7 +233,7 @@ void KEYCollector::startPage()
   startLevel();
 
   if (m_paint)
-    m_slides.push_back(IWORKOutputElements());
+    m_slides.push_back(Slide());
   m_pageOpened = true;
 }
 
@@ -351,14 +360,17 @@ void KEYCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &tra
   }
 }
 
-void KEYCollector::writeSlide(const IWORKOutputElements &content)
+void KEYCollector::writeSlide(const Slide &slide)
 {
   librevenge::RVNGPropertyList props;
   props.insert("svg:width", pt2in(m_size.m_width));
   props.insert("svg:height", pt2in(m_size.m_height));
 
+  if (bool(slide.m_style) && slide.m_style->has<property::Fill>())
+    writeFill(slide.m_style->get<property::Fill>(), props);
+
   m_document->startSlide(props);
-  content.write(m_document);
+  slide.m_content.write(m_document);
   m_document->endSlide();
 }
 

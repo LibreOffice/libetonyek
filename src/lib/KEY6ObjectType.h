@@ -23,6 +23,7 @@ enum
   SlideList = 4,
   Slide = 5,
   Placeholder = 7,
+  SlideStyle = 9,
   Notes = 15
 };
 

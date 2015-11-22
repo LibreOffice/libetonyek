@@ -30,6 +30,7 @@ using boost::optional;
 
 using std::deque;
 using std::for_each;
+using std::string;
 
 KEY6Parser::KEY6Parser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package, KEYCollector &collector)
   : IWAParser(fragments, package, collector)
@@ -105,9 +106,13 @@ bool KEY6Parser::parseSlide(const unsigned id, const bool master)
 
   m_collector.startLayer();
 
-  // const optional<unsigned> &styleRef = readRef(get(msg), 1);
   if (!master)
   {
+    IWORKStylePtr_t style;
+    const optional<unsigned> &styleRef = readRef(get(msg), 1);
+    if (styleRef)
+      style = querySlideStyle(get(styleRef));
+    m_collector.setSlideStyle(style);
     const optional<unsigned> &titlePlaceholderRef = readRef(get(msg), 5);
     if (titlePlaceholderRef)
       parsePlaceholder(get(titlePlaceholderRef));
@@ -253,6 +258,47 @@ bool KEY6Parser::parseStickyNote(const IWAMessage &msg)
   m_collector.endLevel();
 
   return true;
+}
+
+const IWORKStylePtr_t KEY6Parser::querySlideStyle(const unsigned id) const
+{
+  return queryStyle(id, m_slideStyles, boost::bind(&KEY6Parser::parseSlideStyle, const_cast<KEY6Parser *>(this), _1, _2));
+}
+
+void KEY6Parser::parseSlideStyle(const unsigned id, IWORKStylePtr_t &style)
+{
+  const ObjectMessage msg(*this, id, KEY6ObjectType::SlideStyle);
+  if (!msg)
+    return;
+
+  optional<string> name;
+  IWORKStylePtr_t parent;
+  IWORKPropertyMap props;
+
+  using namespace property;
+
+  const IWAMessageField &styleInfo = get(msg).message(1);
+  if (styleInfo)
+  {
+    name = styleInfo.string(2).optional();
+    const optional<unsigned> &parentRef = readRef(get(styleInfo), 3);
+    if (parentRef)
+      parent = querySlideStyle(get(parentRef));
+  }
+
+  if (get(msg).message(11))
+  {
+    const IWAMessage &properties = get(get(msg).message(11));
+
+    if (properties.message(1))
+    {
+      IWORKFill fill;
+      readFill(get(properties.message(1)), fill);
+      props.put<Fill>(fill);
+    }
+  }
+
+  style.reset(new IWORKStyle(props, name, parent));
 }
 
 }
