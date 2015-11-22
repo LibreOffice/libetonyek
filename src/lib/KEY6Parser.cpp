@@ -60,20 +60,23 @@ bool KEY6Parser::parsePresentation(const unsigned id)
   const optional<IWAMessage> size = get(msg).message(4).optional();
   if (size && get(size).float_(1) && get(size).float_(2))
     m_collector.collectPresentationSize(IWORKSize(get(size).float_(1).get(), get(size).float_(2).get()));
-  optional<unsigned> slideListRef;
+  m_collector.startSlides();
+  bool success = true;
   if (get(msg).message(3))
   {
+    optional<unsigned> slideListRef;
     slideListRef = readRef(get(msg).message(3).get(), 1);
-    if (!slideListRef)
-      slideListRef = readRef(get(msg).message(3).get(), 2);
+    if (slideListRef)
+    {
+      success = parseSlideList(get(slideListRef));
+    }
+    else
+    {
+      const deque<unsigned> &slideListRefs = readRefs(get(get(msg).message(3)), 2);
+      for_each(slideListRefs.begin(), slideListRefs.end(), bind(&KEY6Parser::parseSlideList, this, _1));
+    }
   }
-  bool success = true;
-  if (slideListRef)
-  {
-    m_collector.startSlides();
-    success = parseSlideList(get(slideListRef));
-    m_collector.endSlides();
-  }
+  m_collector.endSlides();
   m_collector.endDocument();
   return success;
 }
