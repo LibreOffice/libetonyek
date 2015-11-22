@@ -460,6 +460,7 @@ void IWAParser::readFill(const IWAMessage &msg, IWORKFill &fill)
     const optional<unsigned> &fileRef = readRef(get(msg.message(3)), 6);
     if (fileRef)
       bitmap.m_stream = queryFile(get(fileRef));
+    fill = bitmap;
   }
 }
 
