@@ -307,12 +307,7 @@ const RVNGInputStreamPtr_t IWAParser::queryFile(const unsigned id) const
 
   if (!it->second.second)
   {
-    if (!m_package->existsSubStream(it->second.first.c_str()))
-    {
-      ETONYEK_DEBUG_MSG(("IWAParser::queryFile: file %s does not exist\n", it->second.first.c_str()));
-      m_fileMap.erase(it); // avoid further attempts to find the same file
-      return RVNGInputStreamPtr_t();
-    }
+    assert(m_package->existsSubStream(it->second.first.c_str())); // we already checked for its presence
     it->second.second.reset(m_package->getSubStreamByName(it->second.first.c_str()));
   }
 
@@ -986,8 +981,18 @@ void IWAParser::parseObjectIndex()
     const deque<IWAMessage> &files = objectIndex.message(4).repeated();
     for (deque<IWAMessage>::const_iterator it = files.begin(); it != files.end(); ++it)
     {
-      if (it->uint32(1) && it->string(3))
-        m_fileMap[it->uint32(1).get()] = make_pair("Data/" + it->string(3).get(), RVNGInputStreamPtr_t());
+      if (it->uint32(1))
+      {
+        const string virtualPath(it->string(3) ? ("Data/" + get(it->string(3))) : "");
+        const string internalPath(it->string(4) ? ("Data/" + get(it->string(4))) : "");
+        string path;
+        if (!internalPath.empty() && m_package->existsSubStream(internalPath.c_str()))
+          path = internalPath;
+        else if (!virtualPath.empty() && m_package->existsSubStream(virtualPath.c_str()))
+          path = virtualPath;
+        if (!path.empty())
+          m_fileMap[it->uint32(1).get()] = make_pair(path, RVNGInputStreamPtr_t());
+      }
     }
   }
 }
