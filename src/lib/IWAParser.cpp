@@ -1304,7 +1304,7 @@ void IWAParser::parseTableStyle(const unsigned id, IWORKStylePtr_t &style)
     name = styleInfo.string(2).optional();
     const optional<unsigned> &parentRef = readRef(get(styleInfo), 3);
     if (parentRef)
-      parent = queryCellStyle(get(parentRef));
+      parent = queryTableStyle(get(parentRef));
   }
 
   if (get(msg).message(11))
