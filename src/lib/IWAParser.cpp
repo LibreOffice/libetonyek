@@ -495,6 +495,7 @@ void IWAParser::readGradient(const IWAMessage &msg, IWORKGradient &gradient)
       stop.m_fraction = get(it->float_(2));
     if (it->float_(3))
       stop.m_inflection = get(it->float_(3));
+    gradient.m_stops.push_back(stop);
   }
   if (msg.message(5) && msg.message(5).float_(2))
     gradient.m_angle = get(msg.message(5).float_(2));
