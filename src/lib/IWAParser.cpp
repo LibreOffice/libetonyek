@@ -1309,7 +1309,7 @@ void IWAParser::parseTableStyle(const unsigned id, IWORKStylePtr_t &style)
 
   if (get(msg).message(11))
   {
-    const IWAMessage &properties = get(get(msg).message(1));
+    const IWAMessage &properties = get(get(msg).message(11));
 
     if (properties.bool_(1))
       props.put<SFTTableBandedRowsProperty>(get(properties.bool_(1)));
