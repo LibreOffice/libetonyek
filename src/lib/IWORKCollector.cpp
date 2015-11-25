@@ -153,6 +153,7 @@ struct FillWriter : public boost::static_visitor<void>
     if (gradient.m_stops.empty())
       return;
     m_props.insert("draw:fill", "gradient");
+    using librevenge::RVNG_PERCENT;
     switch (gradient.m_type)
     {
     case IWORK_GRADIENT_TYPE_LINEAR :
@@ -160,10 +161,11 @@ struct FillWriter : public boost::static_visitor<void>
       break;
     case IWORK_GRADIENT_TYPE_RADIAL :
       m_props.insert("draw:style", "radial");
+      m_props.insert("draw:cx", gradient.m_stops.front().m_inflection, RVNG_PERCENT);
+      m_props.insert("draw:cy", gradient.m_stops.front().m_inflection, RVNG_PERCENT);
       break;
     }
     // TODO: use svg:linearGradient/svg:radialGradient?
-    using librevenge::RVNG_PERCENT;
     m_props.insert("draw:start-color", makeColor(gradient.m_stops.front().m_color));
     m_props.insert("draw:start-intensity", gradient.m_stops.front().m_fraction, RVNG_PERCENT);
     m_props.insert("draw:end-color", makeColor(gradient.m_stops.back().m_color));
