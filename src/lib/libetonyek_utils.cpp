@@ -239,6 +239,18 @@ double deg2rad(double value)
   return etonyek_pi / 180 * value;
 }
 
+double rad2deg(double value)
+{
+  // normalize range
+  while (etonyek_two_pi <= value)
+    value -= etonyek_two_pi;
+  while (0 > value)
+    value += etonyek_two_pi;
+
+  // convert
+  return value / etonyek_pi * 180;
+}
+
 librevenge::RVNGString makeColor(const IWORKColor &color)
 {
   // TODO: alpha

@@ -159,6 +159,13 @@ double pt2in(double d);
   */
 double deg2rad(double value);
 
+/** Convert an angle from radians to degrees.
+  *
+  * @arg[in] value angle in radians
+  * @returns the same angle in degrees
+  */
+double rad2deg(double value);
+
 librevenge::RVNGString makeColor(const IWORKColor &color);
 
 librevenge::RVNGString makeBorder(const IWORKStroke &stroke);
