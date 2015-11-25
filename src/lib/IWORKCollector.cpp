@@ -168,7 +168,8 @@ struct FillWriter : public boost::static_visitor<void>
     m_props.insert("draw:start-intensity", gradient.m_stops.front().m_fraction, RVNG_PERCENT);
     m_props.insert("draw:end-color", makeColor(gradient.m_stops.back().m_color));
     m_props.insert("draw:end-intensity", gradient.m_stops.back().m_fraction, RVNG_PERCENT);
-    m_props.insert("draw:angle", rad2deg(gradient.m_angle));
+    // the axis of the gradient in Keynote is clockwise to the horizontal axis
+    m_props.insert("draw:angle", rad2deg(etonyek_two_pi - gradient.m_angle + etonyek_half_pi));
   }
 
   void operator()(const IWORKFillImage &bitmap) const
