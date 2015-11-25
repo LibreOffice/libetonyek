@@ -163,10 +163,11 @@ struct FillWriter : public boost::static_visitor<void>
       break;
     }
     // TODO: use svg:linearGradient/svg:radialGradient?
+    using librevenge::RVNG_PERCENT;
     m_props.insert("draw:start-color", makeColor(gradient.m_stops.front().m_color));
-    m_props.insert("draw:start-intensity", gradient.m_stops.front().m_fraction);
+    m_props.insert("draw:start-intensity", gradient.m_stops.front().m_fraction, RVNG_PERCENT);
     m_props.insert("draw:end-color", makeColor(gradient.m_stops.back().m_color));
-    m_props.insert("draw:end-intensity", gradient.m_stops.back().m_fraction);
+    m_props.insert("draw:end-intensity", gradient.m_stops.back().m_fraction, RVNG_PERCENT);
     m_props.insert("draw:angle", gradient.m_angle);
   }
 
