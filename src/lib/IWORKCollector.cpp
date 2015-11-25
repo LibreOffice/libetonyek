@@ -34,6 +34,7 @@ using boost::optional;
 using boost::shared_ptr;
 
 using librevenge::RVNGPropertyList;
+  using librevenge::RVNG_PERCENT;
 
 using std::memcmp;
 using std::string;
@@ -153,7 +154,6 @@ struct FillWriter : public boost::static_visitor<void>
     if (gradient.m_stops.empty())
       return;
     m_props.insert("draw:fill", "gradient");
-    using librevenge::RVNG_PERCENT;
     switch (gradient.m_type)
     {
     case IWORK_GRADIENT_TYPE_LINEAR :
@@ -262,7 +262,7 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
 
     props.insert("draw:shadow", "visible");
     props.insert("draw:shadow-color", makeColor(shadow.m_color));
-    props.insert("draw:shadow-opacity", shadow.m_opacity);
+    props.insert("draw:shadow-opacity", shadow.m_opacity, RVNG_PERCENT);
     const double angle = deg2rad(shadow.m_angle);
     props.insert("draw:shadow-offset-x", shadow.m_offset * std::cos(angle));
     props.insert("draw:shadow-offset-y", shadow.m_offset * std::sin(angle));
