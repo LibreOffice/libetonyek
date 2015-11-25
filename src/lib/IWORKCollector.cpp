@@ -184,6 +184,7 @@ struct FillWriter : public boost::static_visitor<void>
       {
         m_props.insert("draw:fill", "bitmap");
         m_props.insert("draw:fill-image", librevenge::RVNGBinaryData(bytes, length));
+        m_props.insert("librevenge:mime-type", "jpg"); // TODO: fix
         switch (bitmap.m_type)
         {
         case IWORK_FILL_IMAGE_TYPE_ORIGINAL_SIZE :
