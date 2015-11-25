@@ -675,7 +675,9 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
     if (placement)
       parseShapePlacement(get(placement));
 
-    // const optional<unsigned> styleRef = readRef(get(shape), 2);
+    const optional<unsigned> styleRef = readRef(get(shape), 2);
+    if (styleRef)
+      m_collector.setGraphicStyle(queryGraphicStyle(get(styleRef)));
 
     const optional<IWAMessage> &path = get(shape).message(3).optional();
     if (path)
