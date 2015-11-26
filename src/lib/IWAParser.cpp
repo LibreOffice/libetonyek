@@ -1147,7 +1147,7 @@ void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
     {
       IWORKTabStops_t tabs;
       const IWAMessageField &tabStops = paraProps.message(25).message(1);
-      for (IWAMessageField::const_iterator it = tabStops.begin(); it != tabStops.message(1).end(); ++it)
+      for (IWAMessageField::const_iterator it = tabStops.begin(); it != tabStops.end(); ++it)
       {
         if (it->float_(1))
           tabs.push_back(IWORKTabStop(get(it->float_(1))));
