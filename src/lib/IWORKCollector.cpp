@@ -224,6 +224,8 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
 
   if (style->has<Fill>())
     apply_visitor(FillWriter(props), style->get<Fill>());
+  else
+    props.insert("draw:fill", "none");
 
   if (style->has<Stroke>())
   {
