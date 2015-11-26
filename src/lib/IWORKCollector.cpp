@@ -35,6 +35,7 @@ using boost::shared_ptr;
 
 using librevenge::RVNGPropertyList;
 using librevenge::RVNG_PERCENT;
+using librevenge::RVNG_POINT;
 
 using std::memcmp;
 using std::string;
@@ -266,8 +267,8 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
     props.insert("draw:shadow-color", makeColor(shadow.m_color));
     props.insert("draw:shadow-opacity", shadow.m_opacity, RVNG_PERCENT);
     const double angle = deg2rad(shadow.m_angle);
-    props.insert("draw:shadow-offset-x", shadow.m_offset * std::cos(angle));
-    props.insert("draw:shadow-offset-y", shadow.m_offset * std::sin(angle));
+    props.insert("draw:shadow-offset-x", shadow.m_offset * std::cos(angle), RVNG_POINT);
+    props.insert("draw:shadow-offset-y", shadow.m_offset * std::sin(angle), RVNG_POINT);
   }
 }
 
