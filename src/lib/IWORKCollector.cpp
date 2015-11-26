@@ -183,6 +183,7 @@ struct FillWriter : public boost::static_visitor<void>
     {
       const unsigned long length = getLength(bitmap.m_stream);
       unsigned long readBytes = 0;
+      bitmap.m_stream->seek(0, librevenge::RVNG_SEEK_SET);
       const unsigned char *const bytes = bitmap.m_stream->read(length, readBytes);
       if (readBytes == length)
       {
