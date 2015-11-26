@@ -61,7 +61,7 @@ public:
   operator bool() const;
   bool operator!() const;
 
-  virtual void parse(const RVNGInputStreamPtr_t &input, unsigned long length) = 0;
+  virtual void parse(const RVNGInputStreamPtr_t &input, unsigned long length, bool allowEmpty) = 0;
 };
 
 typedef boost::shared_ptr<IWAField> IWAFieldPtr_t;
@@ -158,13 +158,20 @@ public:
 
   // initialization
 
-  virtual void parse(const RVNGInputStreamPtr_t &input, const unsigned long length)
+  virtual void parse(const RVNGInputStreamPtr_t &input, const unsigned long length, const bool allowEmpty)
   {
-    const long start = input->tell();
-    while (!input->isEnd() && (length > static_cast<unsigned long>(input->tell() - start)))
+    if (length != 0)
     {
-      const value_type value(Reader::read(input, length));
-      m_values.push_back(value);
+      const long start = input->tell();
+      while (!input->isEnd() && (length > static_cast<unsigned long>(input->tell() - start)))
+      {
+        const value_type value(Reader::read(input, length));
+        m_values.push_back(value);
+      }
+    }
+    else if (allowEmpty)
+    {
+      m_values.push_back(value_type());
     }
   }
 

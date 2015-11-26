@@ -33,6 +33,12 @@ IWAMessage::Field::Field(const IWAMessage::WireType wireType)
 {
 }
 
+IWAMessage::IWAMessage()
+  : m_input()
+  , m_fields()
+{
+}
+
 IWAMessage::IWAMessage(const RVNGInputStreamPtr_t &input, unsigned long length)
   : m_input(input)
   , m_fields()
@@ -200,8 +206,9 @@ const FieldT &IWAMessage::getField(const std::size_t field, const WireType wireT
     fieldIt->second.m_realField = boost::make_shared<FieldT>();
     for (std::deque<InputRange_t>::const_iterator it = fieldIt->second.m_pieces.begin(); it != fieldIt->second.m_pieces.end(); ++it)
     {
+      assert(bool(m_input));
       m_input->seek(it->first, librevenge::RVNG_SEEK_SET);
-      fieldIt->second.m_realField->parse(m_input, static_cast<unsigned long>(it->second - m_input->tell()));
+      fieldIt->second.m_realField->parse(m_input, static_cast<unsigned long>(it->second - m_input->tell()), wireType == WIRE_TYPE_LENGTH_DELIMITED);
     }
   }
 

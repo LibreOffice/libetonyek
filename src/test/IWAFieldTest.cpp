@@ -87,7 +87,7 @@ void IWAFieldTest::testEmpty()
 void IWAFieldTest::testParse()
 {
   IWAUInt64Field field;
-  CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x1")), 1));
+  CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x1")), 1, false));
 
   // repeated
   CPPUNIT_ASSERT(!field.empty());
@@ -100,7 +100,7 @@ void IWAFieldTest::testParse()
   CPPUNIT_ASSERT_EQUAL(uint64_t(1), field.get());
 
   // parse another value
-  CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\xac\x2")), 1));
+  CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\xac\x2")), 1, false));
 
   CPPUNIT_ASSERT_EQUAL(size_t(2), field.size());
   CPPUNIT_ASSERT_EQUAL(uint64_t(1), field[0]);
@@ -112,7 +112,7 @@ void IWAFieldTest::testParse()
 void IWAFieldTest::testParsePacked()
 {
   IWAUInt64Field field;
-  CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x1\x4\x8\x10")), 3));
+  CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x1\x4\x8\x10")), 3, false));
 
   // repeated
   CPPUNIT_ASSERT_EQUAL(size_t(3), field.size());
@@ -130,7 +130,7 @@ void IWAFieldTest::testOptional()
   {
     IWAUInt64Field field;
     CPPUNIT_ASSERT_EQUAL(uint64_t(4), get_optional_value_or(field, 4));
-    CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x1\x4")), 2));
+    CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x1\x4")), 2, false));
     const boost::optional<uint64_t> &value = field.optional();
     CPPUNIT_ASSERT(value);
     CPPUNIT_ASSERT_EQUAL(uint64_t(1), get(value));
@@ -140,7 +140,7 @@ void IWAFieldTest::testOptional()
 
   {
     IWASInt32Field field;
-    CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x3")), 1));
+    CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x3")), 1, false));
     CPPUNIT_ASSERT(field);
     CPPUNIT_ASSERT_EQUAL(int32_t(-2), field.get());
     const boost::optional<int64_t> value(field.optional());
@@ -152,7 +152,7 @@ void IWAFieldTest::testOptional()
 void IWAFieldTest::testRepeated()
 {
   IWAUInt64Field field;
-  CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x1\x4\x8")), 3));
+  CPPUNIT_ASSERT_NO_THROW(field.parse(makeStream(BYTES("\x1\x4\x8")), 3, false));
   const uint64_t expected[] = {1, 4, 8};
   const std::deque<uint64_t> &values = field.repeated();
   CPPUNIT_ASSERT_EQUAL(ETONYEK_NUM_ELEMENTS(expected), values.size());

@@ -21,6 +21,7 @@ namespace libetonyek
 class IWAMessage
 {
 public:
+  IWAMessage();
   IWAMessage(const RVNGInputStreamPtr_t &input, unsigned long length);
   IWAMessage(const RVNGInputStreamPtr_t &input, long start, long end);
 

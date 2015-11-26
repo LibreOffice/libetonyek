@@ -49,6 +49,8 @@ private:
   CPPUNIT_TEST(testPacked);
   CPPUNIT_TEST(testInvalidInput);
   CPPUNIT_TEST(testNestedMessageWithTrailingData);
+  CPPUNIT_TEST(testEmptyMessage);
+  CPPUNIT_TEST(testEmptyString);
   CPPUNIT_TEST_SUITE_END();
 
 private:
@@ -60,6 +62,8 @@ private:
   void testPacked();
   void testInvalidInput();
   void testNestedMessageWithTrailingData();
+  void testEmptyMessage();
+  void testEmptyString();
 };
 
 void IWAMessageTest::setUp()
@@ -190,6 +194,23 @@ void IWAMessageTest::testNestedMessageWithTrailingData()
   CPPUNIT_ASSERT(msg.message(2).uint32(2));
   CPPUNIT_ASSERT_EQUAL(uint32_t(5), msg.message(2).uint32(2).get());
   CPPUNIT_ASSERT(!msg.message(2).uint32(3));
+}
+
+void IWAMessageTest::testEmptyMessage()
+{
+  CPPUNIT_ASSERT_NO_THROW(IWAMessage(makeStream(BYTES("\x12\x0")), 2));
+  IWAMessage msg(makeStream(BYTES("\x12\x0")), 2); // {2: {}}
+  CPPUNIT_ASSERT_NO_THROW(msg.message(2));
+  CPPUNIT_ASSERT(msg.message(2));
+}
+
+void IWAMessageTest::testEmptyString()
+{
+  CPPUNIT_ASSERT_NO_THROW(IWAMessage(makeStream(BYTES("\x12\x0")), 2));
+  IWAMessage msg(makeStream(BYTES("\x12\x0")), 2); // {2: {}}
+  CPPUNIT_ASSERT_NO_THROW(msg.string(2));
+  CPPUNIT_ASSERT(msg.string(2));
+  CPPUNIT_ASSERT_EQUAL(string(), get(msg.string(2)));
 }
 
 #undef BYTES
