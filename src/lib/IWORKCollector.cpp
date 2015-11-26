@@ -204,8 +204,8 @@ struct FillWriter : public boost::static_visitor<void>
           m_props.insert("style:repeat", "repeat");
           break;
         }
-        m_props.insert("draw:fill-image-width", bitmap.m_size.m_width);
-        m_props.insert("draw:fill-image-height", bitmap.m_size.m_height);
+        m_props.insert("draw:fill-image-width", bitmap.m_size.m_width, RVNG_POINT);
+        m_props.insert("draw:fill-image-height", bitmap.m_size.m_height, RVNG_POINT);
         filled = true;
       }
     }
