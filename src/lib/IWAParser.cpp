@@ -411,18 +411,20 @@ void IWAParser::readStroke(const IWAMessage &msg, IWORKStroke &stroke)
   }
 }
 
-void IWAParser::readFill(const IWAMessage &msg, IWORKFill &fill)
+bool IWAParser::readFill(const IWAMessage &msg, IWORKFill &fill)
 {
   const optional<IWORKColor> &color = readColor(msg, 1);
   if (color)
   {
     fill = get(color);
+    return true;
   }
   else if (msg.message(2))
   {
     IWORKGradient gradient;
     readGradient(get(msg.message(2)), gradient);
     fill = gradient;
+    return true;
   }
   else if (msg.message(3))
   {
@@ -461,7 +463,9 @@ void IWAParser::readFill(const IWAMessage &msg, IWORKFill &fill)
     if (fileRef)
       bitmap.m_stream = queryFile(get(fileRef));
     fill = bitmap;
+    return true;
   }
+  return false;
 }
 
 void IWAParser::readGradient(const IWAMessage &msg, IWORKGradient &gradient)
@@ -1195,8 +1199,10 @@ void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
       if (styleProps.message(1))
       {
         IWORKFill fill;
-        readFill(get(styleProps.message(1)), fill);
-        props.put<Fill>(fill);
+        if (readFill(get(styleProps.message(1)), fill))
+          props.put<Fill>(fill);
+        else
+          props.clear<Fill>();
       }
       if (styleProps.message(2))
       {
@@ -1258,8 +1264,10 @@ void IWAParser::parseCellStyle(const unsigned id, IWORKStylePtr_t &style)
     if (properties.message(1))
     {
       IWORKFill fill;
-      readFill(get(properties.message(1)), fill);
-      props.put<Fill>(fill);
+      if (readFill(get(properties.message(1)), fill))
+        props.put<Fill>(fill);
+      else
+        props.clear<Fill>();
     }
     if (properties.message(9))
     {
@@ -1326,8 +1334,10 @@ void IWAParser::parseTableStyle(const unsigned id, IWORKStylePtr_t &style)
     if (properties.message(2))
     {
       IWORKFill fill;
-      readFill(get(properties.message(2)), fill);
-      props.put<SFTTableBandedCellFillProperty>(fill);
+      if (readFill(get(properties.message(2)), fill))
+        props.put<SFTTableBandedCellFillProperty>(fill);
+      else
+        props.clear<SFTTableBandedCellFillProperty>();
     }
     if (properties.bool_(22))
       props.put<SFTAutoResizeProperty>(get(properties.bool_(22)));

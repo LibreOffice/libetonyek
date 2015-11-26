@@ -296,8 +296,10 @@ void KEY6Parser::parseSlideStyle(const unsigned id, IWORKStylePtr_t &style)
     if (properties.message(1))
     {
       IWORKFill fill;
-      readFill(get(properties.message(1)), fill);
-      props.put<Fill>(fill);
+      if (readFill(get(properties.message(1)), fill))
+        props.put<Fill>(fill);
+      else
+        props.clear<Fill>();
     }
   }
 
