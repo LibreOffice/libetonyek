@@ -34,7 +34,7 @@ using boost::optional;
 using boost::shared_ptr;
 
 using librevenge::RVNGPropertyList;
-  using librevenge::RVNG_PERCENT;
+using librevenge::RVNG_PERCENT;
 
 using std::memcmp;
 using std::string;
