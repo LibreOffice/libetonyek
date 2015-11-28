@@ -14,13 +14,11 @@
 #include "IWORKCollector.h"
 #include "IWORKDataElement.h"
 #include "IWORKDictionary.h"
+#include "IWORKFilteredImageElement.h"
 #include "IWORKGeometryElement.h"
-#include "IWORKImageContext.h"
 #include "IWORKParser.h"
 #include "IWORKRefContext.h"
-#include "IWORKSizeElement.h"
 #include "IWORKToken.h"
-#include "IWORKUnfilteredElement.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
@@ -29,88 +27,6 @@ namespace libetonyek
 using boost::optional;
 
 using std::string;
-
-namespace
-{
-
-typedef IWORKImageContext FilteredElement;
-typedef IWORKImageContext LeveledElement;
-
-}
-
-namespace
-{
-
-class FilteredImageElement : public IWORKXMLElementContextBase
-{
-public:
-  FilteredImageElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-
-private:
-  IWORKMediaContentPtr_t &m_content;
-  optional<ID_t> m_unfilteredId;
-  IWORKMediaContentPtr_t m_unfiltered;
-  IWORKMediaContentPtr_t m_filtered;
-  IWORKMediaContentPtr_t m_leveled;
-};
-
-FilteredImageElement::FilteredImageElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
-  : IWORKXMLElementContextBase(state)
-  , m_content(content)
-  , m_unfilteredId()
-  , m_unfiltered()
-  , m_filtered()
-  , m_leveled()
-{
-}
-
-IWORKXMLContextPtr_t FilteredImageElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::unfiltered_ref :
-    return makeContext<IWORKRefContext>(getState(), m_unfilteredId);
-  case IWORKToken::NS_URI_SF | IWORKToken::unfiltered :
-    return makeContext<IWORKUnfilteredElement>(getState(), m_unfiltered);
-  case IWORKToken::NS_URI_SF | IWORKToken::filtered :
-    return makeContext<FilteredElement>(getState(), m_filtered);
-  case IWORKToken::NS_URI_SF | IWORKToken::leveled :
-    return makeContext<LeveledElement>(getState(), m_leveled);
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-void FilteredImageElement::endOfElement()
-{
-  if (m_unfilteredId && !m_unfiltered)
-  {
-    const IWORKMediaContentMap_t::const_iterator it = getState().getDictionary().m_unfiltereds.find(get(m_unfilteredId));
-    if (getState().getDictionary().m_unfiltereds.end() != it)
-      m_unfiltered = it->second;
-  }
-
-  // If a filter is applied to an image, the new image is saved next
-  // to the original. So all we need is to pick the right one. We
-  // can happily ignore the whole filter-properties section :-)
-  // NOTE: Leveled is apparently used to save the result of using
-  // the "Enhance" button.
-  if (bool(m_filtered))
-    m_content = m_filtered;
-  else if (bool(m_leveled))
-    m_content = m_leveled;
-  else
-    m_content = m_unfiltered;
-
-  if (bool(m_content) && getId())
-    getState().getDictionary().m_filteredImages[get(getId())] = m_content;
-}
-
-}
 
 namespace
 {
@@ -138,7 +54,7 @@ IWORKXMLContextPtr_t ImageMediaElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::filtered_image :
-    return makeContext<FilteredImageElement>(getState(), m_content);
+    return makeContext<IWORKFilteredImageElement>(getState(), m_content);
   }
 
   return IWORKXMLContextPtr_t();

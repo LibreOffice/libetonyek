@@ -111,6 +111,7 @@ filtered,filtered
 filtered-image,filtered_image
 firstLineIndent,firstLineIndent
 firstPageMaster,firstPageMaster
+fit,fit
 fmt,fmt
 fo,fo
 fontColor,fontColor
@@ -203,6 +204,7 @@ movie-media,movie_media
 mutable-array,mutable_array
 n,n
 name,name
+natural,natural
 naturalSize,naturalSize
 number,number
 number-format,number_format
@@ -272,6 +274,7 @@ start-index,start_index
 sticky-note,sticky_note
 stop-index,stop_index
 stops,stops
+stretch,stretch
 strikethru,strikethru
 string,string
 stroke,stroke
@@ -294,10 +297,13 @@ tailAtCenter,tailAtCenter
 tailPositionX,tailPositionX
 tailPositionY,tailPositionY
 tailSize,tailSize
+technique,technique
 text,text
 text-body,text_body
 text-storage,text_storage
 textBackground,textBackground
+textured-fill,textured_fill
+tile,tile
 title,title
 title-placeholder-ref,title_placeholder_ref
 top,top

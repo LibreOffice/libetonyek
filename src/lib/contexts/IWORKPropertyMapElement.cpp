@@ -13,6 +13,7 @@
 #include "IWORKCollector.h"
 #include "IWORKColorElement.h"
 #include "IWORKDictionary.h"
+#include "IWORKFilteredImageElement.h"
 #include "IWORKGeometryElement.h"
 #include "IWORKNumericPropertyContext.h"
 #include "IWORKProperties.h"
@@ -585,6 +586,85 @@ void TransformGradientElement::endOfElement()
 namespace
 {
 
+class TexturedFillElement : public IWORKXMLElementContextBase
+{
+public:
+  TexturedFillElement(IWORKXMLParserState &state, optional<IWORKFillImage> &value);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  optional<IWORKFillImage> &m_value;
+  optional<IWORKFillImageType> m_type;
+  IWORKMediaContentPtr_t m_content;
+};
+
+TexturedFillElement::TexturedFillElement(IWORKXMLParserState &state, optional<IWORKFillImage> &value)
+  : IWORKXMLElementContextBase(state)
+  , m_value(value)
+  , m_type()
+  , m_content()
+{
+}
+
+void TexturedFillElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::technique :
+    switch (getState().getTokenizer().getId(value))
+    {
+    case IWORKToken::natural :
+      m_type = IWORK_FILL_IMAGE_TYPE_ORIGINAL_SIZE;
+      break;
+    case IWORKToken::stretch :
+      m_type = IWORK_FILL_IMAGE_TYPE_STRETCH;
+      break;
+    case IWORKToken::tile :
+      m_type = IWORK_FILL_IMAGE_TYPE_TILE;
+      break;
+    case IWORKToken::fill :
+      m_type = IWORK_FILL_IMAGE_TYPE_SCALE_TO_FILL;
+      break;
+    case IWORKToken::fit :
+      m_type = IWORK_FILL_IMAGE_TYPE_SCALE_TO_FIT;
+      break;
+    }
+    break;
+  }
+}
+
+IWORKXMLContextPtr_t TexturedFillElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::filtered_image :
+    return makeContext<IWORKFilteredImageElement>(getState(), m_content);
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void TexturedFillElement::endOfElement()
+{
+  if (m_type && bool(m_content) && bool(m_content->m_size) && bool(m_content->m_data) && bool(m_content->m_data->m_stream))
+  {
+    m_value = IWORKFillImage();
+    get(m_value).m_type = get(m_type);
+    get(m_value).m_size = get(m_content->m_size);
+    get(m_value).m_stream = m_content->m_data->m_stream;
+    get(m_value).m_mimeType = m_content->m_data->m_mimeType;
+  }
+}
+
+}
+
+namespace
+{
+
 class FillElement : public IWORKXMLElementContextBase
 {
 public:
@@ -618,6 +698,8 @@ IWORKXMLContextPtr_t FillElement::element(const int name)
     return makeContext<AngleGradientElement>(getState(), m_gradient);
   case IWORKToken::NS_URI_SF | IWORKToken::color :
     return makeContext<IWORKColorElement>(getState(), m_color);
+  case IWORKToken::NS_URI_SF | IWORKToken::textured_fill :
+    return makeContext<TexturedFillElement>(getState(), m_bitmap);
   case IWORKToken::NS_URI_SF | IWORKToken::transform_gradient :
     return makeContext<TransformGradientElement>(getState(), m_gradient);
   }
