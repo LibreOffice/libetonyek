@@ -337,6 +337,254 @@ void StrokeElement::endOfElement()
 namespace
 {
 
+class GradientStopElement : public IWORKXMLElementContextBase
+{
+public:
+  GradientStopElement(IWORKXMLParserState &state, deque<IWORKGradientStop> &stops);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  deque<IWORKGradientStop> &m_stops;
+  optional<IWORKColor> m_color;
+  optional<double> m_fraction;
+  optional<double> m_inflection;
+};
+
+GradientStopElement::GradientStopElement(IWORKXMLParserState &state, deque<IWORKGradientStop> &stops)
+  : IWORKXMLElementContextBase(state)
+  , m_stops(stops)
+  , m_color()
+  , m_fraction()
+  , m_inflection()
+{
+}
+
+void GradientStopElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::fraction :
+    m_fraction = double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::inflection :
+    m_inflection = double_cast(value);
+    break;
+  }
+}
+
+IWORKXMLContextPtr_t GradientStopElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::color :
+    return makeContext<IWORKColorElement>(getState(), m_color);
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void GradientStopElement::endOfElement()
+{
+  if (m_fraction)
+  {
+    m_stops.push_back(IWORKGradientStop());
+    m_stops.back().m_color = get_optional_value_or(m_color, IWORKColor());
+    m_stops.back().m_fraction = get(m_fraction);
+    m_stops.back().m_inflection = get_optional_value_or(m_inflection, 0.5);
+  }
+}
+
+}
+
+namespace
+{
+
+class StopsElement : public IWORKXMLElementContextBase
+{
+public:
+  StopsElement(IWORKXMLParserState &state, deque<IWORKGradientStop> &value);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+
+private:
+  deque<IWORKGradientStop> &m_value;
+};
+
+StopsElement::StopsElement(IWORKXMLParserState &state, deque<IWORKGradientStop> &value)
+  : IWORKXMLElementContextBase(state)
+  , m_value(value)
+{
+}
+
+IWORKXMLContextPtr_t StopsElement::element(const int name)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::gradient_stop))
+    return makeContext<GradientStopElement>(getState(), m_value);
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
+class AngleGradientElement : public IWORKXMLElementContextBase
+{
+public:
+  AngleGradientElement(IWORKXMLParserState &state, optional<IWORKGradient> &value);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  optional<IWORKGradient> &m_value;
+  optional<IWORKGradientType> m_type;
+  optional<double> m_opacity;
+  optional<double> m_angle;
+  deque<IWORKGradientStop> m_stops;
+};
+
+AngleGradientElement::AngleGradientElement(IWORKXMLParserState &state, optional<IWORKGradient> &value)
+  : IWORKXMLElementContextBase(state)
+  , m_value(value)
+  , m_type()
+  , m_opacity()
+  , m_angle()
+  , m_stops()
+{
+}
+
+void AngleGradientElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::angle :
+    m_angle = double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::opacity :
+    m_opacity = double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::type :
+    switch (getState().getTokenizer().getId(value))
+    {
+    case IWORKToken::linear :
+      m_type = IWORK_GRADIENT_TYPE_LINEAR;
+      break;
+    case IWORKToken::radial :
+      m_type = IWORK_GRADIENT_TYPE_RADIAL;
+      break;
+    }
+    break;
+  }
+}
+
+IWORKXMLContextPtr_t AngleGradientElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::stops :
+    return makeContext<StopsElement>(getState(), m_stops);
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void AngleGradientElement::endOfElement()
+{
+  if (m_type && !m_stops.empty())
+  {
+    m_value = IWORKGradient();
+    get(m_value).m_type = get(m_type);
+    get(m_value).m_angle = get(m_angle);
+    get(m_value).m_stops = m_stops;
+  }
+}
+
+}
+
+namespace
+{
+
+class TransformGradientElement : public IWORKXMLElementContextBase
+{
+public:
+  TransformGradientElement(IWORKXMLParserState &state, optional<IWORKGradient> &value);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  optional<IWORKGradient> &m_value;
+  optional<double> m_opacity;
+  optional<IWORKGradientType> m_type;
+  deque<IWORKGradientStop> m_stops;
+};
+
+TransformGradientElement::TransformGradientElement(IWORKXMLParserState &state, optional<IWORKGradient> &value)
+  : IWORKXMLElementContextBase(state)
+  , m_value(value)
+  , m_opacity()
+  , m_type()
+  , m_stops()
+{
+}
+
+void TransformGradientElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::opacity :
+    m_opacity = double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::type :
+    switch (getState().getTokenizer().getId(value))
+    {
+    case IWORKToken::linear :
+      m_type = IWORK_GRADIENT_TYPE_LINEAR;
+      break;
+    case IWORKToken::radial :
+      m_type = IWORK_GRADIENT_TYPE_RADIAL;
+      break;
+    }
+    break;
+  }
+}
+
+IWORKXMLContextPtr_t TransformGradientElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::stops :
+    return makeContext<StopsElement>(getState(), m_stops);
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void TransformGradientElement::endOfElement()
+{
+  if (m_type && !m_stops.empty())
+  {
+    m_value = IWORKGradient();
+    get(m_value).m_type = get(m_type);
+    get(m_value).m_stops = m_stops;
+  }
+}
+
+}
+
+namespace
+{
+
 class FillElement : public IWORKXMLElementContextBase
 {
 public:
@@ -366,9 +614,12 @@ IWORKXMLContextPtr_t FillElement::element(const int name)
 {
   switch (name)
   {
+  case IWORKToken::NS_URI_SF | IWORKToken::angle_gradient :
+    return makeContext<AngleGradientElement>(getState(), m_gradient);
   case IWORKToken::NS_URI_SF | IWORKToken::color :
     return makeContext<IWORKColorElement>(getState(), m_color);
-    // TODO: handle gradient and bitmap fill
+  case IWORKToken::NS_URI_SF | IWORKToken::transform_gradient :
+    return makeContext<TransformGradientElement>(getState(), m_gradient);
   }
 
   return IWORKXMLContextPtr_t();

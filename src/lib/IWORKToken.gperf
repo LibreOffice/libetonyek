@@ -40,6 +40,7 @@ align,align
 alignment,alignment
 amt,amt
 angle,angle
+angle-gradient,angle_gradient
 anon-styles,anon_styles
 aspectRatioLocked,aspectRatioLocked
 attachment,attachment
@@ -132,6 +133,7 @@ format-show-thousands-separator,format_show_thousands_separator
 format-fraction-accuracy,format_fraction_accuracy
 format-use-accounting-style,format_use_accounting_style
 formula-chart-model,formula_chart_model
+fraction,fraction
 frame-h,frame_h
 frame-w,frame_w
 frame-x,frame_x
@@ -139,6 +141,7 @@ frame-y,frame_y
 fs,fs
 g,g
 geometry,geometry
+gradient-stop,gradient_stop
 graphic-style,graphic_style
 graphic-style-ref,graphic_style_ref
 grid,grid
@@ -162,6 +165,7 @@ id,id
 ident,ident
 image,image
 image-media,image_media
+inflection,inflection
 intratopicbr,intratopicbr
 italic,italic
 join,join
@@ -181,6 +185,7 @@ left,left
 leftIndent,leftIndent
 leveled,leveled
 line,line
+linear,linear
 lineSpacing,lineSpacing
 linespacing,linespacing
 link,link
@@ -204,6 +209,7 @@ numcols, numcols
 numrows, numrows
 number-format,number_format
 oddPageMaster,oddPageMaster
+opacity,opacity
 other-datas,other_datas
 outline,outline
 p,p
@@ -230,6 +236,7 @@ property-map,property_map
 proxied-cell-ref,proxied_cell_ref
 proxy-master-layer,proxy_master_layer
 r,r
+radial,radial
 relative,relative
 right,right
 rightIndent,rightIndent
@@ -263,6 +270,7 @@ span,span
 star,star
 start-index,start_index
 stop-index,stop_index
+stops,stops
 sticky-note,sticky_note
 strikethru,strikethru
 string,string
@@ -294,6 +302,7 @@ title,title
 title-placeholder-ref,title_placeholder_ref
 top,top
 tracking,tracking
+transform-gradient,transform_gradient
 true,true_
 type,type
 underline,underline
