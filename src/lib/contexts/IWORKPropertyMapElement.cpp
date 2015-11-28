@@ -12,6 +12,7 @@
 #include "libetonyek_xml.h"
 #include "IWORKCollector.h"
 #include "IWORKColorElement.h"
+#include "IWORKContainerContext.h"
 #include "IWORKDictionary.h"
 #include "IWORKFilteredImageElement.h"
 #include "IWORKGeometryElement.h"
@@ -404,30 +405,7 @@ void GradientStopElement::endOfElement()
 namespace
 {
 
-class StopsElement : public IWORKXMLElementContextBase
-{
-public:
-  StopsElement(IWORKXMLParserState &state, deque<IWORKGradientStop> &value);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-
-private:
-  deque<IWORKGradientStop> &m_value;
-};
-
-StopsElement::StopsElement(IWORKXMLParserState &state, deque<IWORKGradientStop> &value)
-  : IWORKXMLElementContextBase(state)
-  , m_value(value)
-{
-}
-
-IWORKXMLContextPtr_t StopsElement::element(const int name)
-{
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::gradient_stop))
-    return makeContext<GradientStopElement>(getState(), m_value);
-  return IWORKXMLContextPtr_t();
-}
+typedef IWORKContainerContext<IWORKGradientStop, GradientStopElement, IWORKToken::NS_URI_SF | IWORKToken::gradient_stop> StopsElement;
 
 }
 
