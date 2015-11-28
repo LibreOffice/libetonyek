@@ -22,11 +22,11 @@ struct Token
 };
 %%
 92008102400,VERSION_STR_2
-http://developer.apple.com/namespaces/ls,NS_URI_LS
 document,document
+http://developer.apple.com/namespaces/ls,NS_URI_LS
 page-info,page_info
 stylesheet,stylesheet
+version,version
 workspace,workspace
 workspace-array,workspace_array
-version,version
 %%

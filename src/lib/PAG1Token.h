@@ -53,13 +53,13 @@ enum
   version,
 
   // attribute values
+  VERSION_STR_4,
   body,
   cell,
   footer,
   footnote,
   note,
   textbox,
-  VERSION_STR_4,
 
   LAST_TOKEN
 };

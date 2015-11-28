@@ -21,6 +21,8 @@ struct Token
   int id;
 };
 %%
+DefaultLegendRelativePosition,DefaultLegendRelativePosition
+DefaultLegendSize,DefaultLegendSize
 altLineOpacity,altLineOpacity
 altLineVisible,altLineVisible
 angle,angle
@@ -38,8 +40,8 @@ bullet-indentation,bullet_indentation
 bullets,bullets
 byte-size,byte_size
 character-bullet-style,character_bullet_style
-chartFrame,chartFrame
 chart-prototype,chart_prototype
+chartFrame,chartFrame
 color,color
 content,content
 dash-style,dash_style
@@ -48,8 +50,6 @@ dataFormatterHasThousandsSeparators,dataFormatterHasThousandsSeparators
 dataFormatterNumberOfDecimals,dataFormatterNumberOfDecimals
 dataFormatterPrefix,dataFormatterPrefix
 dataFormatterSuffix,dataFormatterSuffix
-DefaultLegendRelativePosition,DefaultLegendRelativePosition
-DefaultLegendSize,DefaultLegendSize
 dict,dict
 display-name,display_name
 drawables,drawables
@@ -85,8 +85,8 @@ legend,legend
 level,level
 line,line
 line-head-style,line_head_style
-lineOpacity,lineOpacity
 line-tail-style,line_tail_style
+lineOpacity,lineOpacity
 lineVisible,lineVisible
 location,location
 lock-aspect-ratio,lock_aspect_ratio
@@ -161,10 +161,10 @@ transformation,transformation
 transition-style,transition_style
 type,type
 ui-state,ui_state
-userMaximum,userMaximum
-userMinimum,userMinimum
 useUserMaximum,useUserMaximum
 useUserMinimum,useUserMinimum
+userMaximum,userMaximum
+userMinimum,userMinimum
 version,version
 vertical-alignment,vertical_alignment
 visibility,visibility

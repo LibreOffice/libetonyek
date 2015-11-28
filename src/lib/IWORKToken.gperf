@@ -21,7 +21,6 @@ struct Token
   int id;
 };
 %%
-__multilingual,__multilingual
 0,_0
 1,_1
 1246774599,_1246774599
@@ -31,10 +30,11 @@ __multilingual,__multilingual
 1414088262,_1414088262
 ID,ID
 IDREF,IDREF
-SFTCellStylePropertyNumberFormat,SFTCellStylePropertyNumberFormat
 SFTCellStylePropertyDateTimeFormat,SFTCellStylePropertyDateTimeFormat
 SFTCellStylePropertyDurationFormat,SFTCellStylePropertyDurationFormat
+SFTCellStylePropertyNumberFormat,SFTCellStylePropertyNumberFormat
 SFTStrokeProperty, SFTStrokeProperty
+__multilingual,__multilingual
 a,a
 align,align
 alignment,alignment
@@ -69,16 +69,16 @@ cell-style-ref,cell_style_ref
 characterstyle,characterstyle
 characterstyle-ref,characterstyle_ref
 chart-column_names,chart_column_names
-chart-row_names,chart_row_names
 chart-info,chart_info
 chart-model-object,chart_model_object
 chart-name,chart_name
+chart-row_names,chart_row_names
 chart-type,chart_type
 col-span,col_span
 color,color
 column,column
-columns,columns
 column-label-formulas,column_label_formulas
+columns,columns
 comment,comment
 connection-line,connection_line
 connection-path,connection_path
@@ -96,8 +96,8 @@ datasource,datasource
 date-format,date_format
 displayname,displayname
 double,double_
-drawables,drawables
 drawable-shape,drawable_shape
+drawables,drawables
 du,du
 duration-format,duration_format
 editable-bezier-path,editable_bezier_path
@@ -124,13 +124,13 @@ footnotebr,footnotebr
 footnotes,footnotes
 format-base,format_base
 format-base-places,format_base_places
-format-type,format_type
-format-string,format_string
-format-decimal-places,format_decimal_places
 format-currency-code,format_currency_code
+format-decimal-places,format_decimal_places
+format-fraction-accuracy,format_fraction_accuracy
 format-negative-style,format_negative_style
 format-show-thousands-separator,format_show_thousands_separator
-format-fraction-accuracy,format_fraction_accuracy
+format-string,format_string
+format-type,format_type
 format-use-accounting-style,format_use_accounting_style
 formula-chart-model,formula_chart_model
 fraction,fraction
@@ -156,8 +156,8 @@ headers,headers
 headline-style,headline_style
 height,height
 hfs-type,hfs_type
-horizontalFlip,horizontalFlip
 horizontal-gridline-styles,horizontal_gridline_styles
+horizontalFlip,horizontalFlip
 href,href
 http://developer.apple.com/namespaces/sf,NS_URI_SF
 http://developer.apple.com/namespaces/sfa,NS_URI_SFA
@@ -185,8 +185,8 @@ left,left
 leftIndent,leftIndent
 leveled,leveled
 line,line
-linear,linear
 lineSpacing,lineSpacing
+linear,linear
 linespacing,linespacing
 link,link
 liststyle,liststyle
@@ -205,9 +205,9 @@ n,n
 name,name
 naturalSize,naturalSize
 number,number
+number-format,number_format
 numcols, numcols
 numrows, numrows
-number-format,number_format
 oddPageMaster,oddPageMaster
 opacity,opacity
 other-datas,other_datas
@@ -241,10 +241,10 @@ relative,relative
 right,right
 rightIndent,rightIndent
 rn,rn
-rt,rt
+row-label-formulas,row_label_formulas
 row-span,row_span
 rows,rows
-row-label-formulas,row_label_formulas
+rt,rt
 s,s
 scalar,scalar
 scalar-path,scalar_path
@@ -260,18 +260,18 @@ shearYAngle,shearYAngle
 size,size
 sizesLocked,sizesLocked
 sl,sl
-st,st
 slide-style,slide_style
 so,so
 spaceAfter,spaceAfter
 spaceBefore,spaceBefore
 spacing,spacing
 span,span
+st,st
 star,star
 start-index,start_index
+sticky-note,sticky_note
 stop-index,stop_index
 stops,stops
-sticky-note,sticky_note
 strikethru,strikethru
 string,string
 stroke,stroke
@@ -295,9 +295,9 @@ tailPositionX,tailPositionX
 tailPositionY,tailPositionY
 tailSize,tailSize
 text,text
-textBackground,textBackground
 text-body,text_body
 text-storage,text_storage
+textBackground,textBackground
 title,title
 title-placeholder-ref,title_placeholder_ref
 top,top
@@ -313,8 +313,8 @@ val,val
 value-title,value_title
 vector-style,vector_style
 vector-style-ref,vector_style_ref
-verticalFlip,verticalFlip
 vertical-gridline-styles,vertical_gridline_styles,
+verticalFlip,verticalFlip
 w,w
 widowControl,widowControl
 width,width
