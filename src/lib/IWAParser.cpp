@@ -26,6 +26,7 @@
 #include "IWORKProperties.h"
 #include "IWORKTable.h"
 #include "IWORKText.h"
+#include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 
 namespace libetonyek
@@ -810,6 +811,10 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
               }
             }
           }
+          // the path is in unit area, scale it to the real size
+          const optional<IWORKSize> &size = readSize(get(get(path).message(5)), 2);
+          if (size)
+            *bezierPath *= transformations::scale(get(size).m_width / 100, get(size).m_height / 100);
           m_collector.collectBezier(bezierPath);
           m_collector.collectBezierPath();
         }
