@@ -308,6 +308,15 @@ struct IWORKDurationFormat
   std::string m_format;
 };
 
+struct IWORKFilterDescriptor
+{
+  IWORKFilterDescriptor();
+
+  bool m_isShadow;
+};
+
+typedef boost::unordered_map<ID_t, IWORKFilterDescriptor> IWORKFilterDescriptorMap_t;
+
 }
 
 #endif //  IWORKTYPES_H_INCLUDED

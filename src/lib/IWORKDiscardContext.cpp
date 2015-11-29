@@ -10,6 +10,7 @@
 #include "IWORKDiscardContext.h"
 
 #include "IWORKBezierElement.h"
+#include "IWORKCoreImageFilterDescriptorElement.h"
 #include "IWORKDataElement.h"
 #include "IWORKDictionary.h"
 #include "IWORKStyleContext.h"
@@ -26,6 +27,7 @@ struct IWORKDiscardContext::Data
   IWORKDataPtr_t m_data;
   IWORKMediaContentPtr_t m_mediaContent;
   IWORKTabStops_t m_tabStops;
+  bool m_isShadow;
 };
 
 IWORKDiscardContext::IWORKDiscardContext(IWORKXMLParserState &state)
@@ -60,6 +62,8 @@ IWORKXMLContextPtr_t IWORKDiscardContext::element(const int name)
     return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::characterstyle :
     return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_characterStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::core_image_filter_descriptor :
+    return makeContext<IWORKCoreImageFilterDescriptorElement>(m_state, m_data->m_isShadow);
   case IWORKToken::NS_URI_SF | IWORKToken::data :
     m_data->m_data.reset();
     return makeContext<IWORKDataElement>(m_state, m_data->m_data);

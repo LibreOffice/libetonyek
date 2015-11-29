@@ -26,6 +26,7 @@ IWORKDictionary::IWORKDictionary()
   , m_filteredImages()
   , m_images()
   , m_tabs()
+  , m_filterDescriptors()
 {
 }
 

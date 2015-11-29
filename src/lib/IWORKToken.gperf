@@ -30,6 +30,7 @@ struct Token
 1414088262,_1414088262
 ID,ID
 IDREF,IDREF
+SFIUDropShadow,SFIUDropShadow
 SFTCellStylePropertyDateTimeFormat,SFTCellStylePropertyDateTimeFormat
 SFTCellStylePropertyDurationFormat,SFTCellStylePropertyDurationFormat
 SFTCellStylePropertyNumberFormat,SFTCellStylePropertyNumberFormat
@@ -85,6 +86,9 @@ connection-path,connection_path
 connection-style,connection_style
 container-hint,container_hint
 content,content
+core-image-filter-descriptor,core_image_filter_descriptor
+core-image-filter-descriptor-ref,core_image_filter_descriptor_ref
+core-image-filter-info,core_image_filter_info
 cornerRadius,cornerRadius
 crbr,crbr
 ct,ct
@@ -107,8 +111,10 @@ evenPageMaster,evenPageMaster
 f,f
 false,false_
 fill,fill
+filterClassName,filterClassName
 filtered,filtered
 filtered-image,filtered_image
+filters,filters
 firstLineIndent,firstLineIndent
 firstPageMaster,firstPageMaster
 fit,fit
@@ -167,6 +173,10 @@ ident,ident
 image,image
 image-media,image_media
 inflection,inflection
+inputAngle,inputAngle
+inputColor,inputColor
+inputDistance,inputDistance
+inputOpacity,inputOpacity
 intratopicbr,intratopicbr
 italic,italic
 join,join
@@ -214,6 +224,7 @@ oddPageMaster,oddPageMaster
 opacity,opacity
 other-datas,other_datas
 outline,outline
+overrides,overrides
 p,p
 padding,padding
 pageBreakBefore,pageBreakBefore

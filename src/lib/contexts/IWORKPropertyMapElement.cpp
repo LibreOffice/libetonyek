@@ -13,6 +13,7 @@
 #include "IWORKCollector.h"
 #include "IWORKColorElement.h"
 #include "IWORKContainerContext.h"
+#include "IWORKCoreImageFilterDescriptorElement.h"
 #include "IWORKDictionary.h"
 #include "IWORKFilteredImageElement.h"
 #include "IWORKGeometryElement.h"
@@ -27,6 +28,7 @@
 #include "IWORKTabsElement.h"
 #include "IWORKToken.h"
 #include "IWORKTokenizer.h"
+#include "IWORKValueContext.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
@@ -1023,6 +1025,148 @@ void DurationFormatElement::endOfElement()
 
 }
 
+namespace
+{
+
+class OverridesElement : public IWORKXMLElementContextBase
+{
+public:
+  OverridesElement(IWORKXMLParserState &state, IWORKShadow &value);
+
+private:
+  typedef IWORKValueContext<double, IWORKNumberElement<double>, IWORKToken::NS_URI_SF | IWORKToken::number> NumberProperty;
+  typedef IWORKValueContext<IWORKColor, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> ColorProperty;
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+
+private:
+  IWORKShadow &m_value;
+  IWORKShadow m_builder;
+};
+
+OverridesElement::OverridesElement(IWORKXMLParserState &state, IWORKShadow &value)
+  : IWORKXMLElementContextBase(state)
+  , m_value(value)
+{
+}
+
+IWORKXMLContextPtr_t OverridesElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::inputAngle :
+    return makeContext<NumberProperty>(getState(), m_value.m_angle);
+  case IWORKToken::NS_URI_SF | IWORKToken::inputColor :
+    return makeContext<ColorProperty>(getState(), m_value.m_color);
+  case IWORKToken::NS_URI_SF | IWORKToken::inputOpacity :
+    return makeContext<NumberProperty>(getState(), m_value.m_opacity);
+  case IWORKToken::NS_URI_SF | IWORKToken::inputDistance :
+    return makeContext<NumberProperty>(getState(), m_value.m_offset);
+  }
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
+class CoreImageFilterInfoElement : public IWORKXMLElementContextBase
+{
+public:
+  CoreImageFilterInfoElement(IWORKXMLParserState &state, deque<IWORKShadow> &elements);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  deque<IWORKShadow> &m_elements;
+  bool m_isShadow;
+  optional<ID_t> m_descriptorRef;
+  IWORKShadow m_value;
+};
+
+CoreImageFilterInfoElement::CoreImageFilterInfoElement(IWORKXMLParserState &state, deque<IWORKShadow> &elements)
+  : IWORKXMLElementContextBase(state)
+  , m_elements(elements)
+  , m_isShadow(false)
+  , m_descriptorRef()
+  , m_value()
+{
+}
+
+IWORKXMLContextPtr_t CoreImageFilterInfoElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::core_image_filter_descriptor :
+    return makeContext<IWORKCoreImageFilterDescriptorElement>(getState(), m_isShadow);
+  case IWORKToken::NS_URI_SF | IWORKToken::core_image_filter_descriptor_ref :
+    return makeContext<IWORKRefContext>(getState(), m_descriptorRef);
+  case IWORKToken::NS_URI_SF | IWORKToken::overrides :
+    return makeContext<OverridesElement>(getState(), m_value);
+  }
+  return IWORKXMLContextPtr_t();
+}
+
+void CoreImageFilterInfoElement::endOfElement()
+{
+  if (m_descriptorRef)
+  {
+    const IWORKFilterDescriptorMap_t::const_iterator it = getState().getDictionary().m_filterDescriptors.find(get(m_descriptorRef));
+    if (it != getState().getDictionary().m_filterDescriptors.end())
+      m_isShadow = it->second.m_isShadow;
+  }
+  if (m_isShadow)
+    m_elements.push_back(m_value);
+}
+
+}
+
+namespace
+{
+
+class FiltersElement : public IWORKXMLElementContextBase
+{
+  typedef IWORKContainerContext<IWORKShadow, CoreImageFilterInfoElement, IWORKToken::NS_URI_SF | IWORKToken::core_image_filter_info> MutableArrayElement;
+
+public:
+  FiltersElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  IWORKPropertyMap &m_propMap;
+  deque<IWORKShadow> m_elements;
+};
+
+FiltersElement::FiltersElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : IWORKXMLElementContextBase(state)
+  , m_propMap(propMap)
+  , m_elements()
+{
+}
+
+IWORKXMLContextPtr_t FiltersElement::element(const int name)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::mutable_array))
+    return makeContext<MutableArrayElement>(getState(), m_elements);
+  return IWORKXMLContextPtr_t();
+}
+
+void FiltersElement::endOfElement()
+{
+  if (m_elements.empty())
+    m_propMap.clear<property::Shadow>();
+  else
+    m_propMap.put<property::Shadow>(m_elements.back());
+}
+
+}
 
 namespace
 {
@@ -1089,6 +1233,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<ColumnsProperty>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::fill :
     return makeContext<FillElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::filters :
+    return makeContext<FiltersElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::firstLineIndent :
     return makeContext<FirstLineIndentElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::fontColor :

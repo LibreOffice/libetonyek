@@ -53,6 +53,8 @@ struct IWORKDictionary
   IWORKImageMap_t m_images;
 
   IWORKTabStopsMap_t m_tabs;
+
+  IWORKFilterDescriptorMap_t m_filterDescriptors;
 };
 
 }

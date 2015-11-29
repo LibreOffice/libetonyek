@@ -242,6 +242,11 @@ IWORKDurationFormat::IWORKDurationFormat()
 {
 }
 
+IWORKFilterDescriptor::IWORKFilterDescriptor()
+  : m_isShadow(false)
+{
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
