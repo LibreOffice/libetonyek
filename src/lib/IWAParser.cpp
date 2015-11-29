@@ -406,8 +406,11 @@ void IWAParser::readStroke(const IWAMessage &msg, IWORKStroke &stroke)
   }
   if (msg.message(6))
   {
+    unsigned remaining = 0;
+    if (msg.message(6).uint32(3))
+      remaining = get(msg.message(6).uint32(3));
     const deque<float> &elements = msg.message(6).float_(4).repeated();
-    for (deque<float>::const_iterator it = elements.begin(); it != elements.end(); ++it)
+    for (deque<float>::const_iterator it = elements.begin(); it != elements.end() && remaining != 0; ++it)
       stroke.m_pattern.push_back(*it);
   }
 }
