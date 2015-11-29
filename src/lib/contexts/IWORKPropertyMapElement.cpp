@@ -1198,6 +1198,7 @@ typedef IWORKNumericPropertyContext<property::Italic> ItalicElement;
 typedef IWORKNumericPropertyContext<property::KeepLinesTogether> KeepLinesTogetherElement;
 typedef IWORKNumericPropertyContext<property::KeepWithNext> KeepWithNextElement;
 typedef IWORKNumericPropertyContext<property::LeftIndent> LeftIndentElement;
+typedef IWORKNumericPropertyContext<property::Opacity> OpacityElement;
 typedef IWORKNumericPropertyContext<property::Outline> OutlineElement;
 typedef IWORKNumericPropertyContext<property::PageBreakBefore> PageBreakBeforeElement;
 typedef IWORKNumericPropertyContext<property::ParagraphBorderType> ParagraphBorderTypeElement;
@@ -1259,6 +1260,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<LeftIndentElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::lineSpacing :
     return makeContext<LineSpacingElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::opacity :
+    return makeContext<OpacityElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::outline :
     return makeContext<OutlineElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::pageBreakBefore :

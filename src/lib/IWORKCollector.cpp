@@ -271,6 +271,12 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
     props.insert("draw:shadow-offset-x", shadow.m_offset * std::cos(angle), RVNG_POINT);
     props.insert("draw:shadow-offset-y", shadow.m_offset * std::sin(angle), RVNG_POINT);
   }
+
+  if (style->has<Opacity>())
+  {
+    props.insert("draw:opacity", style->get<Opacity>(), RVNG_PERCENT);
+    props.insert("draw:image-opacity", style->get<Opacity>(), RVNG_PERCENT);
+  }
 }
 
 }
