@@ -167,6 +167,28 @@ optional<IWORKCellNumberType> IWORKNumberConverter<IWORKCellNumberType>::convert
   return none;
 }
 
+optional<IWORKStrokeType> IWORKNumberConverter<IWORKStrokeType>::convert(const char *const value)
+{
+  const optional<int> type(try_int_cast(value));
+  if (type)
+    return convert(unsigned(get(type)));
+  return none;
+}
+
+optional<IWORKStrokeType> IWORKNumberConverter<IWORKStrokeType>::convert(const unsigned value)
+{
+  switch (value)
+  {
+  case 0 :
+    return IWORK_STROKE_TYPE_DASHED;
+  case 1 :
+    return IWORK_STROKE_TYPE_SOLID;
+  case 2 :
+    return IWORK_STROKE_TYPE_NONE;
+  }
+  return none;
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

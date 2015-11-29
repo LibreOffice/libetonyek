@@ -44,10 +44,7 @@ void writeBorder(librevenge::RVNGPropertyList &props, const char *name, IWORKGri
   IWORKStylePtr_t style;
   line.search_tree(index, style);
   if (style && style->has<property::SFTStrokeProperty>())
-  {
-    const IWORKStroke &stroke = style->get<property::SFTStrokeProperty>();
-    props.insert(name, makeBorder(stroke));
-  }
+    writeBorder(style->get<property::SFTStrokeProperty>(), name, props);
 }
 
 void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStyleStack &style, const IWORKCellType type, const optional<string> &styleName, const boost::optional<std::string> &value)
@@ -162,13 +159,13 @@ void writeCellStyle(librevenge::RVNGPropertyList &props, const IWORKStyleStack &
   }
 
   if (style.has<TopBorder>())
-    props.insert("fo:border-top", makeBorder(style.get<TopBorder>()));
+    writeBorder(style.get<TopBorder>(), "fo:border-top", props);
   if (style.has<BottomBorder>())
-    props.insert("fo:border-bottom", makeBorder(style.get<BottomBorder>()));
+    writeBorder(style.get<BottomBorder>(), "fo:border-bottom", props);
   if (style.has<LeftBorder>())
-    props.insert("fo:border-left", makeBorder(style.get<LeftBorder>()));
+    writeBorder(style.get<LeftBorder>(), "fo:border-left", props);
   if (style.has<RightBorder>())
-    props.insert("fo:border-right", makeBorder(style.get<RightBorder>()));
+    writeBorder(style.get<RightBorder>(), "fo:border-right", props);
 
   if (style.has<Fill>())
   {

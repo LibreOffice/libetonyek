@@ -227,19 +227,45 @@ namespace
 class PatternElement : public IWORKXMLElementContextBase
 {
 public:
-  PatternElement(IWORKXMLParserState &state, deque<double> &value);
+  PatternElement(IWORKXMLParserState &state, optional<IWORKStrokeType> &type, deque<double> &value);
 
 private:
+  virtual void attribute(int name, const char *value);
   virtual IWORKXMLContextPtr_t element(int name);
 
 private:
+  optional<IWORKStrokeType> &m_type;
   deque<double> &m_value;
 };
 
-PatternElement::PatternElement(IWORKXMLParserState &state, deque<double> &value)
+PatternElement::PatternElement(IWORKXMLParserState &state, optional<IWORKStrokeType> &type, deque<double> &value)
   : IWORKXMLElementContextBase(state)
+  , m_type(type)
   , m_value(value)
 {
+}
+
+void PatternElement::attribute(const int name, const char *const value)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::type))
+  {
+    switch (getState().getTokenizer().getId(value))
+    {
+    case IWORKToken::empty :
+      m_type = IWORK_STROKE_TYPE_NONE;
+      break;
+    case IWORKToken::solid :
+      m_type = IWORK_STROKE_TYPE_SOLID;
+      break;
+    case IWORKToken::pattern :
+      m_type = IWORK_STROKE_TYPE_DASHED;
+      break;
+    default :
+      ETONYEK_DEBUG_MSG(("unknown pattern type %s\n", value));
+      break;
+    }
+  }
+  return IWORKXMLElementContextBase::attribute(name, value);
 }
 
 IWORKXMLContextPtr_t PatternElement::element(const int name)
@@ -266,6 +292,7 @@ private:
 
 private:
   optional<IWORKStroke> &m_value;
+  optional<IWORKStrokeType> m_type;
   optional<double> m_width;
   optional<IWORKColor> m_color;
   optional<IWORKLineCap> m_cap;
@@ -276,6 +303,7 @@ private:
 StrokeElement::StrokeElement(IWORKXMLParserState &state, optional<IWORKStroke> &value)
   : IWORKXMLElementContextBase(state)
   , m_value(value)
+  , m_type()
   , m_width()
   , m_color()
   , m_cap()
@@ -317,7 +345,7 @@ IWORKXMLContextPtr_t StrokeElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::color :
     return makeContext<IWORKColorElement>(getState(), m_color);
   case IWORKToken::NS_URI_SF | IWORKToken::pattern :
-    return makeContext<PatternElement>(getState(), m_pattern);
+    return makeContext<PatternElement>(getState(), m_type, m_pattern);
   }
 
   return IWORKXMLContextPtr_t();
@@ -329,6 +357,7 @@ void StrokeElement::endOfElement()
   {
     m_value = IWORKStroke();
     IWORKStroke &value = get(m_value);
+    value.m_type = get_optional_value_or(m_type, IWORK_STROKE_TYPE_SOLID);
     value.m_width = get(m_width);
     if (m_color)
       value.m_color = get(m_color);

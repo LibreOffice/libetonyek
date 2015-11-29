@@ -202,6 +202,7 @@ struct IWORKStroke
 {
   IWORKStroke();
 
+  IWORKStrokeType m_type;
   double m_width;
   IWORKColor m_color;
   IWORKLineJoin m_join;

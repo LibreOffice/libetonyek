@@ -168,7 +168,7 @@ double rad2deg(double value);
 
 librevenge::RVNGString makeColor(const IWORKColor &color);
 
-librevenge::RVNGString makeBorder(const IWORKStroke &stroke);
+void writeBorder(const IWORKStroke &stroke, const char *name, librevenge::RVNGPropertyList &props);
 
 class EndOfStreamException
 {

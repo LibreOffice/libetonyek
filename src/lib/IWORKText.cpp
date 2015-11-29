@@ -237,30 +237,23 @@ void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props
     props.insert("librevenge:tab-stops", tabs);
   }
 
-  if (styleStack.has<ParagraphBorderType>())
+  if (styleStack.has<ParagraphBorderType>() && styleStack.has<ParagraphStroke>())
   {
-    librevenge::RVNGString border;
-
-    if (styleStack.has<ParagraphStroke>())
-    {
-      const IWORKStroke &stroke = styleStack.get<ParagraphStroke>();
-      border = makeBorder(stroke);
-    }
-
+    const IWORKStroke &stroke = styleStack.get<ParagraphStroke>();
     switch (styleStack.get<ParagraphBorderType>())
     {
     case IWORK_BORDER_TYPE_TOP :
-      props.insert("fo:border-top", border);
+      writeBorder(stroke, "fo:border-top", props);
       break;
     case IWORK_BORDER_TYPE_BOTTOM :
-      props.insert("fo:border-bottom", border);
+      writeBorder(stroke, "fo:border-bottom", props);
       break;
     case IWORK_BORDER_TYPE_TOP_AND_BOTTOM :
-      props.insert("fo:border-top", border);
-      props.insert("fo:border-bottom", border);
+      writeBorder(stroke, "fo:border-top", props);
+      writeBorder(stroke, "fo:border-bottom", props);
       break;
     case IWORK_BORDER_TYPE_ALL :
-      props.insert("fo:border", border);
+      writeBorder(stroke, "fo:border", props);
       break;
     default :
       break;

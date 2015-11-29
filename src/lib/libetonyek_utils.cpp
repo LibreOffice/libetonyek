@@ -265,15 +265,18 @@ librevenge::RVNGString makeColor(const IWORKColor &color)
   return str;
 }
 
-librevenge::RVNGString makeBorder(const IWORKStroke &stroke)
+void writeBorder(const IWORKStroke &stroke, const char *const name, librevenge::RVNGPropertyList &props)
 {
+  if (stroke.m_type == IWORK_STROKE_TYPE_NONE)
+    return;
+
   librevenge::RVNGString border;
 
   border.sprintf("%fpt", stroke.m_width);
 
   // The format can represent arbitrary patterns, but we have to
   // fit them to the limited number of options ODF allows...
-  if (stroke.m_pattern.size() >= 2)
+  if ((stroke.m_type == IWORK_STROKE_TYPE_DASHED) && (stroke.m_pattern.size() >= 2))
   {
     const double x = stroke.m_pattern[0];
     const double y = stroke.m_pattern[1];
@@ -289,7 +292,8 @@ librevenge::RVNGString makeBorder(const IWORKStroke &stroke)
 
   border.append(" ");
   border.append(makeColor(stroke.m_color));
-  return border;
+
+  props.insert(name, border);
 }
 
 }
