@@ -233,8 +233,19 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
   {
     const IWORKStroke &stroke = style->get<Stroke>();
 
-    // TODO: interpret pattern
-    props.insert("draw:stroke", "solid");
+    if (stroke.m_pattern.size() >= 2)
+    {
+      props.insert("draw:stroke", "dash");
+      props.insert("draw:dots1", 1);
+      props.insert("draw:dots1-length", stroke.m_pattern[0], RVNG_PERCENT);
+      props.insert("draw:dots2", 1);
+      props.insert("draw:dots2-length", stroke.m_pattern[0], RVNG_PERCENT);
+      props.insert("draw:distance", stroke.m_pattern[1], RVNG_PERCENT);
+    }
+    else
+    {
+      props.insert("draw:stroke", "solid");
+    }
 
     props.insert("svg:stroke-width", pt2in(stroke.m_width));
     props.insert("svg:stroke-color", makeColor(stroke.m_color));
