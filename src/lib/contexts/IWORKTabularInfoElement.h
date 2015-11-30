@@ -10,8 +10,6 @@
 #ifndef IWORKTABULARINFOELEMENT_H_INCLUDED
 #define IWORKTABULARINFOELEMENT_H_INCLUDED
 
-#include <boost/shared_ptr.hpp>
-
 #include "IWORKXMLContextBase.h"
 
 namespace libetonyek
