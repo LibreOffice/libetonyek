@@ -99,6 +99,12 @@ IWORKXMLContextPtr_t makeContext(Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3)
 }
 
 template<typename Context, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+IWORKXMLContextPtr_t makeContext(Arg1 &arg1, Arg2 &arg2, const Arg3 &arg3, const Arg4 &arg4)
+{
+  return IWORKXMLContextPtr_t(new Context(arg1, arg2, arg3, arg4));
+}
+
+template<typename Context, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
 IWORKXMLContextPtr_t makeContext(Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3, const Arg4 &arg4)
 {
   return IWORKXMLContextPtr_t(new Context(arg1, arg2, arg3, arg4));

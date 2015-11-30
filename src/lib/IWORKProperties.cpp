@@ -53,6 +53,8 @@ IWORK_IMPLEMENT_PROPERTY(SFTDefaultBodyCellStyleProperty);
 IWORK_IMPLEMENT_PROPERTY(SFTDefaultFooterRowCellStyleProperty);
 IWORK_IMPLEMENT_PROPERTY(SFTDefaultHeaderColumnCellStyleProperty);
 IWORK_IMPLEMENT_PROPERTY(SFTDefaultHeaderRowCellStyleProperty);
+IWORK_IMPLEMENT_PROPERTY(SFTHeaderColumnRepeatsProperty);
+IWORK_IMPLEMENT_PROPERTY(SFTHeaderRowRepeatsProperty);
 IWORK_IMPLEMENT_PROPERTY(SFTStrokeProperty);
 IWORK_IMPLEMENT_PROPERTY(SFTTableBandedCellFillProperty);
 IWORK_IMPLEMENT_PROPERTY(SFTTableBandedRowsProperty);

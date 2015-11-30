@@ -13,6 +13,7 @@
 #include <ctime>
 
 #include <boost/lexical_cast.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include "libetonyek_xml.h"
 #include "IWORKCollector.h"
@@ -35,6 +36,7 @@ namespace libetonyek
 
 using boost::lexical_cast;
 using boost::optional;
+using boost::shared_ptr;
 using std::string;
 
 namespace
@@ -1204,17 +1206,22 @@ private:
   virtual void attribute(int name, const char *value);
   virtual void endOfAttributes();
   virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  void sendStyle(const IWORKStylePtr_t &style, const shared_ptr<IWORKTable> &table);
 
 private:
   boost::optional<string> m_tableName;
   boost::optional<string> m_tableId;
-
+  boost::optional<ID_t> m_styleRef;
 };
 
 TabularModelElement::TabularModelElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_tableName()
   , m_tableId()
+  , m_styleRef()
 {
 }
 
@@ -1243,9 +1250,57 @@ IWORKXMLContextPtr_t TabularModelElement::element(const int name)
   {
   case IWORKToken::grid | IWORKToken::NS_URI_SF :
     return makeContext<GridElement>(getState());
+  case IWORKToken::tabular_style_ref | IWORKToken::NS_URI_SF :
+    return makeContext<IWORKRefContext>(getState(), m_styleRef);
   }
 
   return IWORKXMLContextPtr_t();
+}
+
+void TabularModelElement::endOfElement()
+{
+  if (bool(getState().m_currentTable))
+  {
+    IWORKStylePtr_t style;
+    if (m_styleRef)
+    {
+      const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_tabularStyles.find(get(m_styleRef));
+      if (it != getState().getDictionary().m_tabularStyles.end())
+        style = it->second;
+    }
+    sendStyle(style, getState().m_currentTable);
+    getState().m_currentTable->setHeaders(
+      get_optional_value_or(m_headerColumns, 0), get_optional_value_or(m_headerRows, 0),
+      get_optional_value_or(m_footerRows, 0));
+  }
+}
+
+void TabularModelElement::sendStyle(const IWORKStylePtr_t &style, const shared_ptr<IWORKTable> &table)
+{
+  assert(bool(table));
+
+  table->setStyle(style);
+  if (style)
+  {
+    using namespace property;
+    if (style->has<SFTTableBandedRowsProperty>())
+      table->setBandedRows(style->get<SFTTableBandedRowsProperty>());
+    bool headerColumnRepeats = false;
+    if (style->has<SFTHeaderColumnRepeatsProperty>())
+      headerColumnRepeats = style->get<SFTHeaderColumnRepeatsProperty>();
+    bool headerRowRepeats = false;
+    if (style->has<SFTHeaderRowRepeatsProperty>())
+      headerRowRepeats = style->get<SFTHeaderRowRepeatsProperty>();
+    table->setRepeated(headerColumnRepeats, headerRowRepeats);
+    if (style->has<SFTDefaultBodyCellStyleProperty>())
+      table->setDefaultCellStyle(IWORKTable::CELL_TYPE_BODY, style->get<SFTDefaultBodyCellStyleProperty>());
+    if (style->has<SFTDefaultHeaderRowCellStyleProperty>())
+      table->setDefaultCellStyle(IWORKTable::CELL_TYPE_ROW_HEADER, style->get<SFTDefaultHeaderRowCellStyleProperty>());
+    if (style->has<SFTDefaultHeaderColumnCellStyleProperty>())
+      table->setDefaultCellStyle(IWORKTable::CELL_TYPE_COLUMN_HEADER, style->get<SFTDefaultHeaderColumnCellStyleProperty>());
+    if (style->has<SFTDefaultFooterRowCellStyleProperty>())
+      table->setDefaultCellStyle(IWORKTable::CELL_TYPE_ROW_FOOTER, style->get<SFTDefaultFooterRowCellStyleProperty>());
+  }
 }
 
 }

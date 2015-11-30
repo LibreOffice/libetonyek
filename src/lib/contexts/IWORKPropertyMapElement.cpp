@@ -9,6 +9,8 @@
 
 #include "IWORKPropertyMapElement.h"
 
+#include <boost/make_shared.hpp>
+
 #include "libetonyek_xml.h"
 #include "IWORKCollector.h"
 #include "IWORKColorElement.h"
@@ -34,10 +36,71 @@
 namespace libetonyek
 {
 
+using boost::make_shared;
+using boost::none;
 using boost::optional;
 
 using std::deque;
 using std::string;
+
+namespace
+{
+
+template<typename Property, int TokenId, int RefTokenId>
+class StylePropertyContext : public IWORKPropertyContextBase
+{
+public:
+  StylePropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap, IWORKStyleMap_t &styleMap);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  IWORKStyleMap_t &m_styleMap;
+  IWORKPropertyMap m_stylePropMap;
+  optional<ID_t> m_ref;
+};
+
+template<typename Property, int TokenId, int RefTokenId>
+StylePropertyContext<Property, TokenId, RefTokenId>::StylePropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap, IWORKStyleMap_t &styleMap)
+  : IWORKPropertyContextBase(state, propMap)
+  , m_styleMap(styleMap)
+  , m_stylePropMap()
+  , m_ref()
+{
+}
+
+template<typename Property, int TokenId, int RefTokenId>
+IWORKXMLContextPtr_t StylePropertyContext<Property, TokenId, RefTokenId>::element(const int name)
+{
+  switch (name)
+  {
+  case TokenId :
+    return makeContext<IWORKStyleContext>(getState(), m_stylePropMap, &m_styleMap, true);
+  case RefTokenId :
+    return makeContext<IWORKRefContext>(getState(), m_ref);
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+template<typename Property, int TokenId, int RefTokenId>
+void StylePropertyContext<Property, TokenId, RefTokenId>::endOfElement()
+{
+  if (m_ref)
+  {
+    IWORKStyleMap_t::const_iterator it = m_styleMap.find(get(m_ref));
+    if (m_styleMap.end() != it)
+      m_propMap.put<Property>(it->second);
+  }
+  else
+  {
+    m_propMap.put<Property>(make_shared<IWORKStyle>(m_stylePropMap, none, none));
+  }
+}
+
+}
 
 namespace
 {
@@ -1222,6 +1285,11 @@ typedef IWORKPropertyContext<property::TextBackground, IWORKColorElement, IWORKT
 
 typedef IWORKPtrPropertyContext<property::Geometry, IWORKGeometryElement, IWORKToken::NS_URI_SF | IWORKToken::geometry> GeometryElement;
 
+typedef StylePropertyContext<property::SFTDefaultBodyCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultBodyCellStylePropertyElement;
+typedef StylePropertyContext<property::SFTDefaultFooterRowCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultFooterRowCellStylePropertyElement;
+typedef StylePropertyContext<property::SFTDefaultHeaderColumnCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultHeaderColumnCellStylePropertyElement;
+typedef StylePropertyContext<property::SFTDefaultHeaderRowCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultHeaderRowCellStylePropertyElement;
+
 typedef IWORKNumericPropertyContext<property::Alignment> AlignmentElement;
 typedef IWORKNumericPropertyContext<property::Baseline> SuperscriptElement;
 typedef IWORKNumericPropertyContext<property::BaselineShift> BaselineShiftElement;
@@ -1238,6 +1306,9 @@ typedef IWORKNumericPropertyContext<property::Outline> OutlineElement;
 typedef IWORKNumericPropertyContext<property::PageBreakBefore> PageBreakBeforeElement;
 typedef IWORKNumericPropertyContext<property::ParagraphBorderType> ParagraphBorderTypeElement;
 typedef IWORKNumericPropertyContext<property::RightIndent> RightIndentElement;
+typedef IWORKNumericPropertyContext<property::SFTHeaderColumnRepeatsProperty> SFTHeaderColumnRepeatsPropertyElement;
+typedef IWORKNumericPropertyContext<property::SFTHeaderRowRepeatsProperty> SFTHeaderRowRepeatsPropertyElement;
+typedef IWORKNumericPropertyContext<property::SFTTableBandedRowsProperty> SFTTableBandedRowsPropertyElement;
 typedef IWORKNumericPropertyContext<property::SpaceAfter> SpaceAfterElement;
 typedef IWORKNumericPropertyContext<property::SpaceBefore> SpaceBeforeElement;
 typedef IWORKNumericPropertyContext<property::Strikethru> StrikethruElement;
@@ -1315,8 +1386,22 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<SFTCellStylePropertyDateTimeFormatElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyDurationFormat :
     return makeContext<SFTCellStylePropertyDurationFormatElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultBodyCellStyleProperty :
+    return makeContext<SFTDefaultBodyCellStylePropertyElement>(getState(), m_propMap, getState().getDictionary().m_cellStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultFooterRowCellStyleProperty :
+    return makeContext<SFTDefaultFooterRowCellStylePropertyElement>(getState(), m_propMap, getState().getDictionary().m_cellStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultHeaderColumnCellStyleProperty :
+    return makeContext<SFTDefaultHeaderColumnCellStylePropertyElement>(getState(), m_propMap, getState().getDictionary().m_cellStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultHeaderRowCellStyleProperty :
+    return makeContext<SFTDefaultHeaderRowCellStylePropertyElement>(getState(), m_propMap, getState().getDictionary().m_cellStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTHeaderColumnRepeatsProperty :
+    return makeContext<SFTHeaderColumnRepeatsPropertyElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTHeaderRowRepeatsProperty :
+    return makeContext<SFTHeaderRowRepeatsPropertyElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTStrokeProperty :
     return makeContext<SFTStrokePropertyElement>(getState(), m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTTableBandedRowsProperty :
+    return makeContext<SFTTableBandedRowsPropertyElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceAfter :
     return makeContext<SpaceAfterElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceBefore :

@@ -58,6 +58,8 @@ IWORK_DECLARE_PROPERTY(SFTDefaultBodyCellStyleProperty, IWORKStylePtr_t);
 IWORK_DECLARE_PROPERTY(SFTDefaultFooterRowCellStyleProperty, IWORKStylePtr_t);
 IWORK_DECLARE_PROPERTY(SFTDefaultHeaderColumnCellStyleProperty, IWORKStylePtr_t);
 IWORK_DECLARE_PROPERTY(SFTDefaultHeaderRowCellStyleProperty, IWORKStylePtr_t);
+IWORK_DECLARE_PROPERTY(SFTHeaderColumnRepeatsProperty, bool);
+IWORK_DECLARE_PROPERTY(SFTHeaderRowRepeatsProperty, bool);
 IWORK_DECLARE_PROPERTY(SFTStrokeProperty, IWORKStroke);
 IWORK_DECLARE_PROPERTY(SFTTableBandedCellFillProperty, IWORKFill);
 IWORK_DECLARE_PROPERTY(SFTTableBandedRowsProperty, bool);

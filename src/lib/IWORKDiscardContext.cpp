@@ -74,6 +74,8 @@ IWORKXMLContextPtr_t IWORKDiscardContext::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::tabs :
     m_data->m_tabStops.clear();
     return makeContext<IWORKTabsElement>(m_state, m_data->m_tabStops);
+  case IWORKToken::NS_URI_SF | IWORKToken::tabular_style :
+    return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_tabularStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::unfiltered :
     m_data->m_mediaContent.reset();
     return makeContext<IWORKUnfilteredElement>(m_state, m_data->m_mediaContent);
