@@ -252,6 +252,11 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
       props.insert("draw:dots2-length", stroke.m_pattern[0], RVNG_PERCENT);
       props.insert("draw:distance", stroke.m_pattern[1], RVNG_PERCENT);
       break;
+    case IWORK_STROKE_TYPE_AUTO :
+      if (style->has<Fill>())
+        props.insert("draw:stroke", "none");
+      else
+        props.insert("draw:stroke", "solid");
     }
 
     props.insert("svg:stroke-width", pt2in(stroke.m_width));

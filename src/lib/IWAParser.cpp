@@ -406,6 +406,7 @@ void IWAParser::readStroke(const IWAMessage &msg, IWORKStroke &stroke)
   }
   if (msg.message(6))
   {
+    stroke.m_type = IWORK_STROKE_TYPE_SOLID;
     if (msg.message(6).uint32(1))
     {
       const optional<IWORKStrokeType> &strokeType = convert<IWORKStrokeType>(get(msg.message(6).uint32(1)));

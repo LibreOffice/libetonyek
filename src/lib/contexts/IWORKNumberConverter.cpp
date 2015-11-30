@@ -184,7 +184,7 @@ optional<IWORKStrokeType> IWORKNumberConverter<IWORKStrokeType>::convert(const u
   case 1 :
     return IWORK_STROKE_TYPE_SOLID;
   case 2 :
-    return IWORK_STROKE_TYPE_NONE;
+    return IWORK_STROKE_TYPE_AUTO;
   }
   return none;
 }
