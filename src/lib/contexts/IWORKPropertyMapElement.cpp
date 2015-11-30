@@ -322,6 +322,9 @@ void StrokeElement::attribute(const int name, const char *const value)
     case IWORKToken::butt :
       m_cap = IWORK_LINE_CAP_BUTT;
       break;
+    case IWORKToken::round :
+      m_cap = IWORK_LINE_CAP_ROUND;
+      break;
     }
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::join :
@@ -329,6 +332,9 @@ void StrokeElement::attribute(const int name, const char *const value)
     {
     case IWORKToken::miter :
       m_join = IWORK_LINE_JOIN_MITER;
+      break;
+    case IWORKToken::round :
+      m_join = IWORK_LINE_JOIN_ROUND;
       break;
     }
     break;

@@ -345,6 +345,7 @@ enum
   natural,
   radial,
   relative,
+  round,
   solid,
   star,
   stretch,

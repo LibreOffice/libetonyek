@@ -278,6 +278,9 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
     case IWORK_LINE_JOIN_MITER :
       props.insert("svg:stroke-linejoin", "miter");
       break;
+    case IWORK_LINE_JOIN_ROUND :
+      props.insert("svg:stroke-linejoin", "round");
+      break;
     default :
       props.insert("svg:stroke-linejoin", "none");
     }

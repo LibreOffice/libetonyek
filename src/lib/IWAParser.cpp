@@ -402,6 +402,9 @@ void IWAParser::readStroke(const IWAMessage &msg, IWORKStroke &stroke)
     case 0 :
       stroke.m_join = IWORK_LINE_JOIN_MITER;
       break;
+    case 1 :
+      stroke.m_join = IWORK_LINE_JOIN_ROUND;
+      break;
     }
   }
   if (msg.message(6))
