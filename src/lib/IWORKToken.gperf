@@ -224,6 +224,9 @@ n,n
 name,name
 natural,natural
 naturalSize,naturalSize
+num-footer-rows,num_footer_rows
+num-header-columns,num_header_columns
+num-header-rows,num_header_rows
 number,number
 number-format,number_format
 numcols, numcols

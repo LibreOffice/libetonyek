@@ -1215,6 +1215,9 @@ private:
   boost::optional<string> m_tableName;
   boost::optional<string> m_tableId;
   boost::optional<ID_t> m_styleRef;
+  boost::optional<int> m_headerColumns;
+  boost::optional<int> m_headerRows;
+  boost::optional<int> m_footerRows;
 };
 
 TabularModelElement::TabularModelElement(IWORKXMLParserState &state)
@@ -1222,6 +1225,9 @@ TabularModelElement::TabularModelElement(IWORKXMLParserState &state)
   , m_tableName()
   , m_tableId()
   , m_styleRef()
+  , m_headerColumns()
+  , m_headerRows()
+  , m_footerRows()
 {
 }
 
@@ -1231,6 +1237,15 @@ void TabularModelElement::attribute(const int name, const char *value)
   {
   case IWORKToken::name | IWORKToken::NS_URI_SF :
     m_tableName = value;
+    break;
+  case IWORKToken::num_footer_rows | IWORKToken::NS_URI_SF :
+    m_footerRows = try_int_cast(value);
+    break;
+  case IWORKToken::num_header_columns | IWORKToken::NS_URI_SF :
+    m_headerColumns = try_int_cast(value);
+    break;
+  case IWORKToken::num_header_rows | IWORKToken::NS_URI_SF :
+    m_headerRows = try_int_cast(value);
     break;
   case IWORKToken::id | IWORKToken::NS_URI_SF :
     m_tableId = "SFTGlobalID_" + string(value);
