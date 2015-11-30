@@ -1213,6 +1213,8 @@ private:
 
 TabularModelElement::TabularModelElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
+  , m_tableName()
+  , m_tableId()
 {
 }
 
