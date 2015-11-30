@@ -19,7 +19,6 @@ namespace libetonyek
 
 class IWORKTabularInfoElement : public IWORKXMLElementContextBase
 {
-
 public:
   explicit IWORKTabularInfoElement(IWORKXMLParserState &state);
 
@@ -27,7 +26,6 @@ private:
   virtual void startOfElement();
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
-
 };
 
 }
