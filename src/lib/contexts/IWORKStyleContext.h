@@ -21,8 +21,6 @@
 namespace libetonyek
 {
 
-struct IWORKDictionary;
-
 class IWORKStyleContext : public IWORKXMLElementContextBase
 {
 public:
