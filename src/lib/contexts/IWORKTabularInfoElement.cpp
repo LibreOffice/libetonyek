@@ -1268,7 +1268,6 @@ IWORKXMLContextPtr_t IWORKTabularInfoElement::element(const int name)
   {
   case IWORKToken::geometry | IWORKToken::NS_URI_SF :
     return makeContext<IWORKGeometryElement>(getState());
-    break;
   case IWORKToken::tabular_model | IWORKToken::NS_URI_SF :
     return makeContext<TabularModelElement>(getState());
   }
