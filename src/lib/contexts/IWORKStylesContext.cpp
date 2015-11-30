@@ -32,7 +32,6 @@ IWORKXMLContextPtr_t IWORKStylesContext::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::connection_style :
   case IWORKToken::NS_URI_SF | IWORKToken::headline_style :
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
-  case IWORKToken::NS_URI_SF | IWORKToken::slide_style :
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_style :
     return makeContext<IWORKStyleContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::cell_style :

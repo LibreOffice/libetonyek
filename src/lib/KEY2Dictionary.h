@@ -33,6 +33,7 @@ namespace libetonyek
 struct KEY2Dictionary : public IWORKDictionary
 {
   IWORKStyleMap_t m_placeholderStyles;
+  IWORKStyleMap_t m_slideStyles;
 
   KEYPlaceholderMap_t m_bodyPlaceholders;
   KEYPlaceholderMap_t m_titlePlaceholders;

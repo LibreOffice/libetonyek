@@ -219,7 +219,6 @@ enum
   shape,
   size,
   sl,
-  slide_style,
   so,
   spaceAfter,
   spaceBefore,

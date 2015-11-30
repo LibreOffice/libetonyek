@@ -193,6 +193,8 @@ IWORKXMLContextPtr_t StylesContext::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style :
     return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_placeholderStyles);
+  case KEY2Token::NS_URI_KEY | KEY2Token::slide_style :
+    return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_slideStyles);
   }
 
   return KEY2XMLContextBase<IWORKStylesContext>::element(name);
@@ -1059,10 +1061,14 @@ private:
   virtual void startOfElement();
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
+
+private:
+  optional<ID_t> m_styleRef;
 };
 
 SlideElement::SlideElement(KEY2ParserState &state)
   : KEY2XMLElementContextBase(state)
+  , m_styleRef()
 {
 }
 
@@ -1080,6 +1086,8 @@ IWORKXMLContextPtr_t SlideElement::element(const int name)
     return makeContext<NotesElement>(getState());
   case KEY2Token::NS_URI_KEY | KEY2Token::page :
     return makeContext<PageElement>(getState());
+  case KEY2Token::NS_URI_KEY | KEY2Token::style_ref :
+    return makeContext<IWORKRefContext>(getState(), m_styleRef);
   case KEY2Token::NS_URI_KEY | KEY2Token::stylesheet :
     return makeContext<StylesheetElement>(getState());
   case KEY2Token::NS_URI_KEY | KEY2Token::title_placeholder :
@@ -1097,6 +1105,12 @@ void SlideElement::endOfElement()
 {
   if (isCollector())
   {
+    if (m_styleRef)
+    {
+      const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_slideStyles.find(get(m_styleRef));
+      if (it != getState().getDictionary().m_slideStyles.end())
+        getCollector().setSlideStyle(it->second);
+    }
     getCollector().collectPage();
     getCollector().endPage();
   }
@@ -1295,6 +1309,8 @@ IWORKXMLContextPtr_t DiscardContext::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style :
     return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_placeholderStyles);
+  case KEY2Token::NS_URI_KEY | KEY2Token::slide_style :
+    return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_slideStyles);
   case KEY2Token::NS_URI_KEY | KEY2Token::stylesheet :
     if (!m_savedStylesheet)
     {

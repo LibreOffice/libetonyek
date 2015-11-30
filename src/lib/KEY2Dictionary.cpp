@@ -15,6 +15,7 @@ namespace libetonyek
 KEY2Dictionary::KEY2Dictionary()
   : IWORKDictionary()
   , m_placeholderStyles()
+  , m_slideStyles()
   , m_bodyPlaceholders()
   , m_titlePlaceholders()
 {

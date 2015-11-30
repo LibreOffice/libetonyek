@@ -44,9 +44,11 @@ presentation,presentation
 size,size
 slide,slide
 slide-list,slide_list
+slide-style,slide_style
 sticky-note,sticky_note
 sticky-notes,sticky_notes
 string,string
+style-ref,style_ref
 stylesheet,stylesheet
 text,text
 theme,theme
