@@ -1,49 +1,51 @@
 = Format coverage =
 
-== Currently supported ==
+== Supported ==
+
+=== Common ===
 
 * shapes
-  + simple shapes
-    - rectangle
-    - triangle
-    - circle
-    - generic path
+  + simple shapes (rectangle, triangle, circle, generic path)
   + text shapes
-  + parametrizable shapes
-    - polygon
-    - star
-    - arrow
-    - double-sided arrow
+  + parametrizable shapes (polygon, star, arrows)
   + transformations
-* presentation text
+  + style (line stroke, fill, opacity)
+* text
   + formatting attributes
+  + language
 * media
   + images
   + movies and sounds
     - just insterted into the output. No fancy stuff like autoplay etc.
 * tables
   + structure
-  + text cells
-  + number cells
-    - but no numeric formats
+  + cell content (text, number, date, duration)
+  + cell style (border, fill)
+  + cell number format
++ links
+* document metadata (author, title,...)
+
+=== Keynote ===
+
 * comments aka sticky notes
 * (slide) notes
 
+=== Numbers ===
+
+* formulas
+
+=== Pages ===
+
+* headers and footers
+* footnotes / endnotes
+* inline images
+
 == Planned ==
 
-* shape attributes (background / line)
 * the rest of parametrizable shapes
 * transitions
 * animations
 * auto-fitting of presentation text
 * better handling of bullet lists
 * connectors
-* more cell types (date, duration)
-
-== Unlikely to be supported ==
-
 * charts
-  + because there is a lot of stuff to do and it is an area I know very
-    little about
-  + it would be best to handle them through a separate API anyway
-* formulas in tables
