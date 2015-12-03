@@ -1,3 +1,10 @@
+libetonyek 0.1.5
+
+- Parse slide background.
+- Parse shape style: fill, line stroke, opacity, shadow.
+- Parse table style: default cell borders, background etc.
+- Various fixes and improvements.
+
 libetonyek 0.1.4
 
 - Parse formulas.
