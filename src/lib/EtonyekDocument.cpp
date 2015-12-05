@@ -36,6 +36,7 @@
 #include "NUM1Dictionary.h"
 #include "NUM1Parser.h"
 #include "NUM1Token.h"
+#include "NUM3Parser.h"
 #include "PAGCollector.h"
 #include "PAG1Dictionary.h"
 #include "PAG1Parser.h"
@@ -394,9 +395,20 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   IWORKSpreadsheetRedirector redirector(document);
   NUMCollector collector(&redirector);
-  NUM1Dictionary dict;
-  NUM1Parser parser(info.m_input, info.m_package, collector, &dict);
-  return parser.parse();
+  if (info.m_format == FORMAT_XML2)
+  {
+    NUM1Dictionary dict;
+    NUM1Parser parser(info.m_input, info.m_package, collector, &dict);
+    return parser.parse();
+  }
+  else if (info.m_format == FORMAT_BINARY)
+  {
+    NUM3Parser parser(info.m_fragments, info.m_package, collector);
+    return parser.parse();
+  }
+
+  ETONYEK_DEBUG_MSG(("EtonyekDocument::parse: unhandled format %d\n", info.m_format));
+  return false;
 }
 catch (...)
 {

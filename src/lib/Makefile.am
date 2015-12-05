@@ -145,6 +145,9 @@ libetonyek_internal_la_SOURCES = \
 	NUM1Token.cpp \
 	NUM1Token.h \
 	NUM1XMLContextBase.h \
+	NUM3ObjectType.h \
+	NUM3Parser.cpp \
+	NUM3Parser.h \
 	NUMCollector.cpp \
 	NUMCollector.h \
 	PAG1Dictionary.cpp \
