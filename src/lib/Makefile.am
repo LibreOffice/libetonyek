@@ -156,6 +156,9 @@ libetonyek_internal_la_SOURCES = \
 	PAG1Token.cpp \
 	PAG1Token.h \
 	PAG1XMLContextBase.h \
+	PAG5ObjectType.h \
+	PAG5Parser.cpp \
+	PAG5Parser.h \
 	PAGCollector.cpp \
 	PAGCollector.h \
 	PAGEnum.h \

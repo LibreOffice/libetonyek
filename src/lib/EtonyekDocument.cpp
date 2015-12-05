@@ -40,6 +40,7 @@
 #include "PAG1Dictionary.h"
 #include "PAG1Parser.h"
 #include "PAG1Token.h"
+#include "PAG5Parser.h"
 
 using boost::optional;
 using boost::scoped_ptr;
@@ -416,9 +417,20 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   IWORKTextRedirector redirector(document);
   PAGCollector collector(&redirector);
-  PAG1Dictionary dict;
-  PAG1Parser parser(info.m_input, info.m_package, collector, &dict);
-  return parser.parse();
+  if (info.m_format == FORMAT_XML2)
+  {
+    PAG1Dictionary dict;
+    PAG1Parser parser(info.m_input, info.m_package, collector, &dict);
+    return parser.parse();
+  }
+  else if (info.m_format == FORMAT_BINARY)
+  {
+    PAG5Parser parser(info.m_fragments, info.m_package, collector);
+    return parser.parse();
+  }
+
+  ETONYEK_DEBUG_MSG(("EtonyekDocument::parse: unhandled format %d\n", info.m_format));
+  return false;
 }
 catch (...)
 {
