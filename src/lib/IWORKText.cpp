@@ -390,6 +390,13 @@ void IWORKText::insertTab()
   m_inSpan = true;
 }
 
+void IWORKText::insertSpace()
+{
+  flushSpan();
+  m_elements.addInsertSpace();
+  m_inSpan = true;
+}
+
 void IWORKText::insertLineBreak()
 {
   flushSpan();

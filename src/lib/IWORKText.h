@@ -46,6 +46,7 @@ public:
 
   void insertText(const std::string &text);
   void insertTab();
+  void insertSpace();
   void insertLineBreak();
 
   void insertInlineContent(const IWORKOutputElements &elements);
