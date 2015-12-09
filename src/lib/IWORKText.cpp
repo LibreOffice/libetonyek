@@ -275,93 +275,103 @@ IWORKText::IWORKText(const bool discardEmptyContent)
   : m_layoutStyleStack()
   , m_paraStyleStack()
   , m_elements()
-  , m_sectionOpened(false)
-  , m_currentParaStyle()
-  , m_paraOpened(false)
+  , m_layoutStyle()
+  , m_inSection(false)
+  , m_paraStyle()
+  , m_inPara(false)
     // FIXME: This will work fine when encountering real empty text block, i.e., with a single
     // empty paragraph. But it will cause a loss of a leading empty paragraph otherwise. It is
     // good enough for now, though.
   , m_ignoreEmptyPara(discardEmptyContent)
-  , m_currentSpanStyle()
-  , m_spanOpened(false)
-  , m_pendingSpanClose(false)
+  , m_spanStyle()
+  , m_spanStyleChanged(false)
   , m_inSpan(false)
+  , m_oldSpanStyle()
 {
 }
 
-void IWORKText::pushLayoutStyle(const IWORKStylePtr_t &style)
+void IWORKText::pushBaseLayoutStyle(const IWORKStylePtr_t &style)
 {
   m_layoutStyleStack.push(style);
 }
 
-void IWORKText::pushParagraphStyle(const IWORKStylePtr_t &style)
+void IWORKText::pushBaseParagraphStyle(const IWORKStylePtr_t &style)
 {
   m_paraStyleStack.push(style);
 }
 
-void IWORKText::openLayout(const IWORKStylePtr_t &style)
+void IWORKText::setLayoutStyle(const IWORKStylePtr_t &style)
 {
-  assert(!m_paraOpened);
-
-  m_layoutStyleStack.push(style);
-
-  // TODO: Should a section be always created? Maybe check if the property-list is non-empty?
-  if (bool(style))
-  {
-    RVNGPropertyList props;
-    fillSectionPropList(m_layoutStyleStack, props);
-    m_elements.addOpenSection(props);
-    m_sectionOpened = true;
-  }
+  m_layoutStyle = style;
+  m_checkedSection = false;
+  m_sectionProps.clear();
 }
 
-void IWORKText::closeLayout()
+void IWORKText::flushLayout()
 {
-  assert(!m_paraOpened);
-
-  if (m_sectionOpened)
-    m_elements.addCloseSection();
-  m_layoutStyleStack.pop();
+  if (m_inSection)
+    closeSection();
 }
 
-void IWORKText::openParagraph(const IWORKStylePtr_t &style)
+void IWORKText::openSection()
 {
-  assert(!m_paraOpened);
+  assert(!m_inSection);
+  assert(!m_inPara);
+  assert(!m_sectionProps.empty());
 
-  // A paragraph might have to be closed an then opened again, if there
-  // is a block content in it. That is why we only open them when needed.
-  m_currentParaStyle = style;
+  m_elements.addOpenSection(m_sectionProps);
+  m_inSection = true;
 }
 
-void IWORKText::closeParagraph()
+void IWORKText::closeSection()
 {
-  if (!m_paraOpened && !m_ignoreEmptyPara)
-    doOpenPara(); // empty paragraphs are allowed, contrary to empty spans
-  if (m_paraOpened)
-    doClosePara();
+  assert(m_inSection);
+
+  if (m_inPara)
+    closePara();
+  m_elements.addCloseSection();
+  m_inSection = false;
+}
+
+void IWORKText::setParagraphStyle(const IWORKStylePtr_t &style)
+{
+  m_paraStyle = style;
+}
+
+void IWORKText::flushParagraph()
+{
+  if (!m_inPara && !m_ignoreEmptyPara)
+    openPara(); // empty paragraphs are allowed, contrary to empty spans
+  if (m_inSpan)
+    closeSpan();
+  if (m_inPara)
+    closePara();
   m_ignoreEmptyPara = false;
 }
 
-void IWORKText::openSpan(const IWORKStylePtr_t &style)
+void IWORKText::setSpanStyle(const IWORKStylePtr_t &style)
 {
-  if (m_inSpan) // there was an implicit span
-    m_pendingSpanClose = true;
-  m_currentSpanStyle = style;
+  m_spanStyleChanged |= m_spanStyle != style;
+  m_spanStyle = style;
 }
 
-void IWORKText::closeSpan()
+void IWORKText::flushSpan()
 {
-  m_currentSpanStyle.reset();
-  m_pendingSpanClose = true;
+  if (m_inSpan)
+    closeSpan();
 }
 
 void IWORKText::openLink(const std::string &url)
 {
-  if (!m_paraOpened)
-    doOpenPara();
-  if (m_spanOpened)
-    doCloseSpan(); // A link is always outside of a span
+  if (!m_inPara)
+    openPara();
+  if (m_inSpan)
+  {
+    m_oldSpanStyle = m_spanStyle;
+    closeSpan(); // A link is always outside of a span
+  }
 
+  // TODO: handle link overflowing to next paragraph
   librevenge::RVNGPropertyList props;
   props.insert("xlink:type", "simple");
   props.insert("xlink:href", url.c_str());
@@ -370,51 +380,63 @@ void IWORKText::openLink(const std::string &url)
 
 void IWORKText::closeLink()
 {
-  if (m_spanOpened)
-    doCloseSpan();
+  if (m_inSpan)
+    closeSpan();
+  m_spanStyle = m_oldSpanStyle;
+  m_oldSpanStyle.reset();
 
   m_elements.addCloseLink();
 }
 
 void IWORKText::insertText(const std::string &text)
 {
-  flushSpan();
+  if (m_inSpan && m_spanStyleChanged)
+    closeSpan();
+  if (!m_inSpan)
+    openSpan();
   m_elements.addInsertText(librevenge::RVNGString(text.c_str()));
-  m_inSpan = true;
 }
 
 void IWORKText::insertTab()
 {
-  flushSpan();
+  if (m_inSpan && m_spanStyleChanged)
+    closeSpan();
+  if (!m_inSpan)
+    openSpan();
   m_elements.addInsertTab();
-  m_inSpan = true;
 }
 
 void IWORKText::insertSpace()
 {
-  flushSpan();
+  if (m_inSpan && m_spanStyleChanged)
+    closeSpan();
+  if (!m_inSpan)
+    openSpan();
   m_elements.addInsertSpace();
-  m_inSpan = true;
 }
 
 void IWORKText::insertLineBreak()
 {
-  flushSpan();
+  if (m_inSpan && m_spanStyleChanged)
+    closeSpan();
+  if (!m_inSpan)
+    openSpan();
   m_elements.addInsertLineBreak();
-  m_inSpan = true;
 }
 
 void IWORKText::insertInlineContent(const IWORKOutputElements &elements)
 {
-  flushSpan();
+  if (!m_inSpan)
+    openSpan();
   m_elements.append(elements);
-  m_inSpan = true;
 }
 
 void IWORKText::insertBlockContent(const IWORKOutputElements &elements)
 {
-  if (m_paraOpened)
-    doClosePara();
+  if (m_inPara)
+    closePara();
+  if (!m_inSection and needsSection())
+    openSection();
   m_elements.append(elements);
   m_ignoreEmptyPara = true;
 }
@@ -424,64 +446,68 @@ bool IWORKText::empty() const
   return m_elements.empty();
 }
 
-void IWORKText::doOpenPara()
+void IWORKText::openPara()
 {
-  assert(!m_paraOpened);
+  assert(!m_inPara);
 
-  m_paraStyleStack.push(m_currentParaStyle);
+  if (!m_inSection and needsSection())
+    openSection();
+
+  m_paraStyleStack.push(m_paraStyle);
   librevenge::RVNGPropertyList paraProps;
   fillParaPropList(m_paraStyleStack, paraProps);
+  m_paraStyleStack.pop();
   m_elements.addOpenParagraph(paraProps);
-  m_paraOpened = true;
+  m_inPara = true;
 }
 
-void IWORKText::doClosePara()
+void IWORKText::closePara()
 {
-  assert(m_paraOpened);
+  assert(m_inPara);
 
-  if (m_spanOpened)
-    doCloseSpan();
+  if (m_inSpan)
+    closeSpan();
 
   m_elements.addCloseParagraph();
-  m_paraOpened = false;
-  m_paraStyleStack.pop();
+  m_inPara = false;
 }
 
-void IWORKText::doOpenSpan()
+void IWORKText::openSpan()
 {
-  assert(!m_pendingSpanClose);
+  assert(!m_inSpan);
 
-  if (!m_paraOpened)
-    doOpenPara();
-  assert(m_paraOpened);
+  if (!m_inPara)
+    openPara();
 
+  m_paraStyleStack.push(m_paraStyle);
+  m_paraStyleStack.push(m_spanStyle);
   librevenge::RVNGPropertyList props;
-  IWORKStyleStack styleStack(m_paraStyleStack);
-  styleStack.push(m_currentSpanStyle);
-  fillCharPropList(styleStack, props);
+  fillCharPropList(m_paraStyleStack, props);
+  m_paraStyleStack.pop();
+  m_paraStyleStack.pop();
   m_elements.addOpenSpan(props);
-  m_spanOpened = true;
+  m_inSpan = true;
+  m_spanStyleChanged = false;
 }
 
-void IWORKText::doCloseSpan()
+void IWORKText::closeSpan()
 {
-  assert(m_paraOpened);
+  assert(m_inSpan);
 
-  if (m_spanOpened)
-  {
-    m_elements.addCloseSpan();
-    m_spanOpened = false;
-  }
-  m_pendingSpanClose = false;
+  m_elements.addCloseSpan();
   m_inSpan = false;
 }
 
-void IWORKText::flushSpan()
+bool IWORKText::needsSection() const
 {
-  if (m_pendingSpanClose)
-    doCloseSpan();
-  if (!m_spanOpened)
-    doOpenSpan();
+  if (!m_checkedSection)
+  {
+    IWORKStyleStack styleStack(m_layoutStyleStack);
+    styleStack.push(m_layoutStyle);
+    fillSectionPropList(styleStack, m_sectionProps);
+    m_checkedSection = true;
+  }
+  return !m_sectionProps.empty();
 }
 
 }

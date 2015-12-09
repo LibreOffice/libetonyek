@@ -16,6 +16,8 @@
 
 #include <glm/glm.hpp>
 
+#include <librevenge/librevenge.h>
+
 #include "IWORKStyle_fwd.h"
 #include "IWORKStyleStack.h"
 #include "IWORKOutputElements.h"
@@ -29,17 +31,25 @@ class IWORKText
 public:
   explicit IWORKText(bool discardEmptyContent);
 
-  void pushLayoutStyle(const IWORKStylePtr_t &style);
-  void pushParagraphStyle(const IWORKStylePtr_t &style);
+  /// Set style used as base for all layout styles in this text.
+  void pushBaseLayoutStyle(const IWORKStylePtr_t &style);
+  /// Set style used as base for all paragraph styles in this text.
+  void pushBaseParagraphStyle(const IWORKStylePtr_t &style);
 
-  void openLayout(const IWORKStylePtr_t &style = IWORKStylePtr_t());
-  void closeLayout();
+  /// Set style used for the next layout.
+  void setLayoutStyle(const IWORKStylePtr_t &style);
+  /// Flush the current layout.
+  void flushLayout();
 
-  void openParagraph(const IWORKStylePtr_t &style = IWORKStylePtr_t());
-  void closeParagraph();
+  /// Set style used for the next paragraph.
+  void setParagraphStyle(const IWORKStylePtr_t &style);
+  /// Flush the current paragraph.
+  void flushParagraph();
 
-  void openSpan(const IWORKStylePtr_t &style = IWORKStylePtr_t());
-  void closeSpan();
+  /// Set style used for the next span.
+  void setSpanStyle(const IWORKStylePtr_t &style);
+  /// Flush the current span.
+  void flushSpan();
 
   void openLink(const std::string &url);
   void closeLink();
@@ -57,13 +67,15 @@ public:
   void draw(IWORKOutputElements &elements);
 
 private:
-  void doOpenPara();
-  void doClosePara();
+  void openSection();
+  void closeSection();
+  bool needsSection() const;
 
-  void doOpenSpan();
-  void doCloseSpan();
+  void openPara();
+  void closePara();
 
-  void flushSpan();
+  void openSpan();
+  void closeSpan();
 
 private:
   IWORKStyleStack m_layoutStyleStack;
@@ -71,16 +83,20 @@ private:
 
   IWORKOutputElements m_elements;
 
-  bool m_sectionOpened;
+  IWORKStylePtr_t m_layoutStyle;
+  bool m_inSection;
+  mutable librevenge::RVNGPropertyList m_sectionProps;
+  mutable bool m_checkedSection;
 
-  IWORKStylePtr_t m_currentParaStyle;
-  bool m_paraOpened;
+  IWORKStylePtr_t m_paraStyle;
+  bool m_inPara;
   bool m_ignoreEmptyPara;
 
-  IWORKStylePtr_t m_currentSpanStyle;
-  bool m_spanOpened;
-  bool m_pendingSpanClose;
+  IWORKStylePtr_t m_spanStyle;
+  bool m_spanStyleChanged;
   bool m_inSpan;
+
+  IWORKStylePtr_t m_oldSpanStyle;
 };
 
 }

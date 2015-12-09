@@ -75,7 +75,7 @@ void IWORKPElement::endOfElement()
 {
   ensureOpened();
   if (bool(getState().m_currentText))
-    getState().m_currentText->closeParagraph();
+    getState().m_currentText->flushParagraph();
 }
 
 void IWORKPElement::ensureOpened()
@@ -83,7 +83,7 @@ void IWORKPElement::ensureOpened()
   if (!m_opened)
   {
     if (bool(getState().m_currentText))
-      getState().m_currentText->openParagraph(m_style);
+      getState().m_currentText->setParagraphStyle(m_style);
     m_opened = true;
   }
 }

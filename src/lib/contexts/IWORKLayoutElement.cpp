@@ -52,7 +52,7 @@ void IWORKLayoutElement::endOfElement()
   if (m_opened)
   {
     if (bool(getState().m_currentText))
-      getState().m_currentText->closeLayout();
+      getState().m_currentText->flushLayout();
   }
 }
 
@@ -61,7 +61,7 @@ void IWORKLayoutElement::open()
   assert(!m_opened);
 
   if (bool(getState().m_currentText))
-    getState().m_currentText->openLayout(m_style);
+    getState().m_currentText->setLayoutStyle(m_style);
   m_opened = true;
 }
 

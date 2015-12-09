@@ -67,7 +67,13 @@ void IWORKSpanElement::text(const char *const value)
 void IWORKSpanElement::endOfElement()
 {
   if (m_opened && bool(getState().m_currentText))
-    getState().m_currentText->closeSpan();
+  {
+    getState().m_currentText->flushSpan();
+    // This is needed to handle mixed paragraph content correctly. If
+    // there is a plain text following a span, it must not have the
+    // style of the preceding span.
+    getState().m_currentText->setSpanStyle(IWORKStylePtr_t());
+  }
 }
 
 void IWORKSpanElement::ensureOpened()
@@ -75,7 +81,7 @@ void IWORKSpanElement::ensureOpened()
   if (!m_opened)
   {
     if (bool(getState().m_currentText))
-      getState().m_currentText->openSpan(m_style);
+      getState().m_currentText->setSpanStyle(m_style);
     m_opened = true;
   }
 }

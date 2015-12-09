@@ -621,22 +621,22 @@ bool IWAParser::parseText(const unsigned id)
     for (map<unsigned, pair<IWORKStylePtr_t, IWORKStylePtr_t> >::const_iterator it = textSpans.begin(); it != textSpans.end();)
     {
       if (bool(it->second.first))
-        m_currentText->openParagraph(it->second.first);
-      m_currentText->openSpan(it->second.second);
+        m_currentText->setParagraphStyle(it->second.first);
+      m_currentText->setSpanStyle(it->second.second);
       const unsigned start = it->first;
       ++it;
       if (it == textSpans.end())
       {
         writeText(get(text), start, length, true, *m_currentText);
-        m_currentText->closeSpan();
-        m_currentText->closeParagraph();
+        m_currentText->flushSpan();
+        m_currentText->flushParagraph();
       }
       else
       {
         writeText(get(text), start, it->first, bool(it->second.first), *m_currentText);
-        m_currentText->closeSpan();
+        m_currentText->flushSpan();
         if (bool(it->second.first))
-          m_currentText->closeParagraph();
+          m_currentText->flushParagraph();
       }
     }
   }
@@ -1447,12 +1447,10 @@ void IWAParser::parseComment(const unsigned id)
 
   if (get(msg).string(1))
   {
-    m_currentText->openParagraph(make_shared<IWORKStyle>(IWORKPropertyMap(), none, none));
-    m_currentText->openSpan(IWORKStylePtr_t());
     const string &text = get(get(msg).string(1));
     writeText(text, 0, text.size(), false, *m_currentText);
-    m_currentText->closeSpan();
-    m_currentText->closeParagraph();
+    m_currentText->flushSpan();
+    m_currentText->flushParagraph();
   }
 }
 
@@ -1731,11 +1729,9 @@ void IWAParser::parseTile(const unsigned id)
 
         if (bool(text))
         {
-          m_currentText->openParagraph();
-          m_currentText->openSpan();
           m_currentText->insertText(get(text));
-          m_currentText->closeSpan();
-          m_currentText->closeParagraph();
+          m_currentText->flushSpan();
+          m_currentText->flushParagraph();
         }
         else if (textRef)
         {
@@ -1763,23 +1759,21 @@ void IWAParser::parseTile(const unsigned id)
         if (m_currentTable->m_style->has<property::FontName>())
         {
           defaultProps.put<property::FontName>(m_currentTable->m_style->get<property::FontName>());
-          m_currentText->pushParagraphStyle(make_shared<IWORKStyle>(defaultProps, none, none));
+          m_currentText->pushBaseParagraphStyle(make_shared<IWORKStyle>(defaultProps, none, none));
         }
       }
 
       // 2b. Set default para and layout style
-      m_currentText->pushLayoutStyle(m_currentTable->m_table->getDefaultLayoutStyle(column, row));
-      m_currentText->pushParagraphStyle(m_currentTable->m_table->getDefaultParagraphStyle(column, row));
+      m_currentText->pushBaseLayoutStyle(m_currentTable->m_table->getDefaultLayoutStyle(column, row));
+      m_currentText->pushBaseParagraphStyle(m_currentTable->m_table->getDefaultParagraphStyle(column, row));
 
       // 2c. Insert text
       if (bool(text))
       {
-        m_currentText->openParagraph();
-        m_currentText->openSpan();
         // TODO: handle embedded spaces and tabs (I assume line breaks are not allowed)
         m_currentText->insertText(get(text));
-        m_currentText->closeSpan();
-        m_currentText->closeParagraph();
+        m_currentText->flushSpan();
+        m_currentText->flushParagraph();
       }
       else if (textRef)
       {

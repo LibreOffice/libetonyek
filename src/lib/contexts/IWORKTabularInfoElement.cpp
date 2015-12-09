@@ -857,9 +857,9 @@ void TElement::startOfElement()
     styleStack.push(getState().m_tableData->m_style);
     using namespace property;
     if (styleStack.has<SFTCellStylePropertyParagraphStyle>())
-      getState().m_currentText->pushParagraphStyle(styleStack.get<SFTCellStylePropertyParagraphStyle>());
+      getState().m_currentText->pushBaseParagraphStyle(styleStack.get<SFTCellStylePropertyParagraphStyle>());
     if (styleStack.has<SFTCellStylePropertyLayoutStyle>())
-      getState().m_currentText->pushLayoutStyle(styleStack.get<SFTCellStylePropertyLayoutStyle>());
+      getState().m_currentText->pushBaseLayoutStyle(styleStack.get<SFTCellStylePropertyLayoutStyle>());
   }
 }
 
