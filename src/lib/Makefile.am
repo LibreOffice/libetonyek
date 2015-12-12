@@ -32,6 +32,7 @@ libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_LDFLAGS = $(versio
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
 	EtonyekDocument.cpp
 
+libetonyek_internal_la_CPPFLAGS = -DBOOST_SPIRIT_USE_PHOENIX_V3
 libetonyek_internal_la_SOURCES = \
 	IWAField.cpp \
 	IWAField.h \
