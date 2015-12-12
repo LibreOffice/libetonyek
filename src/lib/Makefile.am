@@ -45,6 +45,8 @@ libetonyek_internal_la_SOURCES = \
 	IWAReader.h \
 	IWASnappyStream.cpp \
 	IWASnappyStream.h \
+	IWAText.cpp \
+	IWAText.h \
 	IWORKChainedTokenizer.cpp \
 	IWORKChainedTokenizer.h \
 	IWORKChart.cpp \
