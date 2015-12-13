@@ -14,6 +14,7 @@
 
 #include "IWORKCollector.h"
 #include "IWORKPath_fwd.h"
+#include "IWORKStyle_fwd.h"
 #include "KEYTypes.h"
 #include "KEYTypes_fwd.h"
 
@@ -62,7 +63,7 @@ private:
   struct Slide
   {
     IWORKOutputElements m_content;
-    boost::shared_ptr<IWORKStyle> m_style;
+    IWORKStylePtr_t m_style;
   };
 
 private:

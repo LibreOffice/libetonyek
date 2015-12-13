@@ -13,12 +13,11 @@
 #include <map>
 #include <string>
 
-#include <boost/shared_ptr.hpp>
+#include "IWORKStyle_fwd.h"
 
 namespace libetonyek
 {
 
-class IWORKStyle;
 class IWORKText;
 
 class IWAText
@@ -26,8 +25,8 @@ class IWAText
 public:
   explicit IWAText(const std::string text);
 
-  void setParagraphs(const std::map<unsigned, boost::shared_ptr<IWORKStyle> > &paras);
-  void setSpans(const std::map<unsigned, boost::shared_ptr<IWORKStyle> > &spans);
+  void setParagraphs(const std::map<unsigned, IWORKStylePtr_t> &paras);
+  void setSpans(const std::map<unsigned, IWORKStylePtr_t> &spans);
   void setLanguages(const std::map<unsigned, std::string> &langs);
 
   void parse(IWORKText &collector);
@@ -35,8 +34,8 @@ public:
 private:
   const std::string m_text;
 
-  std::map<unsigned, boost::shared_ptr<IWORKStyle> > m_paras;
-  std::map<unsigned, boost::shared_ptr<IWORKStyle> > m_spans;
+  std::map<unsigned, IWORKStylePtr_t> m_paras;
+  std::map<unsigned, IWORKStylePtr_t> m_spans;
   std::map<unsigned, std::string> m_langs;
 };
 

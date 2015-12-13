@@ -34,12 +34,12 @@ IWAText::IWAText(const std::string text)
 {
 }
 
-void IWAText::setParagraphs(const std::map<unsigned, boost::shared_ptr<IWORKStyle> > &paras)
+void IWAText::setParagraphs(const std::map<unsigned, IWORKStylePtr_t> &paras)
 {
   m_paras = paras;
 }
 
-void IWAText::setSpans(const std::map<unsigned, boost::shared_ptr<IWORKStyle> > &spans)
+void IWAText::setSpans(const std::map<unsigned, IWORKStylePtr_t> &spans)
 {
   m_spans = spans;
 }
@@ -51,17 +51,17 @@ void IWAText::setLanguages(const std::map<unsigned, std::string> &langs)
 
 void IWAText::parse(IWORKText &collector)
 {
-  map<unsigned, shared_ptr<IWORKStyle> >::const_iterator paraIt = m_paras.begin();
-  map<unsigned, shared_ptr<IWORKStyle> >::const_iterator spanIt = m_spans.begin();
+  map<unsigned, IWORKStylePtr_t>::const_iterator paraIt = m_paras.begin();
+  map<unsigned, IWORKStylePtr_t>::const_iterator spanIt = m_spans.begin();
   map<unsigned, string>::const_iterator langIt = m_langs.begin();
   size_t textStart = 0;
   bool wasSpace = false;
-  shared_ptr<IWORKStyle> currentSpanStyle;
+  IWORKStylePtr_t currentSpanStyle;
 
   // handle span style change
   for (size_t i = 0; i != m_text.size(); ++i)
   {
-    shared_ptr<IWORKStyle> spanStyle;
+    IWORKStylePtr_t spanStyle;
     bool span = false;
     if ((spanIt != m_spans.end()) && (spanIt->first == i))
     {
