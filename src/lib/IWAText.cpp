@@ -9,82 +9,22 @@
 
 #include "IWAText.h"
 
+#include <boost/make_shared.hpp>
+
+#include "IWORKProperties.h"
 #include "IWORKText.h"
 
 namespace libetonyek
 {
 
+using boost::make_shared;
+using boost::none;
+using boost::shared_ptr;
+
 using std::make_pair;
 using std::map;
 using std::pair;
 using std::string;
-
-namespace
-{
-
-void mergeTextSpans(const map<unsigned, IWORKStylePtr_t> &paras,
-                    const map<unsigned, IWORKStylePtr_t> &spans,
-                    const map<unsigned, string> &langs,
-                    map<unsigned, pair<IWORKStylePtr_t, IWORKStylePtr_t> > &merged)
-{
-  merged[0] = make_pair(IWORKStylePtr_t(), IWORKStylePtr_t());
-  for (map<unsigned, IWORKStylePtr_t>::const_iterator it = paras.begin(); it != paras.end(); ++it)
-    merged[it->first].first = it->second;
-  for (map<unsigned, IWORKStylePtr_t>::const_iterator it = spans.begin(); it != spans.end(); ++it)
-    merged[it->first].second = it->second;
-  for (map<unsigned, string>::const_iterator it = langs.begin(); it != langs.end(); ++it)
-  {
-    map<unsigned, pair<IWORKStylePtr_t, IWORKStylePtr_t> >::iterator mergedIt = merged.lower_bound(it->first);
-    if (mergedIt == merged.end())
-      mergedIt = merged.insert(merged.end(), make_pair(it->first, make_pair(IWORKStylePtr_t(), IWORKStylePtr_t())));
-    // TODO: create a new char. style with the language and make the
-    // current char. style parent of it
-    IWORKStylePtr_t langStyle;
-    mergedIt->second.second = langStyle;
-  }
-}
-
-void flushText(string &text, IWORKText &collector)
-{
-  if (!text.empty())
-  {
-    collector.insertText(text);
-    text.clear();
-  }
-}
-
-void writeText(const string &text, const unsigned start, const unsigned end, const bool endPara, IWORKText &collector)
-{
-  assert(end <= text.size());
-
-  string buf;
-  for (unsigned i = start; i < end; ++i)
-  {
-    switch (text[i])
-    {
-    case '\t' :
-      flushText(buf, collector);
-      collector.insertTab();
-      break;
-    case '\r' :
-      flushText(buf, collector);
-      collector.insertLineBreak();
-      break;
-    case '\n' :
-      flushText(buf, collector);
-      if (endPara && i != end - 1) // ignore the newline that ends the paragraph
-        collector.insertLineBreak();
-      break;
-    default :
-      buf.push_back(text[i]);
-      break;
-    }
-  }
-
-  flushText(buf, collector);
-}
-
-}
 
 IWAText::IWAText(const std::string text)
   : m_text(text)
@@ -111,29 +51,95 @@ void IWAText::setLanguages(const std::map<unsigned, std::string> &langs)
 
 void IWAText::parse(IWORKText &collector)
 {
-  map<unsigned, pair<IWORKStylePtr_t, IWORKStylePtr_t> > textSpans;
-  mergeTextSpans(m_paras, m_spans, m_langs, textSpans);
+  map<unsigned, shared_ptr<IWORKStyle> >::const_iterator paraIt = m_paras.begin();
+  map<unsigned, shared_ptr<IWORKStyle> >::const_iterator spanIt = m_spans.begin();
+  map<unsigned, string>::const_iterator langIt = m_langs.begin();
+  size_t textStart = 0;
+  bool wasSpace = false;
+  shared_ptr<IWORKStyle> currentSpanStyle;
 
-  for (map<unsigned, pair<IWORKStylePtr_t, IWORKStylePtr_t> >::const_iterator it = textSpans.begin(); it != textSpans.end();)
+  // handle span style change
+  for (size_t i = 0; i != m_text.size(); ++i)
   {
-    if (bool(it->second.first))
-      collector.setParagraphStyle(it->second.first);
-    collector.setSpanStyle(it->second.second);
-    const unsigned start = it->first;
-    ++it;
-    if (it == textSpans.end())
+    shared_ptr<IWORKStyle> spanStyle;
+    bool span = false;
+    if ((spanIt != m_spans.end()) && (spanIt->first == i))
     {
-      writeText(m_text, start, m_text.size(), true, collector);
-      collector.flushSpan();
+      spanStyle = currentSpanStyle = spanIt->second;
+      span = true;
+      ++spanIt;
+    }
+    if ((langIt != m_langs.end()) && (langIt->first == i))
+    {
+      IWORKPropertyMap props;
+      props.put<property::Language>(langIt->second);
+      if (bool(currentSpanStyle))
+        props.setParent(&currentSpanStyle->getPropertyMap());
+      spanStyle = make_shared<IWORKStyle>(props, none, none);
+      span = true;
+      ++langIt;
+    }
+    if (span)
+    {
+      if (textStart < i)
+        collector.insertText(m_text.substr(textStart, i - textStart));
+      textStart = i;
+      if (i != 0)
+        collector.flushSpan();
+      collector.setSpanStyle(spanStyle);
+    }
+
+    // handle paragraph style change
+    if ((paraIt != m_paras.end()) && (paraIt->first == i))
+    {
+      collector.setParagraphStyle(paraIt->second);
+      ++paraIt;
+    }
+
+    // handle text
+    switch (m_text[i])
+    {
+    case '\t' :
+      wasSpace = false;
+      if (textStart < i)
+        collector.insertText(m_text.substr(textStart, i - textStart));
+      textStart = i + 1;
+      collector.insertTab();
+      break;
+    case '\r' :
+      wasSpace = false;
+      if (textStart < i)
+        collector.insertText(m_text.substr(textStart, i - textStart));
+      textStart = i + 1;
+      collector.insertLineBreak();
+      break;
+    case '\n' :
+      wasSpace = false;
+      if (textStart < i)
+        collector.insertText(m_text.substr(textStart, i - textStart));
+      textStart = i + 1;
       collector.flushParagraph();
+      break;
+    case ' ' :
+      if (wasSpace)
+      {
+        if (textStart < i)
+          collector.insertText(m_text.substr(textStart, i - textStart));
+        textStart = i + 1;
+        collector.insertSpace();
+      }
+      wasSpace = true;
+      break;
+    default :
+      wasSpace = false;
+      break;
     }
-    else
-    {
-      writeText(m_text, start, it->first, bool(it->second.first), collector);
-      collector.flushSpan();
-      if (bool(it->second.first))
-        collector.flushParagraph();
-    }
+  }
+
+  if (textStart < m_text.size())
+  {
+    collector.insertText(m_text.substr(textStart, m_text.size() - textStart));
+    collector.flushParagraph();
   }
 }
 
