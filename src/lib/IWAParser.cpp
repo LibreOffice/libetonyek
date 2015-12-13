@@ -508,6 +508,7 @@ bool IWAParser::parseText(const unsigned id)
   {
     IWAText textParser(get(text));
     const size_t length = get(text).size();
+
     if (get(msg).message(5))
     {
       map<unsigned, IWORKStylePtr_t> paras;
@@ -546,6 +547,23 @@ bool IWAParser::parseText(const unsigned id)
       textParser.setSpans(spans);
     }
 
+    if (get(msg).message(11))
+    {
+      map<unsigned, string> links;
+      for (IWAMessageField::const_iterator it = get(msg).message(11).message(1).begin(); it != get(msg).message(11).message(1).end(); ++it)
+      {
+        if (it->uint32(1))
+        {
+          string url;
+          const optional<unsigned> &linkRef = readRef(*it, 2);
+          if (linkRef)
+            parseLink(get(linkRef), url);
+          links.insert(links.end(), make_pair(get(it->uint32(1)), url));
+        }
+      }
+      textParser.setLinks(links);
+    }
+
     if (get(msg).message(19))
     {
       map<unsigned, string> langs;
@@ -556,6 +574,7 @@ bool IWAParser::parseText(const unsigned id)
       }
       textParser.setLanguages(langs);
     }
+
     textParser.parse(*m_currentText);
   }
 
@@ -1728,6 +1747,16 @@ void IWAParser::parseHeaders(const unsigned id, TableHeader &header)
         header.m_hidden.insert_back(index, index + 1, get(it->bool_(3)));
     }
   }
+}
+
+void IWAParser::parseLink(const unsigned id, std::string &url)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::Link);
+  if (!msg)
+    return;
+
+  if (get(msg).string(2))
+    url = get(get(msg).string(2));
 }
 
 }

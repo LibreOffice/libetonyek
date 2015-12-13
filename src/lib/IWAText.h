@@ -28,6 +28,7 @@ public:
   void setParagraphs(const std::map<unsigned, IWORKStylePtr_t> &paras);
   void setSpans(const std::map<unsigned, IWORKStylePtr_t> &spans);
   void setLanguages(const std::map<unsigned, std::string> &langs);
+  void setLinks(const std::map<unsigned, std::string> &links);
 
   void parse(IWORKText &collector);
 
@@ -37,6 +38,7 @@ private:
   std::map<unsigned, IWORKStylePtr_t> m_paras;
   std::map<unsigned, IWORKStylePtr_t> m_spans;
   std::map<unsigned, std::string> m_langs;
+  std::map<unsigned, std::string> m_links;
 };
 
 }

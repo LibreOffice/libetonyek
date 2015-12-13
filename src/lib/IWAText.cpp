@@ -31,6 +31,7 @@ IWAText::IWAText(const std::string text)
   , m_paras()
   , m_spans()
   , m_langs()
+  , m_links()
 {
 }
 
@@ -49,14 +50,21 @@ void IWAText::setLanguages(const std::map<unsigned, std::string> &langs)
   m_langs = langs;
 }
 
+void IWAText::setLinks(const std::map<unsigned, std::string> &links)
+{
+  m_links = links;
+}
+
 void IWAText::parse(IWORKText &collector)
 {
   map<unsigned, IWORKStylePtr_t>::const_iterator paraIt = m_paras.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator spanIt = m_spans.begin();
   map<unsigned, string>::const_iterator langIt = m_langs.begin();
+  map<unsigned, string>::const_iterator linkIt = m_links.begin();
   size_t textStart = 0;
   bool wasSpace = false;
   IWORKStylePtr_t currentSpanStyle;
+  bool isLink = false;
 
   // handle span style change
   for (size_t i = 0; i != m_text.size(); ++i)
@@ -87,6 +95,25 @@ void IWAText::parse(IWORKText &collector)
       if (i != 0)
         collector.flushSpan();
       collector.setSpanStyle(spanStyle);
+    }
+
+    // handle start/end of a link
+    if ((linkIt != m_links.end()) && (linkIt->first == i))
+    {
+      if (textStart < i)
+        collector.insertText(m_text.substr(textStart, i - textStart));
+      textStart = i;
+      if (isLink)
+      {
+        collector.closeLink();
+        isLink = false;
+      }
+      if (!linkIt->second.empty())
+      {
+        collector.openLink(linkIt->second);
+        isLink = true;
+      }
+      ++linkIt;
     }
 
     // handle paragraph style change

@@ -24,6 +24,7 @@ enum
   CharacterStyle = 2021,
   ParagraphStyle = 2022,
   GraphicStyle = 2025,
+  Link = 2032,
   Image = 3005,
   Group = 3008,
   Comment = 3056,

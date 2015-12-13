@@ -172,6 +172,8 @@ private:
   void parseTile(unsigned id);
   void parseHeaders(unsigned id, TableHeader &header);
 
+  void parseLink(unsigned id, std::string &url);
+
   bool parseDrawableShape(const IWAMessage &msg);
   bool parseGroup(const IWAMessage &msg);
   bool parseShapePlacement(const IWAMessage &msg);
