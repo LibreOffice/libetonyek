@@ -570,7 +570,7 @@ bool IWAParser::parseText(const unsigned id)
       for (IWAMessageField::const_iterator it = get(msg).message(19).message(1).begin(); it != get(msg).message(19).message(1).end(); ++it)
       {
         if (it->uint32(1))
-          langs.insert(langs.end(), make_pair(get(it->uint32(1)), string()));
+          langs.insert(langs.end(), make_pair(get(it->uint32(1)), get_optional_value_or(it->string(2), "")));
       }
       textParser.setLanguages(langs);
     }

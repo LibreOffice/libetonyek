@@ -80,7 +80,8 @@ void IWAText::parse(IWORKText &collector)
     if ((langIt != m_langs.end()) && (langIt->first == i))
     {
       IWORKPropertyMap props;
-      props.put<property::Language>(langIt->second);
+      if (!langIt->second.empty())
+        props.put<property::Language>(langIt->second);
       if (bool(currentSpanStyle))
         props.setParent(&currentSpanStyle->getPropertyMap());
       spanStyle = make_shared<IWORKStyle>(props, none, none);
