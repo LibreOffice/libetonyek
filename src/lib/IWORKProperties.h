@@ -10,6 +10,8 @@
 #ifndef IWORKPROPERTIES_H_INCLUDED
 #define IWORKPROPERTIES_H_INCLUDED
 
+#include <map>
+
 #include "IWORKEnum.h"
 #include "IWORKPropertyInfo.h"
 #include "IWORKTypes.h"
@@ -39,6 +41,10 @@ IWORK_DECLARE_PROPERTY(LayoutMargins, IWORKPadding);
 IWORK_DECLARE_PROPERTY(LeftBorder, IWORKStroke);
 IWORK_DECLARE_PROPERTY(LeftIndent, double);
 IWORK_DECLARE_PROPERTY(LineSpacing, IWORKLineSpacing);
+IWORK_DECLARE_PROPERTY(ListLabelGeometries, IWORKListLabelGeometries_t);
+IWORK_DECLARE_PROPERTY(ListLabelIndents, IWORKListIndents_t);
+IWORK_DECLARE_PROPERTY(ListLabelTypeInfos, IWORKListLabelTypeInfos_t);
+IWORK_DECLARE_PROPERTY(ListTextIndents, IWORKListIndents_t);
 IWORK_DECLARE_PROPERTY(Opacity, double);
 IWORK_DECLARE_PROPERTY(Outline, bool);
 IWORK_DECLARE_PROPERTY(Padding, IWORKPadding);

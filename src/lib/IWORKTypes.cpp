@@ -247,6 +247,20 @@ IWORKFilterDescriptor::IWORKFilterDescriptor()
 {
 }
 
+IWORKTextLabelFormat::IWORKTextLabelFormat()
+  : m_prefix(IWORK_LABEL_NUM_FORMAT_SURROUNDING_NONE)
+  , m_format(IWORK_LABEL_NUM_FORMAT_NUMERIC)
+  , m_suffix(IWORK_LABEL_NUM_FORMAT_SURROUNDING_NONE)
+{
+}
+
+IWORKTextLabel::IWORKTextLabel()
+  : m_format()
+  , m_tiered(false)
+  , m_first(1)
+{
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

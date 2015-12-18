@@ -13,6 +13,7 @@
 #include "IWORKTypes_fwd.h"
 
 #include <deque>
+#include <map>
 #include <string>
 
 #include <boost/optional.hpp>
@@ -317,6 +318,41 @@ struct IWORKFilterDescriptor
 };
 
 typedef boost::unordered_map<ID_t, IWORKFilterDescriptor> IWORKFilterDescriptorMap_t;
+
+struct IWORKListLabelGeometry
+{
+  IWORKListLabelGeometry();
+
+  IWORKAlignment m_align;
+  double m_scale;
+  double m_offset;
+  bool m_scaleWithText;
+};
+typedef std::map<unsigned, IWORKListLabelGeometry> IWORKListLabelGeometries_t;
+
+struct IWORKTextLabelFormat
+{
+  IWORKTextLabelFormat();
+
+  IWORKLabelNumFormatSurrounding m_prefix;
+  IWORKLabelNumFormat m_format;
+  IWORKLabelNumFormatSurrounding m_suffix;
+};
+
+struct IWORKTextLabel
+{
+  IWORKTextLabel();
+
+  IWORKTextLabelFormat m_format;
+  bool m_tiered;
+  unsigned m_first;
+};
+
+typedef boost::variant<std::string, IWORKTextLabel, IWORKBinary> IWORKListLabelTypeInfo_t;
+typedef std::map<unsigned, IWORKListLabelTypeInfo_t> IWORKListLabelTypeInfos_t;
+typedef boost::unordered_map<ID_t, IWORKListLabelTypeInfo_t> IWORKListLabelTypeInfoMap_t;
+
+typedef std::map<unsigned, double> IWORKListIndents_t;
 
 }
 
