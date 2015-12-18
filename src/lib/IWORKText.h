@@ -13,6 +13,7 @@
 #include "IWORKText_fwd.h"
 
 #include <deque>
+#include <stack>
 
 #include <glm/glm.hpp>
 
@@ -30,6 +31,7 @@ class IWORKText
 
 public:
   explicit IWORKText(bool discardEmptyContent);
+  ~IWORKText();
 
   /// Set style used as base for all layout styles in this text.
   void pushBaseLayoutStyle(const IWORKStylePtr_t &style);
@@ -40,6 +42,13 @@ public:
   void setLayoutStyle(const IWORKStylePtr_t &style);
   /// Flush the current layout.
   void flushLayout();
+
+  /// Set list style used for the next paragraph, if it is in a list.
+  void setListStyle(const IWORKStylePtr_t &style);
+  /// Set the list level of the next paragraph, 0 meaning no list.
+  void setListLevel(const unsigned level);
+  /// Flush the current list level(s).
+  void flushList();
 
   /// Set style used for the next paragraph.
   void setParagraphStyle(const IWORKStylePtr_t &style);
@@ -71,6 +80,8 @@ private:
   void closeSection();
   bool needsSection() const;
 
+  void handleListLevelChange(unsigned level);
+
   void openPara();
   void closePara();
 
@@ -87,6 +98,12 @@ private:
   bool m_inSection;
   mutable librevenge::RVNGPropertyList m_sectionProps;
   mutable bool m_checkedSection;
+
+  IWORKStylePtr_t m_listStyle;
+  unsigned m_listLevel;
+  unsigned m_inListLevel;
+  /// Saves info about the currently opened list levels being ordered or unordered.
+  std::stack<bool> m_isOrderedStack;
 
   IWORKStylePtr_t m_paraStyle;
   bool m_inPara;

@@ -264,6 +264,23 @@ void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props
     props.insert("fo:break-before", "page");
 }
 
+bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPropertyList &props)
+{
+  // TODO: implement me
+  (void) level;
+  (void) style;
+  (void) props;
+  return false;
+}
+
+void fillListElementPropList(const unsigned level, const IWORKStyleStack &style, RVNGPropertyList &props)
+{
+  // TODO: implement me
+  (void) level;
+  (void) style;
+  (void) props;
+}
+
 }
 
 void IWORKText::draw(IWORKOutputElements &elements)
@@ -277,6 +294,10 @@ IWORKText::IWORKText(const bool discardEmptyContent)
   , m_elements()
   , m_layoutStyle()
   , m_inSection(false)
+  , m_listStyle()
+  , m_listLevel(0)
+  , m_inListLevel(0)
+  , m_isOrderedStack()
   , m_paraStyle()
   , m_inPara(false)
     // FIXME: This will work fine when encountering real empty text block, i.e., with a single
@@ -288,6 +309,11 @@ IWORKText::IWORKText(const bool discardEmptyContent)
   , m_inSpan(false)
   , m_oldSpanStyle()
 {
+}
+
+IWORKText::~IWORKText()
+{
+  assert(m_isOrderedStack.empty());
 }
 
 void IWORKText::pushBaseLayoutStyle(const IWORKStylePtr_t &style)
@@ -319,6 +345,8 @@ void IWORKText::openSection()
   assert(!m_inPara);
   assert(!m_sectionProps.empty());
 
+  handleListLevelChange(0);
+
   m_elements.addOpenSection(m_sectionProps);
   m_inSection = true;
 }
@@ -329,8 +357,25 @@ void IWORKText::closeSection()
 
   if (m_inPara)
     closePara();
+  handleListLevelChange(0);
+
   m_elements.addCloseSection();
   m_inSection = false;
+}
+
+void IWORKText::setListStyle(const IWORKStylePtr_t &style)
+{
+  m_listStyle = style;
+}
+
+void IWORKText::setListLevel(const unsigned level)
+{
+  m_listLevel = level;
+}
+
+void IWORKText::flushList()
+{
+  handleListLevelChange(m_listLevel);
 }
 
 void IWORKText::setParagraphStyle(const IWORKStylePtr_t &style)
@@ -446,12 +491,43 @@ bool IWORKText::empty() const
   return m_elements.empty();
 }
 
+void IWORKText::handleListLevelChange(const unsigned level)
+{
+  if (m_inPara)
+    closePara();
+  for (; level > m_inListLevel; ++m_inListLevel)
+  {
+    IWORKStyleStack styleStack;
+    styleStack.push(m_listStyle);
+    RVNGPropertyList listProps;
+    m_isOrderedStack.push(fillListPropList(m_inListLevel, styleStack, listProps));
+    if (m_isOrderedStack.top())
+      m_elements.addOpenOrderedListLevel(listProps);
+    else
+      m_elements.addOpenUnorderedListLevel(listProps);
+    RVNGPropertyList elementProps;
+    fillListElementPropList(m_inListLevel, styleStack, elementProps);
+    m_elements.addOpenListElement(elementProps);
+  }
+  for (; level < m_inListLevel; --m_inListLevel)
+  {
+    assert(!m_isOrderedStack.empty());
+    m_elements.addCloseListElement();
+    if (m_isOrderedStack.top())
+      m_elements.addCloseOrderedListLevel();
+    else
+      m_elements.addCloseUnorderedListLevel();
+    m_isOrderedStack.pop();
+  }
+}
+
 void IWORKText::openPara()
 {
   assert(!m_inPara);
 
   if (!m_inSection and needsSection())
     openSection();
+  handleListLevelChange(m_listLevel);
 
   m_paraStyleStack.push(m_paraStyle);
   librevenge::RVNGPropertyList paraProps;
