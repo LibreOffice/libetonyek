@@ -18,6 +18,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/optional.hpp>
+#include <boost/variant.hpp>
 
 #include <librevenge/librevenge.h>
 
@@ -264,13 +265,148 @@ void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props
     props.insert("fo:break-before", "page");
 }
 
+struct FillListLabelProps : public boost::static_visitor<bool>
+{
+public:
+  FillListLabelProps(const IWORKListLabelTypeInfos_t &labels, const IWORKListLabelTypeInfos_t::const_iterator &current, const IWORKListLabelGeometry *const geometry, RVNGPropertyList &props)
+    : m_labels(labels)
+    , m_current(current)
+    , m_geometry(geometry)
+    , m_props(&props)
+  {
+  }
+
+  bool operator()(const std::string &bullet) const
+  {
+    m_props->insert("text:bullet-char", bullet.c_str());
+    if (m_geometry)
+      m_props->insert("text:bullet-relative-size", m_geometry->m_scale, librevenge::RVNG_PERCENT);
+    return false;
+  }
+
+  bool operator()(const IWORKTextLabel &label) const
+  {
+    m_props->insert("style:num-letter-sync", "false");
+    fillSurrounding(label.m_format.m_prefix, "style:num-prefix");
+    fillSurrounding(label.m_format.m_suffix, "style:num-suffix");
+    switch (label.m_format.m_format)
+    {
+    case IWORK_LABEL_NUM_FORMAT_NUMERIC :
+      m_props->insert("style:num-format", "1");
+      break;
+    case IWORK_LABEL_NUM_FORMAT_ALPHA :
+      m_props->insert("style:num-format", "A");
+      break;
+    case IWORK_LABEL_NUM_FORMAT_ALPHA_LOWERCASE :
+      m_props->insert("style:num-format", "a");
+      break;
+    case IWORK_LABEL_NUM_FORMAT_ROMAN :
+      m_props->insert("style:num-format", "I");
+      break;
+    case IWORK_LABEL_NUM_FORMAT_ROMAN_LOWERCASE :
+      m_props->insert("style:num-format", "i");
+      break;
+    }
+    m_props->insert("text:display-levels", boost::apply_visitor(GetDisplayLevels(m_labels, m_current, 1), m_current->second));
+    return true;
+  }
+
+  bool operator()(const IWORKBinary &image) const
+  {
+    // TODO: handle
+    (void) image;
+    return false;
+  }
+
+private:
+  void fillSurrounding(const IWORKLabelNumFormatSurrounding surrounding, const char *const name) const
+  {
+    switch (surrounding)
+    {
+    case IWORK_LABEL_NUM_FORMAT_SURROUNDING_NONE :
+      break;
+    case IWORK_LABEL_NUM_FORMAT_SURROUNDING_PARENTHESIS :
+      m_props->insert(name, "(");
+      break;
+    case IWORK_LABEL_NUM_FORMAT_SURROUNDING_DOT :
+      m_props->insert(name, ".");
+      break;
+    }
+  }
+
+  struct GetDisplayLevels : public boost::static_visitor<int>
+  {
+    GetDisplayLevels(const IWORKListLabelTypeInfos_t &labels, const IWORKListLabelTypeInfos_t::const_iterator &current, const int initial = 1)
+      : m_labels(labels)
+      , m_current(current)
+      , m_initial(initial)
+    {
+    }
+
+    int operator()(const std::string &) const
+    {
+      return m_initial;
+    }
+
+    int operator()(const IWORKTextLabel &) const
+    {
+      if (m_current == m_labels.begin())
+        return m_initial;
+      IWORKListLabelTypeInfos_t::const_iterator prev(m_current);
+      --prev;
+      if (prev->first != m_current->first - 1) // missing level spec
+        return m_initial;
+      return boost::apply_visitor(GetDisplayLevels(m_labels, prev, m_initial + 1), prev->second);
+    }
+
+    int operator()(const IWORKBinary &) const
+    {
+      return m_initial;
+    }
+
+  private:
+    const IWORKListLabelTypeInfos_t &m_labels;
+    const IWORKListLabelTypeInfos_t::const_iterator m_current;
+    const int m_initial;
+  };
+
+private:
+  const IWORKListLabelTypeInfos_t &m_labels;
+  const IWORKListLabelTypeInfos_t::const_iterator m_current;
+  const IWORKListLabelGeometry *const m_geometry;
+  RVNGPropertyList *const m_props;
+};
+
 bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPropertyList &props)
 {
-  // TODO: implement me
-  (void) level;
-  (void) style;
-  (void) props;
-  return false;
+  bool isOrdered = false;
+
+  props.insert("librevenge:level", int(level));
+
+  using namespace property;
+
+  const IWORKListLabelGeometry *geometry = 0;
+
+  if (style.has<ListLabelGeometries>())
+  {
+    const IWORKListLabelGeometries_t &geometries = style.get<ListLabelGeometries>();
+    const IWORKListLabelGeometries_t::const_iterator it = geometries.find(level);
+    if (it != geometries.end())
+      geometry = &it->second;
+    // TODO: process
+  }
+
+  if (style.has<ListLabelTypeInfos>())
+  {
+    const IWORKListLabelTypeInfos_t &types = style.get<ListLabelTypeInfos>();
+    const IWORKListLabelTypeInfos_t::const_iterator it = types.find(level);
+    if (it != types.end())
+    {
+      isOrdered = boost::apply_visitor(FillListLabelProps(types, it, geometry, props), it->second);
+    }
+  }
+
+  return isOrdered;
 }
 
 void fillListElementPropList(const unsigned level, const IWORKStyleStack &style, RVNGPropertyList &props)
