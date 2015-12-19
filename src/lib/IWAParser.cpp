@@ -166,6 +166,7 @@ IWAParser::IWAParser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStrea
   , m_graphicStyles()
   , m_cellStyles()
   , m_tableStyles()
+  , m_listStyles()
   , m_tableNameMap()
   , m_currentTable()
 {
@@ -629,6 +630,11 @@ const IWORKStylePtr_t IWAParser::queryCellStyle(const unsigned id) const
 const IWORKStylePtr_t IWAParser::queryTableStyle(const unsigned id) const
 {
   return queryStyle(id, m_tableStyles, bind(&IWAParser::parseTableStyle, const_cast<IWAParser *>(this), _1, _2));
+}
+
+const IWORKStylePtr_t IWAParser::queryListStyle(const unsigned id) const
+{
+  return queryStyle(id, m_tableStyles, bind(&IWAParser::parseListStyle, const_cast<IWAParser *>(this), _1, _2));
 }
 
 bool IWAParser::parseDrawableShape(const IWAMessage &msg)
@@ -1311,6 +1317,126 @@ void IWAParser::parseTableStyle(const unsigned id, IWORKStylePtr_t &style)
     if (properties.string(41))
       props.put<FontName>(get(properties.string(41)));
   }
+
+  style.reset(new IWORKStyle(props, name, parent));
+}
+
+void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::ListStyle);
+  if (!msg)
+    return;
+
+  optional<string> name;
+  IWORKStylePtr_t parent;
+  IWORKPropertyMap props;
+
+  using namespace property;
+
+  const IWAMessageField &styleInfo = get(msg).message(1);
+  if (styleInfo)
+  {
+    name = styleInfo.string(2).optional();
+    const optional<unsigned> &parentRef = readRef(get(styleInfo), 3);
+    if (parentRef)
+      parent = queryListStyle(get(parentRef));
+  }
+
+  unsigned level = 0;
+
+  IWORKListLabelTypeInfos_t typeInfos;
+  const IWAUInt32Field &numberFormats = get(msg).uint32(15);
+  const IWAStringField &bullets = get(msg).string(16);
+  const IWABoolField &tiered = get(msg).bool_(25);
+  for (IWAUInt32Field::const_iterator it = get(msg).uint32(11).begin(); it != get(msg).uint32(11).end(); ++it, ++level)
+  {
+    switch (*it)
+    {
+    case 0 :
+      // no label
+      break;
+    case 1 :
+      // TODO: handle image
+      break;
+    case 2 :
+      if (level < bullets.size())
+        typeInfos[level] = bullets[level];
+      break;
+    case 3 :
+    {
+      IWORKTextLabel label;
+      if (level < numberFormats.size())
+      {
+        switch (numberFormats[level] / 3)
+        {
+        case 0 :
+          label.m_format.m_format = IWORK_LABEL_NUM_FORMAT_NUMERIC;
+          break;
+        case 1 :
+          label.m_format.m_format = IWORK_LABEL_NUM_FORMAT_ROMAN;
+          break;
+        case 2 :
+          label.m_format.m_format = IWORK_LABEL_NUM_FORMAT_ROMAN_LOWERCASE;
+          break;
+        case 3 :
+          label.m_format.m_format = IWORK_LABEL_NUM_FORMAT_ALPHA;
+          break;
+        case 4 :
+          label.m_format.m_format = IWORK_LABEL_NUM_FORMAT_ALPHA_LOWERCASE;
+          break;
+        default :
+          ETONYEK_DEBUG_MSG(("parseListStyle: unknown label number format %u\n", numberFormats[level]));
+          break;
+        }
+        switch (numberFormats[level] % 3)
+        {
+        case 0 :
+          label.m_format.m_suffix = IWORK_LABEL_NUM_FORMAT_SURROUNDING_DOT;
+          break;
+        case 1 :
+          label.m_format.m_prefix = IWORK_LABEL_NUM_FORMAT_SURROUNDING_PARENTHESIS;
+          label.m_format.m_suffix = IWORK_LABEL_NUM_FORMAT_SURROUNDING_PARENTHESIS;
+          break;
+        case 2 :
+          label.m_format.m_suffix = IWORK_LABEL_NUM_FORMAT_SURROUNDING_PARENTHESIS;
+          break;
+        }
+      }
+      if (level < tiered.size())
+        label.m_tiered = tiered[level];
+      typeInfos[level] = label;
+      break;
+    }
+    }
+  }
+  if (!typeInfos.empty())
+    props.put<ListLabelTypeInfos>(typeInfos);
+
+  IWORKListIndents_t textIndents;
+  level = 0;
+  for (IWAFloatField::const_iterator it = get(msg).float_(12).begin(); it != get(msg).float_(12).end(); ++it, ++level)
+    textIndents[level] = *it;
+  if (!textIndents.empty())
+    props.put<ListTextIndents>(textIndents);
+
+  IWORKListIndents_t labelIndents;
+  level = 0;
+  for (IWAFloatField::const_iterator it = get(msg).float_(13).begin(); it != get(msg).float_(13).end(); ++it, ++level)
+    labelIndents[level] = *it;
+  if (!labelIndents.empty())
+    props.put<ListLabelIndents>(labelIndents);
+
+  IWORKListLabelGeometries_t geometries;
+  level = 0;
+  for (IWAMessageField::const_iterator it = get(msg).message(14).begin(); it != get(msg).message(14).end(); ++it, ++level)
+  {
+    IWORKListLabelGeometry geometry;
+    if (it->float_(1))
+      geometry.m_scale = get(it->float_(1));
+    geometries[level] = geometry;
+  }
+  if (!geometries.empty())
+    props.put<ListLabelGeometries>(geometries);
 
   style.reset(new IWORKStyle(props, name, parent));
 }

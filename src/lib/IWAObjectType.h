@@ -23,6 +23,7 @@ enum
   StickyNote = 2014,
   CharacterStyle = 2021,
   ParagraphStyle = 2022,
+  ListStyle = 2023,
   GraphicStyle = 2025,
   Link = 2032,
   Image = 3005,
