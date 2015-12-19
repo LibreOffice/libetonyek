@@ -247,6 +247,14 @@ IWORKFilterDescriptor::IWORKFilterDescriptor()
 {
 }
 
+IWORKListLabelGeometry::IWORKListLabelGeometry()
+  : m_align(IWORK_ALIGNMENT_LEFT)
+  , m_scale(1)
+  , m_offset(0)
+  , m_scaleWithText(false)
+{
+}
+
 IWORKTextLabelFormat::IWORKTextLabelFormat()
   : m_prefix(IWORK_LABEL_NUM_FORMAT_SURROUNDING_NONE)
   , m_format(IWORK_LABEL_NUM_FORMAT_NUMERIC)
