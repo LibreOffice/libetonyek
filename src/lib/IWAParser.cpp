@@ -153,9 +153,21 @@ IWAParser::TableInfo::TableInfo(const shared_ptr<IWORKTable> &table, const unsig
 }
 
 IWAParser::IWAParser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package, IWORKCollector &collector)
-  : m_fragments(fragments)
+  : m_currentText()
+  , m_fragments(fragments)
   , m_package(package)
   , m_collector(collector)
+  , m_fragmentMap()
+  , m_fragmentObjectMap()
+  , m_fileMap()
+  , m_visited()
+  , m_charStyles()
+  , m_paraStyles()
+  , m_graphicStyles()
+  , m_cellStyles()
+  , m_tableStyles()
+  , m_tableNameMap()
+  , m_currentTable()
 {
 }
 
