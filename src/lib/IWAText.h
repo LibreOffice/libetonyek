@@ -29,6 +29,8 @@ public:
   void setSpans(const std::map<unsigned, IWORKStylePtr_t> &spans);
   void setLanguages(const std::map<unsigned, std::string> &langs);
   void setLinks(const std::map<unsigned, std::string> &links);
+  void setListLevels(const std::map<unsigned, unsigned> &levels);
+  void setLists(const std::map<unsigned, IWORKStylePtr_t> &lists);
 
   void parse(IWORKText &collector);
 
@@ -39,6 +41,8 @@ private:
   std::map<unsigned, IWORKStylePtr_t> m_spans;
   std::map<unsigned, std::string> m_langs;
   std::map<unsigned, std::string> m_links;
+  std::map<unsigned, IWORKStylePtr_t> m_lists;
+  std::map<unsigned, unsigned> m_listLevels;
 };
 
 }

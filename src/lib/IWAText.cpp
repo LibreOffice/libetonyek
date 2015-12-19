@@ -32,6 +32,8 @@ IWAText::IWAText(const std::string text)
   , m_spans()
   , m_langs()
   , m_links()
+  , m_lists()
+  , m_listLevels()
 {
 }
 
@@ -55,12 +57,24 @@ void IWAText::setLinks(const std::map<unsigned, std::string> &links)
   m_links = links;
 }
 
+void IWAText::setListLevels(const std::map<unsigned, unsigned> &levels)
+{
+  m_listLevels = levels;
+}
+
+void IWAText::setLists(const std::map<unsigned, IWORKStylePtr_t> &lists)
+{
+  m_lists = lists;
+}
+
 void IWAText::parse(IWORKText &collector)
 {
   map<unsigned, IWORKStylePtr_t>::const_iterator paraIt = m_paras.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator spanIt = m_spans.begin();
   map<unsigned, string>::const_iterator langIt = m_langs.begin();
   map<unsigned, string>::const_iterator linkIt = m_links.begin();
+  map<unsigned, IWORKStylePtr_t>::const_iterator listIt = m_lists.begin();
+  map<unsigned, unsigned>::const_iterator listLevelIt = m_listLevels.begin();
   size_t textStart = 0;
   bool wasSpace = false;
   IWORKStylePtr_t currentSpanStyle;
@@ -122,6 +136,20 @@ void IWAText::parse(IWORKText &collector)
     {
       collector.setParagraphStyle(paraIt->second);
       ++paraIt;
+    }
+
+    // handle list style change
+    if ((listIt != m_lists.end()) && (listIt->first == i))
+    {
+      collector.setListStyle(listIt->second);
+      ++listIt;
+    }
+
+    // handle list level change
+    if ((listLevelIt != m_listLevels.end()) && (listLevelIt->first == i))
+    {
+      collector.setListLevel(listLevelIt->second);
+      ++listLevelIt;
     }
 
     // handle text

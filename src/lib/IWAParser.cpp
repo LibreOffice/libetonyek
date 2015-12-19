@@ -543,6 +543,34 @@ bool IWAParser::parseText(const unsigned id)
       textParser.setParagraphs(paras);
     }
 
+    if (get(msg).message(6))
+    {
+      map<unsigned, unsigned> levels;
+      for (IWAMessageField::const_iterator it = get(msg).message(6).message(1).begin(); it != get(msg).message(6).message(1).end(); ++it)
+      {
+        if (it->uint32(1) && (get(it->uint32(1)) < length))
+          levels.insert(levels.end(), make_pair(get(it->uint32(1)), get_optional_value_or(it->uint32(2), 0)));
+      }
+      textParser.setListLevels(levels);
+    }
+
+    if (get(msg).message(7))
+    {
+      map<unsigned, IWORKStylePtr_t> lists;
+      for (IWAMessageField::const_iterator it = get(msg).message(7).message(1).begin(); it != get(msg).message(7).message(1).end(); ++it)
+      {
+        if (it->uint32(1) && (get(it->uint32(1)) < length))
+        {
+          IWORKStylePtr_t style;
+          const optional<unsigned> &styleRef = readRef(*it, 2);
+          if (styleRef)
+            style = queryListStyle(get(styleRef));
+          lists.insert(lists.end(), make_pair(get(it->uint32(1)), style));
+        }
+      }
+      textParser.setLists(lists);
+    }
+
     if (get(msg).message(8))
     {
       map<unsigned, IWORKStylePtr_t> spans;
