@@ -66,9 +66,9 @@ void IWAText::parse(IWORKText &collector)
   IWORKStylePtr_t currentSpanStyle;
   bool isLink = false;
 
-  // handle span style change
   for (size_t i = 0; i != m_text.size(); ++i)
   {
+    // handle span style change
     IWORKStylePtr_t spanStyle;
     bool span = false;
     if ((spanIt != m_spans.end()) && (spanIt->first == i))
