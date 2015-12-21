@@ -1435,6 +1435,9 @@ void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
       typeInfos[level] = label;
       break;
     }
+    default :
+      ETONYEK_DEBUG_MSG(("parseListStyle: unknown label type %u\n", *it));
+      break;
     }
   }
   if (!typeInfos.empty())
