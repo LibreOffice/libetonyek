@@ -418,18 +418,15 @@ bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPr
     {
       props.insert("text:list-level-position-and-space-mode", "label-width-and-position");
       props.insert("text:space-before", it->second, librevenge::RVNG_POINT);
-      if (style.has<ListTextIndents>())
-      {
-        const IWORKListIndents_t &textIndents = style.get<ListTextIndents>();
-        const IWORKListIndents_t::const_iterator it2 = textIndents.find(level - 1);
-        if (it2 != textIndents.end())
-        {
-          // make sure the text is indented at least by as much as it should be
-          if (it2->second > it->second)
-            props.insert("text:min-label-width", it2->second - it->second, librevenge::RVNG_POINT);
-        }
-      }
     }
+  }
+
+  if (style.has<FontSize>() && style.has<ListTextIndents>())
+  {
+    const IWORKListIndents_t &indents = style.get<ListTextIndents>();
+    const IWORKListIndents_t::const_iterator it = indents.find(level - 1);
+    if (it != indents.end())
+      props.insert("text:min-label-width", it->second * style.get<FontSize>(), librevenge::RVNG_POINT);
   }
 
   return isOrdered;
@@ -654,7 +651,8 @@ void IWORKText::handleListLevelChange(const unsigned level)
 
     for (; level > m_inListLevel;)
     {
-      IWORKStyleStack styleStack;
+      IWORKStyleStack styleStack(m_paraStyleStack);
+      styleStack.push(m_paraStyle);
       styleStack.push(m_listStyle);
       ++m_inListLevel;
       RVNGPropertyList listProps;
