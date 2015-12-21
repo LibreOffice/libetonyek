@@ -408,6 +408,30 @@ bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPr
     }
   }
 
+  props.insert("style:vertical-pos", "center");
+
+  if (style.has<ListLabelIndents>())
+  {
+    const IWORKListIndents_t &indents = style.get<ListLabelIndents>();
+    const IWORKListIndents_t::const_iterator it = indents.find(level - 1);
+    if (it != indents.end())
+    {
+      props.insert("text:list-level-position-and-space-mode", "label-width-and-position");
+      props.insert("text:space-before", it->second, librevenge::RVNG_POINT);
+      if (style.has<ListTextIndents>())
+      {
+        const IWORKListIndents_t &textIndents = style.get<ListTextIndents>();
+        const IWORKListIndents_t::const_iterator it2 = textIndents.find(level - 1);
+        if (it2 != textIndents.end())
+        {
+          // make sure the text is indented at least by as much as it should be
+          if (it2->second > it->second)
+            props.insert("text:min-label-width", it2->second - it->second, librevenge::RVNG_POINT);
+        }
+      }
+    }
+  }
+
   return isOrdered;
 }
 
