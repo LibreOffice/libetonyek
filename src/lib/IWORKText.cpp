@@ -379,6 +379,8 @@ private:
 
 bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPropertyList &props)
 {
+  assert(level != 0);
+
   bool isOrdered = false;
 
   props.insert("librevenge:level", int(level));
@@ -390,7 +392,7 @@ bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPr
   if (style.has<ListLabelGeometries>())
   {
     const IWORKListLabelGeometries_t &geometries = style.get<ListLabelGeometries>();
-    const IWORKListLabelGeometries_t::const_iterator it = geometries.find(level);
+    const IWORKListLabelGeometries_t::const_iterator it = geometries.find(level - 1);
     if (it != geometries.end())
       geometry = &it->second;
     // TODO: process
@@ -399,7 +401,7 @@ bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPr
   if (style.has<ListLabelTypeInfos>())
   {
     const IWORKListLabelTypeInfos_t &types = style.get<ListLabelTypeInfos>();
-    const IWORKListLabelTypeInfos_t::const_iterator it = types.find(level);
+    const IWORKListLabelTypeInfos_t::const_iterator it = types.find(level - 1);
     if (it != types.end())
     {
       isOrdered = boost::apply_visitor(FillListLabelProps(types, it, geometry, props), it->second);
