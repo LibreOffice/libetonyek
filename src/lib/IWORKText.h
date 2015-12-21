@@ -84,6 +84,7 @@ private:
 
   void openPara();
   void closePara();
+  void fillParaPropList(librevenge::RVNGPropertyList &propList);
 
   void openSpan();
   void closeSpan();

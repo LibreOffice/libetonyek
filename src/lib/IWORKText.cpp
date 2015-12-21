@@ -435,14 +435,6 @@ bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPr
   return isOrdered;
 }
 
-void fillListElementPropList(const unsigned level, const IWORKStyleStack &style, RVNGPropertyList &props)
-{
-  // TODO: implement me
-  (void) level;
-  (void) style;
-  (void) props;
-}
-
 }
 
 void IWORKText::draw(IWORKOutputElements &elements)
@@ -655,32 +647,42 @@ bool IWORKText::empty() const
 
 void IWORKText::handleListLevelChange(const unsigned level)
 {
-  if (m_inPara)
-    closePara();
-  for (; level > m_inListLevel;)
+  if (level > m_inListLevel)
   {
-    IWORKStyleStack styleStack;
-    styleStack.push(m_listStyle);
-    ++m_inListLevel;
-    RVNGPropertyList listProps;
-    m_isOrderedStack.push(fillListPropList(m_inListLevel, styleStack, listProps));
-    if (m_isOrderedStack.top())
-      m_elements.addOpenOrderedListLevel(listProps);
-    else
-      m_elements.addOpenUnorderedListLevel(listProps);
-    RVNGPropertyList elementProps;
-    fillListElementPropList(m_inListLevel, styleStack, elementProps);
-    m_elements.addOpenListElement(elementProps);
+    RVNGPropertyList paraProps;
+    fillParaPropList(paraProps);
+
+    for (; level > m_inListLevel;)
+    {
+      IWORKStyleStack styleStack;
+      styleStack.push(m_listStyle);
+      ++m_inListLevel;
+      RVNGPropertyList listProps;
+      m_isOrderedStack.push(fillListPropList(m_inListLevel, styleStack, listProps));
+      if (m_isOrderedStack.top())
+        m_elements.addOpenOrderedListLevel(listProps);
+      else
+        m_elements.addOpenUnorderedListLevel(listProps);
+      if (m_inListLevel != level)
+        m_elements.addOpenListElement(paraProps);
+    }
   }
-  for (; level < m_inListLevel; --m_inListLevel)
+  if (level < m_inListLevel)
   {
-    assert(!m_isOrderedStack.empty());
-    m_elements.addCloseListElement();
-    if (m_isOrderedStack.top())
-      m_elements.addCloseOrderedListLevel();
-    else
-      m_elements.addCloseUnorderedListLevel();
-    m_isOrderedStack.pop();
+    if (m_inPara)
+      closePara();
+    const unsigned startLevel = m_inListLevel;
+    for (; level < m_inListLevel; --m_inListLevel)
+    {
+      assert(!m_isOrderedStack.empty());
+      if (m_inListLevel != startLevel)
+        m_elements.addCloseListElement();
+      if (m_isOrderedStack.top())
+        m_elements.addCloseOrderedListLevel();
+      else
+        m_elements.addCloseUnorderedListLevel();
+      m_isOrderedStack.pop();
+    }
   }
 }
 
@@ -692,11 +694,12 @@ void IWORKText::openPara()
     openSection();
   handleListLevelChange(m_listLevel);
 
-  m_paraStyleStack.push(m_paraStyle);
   librevenge::RVNGPropertyList paraProps;
-  fillParaPropList(m_paraStyleStack, paraProps);
-  m_paraStyleStack.pop();
-  m_elements.addOpenParagraph(paraProps);
+  fillParaPropList(paraProps);
+  if (m_inListLevel > 0)
+    m_elements.addOpenListElement(paraProps);
+  else
+    m_elements.addOpenParagraph(paraProps);
   m_inPara = true;
 }
 
@@ -707,8 +710,19 @@ void IWORKText::closePara()
   if (m_inSpan)
     closeSpan();
 
-  m_elements.addCloseParagraph();
+  // TODO: This is a temporary hack. The use of list element vs. paragraph needs rework.
+  if (m_inListLevel > 0)
+    m_elements.addCloseListElement();
+  else
+    m_elements.addCloseParagraph();
   m_inPara = false;
+}
+
+void IWORKText::fillParaPropList(librevenge::RVNGPropertyList &propList)
+{
+  m_paraStyleStack.push(m_paraStyle);
+  libetonyek::fillParaPropList(m_paraStyleStack, propList);
+  m_paraStyleStack.pop();
 }
 
 void IWORKText::openSpan()
