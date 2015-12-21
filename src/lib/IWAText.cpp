@@ -78,6 +78,7 @@ void IWAText::parse(IWORKText &collector)
   size_t textStart = 0;
   bool wasSpace = false;
   IWORKStylePtr_t currentSpanStyle;
+  IWORKStylePtr_t currentListStyle;
   bool isLink = false;
 
   for (size_t i = 0; i != m_text.size(); ++i)
@@ -141,14 +142,25 @@ void IWAText::parse(IWORKText &collector)
     // handle list style change
     if ((listIt != m_lists.end()) && (listIt->first == i))
     {
-      collector.setListStyle(listIt->second);
+      currentListStyle = listIt->second;
+      collector.setListStyle(currentListStyle);
       ++listIt;
     }
 
     // handle list level change
     if ((listLevelIt != m_listLevels.end()) && (listLevelIt->first == i))
     {
-      collector.setListLevel(listLevelIt->second);
+      // paragraphs at level 0 with type "none" aren't part of any list
+      bool isList = listLevelIt->second != 0;
+      if ((listLevelIt->second == 0) && bool(currentListStyle) && currentListStyle->has<property::ListLabelTypeInfos>())
+      {
+        const IWORKListLabelTypeInfos_t &typeInfos = currentListStyle->get<property::ListLabelTypeInfos>();
+        isList = typeInfos.find(listLevelIt->second) != typeInfos.end();
+      }
+      if (isList)
+        collector.setListLevel(listLevelIt->second + 1);
+      else
+        collector.setListLevel(0);
       ++listLevelIt;
     }
 
