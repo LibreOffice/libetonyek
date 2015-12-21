@@ -209,6 +209,8 @@ void IWAText::parse(IWORKText &collector)
     collector.insertText(m_text.substr(textStart, m_text.size() - textStart));
     collector.flushParagraph();
   }
+  collector.setListLevel(0);
+  collector.flushList();
 }
 
 }
