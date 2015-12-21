@@ -633,10 +633,11 @@ void IWORKText::handleListLevelChange(const unsigned level)
 {
   if (m_inPara)
     closePara();
-  for (; level > m_inListLevel; ++m_inListLevel)
+  for (; level > m_inListLevel;)
   {
     IWORKStyleStack styleStack;
     styleStack.push(m_listStyle);
+    ++m_inListLevel;
     RVNGPropertyList listProps;
     m_isOrderedStack.push(fillListPropList(m_inListLevel, styleStack, listProps));
     if (m_isOrderedStack.top())
