@@ -381,7 +381,7 @@ bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPr
 {
   assert(level != 0);
 
-  bool isOrdered = false;
+  bool isOrdered = true;
 
   props.insert("librevenge:level", int(level));
 
@@ -403,10 +403,12 @@ bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPr
     const IWORKListLabelTypeInfos_t &types = style.get<ListLabelTypeInfos>();
     const IWORKListLabelTypeInfos_t::const_iterator it = types.find(level - 1);
     if (it != types.end())
-    {
       isOrdered = boost::apply_visitor(FillListLabelProps(types, it, geometry, props), it->second);
-    }
+    else
+      props.insert("style:num-format", "");
   }
+  else
+    props.insert("style:num-format", "");
 
   props.insert("style:vertical-pos", "center");
 
