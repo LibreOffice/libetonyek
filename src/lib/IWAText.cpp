@@ -152,10 +152,14 @@ void IWAText::parse(IWORKText &collector)
     {
       // paragraphs at level 0 with type "none" aren't part of any list
       bool isList = listLevelIt->second != 0;
-      if ((listLevelIt->second == 0) && bool(currentListStyle) && currentListStyle->has<property::ListLabelTypeInfos>())
+      if ((listLevelIt->second == 0) && bool(currentListStyle) && currentListStyle->has<property::ListLevelStyles>())
       {
-        const IWORKListLabelTypeInfos_t &typeInfos = currentListStyle->get<property::ListLabelTypeInfos>();
-        isList = typeInfos.find(listLevelIt->second) != typeInfos.end();
+        const IWORKListStyle_t &levelStyles = currentListStyle->get<property::ListLevelStyles>();
+        const IWORKListStyle_t::const_iterator it = levelStyles.find(listLevelIt->second);
+        if (it == levelStyles.end())
+          isList = false;
+        else
+          isList = bool(it->second) && it->second->has<property::ListLabelTypeInfo>();
       }
       if (isList)
         collector.setListLevel(listLevelIt->second + 1);

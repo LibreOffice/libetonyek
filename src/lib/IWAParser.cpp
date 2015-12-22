@@ -1357,7 +1357,6 @@ void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
 
   optional<string> name;
   IWORKStylePtr_t parent;
-  IWORKPropertyMap props;
 
   using namespace property;
 
@@ -1372,7 +1371,8 @@ void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
 
   unsigned level = 0;
 
-  IWORKListLabelTypeInfos_t typeInfos;
+  map<unsigned, IWORKPropertyMap> levelProps;
+
   const IWAUInt32Field &numberFormats = get(msg).uint32(15);
   const IWAStringField &bullets = get(msg).string(16);
   const IWABoolField &tiered = get(msg).bool_(25);
@@ -1380,15 +1380,19 @@ void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
   {
     switch (*it)
     {
+    default :
+      ETONYEK_DEBUG_MSG(("parseListStyle: unknown label type %u\n", *it));
+    // fall-through intended
     case 0 :
       // no label
+      levelProps[level].clear<ListLabelTypeInfo>();
       break;
     case 1 :
       // TODO: handle image
       break;
     case 2 :
       if (level < bullets.size())
-        typeInfos[level] = bullets[level];
+        levelProps[level].put<ListLabelTypeInfo>(bullets[level]);
       break;
     case 3 :
     {
@@ -1432,44 +1436,43 @@ void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
       }
       if (level < tiered.size())
         label.m_tiered = tiered[level];
-      typeInfos[level] = label;
+      levelProps[level].put<ListLabelTypeInfo>(label);
       break;
     }
-    default :
-      ETONYEK_DEBUG_MSG(("parseListStyle: unknown label type %u\n", *it));
-      break;
     }
   }
-  if (!typeInfos.empty())
-    props.put<ListLabelTypeInfos>(typeInfos);
 
-  IWORKListIndents_t textIndents;
   level = 0;
   for (IWAFloatField::const_iterator it = get(msg).float_(12).begin(); it != get(msg).float_(12).end(); ++it, ++level)
-    textIndents[level] = *it;
-  if (!textIndents.empty())
-    props.put<ListTextIndents>(textIndents);
+    levelProps[level].put<ListTextIndent>(*it);
 
-  IWORKListIndents_t labelIndents;
   level = 0;
   for (IWAFloatField::const_iterator it = get(msg).float_(13).begin(); it != get(msg).float_(13).end(); ++it, ++level)
-    labelIndents[level] = *it;
-  if (!labelIndents.empty())
-    props.put<ListLabelIndents>(labelIndents);
+    levelProps[level].put<ListLabelIndent>(*it);
 
-  IWORKListLabelGeometries_t geometries;
   level = 0;
   for (IWAMessageField::const_iterator it = get(msg).message(14).begin(); it != get(msg).message(14).end(); ++it, ++level)
   {
     IWORKListLabelGeometry geometry;
     if (it->float_(1))
       geometry.m_scale = get(it->float_(1));
-    geometries[level] = geometry;
+    levelProps[level].put<ListLabelGeometry>(geometry);
   }
-  if (!geometries.empty())
-    props.put<ListLabelGeometries>(geometries);
 
-  style.reset(new IWORKStyle(props, name, parent));
+  if (bool(parent) && parent->has<ListLevelStyles>())
+  {
+    const IWORKListStyle_t &parentStyle = parent->get<ListLevelStyles>();
+    for (IWORKListStyle_t::const_iterator it = parentStyle.begin(); it != parentStyle.end(); ++it)
+      levelProps[it->first].setParent(&it->second->getPropertyMap());
+  }
+
+  IWORKListStyle_t listStyle;
+  for (map<unsigned, IWORKPropertyMap>::const_iterator it = levelProps.begin(); it != levelProps.end(); ++it)
+    listStyle[it->first].reset(new IWORKStyle(it->second, none, none));
+
+  IWORKPropertyMap props;
+  props.put<ListLevelStyles>(listStyle);
+  style.reset(new IWORKStyle(props, name, none));
 }
 
 void IWAParser::parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props)

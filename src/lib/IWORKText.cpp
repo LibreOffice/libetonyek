@@ -268,10 +268,11 @@ void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props
 struct FillListLabelProps : public boost::static_visitor<bool>
 {
 public:
-  FillListLabelProps(const IWORKListLabelTypeInfos_t &labels, const IWORKListLabelTypeInfos_t::const_iterator &current, const IWORKListLabelGeometry *const geometry, RVNGPropertyList &props)
-    : m_labels(labels)
-    , m_current(current)
+  FillListLabelProps(const IWORKListStyle_t &listStyle, const IWORKListStyle_t::const_iterator &level, const IWORKListLabelGeometry *const geometry, const IWORKListLabelTypeInfo_t &typeInfo, RVNGPropertyList &props)
+    : m_listStyle(listStyle)
+    , m_current(level)
     , m_geometry(geometry)
+    , m_typeInfo(typeInfo)
     , m_props(&props)
   {
   }
@@ -307,7 +308,7 @@ public:
       m_props->insert("style:num-format", "i");
       break;
     }
-    m_props->insert("text:display-levels", boost::apply_visitor(GetDisplayLevels(m_labels, m_current, 1), m_current->second));
+    m_props->insert("text:display-levels", boost::apply_visitor(GetDisplayLevels(m_listStyle, m_current, 1), m_typeInfo));
     return true;
   }
 
@@ -336,8 +337,8 @@ private:
 
   struct GetDisplayLevels : public boost::static_visitor<int>
   {
-    GetDisplayLevels(const IWORKListLabelTypeInfos_t &labels, const IWORKListLabelTypeInfos_t::const_iterator &current, const int initial = 1)
-      : m_labels(labels)
+    GetDisplayLevels(const IWORKListStyle_t &listStyle, const IWORKListStyle_t::const_iterator &current, const int initial = 1)
+      : m_listStyle(listStyle)
       , m_current(current)
       , m_initial(initial)
     {
@@ -350,13 +351,17 @@ private:
 
     int operator()(const IWORKTextLabel &) const
     {
-      if (m_current == m_labels.begin())
+      if (m_current == m_listStyle.begin())
         return m_initial;
-      IWORKListLabelTypeInfos_t::const_iterator prev(m_current);
+      IWORKListStyle_t::const_iterator prev(m_current);
       --prev;
       if (prev->first != m_current->first - 1) // missing level spec
         return m_initial;
-      return boost::apply_visitor(GetDisplayLevels(m_labels, prev, m_initial + 1), prev->second);
+      if (!prev->second)
+        return m_initial;
+      if (!prev->second->has<property::ListLabelTypeInfo>())
+        return m_initial;
+      return boost::apply_visitor(GetDisplayLevels(m_listStyle, prev, m_initial + 1), prev->second->get<property::ListLabelTypeInfo>());
     }
 
     int operator()(const IWORKBinary &) const
@@ -365,15 +370,16 @@ private:
     }
 
   private:
-    const IWORKListLabelTypeInfos_t &m_labels;
-    const IWORKListLabelTypeInfos_t::const_iterator m_current;
+    const IWORKListStyle_t &m_listStyle;
+    const IWORKListStyle_t::const_iterator m_current;
     const int m_initial;
   };
 
 private:
-  const IWORKListLabelTypeInfos_t &m_labels;
-  const IWORKListLabelTypeInfos_t::const_iterator m_current;
+  const IWORKListStyle_t &m_listStyle;
+  const IWORKListStyle_t::const_iterator m_current;
   const IWORKListLabelGeometry *const m_geometry;
+  const IWORKListLabelTypeInfo_t &m_typeInfo;
   RVNGPropertyList *const m_props;
 };
 
@@ -387,46 +393,40 @@ bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPr
 
   using namespace property;
 
-  const IWORKListLabelGeometry *geometry = 0;
-
-  if (style.has<ListLabelGeometries>())
+  if (style.has<ListLevelStyles>())
   {
-    const IWORKListLabelGeometries_t &geometries = style.get<ListLabelGeometries>();
-    const IWORKListLabelGeometries_t::const_iterator it = geometries.find(level - 1);
-    if (it != geometries.end())
-      geometry = &it->second;
-    // TODO: process
-  }
+    const IWORKListStyle_t &listStyle = style.get<ListLevelStyles>();
+    const IWORKListStyle_t::const_iterator levelIt = listStyle.find(level - 1);
+    if ((levelIt != listStyle.end()) && bool(levelIt->second))
+    {
+      const IWORKStylePtr_t &levelStyle = levelIt->second;
+      const IWORKListLabelGeometry *geometry = 0;
 
-  if (style.has<ListLabelTypeInfos>())
-  {
-    const IWORKListLabelTypeInfos_t &types = style.get<ListLabelTypeInfos>();
-    const IWORKListLabelTypeInfos_t::const_iterator it = types.find(level - 1);
-    if (it != types.end())
-      isOrdered = boost::apply_visitor(FillListLabelProps(types, it, geometry, props), it->second);
-    else
-      props.insert("style:num-format", "");
-  }
-  else
-    props.insert("style:num-format", "");
+      if (levelStyle->has<ListLabelGeometry>())
+      {
+        geometry = &levelStyle->get<ListLabelGeometry>();
+        // TODO: process
+      }
 
-  props.insert("style:vertical-pos", "center");
-  props.insert("text:list-level-position-and-space-mode", "label-width-and-position");
+      if (levelStyle->has<ListLabelTypeInfo>())
+      {
+        const IWORKListLabelTypeInfo_t &typeInfo = levelStyle->get<ListLabelTypeInfo>();
+        isOrdered = boost::apply_visitor(FillListLabelProps(listStyle, levelIt, geometry, typeInfo, props), typeInfo);
+      }
+      else
+      {
+        props.insert("style:num-format", "");
+      }
 
-  if (style.has<ListLabelIndents>())
-  {
-    const IWORKListIndents_t &indents = style.get<ListLabelIndents>();
-    const IWORKListIndents_t::const_iterator it = indents.find(level - 1);
-    if (it != indents.end())
-      props.insert("text:space-before", it->second, librevenge::RVNG_POINT);
-  }
+      props.insert("style:vertical-pos", "center");
+      props.insert("text:list-level-position-and-space-mode", "label-width-and-position");
 
-  if (style.has<FontSize>() && style.has<ListTextIndents>())
-  {
-    const IWORKListIndents_t &indents = style.get<ListTextIndents>();
-    const IWORKListIndents_t::const_iterator it = indents.find(level - 1);
-    if (it != indents.end())
-      props.insert("text:min-label-width", it->second * style.get<FontSize>(), librevenge::RVNG_POINT);
+      if (levelStyle->has<ListLabelIndent>())
+        props.insert("text:space-before", levelStyle->get<ListLabelIndent>(), librevenge::RVNG_POINT);
+
+      if (style.has<FontSize>() && levelStyle->has<ListTextIndent>())
+        props.insert("text:min-label-width", levelStyle->get<ListTextIndent>() * style.get<FontSize>(), librevenge::RVNG_POINT);
+    }
   }
 
   return isOrdered;
