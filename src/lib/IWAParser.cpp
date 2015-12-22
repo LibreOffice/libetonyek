@@ -1563,11 +1563,13 @@ void IWAParser::parseComment(const unsigned id)
 
 bool IWAParser::parseTabularInfo(const IWAMessage &msg)
 {
+  m_collector.startLevel();
   if (msg.message(1))
     parseShapePlacement(get(msg.message(1)));
   const optional<unsigned> &modelRef = readRef(msg, 2);
   if (modelRef)
     parseTabularModel(get(modelRef));
+  m_collector.endLevel();
   return bool(modelRef);
 }
 
