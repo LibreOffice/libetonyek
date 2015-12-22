@@ -411,16 +411,14 @@ bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPr
     props.insert("style:num-format", "");
 
   props.insert("style:vertical-pos", "center");
+  props.insert("text:list-level-position-and-space-mode", "label-width-and-position");
 
   if (style.has<ListLabelIndents>())
   {
     const IWORKListIndents_t &indents = style.get<ListLabelIndents>();
     const IWORKListIndents_t::const_iterator it = indents.find(level - 1);
     if (it != indents.end())
-    {
-      props.insert("text:list-level-position-and-space-mode", "label-width-and-position");
       props.insert("text:space-before", it->second, librevenge::RVNG_POINT);
-    }
   }
 
   if (style.has<FontSize>() && style.has<ListTextIndents>())
