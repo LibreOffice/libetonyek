@@ -288,8 +288,8 @@ public:
   bool operator()(const IWORKTextLabel &label) const
   {
     m_props->insert("style:num-letter-sync", "false");
-    fillSurrounding(label.m_format.m_prefix, "style:num-prefix");
-    fillSurrounding(label.m_format.m_suffix, "style:num-suffix");
+    fillSurrounding(label.m_format.m_prefix, "style:num-prefix", true);
+    fillSurrounding(label.m_format.m_suffix, "style:num-suffix", false);
     switch (label.m_format.m_format)
     {
     case IWORK_LABEL_NUM_FORMAT_NUMERIC :
@@ -320,14 +320,17 @@ public:
   }
 
 private:
-  void fillSurrounding(const IWORKLabelNumFormatSurrounding surrounding, const char *const name) const
+  void fillSurrounding(const IWORKLabelNumFormatSurrounding surrounding, const char *const name, bool prefix) const
   {
     switch (surrounding)
     {
     case IWORK_LABEL_NUM_FORMAT_SURROUNDING_NONE :
       break;
     case IWORK_LABEL_NUM_FORMAT_SURROUNDING_PARENTHESIS :
-      m_props->insert(name, "(");
+      if (prefix)
+        m_props->insert(name, "(");
+      else
+        m_props->insert(name, ")");
       break;
     case IWORK_LABEL_NUM_FORMAT_SURROUNDING_DOT :
       m_props->insert(name, ".");
