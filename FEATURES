@@ -22,8 +22,9 @@
   + cell content (text, number, date, duration)
   + cell style (border, fill)
   + cell number format
-+ links
+* links
 * document metadata (author, title,...)
+* lists (bullets, numbered)
 
 === Keynote ===
 
@@ -46,6 +47,5 @@
 * transitions
 * animations
 * auto-fitting of presentation text
-* better handling of bullet lists
 * connectors
 * charts
