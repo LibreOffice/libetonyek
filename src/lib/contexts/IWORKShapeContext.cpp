@@ -80,7 +80,7 @@ void IWORKShapeContext::startOfElement()
   {
     getCollector().startLevel();
     assert(!getState().m_currentText);
-    getState().m_currentText = getCollector().createText();
+    getState().m_currentText = getCollector().createText(getState().m_langManager);
   }
 }
 

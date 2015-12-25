@@ -23,6 +23,7 @@
 #include <librevenge/librevenge.h>
 
 #include "IWORKDocumentInterface.h"
+#include "IWORKLanguageManager.h"
 #include "IWORKPath.h"
 #include "IWORKProperties.h"
 #include "IWORKTypes.h"
@@ -78,7 +79,7 @@ void fillSectionPropList(const IWORKStyleStack &style, RVNGPropertyList &props)
   }
 }
 
-void fillCharPropList(const IWORKStyleStack &style, librevenge::RVNGPropertyList &props)
+void fillCharPropList(const IWORKStyleStack &style, const IWORKLanguageManager &langManager, librevenge::RVNGPropertyList &props)
 {
   using namespace property;
 
@@ -144,23 +145,7 @@ void fillCharPropList(const IWORKStyleStack &style, librevenge::RVNGPropertyList
     props.insert("fo:background-color", makeColor(style.get<TextBackground>()));
 
   if (style.has<Language>())
-  {
-    const string &lang = style.get<Language>();
-
-    std::vector<string> components;
-    components.reserve(2);
-    boost::split(components, lang, boost::is_any_of("_"));
-
-    if (2 != components.size())
-    {
-      ETONYEK_DEBUG_MSG(("irregular lang specifier '%s'", lang.c_str()));
-    }
-
-    if ((1 <= components.size()) && (2 <= components[0].size()) && (3 >= components[0].size()) && boost::all(components[0], boost::is_lower()))
-      props.insert("fo:language", components[0].c_str());
-    if ((2 <= components.size()) && (2 == components[1].size()) && boost::all(components[1], boost::is_upper()))
-      props.insert("fo:country", components[1].c_str());
-  }
+    langManager.writeProperties(style.get<Language>(), props);
 }
 
 void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props)
@@ -442,8 +427,9 @@ void IWORKText::draw(IWORKOutputElements &elements)
   elements.append(m_elements);
 }
 
-IWORKText::IWORKText(const bool discardEmptyContent)
-  : m_layoutStyleStack()
+IWORKText::IWORKText(const IWORKLanguageManager &langManager, const bool discardEmptyContent)
+  : m_langManager(langManager)
+  , m_layoutStyleStack()
   , m_paraStyleStack()
   , m_elements()
   , m_layoutStyle()
@@ -736,7 +722,7 @@ void IWORKText::openSpan()
   m_paraStyleStack.push(m_paraStyle);
   m_paraStyleStack.push(m_spanStyle);
   librevenge::RVNGPropertyList props;
-  fillCharPropList(m_paraStyleStack, props);
+  fillCharPropList(m_paraStyleStack, m_langManager, props);
   m_paraStyleStack.pop();
   m_paraStyleStack.pop();
   m_elements.addOpenSpan(props);

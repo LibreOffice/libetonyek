@@ -171,7 +171,7 @@ bool KEY6Parser::parsePlaceholder(const unsigned id)
           if (placement)
             parseShapePlacement(get(placement), geometry);
           assert(!m_currentText);
-          m_currentText = m_collector.createText();
+          m_currentText = m_collector.createText(m_langManager);
           parseText(get(textRef));
           if (!m_currentText->empty())
             m_collector.collectText(m_currentText);
@@ -206,7 +206,7 @@ void KEY6Parser::parseNotes(const unsigned id)
   if (textRef)
   {
     assert(!m_currentText);
-    m_currentText = m_collector.createText();
+    m_currentText = m_collector.createText(m_langManager);
     parseText(get(textRef));
     m_collector.collectText(m_currentText);
     m_currentText.reset();
@@ -238,7 +238,7 @@ bool KEY6Parser::parseStickyNote(const IWAMessage &msg)
     const optional<unsigned> &textRef = readRef(get(msg.message(1)), 2);
     if (textRef)
     {
-      m_currentText = m_collector.createText();
+      m_currentText = m_collector.createText(m_langManager);
       parseText(get(textRef));
     }
   }
@@ -247,7 +247,7 @@ bool KEY6Parser::parseStickyNote(const IWAMessage &msg)
     const optional<unsigned> &commentRef = readRef(msg, 2);
     if (commentRef)
     {
-      m_currentText = m_collector.createText();
+      m_currentText = m_collector.createText(m_langManager);
       parseComment(get(commentRef));
     }
   }

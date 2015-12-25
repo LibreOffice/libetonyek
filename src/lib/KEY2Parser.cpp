@@ -464,7 +464,7 @@ void StickyNoteElement::startOfElement()
   if (isCollector())
   {
     assert(!getState().m_currentText);
-    getState().m_currentText = getCollector().createText();
+    getState().m_currentText = getCollector().createText(getState().m_langManager);
     getCollector().startLevel();
   }
 }
@@ -752,7 +752,7 @@ void PlaceholderContext::startOfElement()
   if (isCollector())
   {
     assert(!getState().m_currentText);
-    getState().m_currentText = getCollector().createText();
+    getState().m_currentText = getCollector().createText(getState().m_langManager);
   }
 }
 
@@ -992,7 +992,7 @@ void NotesElement::startOfElement()
   if (isCollector())
   {
     assert(!getState().m_currentText);
-    getState().m_currentText = getCollector().createText();
+    getState().m_currentText = getCollector().createText(getState().m_langManager);
   }
 }
 

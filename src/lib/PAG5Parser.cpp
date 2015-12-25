@@ -32,7 +32,7 @@ bool PAG5Parser::parseDocument()
     const optional<unsigned> textRef(readRef(get(msg), 4));
     if (textRef)
     {
-      m_currentText = m_collector.createText();
+      m_currentText = m_collector.createText(m_langManager);
       parseText(get(textRef));
       m_collector.collectText(m_currentText);
       m_currentText.reset();

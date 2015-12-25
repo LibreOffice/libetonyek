@@ -24,6 +24,7 @@
 
 #include "libetonyek_utils.h"
 #include "IWAMessage.h"
+#include "IWORKLanguageManager.h"
 #include "IWORKStyle_fwd.h"
 #include "IWORKTypes.h"
 
@@ -117,6 +118,7 @@ protected:
   const IWORKStylePtr_t queryStyle(unsigned id, StyleMap_t &styleMap, StyleParseFun_t parse) const;
 
 protected:
+  IWORKLanguageManager m_langManager;
   boost::shared_ptr<IWORKText> m_currentText;
 
 private:

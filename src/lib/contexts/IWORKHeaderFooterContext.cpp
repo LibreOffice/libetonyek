@@ -31,7 +31,7 @@ void IWORKHeaderFooterContext::startOfElement()
   if (isCollector())
   {
     assert(!getState().m_currentText);
-    getState().m_currentText = getCollector().createText(true);
+    getState().m_currentText = getCollector().createText(getState().m_langManager, true);
   }
 }
 

@@ -15,6 +15,7 @@ test_CPPFLAGS = \
 	$(XML_CFLAGS) \
 	$(GLM_CFLAGS) \
 	$(MDDS_CFLAGS) \
+	$(LANGTAG_LIBS) \
 	$(DEBUG_CXXFLAGS)
 
 test_LDFLAGS = -L$(top_builddir)/src/lib
@@ -23,6 +24,7 @@ test_LDADD = \
 	$(top_builddir)/src/lib/libetonyek_internal.la \
 	$(REVENGE_LIBS) \
 	$(CPPUNIT_LIBS) \
+	$(LANGTAG_LIBS) \
 	$(XML_LIBS)
 
 test_SOURCES = \
@@ -32,6 +34,7 @@ test_SOURCES = \
 	IWASnappyStreamTest.cpp \
 	IWORKChainedTokenizerTest.cpp \
 	IWORKFormulaTest.cpp \
+	IWORKLanguageManagerTest.cpp \
 	IWORKPathTest.cpp \
 	IWORKPropertyMapTest.cpp \
 	IWORKShapeTest.cpp \

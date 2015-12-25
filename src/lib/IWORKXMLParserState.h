@@ -13,6 +13,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "IWORKStylesheet.h"
+#include "IWORKLanguageManager.h"
 #include "IWORKTypes.h"
 #include "IWORKTypes_fwd.h"
 
@@ -47,6 +48,7 @@ public:
   // gather referenceable entities in skipped parts of the file.
   bool m_enableCollector;
   IWORKTableNameMapPtr_t m_tableNameMap;
+  IWORKLanguageManager m_langManager;
   boost::shared_ptr<IWORKTable> m_currentTable;
   boost::shared_ptr<IWORKText> m_currentText;
 

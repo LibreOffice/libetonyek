@@ -11,6 +11,7 @@
 
 #include <boost/make_shared.hpp>
 
+#include "IWORKLanguageManager.h"
 #include "IWORKProperties.h"
 #include "IWORKText.h"
 
@@ -26,8 +27,9 @@ using std::map;
 using std::pair;
 using std::string;
 
-IWAText::IWAText(const std::string text)
+IWAText::IWAText(const std::string text, IWORKLanguageManager &langManager)
   : m_text(text)
+  , m_langManager(langManager)
   , m_paras()
   , m_spans()
   , m_langs()
@@ -96,7 +98,17 @@ void IWAText::parse(IWORKText &collector)
     {
       IWORKPropertyMap props;
       if (!langIt->second.empty())
-        props.put<property::Language>(langIt->second);
+      {
+        const string &tag = m_langManager.addTag(langIt->second);
+        if (tag.empty())
+          props.clear<property::Language>();
+        else
+          props.put<property::Language>(tag);
+      }
+      else
+      {
+        props.clear<property::Language>();
+      }
       if (bool(currentSpanStyle))
         props.setParent(&currentSpanStyle->getPropertyMap());
       spanStyle = make_shared<IWORKStyle>(props, none, none);

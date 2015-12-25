@@ -473,7 +473,7 @@ void PElement::endOfElement()
     getState().m_currentText->draw(fs.m_footnotes.back());
     // prepare for possible next footnote
     // TODO: introduce IN_FOOTNOTES state and move this to startOfElement
-    getState().m_currentText = getCollector().createText(false);
+    getState().m_currentText = getCollector().createText(getState().m_langManager, false);
     if (getCollector().getFootnoteKind() == PAG_FOOTNOTE_KIND_FOOTNOTE)
       fs.m_footnotes.back().addCloseFootnote();
     else
@@ -572,7 +572,7 @@ void SectionElement::startOfElement()
     if (bool(getState().m_currentText) && !getState().m_currentText->empty())
     {
       getCollector().collectText(getState().m_currentText);
-      getState().m_currentText = getCollector().createText();
+      getState().m_currentText = getCollector().createText(getState().m_langManager);
       getCollector().collectTextBody();
     }
   }
@@ -605,7 +605,7 @@ void SectionElement::endOfElement()
       open();
     getCollector().collectText(getState().m_currentText);
     // In case there's non-section text following. Again, this should not happen in normal files.
-    getState().m_currentText = getCollector().createText();
+    getState().m_currentText = getCollector().createText(getState().m_langManager);
     getCollector().closeSection();
   }
 }
@@ -713,7 +713,7 @@ IWORKXMLContextPtr_t PAG1TextStorageElement::element(const int name)
     if (!m_textOpened)
     {
       assert(!getState().m_currentText);
-      getState().m_currentText = getCollector().createText();
+      getState().m_currentText = getCollector().createText(getState().m_langManager);
       m_textOpened = true;
     }
     return makeContext<TextBodyElement>(getState());

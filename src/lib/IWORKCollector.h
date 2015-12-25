@@ -32,6 +32,7 @@ namespace libetonyek
 {
 
 class IWORKDocumentInterface;
+class IWORKLanguageManager;
 class IWORKPropertyMap;
 class IWORKTable;
 class IWORKText;
@@ -93,7 +94,7 @@ public:
   void endGroup();
 
   boost::shared_ptr<IWORKTable> createTable(const IWORKTableNameMapPtr_t &tableNameMap) const;
-  boost::shared_ptr<IWORKText> createText(bool discardEmptyContent = false) const;
+  boost::shared_ptr<IWORKText> createText(const IWORKLanguageManager &langManager, bool discardEmptyContent = false) const;
 
   void startLevel();
   void endLevel();

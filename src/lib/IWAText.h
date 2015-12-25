@@ -18,12 +18,13 @@
 namespace libetonyek
 {
 
+class IWORKLanguageManager;
 class IWORKText;
 
 class IWAText
 {
 public:
-  explicit IWAText(const std::string text);
+  IWAText(const std::string text, IWORKLanguageManager &langManager);
 
   void setParagraphs(const std::map<unsigned, IWORKStylePtr_t> &paras);
   void setSpans(const std::map<unsigned, IWORKStylePtr_t> &spans);
@@ -36,6 +37,7 @@ public:
 
 private:
   const std::string m_text;
+  IWORKLanguageManager &m_langManager;
 
   std::map<unsigned, IWORKStylePtr_t> m_paras;
   std::map<unsigned, IWORKStylePtr_t> m_spans;

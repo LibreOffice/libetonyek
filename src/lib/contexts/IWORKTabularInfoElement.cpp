@@ -851,7 +851,7 @@ void TElement::startOfElement()
     // TODO: This will have to be moved to the parent class, so all
     // cells get the correct style, not only text cells.
     assert(!getState().m_currentText);
-    getState().m_currentText = getCollector().createText(false);
+    getState().m_currentText = getCollector().createText(getState().m_langManager, false);
     IWORKStyleStack styleStack;
     styleStack.push(getState().m_currentTable->getDefaultCellStyle(getState().m_tableData->m_column, getState().m_tableData->m_row));
     styleStack.push(getState().m_tableData->m_style);

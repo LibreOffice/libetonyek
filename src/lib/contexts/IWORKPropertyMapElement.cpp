@@ -973,10 +973,18 @@ void LanguageElement::endOfElement()
   if (m_lang)
   {
     if (IWORKToken::__multilingual != getToken(get(m_lang).c_str()))
-      m_propMap.put<property::Language>(get(m_lang));
+    {
+      const string &tag = getState().m_langManager.addLocale(get(m_lang));
+      if (tag.empty())
+        m_propMap.clear<property::Language>();
+      else
+        m_propMap.put<property::Language>(tag);
+    }
   }
   else if (m_default)
+  {
     m_propMap.clear<property::Language>();
+  }
 }
 
 }

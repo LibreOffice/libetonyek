@@ -26,11 +26,12 @@
 namespace libetonyek
 {
 
+class IWORKLanguageManager;
+
 class IWORKText
 {
-
 public:
-  explicit IWORKText(bool discardEmptyContent);
+  IWORKText(const IWORKLanguageManager &langManager, bool discardEmptyContent);
   ~IWORKText();
 
   /// Set style used as base for all layout styles in this text.
@@ -90,6 +91,8 @@ private:
   void closeSpan();
 
 private:
+  const IWORKLanguageManager &m_langManager;
+
   IWORKStyleStack m_layoutStyleStack;
   IWORKStyleStack m_paraStyleStack;
 

@@ -20,13 +20,14 @@ AM_CXXFLAGS = \
 	-I$(top_srcdir)/src/lib/contexts \
 	$(BOOST_CFLAGS) \
 	$(GLM_CFLAGS) \
+	$(LANGTAG_CFLAGS) \
 	$(MDDS_CFLAGS) \
 	$(REVENGE_CFLAGS) \
 	$(XML_CFLAGS) \
 	$(ZLIB_CFLAGS) \
 	$(DEBUG_CXXFLAGS)
 
-libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_LIBADD  = libetonyek_internal.la $(REVENGE_LIBS) $(XML_LIBS) $(ZLIB_LIBS) @LIBETONYEK_WIN32_RESOURCE@
+libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_LIBADD  = libetonyek_internal.la $(REVENGE_LIBS) $(LANGTAG_LIBS) $(XML_LIBS) $(ZLIB_LIBS) @LIBETONYEK_WIN32_RESOURCE@
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_DEPENDENCIES = libetonyek_internal.la @LIBETONYEK_WIN32_RESOURCE@
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_LDFLAGS = $(version_info) -export-dynamic -no-undefined
 libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_la_SOURCES = \
@@ -62,6 +63,8 @@ libetonyek_internal_la_SOURCES = \
 	IWORKEnum.h \
 	IWORKFormula.cpp \
 	IWORKFormula.h \
+	IWORKLanguageManager.cpp \
+	IWORKLanguageManager.h \
 	IWORKMemoryStream.cpp \
 	IWORKMemoryStream.h \
 	IWORKOutputElements.cpp \

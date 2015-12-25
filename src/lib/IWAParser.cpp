@@ -153,7 +153,8 @@ IWAParser::TableInfo::TableInfo(const shared_ptr<IWORKTable> &table, const unsig
 }
 
 IWAParser::IWAParser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package, IWORKCollector &collector)
-  : m_currentText()
+  : m_langManager()
+  , m_currentText()
   , m_fragments(fragments)
   , m_package(package)
   , m_collector(collector)
@@ -519,7 +520,7 @@ bool IWAParser::parseText(const unsigned id)
   const IWAStringField &text = get(msg).string(3);
   if (text)
   {
-    IWAText textParser(get(text));
+    IWAText textParser(get(text), m_langManager);
     const size_t length = get(text).size();
 
     if (get(msg).message(5))
@@ -877,7 +878,7 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
   const optional<unsigned> &textRef = readRef(msg, 2);
   if (textRef)
   {
-    m_currentText = m_collector.createText();
+    m_currentText = m_collector.createText(m_langManager);
     parseText(get(textRef));
   }
 
@@ -1556,7 +1557,7 @@ void IWAParser::parseComment(const unsigned id)
 
   if (get(msg).string(1))
   {
-    IWAText text(get(get(msg).string(1)));
+    IWAText text(get(get(msg).string(1)), m_langManager);
     text.parse(*m_currentText);
   }
 }
@@ -1834,7 +1835,7 @@ void IWAParser::parseTile(const unsigned id)
         }
 
         assert(!m_currentText);
-        m_currentText = m_collector.createText();
+        m_currentText = m_collector.createText(m_langManager);
 
         if (bool(text))
         {
@@ -1859,7 +1860,7 @@ void IWAParser::parseTile(const unsigned id)
       }
 
       // 2. Create cell content
-      m_currentText = m_collector.createText();
+      m_currentText = m_collector.createText(m_langManager);
 
       // 2a. Get default font from table style
       if (m_currentTable->m_style)

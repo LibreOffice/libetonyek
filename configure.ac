@@ -77,6 +77,13 @@ PKG_CHECK_MODULES([ZLIB],[zlib],[],[
 AC_SUBST(ZLIB_CFLAGS)
 AC_SUBST(ZLIB_LIBS)
 
+# ===============
+# Find liblangtag
+# ===============
+PKG_CHECK_MODULES([LANGTAG],[
+    liblangtag
+])
+
 # ==================
 # Find boost headers
 # ==================
@@ -103,8 +110,10 @@ AC_CHECK_HEADERS(
         boost/spirit/include/phoenix.hpp \
         boost/spirit/include/qi.hpp \
         boost/unordered_map.hpp \
+        boost/unordered_set.hpp \
         boost/variant/recursive_variant.hpp \
-        boost/variant/variant.hpp,
+        boost/variant/variant.hpp \
+        ,
     [],
     [AC_MSG_ERROR([Required boost headers not found.])],
     []
