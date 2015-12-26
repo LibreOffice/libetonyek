@@ -540,6 +540,12 @@ void IWORKText::setSpanStyle(const IWORKStylePtr_t &style)
   m_spanStyle = style;
 }
 
+void IWORKText::setLanguage(const IWORKStylePtr_t &style)
+{
+  m_spanStyleChanged |= m_langStyle != style;
+  m_langStyle = style;
+}
+
 void IWORKText::flushSpan()
 {
   if (m_inSpan)
@@ -721,8 +727,10 @@ void IWORKText::openSpan()
 
   m_paraStyleStack.push(m_paraStyle);
   m_paraStyleStack.push(m_spanStyle);
+  m_paraStyleStack.push(m_langStyle);
   librevenge::RVNGPropertyList props;
   fillCharPropList(m_paraStyleStack, m_langManager, props);
+  m_paraStyleStack.pop();
   m_paraStyleStack.pop();
   m_paraStyleStack.pop();
   m_elements.addOpenSpan(props);

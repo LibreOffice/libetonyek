@@ -79,7 +79,6 @@ void IWAText::parse(IWORKText &collector)
   map<unsigned, unsigned>::const_iterator listLevelIt = m_listLevels.begin();
   size_t textStart = 0;
   bool wasSpace = false;
-  IWORKStylePtr_t currentSpanStyle;
   IWORKStylePtr_t currentListStyle;
   bool isLink = false;
 
@@ -87,11 +86,13 @@ void IWAText::parse(IWORKText &collector)
   {
     // handle span style change
     IWORKStylePtr_t spanStyle;
-    bool span = false;
+    IWORKStylePtr_t langStyle;
+    bool spanChanged = false;
+    bool langChanged = false;
     if ((spanIt != m_spans.end()) && (spanIt->first == i))
     {
-      spanStyle = currentSpanStyle = spanIt->second;
-      span = true;
+      spanStyle = spanIt->second;
+      spanChanged = true;
       ++spanIt;
     }
     if ((langIt != m_langs.end()) && (langIt->first == i))
@@ -109,20 +110,21 @@ void IWAText::parse(IWORKText &collector)
       {
         props.clear<property::Language>();
       }
-      if (bool(currentSpanStyle))
-        props.setParent(&currentSpanStyle->getPropertyMap());
-      spanStyle = make_shared<IWORKStyle>(props, none, none);
-      span = true;
+      langStyle = make_shared<IWORKStyle>(props, none, none);
+      langChanged = true;
       ++langIt;
     }
-    if (span)
+    if (spanChanged || langChanged)
     {
       if (textStart < i)
         collector.insertText(m_text.substr(textStart, i - textStart));
       textStart = i;
       if (i != 0)
         collector.flushSpan();
-      collector.setSpanStyle(spanStyle);
+      if (spanChanged)
+        collector.setSpanStyle(spanStyle);
+      if (langChanged)
+        collector.setLanguage(langStyle);
     }
 
     // handle start/end of a link

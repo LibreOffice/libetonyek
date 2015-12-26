@@ -58,6 +58,8 @@ public:
 
   /// Set style used for the next span.
   void setSpanStyle(const IWORKStylePtr_t &style);
+  /// Set language used for the next span.
+  void setLanguage(const IWORKStylePtr_t &style);
   /// Flush the current span.
   void flushSpan();
 
@@ -114,6 +116,7 @@ private:
   bool m_ignoreEmptyPara;
 
   IWORKStylePtr_t m_spanStyle;
+  IWORKStylePtr_t m_langStyle;
   bool m_spanStyleChanged;
   bool m_inSpan;
 
