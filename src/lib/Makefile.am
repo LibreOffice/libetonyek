@@ -9,10 +9,6 @@ endif
 
 noinst_LTLIBRARIES = libetonyek_internal.la
 lib_LTLIBRARIES = libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@.la
-libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_includedir = $(includedir)/libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@/libetonyek
-libetonyek_@ETONYEK_MAJOR_VERSION@_@ETONYEK_MINOR_VERSION@_include_HEADERS = \
-	$(top_srcdir)/inc/libetonyek/libetonyek.h \
-	$(top_srcdir)/inc/libetonyek/EtonyekDocument.h
 
 AM_CXXFLAGS = \
 	-DLIBETONYEK_BUILD \
