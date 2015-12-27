@@ -7,6 +7,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <boost/shared_ptr.hpp>
 
 #include <iostream>
@@ -19,16 +23,33 @@
 #include <librevenge/librevenge.h>
 #include <libetonyek/libetonyek.h>
 
+#ifndef VERSION
+#define VERSION "UNKNOWN VERSION"
+#endif
+
+#define TOOL "key2xhtml"
+
 namespace
 {
 
 int printUsage()
 {
-  printf("Usage: key2xhtml [OPTION] <KeyNote Document> | <KeyNote Directory>\n");
+  printf("`" TOOL "' converts Apple Keynote presentations to SVG.\n");
+  printf("\n");
+  printf("Usage: " TOOL " [OPTION] INPUT\n");
   printf("\n");
   printf("Options:\n");
-  printf("--help                Shows this help message\n");
+  printf("\t--help                show this help message\n");
+  printf("\t--version             show version information\n");
+  printf("\n");
+  printf("Report bugs to <https://bugs.documentfoundation.org/>.\n");
   return -1;
+}
+
+int printVersion()
+{
+  printf(TOOL " " VERSION "\n");
+  return 0;
 }
 
 } // anonymous namespace
@@ -42,7 +63,9 @@ int main(int argc, char *argv[]) try
 
   for (int i = 1; i < argc; i++)
   {
-    if (!file && strncmp(argv[i], "--", 2))
+    if (!strcmp(argv[i], "--version"))
+      return printVersion();
+    else if (!file && strncmp(argv[i], "--", 2))
       file = argv[i];
     else
       return printUsage();

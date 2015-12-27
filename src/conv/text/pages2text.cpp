@@ -26,23 +26,28 @@
 #define VERSION "UNKNOWN VERSION"
 #endif
 
+#define TOOL "pages2text"
+
 namespace
 {
 
 int printUsage()
 {
-  printf("Usage: pages2text [OPTION] <Pages Document> | <Pages Directory>\n");
+  printf("`" TOOL "' converts Apple Pages documents to plain text.\n");
+  printf("\n");
+  printf("Usage: " TOOL " [OPTION] INPUT\n");
   printf("\n");
   printf("Options:\n");
-  printf("--info                Display document metadata instead of the text\n");
-  printf("--help                Shows this help message\n");
-  printf("--version             Output pages2text version\n");
+  printf("\t--help                show this help message\n");
+  printf("\t--version             show version information\n");
+  printf("\n");
+  printf("Report bugs to <https://bugs.documentfoundation.org/>.\n");
   return -1;
 }
 
 int printVersion()
 {
-  printf("pages2text %s\n", VERSION);
+  printf(TOOL " " VERSION "\n");
   return 0;
 }
 

@@ -22,27 +22,36 @@
 #include "config.h"
 #endif
 
+#ifndef PACKAGE
+#define PACKAGE "libetonyek"
+#endif
 #ifndef VERSION
 #define VERSION "UNKNOWN VERSION"
 #endif
+
+#define TOOL "pages2raw"
 
 namespace
 {
 
 int printUsage()
 {
-  printf("Usage: pages2raw [OPTION] <Pages Document> | <Pages Directory>\n");
+  printf("`" TOOL "' is used to test Apple Pages import in " PACKAGE ".\n");
+  printf("\n");
+  printf("Usage: " TOOL " [OPTION] INPUT\n");
   printf("\n");
   printf("Options:\n");
-  printf("--callgraph           Display the call graph nesting level\n");
-  printf("--help                Shows this help message\n");
-  printf("--version             Output pages2raw version \n");
+  printf("\t--callgraph           display the call graph nesting level\n");
+  printf("\t--help                show this help message\n");
+  printf("\t--version             show version information\n");
+  printf("\n");
+  printf("Report bugs to <https://bugs.documentfoundation.org/>.\n");
   return -1;
 }
 
 int printVersion()
 {
-  printf("pages2raw %s\n", VERSION);
+  printf(TOOL " " VERSION "\n");
   return 0;
 }
 
