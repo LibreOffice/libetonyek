@@ -15,6 +15,7 @@
 namespace libetonyek
 {
 
+class IWORKPropertyHandler;
 class IWORKPropertyMap;
 class IWORKXMLParserState;
 
@@ -22,11 +23,13 @@ class IWORKPropertyMapElement : public IWORKXMLElementContextBase
 {
 public:
   IWORKPropertyMapElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+  IWORKPropertyMapElement(IWORKXMLParserState &state, IWORKPropertyHandler &propHandler);
 
   virtual IWORKXMLContextPtr_t element(int name);
 
 private:
-  IWORKPropertyMap &m_propMap;
+  IWORKPropertyMap *m_propMap;
+  IWORKPropertyHandler *m_propHandler;
 };
 
 }

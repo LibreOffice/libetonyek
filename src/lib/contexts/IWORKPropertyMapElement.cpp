@@ -22,6 +22,8 @@
 #include "IWORKNumericPropertyContext.h"
 #include "IWORKProperties.h"
 #include "IWORKPropertyContext.h"
+#include "IWORKPropertyHandler.h"
+#include "IWORKPropertyMap.h"
 #include "IWORKPtrPropertyContext.h"
 #include "IWORKRefContext.h"
 #include "IWORKStringElement.h"
@@ -1328,108 +1330,119 @@ typedef IWORKNumericPropertyContext<property::WidowControl> WidowControlElement;
 
 IWORKPropertyMapElement::IWORKPropertyMapElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : IWORKXMLElementContextBase(state)
-  , m_propMap(propMap)
+  , m_propMap(&propMap)
+  , m_propHandler(0)
+{
+}
+
+IWORKPropertyMapElement::IWORKPropertyMapElement(IWORKXMLParserState &state, IWORKPropertyHandler &propHandler)
+  : IWORKXMLElementContextBase(state)
+  , m_propMap(0)
+  , m_propHandler(&propHandler)
 {
 }
 
 IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
 {
+  if (m_propHandler)
+    return m_propHandler->handle(name);
+
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::alignment :
-    return makeContext<AlignmentElement>(getState(), m_propMap);
+    return makeContext<AlignmentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::baselineShift :
-    return makeContext<BaselineShiftElement>(getState(), m_propMap);
+    return makeContext<BaselineShiftElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::bold :
-    return makeContext<BoldElement>(getState(), m_propMap);
+    return makeContext<BoldElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::capitalization :
-    return makeContext<CapitalizationElement>(getState(), m_propMap);
+    return makeContext<CapitalizationElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::columns :
-    return makeContext<ColumnsProperty>(getState(), m_propMap);
+    return makeContext<ColumnsProperty>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::fill :
-    return makeContext<FillElement>(getState(), m_propMap);
+    return makeContext<FillElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::filters :
-    return makeContext<FiltersElement>(getState(), m_propMap);
+    return makeContext<FiltersElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::firstLineIndent :
-    return makeContext<FirstLineIndentElement>(getState(), m_propMap);
+    return makeContext<FirstLineIndentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::fontColor :
-    return makeContext<FontColorElement>(getState(), m_propMap);
+    return makeContext<FontColorElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::fontName :
-    return makeContext<FontNameElement>(getState(), m_propMap);
+    return makeContext<FontNameElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::fontSize :
-    return makeContext<FontSizeElement>(getState(), m_propMap);
+    return makeContext<FontSizeElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::geometry :
-    return makeContext<GeometryElement>(getState(), m_propMap);
+    return makeContext<GeometryElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::italic :
-    return makeContext<ItalicElement>(getState(), m_propMap);
+    return makeContext<ItalicElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::keepLinesTogether :
-    return makeContext<KeepLinesTogetherElement>(getState(), m_propMap);
+    return makeContext<KeepLinesTogetherElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::keepWithNext :
-    return makeContext<KeepWithNextElement>(getState(), m_propMap);
+    return makeContext<KeepWithNextElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::language :
-    return makeContext<LanguageElement>(getState(), m_propMap);
+    return makeContext<LanguageElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutMargins :
-    return makeContext<LayoutMarginsElement>(getState(), m_propMap);
+    return makeContext<LayoutMarginsElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::leftIndent :
-    return makeContext<LeftIndentElement>(getState(), m_propMap);
+    return makeContext<LeftIndentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::lineSpacing :
-    return makeContext<LineSpacingElement>(getState(), m_propMap);
+    return makeContext<LineSpacingElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::opacity :
-    return makeContext<OpacityElement>(getState(), m_propMap);
+    return makeContext<OpacityElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::outline :
-    return makeContext<OutlineElement>(getState(), m_propMap);
+    return makeContext<OutlineElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::pageBreakBefore :
-    return makeContext<PageBreakBeforeElement>(getState(), m_propMap);
+    return makeContext<PageBreakBeforeElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphBorderType :
-    return makeContext<ParagraphBorderTypeElement>(getState(), m_propMap);
+    return makeContext<ParagraphBorderTypeElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphFill :
-    return makeContext<ParagraphFillElement>(getState(), m_propMap);
+    return makeContext<ParagraphFillElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphStroke :
-    return makeContext<ParagraphStrokeElement>(getState(), m_propMap);
+    return makeContext<ParagraphStrokeElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::rightIndent :
-    return makeContext<RightIndentElement>(getState(), m_propMap);
+    return makeContext<RightIndentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyNumberFormat :
-    return makeContext<SFTCellStylePropertyNumberFormatElement>(getState(), m_propMap);
+    return makeContext<SFTCellStylePropertyNumberFormatElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyDateTimeFormat :
-    return makeContext<SFTCellStylePropertyDateTimeFormatElement>(getState(), m_propMap);
+    return makeContext<SFTCellStylePropertyDateTimeFormatElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyDurationFormat :
-    return makeContext<SFTCellStylePropertyDurationFormatElement>(getState(), m_propMap);
+    return makeContext<SFTCellStylePropertyDurationFormatElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultBodyCellStyleProperty :
-    return makeContext<SFTDefaultBodyCellStylePropertyElement>(getState(), m_propMap, getState().getDictionary().m_cellStyles);
+    return makeContext<SFTDefaultBodyCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultFooterRowCellStyleProperty :
-    return makeContext<SFTDefaultFooterRowCellStylePropertyElement>(getState(), m_propMap, getState().getDictionary().m_cellStyles);
+    return makeContext<SFTDefaultFooterRowCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultHeaderColumnCellStyleProperty :
-    return makeContext<SFTDefaultHeaderColumnCellStylePropertyElement>(getState(), m_propMap, getState().getDictionary().m_cellStyles);
+    return makeContext<SFTDefaultHeaderColumnCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultHeaderRowCellStyleProperty :
-    return makeContext<SFTDefaultHeaderRowCellStylePropertyElement>(getState(), m_propMap, getState().getDictionary().m_cellStyles);
+    return makeContext<SFTDefaultHeaderRowCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTHeaderColumnRepeatsProperty :
-    return makeContext<SFTHeaderColumnRepeatsPropertyElement>(getState(), m_propMap);
+    return makeContext<SFTHeaderColumnRepeatsPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTHeaderRowRepeatsProperty :
-    return makeContext<SFTHeaderRowRepeatsPropertyElement>(getState(), m_propMap);
+    return makeContext<SFTHeaderRowRepeatsPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTStrokeProperty :
-    return makeContext<SFTStrokePropertyElement>(getState(), m_propMap);
+    return makeContext<SFTStrokePropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTTableBandedRowsProperty :
-    return makeContext<SFTTableBandedRowsPropertyElement>(getState(), m_propMap);
+    return makeContext<SFTTableBandedRowsPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceAfter :
-    return makeContext<SpaceAfterElement>(getState(), m_propMap);
+    return makeContext<SpaceAfterElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceBefore :
-    return makeContext<SpaceBeforeElement>(getState(), m_propMap);
+    return makeContext<SpaceBeforeElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::strikethru :
-    return makeContext<StrikethruElement>(getState(), m_propMap);
+    return makeContext<StrikethruElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::stroke :
-    return makeContext<StrokeProperty>(getState(), m_propMap);
+    return makeContext<StrokeProperty>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::superscript :
-    return makeContext<SuperscriptElement>(getState(), m_propMap);
+    return makeContext<SuperscriptElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::tabs :
-    return makeContext<TabsProperty>(getState(), m_propMap);
+    return makeContext<TabsProperty>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::textBackground :
-    return makeContext<TextBackgroundElement>(getState(), m_propMap);
+    return makeContext<TextBackgroundElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::tracking :
-    return makeContext<TrackingElement>(getState(), m_propMap);
+    return makeContext<TrackingElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::underline :
-    return makeContext<UnderlineElement>(getState(), m_propMap);
+    return makeContext<UnderlineElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::widowControl :
-    return makeContext<WidowControlElement>(getState(), m_propMap);
+    return makeContext<WidowControlElement>(getState(), *m_propMap);
   }
 
   return IWORKXMLContextPtr_t();

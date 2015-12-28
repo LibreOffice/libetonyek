@@ -76,6 +76,8 @@ libetonyek_internal_la_SOURCES = \
 	IWORKPresentationRedirector.h \
 	IWORKProperties.cpp \
 	IWORKProperties.h \
+	IWORKPropertyHandler.cpp \
+	IWORKPropertyHandler.h \
 	IWORKPropertyInfo.h \
 	IWORKPropertyMap.cpp \
 	IWORKPropertyMap.h \
