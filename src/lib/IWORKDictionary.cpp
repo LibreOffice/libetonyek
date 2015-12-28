@@ -17,6 +17,7 @@ IWORKDictionary::IWORKDictionary()
   , m_characterStyles()
   , m_graphicStyles()
   , m_layoutStyles()
+  , m_listStyles()
   , m_paragraphStyles()
   , m_tabularStyles()
   , m_vectorStyles()
@@ -28,6 +29,8 @@ IWORKDictionary::IWORKDictionary()
   , m_images()
   , m_tabs()
   , m_filterDescriptors()
+  , m_listLabelTypeInfos()
+  , m_listLabelGeometries()
 {
 }
 

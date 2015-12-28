@@ -40,6 +40,7 @@ struct IWORKDictionary
   IWORKStyleMap_t m_characterStyles;
   IWORKStyleMap_t m_graphicStyles;
   IWORKStyleMap_t m_layoutStyles;
+  IWORKListStyleMap_t m_listStyles;
   IWORKStyleMap_t m_paragraphStyles;
   IWORKStyleMap_t m_tabularStyles;
   IWORKStyleMap_t m_vectorStyles;
@@ -56,6 +57,9 @@ struct IWORKDictionary
   IWORKTabStopsMap_t m_tabs;
 
   IWORKFilterDescriptorMap_t m_filterDescriptors;
+
+  IWORKListLabelTypeInfoMap_t m_listLabelTypeInfos;
+  IWORKListLabelGeometryMap_t  m_listLabelGeometries;
 };
 
 }

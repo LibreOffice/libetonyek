@@ -329,6 +329,8 @@ struct IWORKListLabelGeometry
   bool m_scaleWithText;
 };
 
+typedef boost::unordered_map<ID_t, IWORKListLabelGeometry> IWORKListLabelGeometryMap_t;
+
 struct IWORKTextLabelFormat
 {
   IWORKTextLabelFormat();
@@ -351,6 +353,7 @@ typedef boost::variant<std::string, IWORKTextLabel, IWORKBinary> IWORKListLabelT
 typedef boost::unordered_map<ID_t, IWORKListLabelTypeInfo_t> IWORKListLabelTypeInfoMap_t;
 
 typedef std::map<unsigned, IWORKStylePtr_t> IWORKListStyle_t;
+typedef boost::unordered_map<ID_t, IWORKListStyle_t> IWORKListStyleMap_t;
 
 }
 

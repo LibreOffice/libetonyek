@@ -1328,6 +1328,137 @@ typedef IWORKNumericPropertyContext<property::WidowControl> WidowControlElement;
 
 }
 
+namespace
+{
+
+class ListStyleElement : public IWORKXMLElementContextBase, public IWORKPropertyHandler
+{
+public:
+  ListStyleElement(IWORKXMLParserState &state, IWORKListStyle_t &style);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+  virtual IWORKXMLContextPtr_t handle(int name);
+
+private:
+  IWORKListStyle_t &m_style;
+  deque<IWORKListLabelGeometry> m_labelGeometries;
+  deque<IWORKListLabelTypeInfo_t> m_typeInfos;
+  deque<double> m_labelIndents;
+  deque<double> m_textIndents;
+};
+
+ListStyleElement::ListStyleElement(IWORKXMLParserState &state, IWORKListStyle_t &style)
+  : IWORKXMLElementContextBase(state)
+  , m_style(style)
+{
+}
+
+IWORKXMLContextPtr_t ListStyleElement::element(const int name)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::property_map))
+    return makeContext<IWORKPropertyMapElement>(getState(), *this);
+  return IWORKXMLContextPtr_t();
+}
+
+void ListStyleElement::endOfElement()
+{
+  using namespace property;
+  using std::max;
+
+  const std::size_t levels = (max)((max)(m_labelGeometries.size(), m_typeInfos.size()),
+                                   (max)(m_labelIndents.size(), m_textIndents.size()));
+  deque<IWORKPropertyMap> levelProps(levels);
+  for (std::size_t i = 0; i != levels; ++i)
+  {
+    if (i < m_labelGeometries.size())
+      levelProps[i].put<ListLabelGeometry>(m_labelGeometries[i]);
+    if (i < m_typeInfos.size())
+      levelProps[i].put<ListLabelTypeInfo>(m_typeInfos[i]);
+    if (i < m_labelIndents.size())
+      levelProps[i].put<ListLabelIndent>(m_labelIndents[i]);
+    if (i < m_textIndents.size())
+      levelProps[i].put<ListTextIndent>(m_textIndents[i]);
+  }
+  for (std::size_t i = 0; i != levels; ++i)
+    m_style[i] = boost::make_shared<IWORKStyle>(levelProps[i], boost::none, boost::none);
+
+  if (getId())
+    getState().getDictionary().m_listStyles[get(getId())] = m_style;
+}
+
+IWORKXMLContextPtr_t ListStyleElement::handle(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::listLabelGeometries :
+  // return makeContext<ListLabelGeometriesProperty>(getState(), m_labelGeometries);
+  case IWORKToken::NS_URI_SF | IWORKToken::listLabelIndents :
+  // return makeContext<ListLabelIndentsProperty>(getState(), m_labelIndents);
+  case IWORKToken::NS_URI_SF | IWORKToken::listLabelTypes :
+  // return makeContext<ListLabelTypesProperty>(getState(), m_typeInfos);
+  case IWORKToken::NS_URI_SF | IWORKToken::listTextIndents :
+    // return makeContext<ListTextIndentsProperty>(getState(), m_textIndents);
+    return IWORKXMLContextPtr_t();
+  }
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
+class ListStyleProperty : public IWORKPropertyContextBase
+{
+public:
+  ListStyleProperty(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  IWORKListStyle_t m_style;
+  boost::optional<ID_t> m_ref;
+};
+
+ListStyleProperty::ListStyleProperty(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+  : IWORKPropertyContextBase(state, propMap)
+  , m_style()
+  , m_ref()
+{
+}
+
+IWORKXMLContextPtr_t ListStyleProperty::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
+    m_default = false;
+    return makeContext<ListStyleElement>(getState(), m_style);
+  case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
+    return makeContext<IWORKRefContext>(getState(), m_ref);
+  }
+  return IWORKXMLContextPtr_t();
+}
+
+void ListStyleProperty::endOfElement()
+{
+  if (m_ref)
+  {
+    const IWORKListStyleMap_t::const_iterator it = getState().getDictionary().m_listStyles.find(get(m_ref));
+    if (it != getState().getDictionary().m_listStyles.end())
+      m_style = it->second;
+  }
+
+  m_propMap.put<property::ListLevelStyles>(m_style);
+}
+
+}
+
 IWORKPropertyMapElement::IWORKPropertyMapElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : IWORKXMLElementContextBase(state)
   , m_propMap(&propMap)
@@ -1387,6 +1518,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<LeftIndentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::lineSpacing :
     return makeContext<LineSpacingElement>(getState(), *m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::listStyle :
+    return makeContext<ListStyleProperty>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::opacity :
     return makeContext<OpacityElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::outline :

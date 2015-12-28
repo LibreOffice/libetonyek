@@ -208,6 +208,11 @@ lineSpacing,lineSpacing
 linear,linear
 linespacing,linespacing
 link,link
+listLabelGeometries,listLabelGeometries
+listLabelIndents,listLabelIndents
+listLabelTypes,listLabelTypes
+listStyle,listStyle
+listTextIndents,listTextIndents
 liststyle,liststyle
 liststyle-ref,liststyle_ref
 lnbr,lnbr
