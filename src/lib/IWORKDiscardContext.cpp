@@ -19,6 +19,7 @@
 #include "IWORKListLabelGeometryElement.h"
 #include "IWORKListLabelIndentsProperty.h"
 #include "IWORKListLabelTypeinfoElement.h"
+#include "IWORKListstyleElement.h"
 #include "IWORKStyleContext.h"
 #include "IWORKTabsElement.h"
 #include "IWORKTextLabelElement.h"
@@ -39,6 +40,7 @@ struct IWORKDiscardContext::Data
   std::deque<double> m_doubleArray;
   boost::optional<IWORKListLabelGeometry> m_listLabelGeometry;
   boost::optional<IWORKListLabelTypeInfo_t> m_listLabelTypeInfo;
+  IWORKListStyle_t m_listStyle;
 };
 
 IWORKDiscardContext::IWORKDiscardContext(IWORKXMLParserState &state)
@@ -82,6 +84,8 @@ IWORKXMLContextPtr_t IWORKDiscardContext::element(const int name)
     return makeContext<IWORKDataElement>(m_state, m_data->m_data);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
     return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_layoutStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
+    return makeContext<IWORKListstyleElement>(m_state, m_data->m_listStyle);
   case IWORKToken::NS_URI_SF | IWORKToken::listLabelIndents :
     return makeContext<IWORKListLabelIndentsProperty>(m_state, m_data->m_doubleArray);
   case IWORKToken::NS_URI_SF | IWORKToken::list_label_geometry :

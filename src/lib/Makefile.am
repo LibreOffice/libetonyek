@@ -219,6 +219,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKListLabelTypeinfoElement.h \
 	contexts/IWORKListLabelTypesProperty.cpp \
 	contexts/IWORKListLabelTypesProperty.h \
+	contexts/IWORKListstyleElement.cpp \
+	contexts/IWORKListstyleElement.h \
 	contexts/IWORKListTextIndentsProperty.cpp \
 	contexts/IWORKListTextIndentsProperty.h \
 	contexts/IWORKMediaElement.cpp \
