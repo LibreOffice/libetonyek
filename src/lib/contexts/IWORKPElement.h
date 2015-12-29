@@ -10,6 +10,8 @@
 #ifndef IWORKPELEMENT_H_INCLUDED
 #define IWORKPELEMENT_H_INCLUDED
 
+#include <boost/optional.hpp>
+
 #include "IWORKTypes.h"
 #include "IWORKXMLContextBase.h"
 
@@ -32,6 +34,7 @@ protected:
 private:
   IWORKStylePtr_t m_style;
   bool m_opened;
+  boost::optional<unsigned> m_listLevel;
 };
 
 }

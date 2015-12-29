@@ -18,6 +18,7 @@
 #include "IWORKText.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
+#include "libetonyek_xml.h"
 
 namespace libetonyek
 {
@@ -33,6 +34,9 @@ void IWORKPElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
+  case IWORKToken::NS_URI_SF | IWORKToken::list_level :
+    m_listLevel = try_int_cast(value);
+    break;
   case IWORKToken::NS_URI_SF | IWORKToken::style :
   {
     const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_paragraphStyles.find(value);
@@ -83,7 +87,11 @@ void IWORKPElement::ensureOpened()
   if (!m_opened)
   {
     if (bool(getState().m_currentText))
+    {
       getState().m_currentText->setParagraphStyle(m_style);
+      getState().m_currentText->setListLevel(get_optional_value_or(m_listLevel, 0));
+      getState().m_currentText->setListStyle(m_style);
+    }
     m_opened = true;
   }
 }

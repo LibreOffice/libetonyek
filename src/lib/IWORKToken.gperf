@@ -218,6 +218,7 @@ list-label-geometry,list_label_geometry
 list-label-geometry-ref,list_label_geometry_ref
 list-label-typeinfo,list_label_typeinfo
 list-label-typeinfo-ref,list_label_typeinfo_ref
+list-level,list_level
 listLabelGeometries,listLabelGeometries
 listLabelIndents,listLabelIndents
 listLabelTypes,listLabelTypes

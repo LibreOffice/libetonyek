@@ -318,6 +318,7 @@ enum
   join,
   kind,
   left,
+  list_level,
   locked,
   mark,
   mode,
