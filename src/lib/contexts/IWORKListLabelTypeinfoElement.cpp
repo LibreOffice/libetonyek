@@ -10,10 +10,13 @@
 #include "IWORKListLabelTypeinfoElement.h"
 
 #include "IWORKDictionary.h"
+#include "IWORKRefContext.h"
+#include "IWORKTextLabelElement.h"
 #include "IWORKToken.h"
 #include "IWORKTokenizer.h"
 #include "IWORKXMLParserState.h"
 #include "libetonyek_utils.h"
+#include "libetonyek_xml.h"
 
 namespace libetonyek
 {
@@ -21,8 +24,8 @@ namespace libetonyek
 IWORKListLabelTypeinfoElement::IWORKListLabelTypeinfoElement(IWORKXMLParserState &state, boost::optional<IWORKListLabelTypeInfo_t> &value)
   : IWORKXMLElementContextBase(state)
   , m_value(value)
-  , m_bullet()
   , m_text()
+  , m_textRef()
   , m_image()
 {
 }
@@ -36,24 +39,23 @@ void IWORKListLabelTypeinfoElement::attribute(const int name, const char *const 
 
 IWORKXMLContextPtr_t IWORKListLabelTypeinfoElement::element(const int name)
 {
-  (void) name;
-#if 0
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::text_label :
-    return TextLabelElement(getState(), m_text);
+    return makeContext<IWORKTextLabelElement>(getState(), m_text);
+  case IWORKToken::NS_URI_SF | IWORKToken::text_label_ref :
+    return makeContext<IWORKRefContext>(getState(), m_textRef);
   }
-#endif
   return IWORKXMLContextPtr_t();
 }
 
 void IWORKListLabelTypeinfoElement::endOfElement()
 {
-  if ((m_bullet && m_text) || (m_bullet && m_image) || (m_text && m_image))
+  if (m_text && m_image)
   {
     ETONYEK_DEBUG_MSG(("IWORKListLabelTypeinfoElement::endOfElement: more than one label type found\n"));
   }
-  if (m_label && !m_bullet && !m_text && !m_image)
+  if (m_label && !m_text && !m_image)
   {
     ETONYEK_DEBUG_MSG(("IWORKListLabelTypeinfoElement::endOfElement: no label type found\n"));
   }
@@ -61,11 +63,19 @@ void IWORKListLabelTypeinfoElement::endOfElement()
   if (m_label)
   {
     if (m_image)
+    {
       m_value = get(m_image);
+    }
     else if (m_text)
+    {
       m_value = get(m_text);
-    else if (m_bullet)
-      m_value = get(m_bullet);
+    }
+    else if (m_textRef)
+    {
+      const IWORKListLabelTypeInfoMap_t::const_iterator it = getState().getDictionary().m_textLabels.find(get(m_textRef));
+      if (it != getState().getDictionary().m_textLabels.end())
+        m_value = it->second;
+    }
   }
 
   if (getId())

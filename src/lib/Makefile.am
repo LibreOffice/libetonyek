@@ -269,6 +269,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKTextElement.h \
 	contexts/IWORKTextBodyElement.cpp \
 	contexts/IWORKTextBodyElement.h \
+	contexts/IWORKTextLabelElement.cpp \
+	contexts/IWORKTextLabelElement.h \
 	contexts/IWORKTextStorageElement.cpp \
 	contexts/IWORKTextStorageElement.h \
 	contexts/IWORKUnfilteredElement.cpp \

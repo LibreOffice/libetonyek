@@ -30,6 +30,7 @@ IWORKDictionary::IWORKDictionary()
   , m_tabs()
   , m_filterDescriptors()
   , m_listLabelTypeInfos()
+  , m_textLabels()
   , m_listLabelGeometries()
   , m_doubleArrays()
 {

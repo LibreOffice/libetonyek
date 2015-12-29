@@ -20,6 +20,7 @@
 #include "IWORKListLabelTypeinfoElement.h"
 #include "IWORKStyleContext.h"
 #include "IWORKTabsElement.h"
+#include "IWORKTextLabelElement.h"
 #include "IWORKToken.h"
 #include "IWORKTypes.h"
 #include "IWORKUnfilteredElement.h"
@@ -91,6 +92,8 @@ IWORKXMLContextPtr_t IWORKDiscardContext::element(const int name)
     return makeContext<IWORKTabsElement>(m_state, m_data->m_tabStops);
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_style :
     return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_tabularStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::text_label :
+    return makeContext<IWORKTextLabelElement>(m_state, m_data->m_listLabelTypeInfo);
   case IWORKToken::NS_URI_SF | IWORKToken::unfiltered :
     m_data->m_mediaContent.reset();
     return makeContext<IWORKUnfilteredElement>(m_state, m_data->m_mediaContent);

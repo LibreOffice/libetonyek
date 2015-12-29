@@ -63,7 +63,8 @@ struct IWORKDictionary
   IWORKFilterDescriptorMap_t m_filterDescriptors;
 
   IWORKListLabelTypeInfoMap_t m_listLabelTypeInfos;
-  IWORKListLabelGeometryMap_t  m_listLabelGeometries;
+  IWORKListLabelTypeInfoMap_t m_textLabels;
+  IWORKListLabelGeometryMap_t m_listLabelGeometries;
 
   boost::unordered_map<ID_t, std::deque<double> > m_doubleArrays;
 };

@@ -7,37 +7,36 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef IWORKLISTLABELTYPEINFOELEMENT_H_INCLUDED
-#define IWORKLISTLABELTYPEINFOELEMENT_H_INCLUDED
+#ifndef IWORKTEXTLABELELEMENT_H_INCLUDED
+#define IWORKTEXTLABELELEMENT_H_INCLUDED
 
-#include <boost/optional.hpp>
+#include "IWORKXMLContextBase.h"
 
 #include "IWORKTypes.h"
-#include "IWORKXMLContextBase.h"
 
 namespace libetonyek
 {
 
-class IWORKListLabelTypeinfoElement : public IWORKXMLElementContextBase
+
+class IWORKTextLabelElement : public IWORKXMLEmptyContextBase
 {
 public:
-  IWORKListLabelTypeinfoElement(IWORKXMLParserState &state, boost::optional<IWORKListLabelTypeInfo_t> &value);
+  IWORKTextLabelElement(IWORKXMLParserState &state, boost::optional<IWORKListLabelTypeInfo_t> &value);
 
 private:
   virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
 private:
   boost::optional<IWORKListLabelTypeInfo_t> &m_value;
-  bool m_label;
-  boost::optional<IWORKListLabelTypeInfo_t> m_text;
-  boost::optional<ID_t> m_textRef;
-  boost::optional<IWORKBinary> m_image;
+  bool m_bullet;
+  boost::optional<IWORKLabelNumFormat> m_type;
+  std::string m_format;
+  boost::optional<unsigned> m_first;
 };
 
 }
 
-#endif // IWORKLISTLABELTYPEINFOELEMENT_H_INCLUDED
+#endif // IWORKTEXTLABELELEMENT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

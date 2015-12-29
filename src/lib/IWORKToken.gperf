@@ -64,6 +64,7 @@ bezier-ref,bezier_ref
 body-placeholder-ref,body_placeholder_ref
 bold,bold
 bottom,bottom
+bullet,bullet
 butt,butt
 cached-data,cached_data
 calc-engine,calc_engine
@@ -124,6 +125,7 @@ filterClassName,filterClassName
 filtered,filtered
 filtered-image,filtered_image
 filters,filters
+first,first
 firstLineIndent,firstLineIndent
 firstPageMaster,firstPageMaster
 fit,fit
@@ -138,6 +140,7 @@ footnote,footnote
 footnote-mark,footnote_mark
 footnotebr,footnotebr
 footnotes,footnotes
+format,format
 format-base,format_base
 format-base-places,format_base_places
 format-currency-code,format_currency_code
@@ -209,19 +212,21 @@ lineSpacing,lineSpacing
 linear,linear
 linespacing,linespacing
 link,link
+list-label-geometry,list_label_geometry
+list-label-geometry-ref,list_label_geometry_ref
+list-label-typeinfo,list_label_typeinfo
+list-label-typeinfo-ref,list_label_typeinfo_ref
 listLabelGeometries,listLabelGeometries
 listLabelIndents,listLabelIndents
 listLabelTypes,listLabelTypes
 listStyle,listStyle
 listTextIndents,listTextIndents
-list-label-geometry,list_label_geometry
-list-label-geometry-ref,list_label_geometry_ref
-list-label-typeinfo,list_label_typeinfo
-list-label-typeinfo-ref,list_label_typeinfo_ref
 liststyle,liststyle
 liststyle-ref,liststyle_ref
 lnbr,lnbr
 locked,locked
+lower-alpha,lower_alpha
+lower-roman,lower_roman
 mark,mark
 media,media
 menu-choices,menu_choices
@@ -339,6 +344,8 @@ tailSize,tailSize
 technique,technique
 text,text
 text-body,text_body
+text-label,text_label
+text-label-ref,text_label_ref
 text-storage,text_storage
 textBackground,textBackground
 textured-fill,textured_fill
@@ -353,6 +360,8 @@ type,type
 underline,underline
 unfiltered,unfiltered
 unfiltered-ref,unfiltered_ref
+upper-alpha,upper_alpha
+upper-roman,upper_roman
 v,v
 val,val
 value-title,value_title
