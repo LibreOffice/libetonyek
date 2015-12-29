@@ -55,6 +55,8 @@ enum
   bezier,
   bezier_path,
   bezier_ref,
+  binary,
+  binary_ref,
   body_placeholder_ref,
   bold,
   cached_data,

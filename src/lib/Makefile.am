@@ -175,6 +175,8 @@ libetonyek_internal_la_SOURCES = \
 	PAGTypes.h \
 	contexts/IWORKBezierElement.cpp \
 	contexts/IWORKBezierElement.h \
+	contexts/IWORKBinaryElement.cpp \
+	contexts/IWORKBinaryElement.h \
 	contexts/IWORKBrContext.cpp \
 	contexts/IWORKBrContext.h \
 	contexts/IWORKColorElement.cpp \

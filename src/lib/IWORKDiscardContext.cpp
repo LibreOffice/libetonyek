@@ -12,6 +12,7 @@
 #include <boost/optional.hpp>
 
 #include "IWORKBezierElement.h"
+#include "IWORKBinaryElement.h"
 #include "IWORKCoreImageFilterDescriptorElement.h"
 #include "IWORKDataElement.h"
 #include "IWORKDictionary.h"
@@ -68,6 +69,8 @@ IWORKXMLContextPtr_t IWORKDiscardContext::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::bezier :
     return makeContext<IWORKBezierElement>(m_state);
+  case IWORKToken::NS_URI_SF | IWORKToken::binary :
+    return makeContext<IWORKBinaryElement>(m_state, m_data->m_mediaContent);
   case IWORKToken::NS_URI_SF | IWORKToken::cell_style :
     return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::characterstyle :

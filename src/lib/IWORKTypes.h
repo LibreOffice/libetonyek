@@ -349,7 +349,7 @@ struct IWORKTextLabel
   unsigned m_first;
 };
 
-typedef boost::variant<std::string, IWORKTextLabel, IWORKBinary> IWORKListLabelTypeInfo_t;
+typedef boost::variant<std::string, IWORKTextLabel, IWORKMediaContentPtr_t> IWORKListLabelTypeInfo_t;
 typedef boost::unordered_map<ID_t, IWORKListLabelTypeInfo_t> IWORKListLabelTypeInfoMap_t;
 
 typedef std::map<unsigned, IWORKStylePtr_t> IWORKListStyle_t;

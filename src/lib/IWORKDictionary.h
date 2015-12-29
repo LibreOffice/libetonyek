@@ -54,6 +54,7 @@ struct IWORKDictionary
   IWORKPathMap_t m_beziers;
 
   IWORKDataMap_t m_data;
+  IWORKMediaContentMap_t m_binaries;
   IWORKMediaContentMap_t m_unfiltereds;
   IWORKMediaContentMap_t m_filteredImages;
   IWORKImageMap_t m_images;

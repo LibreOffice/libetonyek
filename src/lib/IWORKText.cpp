@@ -297,7 +297,7 @@ public:
     return true;
   }
 
-  bool operator()(const IWORKBinary &image) const
+  bool operator()(const IWORKMediaContentPtr_t &image) const
   {
     // TODO: handle
     (void) image;
@@ -352,7 +352,7 @@ private:
       return boost::apply_visitor(GetDisplayLevels(m_listStyle, prev, m_initial + 1), prev->second->get<property::ListLabelTypeInfo>());
     }
 
-    int operator()(const IWORKBinary &) const
+    int operator()(const IWORKMediaContentPtr_t &) const
     {
       return m_initial;
     }

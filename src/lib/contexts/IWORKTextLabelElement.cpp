@@ -24,8 +24,6 @@
 namespace libetonyek
 {
 
-namespace phoenix = boost::phoenix;
-
 using boost::optional;
 
 using std::string;
@@ -58,7 +56,7 @@ void parseFormat(const string &format, IWORKTextLabel &label)
   {
     if (prefix)
       label.m_format.m_prefix = get(prefix);
-      label.m_format.m_suffix = suffix;
+    label.m_format.m_suffix = suffix;
     if (tiered)
       label.m_tiered = get(tiered);
   }

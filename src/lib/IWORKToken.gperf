@@ -61,6 +61,8 @@ baselineShift,baselineShift
 bezier,bezier
 bezier-path,bezier_path
 bezier-ref,bezier_ref
+binary,binary
+binary-ref,binary_ref
 body-placeholder-ref,body_placeholder_ref
 bold,bold
 bottom,bottom

@@ -9,6 +9,7 @@
 
 #include "IWORKListLabelTypeinfoElement.h"
 
+#include "IWORKBinaryElement.h"
 #include "IWORKDictionary.h"
 #include "IWORKRefContext.h"
 #include "IWORKTextLabelElement.h"
@@ -27,13 +28,31 @@ IWORKListLabelTypeinfoElement::IWORKListLabelTypeinfoElement(IWORKXMLParserState
   , m_text()
   , m_textRef()
   , m_image()
+  , m_imageRef()
+  , m_isText(false)
+  , m_isImage(false)
 {
 }
 
 void IWORKListLabelTypeinfoElement::attribute(const int name, const char *const value)
 {
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::type))
-    m_label = getState().getTokenizer().getId(value) != IWORKToken::none;
+  {
+    switch (getState().getTokenizer().getId(value))
+    {
+    case IWORKToken::image :
+      m_isImage = true;
+      break;
+    case IWORKToken::none :
+      break;
+    case IWORKToken::text :
+      m_isText = true;
+      break;
+    default :
+      ETONYEK_DEBUG_MSG(("IWORKListLabelTypeinfoElement::attribute: unknown label type \"%s\"\n", value));
+      break;
+    }
+  }
   return IWORKXMLElementContextBase::attribute(name, value);
 }
 
@@ -41,6 +60,10 @@ IWORKXMLContextPtr_t IWORKListLabelTypeinfoElement::element(const int name)
 {
   switch (name)
   {
+  case IWORKToken::NS_URI_SF | IWORKToken::binary :
+    return makeContext<IWORKBinaryElement>(getState(), m_image);
+  case IWORKToken::NS_URI_SF | IWORKToken::binary_ref :
+    return makeContext<IWORKRefContext>(getState(), m_imageRef);
   case IWORKToken::NS_URI_SF | IWORKToken::text_label :
     return makeContext<IWORKTextLabelElement>(getState(), m_text);
   case IWORKToken::NS_URI_SF | IWORKToken::text_label_ref :
@@ -51,22 +74,31 @@ IWORKXMLContextPtr_t IWORKListLabelTypeinfoElement::element(const int name)
 
 void IWORKListLabelTypeinfoElement::endOfElement()
 {
-  if (m_text && m_image)
+  if (m_isImage && m_isText)
   {
     ETONYEK_DEBUG_MSG(("IWORKListLabelTypeinfoElement::endOfElement: more than one label type found\n"));
   }
-  if (m_label && !m_text && !m_image)
+  if (!m_text && !m_textRef && !m_image && !m_imageRef)
   {
-    ETONYEK_DEBUG_MSG(("IWORKListLabelTypeinfoElement::endOfElement: no label type found\n"));
+    ETONYEK_DEBUG_MSG(("IWORKListLabelTypeinfoElement::endOfElement: no label def. found\n"));
   }
 
-  if (m_label)
+  if (m_isImage)
   {
-    if (m_image)
+    if (bool(m_image))
     {
-      m_value = get(m_image);
+      m_value = m_image;
     }
-    else if (m_text)
+    else if (m_imageRef)
+    {
+      const IWORKMediaContentMap_t::const_iterator it = getState().getDictionary().m_binaries.find(get(m_imageRef));
+      if (it != getState().getDictionary().m_binaries.end())
+        m_value = it->second;
+    }
+  }
+  else if (m_isText)
+  {
+    if (m_text)
     {
       m_value = get(m_text);
     }

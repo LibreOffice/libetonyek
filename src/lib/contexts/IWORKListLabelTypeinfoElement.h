@@ -30,10 +30,12 @@ private:
 
 private:
   boost::optional<IWORKListLabelTypeInfo_t> &m_value;
-  bool m_label;
   boost::optional<IWORKListLabelTypeInfo_t> m_text;
   boost::optional<ID_t> m_textRef;
-  boost::optional<IWORKBinary> m_image;
+  IWORKMediaContentPtr_t m_image;
+  boost::optional<ID_t> m_imageRef;
+  bool m_isText;
+  bool m_isImage;
 };
 
 }
