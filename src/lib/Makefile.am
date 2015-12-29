@@ -313,7 +313,7 @@ MOSTLYCLEANFILES = $(BUILT_SOURCES)
 DISTCLEANFILES = libetonyek.rc
 
 %.inc : %.gperf
-	if $(GPERF) $(GPERFFLAGS) --language C++ $< > $@.tmp; then \
+	if $(GPERF) $(GPERFFLAGS) --language C++ $< | sed -e 's/\<register //g' > $@.tmp; then \
 		mv $@.tmp $@; \
 	else \
 		rm -f $@.tmp; \
