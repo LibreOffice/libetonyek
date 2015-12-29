@@ -21,7 +21,7 @@
 namespace libetonyek
 {
 
-template<typename Type, class NestedParser, unsigned Id, unsigned RefId = 0>
+template<typename Type, class NestedParser, template<typename T, class C> class Collector, unsigned Id, unsigned RefId = 0>
 class IWORKContainerContext : public IWORKXMLElementContextBase
 {
   typedef boost::unordered_map<ID_t, Type> Dict_t;
@@ -31,6 +31,7 @@ public:
     : IWORKXMLElementContextBase(state)
     , m_dict(0)
     , m_elements(elements)
+    , m_collector(elements)
   {
   }
 
@@ -38,17 +39,20 @@ public:
     : IWORKXMLElementContextBase(state)
     , m_dict(&dict)
     , m_elements(elements)
+    , m_collector(elements)
   {
   }
 
-private:
+protected:
   virtual IWORKXMLContextPtr_t element(const int name)
   {
     if (m_ref)
       handleRef();
+    else if (m_collector.pending())
+      m_collector.push();
 
     if (name == Id)
-      return makeContext<NestedParser>(getState(), m_elements);
+      return m_collector.makeContext<NestedParser>(getState());
     else if ((RefId != 0) && (name == RefId))
       return makeContext<IWORKRefContext>(getState(), m_ref);
     return IWORKXMLContextPtr_t();
@@ -58,8 +62,11 @@ private:
   {
     if (m_ref)
       handleRef();
+    else if (m_collector.pending())
+      m_collector.push();
   }
 
+private:
   void handleRef()
   {
     assert(m_dict);
@@ -75,6 +82,7 @@ private:
   Dict_t *const m_dict;
   boost::optional<ID_t> m_ref;
   std::deque<Type> &m_elements;
+  Collector<Type, std::deque<Type> > m_collector;
 };
 
 }

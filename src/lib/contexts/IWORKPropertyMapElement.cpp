@@ -17,6 +17,7 @@
 #include "IWORKContainerContext.h"
 #include "IWORKCoreImageFilterDescriptorElement.h"
 #include "IWORKDictionary.h"
+#include "IWORKDirectCollector.h"
 #include "IWORKFilteredImageElement.h"
 #include "IWORKGeometryElement.h"
 #include "IWORKNumericPropertyContext.h"
@@ -507,7 +508,7 @@ void GradientStopElement::endOfElement()
 namespace
 {
 
-typedef IWORKContainerContext<IWORKGradientStop, GradientStopElement, IWORKToken::NS_URI_SF | IWORKToken::gradient_stop> StopsElement;
+typedef IWORKContainerContext<IWORKGradientStop, GradientStopElement, IWORKDirectCollector, IWORKToken::NS_URI_SF | IWORKToken::gradient_stop> StopsElement;
 
 }
 
@@ -1238,7 +1239,7 @@ namespace
 
 class FiltersElement : public IWORKXMLElementContextBase
 {
-  typedef IWORKContainerContext<IWORKShadow, CoreImageFilterInfoElement, IWORKToken::NS_URI_SF | IWORKToken::core_image_filter_info> MutableArrayElement;
+  typedef IWORKContainerContext<IWORKShadow, CoreImageFilterInfoElement, IWORKDirectCollector, IWORKToken::NS_URI_SF | IWORKToken::core_image_filter_info> MutableArrayElement;
 
 public:
   FiltersElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);

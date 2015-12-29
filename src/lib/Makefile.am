@@ -186,6 +186,7 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKChartInfoElement.h \
 	contexts/IWORKDataElement.cpp \
 	contexts/IWORKDataElement.h \
+	contexts/IWORKDirectCollector.h \
 	contexts/IWORKFilteredImageElement.cpp \
 	contexts/IWORKFilteredImageElement.h \
 	contexts/IWORKFoElement.cpp \
@@ -226,6 +227,7 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKPropertyMapElement.cpp \
 	contexts/IWORKPropertyMapElement.h \
 	contexts/IWORKPtrPropertyContext.h \
+	contexts/IWORKPushCollector.h \
 	contexts/IWORKRefContext.cpp \
 	contexts/IWORKRefContext.h \
 	contexts/IWORKShapeContext.cpp \
