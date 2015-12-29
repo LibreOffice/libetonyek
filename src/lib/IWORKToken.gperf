@@ -50,6 +50,7 @@ amt,amt
 angle,angle
 angle-gradient,angle_gradient
 anon-styles,anon_styles
+array,array
 aspectRatioLocked,aspectRatioLocked
 attachment,attachment
 attachment-ref,attachment_ref
@@ -213,6 +214,10 @@ listLabelIndents,listLabelIndents
 listLabelTypes,listLabelTypes
 listStyle,listStyle
 listTextIndents,listTextIndents
+list-label-geometry,list_label_geometry
+list-label-geometry-ref,list_label_geometry_ref
+list-label-typeinfo,list_label_typeinfo
+list-label-typeinfo-ref,list_label_typeinfo_ref
 liststyle,liststyle
 liststyle-ref,liststyle_ref
 lnbr,lnbr
@@ -225,10 +230,12 @@ miter,miter
 mode,mode
 movie-media,movie_media
 mutable-array,mutable_array
+mutable-array-ref,mutable_array_ref
 n,n
 name,name
 natural,natural
 naturalSize,naturalSize
+none,none
 num-footer-rows,num_footer_rows
 num-header-columns,num_header_columns
 num-header-rows,num_header_rows
@@ -237,6 +244,7 @@ number-format,number_format
 numcols, numcols
 numrows, numrows
 oddPageMaster,oddPageMaster
+offset,offset
 opacity,opacity
 other-datas,other_datas
 outline,outline
@@ -278,6 +286,8 @@ rt,rt
 s,s
 scalar,scalar
 scalar-path,scalar_path
+scale,scale
+scale-with-text,scale_with_text
 section,section
 sectionstyle,sectionstyle
 sectionstyle_ref,sectionstyle_ref

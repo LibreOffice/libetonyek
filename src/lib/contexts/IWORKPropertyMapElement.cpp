@@ -20,6 +20,10 @@
 #include "IWORKDirectCollector.h"
 #include "IWORKFilteredImageElement.h"
 #include "IWORKGeometryElement.h"
+#include "IWORKListLabelGeometriesProperty.h"
+#include "IWORKListLabelIndentsProperty.h"
+#include "IWORKListLabelTypesProperty.h"
+#include "IWORKListTextIndentsProperty.h"
 #include "IWORKNumericPropertyContext.h"
 #include "IWORKProperties.h"
 #include "IWORKPropertyContext.h"
@@ -1395,14 +1399,13 @@ IWORKXMLContextPtr_t ListStyleElement::handle(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::listLabelGeometries :
-  // return makeContext<ListLabelGeometriesProperty>(getState(), m_labelGeometries);
+    return makeContext<IWORKListLabelGeometriesProperty>(getState(), m_labelGeometries);
   case IWORKToken::NS_URI_SF | IWORKToken::listLabelIndents :
-  // return makeContext<ListLabelIndentsProperty>(getState(), m_labelIndents);
+    return makeContext<IWORKListLabelIndentsProperty>(getState(), m_labelIndents);
   case IWORKToken::NS_URI_SF | IWORKToken::listLabelTypes :
-  // return makeContext<ListLabelTypesProperty>(getState(), m_typeInfos);
+    return makeContext<IWORKListLabelTypesProperty>(getState(), m_typeInfos);
   case IWORKToken::NS_URI_SF | IWORKToken::listTextIndents :
-    // return makeContext<ListTextIndentsProperty>(getState(), m_textIndents);
-    return IWORKXMLContextPtr_t();
+    return makeContext<IWORKListTextIndentsProperty>(getState(), m_textIndents);
   }
   return IWORKXMLContextPtr_t();
 }

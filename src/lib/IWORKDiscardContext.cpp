@@ -9,13 +9,19 @@
 
 #include "IWORKDiscardContext.h"
 
+#include <boost/optional.hpp>
+
 #include "IWORKBezierElement.h"
 #include "IWORKCoreImageFilterDescriptorElement.h"
 #include "IWORKDataElement.h"
 #include "IWORKDictionary.h"
+#include "IWORKListLabelGeometryElement.h"
+#include "IWORKListLabelIndentsProperty.h"
+#include "IWORKListLabelTypeinfoElement.h"
 #include "IWORKStyleContext.h"
 #include "IWORKTabsElement.h"
 #include "IWORKToken.h"
+#include "IWORKTypes.h"
 #include "IWORKUnfilteredElement.h"
 #include "IWORKXMLParserState.h"
 
@@ -28,6 +34,9 @@ struct IWORKDiscardContext::Data
   IWORKMediaContentPtr_t m_mediaContent;
   IWORKTabStops_t m_tabStops;
   bool m_isShadow;
+  std::deque<double> m_doubleArray;
+  boost::optional<IWORKListLabelGeometry> m_listLabelGeometry;
+  boost::optional<IWORKListLabelTypeInfo_t> m_listLabelTypeInfo;
 };
 
 IWORKDiscardContext::IWORKDiscardContext(IWORKXMLParserState &state)
@@ -69,6 +78,12 @@ IWORKXMLContextPtr_t IWORKDiscardContext::element(const int name)
     return makeContext<IWORKDataElement>(m_state, m_data->m_data);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
     return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_layoutStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::listLabelIndents :
+    return makeContext<IWORKListLabelIndentsProperty>(m_state, m_data->m_doubleArray);
+  case IWORKToken::NS_URI_SF | IWORKToken::list_label_geometry :
+    return makeContext<IWORKListLabelGeometryElement>(m_state, m_data->m_listLabelGeometry);
+  case IWORKToken::NS_URI_SF | IWORKToken::list_label_typeinfo :
+    return makeContext<IWORKListLabelTypeinfoElement>(m_state, m_data->m_listLabelTypeInfo);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
     return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::tabs :

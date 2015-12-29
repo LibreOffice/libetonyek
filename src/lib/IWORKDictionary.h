@@ -10,6 +10,10 @@
 #ifndef IWORKDICTIONARY_H_INCLUDED
 #define IWORKDICTIONARY_H_INCLUDED
 
+#include <deque>
+
+#include <boost/unordered_map.hpp>
+
 #include "IWORKPath.h"
 #include "IWORKStyle.h"
 #include "IWORKStylesheet.h"
@@ -60,6 +64,8 @@ struct IWORKDictionary
 
   IWORKListLabelTypeInfoMap_t m_listLabelTypeInfos;
   IWORKListLabelGeometryMap_t  m_listLabelGeometries;
+
+  boost::unordered_map<ID_t, std::deque<double> > m_doubleArrays;
 };
 
 }

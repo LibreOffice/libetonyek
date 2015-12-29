@@ -207,10 +207,23 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKLineElement.h \
 	contexts/IWORKLinkElement.cpp \
 	contexts/IWORKLinkElement.h \
+	contexts/IWORKListLabelGeometriesProperty.cpp \
+	contexts/IWORKListLabelGeometriesProperty.h \
+	contexts/IWORKListLabelGeometryElement.cpp \
+	contexts/IWORKListLabelGeometryElement.h \
+	contexts/IWORKListLabelIndentsProperty.cpp \
+	contexts/IWORKListLabelIndentsProperty.h \
+	contexts/IWORKListLabelTypeinfoElement.cpp \
+	contexts/IWORKListLabelTypeinfoElement.h \
+	contexts/IWORKListLabelTypesProperty.cpp \
+	contexts/IWORKListLabelTypesProperty.h \
+	contexts/IWORKListTextIndentsProperty.cpp \
+	contexts/IWORKListTextIndentsProperty.h \
 	contexts/IWORKMediaElement.cpp \
 	contexts/IWORKMediaElement.h \
 	contexts/IWORKMetadataElement.cpp \
 	contexts/IWORKMetadataElement.h \
+	contexts/IWORKMutableArrayElement.h \
 	contexts/IWORKNumberConverter.cpp \
 	contexts/IWORKNumberConverter.h \
 	contexts/IWORKNumberElement.h \

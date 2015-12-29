@@ -39,7 +39,12 @@ public:
   {
   }
 
-private:
+protected:
+  void set(const Type &value)
+  {
+    m_value = value;
+  }
+
   virtual IWORKXMLContextPtr_t element(const int name)
   {
     if (name == Id)
