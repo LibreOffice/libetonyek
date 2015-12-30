@@ -434,6 +434,8 @@ IWORKText::IWORKText(const IWORKLanguageManager &langManager, const bool discard
   , m_elements()
   , m_layoutStyle()
   , m_inSection(false)
+  , m_sectionProps()
+  , m_checkedSection(false)
   , m_listStyle()
   , m_listLevel(0)
   , m_inListLevel(0)
