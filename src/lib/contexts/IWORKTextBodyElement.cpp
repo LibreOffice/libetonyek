@@ -13,6 +13,7 @@
 #include "IWORKDictionary.h"
 #include "IWORKLayoutElement.h"
 #include "IWORKPElement.h"
+#include "IWORKText.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 
@@ -59,6 +60,12 @@ IWORKXMLContextPtr_t IWORKTextBodyElement::element(const int name)
   }
 
   return IWORKXMLContextPtr_t();
+}
+
+void IWORKTextBodyElement::endOfElement()
+{
+  if (bool(getState().m_currentText) && m_para)
+    getState().m_currentText->flushList();
 }
 
 }

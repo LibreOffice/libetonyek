@@ -22,6 +22,7 @@ public:
 
 protected:
   virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
 
 private:
   bool m_layout;

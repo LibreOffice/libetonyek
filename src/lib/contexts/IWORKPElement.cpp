@@ -79,7 +79,10 @@ void IWORKPElement::endOfElement()
 {
   ensureOpened();
   if (bool(getState().m_currentText))
+  {
     getState().m_currentText->flushParagraph();
+    getState().m_currentText->setListLevel(0);
+  }
 }
 
 void IWORKPElement::ensureOpened()
@@ -89,7 +92,8 @@ void IWORKPElement::ensureOpened()
     if (bool(getState().m_currentText))
     {
       getState().m_currentText->setParagraphStyle(m_style);
-      getState().m_currentText->setListLevel(get_optional_value_or(m_listLevel, 0));
+      if (m_listLevel)
+        getState().m_currentText->setListLevel(get(m_listLevel));
       getState().m_currentText->setListStyle(m_style);
     }
     m_opened = true;
