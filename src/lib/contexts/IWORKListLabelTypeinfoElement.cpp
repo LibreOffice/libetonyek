@@ -16,6 +16,7 @@
 #include "IWORKToken.h"
 #include "IWORKTokenizer.h"
 #include "IWORKXMLParserState.h"
+#include "KEY2Token.h"
 #include "libetonyek_utils.h"
 #include "libetonyek_xml.h"
 
@@ -46,6 +47,7 @@ void IWORKListLabelTypeinfoElement::attribute(const int name, const char *const 
     case IWORKToken::none :
       break;
     case IWORKToken::text :
+    case KEY2Token::text : // NOTE: The hierachical tokenizer can't differentiate these two
       m_isText = true;
       break;
     default :
