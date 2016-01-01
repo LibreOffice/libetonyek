@@ -12,7 +12,6 @@
 
 #include <boost/static_assert.hpp>
 
-#include "IWORKToken.h"
 #include "IWORKTokenInfo.h"
 
 namespace libetonyek

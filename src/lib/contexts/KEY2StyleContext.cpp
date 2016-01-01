@@ -11,6 +11,7 @@
 
 #include "libetonyek_xml.h"
 #include "IWORKPropertyMapElement.h"
+#include "IWORKToken.h"
 #include "KEY2Dictionary.h"
 #include "KEY2ParserState.h"
 #include "KEY2Token.h"
