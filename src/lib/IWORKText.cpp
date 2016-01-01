@@ -666,12 +666,9 @@ void IWORKText::handleListLevelChange(const unsigned level)
   {
     if (m_inPara)
       closePara();
-    const unsigned startLevel = m_inListLevel;
     for (; level < m_inListLevel; --m_inListLevel)
     {
       assert(!m_isOrderedStack.empty());
-      if (m_inListLevel != startLevel)
-        m_elements.addCloseListElement();
       if (m_isOrderedStack.top())
         m_elements.addCloseOrderedListLevel();
       else
