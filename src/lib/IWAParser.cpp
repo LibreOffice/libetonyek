@@ -1386,7 +1386,7 @@ void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
     // fall-through intended
     case 0 :
       // no label
-      levelProps[level].clear<ListLabelTypeInfo>();
+      levelProps[level].put<ListLabelTypeInfo>(true);
       break;
     case 1 :
       // TODO: handle image

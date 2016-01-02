@@ -349,7 +349,10 @@ struct IWORKTextLabel
   unsigned m_first;
 };
 
-typedef boost::variant<std::string, IWORKTextLabel, IWORKMediaContentPtr_t> IWORKListLabelTypeInfo_t;
+// Type of list label. One of: none, bullet, text, image.
+// Note: The bool type, representing 'none', is just a placeholder. The
+// value is not important.
+typedef boost::variant<bool, std::string, IWORKTextLabel, IWORKMediaContentPtr_t> IWORKListLabelTypeInfo_t;
 typedef boost::unordered_map<ID_t, IWORKListLabelTypeInfo_t> IWORKListLabelTypeInfoMap_t;
 
 typedef std::map<unsigned, IWORKStylePtr_t> IWORKListStyle_t;

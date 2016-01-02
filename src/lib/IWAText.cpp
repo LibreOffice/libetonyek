@@ -173,7 +173,7 @@ void IWAText::parse(IWORKText &collector)
         if (it == levelStyles.end())
           isList = false;
         else
-          isList = bool(it->second) && it->second->has<property::ListLabelTypeInfo>();
+          isList = bool(it->second) && it->second->has<property::ListLabelTypeInfo>() && !boost::get<bool>(&it->second->get<property::ListLabelTypeInfo>());
       }
       if (isList)
         collector.setListLevel(listLevelIt->second + 1);

@@ -107,6 +107,8 @@ void IWORKListLabelTypeinfoElement::endOfElement()
         m_value = it->second;
     }
   }
+  else
+    m_value = true;
 
   if (getId())
     getState().getDictionary().m_listLabelTypeInfos[get(getId())] = get_optional_value_or(m_value, IWORKListLabelTypeInfo_t());

@@ -262,6 +262,12 @@ public:
   {
   }
 
+  bool operator()(const bool) const
+  {
+    m_props->insert("style:num-format", "");
+    return false;
+  }
+
   bool operator()(const std::string &bullet) const
   {
     m_props->insert("text:bullet-char", bullet.c_str());
@@ -330,6 +336,11 @@ private:
       , m_current(current)
       , m_initial(initial)
     {
+    }
+
+    int operator()(const bool) const
+    {
+      return m_initial;
     }
 
     int operator()(const std::string &) const
@@ -403,7 +414,9 @@ bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPr
       }
       else
       {
-        props.insert("style:num-format", "");
+        // TODO: move this to parsers?
+        props.insert("text:bullet-char", "\u2022");
+        props.insert("text:bullet-relative-size", 100, librevenge::RVNG_PERCENT);
       }
 
       props.insert("style:vertical-pos", "center");
