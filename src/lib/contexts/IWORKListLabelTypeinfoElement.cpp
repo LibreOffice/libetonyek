@@ -76,10 +76,6 @@ IWORKXMLContextPtr_t IWORKListLabelTypeinfoElement::element(const int name)
 
 void IWORKListLabelTypeinfoElement::endOfElement()
 {
-  if (m_isImage && m_isText)
-  {
-    ETONYEK_DEBUG_MSG(("IWORKListLabelTypeinfoElement::endOfElement: more than one label type found\n"));
-  }
   if ((m_isText && !m_text && !m_textRef) || (m_isImage && !m_image && !m_imageRef))
   {
     ETONYEK_DEBUG_MSG(("IWORKListLabelTypeinfoElement::endOfElement: no label def. found\n"));
