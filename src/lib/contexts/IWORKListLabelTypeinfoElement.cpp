@@ -80,7 +80,7 @@ void IWORKListLabelTypeinfoElement::endOfElement()
   {
     ETONYEK_DEBUG_MSG(("IWORKListLabelTypeinfoElement::endOfElement: more than one label type found\n"));
   }
-  if (!m_text && !m_textRef && !m_image && !m_imageRef)
+  if ((m_isText && !m_text && !m_textRef) || (m_isImage && !m_image && !m_imageRef))
   {
     ETONYEK_DEBUG_MSG(("IWORKListLabelTypeinfoElement::endOfElement: no label def. found\n"));
   }
