@@ -22,6 +22,7 @@
 #include "IWORKProperties.h"
 #include "IWORKStyle.h"
 #include "IWORKStyleStack.h"
+#include "IWORKText.h"
 #include "IWORKTypes.h"
 
 using boost::none;
@@ -264,13 +265,14 @@ void IWORKTable::setBorders(const IWORKGridLineList_t &verticalLines, const IWOR
   m_horizontalLines = horizontalLines;
 }
 
-void IWORKTable::insertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const IWORKOutputElements &content, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, const IWORKCellType type)
+void IWORKTable::insertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const boost::shared_ptr<IWORKText> &text, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, const IWORKCellType type)
 {
   if ((m_rowSizes.size() <= row) || (m_columnSizes.size() <= column))
     return;
 
   Cell cell;
-  cell.m_content = content;
+  if (bool(text))
+    text->draw(cell.m_content);
   cell.m_columnSpan = columnSpan;
   cell.m_rowSpan = rowSpan;
   cell.m_formula = formula;

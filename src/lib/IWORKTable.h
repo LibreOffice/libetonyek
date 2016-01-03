@@ -11,6 +11,7 @@
 #define IWORKTABLE_H_INCLUDED
 
 #include <boost/optional.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include <deque>
 
@@ -20,6 +21,8 @@
 
 namespace libetonyek
 {
+
+class IWORKText;
 
 class IWORKTable
 {
@@ -61,7 +64,13 @@ public:
   void setStyle(const IWORKStylePtr_t &style);
   void setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowSizes_t &rowSizes);
   void setBorders(const IWORKGridLineList_t &verticalLines, const IWORKGridLineList_t &horizontalLines);
-  void insertCell(unsigned column, unsigned row, const boost::optional<std::string> &value = boost::none, const IWORKOutputElements &content = IWORKOutputElements(), unsigned columnSpan = 1, unsigned rowSpan = 1, const boost::optional<IWORKFormula> &formula = boost::none, const IWORKStylePtr_t &style = IWORKStylePtr_t(), IWORKCellType type = IWORK_CELL_TYPE_TEXT);
+  void insertCell(unsigned column, unsigned row,
+                  const boost::optional<std::string> &value = boost::none,
+                  const boost::shared_ptr<IWORKText> &text = boost::shared_ptr<IWORKText>(),
+                  unsigned columnSpan = 1, unsigned rowSpan = 1,
+                  const boost::optional<IWORKFormula> &formula = boost::none,
+                  const IWORKStylePtr_t &style = IWORKStylePtr_t(),
+                  IWORKCellType type = IWORK_CELL_TYPE_TEXT);
   void insertCoveredCell(unsigned column, unsigned row);
 
   void draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements);

@@ -123,28 +123,17 @@ void CellContextBase::emitCell(const bool covered)
     }
     else
     {
-      // TODO: Handle simple text content already in parser, instead of passing it
-      // into the collector.
-      IWORKOutputElements elements;
-
+      IWORKTextPtr_t text(getState().m_currentText);
+      getState().m_currentText.reset();
       if (bool(tableData->m_content) && tableData->m_type == IWORK_CELL_TYPE_TEXT)
       {
-        librevenge::RVNGPropertyList props;
-        elements.addOpenParagraph(props);
-        elements.addOpenSpan(props);
-        elements.addInsertText(librevenge::RVNGString(get(tableData->m_content).c_str()));
-        elements.addCloseSpan();
-        elements.addCloseParagraph();
+        text = getCollector().createText(getState().m_langManager);
+        text->insertText(get(tableData->m_content));
+        text->flushParagraph();
       }
-      else if (bool(getState().m_currentText))
-      {
-        getState().m_currentText->draw(elements);
-      }
-      getState().m_currentText.reset();
-
       getState().m_currentTable->insertCell(
         tableData->m_column, tableData->m_row,
-        tableData->m_content, elements,
+        tableData->m_content, text,
         get_optional_value_or(tableData->m_columnSpan, 1), get_optional_value_or(tableData->m_rowSpan, 1),
         tableData->m_formula, tableData->m_style, tableData->m_type
       );
