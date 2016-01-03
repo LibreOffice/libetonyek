@@ -16,8 +16,6 @@
 
 #include <boost/optional.hpp>
 
-#include <glm/glm.hpp>
-
 #include "libetonyek_utils.h"
 #include "IWORKPath_fwd.h"
 #include "IWORKShape.h"
