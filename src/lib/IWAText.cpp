@@ -27,8 +27,22 @@ using std::map;
 using std::pair;
 using std::string;
 
+namespace
+{
+
+void flushText(string &text, IWORKText &collector)
+{
+  if (!text.empty())
+  {
+    collector.insertText(text);
+    text.clear();
+  }
+}
+
+}
+
 IWAText::IWAText(const std::string text, IWORKLanguageManager &langManager)
-  : m_text(text)
+  : m_text(text.c_str())
   , m_langManager(langManager)
   , m_paras()
   , m_spans()
@@ -77,25 +91,26 @@ void IWAText::parse(IWORKText &collector)
   map<unsigned, string>::const_iterator linkIt = m_links.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator listIt = m_lists.begin();
   map<unsigned, unsigned>::const_iterator listLevelIt = m_listLevels.begin();
-  size_t textStart = 0;
   bool wasSpace = false;
   IWORKStylePtr_t currentListStyle;
   bool isLink = false;
+  string curText;
 
-  for (size_t i = 0; i != m_text.size(); ++i)
+  std::size_t pos = 0;
+  for (librevenge::RVNGString::Iter iter(m_text); !iter.last(); iter.next(), ++pos)
   {
     // handle span style change
     IWORKStylePtr_t spanStyle;
     IWORKStylePtr_t langStyle;
     bool spanChanged = false;
     bool langChanged = false;
-    if ((spanIt != m_spans.end()) && (spanIt->first == i))
+    if ((spanIt != m_spans.end()) && (spanIt->first == pos))
     {
       spanStyle = spanIt->second;
       spanChanged = true;
       ++spanIt;
     }
-    if ((langIt != m_langs.end()) && (langIt->first == i))
+    if ((langIt != m_langs.end()) && (langIt->first == pos))
     {
       IWORKPropertyMap props;
       if (!langIt->second.empty())
@@ -116,10 +131,8 @@ void IWAText::parse(IWORKText &collector)
     }
     if (spanChanged || langChanged)
     {
-      if (textStart < i)
-        collector.insertText(m_text.substr(textStart, i - textStart));
-      textStart = i;
-      if (i != 0)
+      flushText(curText, collector);
+      if (pos != 0)
         collector.flushSpan();
       if (spanChanged)
         collector.setSpanStyle(spanStyle);
@@ -128,11 +141,9 @@ void IWAText::parse(IWORKText &collector)
     }
 
     // handle start/end of a link
-    if ((linkIt != m_links.end()) && (linkIt->first == i))
+    if ((linkIt != m_links.end()) && (linkIt->first == pos))
     {
-      if (textStart < i)
-        collector.insertText(m_text.substr(textStart, i - textStart));
-      textStart = i;
+      flushText(curText, collector);
       if (isLink)
       {
         collector.closeLink();
@@ -147,14 +158,14 @@ void IWAText::parse(IWORKText &collector)
     }
 
     // handle paragraph style change
-    if ((paraIt != m_paras.end()) && (paraIt->first == i))
+    if ((paraIt != m_paras.end()) && (paraIt->first == pos))
     {
       collector.setParagraphStyle(paraIt->second);
       ++paraIt;
     }
 
     // handle list style change
-    if ((listIt != m_lists.end()) && (listIt->first == i))
+    if ((listIt != m_lists.end()) && (listIt->first == pos))
     {
       currentListStyle = listIt->second;
       collector.setListStyle(currentListStyle);
@@ -162,7 +173,7 @@ void IWAText::parse(IWORKText &collector)
     }
 
     // handle list level change
-    if ((listLevelIt != m_listLevels.end()) && (listLevelIt->first == i))
+    if ((listLevelIt != m_listLevels.end()) && (listLevelIt->first == pos))
     {
       // paragraphs at level 0 with type "none" aren't part of any list
       bool isList = listLevelIt->second != 0;
@@ -183,50 +194,45 @@ void IWAText::parse(IWORKText &collector)
     }
 
     // handle text
-    switch (m_text[i])
+    const char *const u8Char = iter();
+    switch (u8Char[0])
     {
     case '\t' :
       wasSpace = false;
-      if (textStart < i)
-        collector.insertText(m_text.substr(textStart, i - textStart));
-      textStart = i + 1;
+      flushText(curText, collector);
       collector.insertTab();
       break;
     case '\r' :
       wasSpace = false;
-      if (textStart < i)
-        collector.insertText(m_text.substr(textStart, i - textStart));
-      textStart = i + 1;
+      flushText(curText, collector);
       collector.insertLineBreak();
       break;
     case '\n' :
       wasSpace = false;
-      if (textStart < i)
-        collector.insertText(m_text.substr(textStart, i - textStart));
-      textStart = i + 1;
+      flushText(curText, collector);
       collector.flushParagraph();
       break;
     case ' ' :
       if (wasSpace)
       {
-        if (textStart < i)
-          collector.insertText(m_text.substr(textStart, i - textStart));
-        textStart = i + 1;
+        flushText(curText, collector);
         collector.insertSpace();
       }
-      wasSpace = true;
+      else
+      {
+        wasSpace = true;
+        curText.push_back(' ');
+      }
       break;
     default :
       wasSpace = false;
+      curText.append(u8Char);
       break;
     }
   }
 
-  if (textStart < m_text.size())
-  {
-    collector.insertText(m_text.substr(textStart, m_text.size() - textStart));
-    collector.flushParagraph();
-  }
+  flushText(curText, collector);
+  collector.flushParagraph();
   collector.setListLevel(0);
   collector.flushList();
 }

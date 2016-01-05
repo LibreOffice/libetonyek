@@ -13,6 +13,8 @@
 #include <map>
 #include <string>
 
+#include <librevenge/librevenge.h>
+
 #include "IWORKStyle_fwd.h"
 
 namespace libetonyek
@@ -36,7 +38,7 @@ public:
   void parse(IWORKText &collector);
 
 private:
-  const std::string m_text;
+  const librevenge::RVNGString m_text;
   IWORKLanguageManager &m_langManager;
 
   std::map<unsigned, IWORKStylePtr_t> m_paras;
