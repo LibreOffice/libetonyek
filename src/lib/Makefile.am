@@ -81,6 +81,8 @@ libetonyek_internal_la_SOURCES = \
 	IWORKPropertyInfo.h \
 	IWORKPropertyMap.cpp \
 	IWORKPropertyMap.h \
+	IWORKRecorder.cpp \
+	IWORKRecorder.h \
 	IWORKShape.cpp \
 	IWORKShape.h \
 	IWORKSpreadsheetRedirector.cpp \
@@ -94,8 +96,12 @@ libetonyek_internal_la_SOURCES = \
 	IWORKStylesheet.h \
 	IWORKTable.cpp \
 	IWORKTable.h \
+	IWORKTableRecorder.cpp \
+	IWORKTableRecorder.h \
 	IWORKText.cpp \
 	IWORKText.h \
+	IWORKTextRecorder.cpp \
+	IWORKTextRecorder.h \
 	IWORKTextRedirector.cpp \
 	IWORKTextRedirector.h \
 	IWORKText_fwd.h \

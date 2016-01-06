@@ -21,6 +21,7 @@
 #include "IWORKOutputElements.h"
 #include "IWORKPath.h"
 #include "IWORKProperties.h"
+#include "IWORKRecorder.h"
 #include "IWORKShape.h"
 #include "IWORKTable.h"
 #include "IWORKText.h"
@@ -316,6 +317,7 @@ IWORKCollector::Level::Level()
 
 IWORKCollector::IWORKCollector(IWORKDocumentInterface *const document)
   : m_document(document)
+  , m_recorder()
   , m_levelStack()
   , m_stylesheetStack()
   , m_newStyles()
@@ -338,14 +340,31 @@ IWORKCollector::~IWORKCollector()
   assert(!m_currentText);
 }
 
+void IWORKCollector::setRecorder(const boost::shared_ptr<IWORKRecorder> &recorder)
+{
+  m_recorder = recorder;
+}
+
 void IWORKCollector::collectStyle(const IWORKStylePtr_t &style)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->collectStyle(style);
+    return;
+  }
+
   if (bool(style))
     m_newStyles.push_back(style);
 }
 
 void IWORKCollector::setGraphicStyle(const IWORKStylePtr_t &style)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->setGraphicStyle(style);
+    return;
+  }
+
   if (!m_levelStack.empty())
   {
     m_levelStack.top().m_graphicStyle = style;
@@ -355,6 +374,12 @@ void IWORKCollector::setGraphicStyle(const IWORKStylePtr_t &style)
 
 void IWORKCollector::collectGeometry(const IWORKGeometryPtr_t &geometry)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->collectGeometry(geometry);
+    return;
+  }
+
   assert(!m_levelStack.empty());
 
   m_levelStack.top().m_geometry = geometry;
@@ -363,11 +388,20 @@ void IWORKCollector::collectGeometry(const IWORKGeometryPtr_t &geometry)
 
 void IWORKCollector::collectBezier(const IWORKPathPtr_t &path)
 {
-  m_currentPath = path;
+  if (bool(m_recorder))
+    m_recorder->collectPath(path);
+  else
+    m_currentPath = path;
 }
 
 void IWORKCollector::collectImage(const IWORKImagePtr_t &image)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->collectImage(image);
+    return;
+  }
+
   assert(!m_levelStack.empty());
 
   image->m_geometry = m_levelStack.top().m_geometry;
@@ -378,6 +412,12 @@ void IWORKCollector::collectImage(const IWORKImagePtr_t &image)
 
 void IWORKCollector::collectLine(const IWORKLinePtr_t &line)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->collectLine(line);
+    return;
+  }
+
   assert(!m_levelStack.empty());
 
   line->m_geometry = m_levelStack.top().m_geometry;
@@ -388,6 +428,12 @@ void IWORKCollector::collectLine(const IWORKLinePtr_t &line)
 
 void IWORKCollector::collectShape()
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->collectShape();
+    return;
+  }
+
   assert(!m_levelStack.empty());
 
   const IWORKShapePtr_t shape(new IWORKShape());
@@ -421,42 +467,74 @@ void IWORKCollector::collectBezierPath()
 
 void IWORKCollector::collectPolygonPath(const IWORKSize &size, const unsigned edges)
 {
-  m_currentPath = makePolygonPath(size, edges);
+  const IWORKPathPtr_t path(makePolygonPath(size, edges));
+  if (bool(m_recorder))
+    m_recorder->collectPath(path);
+  else
+    m_currentPath = path;
 }
 
 void IWORKCollector::collectRoundedRectanglePath(const IWORKSize &size, const double radius)
 {
-  m_currentPath = makeRoundedRectanglePath(size, radius);
+  const IWORKPathPtr_t path(makeRoundedRectanglePath(size, radius));
+  if (bool(m_recorder))
+    m_recorder->collectPath(path);
+  else
+    m_currentPath = path;
 }
 
 void IWORKCollector::collectArrowPath(const IWORKSize &size, const double headWidth, const double stemRelYPos, bool const doubleSided)
 {
+  IWORKPathPtr_t path;
   if (doubleSided)
-    m_currentPath = makeDoubleArrowPath(size, headWidth, stemRelYPos);
+    path = makeDoubleArrowPath(size, headWidth, stemRelYPos);
   else
-    m_currentPath = makeArrowPath(size, headWidth, stemRelYPos);
+    path = makeArrowPath(size, headWidth, stemRelYPos);
+  if (bool(m_recorder))
+    m_recorder->collectPath(path);
+  else
+    m_currentPath = path;
 }
 
 void IWORKCollector::collectStarPath(const IWORKSize &size, const unsigned points, const double innerRadius)
 {
-  m_currentPath = makeStarPath(size, points, innerRadius);
+  const IWORKPathPtr_t path(makeStarPath(size, points, innerRadius));
+  if (bool(m_recorder))
+    m_recorder->collectPath(path);
+  else
+    m_currentPath = path;
 }
 
 void IWORKCollector::collectConnectionPath(const IWORKSize &size, const double middleX, const double middleY)
 {
-  m_currentPath = makeConnectionPath(size, middleX, middleY);
+  const IWORKPathPtr_t path(makeConnectionPath(size, middleX, middleY));
+  if (bool(m_recorder))
+    m_recorder->collectPath(path);
+  else
+    m_currentPath = path;
 }
 
 void IWORKCollector::collectCalloutPath(const IWORKSize &size, const double radius, const double tailSize, const double tailX, const double tailY, bool quoteBubble)
 {
+  IWORKPathPtr_t path;
   if (quoteBubble)
-    m_currentPath = makeQuoteBubblePath(size, radius, tailSize, tailX, tailY);
+    path = makeQuoteBubblePath(size, radius, tailSize, tailX, tailY);
   else
-    m_currentPath = makeCalloutPath(size, radius, tailSize, tailX, tailY);
+    path = makeCalloutPath(size, radius, tailSize, tailX, tailY);
+  if (bool(m_recorder))
+    m_recorder->collectPath(path);
+  else
+    m_currentPath = path;
 }
 
 void IWORKCollector::collectMedia(const IWORKMediaContentPtr_t &content)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->collectMedia(content);
+    return;
+  }
+
   assert(!m_levelStack.empty());
 
   const IWORKMediaPtr_t media(new IWORKMedia());
@@ -472,6 +550,12 @@ void IWORKCollector::collectMedia(const IWORKMediaContentPtr_t &content)
 
 void IWORKCollector::collectStylesheet(const IWORKStylesheetPtr_t &stylesheet)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->collectStylesheet(stylesheet);
+    return;
+  }
+
   for_each(m_newStyles.begin(), m_newStyles.end(), boost::bind(&IWORKStyle::link, _1, stylesheet));
   m_newStyles.clear();
 }
@@ -493,6 +577,12 @@ void IWORKCollector::collectFooter(const std::string &name)
 
 void IWORKCollector::collectTable(const boost::shared_ptr<IWORKTable> &table)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->collectTable(table);
+    return;
+  }
+
   assert(!m_currentTable);
   m_currentTable = table;
   drawTable();
@@ -501,6 +591,12 @@ void IWORKCollector::collectTable(const boost::shared_ptr<IWORKTable> &table)
 
 void IWORKCollector::collectText(const boost::shared_ptr<IWORKText> &text)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->collectText(text);
+    return;
+  }
+
   assert(!m_currentText);
   m_currentText = text;
 }
@@ -523,11 +619,23 @@ void IWORKCollector::endDocument()
 
 void IWORKCollector::startGroup()
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->startGroup();
+    return;
+  }
+
   ++m_groupLevel;
 }
 
 void IWORKCollector::endGroup()
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->endGroup();
+    return;
+  }
+
   assert(m_groupLevel > 0);
 
   --m_groupLevel;
@@ -545,6 +653,12 @@ boost::shared_ptr<IWORKText> IWORKCollector::createText(const IWORKLanguageManag
 
 void IWORKCollector::startLevel()
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->startLevel();
+    return;
+  }
+
   glm::dmat3 currentTrafo;
   if (!m_levelStack.empty())
     currentTrafo = m_levelStack.top().m_trafo;
@@ -556,6 +670,12 @@ void IWORKCollector::startLevel()
 
 void IWORKCollector::endLevel()
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->endLevel();
+    return;
+  }
+
   assert(!m_levelStack.empty());
   m_levelStack.pop();
 
@@ -574,11 +694,23 @@ void IWORKCollector::popStyle()
 
 void IWORKCollector::pushStylesheet(const IWORKStylesheetPtr_t &stylesheet)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->pushStylesheet(stylesheet);
+    return;
+  }
+
   m_stylesheetStack.push(stylesheet);
 }
 
 void IWORKCollector::popStylesheet()
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->popStylesheet();
+    return;
+  }
+
   assert(!m_stylesheetStack.empty());
 
   m_stylesheetStack.pop();

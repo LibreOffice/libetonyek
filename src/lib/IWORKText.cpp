@@ -26,6 +26,7 @@
 #include "IWORKLanguageManager.h"
 #include "IWORKPath.h"
 #include "IWORKProperties.h"
+#include "IWORKTextRecorder.h"
 #include "IWORKTypes.h"
 
 using boost::optional;
@@ -437,6 +438,8 @@ bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPr
 
 void IWORKText::draw(IWORKOutputElements &elements)
 {
+  assert(!m_recorder);
+
   elements.append(m_elements);
 }
 
@@ -463,6 +466,7 @@ IWORKText::IWORKText(const IWORKLanguageManager &langManager, const bool discard
   , m_spanStyleChanged(false)
   , m_inSpan(false)
   , m_oldSpanStyle()
+  , m_recorder()
 {
 }
 
@@ -471,18 +475,46 @@ IWORKText::~IWORKText()
   assert(m_isOrderedStack.empty());
 }
 
+void IWORKText::setRecorder(const boost::shared_ptr<IWORKTextRecorder> &recorder)
+{
+  m_recorder = recorder;
+}
+
+const boost::shared_ptr<IWORKTextRecorder> &IWORKText::getRecorder() const
+{
+  return m_recorder;
+}
+
 void IWORKText::pushBaseLayoutStyle(const IWORKStylePtr_t &style)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->pushBaseLayoutStyle(style);
+    return;
+  }
+
   m_layoutStyleStack.push(style);
 }
 
 void IWORKText::pushBaseParagraphStyle(const IWORKStylePtr_t &style)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->pushBaseParagraphStyle(style);
+    return;
+  }
+
   m_paraStyleStack.push(style);
 }
 
 void IWORKText::setLayoutStyle(const IWORKStylePtr_t &style)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->setLayoutStyle(style);
+    return;
+  }
+
   m_layoutStyle = style;
   m_checkedSection = false;
   m_sectionProps.clear();
@@ -490,6 +522,12 @@ void IWORKText::setLayoutStyle(const IWORKStylePtr_t &style)
 
 void IWORKText::flushLayout()
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->flushLayout();
+    return;
+  }
+
   if (m_inSection)
     closeSection();
 }
@@ -520,26 +558,56 @@ void IWORKText::closeSection()
 
 void IWORKText::setListStyle(const IWORKStylePtr_t &style)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->setListStyle(style);
+    return;
+  }
+
   m_listStyle = style;
 }
 
 void IWORKText::setListLevel(const unsigned level)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->setListLevel(level);
+    return;
+  }
+
   m_listLevel = level;
 }
 
 void IWORKText::flushList()
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->flushList();
+    return;
+  }
+
   handleListLevelChange(m_listLevel);
 }
 
 void IWORKText::setParagraphStyle(const IWORKStylePtr_t &style)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->setParagraphStyle(style);
+    return;
+  }
+
   m_paraStyle = style;
 }
 
 void IWORKText::flushParagraph()
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->flushParagraph();
+    return;
+  }
+
   if (!m_inPara && !m_ignoreEmptyPara)
     openPara(); // empty paragraphs are allowed, contrary to empty spans
   if (m_inSpan)
@@ -551,24 +619,48 @@ void IWORKText::flushParagraph()
 
 void IWORKText::setSpanStyle(const IWORKStylePtr_t &style)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->setSpanStyle(style);
+    return;
+  }
+
   m_spanStyleChanged |= m_spanStyle != style;
   m_spanStyle = style;
 }
 
 void IWORKText::setLanguage(const IWORKStylePtr_t &style)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->setLanguage(style);
+    return;
+  }
+
   m_spanStyleChanged |= m_langStyle != style;
   m_langStyle = style;
 }
 
 void IWORKText::flushSpan()
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->flushSpan();
+    return;
+  }
+
   if (m_inSpan)
     closeSpan();
 }
 
 void IWORKText::openLink(const std::string &url)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->openLink(url);
+    return;
+  }
+
   if (!m_inPara)
     openPara();
   if (m_inSpan)
@@ -586,6 +678,12 @@ void IWORKText::openLink(const std::string &url)
 
 void IWORKText::closeLink()
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->closeLink();
+    return;
+  }
+
   if (m_inSpan)
     closeSpan();
   m_spanStyle = m_oldSpanStyle;
@@ -596,6 +694,12 @@ void IWORKText::closeLink()
 
 void IWORKText::insertText(const std::string &text)
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->insertText(text);
+    return;
+  }
+
   if (m_inSpan && m_spanStyleChanged)
     closeSpan();
   if (!m_inSpan)
@@ -605,6 +709,12 @@ void IWORKText::insertText(const std::string &text)
 
 void IWORKText::insertTab()
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->insertTab();
+    return;
+  }
+
   if (m_inSpan && m_spanStyleChanged)
     closeSpan();
   if (!m_inSpan)
@@ -614,6 +724,12 @@ void IWORKText::insertTab()
 
 void IWORKText::insertSpace()
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->insertSpace();
+    return;
+  }
+
   if (m_inSpan && m_spanStyleChanged)
     closeSpan();
   if (!m_inSpan)
@@ -623,6 +739,12 @@ void IWORKText::insertSpace()
 
 void IWORKText::insertLineBreak()
 {
+  if (bool(m_recorder))
+  {
+    m_recorder->insertLineBreak();
+    return;
+  }
+
   if (m_inSpan && m_spanStyleChanged)
     closeSpan();
   if (!m_inSpan)

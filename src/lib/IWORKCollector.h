@@ -15,6 +15,7 @@
 #include <string>
 
 #include <boost/optional.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include "libetonyek_utils.h"
 #include "IWORKPath_fwd.h"
@@ -32,6 +33,7 @@ namespace libetonyek
 class IWORKDocumentInterface;
 class IWORKLanguageManager;
 class IWORKPropertyMap;
+class IWORKRecorder;
 class IWORKTable;
 class IWORKText;
 struct IWORKSize;
@@ -51,6 +53,8 @@ private:
 public:
   explicit IWORKCollector(IWORKDocumentInterface *document);
   ~IWORKCollector();
+
+  void setRecorder(const boost::shared_ptr<IWORKRecorder> &recorder);
 
   // collector functions
 
@@ -126,6 +130,7 @@ private:
 
 protected:
   IWORKDocumentInterface *m_document;
+  boost::shared_ptr<IWORKRecorder> m_recorder;
 
   std::stack<Level> m_levelStack;
   IWORKStyleStack m_styleStack;

@@ -23,6 +23,7 @@ namespace libetonyek
 {
 
 class IWORKText;
+class IWORKTableRecorder;
 
 class IWORKTable
 {
@@ -55,6 +56,9 @@ public:
 
 public:
   explicit IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap);
+
+  void setRecorder(const boost::shared_ptr<IWORKTableRecorder> &recorder);
+  const boost::shared_ptr<IWORKTableRecorder> &getRecorder() const;
 
   void setSize(unsigned columns, unsigned rows);
   void setHeaders(unsigned headerColumns, unsigned headerRows, unsigned footerRows);
@@ -108,6 +112,8 @@ private:
   IWORKStylePtr_t m_defaultCellStyles[5];
   IWORKStylePtr_t m_defaultLayoutStyles[5];
   IWORKStylePtr_t m_defaultParaStyles[5];
+
+  boost::shared_ptr<IWORKTableRecorder> m_recorder;
 };
 
 }
