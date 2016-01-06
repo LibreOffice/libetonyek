@@ -59,6 +59,9 @@ public:
   void startLayer();
   void endLayer();
 
+protected:
+  bool m_paint;
+
 private:
   struct Slide
   {
@@ -84,8 +87,6 @@ private:
   bool m_pageOpened;
   bool m_layerOpened;
   int m_layerCount;
-
-  bool m_paint;
 };
 
 } // namespace libetonyek

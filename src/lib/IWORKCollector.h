@@ -95,9 +95,6 @@ public:
   void startGroup();
   void endGroup();
 
-  boost::shared_ptr<IWORKTable> createTable(const IWORKTableNameMapPtr_t &tableNameMap) const;
-  boost::shared_ptr<IWORKText> createText(const IWORKLanguageManager &langManager, bool discardEmptyContent = false) const;
-
   void startLevel();
   void endLevel();
 
@@ -108,6 +105,10 @@ public:
   void popStylesheet();
 
   IWORKOutputManager &getOutputManager();
+
+public:
+  virtual boost::shared_ptr<IWORKTable> createTable(const IWORKTableNameMapPtr_t &tableNameMap) const;
+  virtual boost::shared_ptr<IWORKText> createText(const IWORKLanguageManager &langManager, bool discardEmptyContent = false) const;
 
 protected:
   void fillMetadata(librevenge::RVNGPropertyList &props);

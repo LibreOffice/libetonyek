@@ -129,6 +129,8 @@ libetonyek_internal_la_SOURCES = \
 	KEY1Parser.h \
 	KEY1Token.cpp \
 	KEY1Token.h \
+	KEY2Collector.cpp \
+	KEY2Collector.h \
 	KEY2Dictionary.cpp \
 	KEY2Dictionary.h \
 	KEY2Parser.cpp \

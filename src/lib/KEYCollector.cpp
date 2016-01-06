@@ -20,6 +20,7 @@
 #include "IWORKOutputElements.h"
 #include "IWORKPath.h"
 #include "IWORKProperties.h"
+#include "IWORKRecorder.h"
 #include "IWORKTable.h"
 #include "IWORKText.h"
 
@@ -30,6 +31,7 @@ using librevenge::RVNGPropertyList;
 
 KEYCollector::KEYCollector(IWORKDocumentInterface *const document)
   : IWORKCollector(document)
+  , m_paint(false)
   , m_size()
   , m_slides()
   , m_notes()
@@ -37,7 +39,6 @@ KEYCollector::KEYCollector(IWORKDocumentInterface *const document)
   , m_pageOpened(false)
   , m_layerOpened(false)
   , m_layerCount(0)
-  , m_paint(false)
 {
   assert(!m_paint);
 }
@@ -240,6 +241,11 @@ void KEYCollector::startPage()
 void KEYCollector::endPage()
 {
   assert(m_pageOpened);
+
+  const boost::shared_ptr<IWORKRecorder> recorder(m_recorder);
+  m_recorder.reset();
+  if (recorder)
+    recorder->replay(*this);
 
   endLevel();
 
