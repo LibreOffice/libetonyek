@@ -10,6 +10,7 @@
 #ifndef IWORKCONTAINERCONTEXT_H_INCLUDED
 #define IWORKCONTAINERCONTEXT_H_INCLUDED
 
+#include <cassert>
 #include <deque>
 
 #include <boost/optional.hpp>
@@ -46,7 +47,7 @@ public:
 protected:
   virtual IWORKXMLContextPtr_t element(const int name)
   {
-    if (m_ref)
+    if (m_ref && m_dict)
       handleRef();
     else if (m_collector.pending())
       m_collector.push();
@@ -60,7 +61,7 @@ protected:
 
   virtual void endOfElement()
   {
-    if (m_ref)
+    if (m_ref && m_dict)
       handleRef();
     else if (m_collector.pending())
       m_collector.push();
