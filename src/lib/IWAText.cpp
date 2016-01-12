@@ -97,7 +97,9 @@ void IWAText::parse(IWORKText &collector)
   string curText;
 
   std::size_t pos = 0;
-  for (librevenge::RVNGString::Iter iter(m_text); !iter.last(); iter.next(), ++pos)
+  librevenge::RVNGString::Iter iter(m_text);
+  iter.rewind();
+  for (; iter.next(); ++pos)
   {
     // handle span style change
     IWORKStylePtr_t spanStyle;
