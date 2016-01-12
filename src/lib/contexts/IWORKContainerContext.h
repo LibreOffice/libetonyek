@@ -53,7 +53,7 @@ protected:
       m_collector.push();
 
     if (name == Id)
-      return m_collector.makeContext<NestedParser>(getState());
+      return m_collector.template makeContext<NestedParser>(getState());
     else if ((RefId != 0) && (name == RefId))
       return makeContext<IWORKRefContext>(getState(), m_ref);
     return IWORKXMLContextPtr_t();
