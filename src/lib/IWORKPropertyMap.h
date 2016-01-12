@@ -125,7 +125,7 @@ public:
     throw NotFoundException();
   }
 
-  /** Insert a new value for key @key.
+  /** Insert a new value for key @c key.
     *
     * @arg[in] value the value to insert
     */
