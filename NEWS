@@ -1,3 +1,21 @@
+libetonyek 0.1.6
+
+- All formats:
+  + Improved handling of text language, e.g., written language props now
+    include country and script.
+- Keynote 6:
+  + Parse links.
+  + Parse text language.
+  + Parse lists (bullets).
+  + Resize tables properly.
+  + Fix handling of texts containing non-ASCII characters (i.e., the
+    majority of non-English languages).
+- Miscellaneous:
+  + Fix build with boost 1.54/1.55.
+  + Make help output of conversion tools more help2man-friendly.
+  + Fix build with recent clang, which does not like 'register' keyword.
+  + Various small fixes and improvements.
+
 libetonyek 0.1.5
 
 - Parse slide background.
