@@ -18,7 +18,7 @@ namespace NUM3ObjectType
 
 enum
 {
-  Document = 1,
+  Document = 1
 };
 
 }
