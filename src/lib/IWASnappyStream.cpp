@@ -106,6 +106,7 @@ bool uncompressBlock(const RVNGInputStreamPtr_t &input, const unsigned long leng
       {
         runLength = (c >> 2) + 1;
       }
+      assert(runLength > 0);
       unsigned long bytesRead = 0;
       const unsigned char *const bytes = input->read(runLength, bytesRead);
       if (bytesRead != runLength)
