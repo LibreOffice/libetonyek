@@ -9,6 +9,8 @@
 
 #include "IWAReader.h"
 
+#include <cassert>
+
 #include <boost/make_shared.hpp>
 
 #include "IWAMessage.h"
@@ -64,6 +66,8 @@ double Double::read(const RVNGInputStreamPtr_t &input, unsigned long)
 
 std::string String::read(const RVNGInputStreamPtr_t &input, const unsigned long length)
 {
+  assert(length != 0);
+
   unsigned long readBytes(0);
   const unsigned char *const bytes = input->read(length, readBytes);
   if (readBytes < length)
@@ -73,6 +77,8 @@ std::string String::read(const RVNGInputStreamPtr_t &input, const unsigned long 
 
 const RVNGInputStreamPtr_t Bytes::read(const RVNGInputStreamPtr_t &input, const unsigned long length)
 {
+  assert(length != 0);
+
   unsigned long readBytes(0);
   const unsigned char *const bytes = input->read(length, readBytes);
   if (readBytes < length)
@@ -82,6 +88,8 @@ const RVNGInputStreamPtr_t Bytes::read(const RVNGInputStreamPtr_t &input, const 
 
 IWAMessage Message::read(const RVNGInputStreamPtr_t &input, const unsigned long length)
 {
+  assert(length != 0);
+
   return IWAMessage(input, length);
 }
 
