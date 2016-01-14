@@ -763,7 +763,7 @@ void IWORKText::insertBlockContent(const IWORKOutputElements &elements)
 {
   if (m_inPara)
     closePara();
-  if (!m_inSection and needsSection())
+  if (!m_inSection && needsSection())
     openSection();
   m_elements.append(elements);
   m_ignoreEmptyPara = true;
@@ -817,7 +817,7 @@ void IWORKText::openPara()
 {
   assert(!m_inPara);
 
-  if (!m_inSection and needsSection())
+  if (!m_inSection && needsSection())
     openSection();
   handleListLevelChange(m_listLevel);
 
