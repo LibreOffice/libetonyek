@@ -169,7 +169,10 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   using qi::attr;
   using qi::double_;
   using qi::lit;
+  using qi::no_case;
   using qi::uint_;
+
+  createFunctionNameMap();
 
   number %= double_;
   str %= lit('\"') >> +(char_ - '\"') >> '\"';
@@ -224,7 +227,7 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   infixOp %= term >> infixLit >> expression;
   postfixOp %= term >> postfixLit;
 
-  function %= +alnum >> '(' >> -(argument % ',') >> ')';
+  function %= (no_case[mappedName] | +alnum) >> '(' >> -(argument % ',') >> ')';
 
   argument %=
     range
@@ -270,6 +273,10 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   rangeSpecial.name("rangeSpecial");
 }
 
+void createFunctionNameMap()
+{
+}
+
 qi::rule<Iterator, Function()> function;
 qi::rule<Iterator, Expression()> expression, formula, term, argument;
 qi::rule<Iterator, PExpr()> pExpr;
@@ -284,6 +291,8 @@ qi::rule<Iterator, InfixOp()> infixOp;
 qi::rule<Iterator, PostfixOp()> postfixOp;
 qi::rule<Iterator, char()> prefixLit, postfixLit;
 qi::rule<Iterator, qi::locals<Address> > rangeSpecial;
+
+qi::symbols<char, string> mappedName;
 };
 
 }
