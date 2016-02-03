@@ -45,18 +45,30 @@ IWORKXMLContextPtr_t IWORKTextStorageElement::element(const int name)
 void IWORKTextStorageElement::endOfElement()
 {
   if (isCollector() && m_hasStylesheet)
+  {
     getCollector().popStylesheet();
+    getState().m_stylesheet=getCollector().getStylesheet();
+    m_hasStylesheet=false;
+  }
 }
 
 void IWORKTextStorageElement::sendStylesheet()
 {
+  if (!isCollector())
+    return;
+
   if (m_stylesheetId) // a stylesheet has been found
   {
     const IWORKStylesheetMap_t::const_iterator it = getState().getDictionary().m_stylesheets.find(get(m_stylesheetId));
     if (it != getState().getDictionary().m_stylesheets.end())
     {
       getCollector().pushStylesheet(it->second);
+      getState().m_stylesheet=it->second;
       m_hasStylesheet = true;
+    }
+    else
+    {
+      ETONYEK_DEBUG_MSG(("IWORKTextStorageElement::sendStylesheet: can not find stylesheet %s\n", get(m_stylesheetId).c_str()));
     }
     m_stylesheetId.reset();
   }

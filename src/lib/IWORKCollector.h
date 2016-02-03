@@ -103,7 +103,12 @@ public:
 
   void pushStylesheet(const IWORKStylesheetPtr_t &stylesheet);
   void popStylesheet();
-
+  IWORKStylesheetPtr_t getStylesheet() const
+  {
+    if (m_stylesheetStack.empty())
+      return IWORKStylesheetPtr_t();
+    return m_stylesheetStack.top();
+  }
   IWORKOutputManager &getOutputManager();
 
 public:
