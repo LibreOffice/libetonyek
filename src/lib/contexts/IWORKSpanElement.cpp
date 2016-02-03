@@ -35,6 +35,12 @@ void IWORKSpanElement::attribute(const int name, const char *const value)
     const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_characterStyles.find(value);
     if (getState().getDictionary().m_characterStyles.end() != it)
       m_style = it->second;
+    else if (getState().m_stylesheet && getState().m_stylesheet->m_styles.find(value)!=getState().m_stylesheet->m_styles.end())
+      m_style=getState().m_stylesheet->m_styles.find(value)->second;
+    else
+    {
+      ETONYEK_DEBUG_MSG(("IWORKSpanElement::attribute: unknown style %s\n", value));
+    }
     break;
   }
   }

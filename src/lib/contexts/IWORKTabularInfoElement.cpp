@@ -142,6 +142,13 @@ void CellContextBase::attribute(const int name, const char *const value)
     const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_cellStyles.find(value);
     if (getState().getDictionary().m_cellStyles.end() != it)
       getState().m_tableData->m_style = it->second;
+    // checkme: probable but unsure...
+    else if (getState().m_stylesheet && getState().m_stylesheet->m_styles.find(value)!=getState().m_stylesheet->m_styles.end())
+      getState().m_tableData->m_style = getState().m_stylesheet->m_styles.find(value)->second;
+    else
+    {
+      ETONYEK_DEBUG_MSG(("CellContextBase::attribute: unknown style %s\n", value));
+    }
     break;
   }
 }
@@ -1057,6 +1064,13 @@ void VectorStyleRefElement::endOfElement()
     const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_vectorStyles.find(get(getRef()));
     if (getState().getDictionary().m_vectorStyles.end() != it)
       m_line.insert_back(m_startIndex.get(), m_stopIndex.get(), it->second);
+    // not sure if needed but probable
+    else if (getState().m_stylesheet && getState().m_stylesheet->m_styles.find(get(getRef()))!=getState().m_stylesheet->m_styles.end())
+      m_line.insert_back(m_startIndex.get(), m_stopIndex.get(), getState().m_stylesheet->m_styles.find(get(getRef()))->second);
+    else
+    {
+      ETONYEK_DEBUG_MSG(("VectorStyleRefElement::attribute: unknown style %s\n", get(getRef()).c_str()));
+    }
   }
 }
 
@@ -1378,6 +1392,13 @@ void TabularModelElement::endOfElement()
       const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_tabularStyles.find(get(m_styleRef));
       if (it != getState().getDictionary().m_tabularStyles.end())
         style = it->second;
+      // not sure if needed but probable
+      else if (getState().m_stylesheet && getState().m_stylesheet->m_styles.find(get(m_styleRef))!=getState().m_stylesheet->m_styles.end())
+        style=getState().m_stylesheet->m_styles.find(get(m_styleRef))->second;
+      else
+      {
+        ETONYEK_DEBUG_MSG(("TabularModelElement::attribute: unknown style %s\n", get(m_styleRef).c_str()));
+      }
     }
     sendStyle(style, getState().m_currentTable);
     getState().m_currentTable->setHeaders(

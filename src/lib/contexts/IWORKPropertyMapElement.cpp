@@ -1382,6 +1382,11 @@ void ListStyleProperty::endOfElement()
     const IWORKListStyleMap_t::const_iterator it = getState().getDictionary().m_listStyles.find(get(m_ref));
     if (it != getState().getDictionary().m_listStyles.end())
       m_style = it->second;
+    // argh, no sure how to retrieve the list styles here...
+    else
+    {
+      ETONYEK_DEBUG_MSG(("ListStyleProperty::attribute: unknown style %s\n", get(m_ref).c_str()));
+    }
   }
 
   m_propMap.put<property::ListLevelStyles>(m_style);
