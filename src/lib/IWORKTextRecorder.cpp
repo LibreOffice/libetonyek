@@ -153,6 +153,10 @@ struct InsertLineBreak
 {
 };
 
+struct InsertPageBreak
+{
+};
+
 typedef boost::variant
 < PushBaseLayoutStyle
 , PushBaseParagraphStyle
@@ -172,6 +176,7 @@ typedef boost::variant
 , InsertTab
 , InsertSpace
 , InsertLineBreak
+, InsertPageBreak
 >
 Element_t;
 
@@ -275,6 +280,11 @@ struct Sender : public boost::static_visitor<void>
   void operator()(const InsertLineBreak &) const
   {
     m_text.insertLineBreak();
+  }
+
+  void operator()(const InsertPageBreak &) const
+  {
+    m_text.insertPageBreak();
   }
 
 private:
@@ -395,6 +405,11 @@ void IWORKTextRecorder::insertSpace()
 void IWORKTextRecorder::insertLineBreak()
 {
   m_impl->m_elements.push_back(InsertLineBreak());
+}
+
+void IWORKTextRecorder::insertPageBreak()
+{
+  m_impl->m_elements.push_back(InsertPageBreak());
 }
 
 }

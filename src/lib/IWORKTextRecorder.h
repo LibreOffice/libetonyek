@@ -51,6 +51,7 @@ public:
   void insertTab();
   void insertSpace();
   void insertLineBreak();
+  void insertPageBreak();
 
 private:
   struct Impl;

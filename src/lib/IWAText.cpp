@@ -198,15 +198,20 @@ void IWAText::parse(IWORKText &collector)
     {
     case char(5):
     {
-      // FIXME
-      static bool first=true;
-      if (first)
-      {
-        ETONYEK_DEBUG_MSG(("IWAText::parse: find some page break, replaced them by linebreak\n"));
-      }
       wasSpace = false;
       flushText(curText, collector);
       collector.flushParagraph();
+      collector.insertPageBreak();
+      break;
+    }
+    case char(14):
+    {
+      static bool first=true;
+      if (first)
+      {
+        ETONYEK_DEBUG_MSG(("IWAText::parse:: find some footnotes, unimplemented\n"));
+        first=false;
+      }
       break;
     }
     case '\t' :

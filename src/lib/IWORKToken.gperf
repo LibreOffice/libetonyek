@@ -274,6 +274,8 @@ other-datas,other_datas
 outline,outline
 overrides,overrides
 p,p
+page-start,page_start
+pgbr,pgbr
 padding,padding
 pageBreakBefore,pageBreakBefore
 pagemaster,pagemaster

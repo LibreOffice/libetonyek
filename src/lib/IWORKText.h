@@ -74,6 +74,7 @@ public:
   void insertTab();
   void insertSpace();
   void insertLineBreak();
+  void insertPageBreak();
 
   void insertInlineContent(const IWORKOutputElements &elements);
   void insertBlockContent(const IWORKOutputElements &elements);
@@ -119,6 +120,7 @@ private:
   std::stack<bool> m_isOrderedStack;
 
   IWORKStylePtr_t m_paraStyle;
+  bool m_pageBreakDelayed;
   bool m_inPara;
   bool m_ignoreEmptyPara;
 

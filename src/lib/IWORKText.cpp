@@ -245,9 +245,6 @@ void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props
       break;
     }
   }
-
-  if (styleStack.has<PageBreakBefore>() && styleStack.get<PageBreakBefore>())
-    props.insert("fo:break-before", "page");
 }
 
 struct FillListLabelProps : public boost::static_visitor<bool>
@@ -458,6 +455,7 @@ IWORKText::IWORKText(const IWORKLanguageManager &langManager, const bool discard
   , m_inListLevel(0)
   , m_isOrderedStack()
   , m_paraStyle()
+  , m_pageBreakDelayed(false)
   , m_inPara(false)
     // FIXME: This will work fine when encountering real empty text block, i.e., with a single
     // empty paragraph. But it will cause a loss of a leading empty paragraph otherwise. It is
@@ -753,6 +751,17 @@ void IWORKText::insertLineBreak()
   m_elements.addInsertLineBreak();
 }
 
+void IWORKText::insertPageBreak()
+{
+  if (bool(m_recorder))
+  {
+    m_recorder->insertPageBreak();
+    return;
+  }
+
+  m_pageBreakDelayed=true;
+}
+
 void IWORKText::insertInlineContent(const IWORKOutputElements &elements)
 {
   if (!m_inSpan)
@@ -850,6 +859,13 @@ void IWORKText::fillParaPropList(librevenge::RVNGPropertyList &propList)
 {
   m_paraStyleStack.push(m_paraStyle);
   libetonyek::fillParaPropList(m_paraStyleStack, propList);
+
+  using namespace property;
+  if (m_pageBreakDelayed || (m_paraStyleStack.has<PageBreakBefore>() && m_paraStyleStack.get<PageBreakBefore>()))
+  {
+    propList.insert("fo:break-before", "page");
+    m_pageBreakDelayed=false;
+  }
   m_paraStyleStack.pop();
 }
 

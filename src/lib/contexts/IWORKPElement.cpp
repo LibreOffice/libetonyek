@@ -27,6 +27,7 @@ IWORKPElement::IWORKPElement(IWORKXMLParserState &state)
   : IWORKXMLMixedContextBase(state)
   , m_style()
   , m_opened(false)
+  , m_delayedPageBreak(false)
 {
 }
 
@@ -63,6 +64,9 @@ IWORKXMLContextPtr_t IWORKPElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
   case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
     return makeContext<IWORKBrContext>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::pgbr :
+    m_delayedPageBreak=true;
+    return IWORKXMLContextPtr_t();
   case IWORKToken::NS_URI_SF | IWORKToken::span :
     return makeContext<IWORKSpanElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tab :
@@ -88,6 +92,8 @@ void IWORKPElement::endOfElement()
   {
     getState().m_currentText->flushParagraph();
     // getState().m_currentText->setListLevel(0);
+    if (m_delayedPageBreak)
+      getState().m_currentText->insertPageBreak();
   }
 }
 
