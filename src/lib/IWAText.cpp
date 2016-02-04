@@ -196,6 +196,19 @@ void IWAText::parse(IWORKText &collector)
     const char *const u8Char = iter();
     switch (u8Char[0])
     {
+    case char(5):
+    {
+      // FIXME
+      static bool first=true;
+      if (first)
+      {
+        ETONYEK_DEBUG_MSG(("IWAText::parse: find some page break, replaced them by linebreak\n"));
+      }
+      wasSpace = false;
+      flushText(curText, collector);
+      collector.flushParagraph();
+      break;
+    }
     case '\t' :
       wasSpace = false;
       flushText(curText, collector);
@@ -223,7 +236,13 @@ void IWAText::parse(IWORKText &collector)
         curText.push_back(' ');
       }
       break;
-    default :
+    // find also 14
+    default:
+      if (unsigned(u8Char[0])<=0x1f)
+      {
+        ETONYEK_DEBUG_MSG(("IWAText::parse: find bad character %d\n", (int) unsigned(u8Char[0])));
+        break;
+      }
       wasSpace = false;
       curText.append(u8Char);
       break;
