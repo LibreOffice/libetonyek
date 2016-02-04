@@ -23,6 +23,7 @@ class IWORKListstyleElement : public IWORKXMLElementContextBase, public IWORKPro
 {
 public:
   IWORKListstyleElement(IWORKXMLParserState &state, IWORKListStyle_t &style);
+  explicit IWORKListstyleElement(IWORKXMLParserState &state);
 
 private:
   IWORKXMLContextPtr_t element(int name) override;
@@ -31,6 +32,7 @@ private:
   IWORKXMLContextPtr_t handle(int name) override;
 
 private:
+  IWORKListStyle_t m_localStyle;
   IWORKListStyle_t &m_style;
   std::deque<IWORKListLabelGeometry> m_labelGeometries;
   std::deque<IWORKListLabelTypeInfo_t> m_typeInfos;

@@ -14,11 +14,11 @@
 #include "IWORKStyleContext.h"
 #include "IWORKStyleRefContext.h"
 #include "IWORKToken.h"
+#include "IWORKListstyleElement.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
 {
-
 IWORKStylesContext::IWORKStylesContext(IWORKXMLParserState &state, const bool anonymous)
   : IWORKXMLElementContextBase(state)
   , m_anonymous(anonymous)
@@ -31,8 +31,9 @@ IWORKXMLContextPtr_t IWORKStylesContext::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::connection_style :
   case IWORKToken::NS_URI_SF | IWORKToken::headline_style :
-  case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
     return makeContext<IWORKStyleContext>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
+    return makeContext<IWORKListstyleElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::cell_style :
     return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::graphic_style :

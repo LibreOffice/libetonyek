@@ -29,7 +29,15 @@ namespace libetonyek
 
 IWORKListstyleElement::IWORKListstyleElement(IWORKXMLParserState &state, IWORKListStyle_t &style)
   : IWORKXMLElementContextBase(state)
+  , m_localStyle()
   , m_style(style)
+{
+}
+
+IWORKListstyleElement::IWORKListstyleElement(IWORKXMLParserState &state)
+  : IWORKXMLElementContextBase(state)
+  , m_localStyle()
+  , m_style(m_localStyle)
 {
 }
 
