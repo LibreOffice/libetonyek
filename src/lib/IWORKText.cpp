@@ -246,7 +246,7 @@ void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props
     }
   }
 
-  if (styleStack.has<PageBreakBefore>())
+  if (styleStack.has<PageBreakBefore>() && styleStack.get<PageBreakBefore>())
     props.insert("fo:break-before", "page");
 }
 
@@ -439,6 +439,8 @@ void IWORKText::draw(IWORKOutputElements &elements)
 {
   assert(!m_recorder);
 
+  setListLevel(0);
+  flushList();
   elements.append(m_elements);
 }
 
