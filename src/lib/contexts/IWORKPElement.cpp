@@ -106,6 +106,8 @@ void IWORKPElement::ensureOpened()
       getState().m_currentText->setParagraphStyle(m_style);
       // if (m_listLevel)
       // getState().m_currentText->setListLevel(get(m_listLevel));
+      // else
+      getState().m_currentText->setListLevel(0);
       getState().m_currentText->setListStyle(m_style);
     }
     m_opened = true;

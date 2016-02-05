@@ -37,6 +37,9 @@ struct IWORKStylesheet
   IWORKStyleMap_t m_styles;
 
   IWORKStylesheet();
+
+  //! try to return a style in a spreadsheet with a given name
+  IWORKStylePtr_t find(const std::string &name) const;
 };
 
 }
