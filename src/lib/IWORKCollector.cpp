@@ -163,17 +163,41 @@ struct FillWriter : public boost::static_visitor<void>
       break;
     case IWORK_GRADIENT_TYPE_RADIAL :
       m_props.insert("draw:style", "radial");
-      m_props.insert("draw:cx", gradient.m_stops.front().m_inflection, RVNG_PERCENT);
-      m_props.insert("draw:cy", gradient.m_stops.front().m_inflection, RVNG_PERCENT);
+      // TODO: store sf:start to retrieve the center position
+      m_props.insert("draw:cx", 0.5, RVNG_PERCENT);
+      m_props.insert("draw:cy", 0.5, RVNG_PERCENT);
       break;
     }
     // TODO: use svg:linearGradient/svg:radialGradient?
-    m_props.insert("draw:start-color", makeColor(gradient.m_stops.front().m_color));
-    m_props.insert("draw:start-intensity", gradient.m_stops.front().m_fraction, RVNG_PERCENT);
-    m_props.insert("draw:end-color", makeColor(gradient.m_stops.back().m_color));
-    m_props.insert("draw:end-intensity", gradient.m_stops.back().m_fraction, RVNG_PERCENT);
+    if (gradient.m_stops.front().m_fraction<=0 && gradient.m_stops.back().m_fraction>=1)
+    {
+      IWORKGradientStop const &start= gradient.m_type==IWORK_GRADIENT_TYPE_LINEAR ? gradient.m_stops.front() : gradient.m_stops.back();
+      IWORKGradientStop const &end= gradient.m_type==IWORK_GRADIENT_TYPE_LINEAR ? gradient.m_stops.back() : gradient.m_stops.front();
+      m_props.insert("draw:start-color", makeColor(start.m_color));
+      m_props.insert("draw:start-intensity", start.m_color.m_alpha, RVNG_PERCENT);
+      m_props.insert("draw:end-color", makeColor(end.m_color));
+      m_props.insert("draw:end-intensity", end.m_color.m_alpha, RVNG_PERCENT);
+    }
+    else
+    {
+      librevenge::RVNGPropertyListVector gradientVector;
+      int firstVal=gradient.m_type==IWORK_GRADIENT_TYPE_LINEAR ? 1 : 0;
+      for (int s=0; s < 2; ++s)
+      {
+        IWORKGradientStop const &stop= s==firstVal ? gradient.m_stops.front() : gradient.m_stops.back();
+        librevenge::RVNGPropertyList grad;
+        grad.insert("svg:offset", firstVal==0 ? stop.m_fraction : 1.-stop.m_fraction, librevenge::RVNG_PERCENT);
+        grad.insert("svg:stop-color", makeColor(stop.m_color));
+        grad.insert("svg:stop-opacity", stop.m_color.m_alpha, librevenge::RVNG_PERCENT);
+        gradientVector.append(grad);
+      }
+      if (gradient.m_type==IWORK_GRADIENT_TYPE_RADIAL)
+        m_props.insert("svg:radialGradient", gradientVector);
+      else
+        m_props.insert("svg:linearGradient", gradientVector);
+    }
     // the axis of the gradient in Keynote is clockwise to the horizontal axis
-    m_props.insert("draw:angle", rad2deg(etonyek_two_pi - gradient.m_angle + etonyek_half_pi));
+    m_props.insert("draw:angle", rad2deg(/*etonyek_two_pi - */gradient.m_angle + etonyek_half_pi));
   }
 
   void operator()(const IWORKFillImage &bitmap) const
