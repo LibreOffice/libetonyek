@@ -425,7 +425,7 @@ struct Collector : public boost::static_visitor<>
   {
     librevenge::RVNGPropertyList props;
     props.insert("librevenge:type", "librevenge-number");
-    props.insert("librevenge:number", val);
+    props.insert("librevenge:number", val, librevenge::RVNG_GENERIC);
     m_propsVector.append(props);
   }
 
@@ -452,16 +452,16 @@ struct Collector : public boost::static_visitor<>
         props.insert("librevenge:sheet-name", get(val.m_table).c_str());
     }
 
-    if (val.m_column)
+    if (val.m_column && get(val.m_column).m_coord>0)
     {
       props.insert("librevenge:column-absolute", get(val.m_column).m_absolute);
-      props.insert("librevenge:column", int(get(val.m_column).m_coord));
+      props.insert("librevenge:column", int(get(val.m_column).m_coord-1));
     }
 
-    if (val.m_row)
+    if (val.m_row && get(val.m_row).m_coord>0)
     {
       props.insert("librevenge:row-absolute", get(val.m_row).m_absolute);
-      props.insert("librevenge:row", int(get(val.m_row).m_coord));
+      props.insert("librevenge:row", int(get(val.m_row).m_coord-1));
     }
 
     m_propsVector.append(props);
@@ -472,25 +472,25 @@ struct Collector : public boost::static_visitor<>
     librevenge::RVNGPropertyList props;
     props.insert("librevenge:type", "librevenge-cells");
 
-    if (val.first.m_column)
+    if (val.first.m_column && get(val.first.m_column).m_coord>0)
     {
       props.insert("librevenge:start-column-absolute", get(val.first.m_column).m_absolute);
-      props.insert("librevenge:start-column", int(get(val.first.m_column).m_coord));
+      props.insert("librevenge:start-column", int(get(val.first.m_column).m_coord-1));
     }
-    if (val.first.m_row)
+    if (val.first.m_row && get(val.first.m_row).m_coord>0)
     {
       props.insert("librevenge:start-row-absolute", get(val.first.m_row).m_absolute);
-      props.insert("librevenge:start-row", int(get(val.first.m_row).m_coord));
+      props.insert("librevenge:start-row", int(get(val.first.m_row).m_coord-1));
     }
-    if (val.second.m_column)
+    if (val.second.m_column && get(val.second.m_column).m_coord>0)
     {
       props.insert("librevenge:end-column-absolute", get(val.second.m_column).m_absolute);
-      props.insert("librevenge:end-column", int(get(val.second.m_column).m_coord));
+      props.insert("librevenge:end-column", int(get(val.second.m_column).m_coord-1));
     }
-    if (val.second.m_row)
+    if (val.second.m_row && get(val.second.m_row).m_coord>0)
     {
       props.insert("librevenge:end-row-absolute", get(val.second.m_row).m_absolute);
-      props.insert("librevenge:end-row", int(get(val.second.m_row).m_coord));
+      props.insert("librevenge:end-row", int(get(val.second.m_row).m_coord-1));
     }
     m_propsVector.append(props);
   }
