@@ -23,6 +23,7 @@ public:
 
 private:
   virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
 };
 
 }

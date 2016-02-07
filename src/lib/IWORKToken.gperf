@@ -34,6 +34,8 @@ SFIUDropShadow,SFIUDropShadow
 SFTCellStylePropertyDateTimeFormat,SFTCellStylePropertyDateTimeFormat
 SFTCellStylePropertyDurationFormat,SFTCellStylePropertyDurationFormat
 SFTCellStylePropertyNumberFormat,SFTCellStylePropertyNumberFormat
+SFTCellStylePropertyLayoutStyle,SFTCellStylePropertyLayoutStyle
+SFTCellStylePropertyParagraphStyle,SFTCellStylePropertyParagraphStyle
 SFTDefaultBodyCellStyleProperty,SFTDefaultBodyCellStyleProperty
 SFTDefaultFooterRowCellStyleProperty,SFTDefaultFooterRowCellStyleProperty
 SFTDefaultHeaderColumnCellStyleProperty,SFTDefaultHeaderColumnCellStyleProperty
@@ -78,6 +80,8 @@ cb,cb
 cell-date,cell_date
 cell-style,cell_style
 cell-style-ref,cell_style_ref
+cf,cf
+cf-ref,cf_ref
 characterstyle,characterstyle
 characterstyle-ref,characterstyle_ref
 chart-column_names,chart_column_names
@@ -131,6 +135,7 @@ first,first
 firstLineIndent,firstLineIndent
 firstPageMaster,firstPageMaster
 fit,fit
+fm,fm
 fmt,fmt
 fo,fo
 fontColor,fontColor
@@ -186,6 +191,7 @@ id,id
 ident,ident
 image,image
 image-media,image_media
+implicit-format-type,implicit_format_type
 inflection,inflection
 inputAngle,inputAngle
 inputColor,inputColor
@@ -204,6 +210,8 @@ layer-ref,layer_ref
 layers,layers
 layout,layout
 layoutMargins,layoutMargins
+layoutParagraphStyle,layoutParagraphStyle
+layoutParagraphStyle-ref,layoutParagraphStyle_ref
 layoutstyle,layoutstyle
 layoutstyle-ref,layoutstyle_ref
 left,left

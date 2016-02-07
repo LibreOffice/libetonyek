@@ -16,6 +16,26 @@
 
 namespace libetonyek
 {
+namespace
+{
+class FmElement : public IWORKXMLEmptyContextBase
+{
+public:
+  explicit FmElement(IWORKXMLParserState &state);
+
+private:
+  // + sfa:pair as child
+};
+
+FmElement::FmElement(IWORKXMLParserState &state)
+  : IWORKXMLEmptyContextBase(state)
+{
+}
+}
+}
+
+namespace libetonyek
+{
 
 IWORKFoElement::IWORKFoElement(IWORKXMLParserState &state)
   : IWORKXMLEmptyContextBase(state)
@@ -36,6 +56,18 @@ void IWORKFoElement::attribute(const int name, const char *const value)
   default :
     break;
   }
+}
+
+IWORKXMLContextPtr_t IWORKFoElement::element(int name)
+{
+  switch (name)
+  {
+  case IWORKToken::fm | IWORKToken::NS_URI_SF :
+    return makeContext<FmElement>(getState());
+    break;
+  }
+
+  return IWORKXMLEmptyContextBase::element(name);
 }
 
 }

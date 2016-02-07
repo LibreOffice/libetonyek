@@ -96,6 +96,10 @@ void StylePropertyContext<Property, TokenId, RefTokenId>::endOfElement()
     IWORKStyleMap_t::const_iterator it = m_styleMap.find(get(m_ref));
     if (m_styleMap.end() != it)
       m_propMap.put<Property>(it->second);
+    else if (!get(m_ref).empty())
+    {
+      ETONYEK_DEBUG_MSG(("StylePropertyContext<...>::endOfElement: unknown style %s\n", get(m_ref).c_str()));
+    }
   }
   else
   {
@@ -1296,10 +1300,13 @@ typedef IWORKPropertyContext<property::TextBackground, IWORKColorElement, IWORKT
 
 typedef IWORKPtrPropertyContext<property::Geometry, IWORKGeometryElement, IWORKToken::NS_URI_SF | IWORKToken::geometry> GeometryElement;
 
+typedef StylePropertyContext<property::LayoutParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> LayoutParagraphStyleElement;
 typedef StylePropertyContext<property::SFTDefaultBodyCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultBodyCellStylePropertyElement;
 typedef StylePropertyContext<property::SFTDefaultFooterRowCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultFooterRowCellStylePropertyElement;
 typedef StylePropertyContext<property::SFTDefaultHeaderColumnCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultHeaderColumnCellStylePropertyElement;
 typedef StylePropertyContext<property::SFTDefaultHeaderRowCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultHeaderRowCellStylePropertyElement;
+typedef StylePropertyContext<property::SFTCellStylePropertyParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> SFTCellStylePropertyParagraphStylePropertyElement;
+typedef StylePropertyContext<property::SFTCellStylePropertyLayoutStyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref> SFTCellStylePropertyLayoutStylePropertyElement;
 
 typedef IWORKNumericPropertyContext<property::Alignment> AlignmentElement;
 typedef IWORKNumericPropertyContext<property::Baseline> SuperscriptElement;
@@ -1435,6 +1442,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<LanguageElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutMargins :
     return makeContext<LayoutMarginsElement>(getState(), *m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::layoutParagraphStyle :
+    return makeContext<LayoutParagraphStyleElement>(getState(), *m_propMap, getState().getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::leftIndent :
     return makeContext<LeftIndentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::lineSpacing :
@@ -1461,6 +1470,10 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<SFTCellStylePropertyDateTimeFormatElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyDurationFormat :
     return makeContext<SFTCellStylePropertyDurationFormatElement>(getState(), *m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyLayoutStyle :
+    return makeContext<SFTCellStylePropertyLayoutStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_layoutStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyParagraphStyle :
+    return makeContext<SFTCellStylePropertyParagraphStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultBodyCellStyleProperty :
     return makeContext<SFTDefaultBodyCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultFooterRowCellStyleProperty :

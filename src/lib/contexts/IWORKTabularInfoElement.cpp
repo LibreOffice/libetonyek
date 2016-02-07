@@ -41,6 +41,58 @@ using std::string;
 
 namespace
 {
+// condition
+class CfElement : public IWORKXMLEmptyContextBase
+{
+public:
+  explicit CfElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+CfElement::CfElement(IWORKXMLParserState &state)
+  : IWORKXMLEmptyContextBase(state)
+{
+}
+
+void CfElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::implicit_format_type | IWORKToken::NS_URI_SF :
+  {
+    // find 256
+    break;
+  }
+  default :
+    IWORKXMLEmptyContextBase::attribute(name, value);
+  }
+}
+
+IWORKXMLContextPtr_t CfElement::element(int name)
+{
+  switch (name)
+  {
+  case IWORKToken::number_format | IWORKToken::NS_URI_SF :
+  {
+    // TODO: read a number-format elements here...
+    static bool first=true;
+    if (first)
+    {
+      ETONYEK_DEBUG_MSG(("CfElement::found a number format element\n"));
+      first=false;
+    }
+    return IWORKXMLContextPtr_t();
+  }
+  }
+  return IWORKXMLEmptyContextBase::element(name);
+}
+}
+
+namespace
+{
 
 class CellContextBase : public IWORKXMLEmptyContextBase
 {
@@ -48,9 +100,12 @@ protected:
   explicit CellContextBase(IWORKXMLParserState &state);
 
   virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
   void emitCell(const bool covered = false);
+
+  boost::optional<ID_t> m_ref;
 };
 
 CellContextBase::CellContextBase(IWORKXMLParserState &state)
@@ -77,6 +132,18 @@ void CellContextBase::attribute(const int name, const char *const value)
       getState().m_tableData->m_style = it->second;
     break;
   }
+}
+
+IWORKXMLContextPtr_t CellContextBase::element(int name)
+{
+  switch (name)
+  {
+  case IWORKToken::cf | IWORKToken::NS_URI_SF :
+    return makeContext<CfElement>(getState());
+  case IWORKToken::cf_ref | IWORKToken::NS_URI_SF:
+    return makeContext<IWORKRefContext>(getState(), m_ref);
+  }
+  return IWORKXMLEmptyContextBase::element(name);
 }
 
 void CellContextBase::endOfElement()
@@ -401,6 +468,9 @@ public:
 
 private:
   virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+
+  boost::optional<ID_t> m_ref;
 };
 
 RnElement::RnElement(IWORKXMLParserState &state)
@@ -419,6 +489,17 @@ void RnElement::attribute(const int name, const char *const value)
   }
 }
 
+IWORKXMLContextPtr_t RnElement::element(int name)
+{
+  switch (name)
+  {
+  case IWORKToken::cf | IWORKToken::NS_URI_SF :
+    return makeContext<CfElement>(getState());
+  case IWORKToken::cf_ref | IWORKToken::NS_URI_SF:
+    return makeContext<IWORKRefContext>(getState(), m_ref);
+  }
+  return IWORKXMLEmptyContextBase::element(name);
+}
 }
 
 namespace
@@ -860,7 +941,7 @@ IWORKXMLContextPtr_t TElement::element(const int name)
     return makeContext<CtElement>(getState());
   }
 
-  return IWORKXMLContextPtr_t();
+  return CellContextBase::element(name);
 }
 
 }
