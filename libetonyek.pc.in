@@ -10,4 +10,4 @@ Requires: librevenge-0.0
 Libs: -L${libdir} -letonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@
 Cflags: -I${includedir}/libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@
 
-Requires.private: libxml-2.0 zlib
+Requires.private: liblangtag libxml-2.0 zlib
