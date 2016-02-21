@@ -303,7 +303,7 @@ void KEYCollector::drawTable()
     tableProps.insert("svg:height", pt2in(vec[1]));
   }
 
-  m_currentTable->draw(tableProps, m_outputManager.getCurrent());
+  m_currentTable->draw(tableProps, m_outputManager.getCurrent(), true);
 }
 
 void KEYCollector::drawMedia(

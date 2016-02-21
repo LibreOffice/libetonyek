@@ -11,6 +11,8 @@
 
 #include <cassert>
 #include <ctime>
+#include <iomanip>
+#include <sstream>
 
 #include <boost/numeric/conversion/cast.hpp>
 
@@ -56,7 +58,7 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStyleStack 
   switch (type)
   {
   case IWORK_CELL_TYPE_NUMBER :
-    if (style.has<SFTCellStylePropertyNumberFormat>() && value)
+    if (style.has<SFTCellStylePropertyNumberFormat>())
     {
       const IWORKNumberFormat &format = style.get<SFTCellStylePropertyNumberFormat>();
 
@@ -64,7 +66,7 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStyleStack 
       if (styleName)
         props.insert("librevenge:name", get(styleName).c_str());
 
-      props.insert("librevenge:value", get(value).c_str());
+      props.insert("librevenge:value", value ? get(value).c_str() : "0");
 
       switch (format.m_type)
       {
@@ -88,7 +90,7 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStyleStack 
     }
     break;
   case IWORK_CELL_TYPE_DATE_TIME :
-    if (style.has<SFTCellStylePropertyDateTimeFormat>() && value)
+    if (value)
     {
       if (styleName)
         props.insert("librevenge:name", get(styleName).c_str());
@@ -125,11 +127,8 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStyleStack 
     }
     break;
   case IWORK_CELL_TYPE_BOOL:
-    if (value)
-    {
-      props.insert("librevenge:value", get(value).c_str());
-      props.insert("librevenge:value-type", "bool");
-    }
+    props.insert("librevenge:value-type", "boolean");
+    props.insert("librevenge:value", value ? get(value).c_str() : "0"); // false is default
     break;
   case IWORK_CELL_TYPE_TEXT :
   default:
@@ -196,6 +195,70 @@ void writeCellStyle(librevenge::RVNGPropertyList &props, const IWORKStyleStack &
     if (padding.m_bottom)
       props.insert("fo:padding-bottom", get(padding.m_bottom));
   }
+}
+
+librevenge::RVNGString convertCellValueInText(const IWORKStyleStack &style, const IWORKCellType type, const boost::optional<std::string> &value)
+{
+  using namespace property;
+  switch (type)
+  {
+  case IWORK_CELL_TYPE_NUMBER :
+  {
+    int numDecimals=2;
+    IWORKCellNumberType formatType=IWORK_CELL_NUMBER_TYPE_DOUBLE;
+    std::string currency("$");
+    if (style.has<SFTCellStylePropertyNumberFormat>())
+    {
+      const IWORKNumberFormat &format = style.get<SFTCellStylePropertyNumberFormat>();
+      numDecimals=format.m_decimalPlaces;
+      formatType=format.m_type;
+      currency=format.m_currencyCode.c_str();
+    }
+    const double val = value ? double_cast(get(value).c_str()) : 0;
+    std::stringstream s;
+    s << std::setprecision(-numDecimals);
+    switch (formatType)
+    {
+    case IWORK_CELL_NUMBER_TYPE_CURRENCY :
+      s << std::fixed << val << currency;
+      break;
+    case IWORK_CELL_NUMBER_TYPE_PERCENTAGE :
+      s << std::fixed << 100*val << "%";
+      break;
+    case IWORK_CELL_NUMBER_TYPE_SCIENTIFIC :
+      s << std::scientific << val;
+      break;
+    case IWORK_CELL_NUMBER_TYPE_DOUBLE :
+      s << val;
+      break;
+    }
+    return s.str().c_str();
+  }
+  case IWORK_CELL_TYPE_DATE_TIME :
+  {
+    if (!value) break;
+    const double seconds = double_cast(get(value).c_str());
+    const std::time_t t = ETONYEK_EPOCH_BEGIN + seconds;
+    struct tm *const time = gmtime(&t);
+    librevenge::RVNGString res;
+    res.sprintf("%d/%d/%d", time->tm_mon + 1, time->tm_mday, time->tm_year + 1900);
+    return res;
+  }
+  case IWORK_CELL_TYPE_DURATION :
+  {
+    if (!value) break;
+    const int seconds = int_cast(get(value).c_str());
+    librevenge::RVNGString res;
+    res.sprintf("%d:%d:%d", seconds / 3600, (seconds % 3600) / 60, (seconds % 3600) % 60);
+    return res;
+  }
+  case IWORK_CELL_TYPE_BOOL:
+    return value && get(value)!="0" ? "true" : "false";
+  case IWORK_CELL_TYPE_TEXT :
+  default:
+    break;
+  }
+  return "";
 }
 
 }
@@ -381,7 +444,7 @@ void IWORKTable::insertCoveredCell(const unsigned column, const unsigned row)
   m_table[row][column] = cell;
 }
 
-void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements)
+void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements, bool drawAsSimpleTable)
 {
   assert(!m_recorder);
 
@@ -449,14 +512,26 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
           pStyle.push(style.get<SFTCellStylePropertyParagraphStyle>());
         IWORKText::fillCharPropList(pStyle, m_langManager, cellProps);
 
-        if (cell.m_formula)
+        if (!drawAsSimpleTable && cell.m_formula)
           elements.addOpenFormulaCell(cellProps, get(cell.m_formula), m_tableNameMap);
         else
           elements.addOpenTableCell(cellProps);
 
         if (!cell.m_content.empty())
           elements.append(cell.m_content);
-
+        else if (drawAsSimpleTable)
+        {
+          librevenge::RVNGString value=convertCellValueInText(style, cell.m_type, cell.m_value);
+          if (!value.empty())
+          {
+            librevenge::RVNGPropertyList const empty;
+            elements.addOpenParagraph(empty);
+            elements.addOpenSpan(empty);
+            elements.addInsertText(value);
+            elements.addCloseSpan();
+            elements.addCloseParagraph();
+          }
+        }
         elements.addCloseTableCell();
       }
     }

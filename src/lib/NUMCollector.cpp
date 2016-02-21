@@ -39,7 +39,7 @@ void NUMCollector::drawTable()
 {
   assert(bool(m_currentTable));
   librevenge::RVNGPropertyList props;
-  m_currentTable->draw(props, m_outputManager.getCurrent());
+  m_currentTable->draw(props, m_outputManager.getCurrent(), false);
 }
 
 void NUMCollector::drawMedia(

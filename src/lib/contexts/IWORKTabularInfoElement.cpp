@@ -75,13 +75,24 @@ IWORKXMLContextPtr_t CfElement::element(int name)
 {
   switch (name)
   {
+  case IWORKToken::date_format | IWORKToken::NS_URI_SF :
+  {
+    // TODO: read a date-format elements here...
+    static bool first=true;
+    if (first)
+    {
+      ETONYEK_DEBUG_MSG(("CfElement::element: found a date format element\n"));
+      first=false;
+    }
+    return IWORKXMLContextPtr_t();
+  }
   case IWORKToken::number_format | IWORKToken::NS_URI_SF :
   {
     // TODO: read a number-format elements here...
     static bool first=true;
     if (first)
     {
-      ETONYEK_DEBUG_MSG(("CfElement::found a number format element\n"));
+      ETONYEK_DEBUG_MSG(("CfElement::element: found a number format element\n"));
       first=false;
     }
     return IWORKXMLContextPtr_t();
@@ -214,6 +225,7 @@ void CellContextBase::emitCell(const bool covered)
   tableData->m_content.reset();
   tableData->m_formula.reset();
   tableData->m_style.reset();
+  tableData->m_type = IWORK_CELL_TYPE_TEXT;
 }
 
 }
@@ -294,6 +306,7 @@ private:
 CbElement::CbElement(IWORKXMLParserState &state)
   : CellContextBase(state)
 {
+  getState().m_tableData->m_type = IWORK_CELL_TYPE_BOOL;
 }
 
 void CbElement::attribute(const int name, const char *const value)
@@ -302,7 +315,6 @@ void CbElement::attribute(const int name, const char *const value)
   {
   case IWORKToken::v | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
-    getState().m_tableData->m_type = IWORK_CELL_TYPE_BOOL;
     break;
   default :
     CellContextBase::attribute(name, value);
@@ -461,6 +473,35 @@ IWORKXMLContextPtr_t CtElement::element(const int name)
 namespace
 {
 
+class RbElement : public IWORKXMLEmptyContextBase
+{
+public:
+  explicit RbElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+};
+
+RbElement::RbElement(IWORKXMLParserState &state)
+  : IWORKXMLEmptyContextBase(state)
+{
+  getState().m_tableData->m_type = IWORK_CELL_TYPE_BOOL;
+}
+
+void RbElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::v | IWORKToken::NS_URI_SF :
+    getState().m_tableData->m_content = value;
+    break;
+  }
+}
+}
+
+namespace
+{
+
 class RnElement : public IWORKXMLEmptyContextBase
 {
 public:
@@ -476,6 +517,7 @@ private:
 RnElement::RnElement(IWORKXMLParserState &state)
   : IWORKXMLEmptyContextBase(state)
 {
+  getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
 }
 
 void RnElement::attribute(const int name, const char *const value)
@@ -484,7 +526,6 @@ void RnElement::attribute(const int name, const char *const value)
   {
   case IWORKToken::v | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
-    getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
     break;
   }
 }
@@ -553,6 +594,9 @@ IWORKXMLContextPtr_t RElement::element(int name)
 {
   switch (name)
   {
+  case IWORKToken::rb | IWORKToken::NS_URI_SF :
+    return makeContext<RbElement>(getState());
+    break;
   case IWORKToken::rn | IWORKToken::NS_URI_SF :
     return makeContext<RnElement>(getState());
     break;
@@ -561,6 +605,7 @@ IWORKXMLContextPtr_t RElement::element(int name)
     break;
   }
 
+  ETONYEK_DEBUG_MSG(("RElement::element: found unexpected element\n"));
   return IWORKXMLContextPtr_t();
 }
 
@@ -589,10 +634,8 @@ IWORKXMLContextPtr_t FElement::element(int name)
   {
   case IWORKToken::fo | IWORKToken::NS_URI_SF :
     return makeContext<IWORKFoElement>(getState());
-    break;
   case IWORKToken::r | IWORKToken::NS_URI_SF :
     return makeContext<RElement>(getState());
-    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -631,6 +674,7 @@ private:
 NElement::NElement(IWORKXMLParserState &state)
   : CellContextBase(state)
 {
+  getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
 }
 
 void NElement::attribute(const int name, const char *const value)
@@ -639,7 +683,6 @@ void NElement::attribute(const int name, const char *const value)
   {
   case IWORKToken::v | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
-    getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
     break;
   default :
     CellContextBase::attribute(name, value);

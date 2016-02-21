@@ -78,7 +78,7 @@ public:
                   IWORKCellType type = IWORK_CELL_TYPE_TEXT);
   void insertCoveredCell(unsigned column, unsigned row);
 
-  void draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements);
+  void draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements, bool drawAsSimpleTable);
 
   void setDefaultCellStyle(CellType type, const IWORKStylePtr_t &style);
   void setDefaultLayoutStyle(CellType type, const IWORKStylePtr_t &style);

@@ -234,6 +234,7 @@ enum
   proxied_cell_ref,
   proxy_master_layer,
   r,
+  rb,
   rightIndent,
   rn,
   row_label_formulas,

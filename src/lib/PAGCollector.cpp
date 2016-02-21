@@ -214,7 +214,7 @@ void PAGCollector::drawTable()
     props.insert("style:width", pt2in(dim[0]));
   }
 
-  m_currentTable->draw(props, m_outputManager.getCurrent());
+  m_currentTable->draw(props, m_outputManager.getCurrent(), true);
 }
 
 void PAGCollector::drawMedia(
