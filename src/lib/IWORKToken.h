@@ -311,6 +311,7 @@ enum
   cap,
   col_span,
   cornerRadius,
+  decimal,
   displayname,
   equal_columns,
   filterClassName,

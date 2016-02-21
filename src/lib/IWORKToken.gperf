@@ -115,6 +115,7 @@ data-formulas,data_formulas
 data-ref,data_ref
 datasource,datasource
 date-format,date_format
+decimal,decimal
 displayname,displayname
 double,double_
 drawable-shape,drawable_shape

@@ -94,6 +94,9 @@ void IWORKTextLabelElement::attribute(const int name, const char *const value)
     case IWORKToken::bullet :
       m_bullet = true;
       break;
+    case IWORKToken::decimal :
+      m_type = IWORK_LABEL_NUM_FORMAT_NUMERIC;
+      break;
     case IWORKToken::lower_alpha :
       m_type = IWORK_LABEL_NUM_FORMAT_ALPHA_LOWERCASE;
       break;
