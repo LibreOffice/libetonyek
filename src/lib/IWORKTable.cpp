@@ -172,8 +172,14 @@ void writeCellStyle(librevenge::RVNGPropertyList &props, const IWORKStyleStack &
   if (style.has<Fill>())
   {
     // TODO: add support for style:background-image to libodfgen
+    double opacity=style.has<Opacity>() ? style.get<Opacity>() : 1.;
     if (const IWORKColor *const color = boost::get<IWORKColor>(&style.get<Fill>()))
+    {
       props.insert("fo:background-color", makeColor(*color));
+      opacity *= color->m_alpha;
+    }
+    if (opacity<1)
+      props.insert("draw:opacity", opacity, librevenge::RVNG_PERCENT);
   }
 
   if (style.has<Padding>())
@@ -403,7 +409,6 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
     for (std::size_t c = 0; row.size() != c; ++c)
     {
       const Cell &cell = row[c];
-
       librevenge::RVNGPropertyList cellProps;
       cellProps.insert("librevenge:column", numeric_cast<int>(c));
       cellProps.insert("librevenge:row", numeric_cast<int>(r));

@@ -70,6 +70,7 @@ bold,bold
 bottom,bottom
 bullet,bullet
 butt,butt
+c,c
 cached-data,cached_data
 calc-engine,calc_engine
 callout2-path,callout2_path
@@ -106,6 +107,7 @@ core-image-filter-descriptor-ref,core_image_filter_descriptor_ref
 core-image-filter-info,core_image_filter_info
 cornerRadius,cornerRadius
 crbr,crbr
+custom-space-color,custom_space_color
 ct,ct
 d,d
 data,data
@@ -187,6 +189,7 @@ horizontalFlip,horizontalFlip
 href,href
 http://developer.apple.com/namespaces/sf,NS_URI_SF
 http://developer.apple.com/namespaces/sfa,NS_URI_SFA
+http://www.w3.org/2001/XMLSchema-instance,NS_URI_XSI
 id,id
 ident,ident
 image,image
@@ -200,6 +203,7 @@ inputOpacity,inputOpacity
 intratopicbr,intratopicbr
 italic,italic
 join,join
+k,k
 keepLinesTogether,keepLinesTogether
 keepWithNext,keepWithNext
 keywords,keywords
@@ -238,6 +242,7 @@ lnbr,lnbr
 locked,locked
 lower-alpha,lower_alpha
 lower-roman,lower_roman
+m,m
 mark,mark
 media,media
 menu-choices,menu_choices
@@ -384,5 +389,6 @@ w,w
 widowControl,widowControl
 width,width
 x,x
+xsi,xsi
 y,y
 %%

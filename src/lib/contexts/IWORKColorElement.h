@@ -25,13 +25,20 @@ public:
 
 protected:
   virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
 private:
   boost::optional<IWORKColor> &m_color;
+  std::string m_type;
   double m_r;
   double m_g;
   double m_b;
+  double m_w;
+  double m_c;
+  double m_m;
+  double m_y;
+  double m_k;
   double m_a;
 };
 

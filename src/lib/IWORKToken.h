@@ -30,6 +30,7 @@ enum
   // namespace prefixes
   sf,
   sfa,
+  xsi,
 
   // elements
   SFTCellStylePropertyDateTimeFormat,
@@ -95,6 +96,7 @@ enum
   core_image_filter_info,
   crbr,
   ct,
+  custom_space_color,
   d,
   data,
   data_formulas,
@@ -304,6 +306,7 @@ enum
   aspectRatioLocked,
   b,
   bottom,
+  c,
   cap,
   col_span,
   cornerRadius,
@@ -324,10 +327,12 @@ enum
   ident,
   implicit_format_type,
   join,
+  k,
   kind,
   left,
   list_level,
   locked,
+  m,
   mark,
   mode,
   name,
@@ -405,7 +410,8 @@ BOOST_STATIC_ASSERT(IWORKTokenInfo<IWORKParser>::last >= LAST_TOKEN);
 enum Namespace
 {
   NS_URI_SF = sf << 16,
-  NS_URI_SFA = sfa << 16
+  NS_URI_SFA = sfa << 16,
+  NS_URI_XSI = xsi << 16,
 };
 
 const IWORKTokenizer &getTokenizer();

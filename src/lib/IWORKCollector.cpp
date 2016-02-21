@@ -141,14 +141,19 @@ void drawLine(const IWORKLinePtr_t &line, const glm::dmat3 &trafo, IWORKOutputEl
 struct FillWriter : public boost::static_visitor<void>
 {
   explicit FillWriter(RVNGPropertyList &props)
-    : m_props(props)
+    : m_props(props), m_opacity(1)
   {
   }
 
+  double getOpacity() const
+  {
+    return m_opacity;
+  }
   void operator()(const IWORKColor &color) const
   {
     m_props.insert("draw:fill", "solid");
     m_props.insert("draw:fill-color", makeColor(color));
+    m_opacity=color.m_alpha;
   }
 
   void operator()(const IWORKGradient &gradient) const
@@ -241,6 +246,8 @@ struct FillWriter : public boost::static_visitor<void>
 
 private:
   RVNGPropertyList &m_props;
+  //! the opacity
+  mutable double m_opacity;
 };
 
 void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
@@ -249,8 +256,13 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
 
   using namespace property;
 
+  double opacity=style->has<Opacity>() ? style->get<Opacity>() : 1.;
   if (style->has<Fill>())
-    apply_visitor(FillWriter(props), style->get<Fill>());
+  {
+    FillWriter fillWriter(props);
+    apply_visitor(fillWriter, style->get<Fill>());
+    opacity*=fillWriter.getOpacity();
+  }
   else
     props.insert("draw:fill", "none");
 
@@ -323,10 +335,10 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
     props.insert("draw:shadow-offset-y", shadow.m_offset * std::sin(angle), RVNG_POINT);
   }
 
-  if (style->has<Opacity>())
+  if (opacity<1)
   {
-    props.insert("draw:opacity", style->get<Opacity>(), RVNG_PERCENT);
-    props.insert("draw:image-opacity", style->get<Opacity>(), RVNG_PERCENT);
+    props.insert("draw:opacity", opacity, RVNG_PERCENT);
+    props.insert("draw:image-opacity", opacity, RVNG_PERCENT);
   }
 }
 
