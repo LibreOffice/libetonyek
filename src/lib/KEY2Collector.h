@@ -14,6 +14,7 @@
 
 namespace libetonyek
 {
+class IWORKLanguageManager;
 
 class KEY2Collector : public KEYCollector
 {
@@ -21,7 +22,7 @@ public:
   explicit KEY2Collector(IWORKDocumentInterface *document);
 
 public:
-  virtual boost::shared_ptr<IWORKTable> createTable(const IWORKTableNameMapPtr_t &tableNameMap) const;
+  virtual boost::shared_ptr<IWORKTable> createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const;
   virtual boost::shared_ptr<IWORKText> createText(const IWORKLanguageManager &langManager, bool discardEmptyContent = false) const;
 };
 

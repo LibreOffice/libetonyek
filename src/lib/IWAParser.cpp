@@ -1585,7 +1585,7 @@ void IWAParser::parseTabularModel(const unsigned id)
   if (!rows || !columns)
     return;
 
-  m_currentTable.reset(new TableInfo(m_collector.createTable(m_tableNameMap), get(columns), get(rows)));
+  m_currentTable.reset(new TableInfo(m_collector.createTable(m_tableNameMap, m_langManager), get(columns), get(rows)));
   m_currentTable->m_table->setSize(get(columns), get(rows));
 
   IWORKStylePtr_t tableStyle;

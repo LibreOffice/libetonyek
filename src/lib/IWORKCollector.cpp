@@ -665,9 +665,9 @@ void IWORKCollector::endGroup()
   --m_groupLevel;
 }
 
-boost::shared_ptr<IWORKTable> IWORKCollector::createTable(const IWORKTableNameMapPtr_t &tableNameMap) const
+boost::shared_ptr<IWORKTable> IWORKCollector::createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const
 {
-  return shared_ptr<IWORKTable>(new IWORKTable(tableNameMap));
+  return shared_ptr<IWORKTable>(new IWORKTable(tableNameMap, langManager));
 }
 
 boost::shared_ptr<IWORKText> IWORKCollector::createText(const IWORKLanguageManager &langManager, bool discardEmptyContent) const

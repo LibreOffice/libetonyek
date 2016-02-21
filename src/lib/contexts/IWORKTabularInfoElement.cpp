@@ -918,18 +918,9 @@ void TElement::startOfElement()
 {
   if (isCollector())
   {
-    // TODO: This will have to be moved to the parent class, so all
-    // cells get the correct style, not only text cells.
+    // CHECKME: can we move this code in the constructor ?
     assert(!getState().m_currentText);
     getState().m_currentText = getCollector().createText(getState().m_langManager, false);
-    IWORKStyleStack styleStack;
-    styleStack.push(getState().m_currentTable->getDefaultCellStyle(getState().m_tableData->m_column, getState().m_tableData->m_row));
-    styleStack.push(getState().m_tableData->m_style);
-    using namespace property;
-    if (styleStack.has<SFTCellStylePropertyParagraphStyle>())
-      getState().m_currentText->pushBaseParagraphStyle(styleStack.get<SFTCellStylePropertyParagraphStyle>());
-    if (styleStack.has<SFTCellStylePropertyLayoutStyle>())
-      getState().m_currentText->pushBaseLayoutStyle(styleStack.get<SFTCellStylePropertyLayoutStyle>());
   }
 }
 
@@ -1399,7 +1390,7 @@ void IWORKTabularInfoElement::startOfElement()
 {
   getState().m_tableData.reset(new IWORKTableData());
   assert(!getState().m_currentTable);
-  getState().m_currentTable = getCollector().createTable(getState().m_tableNameMap);
+  getState().m_currentTable = getCollector().createTable(getState().m_tableNameMap, getState().m_langManager);
   if (isCollector())
     getCollector().startLevel();
 }

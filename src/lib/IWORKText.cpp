@@ -79,8 +79,9 @@ void fillSectionPropList(const IWORKStyleStack &style, RVNGPropertyList &props)
       props.insert("librevenge:margin-bottom", pt2in(get(padding.m_bottom)));
   }
 }
+}
 
-void fillCharPropList(const IWORKStyleStack &style, const IWORKLanguageManager &langManager, librevenge::RVNGPropertyList &props)
+void IWORKText::fillCharPropList(const IWORKStyleStack &style, const IWORKLanguageManager &langManager, librevenge::RVNGPropertyList &props)
 {
   using namespace property;
 
@@ -149,6 +150,8 @@ void fillCharPropList(const IWORKStyleStack &style, const IWORKLanguageManager &
     langManager.writeProperties(style.get<Language>(), props);
 }
 
+namespace
+{
 void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props)
 {
   using namespace property;

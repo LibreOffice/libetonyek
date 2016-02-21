@@ -204,8 +204,9 @@ IWORKTable::Cell::Cell()
 {
 }
 
-IWORKTable::IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap)
+IWORKTable::IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager)
   : m_tableNameMap(tableNameMap)
+  , m_langManager(langManager)
   , m_table()
   , m_columnSizes()
   , m_rowSizes()
@@ -332,7 +333,21 @@ void IWORKTable::insertCell(const unsigned column, const unsigned row, const boo
 
   Cell cell;
   if (bool(text))
+  {
+    IWORKStyleStack fStyle;
+    fStyle.push(getDefaultCellStyle(column, row));
+    fStyle.push(style);
+    using namespace property;
+    if (fStyle.has<SFTCellStylePropertyParagraphStyle>())
+      text->pushBaseParagraphStyle(fStyle.get<SFTCellStylePropertyParagraphStyle>());
+    else
+      text->pushBaseParagraphStyle(getDefaultParagraphStyle(column,row));
+    if (fStyle.has<SFTCellStylePropertyLayoutStyle>())
+      text->pushBaseLayoutStyle(fStyle.get<SFTCellStylePropertyLayoutStyle>());
+    else
+      text->pushBaseLayoutStyle(getDefaultLayoutStyle(column,row));
     text->draw(cell.m_content);
+  }
   cell.m_columnSpan = columnSpan;
   cell.m_rowSpan = rowSpan;
   cell.m_formula = formula;
@@ -420,6 +435,12 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
         style.push(cell.m_style);
         writeCellFormat(cellProps, style, cell.m_type, cell.m_style ? cell.m_style->getIdent() : none, cell.m_value);
         writeCellStyle(cellProps, style);
+
+        IWORKStyleStack pStyle;
+        pStyle.push(getDefaultParagraphStyle(c,r));
+        if (style.has<SFTCellStylePropertyParagraphStyle>())
+          pStyle.push(style.get<SFTCellStylePropertyParagraphStyle>());
+        IWORKText::fillCharPropList(pStyle, m_langManager, cellProps);
 
         if (cell.m_formula)
           elements.addOpenFormulaCell(cellProps, get(cell.m_formula), m_tableNameMap);

@@ -82,6 +82,9 @@ public:
 
   void draw(IWORKOutputElements &elements);
 
+  // utility function
+  static void fillCharPropList(const IWORKStyleStack &style, const IWORKLanguageManager &langManager, librevenge::RVNGPropertyList &props);
+
 private:
   void openSection();
   void closeSection();

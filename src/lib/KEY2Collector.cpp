@@ -25,9 +25,9 @@ KEY2Collector::KEY2Collector(IWORKDocumentInterface *const document)
 {
 }
 
-boost::shared_ptr<IWORKTable> KEY2Collector::createTable(const IWORKTableNameMapPtr_t &tableNameMap) const
+boost::shared_ptr<IWORKTable> KEY2Collector::createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const
 {
-  const boost::shared_ptr<IWORKTable> table(IWORKCollector::createTable(tableNameMap));
+  const boost::shared_ptr<IWORKTable> table(IWORKCollector::createTable(tableNameMap, langManager));
   if (m_paint)
     table->setRecorder(boost::make_shared<IWORKTableRecorder>());
   return table;
