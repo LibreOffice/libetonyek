@@ -89,6 +89,7 @@ namespace libetonyek
 {
 
 struct IWORKColor;
+struct IWORKGradient;
 struct IWORKStroke;
 
 /* Constants */
@@ -167,6 +168,9 @@ double deg2rad(double value);
 double rad2deg(double value);
 
 librevenge::RVNGString makeColor(const IWORKColor &color);
+/** Compute the average color of a gradient and return it as a string.
+   */
+librevenge::RVNGString makeColor(const IWORKGradient &gradient);
 
 void writeBorder(const IWORKStroke &stroke, const char *name, librevenge::RVNGPropertyList &props);
 

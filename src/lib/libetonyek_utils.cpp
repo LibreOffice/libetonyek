@@ -265,6 +265,27 @@ librevenge::RVNGString makeColor(const IWORKColor &color)
   return str;
 }
 
+librevenge::RVNGString makeColor(const IWORKGradient &gradient)
+{
+  if (gradient.m_stops.empty())
+  {
+    ETONYEK_DEBUG_MSG(("makeColor[gradient]: can not find gradient stops\n"));
+    return "#ffffff";
+  }
+  const double middle=(gradient.m_stops.front().m_fraction+gradient.m_stops.back().m_fraction)/2;
+  const unsigned red = (middle*gradient.m_stops.front().m_color.m_red+
+                        (1-middle)*gradient.m_stops.back().m_color.m_red)* 256 - 0.5;
+  const unsigned green = (middle*gradient.m_stops.front().m_color.m_green+
+                          (1-middle)*gradient.m_stops.back().m_color.m_green)* 256 - 0.5;
+  const unsigned blue = (middle*gradient.m_stops.front().m_color.m_blue+
+                         (1-middle)*gradient.m_stops.back().m_color.m_blue)* 256 - 0.5;
+
+  librevenge::RVNGString str;
+  str.sprintf("#%.2x%.2x%.2x", red, green, blue);
+
+  return str;
+}
+
 void writeBorder(const IWORKStroke &stroke, const char *const name, librevenge::RVNGPropertyList &props)
 {
   if (stroke.m_type == IWORK_STROKE_TYPE_NONE)

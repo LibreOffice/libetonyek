@@ -178,6 +178,8 @@ void writeCellStyle(librevenge::RVNGPropertyList &props, const IWORKStyleStack &
       props.insert("fo:background-color", makeColor(*color));
       opacity *= color->m_alpha;
     }
+    else if (const IWORKGradient *const gradient = boost::get<IWORKGradient>(&style.get<Fill>()))
+      props.insert("fo:background-color", makeColor(*gradient));
     if (opacity<1)
       props.insert("draw:opacity", opacity, librevenge::RVNG_PERCENT);
   }
