@@ -1056,7 +1056,7 @@ namespace
 class StyleRunElement : public IWORKXMLElementContextBase
 {
 public:
-  explicit StyleRunElement(IWORKXMLParserState &state, IWORKGridLineList_t &gridLines, unsigned maxLines);
+  explicit StyleRunElement(IWORKXMLParserState &state, IWORKGridLineMap_t &gridLines, unsigned maxLines);
 
 private:
   virtual void attribute(int name, const char *value);
@@ -1064,22 +1064,26 @@ private:
   virtual void endOfElement();
 
 private:
-  IWORKGridLineList_t &m_gridLines;
+  IWORKGridLineMap_t &m_gridLines;
   IWORKGridLine_t m_line;
+  optional<unsigned> m_gridlineIndex;
 };
 
-StyleRunElement::StyleRunElement(IWORKXMLParserState &state, IWORKGridLineList_t &gridLines, unsigned maxLines)
+StyleRunElement::StyleRunElement(IWORKXMLParserState &state, IWORKGridLineMap_t &gridLines, unsigned maxLines)
   : IWORKXMLElementContextBase(state)
   , m_gridLines(gridLines)
   , m_line(0, maxLines, IWORKStylePtr_t())
+  , m_gridlineIndex()
 {
 }
 
-void StyleRunElement::attribute(const int name, const char *const /*value*/)
+void StyleRunElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::gridline_index :
+    m_gridlineIndex=int_cast(value);
+    break;
   default :
     break;
   }
@@ -1098,7 +1102,26 @@ IWORKXMLContextPtr_t StyleRunElement::element(const int name)
 
 void StyleRunElement::endOfElement()
 {
-  m_gridLines.push_back(m_line);
+  if (!m_gridlineIndex)
+  {
+    ETONYEK_DEBUG_MSG(("StyleRunElement::endOfElement: can not find the line index\n"));
+    unsigned lineId=0;
+    if (!m_gridLines.empty())
+    {
+      IWORKGridLineMap_t::const_iterator it=m_gridLines.end();
+      lineId=(--it)->first+1;
+    }
+    m_gridLines.insert(IWORKGridLineMap_t::value_type(lineId,m_line));
+  }
+  else
+  {
+    if (m_gridLines.find(*m_gridlineIndex)!=m_gridLines.end())
+    {
+      ETONYEK_DEBUG_MSG(("StyleRunElement::endOfElement: oops, line index=%d is already defined\n", int(*m_gridlineIndex)));
+    }
+    else
+      m_gridLines.insert(IWORKGridLineMap_t::value_type(*m_gridlineIndex,m_line));
+  }
 }
 
 }
@@ -1110,16 +1133,16 @@ namespace
 class GridlineElement : public IWORKXMLElementContextBase
 {
 public:
-  explicit GridlineElement(IWORKXMLParserState &state, IWORKGridLineList_t &gridLines, unsigned maxLines);
+  explicit GridlineElement(IWORKXMLParserState &state, IWORKGridLineMap_t &gridLines, unsigned maxLines);
 
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 private:
-  IWORKGridLineList_t &m_gridLines;
+  IWORKGridLineMap_t &m_gridLines;
   unsigned m_maxLines;
 };
 
-GridlineElement::GridlineElement(IWORKXMLParserState &state, IWORKGridLineList_t &gridLines, unsigned maxLines)
+GridlineElement::GridlineElement(IWORKXMLParserState &state, IWORKGridLineMap_t &gridLines, unsigned maxLines)
   : IWORKXMLElementContextBase(state)
   , m_gridLines(gridLines)
   , m_maxLines(maxLines)

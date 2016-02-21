@@ -99,7 +99,7 @@ struct IWORKTabStop
 typedef std::deque<IWORKTabStop> IWORKTabStops_t;
 typedef boost::unordered_map<ID_t, IWORKTabStops_t> IWORKTabStopsMap_t;
 typedef mdds::flat_segment_tree<unsigned, IWORKStylePtr_t> IWORKGridLine_t;
-typedef std::vector<IWORKGridLine_t> IWORKGridLineList_t;
+typedef std::map<unsigned,IWORKGridLine_t> IWORKGridLineMap_t;
 
 struct IWORKLine
 {
@@ -193,8 +193,8 @@ struct IWORKTableData
   boost::optional<unsigned> m_cellMove;
   boost::optional<std::string> m_content;
   boost::optional<IWORKFormula> m_formula;
-  IWORKGridLineList_t m_horizontalLines;
-  IWORKGridLineList_t m_verticalLines;
+  IWORKGridLineMap_t m_horizontalLines;
+  IWORKGridLineMap_t m_verticalLines;
   IWORKStylePtr_t m_style;
   IWORKCellType m_type;
 };

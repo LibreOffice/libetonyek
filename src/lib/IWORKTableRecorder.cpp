@@ -96,14 +96,14 @@ struct SetSizes
 
 struct SetBorders
 {
-  SetBorders(const IWORKGridLineList_t &verticalLines, const IWORKGridLineList_t &horizontalLines)
+  SetBorders(const IWORKGridLineMap_t &verticalLines, const IWORKGridLineMap_t &horizontalLines)
     : m_verticalLines(verticalLines)
     , m_horizontalLines(horizontalLines)
   {
   }
 
-  const IWORKGridLineList_t m_verticalLines;
-  const IWORKGridLineList_t m_horizontalLines;
+  const IWORKGridLineMap_t m_verticalLines;
+  const IWORKGridLineMap_t m_horizontalLines;
 };
 
 struct InsertCell
@@ -332,7 +332,7 @@ void IWORKTableRecorder::setSizes(const IWORKColumnSizes_t &columnSizes, const I
   m_impl->m_elements.push_back(SetSizes(columnSizes, rowSizes));
 }
 
-void IWORKTableRecorder::setBorders(const IWORKGridLineList_t &verticalLines, const IWORKGridLineList_t &horizontalLines)
+void IWORKTableRecorder::setBorders(const IWORKGridLineMap_t &verticalLines, const IWORKGridLineMap_t &horizontalLines)
 {
   m_impl->m_elements.push_back(SetBorders(verticalLines, horizontalLines));
 }

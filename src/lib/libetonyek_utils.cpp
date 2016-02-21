@@ -301,6 +301,7 @@ void writeBorder(const IWORKStroke &stroke, const char *const name, librevenge::
   {
     const double x = stroke.m_pattern[0];
     const double y = stroke.m_pattern[1];
+    // checkme: maybe we can use <sf:stroke ... sf:cap|butt ...>
     if (((x / y) < 0.01) || ((y / x) < 0.01)) // arbitrarily picked constant
       border.append(" dotted");
     else

@@ -316,7 +316,7 @@ void IWORKTable::setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowS
   m_table = Table_t(m_rowSizes.size(), Row_t(m_columnSizes.size()));
 }
 
-void IWORKTable::setBorders(const IWORKGridLineList_t &verticalLines, const IWORKGridLineList_t &horizontalLines)
+void IWORKTable::setBorders(const IWORKGridLineMap_t &verticalLines, const IWORKGridLineMap_t &horizontalLines)
 {
   if (bool(m_recorder))
   {
@@ -417,14 +417,14 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
 
       using namespace property;
 
-      if (r < m_horizontalLines.size())
-        writeBorder(cellProps, "fo:border-top", m_horizontalLines[r], c);
-      if (r+1 < m_horizontalLines.size())
-        writeBorder(cellProps, "fo:border-bottom", m_horizontalLines[r+1], c);
-      if (c < m_verticalLines.size())
-        writeBorder(cellProps, "fo:border-left", m_verticalLines[c], r);
-      if (c+1 < m_verticalLines.size())
-        writeBorder(cellProps, "fo:border-right", m_verticalLines[c+1], r);
+      if (m_horizontalLines.find(r)!=m_horizontalLines.end())
+        writeBorder(cellProps, "fo:border-top", m_horizontalLines.find(r)->second, c);
+      if (m_horizontalLines.find(r+1)!=m_horizontalLines.end())
+        writeBorder(cellProps, "fo:border-bottom", m_horizontalLines.find(r+1)->second, c);
+      if (m_verticalLines.find(c)!=m_verticalLines.end())
+        writeBorder(cellProps, "fo:border-left", m_verticalLines.find(c)->second, r);
+      if (m_verticalLines.find(c+1)!=m_verticalLines.end())
+        writeBorder(cellProps, "fo:border-right", m_verticalLines.find(c+1)->second, r);
 
       if (cell.m_covered)
       {
