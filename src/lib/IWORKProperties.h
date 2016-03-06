@@ -28,6 +28,8 @@ IWORK_DECLARE_PROPERTY(Capitalization, IWORKCapitalization);
 IWORK_DECLARE_PROPERTY(Columns, IWORKColumns);
 IWORK_DECLARE_PROPERTY(Fill, IWORKFill);
 IWORK_DECLARE_PROPERTY(FirstLineIndent, double);
+IWORK_DECLARE_PROPERTY(FollowingLayoutStyle, IWORKStylePtr_t);
+IWORK_DECLARE_PROPERTY(FollowingParagraphStyle, IWORKStylePtr_t);
 IWORK_DECLARE_PROPERTY(FontColor, IWORKColor);
 IWORK_DECLARE_PROPERTY(FontName, std::string);
 IWORK_DECLARE_PROPERTY(FontSize, double);

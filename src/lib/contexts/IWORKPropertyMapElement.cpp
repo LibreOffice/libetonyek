@@ -1300,6 +1300,8 @@ typedef IWORKPropertyContext<property::TextBackground, IWORKColorElement, IWORKT
 
 typedef IWORKPtrPropertyContext<property::Geometry, IWORKGeometryElement, IWORKToken::NS_URI_SF | IWORKToken::geometry> GeometryElement;
 
+typedef StylePropertyContext<property::FollowingLayoutStyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref> FollowingLayoutStyleElement;
+typedef StylePropertyContext<property::FollowingParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> FollowingParagraphStyleElement;
 typedef StylePropertyContext<property::LayoutParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> LayoutParagraphStyleElement;
 typedef StylePropertyContext<property::SFTDefaultBodyCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultBodyCellStylePropertyElement;
 typedef StylePropertyContext<property::SFTDefaultFooterRowCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultFooterRowCellStylePropertyElement;
@@ -1424,6 +1426,10 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<FiltersElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::firstLineIndent :
     return makeContext<FirstLineIndentElement>(getState(), *m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::followingLayoutStyle :
+    return makeContext<FollowingLayoutStyleElement>(getState(), *m_propMap, getState().getDictionary().m_layoutStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::followingParagraphStyle :
+    return makeContext<FollowingParagraphStyleElement>(getState(), *m_propMap, getState().getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::fontColor :
     return makeContext<FontColorElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::fontName :

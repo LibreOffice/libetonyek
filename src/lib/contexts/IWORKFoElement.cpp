@@ -24,12 +24,25 @@ public:
   explicit FmElement(IWORKXMLParserState &state);
 
 private:
-  // + sfa:pair as child
+  virtual IWORKXMLContextPtr_t element(int name);
 };
 
 FmElement::FmElement(IWORKXMLParserState &state)
   : IWORKXMLEmptyContextBase(state)
 {
+}
+
+IWORKXMLContextPtr_t FmElement::element(int /*name*/)
+{
+  // TODO: sfa:pair as child
+  static bool first=true;
+  if (first)
+  {
+    ETONYEK_DEBUG_MSG(("FmElement::element: found some elements, ignored\n"));
+    first=false;
+  }
+
+  return IWORKXMLContextPtr_t();
 }
 }
 }

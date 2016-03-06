@@ -141,6 +141,8 @@ fit,fit
 fm,fm
 fmt,fmt
 fo,fo
+followingLayoutStyle,followingLayoutStyle
+followingParagraphStyle,followingParagraphStyle
 fontColor,fontColor
 fontName,fontName
 fontSize,fontSize

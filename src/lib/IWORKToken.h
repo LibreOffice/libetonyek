@@ -120,6 +120,8 @@ enum
   fm, // formula mutable dictionary
   fmt,
   fo,
+  followingLayoutStyle,
+  followingParagraphStyle,
   fontColor,
   fontName,
   fontSize,
