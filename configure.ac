@@ -24,7 +24,7 @@ AC_LANG([C++])
 # Configure options
 # =================
 AC_ARG_WITH([mdds],
-            AS_HELP_STRING([--with-mdds=1.0|0.x], [Specify which version of mdds to use (1.0 is the default)]),
+            AS_HELP_STRING([--with-mdds=1.2|1.0|0.x], [Specify which version of mdds to use (1.0 is the default)]),
             [], [with_mdds="1.0"])
 
 # ===========================
@@ -47,7 +47,7 @@ AC_PROG_SED
 
 AM_MISSING_PROG([GPERF], [gperf])
 
-AS_IF([test "$with_mdds" = "1.0"], [AX_CXX_COMPILE_STDCXX_11([noext])])
+AS_IF([test "$with_mdds" = "1.0" -o "$with_mdds" = "1.2" ], [AX_CXX_COMPILE_STDCXX_11([noext])])
 
 # ===============
 # Find librevenge
@@ -138,25 +138,27 @@ AC_SUBST([GLM_CFLAGS])
 # =========
 # Find mdds
 # =========
-AS_IF([test "$with_mdds" = "1.0"], [
-    PKG_CHECK_MODULES([MDDS], [mdds-1.0])
-], [
-    PKG_CHECK_MODULES([MDDS], [mdds])
-    AC_MSG_CHECKING([checking if mdds::flat_segment_tree can store values of any type])
-    old_CPPFLAGS="$CPPFLAGS"
-    CPPFLAGS="$MDDS_CFLAGS $CPPFLAGS"
-    AC_COMPILE_IFELSE([AC_LANG_SOURCE([
-    #include <mdds/flat_segment_tree.hpp>
-    struct Value {};
-    mdds::flat_segment_tree<int, Value> tree(0, 4, Value());
-    ])], [
-        AC_MSG_RESULT([yes])
-    ], [
-        AC_MSG_RESULT([no])
-        AC_MSG_ERROR([please install mdds >= 0.12.1])
-    ])
-    CPPFLAGS="$old_CPPFLAGS"
-])
+AS_CASE(["$with_mdds"],
+    ["1.2"], [PKG_CHECK_MODULES([MDDS], [mdds-1.2])],
+    ["1.0"], [PKG_CHECK_MODULES([MDDS], [mdds-1.0])],
+    [
+        PKG_CHECK_MODULES([MDDS], [mdds])
+        AC_MSG_CHECKING([checking if mdds::flat_segment_tree can store values of any type])
+        old_CPPFLAGS="$CPPFLAGS"
+        CPPFLAGS="$MDDS_CFLAGS $CPPFLAGS"
+        AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+            #include <mdds/flat_segment_tree.hpp>
+            struct Value {};
+            mdds::flat_segment_tree<int, Value> tree(0, 4, Value());
+        ])], [
+            AC_MSG_RESULT([yes])
+        ], [
+            AC_MSG_RESULT([no])
+            AC_MSG_ERROR([please install mdds >= 0.12.1])
+        ])
+        CPPFLAGS="$old_CPPFLAGS"
+    ]
+)
 
 # =================================
 # Libtool/Version Makefile settings
