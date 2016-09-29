@@ -42,15 +42,8 @@ struct Point
   double x;
   double y;
 
-  Point();
   Point(double x_, double y_);
 };
-
-Point::Point()
-  : x(0)
-  , y(0)
-{
-}
 
 Point::Point(const double x_, const double y_)
   : x(x_)
