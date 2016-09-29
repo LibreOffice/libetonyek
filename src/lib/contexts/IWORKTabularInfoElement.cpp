@@ -910,38 +910,6 @@ void SlElement::attribute(const int name, const char *const value)
 namespace
 {
 
-class StElement : public CellContextBase
-{
-public:
-  explicit StElement(IWORKXMLParserState &state);
-
-private:
-  virtual void attribute(int name, const char *value);
-};
-
-StElement::StElement(IWORKXMLParserState &state)
-  : CellContextBase(state)
-{
-}
-
-void StElement::attribute(const int name, const char *const value)
-{
-  switch (name)
-  {
-  case IWORKToken::v | IWORKToken::NS_URI_SF :
-    getState().m_tableData->m_content = value;
-    getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
-    break;
-  default :
-    CellContextBase::attribute(name, value);
-  }
-}
-
-}
-
-namespace
-{
-
 class TElement : public CellContextBase
 {
 public:
