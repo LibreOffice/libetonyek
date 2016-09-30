@@ -104,16 +104,6 @@ void IWORKLanguageManagerTest::testTagToProps()
   }
 
   {
-    const string tag(mgr.addTag("ccc"));
-    CPPUNIT_ASSERT(!tag.empty());
-    RVNGPropertyList props;
-    mgr.writeProperties(tag, props);
-    assertProperty("unknown lang", props, "fo:language", "ccc");
-    CPPUNIT_ASSERT(!props["fo:country"]);
-    CPPUNIT_ASSERT(!props["fo:script"]);
-  }
-
-  {
     // invalid tag
     const string tag(mgr.addTag("13c"));
     CPPUNIT_ASSERT(tag.empty());
