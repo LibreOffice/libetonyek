@@ -47,7 +47,7 @@ AC_PROG_SED
 
 AM_MISSING_PROG([GPERF], [gperf])
 
-AS_IF([test "$with_mdds" = "1.0" -o "$with_mdds" = "1.2" ], [AX_CXX_COMPILE_STDCXX_11([noext])])
+AS_IF([test "$with_mdds" != "0.x"], [AX_CXX_COMPILE_STDCXX_11([noext])])
 
 # ===============
 # Find librevenge
@@ -138,9 +138,8 @@ AC_SUBST([GLM_CFLAGS])
 # =========
 # Find mdds
 # =========
-AS_CASE(["$with_mdds"],
-    ["1.2"], [PKG_CHECK_MODULES([MDDS], [mdds-1.2])],
-    ["1.0"], [PKG_CHECK_MODULES([MDDS], [mdds-1.0])],
+AS_IF([test "$with_mdds" != "0.x"],
+    [PKG_CHECK_MODULES([MDDS], [mdds-][$with_mdds])],
     [
         PKG_CHECK_MODULES([MDDS], [mdds])
         AC_MSG_CHECKING([checking if mdds::flat_segment_tree can store values of any type])
