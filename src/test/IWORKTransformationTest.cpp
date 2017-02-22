@@ -10,6 +10,8 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
+#include <glm/gtx/io.hpp>
+
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 
@@ -72,32 +74,32 @@ void IWORKTransformationTest::testConstruction()
 
 #if 0
   // centering
-  CPPUNIT_ASSERT(center(200, 100) == IWORKTransformation(1, 0, 0, 1, 100, 50));
-  CPPUNIT_ASSERT(origin(200, 100) == IWORKTransformation(1, 0, 0, 1, -100, -50));
+  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 0, 0, 1, 100, 50), center(200, 100));
+  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 0, 0, 1, -100, -50), origin(200, 100));
 
   // flipping
-  CPPUNIT_ASSERT(flip(true, false) == IWORKTransformation(-1, 0, 0, 1, 0, 0));
-  CPPUNIT_ASSERT(flip(false, true) == IWORKTransformation(1, 0, 0, -1, 0, 0));
-  CPPUNIT_ASSERT(flip(true, true) == IWORKTransformation(-1, 0, 0, -1, 0, 0));
+  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(-1, 0, 0, 1, 0, 0), flip(true, false));
+  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 0, 0, -1, 0, 0), flip(false, true));
+  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(-1, 0, 0, -1, 0, 0), flip(true, true));
 
   // rotating
-  CPPUNIT_ASSERT(rotate(etonyek_half_pi) == IWORKTransformation(0, 1, -1, 0, 0, 0));
+  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(0, 1, -1, 0, 0, 0), rotate(etonyek_half_pi));
 
   // scaling
-  CPPUNIT_ASSERT(scale(2, 1) == IWORKTransformation(2, 0, 0, 1, 0, 0));
-  CPPUNIT_ASSERT(scale(1, 2) == IWORKTransformation(1, 0, 0, 2, 0, 0));
-  CPPUNIT_ASSERT(scale(3, 2) == IWORKTransformation(3, 0, 0, 2, 0, 0));
+  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(2, 0, 0, 1, 0, 0), scale(2, 1));
+  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 0, 0, 2, 0, 0), scale(1, 2));
+  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(3, 0, 0, 2, 0, 0), scale(3, 2));
 
   // shearing
   // FIXME: find the problem and enable
-  // CPPUNIT_ASSERT(shear(etonyek_pi / 4, 0) == IWORKTransformation(1, 2, 0, 1, 0, 0));
-  // CPPUNIT_ASSERT(shear(0, etonyek_pi / 4) == IWORKTransformation(1, 0, 2, 1, 0, 0));
-  // CPPUNIT_ASSERT(shear(etonyek_pi / 4, etonyek_pi / 4) == IWORKTransformation(1, 2, 2, 1, 0, 0));
+  // CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 2, 0, 1, 0, 0), shear(etonyek_pi / 4, 0));
+  // CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 0, 2, 1, 0, 0), shear(0, etonyek_pi / 4));
+  // CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 2, 2, 1, 0, 0), shear(etonyek_pi / 4, etonyek_pi / 4));
 
   // translating
-  CPPUNIT_ASSERT(translate(100, 0) == IWORKTransformation(1, 0, 0, 1, 100, 0));
-  CPPUNIT_ASSERT(translate(0, 100) == IWORKTransformation(1, 0, 0, 1, 0, 100));
-  CPPUNIT_ASSERT(translate(300, 100) == IWORKTransformation(1, 0, 0, 1, 300, 100));
+  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 0, 0, 1, 100, 0), translate(100, 0));
+  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 0, 0, 1, 0, 100), translate(0, 100));
+  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 0, 0, 1, 300, 100), translate(300, 100));
 #endif
 }
 
@@ -107,14 +109,14 @@ void IWORKTransformationTest::testConstructionIdentity()
 
   glm::dmat3 eye;
 
-  CPPUNIT_ASSERT(center(0, 0) == eye);
-  CPPUNIT_ASSERT(origin(0, 0) == eye);
-  CPPUNIT_ASSERT(flip(false, false) == eye);
-  CPPUNIT_ASSERT(rotate(0) == eye);
+  CPPUNIT_ASSERT_EQUAL(eye, center(0, 0));
+  CPPUNIT_ASSERT_EQUAL(eye, origin(0, 0));
+  CPPUNIT_ASSERT_EQUAL(eye, flip(false, false));
+  CPPUNIT_ASSERT_EQUAL(eye, rotate(0));
   CPPUNIT_ASSERT(approxEqual(rotate(etonyek_two_pi), eye));
-  CPPUNIT_ASSERT(scale(1, 1) == eye);
-  CPPUNIT_ASSERT(shear(0, 0) == eye);
-  CPPUNIT_ASSERT(translate(0, 0) == eye);
+  CPPUNIT_ASSERT_EQUAL(eye, scale(1, 1));
+  CPPUNIT_ASSERT_EQUAL(eye, shear(0, 0));
+  CPPUNIT_ASSERT_EQUAL(eye, translate(0, 0));
 }
 
 void IWORKTransformationTest::testConstructionFromGeometry()
@@ -131,7 +133,7 @@ void IWORKTransformationTest::testConstructionFromGeometry()
     g.m_position = IWORKPosition(0, 0);
 
     const glm::dmat3 tr = makeTransformation(g);
-    CPPUNIT_ASSERT(glm::dmat3() == tr);
+    CPPUNIT_ASSERT_EQUAL(tr, glm::dmat3());
   }
 
   {
@@ -140,7 +142,7 @@ void IWORKTransformationTest::testConstructionFromGeometry()
     g.m_position = IWORKPosition(200, 150);
 
     const glm::dmat3 tr = makeTransformation(g);
-    CPPUNIT_ASSERT(translate(200, 150) == tr);
+    CPPUNIT_ASSERT_EQUAL(tr, translate(200, 150));
   }
 
   {
@@ -150,7 +152,7 @@ void IWORKTransformationTest::testConstructionFromGeometry()
     g.m_angle = etonyek_half_pi;
 
     const glm::dmat3 tr = makeTransformation(g);
-    CPPUNIT_ASSERT(wrap(100, 100, rotate(etonyek_half_pi)) == tr);
+    CPPUNIT_ASSERT_EQUAL(tr, wrap(100, 100, rotate(etonyek_half_pi)));
   }
 
   {
@@ -160,7 +162,7 @@ void IWORKTransformationTest::testConstructionFromGeometry()
     g.m_horizontalFlip = true;
 
     const glm::dmat3 tr = makeTransformation(g);
-    CPPUNIT_ASSERT(wrap(100, 100, flip(true, false)) == tr);
+    CPPUNIT_ASSERT_EQUAL(tr, wrap(100, 100, flip(true, false)));
   }
 
   {
@@ -170,7 +172,7 @@ void IWORKTransformationTest::testConstructionFromGeometry()
     g.m_verticalFlip = true;
 
     const glm::dmat3 tr = makeTransformation(g);
-    CPPUNIT_ASSERT(wrap(100, 100, flip(false, true)) == tr);
+    CPPUNIT_ASSERT_EQUAL(tr, wrap(100, 100, flip(false, true)));
   }
 
   {
@@ -180,7 +182,7 @@ void IWORKTransformationTest::testConstructionFromGeometry()
     g.m_angle = etonyek_half_pi;
 
     const glm::dmat3 tr = makeTransformation(g);
-    CPPUNIT_ASSERT(wrap(100, 100, translate(200, 150) * rotate(etonyek_half_pi)) == tr);
+    CPPUNIT_ASSERT_EQUAL(tr, wrap(100, 100, translate(200, 150) * rotate(etonyek_half_pi)));
   }
 
   {
@@ -196,8 +198,8 @@ void IWORKTransformationTest::testConstructionFromGeometry()
     const glm::dmat3 tr1 = makeTransformation(g1);
     const glm::dmat3 tr2 = makeTransformation(g2);
     const glm::dmat3 tr = tr1 * tr2;
-    CPPUNIT_ASSERT((tr * glm::dvec3(0, 100, 1)) == glm::dvec3(200, 250, 1));
-    CPPUNIT_ASSERT((tr * glm::dvec3(0, 0, 1)) == glm::dvec3(200, 350, 1));
+    CPPUNIT_ASSERT_EQUAL(glm::dvec3(200, 250, 1), (tr * glm::dvec3(0, 100, 1)));
+    CPPUNIT_ASSERT_EQUAL(glm::dvec3(200, 350, 1), (tr * glm::dvec3(0, 0, 1)));
   }
 }
 
@@ -205,14 +207,14 @@ void IWORKTransformationTest::testIdentities()
 {
   using namespace libetonyek::transformations;
 
-  CPPUNIT_ASSERT(center(100, 50) == translate(50, 25));
-  CPPUNIT_ASSERT(origin(100, 50) == translate(-50, -25));
-  CPPUNIT_ASSERT((flip(true, false) * flip(false, true)) == flip(true, true));
-  CPPUNIT_ASSERT((flip(false, true) * flip(true, false)) == flip(true, true));
+  CPPUNIT_ASSERT_EQUAL(translate(50, 25), center(100, 50));
+  CPPUNIT_ASSERT_EQUAL(translate(-50, -25), origin(100, 50));
+  CPPUNIT_ASSERT_EQUAL(flip(true, true), (flip(true, false) * flip(false, true)));
+  CPPUNIT_ASSERT_EQUAL(flip(true, true), (flip(false, true) * flip(true, false)));
   CPPUNIT_ASSERT(approxEqual(rotate(etonyek_half_pi) * rotate(etonyek_third_pi), rotate(etonyek_third_pi) * rotate(etonyek_half_pi)));
-  CPPUNIT_ASSERT(scale(-1, -1) == flip(true, true));
-  CPPUNIT_ASSERT((translate(80, 40) * translate(10, 20)) == (translate(10, 20) * translate(80, 40)));
-  CPPUNIT_ASSERT((scale(2, 2) * translate(1, 2) == (translate(2, 4) * scale(2, 2))));
+  CPPUNIT_ASSERT_EQUAL(flip(true, true), scale(-1, -1));
+  CPPUNIT_ASSERT_EQUAL((translate(10, 20) * translate(80, 40)), (translate(80, 40) * translate(10, 20)));
+  CPPUNIT_ASSERT_EQUAL(translate(2, 4) * scale(2, 2), scale(2, 2) * translate(1, 2));
 }
 
 void IWORKTransformationTest::testInverseOperations()
@@ -221,22 +223,22 @@ void IWORKTransformationTest::testInverseOperations()
 
   glm::dmat3 eye;
 
-  CPPUNIT_ASSERT(center(10, 20) * origin(10, 20) == eye);
-  CPPUNIT_ASSERT(origin(10, 20) * center(10, 20) == eye);
+  CPPUNIT_ASSERT_EQUAL(eye, center(10, 20) * origin(10, 20));
+  CPPUNIT_ASSERT_EQUAL(eye, origin(10, 20) * center(10, 20));
 
-  CPPUNIT_ASSERT(flip(true, false) * flip(true, false) == eye);
-  CPPUNIT_ASSERT(flip(false, true) * flip(false, true) == eye);
-  CPPUNIT_ASSERT(flip(true, true) * flip(true, true) == eye);
+  CPPUNIT_ASSERT_EQUAL(eye, flip(true, false) * flip(true, false));
+  CPPUNIT_ASSERT_EQUAL(eye, flip(false, true) * flip(false, true));
+  CPPUNIT_ASSERT_EQUAL(eye, flip(true, true) * flip(true, true));
 
-  CPPUNIT_ASSERT(rotate(etonyek_pi) * rotate(-etonyek_pi) == eye);
+  CPPUNIT_ASSERT_EQUAL(eye, rotate(etonyek_pi) * rotate(-etonyek_pi));
 
-  CPPUNIT_ASSERT(scale(2, 1) * scale(0.5, 1) == eye);
-  CPPUNIT_ASSERT(scale(1, 2) * scale(1, 0.5) == eye);
-  CPPUNIT_ASSERT(scale(3, 2) * scale(1.0 / 3, 0.5) == eye);
+  CPPUNIT_ASSERT_EQUAL(eye, scale(2, 1) * scale(0.5, 1));
+  CPPUNIT_ASSERT_EQUAL(eye, scale(1, 2) * scale(1, 0.5));
+  CPPUNIT_ASSERT_EQUAL(eye, scale(3, 2) * scale(1.0 / 3, 0.5));
 
-  // CPPUNIT_ASSERT(shear() == eye);
+  // CPPUNIT_ASSERT_EQUAL(eye, shear());
 
-  CPPUNIT_ASSERT(translate(10, 20) * translate(-10, -20) == eye);
+  CPPUNIT_ASSERT_EQUAL(eye, translate(10, 20) * translate(-10, -20));
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(IWORKTransformationTest);

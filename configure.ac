@@ -126,8 +126,10 @@ AC_SUBST([BOOST_CFLAGS])
 # ================
 saved_CPPFLAGS="${CPPFLAGS}"
 CPPFLAGS="${GLM_CFLAGS} ${CPPFLAGS}"
+GLM_headers="glm/glm.hpp"
+AS_IF([test "x$enable_tests" == "xyes"], [GLM_headers="$GLM_headers glm/gtx/io.hpp"], [])
 AC_CHECK_HEADERS(
-        glm/glm.hpp,
+    [$GLM_headers],
     [],
     [AC_MSG_ERROR([Required glm headers not found.])],
     []
