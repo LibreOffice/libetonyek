@@ -383,7 +383,17 @@ AC_ARG_WITH(tools,
 AS_IF([test "x$with_tools" != "xno"], [build_tools=yes], [build_tools=no])
 AM_CONDITIONAL([WITH_LIBETONYEK_TOOLS], [test "x$build_tools" != "xno"])
 
-AS_IF([test "x$build_tools" != "xno"], [
+# =======
+# Fuzzers
+# =======
+AC_ARG_ENABLE([fuzzers],
+	[AS_HELP_STRING([--enable-fuzzers], [Build fuzzer(s)])],
+	[enable_fuzzers="$enableval"],
+	[enable_fuzzers=no]
+)
+AM_CONDITIONAL(BUILD_FUZZERS, [test "x$enable_fuzzers" = "xyes"])
+
+AS_IF([test "x$build_tools" = "xyes" -o "x$enable_fuzzers" = "xyes"], [
     PKG_CHECK_MODULES([REVENGE_GENERATORS],[
         librevenge-generators-0.0
     ])
@@ -417,6 +427,7 @@ src/conv/text/Makefile
 src/conv/text/key2text.rc
 src/conv/text/numbers2text.rc
 src/conv/text/pages2text.rc
+src/fuzz/Makefile
 src/lib/Makefile
 src/lib/libetonyek.rc
 src/test/Makefile
@@ -438,6 +449,7 @@ AC_MSG_NOTICE([
 Build configuration:
 	debug:           ${enable_debug}
 	docs:            ${build_docs}
+	fuzzers:         ${enable_fuzzers}
 	tests:           ${enable_tests}
 	tools:           ${build_tools}
 	werror:          ${enable_werror}
