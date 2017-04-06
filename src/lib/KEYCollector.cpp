@@ -10,8 +10,7 @@
 #include "KEYCollector.h"
 
 #include <algorithm>
-
-#include <boost/bind.hpp>
+#include <functional>
 
 #include <glm/glm.hpp>
 
@@ -28,6 +27,8 @@ namespace libetonyek
 {
 
 using librevenge::RVNGPropertyList;
+
+using namespace std::placeholders;
 
 KEYCollector::KEYCollector(IWORKDocumentInterface *const document)
   : IWORKCollector(document)
@@ -201,7 +202,7 @@ void KEYCollector::endDocument()
   fillMetadata(metadata);
   m_document->setDocumentMetaData(metadata);
 
-  std::for_each(m_slides.begin(), m_slides.end(), boost::bind(&KEYCollector::writeSlide, this, _1));
+  std::for_each(m_slides.begin(), m_slides.end(), std::bind(&KEYCollector::writeSlide, this, _1));
 
   IWORKCollector::endDocument();
 }

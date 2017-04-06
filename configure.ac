@@ -94,7 +94,6 @@ AC_CHECK_HEADERS(
         boost/algorithm/string/predicate.hpp \
         boost/algorithm/string/split.hpp \
         boost/any.hpp \
-        boost/bind.hpp \
         boost/container/deque.hpp \
         boost/function.hpp \
         boost/fusion/adapted/std_pair.hpp \
@@ -103,7 +102,6 @@ AC_CHECK_HEADERS(
         boost/none.hpp \
         boost/numeric/conversion/cast.hpp \
         boost/optional.hpp \
-        boost/ref.hpp \
         boost/spirit/include/phoenix.hpp \
         boost/spirit/include/qi.hpp \
         boost/variant/recursive_variant.hpp \

@@ -9,9 +9,8 @@
 #include "KEY6Parser.h"
 
 #include <algorithm>
+#include <functional>
 #include <memory>
-
-#include <boost/bind.hpp>
 
 #include "IWAMessage.h"
 #include "IWAObjectType.h"
@@ -23,10 +22,12 @@
 namespace libetonyek
 {
 
-using boost::bind;
 using boost::none;
 using boost::optional;
 
+using namespace std::placeholders;
+
+using std::bind;
 using std::deque;
 using std::for_each;
 using std::make_shared;
@@ -265,7 +266,7 @@ bool KEY6Parser::parseStickyNote(const IWAMessage &msg)
 
 const IWORKStylePtr_t KEY6Parser::querySlideStyle(const unsigned id) const
 {
-  return queryStyle(id, m_slideStyles, boost::bind(&KEY6Parser::parseSlideStyle, const_cast<KEY6Parser *>(this), _1, _2));
+  return queryStyle(id, m_slideStyles, bind(&KEY6Parser::parseSlideStyle, const_cast<KEY6Parser *>(this), _1, _2));
 }
 
 void KEY6Parser::parseSlideStyle(const unsigned id, IWORKStylePtr_t &style)

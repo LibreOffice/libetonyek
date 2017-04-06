@@ -13,9 +13,8 @@
 #include <cassert>
 #include <cmath>
 #include <cstring>
+#include <functional>
 #include <memory>
-
-#include <boost/bind.hpp>
 
 #include "IWORKDocumentInterface.h"
 #include "IWORKOutputElements.h"
@@ -35,6 +34,8 @@ using boost::optional;
 using librevenge::RVNGPropertyList;
 using librevenge::RVNG_PERCENT;
 using librevenge::RVNG_POINT;
+
+using namespace std::placeholders;
 
 using std::make_shared;
 using std::memcmp;
@@ -592,7 +593,7 @@ void IWORKCollector::collectStylesheet(const IWORKStylesheetPtr_t &stylesheet)
     return;
   }
 
-  for_each(m_newStyles.begin(), m_newStyles.end(), boost::bind(&IWORKStyle::link, _1, stylesheet));
+  for_each(m_newStyles.begin(), m_newStyles.end(), std::bind(&IWORKStyle::link, _1, stylesheet));
   m_newStyles.clear();
 }
 

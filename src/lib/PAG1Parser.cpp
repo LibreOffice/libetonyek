@@ -9,9 +9,9 @@
 
 #include "PAG1Parser.h"
 
-#include <boost/bind.hpp>
+#include <functional>
+
 #include <boost/optional.hpp>
-#include <boost/ref.hpp>
 
 #include "IWORKChainedTokenizer.h"
 #include "IWORKDiscardContext.h"
@@ -36,6 +36,8 @@
 
 using boost::none;
 using boost::optional;
+
+using namespace std::placeholders;
 
 using std::string;
 
@@ -79,7 +81,7 @@ IWORKXMLContextPtr_t FootersElement::element(const int name)
 {
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::footer))
     return makeContext<IWORKHeaderFooterContext>(getState(),
-                                                 boost::bind(&IWORKCollector::collectFooter, boost::ref(getCollector()), _1));
+                                                 std::bind(&IWORKCollector::collectFooter, std::ref(getCollector()), _1));
   return IWORKXMLContextPtr_t();
 }
 
@@ -106,7 +108,7 @@ IWORKXMLContextPtr_t HeadersElement::element(const int name)
 {
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::header))
     return makeContext<IWORKHeaderFooterContext>(getState(),
-                                                 boost::bind(&IWORKCollector::collectHeader, boost::ref(getCollector()), _1));
+                                                 std::bind(&IWORKCollector::collectHeader, std::ref(getCollector()), _1));
   return IWORKXMLContextPtr_t();
 }
 
