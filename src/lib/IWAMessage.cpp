@@ -10,8 +10,7 @@
 #include "IWAMessage.h"
 
 #include <cassert>
-
-#include <boost/make_shared.hpp>
+#include <memory>
 
 namespace libetonyek
 {
@@ -203,7 +202,7 @@ const FieldT &IWAMessage::getField(const std::size_t field, const WireType wireT
   }
   else
   {
-    fieldIt->second.m_realField = boost::make_shared<FieldT>();
+    fieldIt->second.m_realField = std::make_shared<FieldT>();
     for (std::deque<InputRange_t>::const_iterator it = fieldIt->second.m_pieces.begin(); it != fieldIt->second.m_pieces.end(); ++it)
     {
       assert(bool(m_input));

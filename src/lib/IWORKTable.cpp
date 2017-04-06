@@ -295,12 +295,12 @@ IWORKTable::IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLa
 {
 }
 
-void IWORKTable::setRecorder(const boost::shared_ptr<IWORKTableRecorder> &recorder)
+void IWORKTable::setRecorder(const std::shared_ptr<IWORKTableRecorder> &recorder)
 {
   m_recorder = recorder;
 }
 
-const boost::shared_ptr<IWORKTableRecorder> &IWORKTable::getRecorder() const
+const std::shared_ptr<IWORKTableRecorder> &IWORKTable::getRecorder() const
 {
   return m_recorder;
 }
@@ -391,7 +391,7 @@ void IWORKTable::setBorders(const IWORKGridLineMap_t &verticalLines, const IWORK
   m_horizontalLines = horizontalLines;
 }
 
-void IWORKTable::insertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const boost::shared_ptr<IWORKText> &text, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, const IWORKCellType type)
+void IWORKTable::insertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const std::shared_ptr<IWORKText> &text, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, const IWORKCellType type)
 {
   if (bool(m_recorder))
   {

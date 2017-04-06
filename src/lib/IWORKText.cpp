@@ -10,13 +10,13 @@
 #include "IWORKText.h"
 
 #include <cassert>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <boost/make_shared.hpp>
 #include <boost/optional.hpp>
 #include <boost/variant.hpp>
 
@@ -478,12 +478,12 @@ IWORKText::~IWORKText()
   assert(m_isOrderedStack.empty());
 }
 
-void IWORKText::setRecorder(const boost::shared_ptr<IWORKTextRecorder> &recorder)
+void IWORKText::setRecorder(const std::shared_ptr<IWORKTextRecorder> &recorder)
 {
   m_recorder = recorder;
 }
 
-const boost::shared_ptr<IWORKTextRecorder> &IWORKText::getRecorder() const
+const std::shared_ptr<IWORKTextRecorder> &IWORKText::getRecorder() const
 {
   return m_recorder;
 }

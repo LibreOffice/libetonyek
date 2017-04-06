@@ -10,7 +10,7 @@
 #ifndef IWORKXMLPARSERSTATE_H_INCLUDED
 #define IWORKXMLPARSERSTATE_H_INCLUDED
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "IWORKStylesheet.h"
 #include "IWORKLanguageManager.h"
@@ -49,8 +49,8 @@ public:
   bool m_enableCollector;
   IWORKTableNameMapPtr_t m_tableNameMap;
   IWORKLanguageManager m_langManager;
-  boost::shared_ptr<IWORKTable> m_currentTable;
-  boost::shared_ptr<IWORKText> m_currentText;
+  std::shared_ptr<IWORKTable> m_currentTable;
+  std::shared_ptr<IWORKText> m_currentText;
 
 private:
   IWORKParser &m_parser;

@@ -10,8 +10,7 @@
 #include "IWORKParser.h"
 
 #include <cassert>
-
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include <libxml/xmlreader.h>
 
@@ -22,7 +21,7 @@
 #include "IWORKXMLContextBase.h"
 #include "IWORKXMLParserState.h"
 
-using boost::shared_ptr;
+using std::shared_ptr;
 using std::stack;
 
 namespace libetonyek

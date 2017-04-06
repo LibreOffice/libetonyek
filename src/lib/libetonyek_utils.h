@@ -11,9 +11,8 @@
 #define LIBETONYEK_UTILS_H_INCLUDED
 
 #include <cmath>
+#include <memory>
 #include <string>
-
-#include <boost/shared_ptr.hpp>
 
 #include <librevenge/librevenge.h>
 #include <librevenge-stream/librevenge-stream.h>
@@ -109,7 +108,7 @@ struct EtonyekDummyDeleter
   void operator()(void *) {}
 };
 
-typedef boost::shared_ptr<librevenge::RVNGInputStream> RVNGInputStreamPtr_t;
+typedef std::shared_ptr<librevenge::RVNGInputStream> RVNGInputStreamPtr_t;
 
 uint8_t readU8(const RVNGInputStreamPtr_t &input, bool = false);
 uint16_t readU16(const RVNGInputStreamPtr_t &input, bool bigEndian=false);

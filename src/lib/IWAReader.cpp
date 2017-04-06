@@ -10,8 +10,7 @@
 #include "IWAReader.h"
 
 #include <cassert>
-
-#include <boost/make_shared.hpp>
+#include <memory>
 
 #include "IWAMessage.h"
 #include "IWORKMemoryStream.h"
@@ -83,7 +82,7 @@ const RVNGInputStreamPtr_t Bytes::read(const RVNGInputStreamPtr_t &input, const 
   const unsigned char *const bytes = input->read(length, readBytes);
   if (readBytes < length)
     throw ParseError();
-  return boost::make_shared<IWORKMemoryStream>(bytes, std::size_t(length));
+  return std::make_shared<IWORKMemoryStream>(bytes, std::size_t(length));
 }
 
 IWAMessage Message::read(const RVNGInputStreamPtr_t &input, const unsigned long length)

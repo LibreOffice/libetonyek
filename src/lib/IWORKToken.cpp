@@ -11,8 +11,7 @@
 
 #include <cassert>
 #include <cstring>
-
-#include <boost/make_shared.hpp>
+#include <memory>
 
 #include "IWORKTokenizerBase.h"
 

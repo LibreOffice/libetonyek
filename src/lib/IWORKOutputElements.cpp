@@ -9,7 +9,7 @@
 
 #include "IWORKOutputElements.h"
 
-#include <boost/make_shared.hpp>
+#include <memory>
 
 #include "IWORKDocumentInterface.h"
 #include "IWORKFormula.h"
@@ -17,7 +17,7 @@
 namespace libetonyek
 {
 
-using boost::make_shared;
+using std::make_shared;
 
 class IWORKOutputElement
 {
@@ -992,7 +992,7 @@ void IWORKOutputElements::addOpenEndnote(const librevenge::RVNGPropertyList &pro
 
 void IWORKOutputElements::addOpenFormulaCell(const librevenge::RVNGPropertyList &propList, const IWORKFormula &formula, const IWORKTableNameMapPtr_t &tableNameMap)
 {
-  m_elements.push_back(boost::shared_ptr<OpenFormulaCellElement>(new OpenFormulaCellElement(propList, formula, tableNameMap)));
+  m_elements.push_back(std::shared_ptr<OpenFormulaCellElement>(new OpenFormulaCellElement(propList, formula, tableNameMap)));
 }
 
 void IWORKOutputElements::addOpenFooter(const librevenge::RVNGPropertyList &propList)

@@ -9,7 +9,7 @@
 
 #include "IWORKPropertyMapElement.h"
 
-#include <boost/make_shared.hpp>
+#include <memory>
 
 #include "libetonyek_xml.h"
 #include "IWORKCollector.h"
@@ -39,11 +39,11 @@
 namespace libetonyek
 {
 
-using boost::make_shared;
 using boost::none;
 using boost::optional;
 
 using std::deque;
+using std::make_shared;
 using std::string;
 
 namespace

@@ -9,7 +9,7 @@
 
 #include "KEY2Collector.h"
 
-#include <boost/make_shared.hpp>
+#include <memory>
 
 #include "IWORKRecorder.h"
 #include "IWORKTable.h"
@@ -25,19 +25,19 @@ KEY2Collector::KEY2Collector(IWORKDocumentInterface *const document)
 {
 }
 
-boost::shared_ptr<IWORKTable> KEY2Collector::createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const
+std::shared_ptr<IWORKTable> KEY2Collector::createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const
 {
-  const boost::shared_ptr<IWORKTable> table(IWORKCollector::createTable(tableNameMap, langManager));
+  const std::shared_ptr<IWORKTable> table(IWORKCollector::createTable(tableNameMap, langManager));
   if (m_paint)
-    table->setRecorder(boost::make_shared<IWORKTableRecorder>());
+    table->setRecorder(std::make_shared<IWORKTableRecorder>());
   return table;
 }
 
-boost::shared_ptr<IWORKText> KEY2Collector::createText(const IWORKLanguageManager &langManager, const bool discardEmptyContent) const
+std::shared_ptr<IWORKText> KEY2Collector::createText(const IWORKLanguageManager &langManager, const bool discardEmptyContent) const
 {
-  const boost::shared_ptr<IWORKText> text(IWORKCollector::createText(langManager, discardEmptyContent));
+  const std::shared_ptr<IWORKText> text(IWORKCollector::createText(langManager, discardEmptyContent));
   if (m_paint)
-    text->setRecorder(boost::make_shared<IWORKTextRecorder>());
+    text->setRecorder(std::make_shared<IWORKTextRecorder>());
   return text;
 }
 

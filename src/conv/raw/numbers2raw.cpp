@@ -11,10 +11,9 @@
 #include "config.h"
 #endif
 
+#include <memory>
 #include <stdio.h>
 #include <string.h>
-
-#include <boost/shared_ptr.hpp>
 
 #include <librevenge-generators/librevenge-generators.h>
 #include <librevenge-stream/librevenge-stream.h>
@@ -79,7 +78,7 @@ int main(int argc, char *argv[]) try
   if (!file)
     return printUsage();
 
-  using boost::shared_ptr;
+  using std::shared_ptr;
   using libetonyek::EtonyekDocument;
 
   shared_ptr<librevenge::RVNGInputStream> input;

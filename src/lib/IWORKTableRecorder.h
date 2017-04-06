@@ -10,8 +10,9 @@
 #ifndef IWORKTABLERECORDER_H_INCLUDED
 #define IWORKTABLERECORDER_H_INCLUDED
 
+#include <memory>
+
 #include <boost/optional.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "IWORKStyle_fwd.h"
 #include "IWORKTable.h"
@@ -37,7 +38,7 @@ public:
   void setStyle(const IWORKStylePtr_t &style);
   void setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowSizes_t &rowSizes);
   void setBorders(const IWORKGridLineMap_t &verticalLines, const IWORKGridLineMap_t &horizontalLines);
-  void insertCell(unsigned column, unsigned row, const boost::optional<std::string> &value, const boost::shared_ptr<IWORKText> &content, unsigned columnSpan, unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, IWORKCellType type);
+  void insertCell(unsigned column, unsigned row, const boost::optional<std::string> &value, const std::shared_ptr<IWORKText> &content, unsigned columnSpan, unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, IWORKCellType type);
   void insertCoveredCell(unsigned column, unsigned row);
 
   void setDefaultCellStyle(IWORKTable::CellType type, const IWORKStylePtr_t &style);
@@ -48,7 +49,7 @@ private:
   struct Impl;
 
 private:
-  boost::shared_ptr<Impl> m_impl;
+  std::shared_ptr<Impl> m_impl;
 };
 
 }

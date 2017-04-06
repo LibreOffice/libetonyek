@@ -7,7 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <boost/make_shared.hpp>
+#include <memory>
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -28,7 +28,7 @@ namespace
 
 RVNGInputStreamPtr_t makeStream(const unsigned char *const bytes, const unsigned long length)
 {
-  return boost::make_shared<IWORKMemoryStream>(bytes, length);
+  return std::make_shared<IWORKMemoryStream>(bytes, length);
 }
 
 }

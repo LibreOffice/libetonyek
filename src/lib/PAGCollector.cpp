@@ -10,8 +10,7 @@
 #include "PAGCollector.h"
 
 #include <cassert>
-
-#include <boost/make_shared.hpp>
+#include <memory>
 
 #include "IWORKDocumentInterface.h"
 #include "IWORKOutputElements.h"

@@ -11,7 +11,7 @@
 #include <cassert>
 #include <string>
 
-#include <boost/make_shared.hpp>
+#include <memory>
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>

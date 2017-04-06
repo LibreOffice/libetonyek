@@ -22,8 +22,8 @@ public:
   explicit KEY2Collector(IWORKDocumentInterface *document);
 
 public:
-  virtual boost::shared_ptr<IWORKTable> createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const;
-  virtual boost::shared_ptr<IWORKText> createText(const IWORKLanguageManager &langManager, bool discardEmptyContent = false) const;
+  virtual std::shared_ptr<IWORKTable> createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const;
+  virtual std::shared_ptr<IWORKText> createText(const IWORKLanguageManager &langManager, bool discardEmptyContent = false) const;
 };
 
 } // namespace libetonyek

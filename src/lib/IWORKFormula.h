@@ -10,9 +10,8 @@
 #ifndef IWORKFORMULA_H_INCLUDED
 #define IWORKFORMULA_H_INCLUDED
 
+#include <memory>
 #include <string>
-
-#include <boost/shared_ptr.hpp>
 
 #include "IWORKTypes_fwd.h"
 #include "libetonyek_utils.h"
@@ -34,7 +33,7 @@ public:
   void write(librevenge::RVNGPropertyListVector &formula, const IWORKTableNameMapPtr_t &tableNameMap) const;
 
 private:
-  boost::shared_ptr<Impl> m_impl;
+  std::shared_ptr<Impl> m_impl;
 };
 
 } // namespace libetonyek

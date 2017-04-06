@@ -11,10 +11,9 @@
 
 #include <cassert>
 #include <limits>
+#include <memory>
 #include <utility>
 #include <vector>
-
-#include <boost/make_shared.hpp>
 
 #include "IWORKMemoryStream.h"
 
@@ -156,7 +155,7 @@ RVNGInputStreamPtr_t uncompress(const RVNGInputStreamPtr_t &input)
       throw CompressionException();
   }
 
-  return boost::make_shared<IWORKMemoryStream>(data);
+  return std::make_shared<IWORKMemoryStream>(data);
 }
 
 }
@@ -178,7 +177,7 @@ RVNGInputStreamPtr_t IWASnappyStream::uncompressBlock(const RVNGInputStreamPtr_t
 {
   vector<unsigned char> data;
   libetonyek::uncompressBlock(block, getLength(block), data);
-  return boost::make_shared<IWORKMemoryStream>(data);
+  return std::make_shared<IWORKMemoryStream>(data);
 }
 
 bool IWASnappyStream::isStructured()

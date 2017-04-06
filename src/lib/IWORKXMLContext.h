@@ -10,14 +10,14 @@
 #ifndef IWORKXMLCONTEXT_H_INCLUDED
 #define IWORKXMLCONTEXT_H_INCLUDED
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace libetonyek
 {
 
 class IWORKXMLContext;
 
-typedef boost::shared_ptr<IWORKXMLContext> IWORKXMLContextPtr_t;
+typedef std::shared_ptr<IWORKXMLContext> IWORKXMLContextPtr_t;
 
 class IWORKXMLContext
 {

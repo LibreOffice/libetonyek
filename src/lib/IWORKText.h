@@ -35,8 +35,8 @@ public:
   IWORKText(const IWORKLanguageManager &langManager, bool discardEmptyContent);
   ~IWORKText();
 
-  void setRecorder(const boost::shared_ptr<IWORKTextRecorder> &recorder);
-  const boost::shared_ptr<IWORKTextRecorder> &getRecorder() const;
+  void setRecorder(const std::shared_ptr<IWORKTextRecorder> &recorder);
+  const std::shared_ptr<IWORKTextRecorder> &getRecorder() const;
 
   /// Set style used as base for all layout styles in this text.
   void pushBaseLayoutStyle(const IWORKStylePtr_t &style);
@@ -129,7 +129,7 @@ private:
 
   IWORKStylePtr_t m_oldSpanStyle;
 
-  boost::shared_ptr<IWORKTextRecorder> m_recorder;
+  std::shared_ptr<IWORKTextRecorder> m_recorder;
 };
 
 }

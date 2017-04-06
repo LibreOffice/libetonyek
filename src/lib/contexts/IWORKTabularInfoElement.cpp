@@ -11,9 +11,9 @@
 
 #include <cassert>
 #include <ctime>
+#include <memory>
 
 #include <boost/lexical_cast.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "libetonyek_xml.h"
 #include "IWORKCollector.h"
@@ -36,7 +36,8 @@ namespace libetonyek
 
 using boost::lexical_cast;
 using boost::optional;
-using boost::shared_ptr;
+
+using std::shared_ptr;
 using std::string;
 
 namespace

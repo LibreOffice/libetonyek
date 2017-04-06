@@ -7,10 +7,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <memory>
 #include <stdio.h>
 #include <string.h>
-
-#include <boost/shared_ptr.hpp>
 
 #include <librevenge/librevenge.h>
 #include <librevenge-generators/librevenge-generators.h>
@@ -82,7 +81,7 @@ int main(int argc, char *argv[])
   if (!file)
     return printUsage();
 
-  using boost::shared_ptr;
+  using std::shared_ptr;
 
   shared_ptr<librevenge::RVNGInputStream> input;
   if (librevenge::RVNGDirectoryStream::isDirectory(file))

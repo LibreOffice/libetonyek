@@ -242,7 +242,7 @@ void KEYCollector::endPage()
 {
   assert(m_pageOpened);
 
-  const boost::shared_ptr<IWORKRecorder> recorder(m_recorder);
+  const std::shared_ptr<IWORKRecorder> recorder(m_recorder);
   m_recorder.reset();
   if (recorder)
     recorder->replay(*this);

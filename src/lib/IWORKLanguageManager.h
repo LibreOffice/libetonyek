@@ -10,9 +10,9 @@
 #ifndef IWORKLANGUAGEMANAGER_H_INCLUDED
 #define IWORKLANGUAGEMANAGER_H_INCLUDED
 
+#include <memory>
 #include <string>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/unordered_set.hpp>
 
@@ -49,7 +49,7 @@ private:
   boost::unordered_map<std::string, std::string> m_localeMap;
   boost::unordered_set<std::string> m_invalidLocales;
   boost::unordered_map<std::string, librevenge::RVNGPropertyList> m_propsMap;
-  mutable boost::shared_ptr<LangDB> m_langDB;
+  mutable std::shared_ptr<LangDB> m_langDB;
 };
 
 }

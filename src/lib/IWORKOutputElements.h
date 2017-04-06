@@ -11,8 +11,8 @@
 #define IWORKOUTPUTELEMENTS_H_INCLUDED
 
 #include <deque>
+#include <memory>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
 
 #include <librevenge/librevenge.h>
@@ -29,7 +29,7 @@ class IWORKOutputElement;
 
 class IWORKOutputElements
 {
-  typedef std::deque<boost::shared_ptr<IWORKOutputElement> > ElementList_t;
+  typedef std::deque<std::shared_ptr<IWORKOutputElement> > ElementList_t;
 
 public:
   IWORKOutputElements();

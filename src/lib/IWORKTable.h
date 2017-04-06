@@ -10,10 +10,10 @@
 #ifndef IWORKTABLE_H_INCLUDED
 #define IWORKTABLE_H_INCLUDED
 
-#include <boost/optional.hpp>
-#include <boost/shared_ptr.hpp>
-
 #include <deque>
+#include <memory>
+
+#include <boost/optional.hpp>
 
 #include "IWORKStyle_fwd.h"
 #include "IWORKTypes.h"
@@ -58,8 +58,8 @@ public:
 public:
   explicit IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager);
 
-  void setRecorder(const boost::shared_ptr<IWORKTableRecorder> &recorder);
-  const boost::shared_ptr<IWORKTableRecorder> &getRecorder() const;
+  void setRecorder(const std::shared_ptr<IWORKTableRecorder> &recorder);
+  const std::shared_ptr<IWORKTableRecorder> &getRecorder() const;
 
   void setSize(unsigned columns, unsigned rows);
   void setHeaders(unsigned headerColumns, unsigned headerRows, unsigned footerRows);
@@ -71,7 +71,7 @@ public:
   void setBorders(const IWORKGridLineMap_t &verticalLines, const IWORKGridLineMap_t &horizontalLines);
   void insertCell(unsigned column, unsigned row,
                   const boost::optional<std::string> &value = boost::none,
-                  const boost::shared_ptr<IWORKText> &text = boost::shared_ptr<IWORKText>(),
+                  const std::shared_ptr<IWORKText> &text = std::shared_ptr<IWORKText>(),
                   unsigned columnSpan = 1, unsigned rowSpan = 1,
                   const boost::optional<IWORKFormula> &formula = boost::none,
                   const IWORKStylePtr_t &style = IWORKStylePtr_t(),
@@ -115,7 +115,7 @@ private:
   IWORKStylePtr_t m_defaultLayoutStyles[5];
   IWORKStylePtr_t m_defaultParaStyles[5];
 
-  boost::shared_ptr<IWORKTableRecorder> m_recorder;
+  std::shared_ptr<IWORKTableRecorder> m_recorder;
 };
 
 }

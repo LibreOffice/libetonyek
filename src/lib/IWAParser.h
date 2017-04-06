@@ -12,11 +12,11 @@
 
 #include <deque>
 #include <map>
+#include <memory>
 #include <string>
 
 #include <boost/function.hpp>
 #include <boost/optional.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/variant.hpp>
 
@@ -119,7 +119,7 @@ protected:
 
 protected:
   IWORKLanguageManager m_langManager;
-  boost::shared_ptr<IWORKText> m_currentText;
+  std::shared_ptr<IWORKText> m_currentText;
 
 private:
   typedef std::map<unsigned, boost::variant<std::string, unsigned> > DataList_t;
@@ -134,9 +134,9 @@ private:
 
   struct TableInfo
   {
-    TableInfo(const boost::shared_ptr<IWORKTable> &table, unsigned columns, unsigned rows);
+    TableInfo(const std::shared_ptr<IWORKTable> &table, unsigned columns, unsigned rows);
 
-    boost::shared_ptr<IWORKTable> m_table;
+    std::shared_ptr<IWORKTable> m_table;
 
     const unsigned m_columns;
     const unsigned m_rows;
@@ -204,7 +204,7 @@ private:
   mutable StyleMap_t m_listStyles;
 
   IWORKTableNameMapPtr_t m_tableNameMap;
-  boost::shared_ptr<TableInfo> m_currentTable;
+  std::shared_ptr<TableInfo> m_currentTable;
 };
 
 }

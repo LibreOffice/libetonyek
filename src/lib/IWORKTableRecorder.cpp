@@ -19,7 +19,7 @@
 namespace libetonyek
 {
 
-using boost::shared_ptr;
+using std::shared_ptr;
 
 namespace
 {
@@ -108,7 +108,7 @@ struct SetBorders
 
 struct InsertCell
 {
-  InsertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const boost::shared_ptr<IWORKText> &content, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, IWORKCellType type)
+  InsertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const std::shared_ptr<IWORKText> &content, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, IWORKCellType type)
     : m_column(column)
     , m_row(row)
     , m_value(value)
@@ -124,7 +124,7 @@ struct InsertCell
   const unsigned m_column;
   const unsigned m_row;
   const boost::optional<std::string> m_value;
-  const boost::shared_ptr<IWORKText> m_content;
+  const std::shared_ptr<IWORKText> m_content;
   const unsigned m_columnSpan;
   const unsigned m_rowSpan;
   const boost::optional<IWORKFormula> m_formula;
@@ -337,7 +337,7 @@ void IWORKTableRecorder::setBorders(const IWORKGridLineMap_t &verticalLines, con
   m_impl->m_elements.push_back(SetBorders(verticalLines, horizontalLines));
 }
 
-void IWORKTableRecorder::insertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const boost::shared_ptr<IWORKText> &content, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, const IWORKCellType type)
+void IWORKTableRecorder::insertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const std::shared_ptr<IWORKText> &content, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, const IWORKCellType type)
 {
   m_impl->m_elements.push_back(InsertCell(column, row, value, content, columnSpan, rowSpan, formula, style, type));
 }

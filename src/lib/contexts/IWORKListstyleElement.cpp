@@ -9,9 +9,8 @@
 
 #include "IWORKListstyleElement.h"
 
+#include <memory>
 #include <utility>
-
-#include <boost/make_shared.hpp>
 
 #include "IWORKDictionary.h"
 #include "IWORKListLabelGeometriesProperty.h"
@@ -61,7 +60,7 @@ void IWORKListstyleElement::endOfElement()
       levelProps[i].put<ListTextIndent>(m_textIndents[i]);
   }
   for (std::size_t i = 0; i != levels; ++i)
-    m_style[i] = boost::make_shared<IWORKStyle>(levelProps[i], boost::none, boost::none);
+    m_style[i] = std::make_shared<IWORKStyle>(levelProps[i], boost::none, boost::none);
 
   if (getId())
     getState().getDictionary().m_listStyles[get(getId())] = m_style;

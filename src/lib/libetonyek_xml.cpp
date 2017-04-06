@@ -12,7 +12,6 @@
 #include <cassert>
 
 #include <boost/lexical_cast.hpp>
-#include <boost/make_shared.hpp>
 #include <boost/none.hpp>
 #include <boost/optional.hpp>
 

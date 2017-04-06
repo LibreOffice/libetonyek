@@ -21,7 +21,7 @@
 namespace libetonyek
 {
 
-using boost::shared_ptr;
+using std::shared_ptr;
 
 namespace
 {
@@ -112,22 +112,22 @@ struct CollectStylesheet
 
 struct CollectTable
 {
-  CollectTable(const boost::shared_ptr<IWORKTable> &table)
+  CollectTable(const std::shared_ptr<IWORKTable> &table)
     : m_table(table)
   {
   }
 
-  const boost::shared_ptr<IWORKTable> m_table;
+  const std::shared_ptr<IWORKTable> m_table;
 };
 
 struct CollectText
 {
-  CollectText(const boost::shared_ptr<IWORKText> &text)
+  CollectText(const std::shared_ptr<IWORKText> &text)
     : m_text(text)
   {
   }
 
-  const boost::shared_ptr<IWORKText> m_text;
+  const std::shared_ptr<IWORKText> m_text;
 };
 
 struct StartGroup
@@ -361,12 +361,12 @@ void IWORKRecorder::collectStylesheet(const IWORKStylesheetPtr_t &stylesheet)
   m_impl->m_elements.push_back(CollectStylesheet(stylesheet));
 }
 
-void IWORKRecorder::collectTable(const boost::shared_ptr<IWORKTable> &table)
+void IWORKRecorder::collectTable(const std::shared_ptr<IWORKTable> &table)
 {
   m_impl->m_elements.push_back(CollectTable(table));
 }
 
-void IWORKRecorder::collectText(const boost::shared_ptr<IWORKText> &text)
+void IWORKRecorder::collectText(const std::shared_ptr<IWORKText> &text)
 {
   m_impl->m_elements.push_back(CollectText(text));
 }

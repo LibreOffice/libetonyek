@@ -10,10 +10,10 @@
 #include <libetonyek/libetonyek.h>
 
 #include <cassert>
+#include <memory>
 
 #include <boost/optional.hpp>
 #include <boost/scoped_ptr.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <libxml/xmlreader.h>
 
@@ -45,7 +45,7 @@
 
 using boost::optional;
 using boost::scoped_ptr;
-using boost::shared_ptr;
+using std::shared_ptr;
 using std::string;
 
 using librevenge::RVNG_SEEK_SET;

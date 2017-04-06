@@ -11,9 +11,8 @@
 #include "config.h"
 #endif
 
-#include <boost/shared_ptr.hpp>
-
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <stdio.h>
 #include <string.h>
@@ -74,7 +73,7 @@ int main(int argc, char *argv[]) try
   if (!file)
     return printUsage();
 
-  using boost::shared_ptr;
+  using std::shared_ptr;
   using libetonyek::EtonyekDocument;
 
   shared_ptr<librevenge::RVNGInputStream> input;

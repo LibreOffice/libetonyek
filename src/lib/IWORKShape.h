@@ -10,7 +10,7 @@
 #ifndef IWORKSHAPE_H_INCLUDED
 #define IWORKSHAPE_H_INCLUDED
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle.h"
@@ -33,7 +33,7 @@ struct IWORKShape
   IWORKShape();
 };
 
-typedef boost::shared_ptr<IWORKShape> IWORKShapePtr_t;
+typedef std::shared_ptr<IWORKShape> IWORKShapePtr_t;
 
 /** Path creator functions for stock shapes.
  */

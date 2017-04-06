@@ -10,14 +10,14 @@
 #ifndef IWORKTEXT_FWD_H_INCLUDED
 #define IWORKTEXT_FWD_H_INCLUDED
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace libetonyek
 {
 
 class IWORKText;
 
-typedef boost::shared_ptr<IWORKText> IWORKTextPtr_t;
+typedef std::shared_ptr<IWORKText> IWORKTextPtr_t;
 
 }
 

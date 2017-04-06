@@ -9,7 +9,7 @@
 
 #include "IWAText.h"
 
-#include <boost/make_shared.hpp>
+#include <memory>
 
 #include "IWORKLanguageManager.h"
 #include "IWORKProperties.h"
@@ -18,13 +18,13 @@
 namespace libetonyek
 {
 
-using boost::make_shared;
 using boost::none;
-using boost::shared_ptr;
 
 using std::make_pair;
+using std::make_shared;
 using std::map;
 using std::pair;
+using std::shared_ptr;
 using std::string;
 
 namespace

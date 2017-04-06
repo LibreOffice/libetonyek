@@ -12,10 +12,10 @@
 #include <algorithm>
 #include <cassert>
 #include <map>
+#include <memory>
 #include <utility>
 
 #include <boost/bind.hpp>
-#include <boost/make_shared.hpp>
 #include <boost/optional.hpp>
 
 #include "IWAObjectType.h"
@@ -34,14 +34,14 @@ namespace libetonyek
 {
 
 using boost::bind;
-using boost::make_shared;
 using boost::none;
 using boost::optional;
-using boost::shared_ptr;
 
 using std::deque;
 using std::make_pair;
+using std::make_shared;
 using std::map;
+using std::shared_ptr;
 using std::string;
 
 namespace

@@ -10,8 +10,7 @@
 #ifndef IWORKDISCARDCONTEXT_H_INCLUDED
 #define IWORKDISCARDCONTEXT_H_INCLUDED
 
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "IWORKXMLContext.h"
 
@@ -20,7 +19,7 @@ namespace libetonyek
 
 class IWORKXMLParserState;
 
-class IWORKDiscardContext : public IWORKXMLContext, public boost::enable_shared_from_this<IWORKDiscardContext>
+class IWORKDiscardContext : public IWORKXMLContext, public std::enable_shared_from_this<IWORKDiscardContext>
 {
   struct Data;
 
@@ -38,7 +37,7 @@ private:
   IWORKXMLParserState &m_state;
   unsigned m_level;
   bool m_enableCollector;
-  boost::shared_ptr<Data> m_data;
+  std::shared_ptr<Data> m_data;
 };
 
 }

@@ -10,9 +10,8 @@
 #ifndef IWORKTEXTRECORDER_H_INCLUDED
 #define IWORKTEXTRECORDER_H_INCLUDED
 
+#include <memory>
 #include <string>
-
-#include <boost/shared_ptr.hpp>
 
 #include "IWORKStyle_fwd.h"
 
@@ -57,7 +56,7 @@ private:
   struct Impl;
 
 private:
-  boost::shared_ptr<Impl> m_impl;
+  std::shared_ptr<Impl> m_impl;
 };
 
 }

@@ -13,9 +13,9 @@
 #include <cassert>
 #include <cmath>
 #include <cstring>
+#include <memory>
 
 #include <boost/bind.hpp>
-#include <boost/make_shared.hpp>
 
 #include "IWORKDocumentInterface.h"
 #include "IWORKOutputElements.h"
@@ -30,15 +30,15 @@
 namespace libetonyek
 {
 
-using boost::make_shared;
 using boost::optional;
-using boost::shared_ptr;
 
 using librevenge::RVNGPropertyList;
 using librevenge::RVNG_PERCENT;
 using librevenge::RVNG_POINT;
 
+using std::make_shared;
 using std::memcmp;
+using std::shared_ptr;
 using std::string;
 
 namespace
@@ -376,7 +376,7 @@ IWORKCollector::~IWORKCollector()
   assert(!m_currentText);
 }
 
-void IWORKCollector::setRecorder(const boost::shared_ptr<IWORKRecorder> &recorder)
+void IWORKCollector::setRecorder(const std::shared_ptr<IWORKRecorder> &recorder)
 {
   m_recorder = recorder;
 }
@@ -611,7 +611,7 @@ void IWORKCollector::collectFooter(const std::string &name)
   collectHeaderFooter(name, m_footers);
 }
 
-void IWORKCollector::collectTable(const boost::shared_ptr<IWORKTable> &table)
+void IWORKCollector::collectTable(const std::shared_ptr<IWORKTable> &table)
 {
   if (bool(m_recorder))
   {
@@ -625,7 +625,7 @@ void IWORKCollector::collectTable(const boost::shared_ptr<IWORKTable> &table)
   m_currentTable.reset();
 }
 
-void IWORKCollector::collectText(const boost::shared_ptr<IWORKText> &text)
+void IWORKCollector::collectText(const std::shared_ptr<IWORKText> &text)
 {
   if (bool(m_recorder))
   {
@@ -677,12 +677,12 @@ void IWORKCollector::endGroup()
   --m_groupLevel;
 }
 
-boost::shared_ptr<IWORKTable> IWORKCollector::createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const
+std::shared_ptr<IWORKTable> IWORKCollector::createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const
 {
   return shared_ptr<IWORKTable>(new IWORKTable(tableNameMap, langManager));
 }
 
-boost::shared_ptr<IWORKText> IWORKCollector::createText(const IWORKLanguageManager &langManager, bool discardEmptyContent) const
+std::shared_ptr<IWORKText> IWORKCollector::createText(const IWORKLanguageManager &langManager, bool discardEmptyContent) const
 {
   return make_shared<IWORKText>(langManager, discardEmptyContent);
 }

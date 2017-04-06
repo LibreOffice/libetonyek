@@ -9,9 +9,9 @@
 #ifndef KEYTYPES_FWD_H_INCLUDED
 #define KEYTYPES_FWD_H_INCLUDED
 
+#include <memory>
 #include <string>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
 
 #include "IWORKTypes_fwd.h"
@@ -21,12 +21,12 @@ namespace libetonyek
 
 struct KEYLayer;
 
-typedef boost::shared_ptr<KEYLayer> KEYLayerPtr_t;
+typedef std::shared_ptr<KEYLayer> KEYLayerPtr_t;
 typedef boost::unordered_map<ID_t, KEYLayerPtr_t> KEYLayerMap_t;
 
 struct KEYPlaceholder;
 
-typedef boost::shared_ptr<KEYPlaceholder> KEYPlaceholderPtr_t;
+typedef std::shared_ptr<KEYPlaceholder> KEYPlaceholderPtr_t;
 typedef boost::unordered_map<ID_t, KEYPlaceholderPtr_t> KEYPlaceholderMap_t;
 
 }

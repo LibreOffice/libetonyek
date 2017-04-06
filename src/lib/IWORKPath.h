@@ -63,7 +63,7 @@ public:
   void write(librevenge::RVNGPropertyListVector &vec) const;
 
 private:
-  boost::shared_ptr<Impl> m_impl;
+  std::shared_ptr<Impl> m_impl;
 };
 
 bool approxEqual(const IWORKPath &left, const IWORKPath &right, double eps = ETONYEK_EPSILON);

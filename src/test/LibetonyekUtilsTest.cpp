@@ -8,9 +8,8 @@
  */
 
 #include <limits>
+#include <memory>
 #include <stdexcept>
-
-#include <boost/make_shared.hpp>
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -34,7 +33,7 @@ namespace
 
 RVNGInputStreamPtr_t makeStream(const char *const bytes, const size_t len)
 {
-  return boost::make_shared<IWORKMemoryStream>(reinterpret_cast<const unsigned char *>(bytes), len);
+  return std::make_shared<IWORKMemoryStream>(reinterpret_cast<const unsigned char *>(bytes), len);
 }
 
 RVNGInputStreamPtr_t makeEmptyStream()

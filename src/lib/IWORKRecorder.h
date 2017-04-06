@@ -10,10 +10,10 @@
 #ifndef IWORKRECORDER_H_INCLUDED
 #define IWORKRECORDER_H_INCLUDED
 
+#include <memory>
 #include <string>
 
 #include <boost/optional.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle.h"
@@ -52,8 +52,8 @@ public:
 
   void collectStylesheet(const IWORKStylesheetPtr_t &stylesheet);
 
-  void collectTable(const boost::shared_ptr<IWORKTable> &table);
-  void collectText(const boost::shared_ptr<IWORKText> &text);
+  void collectTable(const std::shared_ptr<IWORKTable> &table);
+  void collectText(const std::shared_ptr<IWORKText> &text);
 
   void startGroup();
   void endGroup();
@@ -68,7 +68,7 @@ private:
   struct Impl;
 
 private:
-  boost::shared_ptr<Impl> m_impl;
+  std::shared_ptr<Impl> m_impl;
 };
 
 } // namespace libetonyek

@@ -19,12 +19,12 @@
 namespace libetonyek
 {
 
-using boost::shared_ptr;
 using boost::unordered_map;
 using boost::unordered_set;
 
 using librevenge::RVNGPropertyList;
 
+using std::shared_ptr;
 using std::string;
 
 namespace

@@ -9,9 +9,9 @@
 #include "KEY6Parser.h"
 
 #include <algorithm>
+#include <memory>
 
 #include <boost/bind.hpp>
-#include <boost/make_shared.hpp>
 
 #include "IWAMessage.h"
 #include "IWAObjectType.h"
@@ -24,12 +24,12 @@ namespace libetonyek
 {
 
 using boost::bind;
-using boost::make_shared;
 using boost::none;
 using boost::optional;
 
 using std::deque;
 using std::for_each;
+using std::make_shared;
 using std::string;
 
 KEY6Parser::KEY6Parser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package, KEYCollector &collector)

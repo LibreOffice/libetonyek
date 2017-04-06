@@ -11,11 +11,11 @@
 #define IWORKCOLLECTOR_H_INCLUDED
 
 #include <deque>
+#include <memory>
 #include <stack>
 #include <string>
 
 #include <boost/optional.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "libetonyek_utils.h"
 #include "IWORKPath_fwd.h"
@@ -54,7 +54,7 @@ public:
   explicit IWORKCollector(IWORKDocumentInterface *document);
   ~IWORKCollector();
 
-  void setRecorder(const boost::shared_ptr<IWORKRecorder> &recorder);
+  void setRecorder(const std::shared_ptr<IWORKRecorder> &recorder);
 
   // collector functions
 
@@ -86,8 +86,8 @@ public:
   void collectHeader(const std::string &name);
   void collectFooter(const std::string &name);
 
-  void collectTable(const boost::shared_ptr<IWORKTable> &table);
-  void collectText(const boost::shared_ptr<IWORKText> &text);
+  void collectTable(const std::shared_ptr<IWORKTable> &table);
+  void collectText(const std::shared_ptr<IWORKText> &text);
 
   void startDocument();
   void endDocument();
@@ -107,8 +107,8 @@ public:
   IWORKOutputManager &getOutputManager();
 
 public:
-  virtual boost::shared_ptr<IWORKTable> createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const;
-  virtual boost::shared_ptr<IWORKText> createText(const IWORKLanguageManager &langManager, bool discardEmptyContent = false) const;
+  virtual std::shared_ptr<IWORKTable> createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const;
+  virtual std::shared_ptr<IWORKText> createText(const IWORKLanguageManager &langManager, bool discardEmptyContent = false) const;
 
 protected:
   void fillMetadata(librevenge::RVNGPropertyList &props);
@@ -131,7 +131,7 @@ private:
 
 protected:
   IWORKDocumentInterface *m_document;
-  boost::shared_ptr<IWORKRecorder> m_recorder;
+  std::shared_ptr<IWORKRecorder> m_recorder;
 
   std::stack<Level> m_levelStack;
   IWORKStyleStack m_styleStack;
@@ -140,8 +140,8 @@ protected:
 
   std::deque<IWORKStylePtr_t> m_newStyles;
 
-  boost::shared_ptr<IWORKTable> m_currentTable;
-  boost::shared_ptr<IWORKText> m_currentText;
+  std::shared_ptr<IWORKTable> m_currentTable;
+  std::shared_ptr<IWORKText> m_currentText;
 
   IWORKHeaderFooterMap_t m_headers;
   IWORKHeaderFooterMap_t m_footers;

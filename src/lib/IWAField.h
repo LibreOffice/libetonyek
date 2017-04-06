@@ -11,11 +11,11 @@
 #define IWAFIELD_H_INCLUDED
 
 #include <deque>
+#include <memory>
 #include <stdexcept>
 
 #include <boost/container/deque.hpp>
 #include <boost/optional.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "IWAReader.h"
 #include "libetonyek_utils.h"
@@ -64,7 +64,7 @@ public:
   virtual void parse(const RVNGInputStreamPtr_t &input, unsigned long length, bool allowEmpty) = 0;
 };
 
-typedef boost::shared_ptr<IWAField> IWAFieldPtr_t;
+typedef std::shared_ptr<IWAField> IWAFieldPtr_t;
 
 namespace detail
 {
