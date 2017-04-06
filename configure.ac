@@ -90,9 +90,6 @@ PKG_CHECK_MODULES([LANGTAG],[
 saved_CPPFLAGS="${CPPFLAGS}"
 CPPFLAGS="${BOOST_CFLAGS} ${CPPFLAGS}"
 AC_CHECK_HEADERS(
-        boost/algorithm/string/classification.hpp \
-        boost/algorithm/string/predicate.hpp \
-        boost/algorithm/string/split.hpp \
         boost/any.hpp \
         boost/container/deque.hpp \
         boost/fusion/adapted/std_pair.hpp \
