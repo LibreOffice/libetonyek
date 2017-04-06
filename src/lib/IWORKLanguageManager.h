@@ -13,8 +13,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
-
-#include <boost/unordered_set.hpp>
+#include <unordered_set>
 
 #include <librevenge/librevenge.h>
 
@@ -43,11 +42,11 @@ private:
 
 private:
   std::unordered_map<std::string, std::string> m_tagMap;
-  boost::unordered_set<std::string> m_invalidTags;
+  std::unordered_set<std::string> m_invalidTags;
   std::unordered_map<std::string, std::string> m_langMap;
-  boost::unordered_set<std::string> m_invalidLangs;
+  std::unordered_set<std::string> m_invalidLangs;
   std::unordered_map<std::string, std::string> m_localeMap;
-  boost::unordered_set<std::string> m_invalidLocales;
+  std::unordered_set<std::string> m_invalidLocales;
   std::unordered_map<std::string, librevenge::RVNGPropertyList> m_propsMap;
   mutable std::shared_ptr<LangDB> m_langDB;
 };
