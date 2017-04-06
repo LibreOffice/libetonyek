@@ -13,7 +13,6 @@
 #include <memory>
 
 #include <boost/optional.hpp>
-#include <boost/scoped_ptr.hpp>
 
 #include <libxml/xmlreader.h>
 
@@ -44,7 +43,7 @@
 #include "PAG5Parser.h"
 
 using boost::optional;
-using boost::scoped_ptr;
+
 using std::shared_ptr;
 using std::string;
 

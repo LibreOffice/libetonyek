@@ -104,7 +104,6 @@ AC_CHECK_HEADERS(
         boost/numeric/conversion/cast.hpp \
         boost/optional.hpp \
         boost/ref.hpp \
-        boost/scoped_ptr.hpp \
         boost/spirit/include/phoenix.hpp \
         boost/spirit/include/qi.hpp \
         boost/unordered_map.hpp \
