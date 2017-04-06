@@ -47,7 +47,7 @@ AC_PROG_SED
 
 AM_MISSING_PROG([GPERF], [gperf])
 
-AS_IF([test "$with_mdds" != "0.x"], [AX_CXX_COMPILE_STDCXX_11([noext])])
+AX_CXX_COMPILE_STDCXX_11([noext])
 
 # ===============
 # Find librevenge
