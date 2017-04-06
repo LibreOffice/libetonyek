@@ -18,7 +18,6 @@ libetonyek.spec
 libetonyek-zip
 libetonyek-*.tar.*
 ltmain.sh
-m4
 missing
 mkinstalldirs
 stamp-h1
