@@ -106,7 +106,6 @@ AC_CHECK_HEADERS(
         boost/ref.hpp \
         boost/spirit/include/phoenix.hpp \
         boost/spirit/include/qi.hpp \
-        boost/unordered_map.hpp \
         boost/unordered_set.hpp \
         boost/variant/recursive_variant.hpp \
         boost/variant/variant.hpp \

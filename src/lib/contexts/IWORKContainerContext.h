@@ -25,7 +25,7 @@ namespace libetonyek
 template<typename Type, class NestedParser, template<typename T, class C> class Collector, unsigned Id, unsigned RefId = 0>
 class IWORKContainerContext : public IWORKXMLElementContextBase
 {
-  typedef boost::unordered_map<ID_t, Type> Dict_t;
+  typedef std::unordered_map<ID_t, Type> Dict_t;
 
 public:
   IWORKContainerContext(IWORKXMLParserState &state, std::deque<Type> &elements)

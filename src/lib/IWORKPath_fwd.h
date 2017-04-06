@@ -10,8 +10,7 @@
 #define IWORKPATH_FWD_H_INCLUDED
 
 #include <memory>
-
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include "IWORKTypes_fwd.h"
 
@@ -21,7 +20,7 @@ namespace libetonyek
 class IWORKPath;
 
 typedef std::shared_ptr<IWORKPath> IWORKPathPtr_t;
-typedef boost::unordered_map<ID_t, IWORKPathPtr_t> IWORKPathMap_t;
+typedef std::unordered_map<ID_t, IWORKPathPtr_t> IWORKPathMap_t;
 
 }
 

@@ -12,8 +12,7 @@
 #include <deque>
 #include <memory>
 #include <string>
-
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 namespace libetonyek
 {
@@ -26,13 +25,13 @@ typedef std::deque<double> IWORKRowSizes_t;
 
 typedef unsigned IWORKOutputID_t;
 
-typedef boost::unordered_map<ID_t, IWORKOutputID_t> IWORKOutputMap_t;
+typedef std::unordered_map<ID_t, IWORKOutputID_t> IWORKOutputMap_t;
 
-typedef boost::unordered_map<std::string, std::string> IWORKTableNameMap_t;
+typedef std::unordered_map<std::string, std::string> IWORKTableNameMap_t;
 
 typedef std::shared_ptr<IWORKTableNameMap_t> IWORKTableNameMapPtr_t;
 
-typedef boost::unordered_map<std::string, std::string> IWORKContentMap_t;
+typedef std::unordered_map<std::string, std::string> IWORKContentMap_t;
 
 struct IWORKSize;
 struct IWORKPosition;
@@ -48,17 +47,17 @@ typedef std::shared_ptr<IWORKLine> IWORKLinePtr_t;
 struct IWORKData;
 
 typedef std::shared_ptr<IWORKData> IWORKDataPtr_t;
-typedef boost::unordered_map<ID_t, IWORKDataPtr_t> IWORKDataMap_t;
+typedef std::unordered_map<ID_t, IWORKDataPtr_t> IWORKDataMap_t;
 
 struct IWORKMediaContent;
 
 typedef std::shared_ptr<IWORKMediaContent> IWORKMediaContentPtr_t;
-typedef boost::unordered_map<ID_t, IWORKMediaContentPtr_t> IWORKMediaContentMap_t;
+typedef std::unordered_map<ID_t, IWORKMediaContentPtr_t> IWORKMediaContentMap_t;
 
 struct IWORKImage;
 
 typedef std::shared_ptr<IWORKImage> IWORKImagePtr_t;
-typedef boost::unordered_map<ID_t, IWORKImagePtr_t> IWORKImageMap_t;
+typedef std::unordered_map<ID_t, IWORKImagePtr_t> IWORKImageMap_t;
 
 struct IWORKMedia;
 

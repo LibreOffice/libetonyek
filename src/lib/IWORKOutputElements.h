@@ -12,8 +12,7 @@
 
 #include <deque>
 #include <memory>
-
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include <librevenge/librevenge.h>
 

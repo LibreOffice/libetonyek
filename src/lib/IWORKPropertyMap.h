@@ -10,8 +10,9 @@
 #ifndef IWORKPROPERTYMAP_H_INCLUDED
 #define IWORKPROPERTYMAP_H_INCLUDED
 
+#include <unordered_map>
+
 #include <boost/any.hpp>
-#include <boost/unordered_map.hpp>
 
 #include "IWORKPropertyInfo.h"
 
@@ -26,7 +27,7 @@ public:
   class NotFoundException {};
 
 private:
-  typedef boost::unordered_map<IWORKPropertyID_t, boost::any> Map_t;
+  typedef std::unordered_map<IWORKPropertyID_t, boost::any> Map_t;
 
 public:
   /** Construct an empty map.

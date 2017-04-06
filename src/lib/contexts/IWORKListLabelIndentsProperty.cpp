@@ -49,7 +49,7 @@ void IWORKListLabelIndentsProperty::endOfElement()
 {
   if (m_ref)
   {
-    const boost::unordered_map<ID_t, std::deque<double> >::const_iterator it = getState().getDictionary().m_doubleArrays.find(get(m_ref));
+    const std::unordered_map<ID_t, std::deque<double> >::const_iterator it = getState().getDictionary().m_doubleArrays.find(get(m_ref));
     if (it != getState().getDictionary().m_doubleArrays.end())
       m_elements = it->second;
   }

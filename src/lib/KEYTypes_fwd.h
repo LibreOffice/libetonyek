@@ -11,8 +11,7 @@
 
 #include <memory>
 #include <string>
-
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include "IWORKTypes_fwd.h"
 
@@ -22,12 +21,12 @@ namespace libetonyek
 struct KEYLayer;
 
 typedef std::shared_ptr<KEYLayer> KEYLayerPtr_t;
-typedef boost::unordered_map<ID_t, KEYLayerPtr_t> KEYLayerMap_t;
+typedef std::unordered_map<ID_t, KEYLayerPtr_t> KEYLayerMap_t;
 
 struct KEYPlaceholder;
 
 typedef std::shared_ptr<KEYPlaceholder> KEYPlaceholderPtr_t;
-typedef boost::unordered_map<ID_t, KEYPlaceholderPtr_t> KEYPlaceholderMap_t;
+typedef std::unordered_map<ID_t, KEYPlaceholderPtr_t> KEYPlaceholderMap_t;
 
 }
 

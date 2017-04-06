@@ -20,7 +20,6 @@ namespace test
 {
 
 using boost::optional;
-using boost::unordered_map;
 
 using libetonyek::property::Answer;
 using libetonyek::property::Antwort;
@@ -34,6 +33,7 @@ using libetonyek::IWORKStylesheetPtr_t;
 
 using std::shared_ptr;
 using std::string;
+using std::unordered_map;
 
 namespace
 {

@@ -14,10 +14,10 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include <boost/function.hpp>
 #include <boost/optional.hpp>
-#include <boost/unordered_map.hpp>
 #include <boost/variant.hpp>
 
 #include <mdds/flat_segment_tree.hpp>

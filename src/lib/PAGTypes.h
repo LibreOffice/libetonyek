@@ -12,9 +12,9 @@
 
 #include <deque>
 #include <string>
+#include <unordered_map>
 
 #include <boost/optional.hpp>
-#include <boost/unordered_map.hpp>
 
 #include "IWORKOutputElements.h"
 #include "IWORKTypes_fwd.h"
@@ -61,7 +61,7 @@ struct PAGAttachment
   bool m_block;
 };
 
-typedef boost::unordered_map<ID_t, PAGAttachment> PAGAttachmentMap_t;
+typedef std::unordered_map<ID_t, PAGAttachment> PAGAttachmentMap_t;
 
 }
 

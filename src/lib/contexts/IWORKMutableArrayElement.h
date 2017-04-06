@@ -19,8 +19,8 @@ template<typename Type, class NestedParser, template<typename T, class C> class 
 class IWORKMutableArrayElement : public IWORKContainerContext<Type, NestedParser, Collector, Id, RefId>
 {
   typedef IWORKContainerContext<Type, NestedParser, Collector, Id, RefId> Super_t;
-  typedef boost::unordered_map<ID_t, Type> ContextDict_t;
-  typedef boost::unordered_map<ID_t, std::deque<Type> > ArrayDict_t;
+  typedef std::unordered_map<ID_t, Type> ContextDict_t;
+  typedef std::unordered_map<ID_t, std::deque<Type> > ArrayDict_t;
 
 public:
   IWORKMutableArrayElement(IWORKXMLParserState &state, ArrayDict_t &arrayDict, std::deque<Type> &elements)

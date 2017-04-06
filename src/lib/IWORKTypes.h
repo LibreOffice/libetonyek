@@ -32,7 +32,7 @@ namespace libetonyek
 
 class IWORKOutputElements;
 
-typedef boost::unordered_map<std::string, IWORKOutputElements> IWORKHeaderFooterMap_t;
+typedef std::unordered_map<std::string, IWORKOutputElements> IWORKHeaderFooterMap_t;
 
 struct IWORKSize
 {
@@ -97,7 +97,7 @@ struct IWORKTabStop
 };
 
 typedef std::deque<IWORKTabStop> IWORKTabStops_t;
-typedef boost::unordered_map<ID_t, IWORKTabStops_t> IWORKTabStopsMap_t;
+typedef std::unordered_map<ID_t, IWORKTabStops_t> IWORKTabStopsMap_t;
 typedef mdds::flat_segment_tree<unsigned, IWORKStylePtr_t> IWORKGridLine_t;
 typedef std::map<unsigned,IWORKGridLine_t> IWORKGridLineMap_t;
 
@@ -317,7 +317,7 @@ struct IWORKFilterDescriptor
   bool m_isShadow;
 };
 
-typedef boost::unordered_map<ID_t, IWORKFilterDescriptor> IWORKFilterDescriptorMap_t;
+typedef std::unordered_map<ID_t, IWORKFilterDescriptor> IWORKFilterDescriptorMap_t;
 
 struct IWORKListLabelGeometry
 {
@@ -329,7 +329,7 @@ struct IWORKListLabelGeometry
   bool m_scaleWithText;
 };
 
-typedef boost::unordered_map<ID_t, IWORKListLabelGeometry> IWORKListLabelGeometryMap_t;
+typedef std::unordered_map<ID_t, IWORKListLabelGeometry> IWORKListLabelGeometryMap_t;
 
 struct IWORKTextLabelFormat
 {
@@ -353,10 +353,10 @@ struct IWORKTextLabel
 // Note: The bool type, representing 'none', is just a placeholder. The
 // value is not important.
 typedef boost::variant<bool, std::string, IWORKTextLabel, IWORKMediaContentPtr_t> IWORKListLabelTypeInfo_t;
-typedef boost::unordered_map<ID_t, IWORKListLabelTypeInfo_t> IWORKListLabelTypeInfoMap_t;
+typedef std::unordered_map<ID_t, IWORKListLabelTypeInfo_t> IWORKListLabelTypeInfoMap_t;
 
 typedef std::map<unsigned, IWORKStylePtr_t> IWORKListStyle_t;
-typedef boost::unordered_map<ID_t, IWORKListStyle_t> IWORKListStyleMap_t;
+typedef std::unordered_map<ID_t, IWORKListStyle_t> IWORKListStyleMap_t;
 
 }
 

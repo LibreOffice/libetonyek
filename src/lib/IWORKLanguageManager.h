@@ -12,8 +12,8 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 
-#include <boost/unordered_map.hpp>
 #include <boost/unordered_set.hpp>
 
 #include <librevenge/librevenge.h>
@@ -42,13 +42,13 @@ private:
   void addProperties(const std::string &tag);
 
 private:
-  boost::unordered_map<std::string, std::string> m_tagMap;
+  std::unordered_map<std::string, std::string> m_tagMap;
   boost::unordered_set<std::string> m_invalidTags;
-  boost::unordered_map<std::string, std::string> m_langMap;
+  std::unordered_map<std::string, std::string> m_langMap;
   boost::unordered_set<std::string> m_invalidLangs;
-  boost::unordered_map<std::string, std::string> m_localeMap;
+  std::unordered_map<std::string, std::string> m_localeMap;
   boost::unordered_set<std::string> m_invalidLocales;
-  boost::unordered_map<std::string, librevenge::RVNGPropertyList> m_propsMap;
+  std::unordered_map<std::string, librevenge::RVNGPropertyList> m_propsMap;
   mutable std::shared_ptr<LangDB> m_langDB;
 };
 
