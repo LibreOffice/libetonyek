@@ -95,7 +95,6 @@ AC_CHECK_HEADERS(
         boost/algorithm/string/split.hpp \
         boost/any.hpp \
         boost/container/deque.hpp \
-        boost/function.hpp \
         boost/fusion/adapted/std_pair.hpp \
         boost/fusion/include/adapt_struct.hpp \
         boost/lexical_cast.hpp \

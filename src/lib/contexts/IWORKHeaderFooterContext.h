@@ -10,9 +10,9 @@
 #ifndef IWORKHEADERFOOTERCONTEXT_H_INCLUDED
 #define IWORKHEADERFOOTERCONTEXT_H_INCLUDED
 
+#include <functional>
 #include <string>
 
-#include <boost/function.hpp>
 #include <boost/optional.hpp>
 
 #include "IWORKXMLContextBase.h"
@@ -23,7 +23,7 @@ namespace libetonyek
 class IWORKHeaderFooterContext : public IWORKXMLElementContextBase
 {
 public:
-  typedef boost::function<void(const std::string &)> CollectFunction_t;
+  typedef std::function<void(const std::string &)> CollectFunction_t;
 
   IWORKHeaderFooterContext(IWORKXMLParserState &state, const CollectFunction_t &collect);
 

@@ -11,12 +11,12 @@
 #define IWAPARSER_H_INCLUDED
 
 #include <deque>
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
 #include <unordered_map>
 
-#include <boost/function.hpp>
 #include <boost/optional.hpp>
 #include <boost/variant.hpp>
 
@@ -88,7 +88,7 @@ protected:
   friend class ObjectMessage;
 
   typedef std::map<unsigned, IWORKStylePtr_t> StyleMap_t;
-  typedef boost::function<void(unsigned, IWORKStylePtr_t &)> StyleParseFun_t;
+  typedef std::function<void(unsigned, IWORKStylePtr_t &)> StyleParseFun_t;
 
 protected:
   static boost::optional<unsigned> readRef(const IWAMessage &msg, unsigned field);
