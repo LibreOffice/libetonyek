@@ -382,12 +382,6 @@ AC_ARG_ENABLE([fuzzers],
 )
 AM_CONDITIONAL(BUILD_FUZZERS, [test "x$enable_fuzzers" = "xyes"])
 
-AC_ARG_WITH([liblangtag-data-dir],
-            [AS_HELP_STRING([--with-liblangtag-data-dir], [Set data dir for liblangtag. This is a hack needed for oss-fuzz.])],
-            [AC_DEFINE_UNQUOTED([ETONYEK_LANGTAG_DB_DATADIR], ["$withval"], [Set data dir for lang DB.])],
-            []
-)
-
 AS_IF([test "x$build_tools" = "xyes" -o "x$enable_fuzzers" = "xyes"], [
     PKG_CHECK_MODULES([REVENGE_GENERATORS],[
         librevenge-generators-0.0
