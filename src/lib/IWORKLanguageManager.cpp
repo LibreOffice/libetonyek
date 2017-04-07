@@ -7,6 +7,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#ifdef HAVE_CONFIG
+#include "config.h"
+#endif
+
 #include "IWORKLanguageManager.h"
 
 #include <cstdlib>
@@ -66,6 +70,10 @@ struct IWORKLanguageManager::LangDB
 IWORKLanguageManager::LangDB::LangDB()
   : m_db()
 {
+#ifdef ETONYEK_LANGTAG_DB_DATADIR
+  lt_db_set_datadir(ETONYEK_LANGTAG_DB_DATADIR);
+#endif
+
   shared_ptr<lt_lang_db_t> langDB(lt_db_get_lang(), lt_lang_db_unref);
   shared_ptr<lt_iter_t> it(LT_ITER_INIT(langDB.get()), lt_iter_finish);
   lt_pointer_t key(0);
