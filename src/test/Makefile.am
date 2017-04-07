@@ -34,7 +34,6 @@ test_SOURCES = \
 	IWASnappyStreamTest.cpp \
 	IWORKChainedTokenizerTest.cpp \
 	IWORKFormulaTest.cpp \
-	IWORKLanguageManagerTest.cpp \
 	IWORKPathTest.cpp \
 	IWORKPropertyMapTest.cpp \
 	IWORKShapeTest.cpp \
@@ -45,6 +44,11 @@ test_SOURCES = \
 	LibetonyekUtilsTest.cpp \
 	TestProperties.cpp \
 	TestProperties.h
+
+if WITH_LIBLANGTAG
+test_SOURCES += \
+	IWORKLanguageManagerTest.cpp
+endif
 
 detection_CPPFLAGS = \
 	-DETONYEK_DETECTION_TEST_DIR=\"$(top_srcdir)/src/test/data\" \

@@ -93,6 +93,7 @@ AS_IF([test "x$with_liblangtag" = "xyes"], [
     ],
     []
 )
+AM_CONDITIONAL([WITH_LIBLANGTAG], [test "x$with_liblangtag" = "xyes"])
 
 # ==================
 # Find boost headers
