@@ -7,12 +7,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "IWORKLanguageManager.h"
 
 #include <cstdlib>
 #include <stdexcept>
 
+#ifdef WITH_LIBLANGTAG
 #include <liblangtag/langtag.h>
+#endif
 
 #include "libetonyek_utils.h"
 
@@ -26,6 +32,7 @@ using std::string;
 using std::unordered_map;
 using std::unordered_set;
 
+#ifdef WITH_LIBLANGTAG
 namespace
 {
 
@@ -55,6 +62,7 @@ const std::string makeFullTag(const shared_ptr<lt_tag_t> &tag)
 }
 
 }
+#endif
 
 struct IWORKLanguageManager::LangDB
 {
@@ -66,6 +74,7 @@ struct IWORKLanguageManager::LangDB
 IWORKLanguageManager::LangDB::LangDB()
   : m_db()
 {
+#ifdef WITH_LIBLANGTAG
   shared_ptr<lt_lang_db_t> langDB(lt_db_get_lang(), lt_lang_db_unref);
   shared_ptr<lt_iter_t> it(LT_ITER_INIT(langDB.get()), lt_iter_finish);
   lt_pointer_t key(0);
@@ -76,6 +85,7 @@ IWORKLanguageManager::LangDB::LangDB()
     lt_lang_t *const lang = reinterpret_cast<lt_lang_t *>(value);
     m_db[lt_lang_get_name(lang)] = tag;
   }
+#endif
 }
 
 IWORKLanguageManager::IWORKLanguageManager()
@@ -92,6 +102,7 @@ IWORKLanguageManager::IWORKLanguageManager()
 
 const std::string IWORKLanguageManager::addTag(const std::string &tag)
 {
+#ifdef WITH_LIBLANGTAG
   // Check if the tag is already known
   const unordered_map<string, string>::const_iterator it = m_tagMap.find(tag);
   if (it != m_tagMap.end())
@@ -113,10 +124,14 @@ const std::string IWORKLanguageManager::addTag(const std::string &tag)
   addProperties(fullTag);
 
   return fullTag;
+#else
+  return tag;
+#endif
 }
 
 const std::string IWORKLanguageManager::addLanguage(const std::string &lang)
 {
+#ifdef WITH_LIBLANGTAG
   // Check if the lang is already known
   const unordered_map<string, string>::const_iterator it = m_langMap.find(lang);
   if (it != m_langMap.end())
@@ -142,10 +157,15 @@ const std::string IWORKLanguageManager::addLanguage(const std::string &lang)
   addProperties(fullTag);
 
   return fullTag;
+#else
+  (void) lang;
+  return "";
+#endif
 }
 
 const std::string IWORKLanguageManager::addLocale(const std::string &locale)
 {
+#ifdef WITH_LIBLANGTAG
   // Check if the locale is already known
   const unordered_map<string, string>::const_iterator it = m_localeMap.find(locale);
   if (it != m_localeMap.end())
@@ -169,14 +189,23 @@ const std::string IWORKLanguageManager::addLocale(const std::string &locale)
   addProperties(fullTag);
 
   return fullTag;
+#else
+  (void) locale;
+  return "";
+#endif
 }
 
 const std::string IWORKLanguageManager::getLanguage(const std::string &tag) const
 {
+#ifdef WITH_LIBLANGTAG
   const shared_ptr<lt_tag_t> &langTag = parseTag(tag);
   if (!langTag)
     throw std::logic_error("cannot parse tag that has been successfully parsed before");
   return lt_lang_get_name(lt_tag_get_language(langTag.get()));
+#else
+  (void) tag;
+  return "";
+#endif
 }
 
 const IWORKLanguageManager::LangDB &IWORKLanguageManager::getLangDB() const
@@ -188,6 +217,7 @@ const IWORKLanguageManager::LangDB &IWORKLanguageManager::getLangDB() const
 
 void IWORKLanguageManager::addProperties(const std::string &tag)
 {
+#ifdef WITH_LIBLANGTAG
   const shared_ptr<lt_tag_t> &langTag = parseTag(tag);
   if (!langTag)
     throw std::logic_error("cannot parse tag that has been successfully parsed before");
@@ -204,10 +234,14 @@ void IWORKLanguageManager::addProperties(const std::string &tag)
     props.insert("fo:script", lt_script_get_tag(script));
 
   m_propsMap[tag] = props;
+#else
+  (void) tag;
+#endif
 }
 
 void IWORKLanguageManager::writeProperties(const std::string &tag, librevenge::RVNGPropertyList &props) const
 {
+#ifdef WITH_LIBLANGTAG
   const unordered_map<string, RVNGPropertyList>::const_iterator it = m_propsMap.find(tag);
   if (it == m_propsMap.end())
   {
@@ -216,6 +250,10 @@ void IWORKLanguageManager::writeProperties(const std::string &tag, librevenge::R
   }
   for (RVNGPropertyList::Iter iter(it->second); !iter.last(); iter.next())
     props.insert(iter.key(), iter()->getStr());
+#else
+  (void) tag;
+  (void) props;
+#endif
 }
 
 }

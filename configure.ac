@@ -80,9 +80,19 @@ AC_SUBST(ZLIB_LIBS)
 # ===============
 # Find liblangtag
 # ===============
-PKG_CHECK_MODULES([LANGTAG],[
-    liblangtag
-])
+AC_ARG_WITH([liblangtag],
+    [AS_HELP_STRING([--without-liblangtag], [Disable use of liblangtag])],
+    [with_liblangtag="$withval"],
+    [with_liblangtag="yes"]
+)
+AS_IF([test "x$with_liblangtag" = "xyes"], [
+        PKG_CHECK_MODULES([LANGTAG],[
+            liblangtag
+        ])
+        AC_DEFINE([WITH_LIBLANGTAG], [1], [Build with liblangtag])
+    ],
+    []
+)
 
 # ==================
 # Find boost headers
@@ -439,6 +449,7 @@ Build configuration:
 	debug:           ${enable_debug}
 	docs:            ${build_docs}
 	fuzzers:         ${enable_fuzzers}
+	liblangtag:      ${with_liblangtag}
 	tests:           ${enable_tests}
 	tools:           ${build_tools}
 	werror:          ${enable_werror}
