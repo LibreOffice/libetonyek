@@ -199,7 +199,11 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
       RVNGInputStreamPtr_t binaryInput(input);
       const bool isPackage(binaryInput->existsSubStream("Metadata/DocumentIdentifier"));
       if (binaryInput->existsSubStream("Index.zip"))
-        binaryInput = getSubStream(binaryInput, "Index.zip");
+      {
+        RVNGInputStreamPtr_t zipInput = getSubStream(binaryInput, "Index.zip");
+        if (bool(zipInput))
+          binaryInput = zipInput;
+      }
       info.m_fragments = binaryInput;
       if (binaryInput->existsSubStream("Index/Document.iwa"))
       {
