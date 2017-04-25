@@ -18,7 +18,7 @@ namespace libetonyek
 {
 
 IWORKMemoryStream::IWORKMemoryStream(const RVNGInputStreamPtr_t &input)
-  : m_data(0)
+  : m_data()
   , m_length(0)
   , m_pos(0)
 {
@@ -35,7 +35,7 @@ IWORKMemoryStream::IWORKMemoryStream(const RVNGInputStreamPtr_t &input)
 }
 
 IWORKMemoryStream::IWORKMemoryStream(const RVNGInputStreamPtr_t &input, const unsigned length)
-  : m_data(0)
+  : m_data()
   , m_length(0)
   , m_pos(0)
 {
@@ -43,7 +43,7 @@ IWORKMemoryStream::IWORKMemoryStream(const RVNGInputStreamPtr_t &input, const un
 }
 
 IWORKMemoryStream::IWORKMemoryStream(const std::vector<unsigned char> &data)
-  : m_data(0)
+  : m_data()
   , m_length(data.size())
   , m_pos(0)
 {
@@ -66,7 +66,6 @@ IWORKMemoryStream::IWORKMemoryStream(const unsigned char *const data, const unsi
 
 IWORKMemoryStream::~IWORKMemoryStream()
 {
-  delete[] m_data;
 }
 
 bool IWORKMemoryStream::isStructured()
@@ -108,7 +107,7 @@ const unsigned char *IWORKMemoryStream::read(unsigned long numBytes, unsigned lo
   m_pos += numBytes;
 
   numBytesRead = numBytes;
-  return m_data + oldPos;
+  return m_data.get() + oldPos;
 }
 catch (...)
 {
@@ -158,9 +157,8 @@ void IWORKMemoryStream::assign(const unsigned char *const data, const unsigned l
 {
   assert(0 != length);
 
-  unsigned char *buffer = new unsigned char[length];
-  std::copy(data, data + length, buffer);
-  m_data = buffer;
+  m_data.reset(new unsigned char[length]);
+  std::copy(data, data + length, m_data.get());
 }
 
 void IWORKMemoryStream::read(const RVNGInputStreamPtr_t &input, const unsigned length)

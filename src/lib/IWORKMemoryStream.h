@@ -10,6 +10,7 @@
 #ifndef IWORKMEMORYSTREAM_H_INCLUDED
 #define IWORKMEMORYSTREAM_H_INCLUDED
 
+#include <memory>
 #include <vector>
 
 #include "libetonyek_utils.h"
@@ -50,7 +51,7 @@ private:
   void read(const RVNGInputStreamPtr_t &input, unsigned length);
 
 private:
-  const unsigned char *m_data;
+  std::unique_ptr<unsigned char[]> m_data;
   long m_length;
   long m_pos;
 };
