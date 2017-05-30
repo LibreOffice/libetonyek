@@ -102,11 +102,20 @@ bool probeXMLFormat(const Format format, const EtonyekDocument::Type type, const
   return false;
 }
 
+namespace
+{
+  void handleError(void * /*arg*/, const char * /*msg*/, xmlParserSeverities /*severity*/, xmlTextReaderLocatorPtr /*locator*/)
+  {
+  }
+}
+
 bool probeXML(DetectionInfo &info)
 {
   const shared_ptr<xmlTextReader> reader(xmlReaderForIO(readFromStream, closeStream, info.m_input.get(), "", 0, 0), xmlFreeTextReader);
   if (!reader)
     return false;
+
+  xmlTextReaderSetErrorHandler(reader.get(), handleError, NULL);
 
   int ret = 0;
   do
