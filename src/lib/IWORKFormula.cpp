@@ -155,144 +155,144 @@ template<typename Iterator>
 struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
 {
   FormulaGrammar()
-  : FormulaGrammar::base_type(formula, "formula")
-{
-  using ascii::char_;
-  using ascii::string;
-  using boost::none;
-  using phoenix::bind;
-  using qi::_1;
-  using qi::_a;
-  using qi::_val;
-  using qi::alpha;
-  using qi::alnum;
-  using qi::attr;
-  using qi::double_;
-  using qi::lit;
-  using qi::no_case;
-  using qi::uint_;
+    : FormulaGrammar::base_type(formula, "formula")
+  {
+    using ascii::char_;
+    using ascii::string;
+    using boost::none;
+    using phoenix::bind;
+    using qi::_1;
+    using qi::_a;
+    using qi::_val;
+    using qi::alpha;
+    using qi::alnum;
+    using qi::attr;
+    using qi::double_;
+    using qi::lit;
+    using qi::no_case;
+    using qi::uint_;
 
-  createFunctionNameMap();
+    createFunctionNameMap();
 
-  number %= double_;
-  str %= lit('\"') >> +(char_ - '\"') >> '\"';
-  prefixLit %= char_('+') | char_('-');
-  infixLit %=
-    char_('+') | char_('-') | char_('*') | char_('/')
-    | string("<>") | string("<=") | string(">=")
-    | char_('^') | char_('=') | char_('>') | char_('<')
-    ;
-  postfixLit %= char_('%');
+    number %= double_;
+    str %= lit('\"') >> +(char_ - '\"') >> '\"';
+    prefixLit %= char_('+') | char_('-');
+    infixLit %=
+      char_('+') | char_('-') | char_('*') | char_('/')
+      | string("<>") | string("<=") | string(">=")
+      | char_('^') | char_('=') | char_('>') | char_('<')
+      ;
+    postfixLit %= char_('%');
 
-  row %=
-    lit('$') >> attr(true) >> uint_
-    | attr(false) >> uint_
-    ;
+    row %=
+      lit('$') >> attr(true) >> uint_
+      | attr(false) >> uint_
+      ;
 
-  column %=
-    lit('$') >> attr(true) >> columnName
-    | attr(false) >> columnName
-    ;
+    column %=
+      lit('$') >> attr(true) >> columnName
+      | attr(false) >> columnName
+      ;
 
-  columnName = (+alpha)[_val = bind(parseRowName, _1)];
+    columnName = (+alpha)[_val = bind(parseRowName, _1)];
 
-  // TODO: improve
-  table %= +(char_ - ":");
+    // TODO: improve
+    table %= +(char_ - ":");
 
-  address %=
-    table >> "::" >> column >> row
-    | attr(none) >> column >> row
-    ;
+    address %=
+      table >> "::" >> column >> row
+      | attr(none) >> column >> row
+      ;
 
-  addressSpecialColumn %=
-    table >> "::" >> column >> attr(none)
-    | attr(none) >> column >> attr(none)
-    ;
+    addressSpecialColumn %=
+      table >> "::" >> column >> attr(none)
+      | attr(none) >> column >> attr(none)
+      ;
 
-  addressSpecialRow %=
-    table >> "::" >> attr(none) >> row
-    | attr(none) >> attr(none) >> row
-    ;
+    addressSpecialRow %=
+      table >> "::" >> attr(none) >> row
+      | attr(none) >> attr(none) >> row
+      ;
 
-  rangeSpecial %= addressSpecialColumn[_a = _1] >> attr(_a) >> !row;
+    rangeSpecial %= addressSpecialColumn[_a = _1] >> attr(_a) >> !row;
 
-  range %=
-    address >> ':' >> address
-    | addressSpecialColumn >> ':' >> addressSpecialColumn
-    | addressSpecialRow >> ':' >> addressSpecialRow
-    | rangeSpecial
-    ;
+    range %=
+      address >> ':' >> address
+      | addressSpecialColumn >> ':' >> addressSpecialColumn
+      | addressSpecialRow >> ':' >> addressSpecialRow
+      | rangeSpecial
+      ;
 
-  prefixOp %= prefixLit >> term;
-  infixOp %= term >> infixLit >> expression;
-  postfixOp %= term >> postfixLit;
+    prefixOp %= prefixLit >> term;
+    infixOp %= term >> infixLit >> expression;
+    postfixOp %= term >> postfixLit;
 
-  function %= (no_case[mappedName] | +alnum) >> '(' >> -(argument % ',') >> ')';
+    function %= (no_case[mappedName] | +alnum) >> '(' >> -(argument % ',') >> ')';
 
-  argument %=
-    range
-    | '(' >> range >> ')'
-    | expression
-    ;
+    argument %=
+      range
+      | '(' >> range >> ')'
+      | expression
+      ;
 
-  pExpr %= '(' >> expression >> ')';
+    pExpr %= '(' >> expression >> ')';
 
-  term %=
-    str
-    | number
-    | function
-    | address
-    | prefixOp
-    | pExpr
-    ;
+    term %=
+      str
+      | number
+      | function
+      | address
+      | prefixOp
+      | pExpr
+      ;
 
-  expression %=
-    infixOp
-    | postfixOp
-    | term
-    ;
+    expression %=
+      infixOp
+      | postfixOp
+      | term
+      ;
 
-  formula %= lit('=') >> expression;
+    formula %= lit('=') >> expression;
 
-  number.name("number");
-  str.name("str");
-  prefixOp.name("prefixOp");
-  infixOp.name("infixOp");
-  row.name("row");
-  column.name("column");
-  columnName.name("columnName");
-  table.name("table");
-  address.name("address");
-  range.name("range");
-  function.name("function");
-  expression.name("expression");
-  term.name("term");
-  formula.name("formula");
-  pExpr.name("pExpr");
-  argument.name("argument");
-  rangeSpecial.name("rangeSpecial");
-}
+    number.name("number");
+    str.name("str");
+    prefixOp.name("prefixOp");
+    infixOp.name("infixOp");
+    row.name("row");
+    column.name("column");
+    columnName.name("columnName");
+    table.name("table");
+    address.name("address");
+    range.name("range");
+    function.name("function");
+    expression.name("expression");
+    term.name("term");
+    formula.name("formula");
+    pExpr.name("pExpr");
+    argument.name("argument");
+    rangeSpecial.name("rangeSpecial");
+  }
 
-void createFunctionNameMap()
-{
-}
+  void createFunctionNameMap()
+  {
+  }
 
-qi::rule<Iterator, Function()> function;
-qi::rule<Iterator, Expression()> expression, formula, term, argument;
-qi::rule<Iterator, PExpr()> pExpr;
-qi::rule<Iterator, Address()> address, addressSpecialColumn, addressSpecialRow;
-qi::rule<Iterator, AddressRange()> range;
-qi::rule<Iterator, unsigned()> columnName;
-qi::rule<Iterator, Coord()> column, row;
-qi::rule<Iterator, double()> number;
-qi::rule<Iterator, string()> str, table, infixLit;
-qi::rule<Iterator, PrefixOp()> prefixOp;
-qi::rule<Iterator, InfixOp()> infixOp;
-qi::rule<Iterator, PostfixOp()> postfixOp;
-qi::rule<Iterator, char()> prefixLit, postfixLit;
-qi::rule<Iterator, qi::locals<Address> > rangeSpecial;
+  qi::rule<Iterator, Function()> function;
+  qi::rule<Iterator, Expression()> expression, formula, term, argument;
+  qi::rule<Iterator, PExpr()> pExpr;
+  qi::rule<Iterator, Address()> address, addressSpecialColumn, addressSpecialRow;
+  qi::rule<Iterator, AddressRange()> range;
+  qi::rule<Iterator, unsigned()> columnName;
+  qi::rule<Iterator, Coord()> column, row;
+  qi::rule<Iterator, double()> number;
+  qi::rule<Iterator, string()> str, table, infixLit;
+  qi::rule<Iterator, PrefixOp()> prefixOp;
+  qi::rule<Iterator, InfixOp()> infixOp;
+  qi::rule<Iterator, PostfixOp()> postfixOp;
+  qi::rule<Iterator, char()> prefixLit, postfixLit;
+  qi::rule<Iterator, qi::locals<Address> > rangeSpecial;
 
-qi::symbols<char, string> mappedName;
+  qi::symbols<char, string> mappedName;
 };
 
 }

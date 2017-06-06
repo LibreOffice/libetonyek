@@ -104,9 +104,9 @@ bool probeXMLFormat(const Format format, const EtonyekDocument::Type type, const
 
 namespace
 {
-  void handleError(void * /*arg*/, const char * /*msg*/, xmlParserSeverities /*severity*/, xmlTextReaderLocatorPtr /*locator*/)
-  {
-  }
+void handleError(void * /*arg*/, const char * /*msg*/, xmlParserSeverities /*severity*/, xmlTextReaderLocatorPtr /*locator*/)
+{
+}
 }
 
 bool probeXML(DetectionInfo &info)

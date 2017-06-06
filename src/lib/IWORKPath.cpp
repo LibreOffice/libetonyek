@@ -118,36 +118,36 @@ template<typename Iterator>
 struct PathGrammar : public qi::grammar<Iterator, IWORKPath::Impl(), ascii::space_type>
 {
   PathGrammar()
-  : PathGrammar::base_type(path, "path")
-{
-  using qi::attr;
-  using qi::as;
-  using qi::double_;
-  using qi::lit;
-  using qi::omit;
+    : PathGrammar::base_type(path, "path")
+  {
+    using qi::attr;
+    using qi::as;
+    using qi::double_;
+    using qi::lit;
+    using qi::omit;
 
-  close = lit('Z');
+    close = lit('Z');
 
-  move %= 'M' >> double_ >> double_;
+    move %= 'M' >> double_ >> double_;
 
-  line %= 'L' >> double_ >> double_;
+    line %= 'L' >> double_ >> double_;
 
-  curve %= 'C' >> double_ >> double_ >> double_ >> double_ >> double_ >> double_;
+    curve %= 'C' >> double_ >> double_ >> double_ >> double_ >> double_ >> double_;
 
-  path %= as<Path_t>()[move >> +(line | curve)] >> (close >> attr(true) >> omit[move] | attr(false));
+    path %= as<Path_t>()[move >> +(line | curve)] >> (close >> attr(true) >> omit[move] | attr(false));
 
-  close.name("close");
-  move.name("move");
-  line.name("line");
-  curve.name("curve");
-  path.name("path");
-}
+    close.name("close");
+    move.name("move");
+    line.name("line");
+    curve.name("curve");
+    path.name("path");
+  }
 
-qi::rule<Iterator, IWORKPath::Impl(), ascii::space_type> path;
-qi::rule<Iterator, MoveTo(), ascii::space_type> move;
-qi::rule<Iterator, LineTo(), ascii::space_type> line;
-qi::rule<Iterator, CurveTo(), ascii::space_type> curve;
-qi::rule<Iterator, void(), ascii::space_type> close;
+  qi::rule<Iterator, IWORKPath::Impl(), ascii::space_type> path;
+  qi::rule<Iterator, MoveTo(), ascii::space_type> move;
+  qi::rule<Iterator, LineTo(), ascii::space_type> line;
+  qi::rule<Iterator, CurveTo(), ascii::space_type> curve;
+  qi::rule<Iterator, void(), ascii::space_type> close;
 };
 
 }
