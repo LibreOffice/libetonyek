@@ -187,10 +187,13 @@ RVNGInputStreamPtr_t getSubStream(const RVNGInputStreamPtr_t &input, const char 
 RVNGInputStreamPtr_t getUncompressedSubStream(const RVNGInputStreamPtr_t &input, const char *const name, bool snappy = false) try
 {
   const RVNGInputStreamPtr_t compressed(input->getSubStreamByName(name));
-  assert(bool(compressed));
-  if (snappy)
-    return RVNGInputStreamPtr_t(new IWASnappyStream(compressed));
-  return RVNGInputStreamPtr_t(new IWORKZlibStream(compressed));
+  if (bool(compressed))
+  {
+    if (snappy)
+      return RVNGInputStreamPtr_t(new IWASnappyStream(compressed));
+    return RVNGInputStreamPtr_t(new IWORKZlibStream(compressed));
+  }
+  return RVNGInputStreamPtr_t();
 }
 catch (...)
 {
