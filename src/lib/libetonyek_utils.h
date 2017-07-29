@@ -63,6 +63,14 @@ typedef __int64 int64_t;
 #  define ETONYEK_ATTRIBUTE_PRINTF(fmt, arg)
 #endif
 
+#if defined(HAVE_CLANG_ATTRIBUTE_FALLTHROUGH)
+#  define ETONYEK_FALLTHROUGH [[clang::fallthrough]]
+#elif defined(HAVE_GCC_ATTRIBUTE_FALLTHROUGH)
+#  define ETONYEK_FALLTHROUGH __attribute__((fallthrough))
+#else
+#  define ETONYEK_FALLTHROUGH ((void) 0)
+#endif
+
 // debug message includes source file and line number
 //#define VERBOSE_DEBUG 1
 

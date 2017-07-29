@@ -337,7 +337,7 @@ void IWAParser::readStroke(const IWAMessage &msg, IWORKStroke &stroke)
     {
     default :
       ETONYEK_DEBUG_MSG(("IWAParser::readStroke: unknown cap value: %u", get(msg.uint32(3))));
-    // fall-through intended
+      ETONYEK_FALLTHROUGH;
     case 0 :
       stroke.m_cap = IWORK_LINE_CAP_BUTT;
       break;
@@ -352,7 +352,7 @@ void IWAParser::readStroke(const IWAMessage &msg, IWORKStroke &stroke)
     {
     default :
       ETONYEK_DEBUG_MSG(("IWAParser::readStroke: unknown join value: %u", get(msg.uint32(4))));
-    // fall-through intended
+      ETONYEK_FALLTHROUGH;
     case 0 :
       stroke.m_join = IWORK_LINE_JOIN_MITER;
       break;
@@ -403,7 +403,7 @@ bool IWAParser::readFill(const IWAMessage &msg, IWORKFill &fill)
       {
       default :
         ETONYEK_DEBUG_MSG(("IWAParser::readFill: unknown bitmap fill type: %u", get(msg.message(3).uint32(2))));
-      // fall-through intended
+        ETONYEK_FALLTHROUGH;
       case 0 :
         bitmap.m_type = IWORK_FILL_IMAGE_TYPE_ORIGINAL_SIZE;
         break;
@@ -444,7 +444,7 @@ void IWAParser::readGradient(const IWAMessage &msg, IWORKGradient &gradient)
     {
     default :
       ETONYEK_DEBUG_MSG(("IWAParser::readGradient: unknown gradient type: %u", get(msg.uint32(1))));
-    // fall-through intended
+      ETONYEK_FALLTHROUGH;
     case 0 :
       gradient.m_type = IWORK_GRADIENT_TYPE_LINEAR;
       break;
@@ -758,7 +758,7 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
                   closingMove = true;
                   break;
                 }
-              // fall-through intended
+                ETONYEK_FALLTHROUGH;
               case 2 :
               {
                 const optional<IWORKPosition> &coords = readPosition(*it, 2);
@@ -1385,7 +1385,7 @@ void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
     {
     default :
       ETONYEK_DEBUG_MSG(("parseListStyle: unknown label type %u\n", *it));
-    // fall-through intended
+      ETONYEK_FALLTHROUGH;
     case 0 :
       // no label
       levelProps[level].put<ListLabelTypeInfo>(true);
