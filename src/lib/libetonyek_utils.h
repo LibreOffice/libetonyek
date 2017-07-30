@@ -57,7 +57,7 @@ typedef __int64 int64_t;
 
 #define ETONYEK_NUM_ELEMENTS(array) (sizeof(array) / sizeof((array)[0]))
 
-#if defined(__clang__) || defined(__GNUC__)
+#if defined(HAVE_GCC_ATTRIBUTE_FORMAT)
 #  define ETONYEK_ATTRIBUTE_PRINTF(fmt, arg) __attribute__((__format__(__printf__, fmt, arg)))
 #else
 #  define ETONYEK_ATTRIBUTE_PRINTF(fmt, arg)

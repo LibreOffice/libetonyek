@@ -48,6 +48,7 @@ AC_PROG_SED
 AM_MISSING_PROG([GPERF], [gperf])
 
 AX_CXX_COMPILE_STDCXX_11([noext])
+AX_GCC_FUNC_ATTRIBUTE([format])
 DLP_FALLTHROUGH
 
 # ===============
