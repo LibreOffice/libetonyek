@@ -105,6 +105,7 @@ CPPFLAGS="${BOOST_CFLAGS} ${CPPFLAGS}"
 AC_CHECK_HEADERS(
         boost/any.hpp \
         boost/container/deque.hpp \
+        boost/cstdint.hpp \
         boost/fusion/adapted/std_pair.hpp \
         boost/fusion/include/adapt_struct.hpp \
         boost/lexical_cast.hpp \

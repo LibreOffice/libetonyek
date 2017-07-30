@@ -10,47 +10,18 @@
 #ifndef LIBETONYEK_UTILS_H_INCLUDED
 #define LIBETONYEK_UTILS_H_INCLUDED
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <cmath>
 #include <memory>
 #include <string>
 
+#include <boost/cstdint.hpp>
+
 #include <librevenge/librevenge.h>
 #include <librevenge-stream/librevenge-stream.h>
-
-#ifdef _MSC_VER
-
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned uint32_t;
-typedef unsigned __int64 uint64_t;
-typedef signed char int8_t;
-typedef short int16_t;
-typedef int int32_t;
-typedef __int64 int64_t;
-
-#else
-
-#ifdef HAVE_CONFIG_H
-
-#include <config.h>
-
-#ifdef HAVE_STDINT_H
-#include <stdint.h>
-#endif
-
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
-
-#else
-
-// assume that the headers are there inside LibreOffice build when no HAVE_CONFIG_H is defined
-#include <stdint.h>
-#include <inttypes.h>
-
-#endif
-
-#endif
 
 #define ETONYEK_EPSILON 1e-9
 #define ETONYEK_ALMOST_ZERO(x) (std::fabs(x) < ETONYEK_EPSILON)
