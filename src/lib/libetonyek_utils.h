@@ -71,22 +71,14 @@ typedef __int64 int64_t;
 #  define ETONYEK_FALLTHROUGH ((void) 0)
 #endif
 
-// debug message includes source file and line number
-//#define VERBOSE_DEBUG 1
-
 // do nothing with debug messages in a release compile
 #ifdef DEBUG
 namespace libetonyek
 {
 void debugPrint(const char *format, ...) ETONYEK_ATTRIBUTE_PRINTF(1, 2);
 }
-#ifdef VERBOSE_DEBUG
-#define ETONYEK_DEBUG_MSG(M) libetonyek::debugPrint("%15s:%5d: ", FILE, LINE); libetonyek::debugPrint M
-#define ETONYEK_DEBUG(M) M
-#else
 #define ETONYEK_DEBUG_MSG(M) libetonyek::debugPrint M
 #define ETONYEK_DEBUG(M) M
-#endif
 #else
 #define ETONYEK_DEBUG_MSG(M)
 #define ETONYEK_DEBUG(M)
