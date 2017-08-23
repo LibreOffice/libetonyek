@@ -54,7 +54,7 @@ IWORKMemoryStream::IWORKMemoryStream(const std::vector<unsigned char> &data)
 }
 
 IWORKMemoryStream::IWORKMemoryStream(const unsigned char *const data, const unsigned length)
-  : m_data(0)
+  : m_data(nullptr)
   , m_length(length)
   , m_pos(0)
 {
