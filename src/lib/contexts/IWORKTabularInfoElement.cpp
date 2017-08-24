@@ -202,17 +202,17 @@ void CellContextBase::emitCell(const bool covered)
     }
     else
     {
-      IWORKTextPtr_t text(getState().m_currentText);
+      IWORKTextPtr_t cellText(getState().m_currentText);
       getState().m_currentText.reset();
       if (bool(tableData->m_content) && tableData->m_type == IWORK_CELL_TYPE_TEXT)
       {
-        text = getCollector().createText(getState().m_langManager);
-        text->insertText(get(tableData->m_content));
-        text->flushParagraph();
+        cellText = getCollector().createText(getState().m_langManager);
+        cellText->insertText(get(tableData->m_content));
+        cellText->flushParagraph();
       }
       getState().m_currentTable->insertCell(
         tableData->m_column, tableData->m_row,
-        tableData->m_content, text,
+        tableData->m_content, cellText,
         get_optional_value_or(tableData->m_columnSpan, 1), get_optional_value_or(tableData->m_rowSpan, 1),
         tableData->m_formula, tableData->m_style, tableData->m_type
       );
