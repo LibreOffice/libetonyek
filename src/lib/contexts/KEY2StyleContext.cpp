@@ -34,13 +34,11 @@ private:
 
 private:
   IWORKPropertyMapElement m_base;
-  IWORKPropertyMap &m_propMap;
 };
 
 PropertyMapElement::PropertyMapElement(KEY2ParserState &state, IWORKPropertyMap &propMap)
   : KEY2XMLElementContextBase(state)
   , m_base(state, propMap)
-  , m_propMap(propMap)
 {
 }
 

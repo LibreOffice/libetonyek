@@ -34,8 +34,6 @@ private:
 private:
   IWORKPropertyMap m_props;
   IWORKStyleContext m_base;
-  IWORKStyleMap_t *const m_styleMap;
-  const bool m_nested;
   boost::optional<std::string> m_ident;
   boost::optional<std::string> m_parentIdent;
 };

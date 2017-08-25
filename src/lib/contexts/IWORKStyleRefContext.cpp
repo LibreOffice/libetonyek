@@ -17,11 +17,10 @@
 namespace libetonyek
 {
 
-IWORKStyleRefContext::IWORKStyleRefContext(IWORKXMLParserState &state, const IWORKStyleMap_t &styleMap, const bool nested, const bool anonymous)
+IWORKStyleRefContext::IWORKStyleRefContext(IWORKXMLParserState &state, const IWORKStyleMap_t &styleMap, const bool nested)
   : IWORKXMLEmptyContextBase(state)
   , m_styleMap(styleMap)
   , m_nested(nested)
-  , m_anonymous(anonymous)
 {
 }
 

@@ -264,19 +264,17 @@ namespace
 class FootnoteHelper
 {
 public:
-  FootnoteHelper(PAG1ParserState &state, IWORKXMLContext &context);
+  FootnoteHelper(PAG1ParserState &state);
 
   IWORKXMLContextPtr_t element(int name);
   const char *text(const char *value);
 
 private:
   PAG1ParserState &m_state;
-  IWORKXMLContext &m_context;
 };
 
-FootnoteHelper::FootnoteHelper(PAG1ParserState &state, IWORKXMLContext &context)
+FootnoteHelper::FootnoteHelper(PAG1ParserState &state)
   : m_state(state)
-  , m_context(context)
 {
 }
 
@@ -325,7 +323,7 @@ private:
 
 SpanElement::SpanElement(PAG1ParserState &state)
   : PAG1XMLContextBase<IWORKSpanElement>(state)
-  , m_footnoteHelper(state, *this)
+  , m_footnoteHelper(state)
 {
 }
 
@@ -362,7 +360,7 @@ private:
 
 LinkElement::LinkElement(PAG1ParserState &state)
   : PAG1XMLContextBase<IWORKLinkElement>(state)
-  , m_footnoteHelper(state, *this)
+  , m_footnoteHelper(state)
 {
 }
 
@@ -403,7 +401,7 @@ private:
 
 PElement::PElement(PAG1ParserState &state)
   : PAG1XMLContextBase<IWORKPElement>(state)
-  , m_footnoteHelper(state, *this)
+  , m_footnoteHelper(state)
   , m_ref()
 {
 }

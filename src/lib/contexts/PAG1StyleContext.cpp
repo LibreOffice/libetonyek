@@ -141,8 +141,6 @@ PAG1StyleContext::PAG1StyleContext(PAG1ParserState &state, IWORKStyleMap_t *cons
   : PAG1XMLElementContextBase(state)
   , m_props()
   , m_base(state, m_props, styleMap, defaultParent, nested)
-  , m_styleMap(styleMap)
-  , m_nested(nested)
 {
 }
 

@@ -21,7 +21,7 @@ struct IWORKDictionary;
 class IWORKStyleRefContext : public IWORKXMLEmptyContextBase
 {
 public:
-  IWORKStyleRefContext(IWORKXMLParserState &state, const IWORKStyleMap_t &styleMap, bool nested = false, bool anonymous = false);
+  IWORKStyleRefContext(IWORKXMLParserState &state, const IWORKStyleMap_t &styleMap, bool nested = false);
 
   virtual void attribute(int name, const char *value);
   virtual void endOfElement();
@@ -29,7 +29,6 @@ public:
 private:
   const IWORKStyleMap_t &m_styleMap;
   const bool m_nested;
-  const bool m_anonymous;
 };
 
 }
