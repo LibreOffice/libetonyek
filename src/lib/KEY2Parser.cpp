@@ -46,7 +46,6 @@
 #include "KEYCollector.h"
 #include "KEYTypes.h"
 
-using boost::get_optional_value_or;
 using boost::optional;
 
 using std::string;

@@ -20,11 +20,8 @@ namespace libetonyek
 
 using boost::none;
 
-using std::make_pair;
 using std::make_shared;
 using std::map;
-using std::pair;
-using std::shared_ptr;
 using std::string;
 
 namespace

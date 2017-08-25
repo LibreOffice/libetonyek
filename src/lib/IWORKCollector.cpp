@@ -29,7 +29,6 @@
 namespace libetonyek
 {
 
-using boost::optional;
 
 using librevenge::RVNGPropertyList;
 using librevenge::RVNG_PERCENT;

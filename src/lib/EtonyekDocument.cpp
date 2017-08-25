@@ -42,7 +42,6 @@
 #include "PAG1Token.h"
 #include "PAG5Parser.h"
 
-using boost::optional;
 
 using std::shared_ptr;
 using std::string;

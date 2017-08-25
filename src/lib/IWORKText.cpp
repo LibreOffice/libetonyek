@@ -26,7 +26,6 @@
 #include "IWORKTextRecorder.h"
 #include "IWORKTypes.h"
 
-using boost::optional;
 
 using librevenge::RVNGPropertyList;
 using librevenge::RVNGPropertyListVector;
