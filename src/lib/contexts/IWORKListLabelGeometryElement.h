@@ -24,8 +24,8 @@ public:
   IWORKListLabelGeometryElement(IWORKXMLParserState &state, boost::optional<IWORKListLabelGeometry> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   boost::optional<IWORKListLabelGeometry> &m_value;

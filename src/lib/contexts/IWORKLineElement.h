@@ -24,9 +24,9 @@ public:
   explicit IWORKLineElement(IWORKXMLParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   boost::optional<IWORKPosition> m_head;

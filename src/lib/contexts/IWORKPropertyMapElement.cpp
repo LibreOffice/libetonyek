@@ -56,8 +56,8 @@ public:
   StylePropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap, IWORKStyleMap_t &styleMap);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKStyleMap_t &m_styleMap;
@@ -118,8 +118,8 @@ public:
   TabsProperty(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKTabStops_t m_tabs;
@@ -177,8 +177,8 @@ public:
   LinespacingElement(IWORKXMLParserState &state, optional<IWORKLineSpacing> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   optional<IWORKLineSpacing> &m_value;
@@ -224,7 +224,7 @@ public:
   ElementElement(IWORKXMLParserState &state, optional<double> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 
 private:
   optional<double> &m_value;
@@ -253,8 +253,8 @@ public:
   PatternContainerElement(IWORKXMLParserState &state, deque<double> &value);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   deque<double> &m_value;
@@ -300,8 +300,8 @@ public:
   PatternElement(IWORKXMLParserState &state, optional<IWORKStrokeType> &type, deque<double> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   optional<IWORKStrokeType> &m_type;
@@ -356,9 +356,9 @@ public:
   StrokeElement(IWORKXMLParserState &state, optional<IWORKStroke> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   optional<IWORKStroke> &m_value;
@@ -452,9 +452,9 @@ public:
   GradientStopElement(IWORKXMLParserState &state, deque<IWORKGradientStop> &stops);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   deque<IWORKGradientStop> &m_stops;
@@ -525,9 +525,9 @@ public:
   AngleGradientElement(IWORKXMLParserState &state, optional<IWORKGradient> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   optional<IWORKGradient> &m_value;
@@ -604,9 +604,9 @@ public:
   TransformGradientElement(IWORKXMLParserState &state, optional<IWORKGradient> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   optional<IWORKGradient> &m_value;
@@ -677,9 +677,9 @@ public:
   TexturedFillElement(IWORKXMLParserState &state, optional<IWORKFillImage> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   optional<IWORKFillImage> &m_value;
@@ -756,8 +756,8 @@ public:
   FillElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKPropertyMap &m_propMap;
@@ -813,8 +813,8 @@ public:
   ColumnElement(IWORKXMLParserState &state, IWORKColumns::Column &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   IWORKColumns::Column &m_value;
@@ -857,9 +857,9 @@ public:
   ColumnsElement(IWORKXMLParserState &state, optional<IWORKColumns> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   optional<IWORKColumns> &m_value;
@@ -905,8 +905,8 @@ public:
   PaddingElement(IWORKXMLParserState &state, optional<IWORKPadding> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   optional<IWORKPadding> &m_value;
@@ -955,8 +955,8 @@ public:
   LanguageElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   optional<string> m_lang;
@@ -1005,8 +1005,8 @@ public:
   NumberFormatElement(IWORKXMLParserState &state, optional<IWORKNumberFormat> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   optional<IWORKNumberFormat> &m_value;
@@ -1073,8 +1073,8 @@ public:
   DateTimeFormatElement(IWORKXMLParserState &state, optional<IWORKDateTimeFormat> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   optional<IWORKDateTimeFormat> &m_value;
@@ -1110,8 +1110,8 @@ public:
   DurationFormatElement(IWORKXMLParserState &state, optional<IWORKDurationFormat> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   optional<IWORKDurationFormat> &m_value;
@@ -1151,7 +1151,7 @@ private:
   typedef IWORKValueContext<IWORKColor, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> ColorProperty;
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   IWORKShadow &m_value;
@@ -1191,8 +1191,8 @@ public:
   CoreImageFilterInfoElement(IWORKXMLParserState &state, deque<IWORKShadow> &elements);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   deque<IWORKShadow> &m_elements;
@@ -1249,8 +1249,8 @@ public:
   FiltersElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKPropertyMap &m_propMap;
@@ -1347,8 +1347,8 @@ public:
   ListStyleProperty(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKListStyle_t m_style;

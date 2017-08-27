@@ -38,128 +38,128 @@ class CloseCommentElement : public IWORKOutputElement
 {
 public:
   CloseCommentElement() {}
-  ~CloseCommentElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~CloseCommentElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class CloseEndnoteElement : public IWORKOutputElement
 {
 public:
   CloseEndnoteElement() {}
-  ~CloseEndnoteElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~CloseEndnoteElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class CloseFooterElement : public IWORKOutputElement
 {
 public:
   CloseFooterElement() {}
-  ~CloseFooterElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~CloseFooterElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class CloseFootnoteElement : public IWORKOutputElement
 {
 public:
   CloseFootnoteElement() {}
-  ~CloseFootnoteElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~CloseFootnoteElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class CloseFrameElement : public IWORKOutputElement
 {
 public:
   CloseFrameElement() {}
-  ~CloseFrameElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~CloseFrameElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class CloseHeaderElement : public IWORKOutputElement
 {
 public:
   CloseHeaderElement() {}
-  ~CloseHeaderElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~CloseHeaderElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class CloseLinkElement : public IWORKOutputElement
 {
 public:
   CloseLinkElement() {}
-  ~CloseLinkElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~CloseLinkElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class CloseListElementElement : public IWORKOutputElement
 {
 public:
   CloseListElementElement() {}
-  ~CloseListElementElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~CloseListElementElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class CloseOrderedListLevelElement : public IWORKOutputElement
 {
 public:
   CloseOrderedListLevelElement() {}
-  ~CloseOrderedListLevelElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~CloseOrderedListLevelElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class CloseParagraphElement : public IWORKOutputElement
 {
 public:
   CloseParagraphElement() {}
-  ~CloseParagraphElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~CloseParagraphElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class CloseSectionElement : public IWORKOutputElement
 {
 public:
   CloseSectionElement() {}
-  ~CloseSectionElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~CloseSectionElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class CloseSpanElement : public IWORKOutputElement
 {
 public:
   CloseSpanElement() {}
-  ~CloseSpanElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~CloseSpanElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class CloseTableElement : public IWORKOutputElement
 {
 public:
   CloseTableElement() {}
-  ~CloseTableElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~CloseTableElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class CloseTableCellElement : public IWORKOutputElement
 {
 public:
   CloseTableCellElement() {}
-  ~CloseTableCellElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~CloseTableCellElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class CloseTableRowElement : public IWORKOutputElement
 {
 public:
   CloseTableRowElement() {}
-  ~CloseTableRowElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~CloseTableRowElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class CloseUnorderedListLevelElement : public IWORKOutputElement
 {
 public:
   CloseUnorderedListLevelElement() {}
-  ~CloseUnorderedListLevelElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~CloseUnorderedListLevelElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class DrawGraphicObjectElement : public IWORKOutputElement
@@ -167,8 +167,8 @@ class DrawGraphicObjectElement : public IWORKOutputElement
 public:
   DrawGraphicObjectElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~DrawGraphicObjectElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~DrawGraphicObjectElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -178,8 +178,8 @@ class DrawPathElement : public IWORKOutputElement
 public:
   DrawPathElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~DrawPathElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~DrawPathElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -189,8 +189,8 @@ class DrawPolylineElement : public IWORKOutputElement
 public:
   DrawPolylineElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~DrawPolylineElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~DrawPolylineElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -199,24 +199,24 @@ class EndLayerElement : public IWORKOutputElement
 {
 public:
   EndLayerElement() {}
-  ~EndLayerElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~EndLayerElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class EndNotesElement : public IWORKOutputElement
 {
 public:
   EndNotesElement() {}
-  ~EndNotesElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~EndNotesElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class EndTextObjectElement : public IWORKOutputElement
 {
 public:
   EndTextObjectElement() {}
-  ~EndTextObjectElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~EndTextObjectElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class InsertBinaryObjectElement : public IWORKOutputElement
@@ -224,8 +224,8 @@ class InsertBinaryObjectElement : public IWORKOutputElement
 public:
   InsertBinaryObjectElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~InsertBinaryObjectElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~InsertBinaryObjectElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -235,8 +235,8 @@ class InsertCoveredTableCellElement : public IWORKOutputElement
 public:
   InsertCoveredTableCellElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~InsertCoveredTableCellElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~InsertCoveredTableCellElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -245,24 +245,24 @@ class InsertLineBreakElement : public IWORKOutputElement
 {
 public:
   InsertLineBreakElement() {}
-  ~InsertLineBreakElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~InsertLineBreakElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class InsertSpaceElement : public IWORKOutputElement
 {
 public:
   InsertSpaceElement() {}
-  ~InsertSpaceElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~InsertSpaceElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class InsertTabElement : public IWORKOutputElement
 {
 public:
   InsertTabElement() {}
-  ~InsertTabElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~InsertTabElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class InsertTextElement : public IWORKOutputElement
@@ -270,8 +270,8 @@ class InsertTextElement : public IWORKOutputElement
 public:
   InsertTextElement(const librevenge::RVNGString &text) :
     m_text(text) {}
-  ~InsertTextElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~InsertTextElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGString m_text;
 };
@@ -281,8 +281,8 @@ class OpenCommentElement : public IWORKOutputElement
 public:
   OpenCommentElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~OpenCommentElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenCommentElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -292,8 +292,8 @@ class OpenEndnoteElement : public IWORKOutputElement
 public:
   OpenEndnoteElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~OpenEndnoteElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenEndnoteElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -305,8 +305,8 @@ public:
     : m_propList(propList)
     , m_formula(formula)
     , m_tableNameMap(tableNameMap) {}
-  ~OpenFormulaCellElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenFormulaCellElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
   const IWORKFormula m_formula;
@@ -318,8 +318,8 @@ class OpenFooterElement : public IWORKOutputElement
 public:
   OpenFooterElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~OpenFooterElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenFooterElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -329,8 +329,8 @@ class OpenFootnoteElement : public IWORKOutputElement
 public:
   OpenFootnoteElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~OpenFootnoteElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenFootnoteElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -340,8 +340,8 @@ class OpenFrameElement : public IWORKOutputElement
 public:
   OpenFrameElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~OpenFrameElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenFrameElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -351,8 +351,8 @@ class OpenHeaderElement : public IWORKOutputElement
 public:
   OpenHeaderElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~OpenHeaderElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenHeaderElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -362,8 +362,8 @@ class OpenLinkElement : public IWORKOutputElement
 public:
   OpenLinkElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~OpenLinkElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenLinkElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -373,8 +373,8 @@ class OpenListElementElement : public IWORKOutputElement
 public:
   OpenListElementElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~OpenListElementElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenListElementElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -384,8 +384,8 @@ class OpenOrderedListLevelElement : public IWORKOutputElement
 public:
   OpenOrderedListLevelElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~OpenOrderedListLevelElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenOrderedListLevelElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -395,8 +395,8 @@ class OpenParagraphElement : public IWORKOutputElement
 public:
   OpenParagraphElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~OpenParagraphElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenParagraphElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -406,8 +406,8 @@ class OpenSectionElement : public IWORKOutputElement
 public:
   OpenSectionElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~OpenSectionElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenSectionElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -417,8 +417,8 @@ class OpenSpanElement : public IWORKOutputElement
 public:
   OpenSpanElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~OpenSpanElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenSpanElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -428,8 +428,8 @@ class OpenTableElement : public IWORKOutputElement
 public:
   OpenTableElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~OpenTableElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenTableElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -439,8 +439,8 @@ class OpenTableCellElement : public IWORKOutputElement
 public:
   OpenTableCellElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~OpenTableCellElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenTableCellElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -450,8 +450,8 @@ class OpenTableRowElement : public IWORKOutputElement
 public:
   OpenTableRowElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~OpenTableRowElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenTableRowElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -461,8 +461,8 @@ class OpenUnorderedListLevelElement : public IWORKOutputElement
 public:
   OpenUnorderedListLevelElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~OpenUnorderedListLevelElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenUnorderedListLevelElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -472,8 +472,8 @@ class SetStyleElement : public IWORKOutputElement
 public:
   SetStyleElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~SetStyleElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~SetStyleElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -483,8 +483,8 @@ class StartLayerElement : public IWORKOutputElement
 public:
   StartLayerElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~StartLayerElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~StartLayerElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   const librevenge::RVNGPropertyList m_propList;
 };
@@ -494,8 +494,8 @@ class StartNotesElement : public IWORKOutputElement
 public:
   StartNotesElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~StartNotesElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~StartNotesElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   const librevenge::RVNGPropertyList m_propList;
 };
@@ -505,8 +505,8 @@ class StartTextObjectElement : public IWORKOutputElement
 public:
   StartTextObjectElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~StartTextObjectElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~StartTextObjectElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };

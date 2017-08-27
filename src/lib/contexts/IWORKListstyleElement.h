@@ -25,10 +25,10 @@ public:
   IWORKListstyleElement(IWORKXMLParserState &state, IWORKListStyle_t &style);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
-  virtual IWORKXMLContextPtr_t handle(int name);
+  IWORKXMLContextPtr_t handle(int name) override;
 
 private:
   IWORKListStyle_t &m_style;

@@ -35,7 +35,7 @@ namespace
 
 class Tokenizer : public IWORKTokenizerBase
 {
-  virtual int queryId(const char *name) const;
+  int queryId(const char *name) const override;
 };
 
 int Tokenizer::queryId(const char *const name) const

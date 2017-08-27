@@ -26,7 +26,7 @@ public:
   IWORKStringElement(IWORKXMLParserState &state, boost::optional<std::string> &str);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 
 private:
   boost::optional<std::string> &m_string;

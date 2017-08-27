@@ -29,7 +29,7 @@ public:
   explicit MutableArrayElement(IWORKXMLParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 MutableArrayElement::MutableArrayElement(IWORKXMLParserState &state)
@@ -54,7 +54,7 @@ public:
   explicit CachedDataElement(IWORKXMLParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 CachedDataElement::CachedDataElement(IWORKXMLParserState &state)
@@ -81,7 +81,7 @@ public:
   explicit ChartRowColumnNamesElement(IWORKXMLParserState &state, std::deque<std::string> &rowColumnNames);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   std::deque<std::string> m_rowColumnNames;
@@ -109,7 +109,7 @@ public:
   explicit FormulaChartModelElement(IWORKXMLParserState &state, IWORKChart &chart);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   IWORKChart m_chart;
@@ -154,7 +154,7 @@ public:
   explicit ChartModelObjectElement(IWORKXMLParserState &state, IWORKChart &chart);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   IWORKChart m_chart;

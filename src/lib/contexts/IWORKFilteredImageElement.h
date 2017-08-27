@@ -24,8 +24,8 @@ public:
   IWORKFilteredImageElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKMediaContentPtr_t &m_content;

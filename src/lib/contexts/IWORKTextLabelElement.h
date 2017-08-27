@@ -24,8 +24,8 @@ public:
   IWORKTextLabelElement(IWORKXMLParserState &state, boost::optional<IWORKListLabelTypeInfo_t> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   boost::optional<IWORKListLabelTypeInfo_t> &m_value;

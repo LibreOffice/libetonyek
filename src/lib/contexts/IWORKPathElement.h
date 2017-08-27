@@ -21,7 +21,7 @@ public:
   explicit IWORKPathElement(IWORKXMLParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 }

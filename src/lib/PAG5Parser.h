@@ -23,7 +23,7 @@ public:
   PAG5Parser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package, PAGCollector &collector);
 
 private:
-  virtual bool parseDocument();
+  bool parseDocument() override;
 
 private:
   PAGCollector &m_collector;

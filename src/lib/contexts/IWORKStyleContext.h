@@ -28,11 +28,11 @@ public:
   IWORKStyleContext(IWORKXMLParserState &state, IWORKPropertyMap &props, IWORKStyleMap_t *styleMap = 0, bool nested = false);
   IWORKStyleContext(IWORKXMLParserState &state, IWORKPropertyMap &props, IWORKStyleMap_t *styleMap = 0, const char *defaultParent = 0, bool nested = false);
 
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   IWORKStyleMap_t *const m_styleMap;

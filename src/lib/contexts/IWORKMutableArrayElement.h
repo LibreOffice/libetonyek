@@ -38,12 +38,12 @@ public:
   }
 
 private:
-  virtual IWORKXMLContextPtr_t element(const int name)
+  IWORKXMLContextPtr_t element(const int name) override
   {
     return Super_t::element(name);
   }
 
-  virtual void endOfElement()
+  void endOfElement() override
   {
     Super_t::endOfElement();
     if (this->getId())

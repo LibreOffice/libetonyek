@@ -24,8 +24,8 @@ public:
   IWORKTabsElement(IWORKXMLParserState &state, IWORKTabStops_t &tabs);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKTabStops_t &m_tabs;

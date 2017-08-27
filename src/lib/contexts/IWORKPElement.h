@@ -24,10 +24,10 @@ public:
   explicit IWORKPElement(IWORKXMLParserState &state);
 
 protected:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
-  virtual void text(const char *value);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
+  void text(const char *value) override;
 
   void ensureOpened();
 

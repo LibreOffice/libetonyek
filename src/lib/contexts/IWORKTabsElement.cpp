@@ -30,7 +30,7 @@ public:
   TabstopElement(IWORKXMLParserState &state, optional<double> &pos);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 
 private:
   optional<double> &m_pos;

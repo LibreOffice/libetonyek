@@ -21,8 +21,8 @@ public:
   IWORKCoreImageFilterDescriptorElement(IWORKXMLParserState &state, bool &isShadow);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   bool &m_isShadow;

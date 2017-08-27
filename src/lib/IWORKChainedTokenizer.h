@@ -20,8 +20,8 @@ class IWORKChainedTokenizer : public IWORKTokenizer
 public:
   IWORKChainedTokenizer(const IWORKTokenizer &tokenizer, const IWORKTokenizer &next);
 
-  virtual int getId(const char *name) const;
-  virtual int getQualifiedId(const char *name, const char *ns) const;
+  int getId(const char *name) const override;
+  int getQualifiedId(const char *name, const char *ns) const override;
 
 private:
   const IWORKTokenizer &m_tokenizer;

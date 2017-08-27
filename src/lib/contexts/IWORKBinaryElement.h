@@ -24,8 +24,8 @@ public:
   IWORKBinaryElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &value);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKMediaContentPtr_t &m_value;

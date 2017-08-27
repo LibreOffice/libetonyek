@@ -24,7 +24,7 @@ public:
   IWORKListLabelGeometriesProperty(IWORKXMLParserState &state, std::deque<IWORKListLabelGeometry> &elements);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   std::deque<IWORKListLabelGeometry> &m_elements;

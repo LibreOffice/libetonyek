@@ -45,7 +45,7 @@ public:
   }
 
 protected:
-  virtual IWORKXMLContextPtr_t element(const int name)
+  IWORKXMLContextPtr_t element(const int name) override
   {
     if (m_ref && m_dict)
       handleRef();
@@ -59,7 +59,7 @@ protected:
     return IWORKXMLContextPtr_t();
   }
 
-  virtual void endOfElement()
+  void endOfElement() override
   {
     if (m_ref && m_dict)
       handleRef();

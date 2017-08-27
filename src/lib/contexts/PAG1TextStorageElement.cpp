@@ -72,8 +72,8 @@ public:
   explicit AttachmentElement(PAG1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   bool m_known;
@@ -143,9 +143,9 @@ public:
   explicit AttachmentsElement(PAG1ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 AttachmentsElement::AttachmentsElement(PAG1ParserState &state)
@@ -183,7 +183,7 @@ public:
   explicit FootnoteElement(PAG1ParserState &state);
 
 private:
-  virtual void endOfElement();
+  void endOfElement() override;
 };
 
 FootnoteElement::FootnoteElement(PAG1ParserState &state)
@@ -212,7 +212,7 @@ public:
   explicit FootnotebrElement(PAG1ParserState &state);
 
 private:
-  virtual void endOfElement();
+  void endOfElement() override;
 };
 
 FootnotebrElement::FootnotebrElement(PAG1ParserState &state)
@@ -236,8 +236,8 @@ public:
   explicit FootnoteMarkElement(PAG1ParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 };
 
 FootnoteMarkElement::FootnoteMarkElement(PAG1ParserState &state)
@@ -314,8 +314,8 @@ public:
   explicit SpanElement(PAG1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void text(const char *value);
+  IWORKXMLContextPtr_t element(int name) override;
+  void text(const char *value) override;
 
 private:
   FootnoteHelper m_footnoteHelper;
@@ -351,8 +351,8 @@ public:
   LinkElement(PAG1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void text(const char *value);
+  IWORKXMLContextPtr_t element(int name) override;
+  void text(const char *value) override;
 
 private:
   FootnoteHelper m_footnoteHelper;
@@ -390,9 +390,9 @@ public:
   explicit PElement(PAG1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void text(const char *value);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void text(const char *value) override;
+  void endOfElement() override;
 
 private:
   FootnoteHelper m_footnoteHelper;
@@ -494,7 +494,7 @@ public:
   explicit LayoutElement(PAG1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 LayoutElement::LayoutElement(PAG1ParserState &state)
@@ -526,10 +526,10 @@ public:
 private:
   void open();
 
-  virtual void startOfElement();
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   const PageFrame &m_pageFrame;
@@ -619,7 +619,7 @@ public:
   ContainerHintElement(PAG1ParserState &state, PageFrame &pageFrame);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 
 private:
   PageFrame &m_pageFrame;
@@ -661,7 +661,7 @@ public:
   explicit TextBodyElement(PAG1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   PageFrame m_pageFrame;

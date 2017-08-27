@@ -31,7 +31,7 @@ public:
   explicit StringContext(IWORKXMLParserState &state, optional<string> &value);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   optional<string> &m_value;

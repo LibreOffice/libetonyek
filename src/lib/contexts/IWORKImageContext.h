@@ -24,10 +24,10 @@ public:
   IWORKImageContext(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
 
 protected:
-  virtual void endOfElement();
+  void endOfElement() override;
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   IWORKMediaContentPtr_t &m_content;

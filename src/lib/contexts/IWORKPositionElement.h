@@ -24,8 +24,8 @@ public:
   IWORKPositionElement(IWORKXMLParserState &state, boost::optional<IWORKPosition> &position);
 
 protected:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   boost::optional<IWORKPosition> &m_position;

@@ -24,7 +24,7 @@ public:
   IWORKRefContext(IWORKXMLParserState &state, boost::optional<ID_t> &ref);
 
 private:
-  virtual void endOfElement();
+  void endOfElement() override;
 
 private:
   boost::optional<ID_t> &m_ref;

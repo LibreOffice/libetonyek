@@ -27,9 +27,9 @@ public:
   PAG1StyleContext(PAG1ParserState &state, IWORKStyleMap_t *styleMap, const char *defaultParent, bool nested = false);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKPropertyMap m_props;

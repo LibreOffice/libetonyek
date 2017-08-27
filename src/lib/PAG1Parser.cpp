@@ -69,7 +69,7 @@ public:
   explicit FootersElement(PAG1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 FootersElement::FootersElement(PAG1ParserState &state)
@@ -96,7 +96,7 @@ public:
   explicit HeadersElement(PAG1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 HeadersElement::HeadersElement(PAG1ParserState &state)
@@ -123,7 +123,7 @@ public:
   StylesContext(PAG1ParserState &state, bool anonymous);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 StylesContext::StylesContext(PAG1ParserState &state, const bool anonymous)
@@ -157,7 +157,7 @@ public:
   explicit StylesheetElement(PAG1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 StylesheetElement::StylesheetElement(PAG1ParserState &state)
@@ -189,7 +189,7 @@ public:
   explicit PrototypeElement(PAG1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 PrototypeElement::PrototypeElement(PAG1ParserState &state)
@@ -215,7 +215,7 @@ public:
   explicit SectionPrototypesElement(PAG1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 SectionPrototypesElement::SectionPrototypesElement(PAG1ParserState &state)
@@ -241,7 +241,7 @@ public:
   DateElement(PAG1ParserState &state, optional<string> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 
 private:
   optional<string> &m_value;
@@ -270,7 +270,7 @@ public:
   SLCreationDatePropertyElement(PAG1ParserState &state, optional<string> &value);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   optional<string> &m_value;
@@ -301,7 +301,7 @@ public:
   DocumentPropertyContext(PAG1ParserState &state, optional<T> &value);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   optional<T> &m_value;
@@ -362,8 +362,8 @@ public:
   explicit PublicationInfoElement(PAG1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   PAGPublicationInfo m_pubInfo;
@@ -411,9 +411,9 @@ public:
   explicit PageGroupElement(PAG1ParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   void open();
@@ -491,7 +491,7 @@ public:
   explicit DrawablesElement(PAG1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 DrawablesElement::DrawablesElement(PAG1ParserState &state)
@@ -520,10 +520,10 @@ public:
   explicit DocumentElement(PAG1ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   optional<IWORKSize> m_size;
@@ -599,7 +599,7 @@ public:
   explicit XMLDocument(PAG1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 XMLDocument::XMLDocument(PAG1ParserState &state)
@@ -628,7 +628,7 @@ class DiscardContext : public PAG1XMLContextBase<IWORKDiscardContext>
 public:
   explicit DiscardContext(PAG1ParserState &state);
 
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 DiscardContext::DiscardContext(PAG1ParserState &state)

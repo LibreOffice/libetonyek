@@ -19,22 +19,22 @@ class IWORKZlibStream : public librevenge::RVNGInputStream
 {
 public:
   IWORKZlibStream(const RVNGInputStreamPtr_t &stream);
-  ~IWORKZlibStream();
+  ~IWORKZlibStream() override;
 
-  bool isStructured();
-  unsigned subStreamCount();
-  const char *subStreamName(unsigned id);
-  bool existsSubStream(const char *)
+  bool isStructured() override;
+  unsigned subStreamCount() override;
+  const char *subStreamName(unsigned id) override;
+  bool existsSubStream(const char *) override
   {
     return false;
   }
-  librevenge::RVNGInputStream *getSubStreamByName(const char *name);
-  librevenge::RVNGInputStream *getSubStreamById(unsigned id);
+  librevenge::RVNGInputStream *getSubStreamByName(const char *name) override;
+  librevenge::RVNGInputStream *getSubStreamById(unsigned id) override;
 
-  const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
-  int seek(long offset, librevenge::RVNG_SEEK_TYPE seekType);
-  long tell();
-  bool isEnd();
+  const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead) override;
+  int seek(long offset, librevenge::RVNG_SEEK_TYPE seekType) override;
+  long tell() override;
+  bool isEnd() override;
 
 private:
   RVNGInputStreamPtr_t m_stream;

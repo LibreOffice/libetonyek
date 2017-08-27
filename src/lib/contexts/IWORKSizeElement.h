@@ -24,8 +24,8 @@ public:
   IWORKSizeElement(IWORKXMLParserState &state, boost::optional<IWORKSize> &size);
 
 protected:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   boost::optional<IWORKSize> &m_size;

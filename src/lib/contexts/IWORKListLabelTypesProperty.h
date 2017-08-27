@@ -24,7 +24,7 @@ public:
   IWORKListLabelTypesProperty(IWORKXMLParserState &state, std::deque<IWORKListLabelTypeInfo_t> &elements);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   std::deque<IWORKListLabelTypeInfo_t> &m_elements;

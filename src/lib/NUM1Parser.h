@@ -23,12 +23,12 @@ class NUM1Parser: public IWORKParser
 {
 public:
   NUM1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, NUMCollector &collector, NUM1Dictionary *dict);
-  virtual ~NUM1Parser();
+  ~NUM1Parser() override;
 
 private:
-  virtual IWORKXMLContextPtr_t createDocumentContext();
-  virtual IWORKXMLContextPtr_t createDiscardContext();
-  virtual const IWORKTokenizer &getTokenizer() const;
+  IWORKXMLContextPtr_t createDocumentContext() override;
+  IWORKXMLContextPtr_t createDiscardContext() override;
+  const IWORKTokenizer &getTokenizer() const override;
 
 private:
   NUM1ParserState m_state;

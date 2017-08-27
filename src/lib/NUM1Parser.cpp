@@ -52,10 +52,10 @@ public:
   explicit DrawablesElement(NUM1ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 DrawablesElement::DrawablesElement(NUM1ParserState &state)
@@ -122,9 +122,9 @@ public:
   explicit LayerElement(NUM1ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 LayerElement::LayerElement(NUM1ParserState &state)
@@ -162,7 +162,7 @@ public:
   explicit LayersElement(NUM1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 LayersElement::LayersElement(NUM1ParserState &state)
@@ -192,9 +192,9 @@ public:
   explicit PageInfoElement(NUM1ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 PageInfoElement::PageInfoElement(NUM1ParserState &state)
@@ -248,9 +248,9 @@ public:
   explicit WorkSpaceElement(NUM1ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 WorkSpaceElement::WorkSpaceElement(NUM1ParserState &state)
@@ -288,7 +288,7 @@ public:
   explicit WorkSpaceArrayElement(NUM1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 WorkSpaceArrayElement::WorkSpaceArrayElement(NUM1ParserState &state)
@@ -318,10 +318,10 @@ public:
   explicit DocumentElement(NUM1ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 DocumentElement::DocumentElement(NUM1ParserState &state)
@@ -383,7 +383,7 @@ public:
   explicit XMLDocument(NUM1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 XMLDocument::XMLDocument(NUM1ParserState &state)
@@ -413,7 +413,7 @@ public:
   explicit DiscardContext(NUM1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 DiscardContext::DiscardContext(NUM1ParserState &state)

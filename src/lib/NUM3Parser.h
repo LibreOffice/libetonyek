@@ -23,7 +23,7 @@ public:
   NUM3Parser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package, NUMCollector &collector);
 
 private:
-  virtual bool parseDocument();
+  bool parseDocument() override;
 
 private:
   NUMCollector &m_collector;

@@ -45,14 +45,14 @@ protected:
     m_value = value;
   }
 
-  virtual IWORKXMLContextPtr_t element(const int name)
+  IWORKXMLContextPtr_t element(const int name) override
   {
     if (name == Id)
       return makeContext<NestedParser>(getState(), m_value);
     return IWORKXMLContextPtr_t();
   }
 
-  virtual void endOfElement()
+  void endOfElement() override
   {
     if (m_value)
     {

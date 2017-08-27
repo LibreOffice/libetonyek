@@ -40,8 +40,8 @@ public:
   PagemasterElement(IWORKXMLParserState &state, optional<PAGPageMaster> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   optional<PAGPageMaster> &m_value;
@@ -106,7 +106,7 @@ public:
   PropertyMapElement(PAG1ParserState &state, IWORKPropertyMap &propMap);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   IWORKPropertyMapElement m_base;

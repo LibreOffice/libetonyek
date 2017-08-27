@@ -27,8 +27,8 @@ public:
   IWORKDataElement(IWORKXMLParserState &state, IWORKDataPtr_t &data);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   IWORKDataPtr_t &m_data;

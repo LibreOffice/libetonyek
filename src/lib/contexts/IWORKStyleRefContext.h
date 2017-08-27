@@ -23,8 +23,8 @@ class IWORKStyleRefContext : public IWORKXMLEmptyContextBase
 public:
   IWORKStyleRefContext(IWORKXMLParserState &state, const IWORKStyleMap_t &styleMap, bool nested = false);
 
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   const IWORKStyleMap_t &m_styleMap;

@@ -23,12 +23,12 @@ class KEY2Parser : public IWORKParser
 {
 public:
   KEY2Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector &collector, KEY2Dictionary &dict);
-  virtual ~KEY2Parser();
+  ~KEY2Parser() override;
 
 private:
-  virtual IWORKXMLContextPtr_t createDocumentContext();
-  virtual IWORKXMLContextPtr_t createDiscardContext();
-  virtual const IWORKTokenizer &getTokenizer() const;
+  IWORKXMLContextPtr_t createDocumentContext() override;
+  IWORKXMLContextPtr_t createDiscardContext() override;
+  const IWORKTokenizer &getTokenizer() const override;
 
 private:
   KEY2ParserState m_state;

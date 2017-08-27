@@ -49,8 +49,8 @@ public:
   explicit CfElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 CfElement::CfElement(IWORKXMLParserState &state)
@@ -111,9 +111,9 @@ class CellContextBase : public IWORKXMLEmptyContextBase
 protected:
   explicit CellContextBase(IWORKXMLParserState &state);
 
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
   void emitCell(const bool covered = false);
 
@@ -240,7 +240,7 @@ public:
   explicit GridColumnElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 };
 
 GridColumnElement::GridColumnElement(IWORKXMLParserState &state)
@@ -271,7 +271,7 @@ public:
   explicit ColumnsElement(IWORKXMLParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 ColumnsElement::ColumnsElement(IWORKXMLParserState &state)
@@ -301,7 +301,7 @@ class CbElement : public CellContextBase
 public:
   explicit CbElement(IWORKXMLParserState &state);
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 };
 
 CbElement::CbElement(IWORKXMLParserState &state)
@@ -333,7 +333,7 @@ public:
   explicit DElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 };
 
 DElement::DElement(IWORKXMLParserState &state)
@@ -370,7 +370,7 @@ public:
   explicit DuElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 };
 
 DuElement::DuElement(IWORKXMLParserState &state)
@@ -402,7 +402,7 @@ public:
   explicit SoElement(IWORKXMLParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 SoElement::SoElement(IWORKXMLParserState &state)
@@ -432,8 +432,8 @@ public:
   explicit CtElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 CtElement::CtElement(IWORKXMLParserState &state)
@@ -480,7 +480,7 @@ public:
   explicit RbElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 };
 
 RbElement::RbElement(IWORKXMLParserState &state)
@@ -509,8 +509,8 @@ public:
   explicit RnElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
 
   boost::optional<ID_t> m_ref;
 };
@@ -553,7 +553,7 @@ public:
   explicit RtElement(IWORKXMLParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 RtElement::RtElement(IWORKXMLParserState &state)
@@ -583,7 +583,7 @@ public:
   explicit RElement(IWORKXMLParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 RElement::RElement(IWORKXMLParserState &state)
@@ -621,7 +621,7 @@ public:
   explicit FElement(IWORKXMLParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 FElement::FElement(IWORKXMLParserState &state)
@@ -669,7 +669,7 @@ public:
   explicit NElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 };
 
 NElement::NElement(IWORKXMLParserState &state)
@@ -701,7 +701,7 @@ public:
   explicit PmCtElement(IWORKXMLParserState &state, IWORKContentMap_t &contentMap, const boost::optional<std::string> &id);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 
 private:
   IWORKContentMap_t &m_contentMap;
@@ -732,7 +732,7 @@ public:
   explicit PmTElement(IWORKXMLParserState &state, IWORKContentMap_t &contentMap);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   IWORKContentMap_t &m_contentMap;
@@ -763,7 +763,7 @@ public:
   explicit MenuChoicesElement(IWORKXMLParserState &state, IWORKContentMap_t &contentMap);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   IWORKContentMap_t &m_contentMap;
@@ -794,8 +794,8 @@ public:
   explicit PmElement(IWORKXMLParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKContentMap_t m_contentMap;
@@ -848,8 +848,8 @@ public:
   explicit SElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 };
 
 SElement::SElement(IWORKXMLParserState &state)
@@ -885,7 +885,7 @@ public:
   explicit SlElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 };
 
 SlElement::SlElement(IWORKXMLParserState &state)
@@ -917,8 +917,8 @@ public:
   explicit TElement(IWORKXMLParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 TElement::TElement(IWORKXMLParserState &state)
@@ -958,8 +958,8 @@ public:
   explicit DatasourceElement(IWORKXMLParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 DatasourceElement::DatasourceElement(IWORKXMLParserState &state)
@@ -1021,8 +1021,8 @@ public:
   explicit VectorStyleRefElement(IWORKXMLParserState &state, IWORKGridLine_t &line);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   IWORKGridLine_t &m_line;
@@ -1071,9 +1071,9 @@ public:
   explicit StyleRunElement(IWORKXMLParserState &state, IWORKGridLineMap_t &gridLines, unsigned maxLines);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKGridLineMap_t &m_gridLines;
@@ -1148,7 +1148,7 @@ public:
   explicit GridlineElement(IWORKXMLParserState &state, IWORKGridLineMap_t &gridLines, unsigned maxLines);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 private:
   IWORKGridLineMap_t &m_gridLines;
   unsigned m_maxLines;
@@ -1183,7 +1183,7 @@ public:
   explicit GridRowElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 };
 
 GridRowElement::GridRowElement(IWORKXMLParserState &state)
@@ -1214,7 +1214,7 @@ public:
   explicit RowsElement(IWORKXMLParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 RowsElement::RowsElement(IWORKXMLParserState &state)
@@ -1245,8 +1245,8 @@ public:
   explicit GridElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 GridElement::GridElement(IWORKXMLParserState &state)
@@ -1299,10 +1299,10 @@ public:
   explicit TabularModelElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfAttributes();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfAttributes() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   void sendStyle(const IWORKStylePtr_t &style, const shared_ptr<IWORKTable> &table);

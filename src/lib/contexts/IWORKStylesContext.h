@@ -20,8 +20,8 @@ class IWORKStylesContext : public IWORKXMLElementContextBase
 public:
   IWORKStylesContext(IWORKXMLParserState &state, bool anonymous);
 
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 protected:
   const bool m_anonymous;

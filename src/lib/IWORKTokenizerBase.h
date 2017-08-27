@@ -18,8 +18,8 @@ namespace libetonyek
 class IWORKTokenizerBase : public IWORKTokenizer
 {
 public:
-  virtual int getId(const char *name) const;
-  virtual int getQualifiedId(const char *name, const char *ns) const;
+  int getId(const char *name) const override;
+  int getQualifiedId(const char *name, const char *ns) const override;
 
 private:
   /** Try to get an ID for token \c name.

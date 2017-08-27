@@ -84,14 +84,14 @@ public:
 public:
   // classification
 
-  virtual IWAField::Tag tag() const
+  IWAField::Tag tag() const override
   {
     return TagV;
   }
 
   // optional interface
 
-  virtual bool is() const
+  bool is() const override
   {
     return !m_values.empty();
   }
@@ -105,12 +105,12 @@ public:
 
   // container interface
 
-  virtual bool empty() const
+  bool empty() const override
   {
     return m_values.empty();
   }
 
-  virtual std::size_t size() const
+  std::size_t size() const override
   {
     return m_values.size();
   }
@@ -158,7 +158,7 @@ public:
 
   // initialization
 
-  virtual void parse(const RVNGInputStreamPtr_t &input, const unsigned long length, const bool allowEmpty)
+  void parse(const RVNGInputStreamPtr_t &input, const unsigned long length, const bool allowEmpty) override
   {
     if (length != 0)
     {

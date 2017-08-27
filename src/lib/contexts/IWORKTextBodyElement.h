@@ -21,8 +21,8 @@ public:
   explicit IWORKTextBodyElement(IWORKXMLParserState &state);
 
 protected:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   bool m_layout;

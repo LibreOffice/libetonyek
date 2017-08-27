@@ -23,8 +23,8 @@ public:
   explicit PAG1TextStorageElement(PAG1ParserState &state, bool footnotes = false);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   bool m_footnotes;

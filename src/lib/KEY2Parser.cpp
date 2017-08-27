@@ -84,7 +84,7 @@ public:
   StringContentContext(KEY2ParserState &state, optional<string> &value);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   optional<string> &m_value;
@@ -114,8 +114,8 @@ public:
   explicit MetadataElement(KEY2ParserState &state);
 
 protected:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   boost::optional<std::string> m_author;
@@ -178,7 +178,7 @@ public:
   StylesContext(KEY2ParserState &state, bool anonymous);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 StylesContext::StylesContext(KEY2ParserState &state, const bool anonymous)
@@ -210,8 +210,8 @@ public:
   explicit StylesheetElement(KEY2ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   optional<ID_t> m_parent;
@@ -262,8 +262,8 @@ public:
   explicit ProxyMasterLayerElement(KEY2ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   optional<ID_t> m_ref;
@@ -307,10 +307,10 @@ public:
   explicit ImageElement(KEY2ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKImagePtr_t m_image;
@@ -374,7 +374,7 @@ public:
   PlaceholderRefContext(KEY2ParserState &state, bool title);
 
 private:
-  virtual void endOfElement();
+  void endOfElement() override;
 
 private:
   const bool m_title;
@@ -409,8 +409,8 @@ public:
   explicit ConnectionLineElement(KEY2ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 ConnectionLineElement::ConnectionLineElement(KEY2ParserState &state)
@@ -448,9 +448,9 @@ public:
   explicit StickyNoteElement(KEY2ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 StickyNoteElement::StickyNoteElement(KEY2ParserState &state)
@@ -504,10 +504,10 @@ public:
   explicit DrawablesElement(KEY2ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 DrawablesElement::DrawablesElement(KEY2ParserState &state)
@@ -573,9 +573,9 @@ public:
   explicit LayerElement(KEY2ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 LayerElement::LayerElement(KEY2ParserState &state)
@@ -626,7 +626,7 @@ public:
   explicit LayersElement(KEY2ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 LayersElement::LayersElement(KEY2ParserState &state)
@@ -658,8 +658,8 @@ public:
   explicit PageElement(KEY2ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   // TODO: use size
@@ -699,7 +699,7 @@ public:
   explicit StyleElement(KEY2ParserState &state, optional<ID_t> &ref);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   optional<ID_t> &m_ref;
@@ -730,9 +730,9 @@ public:
   PlaceholderContext(KEY2ParserState &state, bool title);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   const bool m_title;
@@ -808,9 +808,9 @@ public:
   explicit MasterSlideElement(KEY2ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 MasterSlideElement::MasterSlideElement(KEY2ParserState &state)
@@ -863,7 +863,7 @@ public:
   explicit MasterSlidesElement(KEY2ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 MasterSlidesElement::MasterSlidesElement(KEY2ParserState &state)
@@ -893,7 +893,7 @@ public:
   explicit ThemeElement(KEY2ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   // TODO: use size
@@ -932,9 +932,9 @@ public:
   explicit ThemeListElement(KEY2ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 ThemeListElement::ThemeListElement(KEY2ParserState &state)
@@ -976,9 +976,9 @@ public:
   explicit NotesElement(KEY2ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 NotesElement::NotesElement(KEY2ParserState &state)
@@ -1027,7 +1027,7 @@ public:
   explicit StickyNotesElement(KEY2ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 StickyNotesElement::StickyNotesElement(KEY2ParserState &state)
@@ -1057,9 +1057,9 @@ public:
   explicit SlideElement(KEY2ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   optional<ID_t> m_styleRef;
@@ -1126,9 +1126,9 @@ public:
   explicit SlideListElement(KEY2ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 SlideListElement::SlideListElement(KEY2ParserState &state)
@@ -1170,10 +1170,10 @@ public:
   explicit PresentationElement(KEY2ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   optional<IWORKSize> m_size;
@@ -1251,7 +1251,7 @@ public:
   explicit XMLDocument(KEY2ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 XMLDocument::XMLDocument(KEY2ParserState &state)
@@ -1279,10 +1279,10 @@ class DiscardContext : public KEY2XMLContextBase<IWORKDiscardContext>
 {
 public:
   explicit DiscardContext(KEY2ParserState &state);
-  ~DiscardContext();
+  ~DiscardContext() override;
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   KEY2ParserState &m_state;

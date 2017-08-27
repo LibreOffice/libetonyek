@@ -23,7 +23,7 @@ public:
   KEY6Parser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package, KEYCollector &collector);
 
 private:
-  virtual bool parseDocument();
+  bool parseDocument() override;
 
   bool dispatchShape(unsigned id);
 

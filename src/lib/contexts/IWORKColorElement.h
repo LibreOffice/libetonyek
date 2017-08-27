@@ -24,9 +24,9 @@ public:
   IWORKColorElement(IWORKXMLParserState &state, boost::optional<IWORKColor> &color);
 
 protected:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   boost::optional<IWORKColor> &m_color;

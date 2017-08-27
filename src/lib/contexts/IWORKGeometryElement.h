@@ -25,9 +25,9 @@ public:
   IWORKGeometryElement(IWORKXMLParserState &state, IWORKGeometryPtr_t &geometry);
 
 protected:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKGeometryPtr_t *const m_geometry;

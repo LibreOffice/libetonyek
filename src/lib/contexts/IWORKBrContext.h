@@ -21,7 +21,7 @@ public:
   explicit IWORKBrContext(IWORKXMLParserState &state);
 
 private:
-  virtual void endOfElement();
+  void endOfElement() override;
 };
 
 }

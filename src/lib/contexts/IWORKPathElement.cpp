@@ -41,7 +41,7 @@ public:
   PointElement(IWORKXMLParserState &state, pair<optional<double>, optional<double> > &point);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 
 private:
   pair<optional<double>, optional<double> > &m_point;
@@ -77,8 +77,8 @@ public:
   explicit ConnectionPathElement(IWORKXMLParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   optional<IWORKSize> m_size;
@@ -120,9 +120,9 @@ public:
   explicit PointPathElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   bool m_star;
@@ -205,9 +205,9 @@ public:
   explicit ScalarPathElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   optional<IWORKSize> m_size;
@@ -288,7 +288,7 @@ public:
   explicit BezierRefElement(IWORKXMLParserState &state);
 
 private:
-  virtual void endOfElement();
+  void endOfElement() override;
 };
 
 BezierRefElement::BezierRefElement(IWORKXMLParserState &state)
@@ -317,8 +317,8 @@ public:
   explicit BezierPathElement(IWORKXMLParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 BezierPathElement::BezierPathElement(IWORKXMLParserState &state)
@@ -356,9 +356,9 @@ public:
   explicit Callout2PathElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   optional<IWORKSize> m_size;

@@ -30,7 +30,7 @@ public:
   PropertyMapElement(KEY2ParserState &state, IWORKPropertyMap &propMap);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   IWORKPropertyMapElement m_base;

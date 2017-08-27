@@ -25,7 +25,7 @@ public:
   IWORKPropertyMapElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
   IWORKPropertyMapElement(IWORKXMLParserState &state, IWORKPropertyHandler &propHandler);
 
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   IWORKPropertyMap *m_propMap;

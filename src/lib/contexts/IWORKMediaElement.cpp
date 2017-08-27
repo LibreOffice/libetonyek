@@ -37,7 +37,7 @@ public:
   ImageMediaElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   IWORKMediaContentPtr_t &m_content;
@@ -71,8 +71,8 @@ public:
   OtherDatasElement(IWORKXMLParserState &state, IWORKDataPtr_t &data);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKDataPtr_t &m_data;
@@ -120,7 +120,7 @@ public:
   SelfContainedMovieElement(IWORKXMLParserState &state, IWORKDataPtr_t &data);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   IWORKDataPtr_t &m_data;
@@ -154,8 +154,8 @@ public:
   MovieMediaElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKMediaContentPtr_t &m_content;
@@ -197,7 +197,7 @@ public:
   ContentElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   IWORKMediaContentPtr_t &m_content;

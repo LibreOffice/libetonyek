@@ -25,8 +25,8 @@ public:
   IWORKPropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   boost::optional<typename IWORKPropertyInfo<Property>::ValueType> m_value;

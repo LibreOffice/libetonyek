@@ -21,7 +21,7 @@ public:
   explicit PAG1FootnotesElement(PAG1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 }

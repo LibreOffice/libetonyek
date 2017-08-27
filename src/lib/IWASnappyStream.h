@@ -21,23 +21,23 @@ class IWASnappyStream : public librevenge::RVNGInputStream
 {
 public:
   explicit IWASnappyStream(const RVNGInputStreamPtr_t &stream);
-  ~IWASnappyStream();
+  ~IWASnappyStream() override;
 
   // for unit tests
   static RVNGInputStreamPtr_t uncompressBlock(const RVNGInputStreamPtr_t &block);
 
-  bool isStructured();
-  unsigned subStreamCount();
-  const char *subStreamName(unsigned id);
-  bool existsSubStream(const char *name);
+  bool isStructured() override;
+  unsigned subStreamCount() override;
+  const char *subStreamName(unsigned id) override;
+  bool existsSubStream(const char *name) override;
 
-  librevenge::RVNGInputStream *getSubStreamByName(const char *name);
-  librevenge::RVNGInputStream *getSubStreamById(unsigned id);
+  librevenge::RVNGInputStream *getSubStreamByName(const char *name) override;
+  librevenge::RVNGInputStream *getSubStreamById(unsigned id) override;
 
-  const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
-  int seek(long offset, librevenge::RVNG_SEEK_TYPE seekType);
-  long tell();
-  bool isEnd();
+  const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead) override;
+  int seek(long offset, librevenge::RVNG_SEEK_TYPE seekType) override;
+  long tell() override;
+  bool isEnd() override;
 
 private:
   RVNGInputStreamPtr_t m_stream;

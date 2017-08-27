@@ -25,8 +25,8 @@ public:
   IWORKListLabelIndentsProperty(IWORKXMLParserState &state, std::deque<double> &elements);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   std::deque<double> &m_elements;

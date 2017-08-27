@@ -24,7 +24,7 @@ public:
   IWORKNumberElement(IWORKXMLParserState &state, boost::optional<T> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 
 private:
   boost::optional<T> &m_value;
