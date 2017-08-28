@@ -26,7 +26,7 @@ using boost::lexical_cast;
 
 IWORKGeometryElement::IWORKGeometryElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
-  , m_geometry(0)
+  , m_geometry(nullptr)
 {
 }
 

@@ -192,7 +192,7 @@ unsigned IWASnappyStream::subStreamCount()
 
 const char *IWASnappyStream::subStreamName(unsigned)
 {
-  return 0;
+  return nullptr;
 }
 
 bool IWASnappyStream::existsSubStream(const char *)
@@ -202,12 +202,12 @@ bool IWASnappyStream::existsSubStream(const char *)
 
 librevenge::RVNGInputStream *IWASnappyStream::getSubStreamByName(const char *)
 {
-  return 0;
+  return nullptr;
 }
 
 librevenge::RVNGInputStream *IWASnappyStream::getSubStreamById(unsigned)
 {
-  return 0;
+  return nullptr;
 }
 
 const unsigned char *IWASnappyStream::read(const unsigned long numBytes, unsigned long &numBytesRead)

@@ -26,11 +26,11 @@ public:
     , m_value()
     , m_optional(value)
     , m_direct(0)
-    , m_isSet(0)
+    , m_isSet(nullptr)
   {
   }
 
-  IWORKValueContext(IWORKXMLParserState &state, Type &value, bool *isSet = 0)
+  IWORKValueContext(IWORKXMLParserState &state, Type &value, bool *isSet = nullptr)
     : IWORKXMLElementContextBase(state)
     , m_value()
     , m_optional(m_value)

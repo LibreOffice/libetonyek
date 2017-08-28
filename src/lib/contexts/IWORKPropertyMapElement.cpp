@@ -1392,13 +1392,13 @@ void ListStyleProperty::endOfElement()
 IWORKPropertyMapElement::IWORKPropertyMapElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : IWORKXMLElementContextBase(state)
   , m_propMap(&propMap)
-  , m_propHandler(0)
+  , m_propHandler(nullptr)
 {
 }
 
 IWORKPropertyMapElement::IWORKPropertyMapElement(IWORKXMLParserState &state, IWORKPropertyHandler &propHandler)
   : IWORKXMLElementContextBase(state)
-  , m_propMap(0)
+  , m_propMap(nullptr)
   , m_propHandler(&propHandler)
 {
 }

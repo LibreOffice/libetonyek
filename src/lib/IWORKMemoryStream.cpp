@@ -80,17 +80,17 @@ unsigned IWORKMemoryStream::subStreamCount()
 
 const char *IWORKMemoryStream::subStreamName(unsigned)
 {
-  return 0;
+  return nullptr;
 }
 
 librevenge::RVNGInputStream *IWORKMemoryStream::getSubStreamByName(const char *)
 {
-  return 0;
+  return nullptr;
 }
 
 librevenge::RVNGInputStream *IWORKMemoryStream::getSubStreamById(unsigned)
 {
-  return 0;
+  return nullptr;
 }
 
 const unsigned char *IWORKMemoryStream::read(unsigned long numBytes, unsigned long &numBytesRead) try
@@ -98,7 +98,7 @@ const unsigned char *IWORKMemoryStream::read(unsigned long numBytes, unsigned lo
   numBytesRead = 0;
 
   if (0 == numBytes)
-    return 0;
+    return nullptr;
 
   if ((m_pos + numBytes) >= static_cast<unsigned long>(m_length))
     numBytes = static_cast<unsigned long>(m_length - m_pos);
@@ -111,7 +111,7 @@ const unsigned char *IWORKMemoryStream::read(unsigned long numBytes, unsigned lo
 }
 catch (...)
 {
-  return 0;
+  return nullptr;
 }
 
 int IWORKMemoryStream::seek(const long offset, librevenge::RVNG_SEEK_TYPE seekType) try

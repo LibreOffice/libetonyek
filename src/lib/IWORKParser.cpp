@@ -51,7 +51,7 @@ IWORKParser::~IWORKParser()
 
 bool IWORKParser::parse()
 {
-  const shared_ptr<xmlTextReader> sharedReader(xmlReaderForIO(readFromStream, closeStream, m_input.get(), "", 0, 0), xmlFreeTextReader);
+  const shared_ptr<xmlTextReader> sharedReader(xmlReaderForIO(readFromStream, closeStream, m_input.get(), "", nullptr, 0), xmlFreeTextReader);
   if (!sharedReader)
     return false;
 

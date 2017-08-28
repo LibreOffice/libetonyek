@@ -110,11 +110,11 @@ void handleError(void * /*arg*/, const char * /*msg*/, xmlParserSeverities /*sev
 
 bool probeXML(DetectionInfo &info)
 {
-  const shared_ptr<xmlTextReader> reader(xmlReaderForIO(readFromStream, closeStream, info.m_input.get(), "", 0, 0), xmlFreeTextReader);
+  const shared_ptr<xmlTextReader> reader(xmlReaderForIO(readFromStream, closeStream, info.m_input.get(), "", nullptr, 0), xmlFreeTextReader);
   if (!reader)
     return false;
 
-  xmlTextReaderSetErrorHandler(reader.get(), handleError, NULL);
+  xmlTextReaderSetErrorHandler(reader.get(), handleError, nullptr);
 
   int ret = 0;
   do

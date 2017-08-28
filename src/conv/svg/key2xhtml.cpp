@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) try
   if (argc < 2)
     return printUsage();
 
-  char *file = 0;
+  char *file = nullptr;
 
   for (int i = 1; i < argc; i++)
   {

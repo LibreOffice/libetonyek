@@ -39,7 +39,7 @@ namespace
 const shared_ptr<lt_tag_t> parseTag(const std::string &lang)
 {
   const shared_ptr<lt_tag_t> tag(lt_tag_new(), lt_tag_unref);
-  lt_error_t *error = 0;
+  lt_error_t *error = nullptr;
   lt_tag_parse(tag.get(), lang.c_str(), &error);
   if (error && lt_error_is_set(error, LT_ERR_ANY))
   {
@@ -51,7 +51,7 @@ const shared_ptr<lt_tag_t> parseTag(const std::string &lang)
 
 const std::string makeFullTag(const shared_ptr<lt_tag_t> &tag)
 {
-  lt_error_t *error = 0;
+  lt_error_t *error = nullptr;
   const shared_ptr<char> full(lt_tag_transform(tag.get(), &error), std::free);
   if (error && lt_error_is_set(error, LT_ERR_ANY))
   {
@@ -77,8 +77,8 @@ IWORKLanguageManager::LangDB::LangDB()
 #ifdef WITH_LIBLANGTAG
   shared_ptr<lt_lang_db_t> langDB(lt_db_get_lang(), lt_lang_db_unref);
   shared_ptr<lt_iter_t> it(LT_ITER_INIT(langDB.get()), lt_iter_finish);
-  lt_pointer_t key(0);
-  lt_pointer_t value(0);
+  lt_pointer_t key(nullptr);
+  lt_pointer_t value(nullptr);
   while (lt_iter_next(it.get(), &key, &value))
   {
     const char *const tag = reinterpret_cast<const char *>(key);
@@ -175,7 +175,7 @@ const std::string IWORKLanguageManager::addLocale(const std::string &locale)
   if (invIt != m_invalidLocales.end())
     return "";
 
-  lt_error_t *error = 0;
+  lt_error_t *error = nullptr;
   const shared_ptr<lt_tag_t> tag(lt_tag_convert_from_locale_string(locale.c_str(), &error), lt_tag_unref);
   if ((error && lt_error_is_set(error, LT_ERR_ANY)) || !tag)
   {

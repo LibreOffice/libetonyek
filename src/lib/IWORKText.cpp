@@ -399,7 +399,7 @@ bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPr
     if ((levelIt != listStyle.end()) && bool(levelIt->second))
     {
       const IWORKStylePtr_t &levelStyle = levelIt->second;
-      const IWORKListLabelGeometry *geometry = 0;
+      const IWORKListLabelGeometry *geometry = nullptr;
 
       if (levelStyle->has<ListLabelGeometry>())
       {

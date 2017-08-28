@@ -131,17 +131,17 @@ unsigned IWORKZlibStream::subStreamCount()
 
 const char *IWORKZlibStream::subStreamName(unsigned)
 {
-  return 0;
+  return nullptr;
 }
 
 librevenge::RVNGInputStream *IWORKZlibStream::getSubStreamByName(const char *)
 {
-  return 0;
+  return nullptr;
 }
 
 librevenge::RVNGInputStream *IWORKZlibStream::getSubStreamById(unsigned)
 {
-  return 0;
+  return nullptr;
 }
 
 const unsigned char *IWORKZlibStream::read(const unsigned long numBytes, unsigned long &numBytesRead)

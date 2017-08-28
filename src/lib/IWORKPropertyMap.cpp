@@ -14,7 +14,7 @@ namespace libetonyek
 
 IWORKPropertyMap::IWORKPropertyMap()
   : m_map()
-  , m_parent(0)
+  , m_parent(nullptr)
 {
 }
 

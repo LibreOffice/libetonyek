@@ -30,7 +30,7 @@ class IWORKContainerContext : public IWORKXMLElementContextBase
 public:
   IWORKContainerContext(IWORKXMLParserState &state, std::deque<Type> &elements)
     : IWORKXMLElementContextBase(state)
-    , m_dict(0)
+    , m_dict(nullptr)
     , m_elements(elements)
     , m_collector(elements)
   {

@@ -24,9 +24,9 @@ namespace libetonyek
 class IWORKStyleContext : public IWORKXMLElementContextBase
 {
 public:
-  IWORKStyleContext(IWORKXMLParserState &state, IWORKStyleMap_t *styleMap = 0,  bool nested = false);
-  IWORKStyleContext(IWORKXMLParserState &state, IWORKPropertyMap &props, IWORKStyleMap_t *styleMap = 0, bool nested = false);
-  IWORKStyleContext(IWORKXMLParserState &state, IWORKPropertyMap &props, IWORKStyleMap_t *styleMap = 0, const char *defaultParent = 0, bool nested = false);
+  IWORKStyleContext(IWORKXMLParserState &state, IWORKStyleMap_t *styleMap = nullptr,  bool nested = false);
+  IWORKStyleContext(IWORKXMLParserState &state, IWORKPropertyMap &props, IWORKStyleMap_t *styleMap = nullptr, bool nested = false);
+  IWORKStyleContext(IWORKXMLParserState &state, IWORKPropertyMap &props, IWORKStyleMap_t *styleMap = nullptr, const char *defaultParent = nullptr, bool nested = false);
 
   void attribute(int name, const char *value) override;
   void endOfElement() override;

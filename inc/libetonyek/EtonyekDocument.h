@@ -83,7 +83,7 @@ public:
     * @arg[out] type type of the input document
     * @returns the type of document
     */
-  static ETONYEKAPI Confidence isSupported(librevenge::RVNGInputStream *input, Type *Type = 0);
+  static ETONYEKAPI Confidence isSupported(librevenge::RVNGInputStream *input, Type *Type = nullptr);
 
   /** Parse the input stream content.
    *
