@@ -409,8 +409,8 @@ void IWORKPath::appendClose()
 
 void IWORKPath::operator*=(const glm::dmat3 &tr)
 {
-  for (Path_t::iterator it = m_impl->m_path.begin(); it != m_impl->m_path.end(); ++it)
-    apply_visitor(Transformer(tr), *it);
+  for (auto &it : m_impl->m_path)
+    apply_visitor(Transformer(tr), it);
 }
 
 const std::string IWORKPath::str() const

@@ -145,8 +145,8 @@ unsigned parseRowName(const vector<char> &columnName)
 {
   unsigned columnNumber = 0;
 
-  for (vector<char>::const_iterator it = columnName.begin(); it != columnName.end(); ++it)
-    columnNumber = 26 * columnNumber + (toupper(*it) - 'A') + 1;
+  for (char it : columnName)
+    columnNumber = 26 * columnNumber + (toupper(it) - 'A') + 1;
 
   return columnNumber;
 }

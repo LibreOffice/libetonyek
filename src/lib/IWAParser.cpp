@@ -283,10 +283,10 @@ std::deque<unsigned> IWAParser::readRefs(const IWAMessage &msg, const unsigned f
   if (msg.message(field))
   {
     const std::deque<IWAMessage> &objs = msg.message(field).repeated();
-    for (std::deque<IWAMessage>::const_iterator it = objs.begin(); it != objs.end(); ++it)
+    for (const auto &obj : objs)
     {
-      if (it->uint32(1))
-        refs.push_back(it->uint32(1).get());
+      if (obj.uint32(1))
+        refs.push_back(obj.uint32(1).get());
     }
   }
   return refs;
@@ -453,16 +453,16 @@ void IWAParser::readGradient(const IWAMessage &msg, IWORKGradient &gradient)
       break;
     }
   }
-  for (IWAMessageField::const_iterator it = msg.message(2).begin(); it != msg.message(2).end(); ++it)
+  for (const auto &it : msg.message(2))
   {
     IWORKGradientStop stop;
-    const optional<IWORKColor> &color = readColor(*it, 1);
+    const optional<IWORKColor> &color = readColor(it, 1);
     if (color)
       stop.m_color = get(color);
-    if (it->float_(2))
-      stop.m_fraction = get(it->float_(2));
-    if (it->float_(3))
-      stop.m_inflection = get(it->float_(3));
+    if (it.float_(2))
+      stop.m_fraction = get(it.float_(2));
+    if (it.float_(3))
+      stop.m_inflection = get(it.float_(3));
     gradient.m_stops.push_back(stop);
   }
   if (msg.message(5) && msg.message(5).float_(2))
@@ -529,18 +529,18 @@ bool IWAParser::parseText(const unsigned id)
     {
       map<unsigned, IWORKStylePtr_t> paras;
       IWORKStylePtr_t style = make_shared<IWORKStyle>(IWORKPropertyMap(), none, none);
-      for (IWAMessageField::const_iterator it = get(msg).message(5).message(1).begin(); it != get(msg).message(5).message(1).end(); ++it)
+      for (const auto &it : get(msg).message(5).message(1))
       {
-        if (it->uint32(1) && (get(it->uint32(1)) < length))
+        if (it.uint32(1) && (get(it.uint32(1)) < length))
         {
-          const optional<unsigned> &styleRef = readRef(*it, 2);
+          const optional<unsigned> &styleRef = readRef(it, 2);
           if (styleRef)
           {
             const IWORKStylePtr_t &newStyle = queryParagraphStyle(get(styleRef));
             if (bool(newStyle))
               style = newStyle;
           }
-          paras.insert(paras.end(), make_pair(get(it->uint32(1)), style));
+          paras.insert(paras.end(), make_pair(get(it.uint32(1)), style));
         }
       }
       textParser.setParagraphs(paras);
@@ -549,10 +549,10 @@ bool IWAParser::parseText(const unsigned id)
     if (get(msg).message(6))
     {
       map<unsigned, unsigned> levels;
-      for (IWAMessageField::const_iterator it = get(msg).message(6).message(1).begin(); it != get(msg).message(6).message(1).end(); ++it)
+      for (const auto &it : get(msg).message(6).message(1))
       {
-        if (it->uint32(1) && (get(it->uint32(1)) < length))
-          levels.insert(levels.end(), make_pair(get(it->uint32(1)), get_optional_value_or(it->uint32(2), 0)));
+        if (it.uint32(1) && (get(it.uint32(1)) < length))
+          levels.insert(levels.end(), make_pair(get(it.uint32(1)), get_optional_value_or(it.uint32(2), 0)));
       }
       textParser.setListLevels(levels);
     }
@@ -560,15 +560,15 @@ bool IWAParser::parseText(const unsigned id)
     if (get(msg).message(7))
     {
       map<unsigned, IWORKStylePtr_t> lists;
-      for (IWAMessageField::const_iterator it = get(msg).message(7).message(1).begin(); it != get(msg).message(7).message(1).end(); ++it)
+      for (const auto &it : get(msg).message(7).message(1))
       {
-        if (it->uint32(1) && (get(it->uint32(1)) < length))
+        if (it.uint32(1) && (get(it.uint32(1)) < length))
         {
           IWORKStylePtr_t style;
-          const optional<unsigned> &styleRef = readRef(*it, 2);
+          const optional<unsigned> &styleRef = readRef(it, 2);
           if (styleRef)
             style = queryListStyle(get(styleRef));
-          lists.insert(lists.end(), make_pair(get(it->uint32(1)), style));
+          lists.insert(lists.end(), make_pair(get(it.uint32(1)), style));
         }
       }
       textParser.setLists(lists);
@@ -577,15 +577,15 @@ bool IWAParser::parseText(const unsigned id)
     if (get(msg).message(8))
     {
       map<unsigned, IWORKStylePtr_t> spans;
-      for (IWAMessageField::const_iterator it = get(msg).message(8).message(1).begin(); it != get(msg).message(8).message(1).end(); ++it)
+      for (const auto &it : get(msg).message(8).message(1))
       {
-        if (it->uint32(1) && (get(it->uint32(1)) < length))
+        if (it.uint32(1) && (get(it.uint32(1)) < length))
         {
           IWORKStylePtr_t style;
-          const optional<unsigned> &styleRef = readRef(*it, 2);
+          const optional<unsigned> &styleRef = readRef(it, 2);
           if (styleRef)
             style = queryCharacterStyle(get(styleRef));
-          spans.insert(spans.end(), make_pair(get(it->uint32(1)), style));
+          spans.insert(spans.end(), make_pair(get(it.uint32(1)), style));
         }
       }
       textParser.setSpans(spans);
@@ -594,15 +594,15 @@ bool IWAParser::parseText(const unsigned id)
     if (get(msg).message(11))
     {
       map<unsigned, string> links;
-      for (IWAMessageField::const_iterator it = get(msg).message(11).message(1).begin(); it != get(msg).message(11).message(1).end(); ++it)
+      for (const auto &it : get(msg).message(11).message(1))
       {
-        if (it->uint32(1))
+        if (it.uint32(1))
         {
           string url;
-          const optional<unsigned> &linkRef = readRef(*it, 2);
+          const optional<unsigned> &linkRef = readRef(it, 2);
           if (linkRef)
             parseLink(get(linkRef), url);
-          links.insert(links.end(), make_pair(get(it->uint32(1)), url));
+          links.insert(links.end(), make_pair(get(it.uint32(1)), url));
         }
       }
       textParser.setLinks(links);
@@ -611,10 +611,10 @@ bool IWAParser::parseText(const unsigned id)
     if (get(msg).message(19))
     {
       map<unsigned, string> langs;
-      for (IWAMessageField::const_iterator it = get(msg).message(19).message(1).begin(); it != get(msg).message(19).message(1).end(); ++it)
+      for (const auto &it : get(msg).message(19).message(1))
       {
-        if (it->uint32(1))
-          langs.insert(langs.end(), make_pair(get(it->uint32(1)), get_optional_value_or(it->string(2), "")));
+        if (it.uint32(1))
+          langs.insert(langs.end(), make_pair(get(it.uint32(1)), get_optional_value_or(it.string(2), "")));
       }
       textParser.setLanguages(langs);
     }
@@ -974,35 +974,35 @@ void IWAParser::parseObjectIndex()
     assert(bool(rec.m_stream));
     const IWAMessage objectIndex(rec.m_stream, rec.m_dataRange.first, rec.m_dataRange.second);
     const deque<IWAMessage> &fragments = objectIndex.message(3).repeated();
-    for (deque<IWAMessage>::const_iterator it = fragments.begin(); it != fragments.end(); ++it)
+    for (const auto &fragment : fragments)
     {
-      if (it->uint32(1) && (it->string(2) || it->string(3)))
+      if (fragment.uint32(1) && (fragment.string(2) || fragment.string(3)))
       {
-        const unsigned pathIdx = it->string(3) ? 3 : 2;
-        m_fragmentMap[it->uint32(1).get()] = make_pair("Index/" + it->string(pathIdx).get() + ".iwa", RVNGInputStreamPtr_t());
-        m_fragmentObjectMap[it->uint32(1).get()] = make_pair(it->uint32(1).get(), ObjectRecord());
+        const unsigned pathIdx = fragment.string(3) ? 3 : 2;
+        m_fragmentMap[fragment.uint32(1).get()] = make_pair("Index/" + fragment.string(pathIdx).get() + ".iwa", RVNGInputStreamPtr_t());
+        m_fragmentObjectMap[fragment.uint32(1).get()] = make_pair(fragment.uint32(1).get(), ObjectRecord());
       }
-      const deque<IWAMessage> &refs = it->message(6).repeated();
-      for (deque<IWAMessage>::const_iterator refIt = refs.begin(); refIt != refs.end(); ++refIt)
+      const deque<IWAMessage> &refs = fragment.message(6).repeated();
+      for (const auto &ref : refs)
       {
-        if (refIt->uint32(1) && refIt->uint32(2))
-          m_fragmentObjectMap[refIt->uint32(2).get()] = make_pair(refIt->uint32(1).get(), ObjectRecord());
+        if (ref.uint32(1) && ref.uint32(2))
+          m_fragmentObjectMap[ref.uint32(2).get()] = make_pair(ref.uint32(1).get(), ObjectRecord());
       }
     }
     const deque<IWAMessage> &files = objectIndex.message(4).repeated();
-    for (deque<IWAMessage>::const_iterator it = files.begin(); it != files.end(); ++it)
+    for (const auto &file : files)
     {
-      if (it->uint32(1))
+      if (file.uint32(1))
       {
-        const string virtualPath(it->string(3) ? ("Data/" + get(it->string(3))) : "");
-        const string internalPath(it->string(4) ? ("Data/" + get(it->string(4))) : "");
+        const string virtualPath(file.string(3) ? ("Data/" + get(file.string(3))) : "");
+        const string internalPath(file.string(4) ? ("Data/" + get(file.string(4))) : "");
         string path;
         if (!internalPath.empty() && m_package->existsSubStream(internalPath.c_str()))
           path = internalPath;
         else if (!virtualPath.empty() && m_package->existsSubStream(virtualPath.c_str()))
           path = virtualPath;
         if (!path.empty())
-          m_fileMap[it->uint32(1).get()] = make_pair(path, RVNGInputStreamPtr_t());
+          m_fileMap[file.uint32(1).get()] = make_pair(path, RVNGInputStreamPtr_t());
       }
     }
   }
@@ -1155,10 +1155,10 @@ void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
     {
       IWORKTabStops_t tabs;
       const IWAMessageField &tabStops = paraProps.message(25).message(1);
-      for (IWAMessageField::const_iterator it = tabStops.begin(); it != tabStops.end(); ++it)
+      for (const auto &tabStop : tabStops)
       {
-        if (it->float_(1))
-          tabs.push_back(IWORKTabStop(get(it->float_(1))));
+        if (tabStop.float_(1))
+          tabs.push_back(IWORKTabStop(get(tabStop.float_(1))));
       }
     }
     if (paraProps.bool_(26))
@@ -1465,8 +1465,8 @@ void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
   if (bool(parent) && parent->has<ListLevelStyles>())
   {
     const IWORKListStyle_t &parentStyle = parent->get<ListLevelStyles>();
-    for (IWORKListStyle_t::const_iterator it = parentStyle.begin(); it != parentStyle.end(); ++it)
-      levelProps[it->first].setParent(&it->second->getPropertyMap());
+    for (const auto &it : parentStyle)
+      levelProps[it.first].setParent(&it.second->getPropertyMap());
   }
 
   IWORKListStyle_t listStyle;
@@ -1700,28 +1700,28 @@ void IWAParser::parseDataList(const unsigned id, DataList_t &dataList)
     return;
 
   const unsigned type = get(get(msg).uint32(1));
-  for (IWAMessageField::const_iterator it = get(msg).message(3).begin(); it != get(msg).message(3).end(); ++it)
+  for (const auto &it : get(msg).message(3))
   {
-    if (!it->uint32(1))
+    if (!it.uint32(1))
       continue;
-    const unsigned index = get(it->uint32(1));
+    const unsigned index = get(it.uint32(1));
     switch (type)
     {
     case 1 :
-      if (it->string(3))
-        dataList[index] = get(it->string(3));
+      if (it.string(3))
+        dataList[index] = get(it.string(3));
       break;
     case 4 :
-      if (it->uint32(4))
-        dataList[index] = get(it->uint32(4));
+      if (it.uint32(4))
+        dataList[index] = get(it.uint32(4));
       break;
     case 9 :
-      if (it->uint32(9))
-        dataList[index] = get(it->uint32(9));
+      if (it.uint32(9))
+        dataList[index] = get(it.uint32(9));
       break;
     case 10 :
-      if (it->uint32(10))
-        dataList[index] = get(it->uint32(10));
+      if (it.uint32(10))
+        dataList[index] = get(it.uint32(10));
       break;
     default :
       ETONYEK_DEBUG_MSG(("IWAParser::parseDataList: unknown data list type %u\n", type));
@@ -1741,17 +1741,17 @@ void IWAParser::parseTile(const unsigned id)
   Rows_t rows;
 
   // save rows
-  for (IWAMessageField::const_iterator it = get(msg).message(5).begin(); it != get(msg).message(5).end(); ++it)
+  for (const auto &it : get(msg).message(5))
   {
-    if (!it->uint32(1) || !it->bytes(3) || !it->bytes(4))
+    if (!it.uint32(1) || !it.bytes(3) || !it.bytes(4))
       continue;
-    const unsigned row = get(it->uint32(1));
+    const unsigned row = get(it.uint32(1));
     if (row >= m_currentTable->m_rows)
     {
       ETONYEK_DEBUG_MSG(("IWAParser::parseTile: invalid row: %u\n", row));
       continue;
     }
-    rows[row] = &*it;
+    rows[row] = &it;
   }
 
   // process rows
@@ -1903,20 +1903,20 @@ void IWAParser::parseHeaders(const unsigned id, TableHeader &header)
   if (!msg)
     return;
 
-  for (IWAMessageField::const_iterator it = get(msg).message(2).begin(); it != get(msg).message(2).end(); ++it)
+  for (const auto &it : get(msg).message(2))
   {
-    if (it->uint32(1))
+    if (it.uint32(1))
     {
-      const unsigned index = get(it->uint32(1));
+      const unsigned index = get(it.uint32(1));
       if (index >= header.m_sizes.max_key())
       {
         ETONYEK_DEBUG_MSG(("IWAParser::parseHeaders: invalid row/column index %u\n", index));
         continue;
       }
-      if (it->float_(2))
-        header.m_sizes.insert_back(index, index + 1, get(it->float_(2)));
-      if (it->bool_(3))
-        header.m_hidden.insert_back(index, index + 1, get(it->bool_(3)));
+      if (it.float_(2))
+        header.m_sizes.insert_back(index, index + 1, get(it.float_(2)));
+      if (it.bool_(3))
+        header.m_hidden.insert_back(index, index + 1, get(it.bool_(3)));
     }
   }
 }
