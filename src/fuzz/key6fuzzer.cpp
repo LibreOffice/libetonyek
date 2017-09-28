@@ -12,14 +12,14 @@
 
 #include <libetonyek/libetonyek.h>
 
-#include <librevenge-generators/librevenge-generators.h>
+#include <librevenge-generators/RVNGDummyPresentationGenerator.h>
 
 #include <librevenge-stream/librevenge-stream.h>
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
   librevenge::RVNGStringStream input(data, size);
-  librevenge::RVNGRawPresentationGenerator generator(true);
+  librevenge::RVNGDummyPresentationGenerator generator;
   libetonyek::EtonyekDocument::parse(&input, &generator);
   return 0;
 }
