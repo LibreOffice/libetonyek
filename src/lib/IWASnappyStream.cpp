@@ -9,6 +9,7 @@
 
 #include "IWASnappyStream.h"
 
+#include <algorithm>
 #include <cassert>
 #include <limits>
 #include <memory>
