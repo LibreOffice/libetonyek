@@ -1,3 +1,22 @@
+libetonyek 0.1.7
+
+- Fix a few issues found by Coverity.
+- Correctly compute cell row and column.
+- Improve reconstruction of gradients.
+- Improve resolution of cell styles.
+- Parse non-RGB colors.
+- Improve handling of table border lines.
+- Convert cell values to text in presentation and text documents.
+- Handle following-paragraph and following-layout styles.
+- Allow building with different versions of mdds (1.2 is the default).
+- Require C++11 for build.
+- Fix several issues found by oss-fuzz.
+- Disable error output from libxml2.
+- Improve lookup of parent styles.
+- Never insert a page break in a footnote.
+- Drop outdated MSVC project files.
+- Various small fixes and improvements.
+
 libetonyek 0.1.6
 
 - All formats:
