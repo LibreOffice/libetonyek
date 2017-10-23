@@ -54,18 +54,14 @@ DLP_FALLTHROUGH
 # ===============
 # Find librevenge
 # ===============
-PKG_CHECK_MODULES([REVENGE],[
-	librevenge-0.0
-])
+PKG_CHECK_MODULES([REVENGE],[librevenge-0.0])
 AC_SUBST([REVENGE_CFLAGS])
 AC_SUBST([REVENGE_LIBS])
 
 # ============
 # Find libxml2
 # ============
-PKG_CHECK_MODULES([XML],[
-    libxml-2.0
-])
+PKG_CHECK_MODULES([XML],[libxml-2.0])
 
 # =========
 # Find zlib
@@ -83,9 +79,7 @@ AC_ARG_WITH([liblangtag],
     [with_liblangtag="yes"]
 )
 AS_IF([test "x$with_liblangtag" = "xyes"], [
-        PKG_CHECK_MODULES([LANGTAG],[
-            liblangtag
-        ])
+        PKG_CHECK_MODULES([LANGTAG],[liblangtag])
         AC_DEFINE([WITH_LIBLANGTAG], [1], [Build with liblangtag])
     ],
     []
@@ -392,12 +386,8 @@ AC_ARG_ENABLE([fuzzers],
 AM_CONDITIONAL(BUILD_FUZZERS, [test "x$enable_fuzzers" = "xyes"])
 
 AS_IF([test "x$build_tools" = "xyes" -o "x$enable_fuzzers" = "xyes"], [
-    PKG_CHECK_MODULES([REVENGE_GENERATORS],[
-        librevenge-generators-0.0
-    ])
-    PKG_CHECK_MODULES([REVENGE_STREAM],[
-        librevenge-stream-0.0
-    ])
+    PKG_CHECK_MODULES([REVENGE_GENERATORS],[librevenge-generators-0.0])
+    PKG_CHECK_MODULES([REVENGE_STREAM],[librevenge-stream-0.0])
 ])
 AC_SUBST([REVENGE_GENERATORS_CFLAGS])
 AC_SUBST([REVENGE_GENERATORS_LIBS])
