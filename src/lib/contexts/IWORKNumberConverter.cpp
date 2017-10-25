@@ -164,7 +164,6 @@ optional<IWORKCellNumberType> IWORKNumberConverter<IWORKCellNumberType>::convert
   default :
     return IWORK_CELL_NUMBER_TYPE_DOUBLE;
   }
-  return none;
 }
 
 optional<IWORKStrokeType> IWORKNumberConverter<IWORKStrokeType>::convert(const char *const value)
