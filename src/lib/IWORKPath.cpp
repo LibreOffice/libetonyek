@@ -114,6 +114,11 @@ namespace
 namespace ascii = boost::spirit::ascii;
 namespace qi = boost::spirit::qi;
 
+#if defined _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4100) // unreferenced formal parameter in boost
+#endif
+
 template<typename Iterator>
 struct PathGrammar : public qi::grammar<Iterator, IWORKPath::Impl(), ascii::space_type>
 {
@@ -149,6 +154,10 @@ struct PathGrammar : public qi::grammar<Iterator, IWORKPath::Impl(), ascii::spac
   qi::rule<Iterator, CurveTo(), ascii::space_type> curve;
   qi::rule<Iterator, void(), ascii::space_type> close;
 };
+
+#if defined _MSC_VER
+#pragma warning(pop)
+#endif
 
 }
 

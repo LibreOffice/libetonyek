@@ -151,6 +151,11 @@ unsigned parseRowName(const vector<char> &columnName)
   return columnNumber;
 }
 
+#if defined _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4100) // unreferenced formal parameter in boost
+#endif
+
 template<typename Iterator>
 struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
 {
@@ -294,6 +299,10 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
 
   qi::symbols<char, string> mappedName;
 };
+
+#if defined _MSC_VER
+#pragma warning(pop)
+#endif
 
 }
 
