@@ -77,7 +77,7 @@ public:
   template<class Property>
   bool has(bool lookInParent = false) const
   {
-    const Map_t::const_iterator it = m_map.find(IWORKPropertyInfo<Property>::id);
+    const auto it = m_map.find(IWORKPropertyInfo<Property>::id);
     if (m_map.end() != it)
       return !it->second.empty();
 
@@ -90,7 +90,7 @@ public:
   template<class Property>
   bool clears(bool lookInParent = false) const
   {
-    const Map_t::const_iterator it = m_map.find(IWORKPropertyInfo<Property>::id);
+    const auto it = m_map.find(IWORKPropertyInfo<Property>::id);
     if (m_map.end() != it)
       return it->second.empty();
 
@@ -112,7 +112,7 @@ public:
   template<class Property>
   const typename IWORKPropertyInfo<Property>::ValueType &get(bool lookInParent = false) const
   {
-    const Map_t::const_iterator it = m_map.find(IWORKPropertyInfo<Property>::id);
+    const auto it = m_map.find(IWORKPropertyInfo<Property>::id);
     if (m_map.end() != it)
     {
       if (!it->second.empty())

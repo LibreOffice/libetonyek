@@ -212,7 +212,7 @@ void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props
     librevenge::RVNGPropertyListVector tabs;
 
     const IWORKTabStops_t &tabStops = styleStack.get<Tabs>();
-    for (IWORKTabStops_t::const_iterator it = tabStops.begin(); tabStops.end() != it; ++it)
+    for (auto it = tabStops.begin(); tabStops.end() != it; ++it)
     {
       librevenge::RVNGPropertyList tab;
       tab.insert("style:position", pt2in(it->m_pos));

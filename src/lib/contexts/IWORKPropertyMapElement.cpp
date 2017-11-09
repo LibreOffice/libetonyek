@@ -93,7 +93,7 @@ void StylePropertyContext<Property, TokenId, RefTokenId>::endOfElement()
 {
   if (m_ref)
   {
-    IWORKStyleMap_t::const_iterator it = m_styleMap.find(get(m_ref));
+    auto it = m_styleMap.find(get(m_ref));
     if (m_styleMap.end() != it)
       m_propMap.put<Property>(it->second);
     else if (!get(m_ref).empty())

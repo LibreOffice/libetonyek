@@ -357,7 +357,7 @@ struct Printer : public boost::static_visitor<void>
   void operator()(const recursive_wrapper<Function> &val) const
   {
     m_out << val.get().m_name << '(';
-    for (vector<Expression>::const_iterator it = val.get().m_args.begin(); it != val.get().m_args.end(); ++it)
+    for (auto it = val.get().m_args.begin(); it != val.get().m_args.end(); ++it)
     {
       if (it != val.get().m_args.begin())
         m_out << ';';
@@ -539,7 +539,7 @@ struct Collector : public boost::static_visitor<>
     props.insert("librevenge:type", "librevenge-operator");
     props.insert("librevenge:operator", ";");
 
-    for (vector<Expression>::const_iterator it = val.get().m_args.begin(); it != val.get().m_args.end(); ++it)
+    for (auto it = val.get().m_args.begin(); it != val.get().m_args.end(); ++it)
     {
       if (it != val.get().m_args.begin())
         m_propsVector.append(props);

@@ -52,7 +52,7 @@ RVNGInputStreamPtr_t getInflatedStream(const RVNGInputStreamPtr_t &input)
   input->seek(begin - offset, librevenge::RVNG_SEEK_SET);
 
   unsigned long numBytesRead = 0;
-  unsigned char *compressedData = const_cast<unsigned char *>(input->read(compressedSize, numBytesRead));
+  auto *compressedData = const_cast<unsigned char *>(input->read(compressedSize, numBytesRead));
 
   if (uncompressed)
   {

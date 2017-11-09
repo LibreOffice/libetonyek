@@ -374,7 +374,7 @@ void IWAParser::readStroke(const IWAMessage &msg, IWORKStroke &stroke)
     if (msg.message(6).uint32(3))
       remaining = get(msg.message(6).uint32(3));
     const deque<float> &elements = msg.message(6).float_(4).repeated();
-    for (deque<float>::const_iterator it = elements.begin(); it != elements.end() && remaining != 0; ++it)
+    for (auto it = elements.begin(); it != elements.end() && remaining != 0; ++it)
       stroke.m_pattern.push_back(*it);
   }
 }
@@ -740,7 +740,7 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
           const deque<IWAMessage> &elements = get(bezier).message(1).repeated();
           bool closed = false;
           bool closingMove = false;
-          for (deque<IWAMessage>::const_iterator it = elements.begin(); it != elements.end() && !closed; ++it)
+          for (auto it = elements.begin(); it != elements.end() && !closed; ++it)
           {
             const optional<unsigned> &type = it->uint32(1).optional();
             if (type)
@@ -1059,7 +1059,7 @@ void IWAParser::scanFragment(const unsigned id, const RVNGInputStreamPtr_t &stre
   }
 
   // remove all objects from the fragment that have not been found
-  RecordMap_t::iterator it = m_fragmentObjectMap.begin();
+  auto it = m_fragmentObjectMap.begin();
   while (it != m_fragmentObjectMap.end())
   {
     const RecordMap_t::iterator curIt = it;
@@ -1758,7 +1758,7 @@ void IWAParser::parseTile(const unsigned id)
   for (Rows_t::const_iterator it = rows.begin(); it != rows.end(); ++it)
   {
     const RVNGInputStreamPtr_t &input = get(it->second->bytes(3));
-    unsigned length = unsigned(getLength(input));
+    auto length = unsigned(getLength(input));
     if (length >= 0xffff)
     {
       ETONYEK_DEBUG_MSG(("IWAParser::parseTile: invalid column data length: %u\n", length));

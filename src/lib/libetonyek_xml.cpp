@@ -30,7 +30,7 @@ extern "C" int readFromStream(void *context, char *buffer, int len)
 {
   try
   {
-    librevenge::RVNGInputStream *const input = reinterpret_cast<librevenge::RVNGInputStream *>(context);
+    auto *const input = reinterpret_cast<librevenge::RVNGInputStream *>(context);
 
     unsigned long bytesRead = 0;
     const unsigned char *const bytes = input->read(len, bytesRead);

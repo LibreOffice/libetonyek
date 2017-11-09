@@ -68,7 +68,7 @@ public:
   template<class Property>
   bool has(const bool lookInParent = true) const
   {
-    for (Stack_t::const_iterator it = m_stack.begin(); m_stack.end() != it; ++it)
+    for (auto it = m_stack.begin(); m_stack.end() != it; ++it)
     {
       if (*it)
       {
@@ -84,7 +84,7 @@ public:
   template<class Property>
   const typename IWORKPropertyInfo<Property>::ValueType &get(const bool lookInParent = true) const
   {
-    for (Stack_t::const_iterator it = m_stack.begin(); m_stack.end() != it; ++it)
+    for (auto it = m_stack.begin(); m_stack.end() != it; ++it)
     {
       if (*it)
       {

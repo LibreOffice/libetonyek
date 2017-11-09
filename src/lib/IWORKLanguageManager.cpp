@@ -81,8 +81,8 @@ IWORKLanguageManager::LangDB::LangDB()
   lt_pointer_t value(nullptr);
   while (lt_iter_next(it.get(), &key, &value))
   {
-    const char *const tag = reinterpret_cast<const char *>(key);
-    lt_lang_t *const lang = reinterpret_cast<lt_lang_t *>(value);
+    const auto *const tag = reinterpret_cast<const char *>(key);
+    auto *const lang = reinterpret_cast<lt_lang_t *>(value);
     m_db[lt_lang_get_name(lang)] = tag;
   }
 #endif

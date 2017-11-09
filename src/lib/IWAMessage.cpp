@@ -64,7 +64,7 @@ void IWAMessage::parse(const unsigned long length) try
   const long startPos = m_input->tell();
   while (!m_input->isEnd() && (length > static_cast<unsigned long>(m_input->tell() - startPos)))
   {
-    const unsigned spec = unsigned(readUVar(m_input));
+    const auto spec = unsigned(readUVar(m_input));
     const unsigned wireType = spec & 0x7;
 
     long start = m_input->tell();
@@ -97,7 +97,7 @@ void IWAMessage::parse(const unsigned long length) try
     if (length >= static_cast<unsigned long>(end - startPos))
     {
       const unsigned field = spec >> 3;
-      FieldList_t::iterator it = m_fields.find(field);
+      auto it = m_fields.find(field);
       if ((it != m_fields.end()) && (it->second.m_wireType != WireType(wireType)))
       {
         ETONYEK_DEBUG_MSG(("IWAMessage::IWAMessage: wire type %d of field %d does not match previously seen %d\n", wireType, field, it->second.m_wireType));

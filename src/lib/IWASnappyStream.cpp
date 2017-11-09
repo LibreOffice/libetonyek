@@ -53,8 +53,8 @@ void appendRef(Data &data, const unsigned offset, const unsigned length)
 
   data.m_data.resize(data.m_data.size() + length);
   const vector<unsigned char>::iterator end = data.m_data.end();
-  vector<unsigned char>::iterator dest = data.m_data.end() - length;
-  vector<unsigned char>::iterator src = dest - offset;
+  auto dest = data.m_data.end() - length;
+  auto src = dest - offset;
 
   if (offset >= length)
   {
