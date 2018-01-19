@@ -963,7 +963,7 @@ void IWAParser::parseObjectIndex()
   m_fragmentObjectMap[2] = make_pair(2, ObjectRecord());
   scanFragment(2);
   const RecordMap_t::const_iterator indexIt = m_fragmentObjectMap.find(2);
-  if (indexIt == m_fragmentObjectMap.end())
+  if (indexIt == m_fragmentObjectMap.end() || !indexIt->second.second.m_stream)
   {
     // TODO: scan all fragment files
     ETONYEK_DEBUG_MSG(("IWAParser::parseObjectIndex: object index is broken, nothing will be parsed\n"));
@@ -971,7 +971,6 @@ void IWAParser::parseObjectIndex()
   else
   {
     const ObjectRecord &rec = indexIt->second.second;
-    assert(bool(rec.m_stream));
     const IWAMessage objectIndex(rec.m_stream, rec.m_dataRange.first, rec.m_dataRange.second);
     const deque<IWAMessage> &fragments = objectIndex.message(3).repeated();
     for (const auto &fragment : fragments)
