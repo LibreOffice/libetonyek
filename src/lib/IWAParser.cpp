@@ -260,13 +260,12 @@ const RVNGInputStreamPtr_t IWAParser::queryFile(const unsigned id) const
     return RVNGInputStreamPtr_t();
   }
 
-  if (!it->second.second)
+  if (!it->second.second && m_package)
   {
     assert(m_package->existsSubStream(it->second.first.c_str())); // we already checked for its presence
     it->second.second.reset(m_package->getSubStreamByName(it->second.first.c_str()));
   }
 
-  assert(bool(it->second.second));
   return it->second.second;
 }
 
@@ -991,7 +990,7 @@ void IWAParser::parseObjectIndex()
     const deque<IWAMessage> &files = objectIndex.message(4).repeated();
     for (const auto &file : files)
     {
-      if (file.uint32(1))
+      if (file.uint32(1) && m_package)
       {
         const string virtualPath(file.string(3) ? ("Data/" + get(file.string(3))) : "");
         const string internalPath(file.string(4) ? ("Data/" + get(file.string(4))) : "");
