@@ -184,19 +184,6 @@ void IWAObjectIndex::scanFragment(const unsigned id, const RVNGInputStreamPtr_t 
   {
     // just read as much as possible
   }
-
-  // remove all objects from the fragment that have not been found
-  auto it = m_fragmentObjectMap.begin();
-  while (it != m_fragmentObjectMap.end())
-  {
-    const auto curIt = it;
-    ++it;
-    if ((curIt->second.first == id) && !curIt->second.second.m_stream)
-    {
-      ETONYEK_DEBUG_MSG(("IWAObjectIndex::scanFragment: object with ID %u was not found\n", curIt->first));
-      m_fragmentObjectMap.erase(curIt);
-    }
-  }
 }
 
 }
