@@ -158,32 +158,30 @@ void IWAObjectIndex::scanFragment(const unsigned id)
 }
 
 void IWAObjectIndex::scanFragment(const unsigned id, const RVNGInputStreamPtr_t &stream)
+try
 {
-  try
+  while (!stream->isEnd())
   {
-    while (!stream->isEnd())
+    // scan a single object
+    const uint64_t headerLen = readUVar(stream);
+    const long start = stream->tell();
+    const IWAMessage header(stream, headerLen);
+    if (!header.message(2) || !header.message(2).uint64(3))
+      break;
+    const uint64_t dataLen = header.message(2).uint64(3).get();
+    if (header.uint32(1))
     {
-      // scan a single object
-      const uint64_t headerLen = readUVar(stream);
-      const long start = stream->tell();
-      const IWAMessage header(stream, headerLen);
-      if (!header.message(2) || !header.message(2).uint64(3))
-        break;
-      const uint64_t dataLen = header.message(2).uint64(3).get();
-      if (header.uint32(1))
-      {
-        const optional<unsigned> type = header.message(2).uint32(1).optional();
-        const ObjectRecord rec(stream, get_optional_value_or(type, 0), start, long(headerLen), long(dataLen));
-        m_fragmentObjectMap[header.uint32(1).get()] = make_pair(id, rec);
-      }
-      if (stream->seek(start + long(headerLen) + long(dataLen), librevenge::RVNG_SEEK_SET) != 0)
-        break;
+      const optional<unsigned> type = header.message(2).uint32(1).optional();
+      const ObjectRecord rec(stream, get_optional_value_or(type, 0), start, long(headerLen), long(dataLen));
+      m_fragmentObjectMap[header.uint32(1).get()] = make_pair(id, rec);
     }
+    if (stream->seek(start + long(headerLen) + long(dataLen), librevenge::RVNG_SEEK_SET) != 0)
+      break;
   }
-  catch (...)
-  {
-    // just read as much as possible
-  }
+}
+catch (...)
+{
+  // just read as much as possible
 }
 
 }
