@@ -19,7 +19,6 @@
 #include <boost/optional.hpp>
 
 #include "IWAObjectType.h"
-#include "IWASnappyStream.h"
 #include "IWAText.h"
 #include "IWORKCollector.h"
 #include "IWORKNumberConverter.h"
@@ -117,23 +116,6 @@ deque<double> makeSizes(const mdds::flat_segment_tree<unsigned, float> &sizes)
 
 }
 
-IWAParser::ObjectRecord::ObjectRecord()
-  : m_stream()
-  , m_type(0)
-  , m_headerRange(0, 0)
-  , m_dataRange(0, 0)
-{
-}
-
-IWAParser::ObjectRecord::ObjectRecord(const RVNGInputStreamPtr_t &stream, const unsigned type,
-                                      const long pos, const unsigned long headerLen, const unsigned long dataLen)
-  : m_stream(stream)
-  , m_type(type)
-  , m_headerRange(pos, pos + long(headerLen))
-  , m_dataRange(m_headerRange.second, m_headerRange.second + long(dataLen))
-{
-}
-
 IWAParser::TableHeader::TableHeader(const unsigned count)
   : m_sizes(0, count, 0)
   , m_hidden(0, count, false)
@@ -157,12 +139,8 @@ IWAParser::TableInfo::TableInfo(const shared_ptr<IWORKTable> &table, const unsig
 IWAParser::IWAParser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package, IWORKCollector &collector)
   : m_langManager()
   , m_currentText()
-  , m_fragments(fragments)
-  , m_package(package)
   , m_collector(collector)
-  , m_fragmentMap()
-  , m_fragmentObjectMap()
-  , m_fileMap()
+  , m_index(fragments, package)
   , m_visited()
   , m_charStyles()
   , m_paraStyles()
@@ -234,39 +212,12 @@ unsigned IWAParser::ObjectMessage::getType() const
 
 void IWAParser::queryObject(const unsigned id, unsigned &type, boost::optional<IWAMessage> &msg) const
 {
-  const RecordMap_t::const_iterator recIt = m_fragmentObjectMap.find(id);
-  if (recIt == m_fragmentObjectMap.end())
-  {
-    ETONYEK_DEBUG_MSG(("IWAParser::queryObject: object %u not found\n", id));
-    return;
-  }
-  if (!recIt->second.second.m_stream)
-    const_cast<IWAParser *>(this)->scanFragment(recIt->second.first);
-  if (recIt->second.second.m_stream)
-  {
-    const ObjectRecord &objRecord = recIt->second.second;
-    msg = IWAMessage(objRecord.m_stream, objRecord.m_dataRange.first, objRecord.m_dataRange.second);
-    type = objRecord.m_type;
-  }
+  m_index.queryObject(id, type, msg);
 }
 
 const RVNGInputStreamPtr_t IWAParser::queryFile(const unsigned id) const
 {
-  const FileMap_t::iterator it = m_fileMap.find(id);
-
-  if (it == m_fileMap.end())
-  {
-    ETONYEK_DEBUG_MSG(("IWAParser::queryFile: file %u not found\n", id));
-    return RVNGInputStreamPtr_t();
-  }
-
-  if (!it->second.second && m_package)
-  {
-    assert(m_package->existsSubStream(it->second.first.c_str())); // we already checked for its presence
-    it->second.second.reset(m_package->getSubStreamByName(it->second.first.c_str()));
-  }
-
-  return it->second.second;
+  return m_index.queryFile(id);
 }
 
 boost::optional<unsigned> IWAParser::readRef(const IWAMessage &msg, const unsigned field)
@@ -958,116 +909,7 @@ bool IWAParser::parseShapePlacement(const IWAMessage &msg)
 
 void IWAParser::parseObjectIndex()
 {
-  m_fragmentMap[2] = make_pair(string("Index/Metadata.iwa"), RVNGInputStreamPtr_t());
-  m_fragmentObjectMap[2] = make_pair(2, ObjectRecord());
-  scanFragment(2);
-  const RecordMap_t::const_iterator indexIt = m_fragmentObjectMap.find(2);
-  if (indexIt == m_fragmentObjectMap.end() || !indexIt->second.second.m_stream)
-  {
-    // TODO: scan all fragment files
-    ETONYEK_DEBUG_MSG(("IWAParser::parseObjectIndex: object index is broken, nothing will be parsed\n"));
-  }
-  else
-  {
-    const ObjectRecord &rec = indexIt->second.second;
-    const IWAMessage objectIndex(rec.m_stream, rec.m_dataRange.first, rec.m_dataRange.second);
-    const deque<IWAMessage> &fragments = objectIndex.message(3).repeated();
-    for (const auto &fragment : fragments)
-    {
-      if (fragment.uint32(1) && (fragment.string(2) || fragment.string(3)))
-      {
-        const unsigned pathIdx = fragment.string(3) ? 3 : 2;
-        m_fragmentMap[fragment.uint32(1).get()] = make_pair("Index/" + fragment.string(pathIdx).get() + ".iwa", RVNGInputStreamPtr_t());
-        m_fragmentObjectMap[fragment.uint32(1).get()] = make_pair(fragment.uint32(1).get(), ObjectRecord());
-      }
-      const deque<IWAMessage> &refs = fragment.message(6).repeated();
-      for (const auto &ref : refs)
-      {
-        if (ref.uint32(1) && ref.uint32(2))
-          m_fragmentObjectMap[ref.uint32(2).get()] = make_pair(ref.uint32(1).get(), ObjectRecord());
-      }
-    }
-    const deque<IWAMessage> &files = objectIndex.message(4).repeated();
-    for (const auto &file : files)
-    {
-      if (file.uint32(1) && m_package)
-      {
-        const string virtualPath(file.string(3) ? ("Data/" + get(file.string(3))) : "");
-        const string internalPath(file.string(4) ? ("Data/" + get(file.string(4))) : "");
-        string path;
-        if (!internalPath.empty() && m_package->existsSubStream(internalPath.c_str()))
-          path = internalPath;
-        else if (!virtualPath.empty() && m_package->existsSubStream(virtualPath.c_str()))
-          path = virtualPath;
-        if (!path.empty())
-          m_fileMap[file.uint32(1).get()] = make_pair(path, RVNGInputStreamPtr_t());
-      }
-    }
-  }
-}
-
-void IWAParser::scanFragment(const unsigned id)
-{
-  // scan the fragment file
-  const FileMap_t::iterator fragmentIt = m_fragmentMap.find(id);
-  if (fragmentIt != m_fragmentMap.end())
-  {
-    assert(!fragmentIt->second.second); // this could only happen if the fragment file had already been scanned
-    if (m_fragments->existsSubStream(fragmentIt->second.first.c_str()))
-    {
-      const RVNGInputStreamPtr_t stream(m_fragments->getSubStreamByName(fragmentIt->second.first.c_str()));
-      assert(bool(stream));
-      fragmentIt->second.second = make_shared<IWASnappyStream>(stream);
-      scanFragment(fragmentIt->first, fragmentIt->second.second);
-    }
-    else
-    {
-      ETONYEK_DEBUG_MSG(("IWAParser::scanFragment: file %s does not exist\n", fragmentIt->second.first.c_str()));
-      m_fragmentMap.erase(fragmentIt); // avoid unnecessary repeats of the lookup
-    }
-  }
-}
-
-void IWAParser::scanFragment(const unsigned id, const RVNGInputStreamPtr_t &stream)
-{
-  try
-  {
-    while (!stream->isEnd())
-    {
-      // scan a single object
-      const uint64_t headerLen = readUVar(stream);
-      const long start = stream->tell();
-      const IWAMessage header(stream, headerLen);
-      if (!header.message(2) || !header.message(2).uint64(3))
-        break;
-      const uint64_t dataLen = header.message(2).uint64(3).get();
-      if (header.uint32(1))
-      {
-        const optional<unsigned> type = header.message(2).uint32(1).optional();
-        const ObjectRecord rec(stream, get_optional_value_or(type, 0), start, long(headerLen), long(dataLen));
-        m_fragmentObjectMap[header.uint32(1).get()] = make_pair(id, rec);
-      }
-      if (stream->seek(start + long(headerLen) + long(dataLen), librevenge::RVNG_SEEK_SET) != 0)
-        break;
-    }
-  }
-  catch (...)
-  {
-    // just read as much as possible
-  }
-
-  // remove all objects from the fragment that have not been found
-  auto it = m_fragmentObjectMap.begin();
-  while (it != m_fragmentObjectMap.end())
-  {
-    const RecordMap_t::iterator curIt = it;
-    ++it;
-    if ((curIt->second.first == id) && !curIt->second.second.m_stream)
-    {
-      ETONYEK_DEBUG_MSG(("IWAParser::scanFragment: object with ID %u was not found\n", curIt->first));
-      m_fragmentObjectMap.erase(curIt);
-    }
-  }
+  m_index.parse();
 }
 
 void IWAParser::parseCharacterStyle(const unsigned id, IWORKStylePtr_t &style)

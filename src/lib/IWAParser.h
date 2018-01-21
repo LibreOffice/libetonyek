@@ -24,6 +24,7 @@
 
 #include "libetonyek_utils.h"
 #include "IWAMessage.h"
+#include "IWAObjectIndex.h"
 #include "IWORKLanguageManager.h"
 #include "IWORKStyle_fwd.h"
 #include "IWORKTypes.h"
@@ -41,21 +42,6 @@ class IWAParser
   // disable copying
   IWAParser(const IWAParser &);
   IWAParser &operator=(const IWAParser &);
-
-public:
-  struct ObjectRecord
-  {
-    ObjectRecord();
-    ObjectRecord(const RVNGInputStreamPtr_t &stream, unsigned type, long pos, unsigned long headerLen, unsigned long dataLen);
-
-    RVNGInputStreamPtr_t m_stream;
-    unsigned m_type;
-    std::pair<long, long> m_headerRange;
-    std::pair<long, long> m_dataRange;
-  };
-
-  typedef std::map<unsigned, std::pair<std::string, RVNGInputStreamPtr_t> > FileMap_t;
-  typedef std::map<unsigned, std::pair<unsigned, ObjectRecord> > RecordMap_t;
 
 public:
   IWAParser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package, IWORKCollector &collector);
@@ -161,9 +147,6 @@ private:
 
   void parseObjectIndex();
 
-  void scanFragment(unsigned id);
-  void scanFragment(unsigned id, const RVNGInputStreamPtr_t &stream);
-
   void parseCharacterStyle(unsigned id, IWORKStylePtr_t &style);
   void parseParagraphStyle(unsigned id, IWORKStylePtr_t &style);
   void parseGraphicStyle(unsigned id, IWORKStylePtr_t &style);
@@ -186,13 +169,9 @@ private:
   bool parseTabularInfo(const IWAMessage &msg);
 
 private:
-  const RVNGInputStreamPtr_t m_fragments;
-  const RVNGInputStreamPtr_t m_package;
   IWORKCollector &m_collector;
 
-  FileMap_t m_fragmentMap;
-  mutable RecordMap_t m_fragmentObjectMap;
-  mutable FileMap_t m_fileMap;
+  IWAObjectIndex m_index;
 
   std::deque<unsigned> m_visited;
 
