@@ -44,7 +44,7 @@ IWAObjectIndex::ObjectRecord::ObjectRecord(const RVNGInputStreamPtr_t &stream, c
 IWAObjectIndex::IWAObjectIndex(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package)
   : m_fragments(fragments)
   , m_package(package)
-  , m_fragmentMap()
+  , m_unparsedFragments()
   , m_fragmentObjectMap()
   , m_fileMap()
 {
@@ -52,10 +52,10 @@ IWAObjectIndex::IWAObjectIndex(const RVNGInputStreamPtr_t &fragments, const RVNG
 
 void IWAObjectIndex::parse()
 {
-  m_fragmentMap[2] = make_pair(string("Index/Metadata.iwa"), RVNGInputStreamPtr_t());
+  m_unparsedFragments[2] = "Index/Metadata.iwa";
   m_fragmentObjectMap[2] = make_pair(2, ObjectRecord());
   scanFragment(2);
-  const RecordMap_t::const_iterator indexIt = m_fragmentObjectMap.find(2);
+  const auto indexIt = m_fragmentObjectMap.find(2);
   if (indexIt == m_fragmentObjectMap.end() || !indexIt->second.second.m_stream)
   {
     // TODO: scan all fragment files
@@ -71,7 +71,7 @@ void IWAObjectIndex::parse()
       if (fragment.uint32(1) && (fragment.string(2) || fragment.string(3)))
       {
         const unsigned pathIdx = fragment.string(3) ? 3 : 2;
-        m_fragmentMap[fragment.uint32(1).get()] = make_pair("Index/" + fragment.string(pathIdx).get() + ".iwa", RVNGInputStreamPtr_t());
+        m_unparsedFragments[fragment.uint32(1).get()] = "Index/" + fragment.string(pathIdx).get() + ".iwa";
         m_fragmentObjectMap[fragment.uint32(1).get()] = make_pair(fragment.uint32(1).get(), ObjectRecord());
       }
       const deque<IWAMessage> &refs = fragment.message(6).repeated();
@@ -102,7 +102,7 @@ void IWAObjectIndex::parse()
 
 void IWAObjectIndex::queryObject(const unsigned id, unsigned &type, boost::optional<IWAMessage> &msg) const
 {
-  const RecordMap_t::const_iterator recIt = m_fragmentObjectMap.find(id);
+  const auto recIt = m_fragmentObjectMap.find(id);
   if (recIt == m_fragmentObjectMap.end())
   {
     ETONYEK_DEBUG_MSG(("IWAObjectIndex::queryObject: object %u not found\n", id));
@@ -120,7 +120,7 @@ void IWAObjectIndex::queryObject(const unsigned id, unsigned &type, boost::optio
 
 const RVNGInputStreamPtr_t IWAObjectIndex::queryFile(const unsigned id) const
 {
-  const FileMap_t::iterator it = m_fileMap.find(id);
+  const auto it = m_fileMap.find(id);
 
   if (it == m_fileMap.end())
   {
@@ -140,22 +140,20 @@ const RVNGInputStreamPtr_t IWAObjectIndex::queryFile(const unsigned id) const
 void IWAObjectIndex::scanFragment(const unsigned id)
 {
   // scan the fragment file
-  const FileMap_t::iterator fragmentIt = m_fragmentMap.find(id);
-  if (fragmentIt != m_fragmentMap.end())
+  const auto fragmentIt = m_unparsedFragments.find(id);
+  if (fragmentIt != m_unparsedFragments.end())
   {
-    assert(!fragmentIt->second.second); // this could only happen if the fragment file had already been scanned
-    if (m_fragments->existsSubStream(fragmentIt->second.first.c_str()))
+    const RVNGInputStreamPtr_t stream(m_fragments->getSubStreamByName(fragmentIt->second.c_str()));
+    if (stream)
     {
-      const RVNGInputStreamPtr_t stream(m_fragments->getSubStreamByName(fragmentIt->second.first.c_str()));
-      assert(bool(stream));
-      fragmentIt->second.second = make_shared<IWASnappyStream>(stream);
-      scanFragment(fragmentIt->first, fragmentIt->second.second);
+      const auto fragment = make_shared<IWASnappyStream>(stream);
+      scanFragment(fragmentIt->first, fragment);
     }
     else
     {
       ETONYEK_DEBUG_MSG(("IWAObjectIndex::scanFragment: file %s does not exist\n", fragmentIt->second.first.c_str()));
-      m_fragmentMap.erase(fragmentIt); // avoid unnecessary repeats of the lookup
     }
+    m_unparsedFragments.erase(fragmentIt);
   }
 }
 
@@ -191,7 +189,7 @@ void IWAObjectIndex::scanFragment(const unsigned id, const RVNGInputStreamPtr_t 
   auto it = m_fragmentObjectMap.begin();
   while (it != m_fragmentObjectMap.end())
   {
-    const RecordMap_t::iterator curIt = it;
+    const auto curIt = it;
     ++it;
     if ((curIt->second.first == id) && !curIt->second.second.m_stream)
     {

@@ -37,9 +37,6 @@ public:
     std::pair<long, long> m_dataRange;
   };
 
-  typedef std::map<unsigned, std::pair<std::string, RVNGInputStreamPtr_t> > FileMap_t;
-  typedef std::map<unsigned, std::pair<unsigned, ObjectRecord> > RecordMap_t;
-
 public:
   IWAObjectIndex(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package);
 
@@ -56,9 +53,9 @@ private:
   const RVNGInputStreamPtr_t m_fragments;
   const RVNGInputStreamPtr_t m_package;
 
-  FileMap_t m_fragmentMap;
-  mutable RecordMap_t m_fragmentObjectMap;
-  mutable FileMap_t m_fileMap;
+  mutable std::map<unsigned, std::string> m_unparsedFragments;
+  mutable std::map<unsigned, std::pair<unsigned, ObjectRecord>> m_fragmentObjectMap;
+  mutable std::map<unsigned, std::pair<std::string, RVNGInputStreamPtr_t>> m_fileMap;
 };
 
 }
