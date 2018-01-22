@@ -150,6 +150,7 @@ bool probeBinary(DetectionInfo &info)
 
   EtonyekDocument::Type detected = EtonyekDocument::TYPE_UNKNOWN;
 
+  const uint64_t pos = info.m_input->tell();
   const IWAMessage header(info.m_input, headerLen);
 
   if (header.uint32(1) && header.message(2) && header.message(2).uint32(1) && (header.uint32(1).get() == 1))
@@ -157,12 +158,15 @@ bool probeBinary(DetectionInfo &info)
     switch (header.message(2).uint32(1).get())
     {
     case 1 :
-      // The app-specific object types for Keynote and Numbers overlap.
-      // So we use a structure check earlier to provisionally set the type as Keynote (or not).
-      // TODO: We likely need a better detection here: either parse the first
-      // object or find the document kind info somewhere in the document
-      // (Metadata/Properties.plist?).
-      detected = (info.m_type == EtonyekDocument::TYPE_KEYNOTE) ? EtonyekDocument::TYPE_KEYNOTE : EtonyekDocument::TYPE_NUMBERS;
+      if (header.message(2).uint32(3))
+      {
+        const auto dataLen = get(header.message(2).uint32(3));
+        const IWAMessage data(info.m_input, pos + headerLen, pos + headerLen + dataLen);
+        if (data.message(2))
+          detected = EtonyekDocument::TYPE_KEYNOTE;
+        else
+          detected = EtonyekDocument::TYPE_NUMBERS;
+      }
       break;
     case 10000 :
       detected = EtonyekDocument::TYPE_PAGES;
@@ -223,8 +227,6 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
         info.m_format = FORMAT_BINARY;
         info.m_input = getUncompressedSubStream(binaryInput, "Index/Document.iwa", true);
       }
-      if ((info.m_type == EtonyekDocument::TYPE_UNKNOWN) && binaryInput->existsSubStream("Index/MasterSlide.iwa"))
-        info.m_type = EtonyekDocument::TYPE_KEYNOTE;
     }
 
     if ((info.m_format == FORMAT_XML2) || (info.m_format == FORMAT_UNKNOWN))
