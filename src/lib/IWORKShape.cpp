@@ -200,7 +200,7 @@ IWORKPathPtr_t makeRoundedRectanglePath(const IWORKSize &size, const double radi
 
 IWORKPathPtr_t makeArrowPath(const IWORKSize &size, const double headWidth, const double stemThickness)
 {
-  deque<Point> points = drawArrowHalf(headWidth / size.m_width, 1 - 2 * stemThickness);
+  deque<Point> points = drawArrowHalf(size.m_width > 0 ? headWidth / size.m_width : 1., 1 - 2 * stemThickness);
 
   // mirror around the x axis
   deque<Point> mirroredPoints = points;
@@ -217,7 +217,7 @@ IWORKPathPtr_t makeArrowPath(const IWORKSize &size, const double headWidth, cons
 
 IWORKPathPtr_t makeDoubleArrowPath(const IWORKSize &size, const double headWidth, const double stemThickness)
 {
-  deque<Point> points = drawArrowHalf(2 * headWidth / size.m_width, 1 - 2 * stemThickness);
+  deque<Point> points = drawArrowHalf(size.m_width > 0 ? 2 * headWidth / size.m_width : 1., 1 - 2 * stemThickness);
 
   {
     // mirror around the y axis
