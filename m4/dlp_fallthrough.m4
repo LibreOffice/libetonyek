@@ -61,5 +61,5 @@ m4_defun([_DLP_FALLTHROUGH], [
 
 AC_DEFUN([DLP_FALLTHROUGH], [
     _DLP_FALLTHROUGH([[__attribute__((fallthrough))]], [gcc], [GCC], [GNU])
-    _DLP_FALLTHROUGH([[[[clang:fallthrough]]]], [clang], [CLANG], [clang])
+    _DLP_FALLTHROUGH([[[[clang::fallthrough]]]], [clang], [CLANG], [clang])
 ])
