@@ -18,6 +18,7 @@
 #include "IWORKBezierElement.h"
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
+#include "IWORKPositionElement.h"
 #include "IWORKSizeElement.h"
 #include "IWORKToken.h"
 #include "IWORKTokenizer.h"
@@ -29,46 +30,6 @@ namespace libetonyek
 
 using boost::numeric_cast;
 using boost::optional;
-
-using std::pair;
-
-namespace
-{
-// TODO: replace this element by a IWORKPositionElement
-class PointElement : public IWORKXMLEmptyContextBase
-{
-public:
-  PointElement(IWORKXMLParserState &state, pair<optional<double>, optional<double> > &point);
-
-private:
-  void attribute(int name, const char *value) override;
-
-private:
-  pair<optional<double>, optional<double> > &m_point;
-};
-
-PointElement::PointElement(IWORKXMLParserState &state, pair<optional<double>, optional<double> > &point)
-  : IWORKXMLEmptyContextBase(state)
-  , m_point(point)
-{
-}
-
-void PointElement::attribute(const int name, const char *const value)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SFA | IWORKToken::x :
-    m_point.first = double_cast(value);
-    break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::y :
-    m_point.second = double_cast(value);
-    break;
-  default:
-    ETONYEK_DEBUG_MSG(("PointElement::attribute[IWORKPathElement.cpp]: find unknown attribute\n"));
-  }
-}
-
-}
 
 namespace
 {
@@ -84,7 +45,7 @@ private:
 
 private:
   optional<IWORKSize> m_size;
-  pair<optional<double>, optional<double> > m_point;
+  optional<IWORKPosition> m_point;
 };
 
 ConnectionPathElement::ConnectionPathElement(IWORKXMLParserState &state)
@@ -99,7 +60,7 @@ IWORKXMLContextPtr_t ConnectionPathElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::point :
-    return makeContext<PointElement>(getState(), m_point);
+    return makeContext<IWORKPositionElement>(getState(), m_point);
   case IWORKToken::NS_URI_SF | IWORKToken::size :
     return makeContext<IWORKSizeElement>(getState(), m_size);
   default:
@@ -112,7 +73,9 @@ IWORKXMLContextPtr_t ConnectionPathElement::element(const int name)
 void ConnectionPathElement::endOfElement()
 {
   if (m_size && isCollector())
-    getCollector().collectConnectionPath(get(m_size), get_optional_value_or(m_point.first, 0), get_optional_value_or(m_point.second, 0));
+  {
+    getCollector().collectConnectionPath(get(m_size), m_point);
+  }
 }
 
 }
@@ -134,7 +97,7 @@ private:
   bool m_star;
   bool m_doubleArrow;
   optional<IWORKSize> m_size;
-  pair<optional<double>, optional<double> > m_point;
+  optional<IWORKPosition> m_point;
 };
 
 PointPathElement::PointPathElement(IWORKXMLParserState &state)
@@ -179,7 +142,7 @@ IWORKXMLContextPtr_t PointPathElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::point :
-    return makeContext<PointElement>(getState(), m_point);
+    return makeContext<IWORKPositionElement>(getState(), m_point);
   case IWORKToken::NS_URI_SF | IWORKToken::size :
     return makeContext<IWORKSizeElement>(getState(), m_size);
   default:
@@ -198,9 +161,19 @@ void PointPathElement::endOfElement()
   if (isCollector())
   {
     if (m_star)
-      getCollector().collectStarPath(size, numeric_cast<unsigned>(get_optional_value_or(m_point.first, 0.0)), get_optional_value_or(m_point.second, 0));
+    {
+      if (m_point)
+        getCollector().collectStarPath(size, numeric_cast<unsigned>(get(m_point).m_x), get(m_point).m_y);
+      else
+        getCollector().collectStarPath(size, 0, 0);
+    }
     else
-      getCollector().collectArrowPath(size, get_optional_value_or(m_point.first, 0), get_optional_value_or(m_point.second, 0), m_doubleArrow);
+    {
+      if (m_point)
+        getCollector().collectArrowPath(size, get(m_point).m_x, get(m_point).m_y, m_doubleArrow);
+      else
+        getCollector().collectArrowPath(size, 0, 0, m_doubleArrow);
+    }
   }
 }
 

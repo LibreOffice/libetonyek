@@ -285,7 +285,7 @@ librevenge::RVNGString makeColor(const IWORKGradient &gradient)
 
 void writeBorder(const IWORKStroke &stroke, const char *const name, librevenge::RVNGPropertyList &props)
 {
-  if (stroke.m_type == IWORK_STROKE_TYPE_NONE)
+  if (stroke.m_pattern.m_type == IWORK_STROKE_TYPE_NONE)
     return;
 
   librevenge::RVNGString border;
@@ -294,10 +294,10 @@ void writeBorder(const IWORKStroke &stroke, const char *const name, librevenge::
 
   // The format can represent arbitrary patterns, but we have to
   // fit them to the limited number of options ODF allows...
-  if ((stroke.m_type == IWORK_STROKE_TYPE_DASHED) && (stroke.m_pattern.size() >= 2))
+  if ((stroke.m_pattern.m_type == IWORK_STROKE_TYPE_DASHED) && (stroke.m_pattern.m_values.size() >= 2))
   {
-    const double x = stroke.m_pattern[0];
-    const double y = stroke.m_pattern[1];
+    const double x = stroke.m_pattern.m_values[0];
+    const double y = stroke.m_pattern.m_values[1];
     // checkme: maybe we can use <sf:stroke ... sf:cap|butt ...>
     if (((x / y) < 0.01) || ((y / x) < 0.01)) // arbitrarily picked constant
       border.append(" dotted");

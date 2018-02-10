@@ -132,6 +132,7 @@ connection-style,connection_style
 container-hint,container_hint
 content,content
 content-size,content_size
+copyright,copyright
 core-image-filter-descriptor,core_image_filter_descriptor
 core-image-filter-descriptor-ref,core_image_filter_descriptor_ref
 core-image-filter-info,core_image_filter_info
@@ -205,6 +206,7 @@ formula-cell,formula_cell
 formula-chart-model,formula_chart_model
 formula-string,formula_string
 fraction,fraction
+frame,frame
 frame-h,frame_h
 frame-w,frame_w
 frame-x,frame_x
@@ -281,6 +283,7 @@ line,line
 lineSpacing,lineSpacing
 linear,linear
 linespacing,linespacing
+linespacing-ref,linespacing_ref
 line-end,line_end
 link,link
 list-label-geometry,list_label_geometry
@@ -315,6 +318,7 @@ name,name
 natural,natural
 naturalSize,naturalSize
 none,none
+null,null
 num-footer-rows,num_footer_rows
 num-header-columns,num_header_columns
 num-header-rows,num_header_rows
@@ -348,6 +352,8 @@ parent-ref,parent_ref
 path,path
 path-join,path_join
 pattern,pattern
+pattern-ref,pattern_ref
+phase,phase
 placeholder-style,placeholder_style
 placeholder-style-ref,placeholder_style_ref
 pm,pm
@@ -355,6 +361,7 @@ point,point
 point-path,point_path
 pos,pos
 position,position
+projects,projects
 property-map,property_map
 proxied-cell-ref,proxied_cell_ref
 proxy-master-layer,proxy_master_layer
@@ -412,6 +419,7 @@ stretch,stretch
 strikethru,strikethru
 string,string
 stroke,stroke
+stroke-ref,stroke_ref
 style,style
 style-run,style_run
 styles,styles

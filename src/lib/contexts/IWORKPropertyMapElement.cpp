@@ -34,6 +34,7 @@
 #include "IWORKPtrPropertyContext.h"
 #include "IWORKRefContext.h"
 #include "IWORKStringElement.h"
+#include "IWORKStrokeElement.h"
 #include "IWORKStyleContext.h"
 #include "IWORKStyleRefContext.h"
 #include "IWORKTabsElement.h"
@@ -55,6 +56,84 @@ using std::string;
 namespace
 {
 
+template<typename Property, typename Context, int TokenId, int RefTokenId, typename DataType>
+class RefPropertyContext : public IWORKPropertyContextBase
+{
+  typedef std::unordered_map<ID_t, DataType> DataMap_t;
+public:
+  RefPropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap, DataMap_t &dataMap);
+
+private:
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
+
+private:
+  DataMap_t &m_dataMap;
+  boost::optional<DataType> m_data;
+  optional<ID_t> m_ref;
+};
+
+template<typename Property, typename Context, int TokenId, int RefTokenId, typename DataType>
+RefPropertyContext<Property, Context, TokenId, RefTokenId, DataType>::RefPropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap, DataMap_t &dataMap)
+  : IWORKPropertyContextBase(state, propMap)
+  , m_dataMap(dataMap)
+  , m_data()
+  , m_ref()
+{
+}
+
+template<typename Property, typename Context, int TokenId, int RefTokenId, typename DataType>
+IWORKXMLContextPtr_t RefPropertyContext<Property, Context, TokenId, RefTokenId, DataType>::element(const int name)
+{
+  switch (name)
+  {
+  case TokenId :
+    return makeContext<Context>(getState(), m_data);
+  case RefTokenId :
+    return makeContext<IWORKRefContext>(getState(), m_ref);
+  case IWORKToken::NS_URI_SF | IWORKToken::null:
+    return IWORKXMLContextPtr_t();
+  default:
+    break;
+  }
+  if (name==(IWORKToken::NS_URI_SF | IWORKToken::frame))
+  {
+    // REMOVEME in graphicStyle sf:stroke can contain some frame element instead of stroke
+    static bool first=true;
+    if (first)
+    {
+      first=false;
+      ETONYEK_DEBUG_MSG(("RefPropertyContext<...>::element: Oops, find some frame elements\n"));
+    }
+    return IWORKXMLContextPtr_t();
+  }
+  ETONYEK_DEBUG_MSG(("RefPropertyContext<...>::element: unknown element %d\n", name));
+  return IWORKXMLContextPtr_t();
+}
+
+template<typename Property, typename Context, int TokenId, int RefTokenId, typename DataType>
+void RefPropertyContext<Property, Context, TokenId, RefTokenId, DataType>::endOfElement()
+{
+  if (m_ref)
+  {
+    typename DataMap_t::const_iterator it = m_dataMap.find(get(m_ref));
+    if (m_dataMap.end() != it)
+      m_propMap.put<Property>(it->second);
+    else if (!get(m_ref).empty())
+    {
+      ETONYEK_DEBUG_MSG(("RefPropertyContext<...>::endOfElement: unknown data %s\n", get(m_ref).c_str()));
+    }
+  }
+  else if (m_data)
+  {
+    m_propMap.put<Property>(get(m_data));
+  }
+}
+
+}
+
+namespace
+{
 template<typename Property, int TokenId, int RefTokenId>
 class StylePropertyContext : public IWORKPropertyContextBase
 {
@@ -90,10 +169,13 @@ IWORKXMLContextPtr_t StylePropertyContext<Property, TokenId, RefTokenId>::elemen
     return m_context;
   case RefTokenId :
     return makeContext<IWORKRefContext>(getState(), m_ref);
+  case IWORKToken::NS_URI_SF | IWORKToken::null:
+    return IWORKXMLContextPtr_t();
   default:
     break;
   }
 
+  ETONYEK_DEBUG_MSG(("StylePropertyContext<...>::element: unknown element %d\n", name));
   return IWORKXMLContextPtr_t();
 }
 
@@ -215,248 +297,21 @@ void LinespacingElement::attribute(const int name, const char *const value)
   case IWORKToken::NS_URI_SF | IWORKToken::mode :
     m_relative = IWORKToken::relative == getToken(value);
     break;
+  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+    IWORKXMLEmptyContextBase::attribute(name, value);
+    break;
   default:
-    ETONYEK_DEBUG_MSG(("Linespacing::element[IWORKPropertyMapElement.cpp]: find unknown element\n"));
+    ETONYEK_DEBUG_MSG(("Linespacing::attribute[IWORKPropertyMapElement.cpp]: find unknown attribute\n"));
   }
 }
 
 void LinespacingElement::endOfElement()
 {
   if (m_amount)
+  {
     m_value = IWORKLineSpacing(get(m_amount), get_optional_value_or(m_relative, false));
-}
-
-}
-
-namespace
-{
-
-class ElementElement : public IWORKXMLEmptyContextBase
-{
-public:
-  ElementElement(IWORKXMLParserState &state, optional<double> &value);
-
-private:
-  void attribute(int name, const char *value) override;
-
-private:
-  optional<double> &m_value;
-};
-
-ElementElement::ElementElement(IWORKXMLParserState &state, optional<double> &value)
-  : IWORKXMLEmptyContextBase(state)
-  , m_value(value)
-{
-}
-
-void ElementElement::attribute(const int name, const char *const value)
-{
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::val))
-    m_value = double_cast(value);
-}
-
-}
-
-namespace
-{
-
-class PatternContainerElement : public IWORKXMLElementContextBase
-{
-public:
-  PatternContainerElement(IWORKXMLParserState &state, deque<double> &value);
-
-private:
-  IWORKXMLContextPtr_t element(int name) override;
-  void endOfElement() override;
-
-private:
-  deque<double> &m_value;
-  optional<double> m_element;
-};
-
-PatternContainerElement::PatternContainerElement(IWORKXMLParserState &state, deque<double> &value)
-  : IWORKXMLElementContextBase(state)
-  , m_value(value)
-  , m_element()
-{
-}
-
-IWORKXMLContextPtr_t PatternContainerElement::element(const int name)
-{
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::element))
-  {
-    if (m_element)
-    {
-      m_value.push_back(get(m_element));
-      m_element.reset();
-    }
-    return makeContext<ElementElement>(getState(), m_element);
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-void PatternContainerElement::endOfElement()
-{
-  if (m_element)
-    m_value.push_back(get(m_element));
-}
-
-}
-
-namespace
-{
-
-class PatternElement : public IWORKXMLElementContextBase
-{
-public:
-  PatternElement(IWORKXMLParserState &state, optional<IWORKStrokeType> &type, deque<double> &value);
-
-private:
-  void attribute(int name, const char *value) override;
-  IWORKXMLContextPtr_t element(int name) override;
-
-private:
-  optional<IWORKStrokeType> &m_type;
-  deque<double> &m_value;
-};
-
-PatternElement::PatternElement(IWORKXMLParserState &state, optional<IWORKStrokeType> &type, deque<double> &value)
-  : IWORKXMLElementContextBase(state)
-  , m_type(type)
-  , m_value(value)
-{
-}
-
-void PatternElement::attribute(const int name, const char *const value)
-{
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::type))
-  {
-    switch (getState().getTokenizer().getId(value))
-    {
-    case IWORKToken::empty :
-      m_type = IWORK_STROKE_TYPE_NONE;
-      break;
-    case IWORKToken::solid :
-      m_type = IWORK_STROKE_TYPE_SOLID;
-      break;
-    case IWORKToken::pattern :
-      m_type = IWORK_STROKE_TYPE_DASHED;
-      break;
-    default :
-      ETONYEK_DEBUG_MSG(("unknown pattern type %s\n", value));
-      break;
-    }
-  }
-  return IWORKXMLElementContextBase::attribute(name, value);
-}
-
-IWORKXMLContextPtr_t PatternElement::element(const int name)
-{
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::pattern))
-    return makeContext<PatternContainerElement>(getState(), m_value);
-  return IWORKXMLContextPtr_t();
-}
-
-}
-
-namespace
-{
-
-class StrokeElement : public IWORKXMLElementContextBase
-{
-public:
-  StrokeElement(IWORKXMLParserState &state, optional<IWORKStroke> &value);
-
-private:
-  void attribute(int name, const char *value) override;
-  IWORKXMLContextPtr_t element(int name) override;
-  void endOfElement() override;
-
-private:
-  optional<IWORKStroke> &m_value;
-  optional<IWORKStrokeType> m_type;
-  optional<double> m_width;
-  optional<IWORKColor> m_color;
-  optional<IWORKLineCap> m_cap;
-  optional<IWORKLineJoin> m_join;
-  deque<double> m_pattern;
-};
-
-StrokeElement::StrokeElement(IWORKXMLParserState &state, optional<IWORKStroke> &value)
-  : IWORKXMLElementContextBase(state)
-  , m_value(value)
-  , m_type()
-  , m_width()
-  , m_color()
-  , m_cap()
-  , m_join()
-  , m_pattern()
-{
-}
-
-void StrokeElement::attribute(const int name, const char *const value)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::cap :
-    switch (getState().getTokenizer().getId(value))
-    {
-    case IWORKToken::butt :
-      m_cap = IWORK_LINE_CAP_BUTT;
-      break;
-    case IWORKToken::round :
-      m_cap = IWORK_LINE_CAP_ROUND;
-      break;
-    default:
-      ETONYEK_DEBUG_MSG(("StrokeElement::attribute[IWORKPropertyMapElement.cpp]: find unknown cap\n"));
-    }
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::join :
-    switch (getState().getTokenizer().getId(value))
-    {
-    case IWORKToken::miter :
-      m_join = IWORK_LINE_JOIN_MITER;
-      break;
-    case IWORKToken::round :
-      m_join = IWORK_LINE_JOIN_ROUND;
-      break;
-    default:
-      ETONYEK_DEBUG_MSG(("StrokeElement::attribute[IWORKPropertyMapElement.cpp]: find unknown join\n"));
-    }
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::width :
-    m_width = double_cast(value);
-    break;
-  }
-}
-
-IWORKXMLContextPtr_t StrokeElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::color :
-    return makeContext<IWORKColorElement>(getState(), m_color);
-  case IWORKToken::NS_URI_SF | IWORKToken::pattern :
-    return makeContext<PatternElement>(getState(), m_type, m_pattern);
-  default:
-    ETONYEK_DEBUG_MSG(("StrokeElement::element[IWORKPropertyMapElement.cpp]: find unknown element\n"));
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-void StrokeElement::endOfElement()
-{
-  if (m_width)
-  {
-    m_value = IWORKStroke();
-    IWORKStroke &value = get(m_value);
-    value.m_type = get_optional_value_or(m_type, IWORK_STROKE_TYPE_SOLID);
-    value.m_width = get(m_width);
-    if (m_color)
-      value.m_color = get(m_color);
-    value.m_pattern = m_pattern;
+    if (getId())
+      getState().getDictionary().m_lineSpacings.insert(IWORKLineSpacingMap_t::value_type(get(getId()),get(m_value)));
   }
 }
 
@@ -500,6 +355,9 @@ void GradientStopElement::attribute(const int name, const char *const value)
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::inflection :
     m_inflection = double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+    IWORKXMLElementContextBase::attribute(name, value);
     break;
   default:
     ETONYEK_DEBUG_MSG(("GradientStopElement::attribute[IWORKPropertyMapElement.cpp]: find unknown attribute\n"));
@@ -1312,15 +1170,15 @@ typedef IWORKPropertyContext<property::FontColor, IWORKColorElement, IWORKToken:
 typedef IWORKPropertyContext<property::FontName, IWORKStringElement, IWORKToken::NS_URI_SF | IWORKToken::string> FontNameElement;
 typedef IWORKPropertyContext<property::HeadLineEnd, IWORKLineEndElement, IWORKToken::NS_URI_SF | IWORKToken::line_end> HeadLineEndElement;
 typedef IWORKPropertyContext<property::LayoutMargins, PaddingElement, IWORKToken::NS_URI_SF | IWORKToken::padding> LayoutMarginsElement;
-typedef IWORKPropertyContext<property::LineSpacing, LinespacingElement, IWORKToken::NS_URI_SF | IWORKToken::linespacing> LineSpacingElement;
+typedef RefPropertyContext<property::LineSpacing, LinespacingElement, IWORKToken::NS_URI_SF | IWORKToken::linespacing, IWORKToken::NS_URI_SF | IWORKToken::linespacing_ref, IWORKLineSpacing> LineSpacingElement;
 typedef IWORKPropertyContext<property::ParagraphFill, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> ParagraphFillElement;
-typedef IWORKPropertyContext<property::ParagraphStroke, StrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke> ParagraphStrokeElement;
+typedef RefPropertyContext<property::ParagraphStroke, IWORKStrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke, IWORKToken::NS_URI_SF | IWORKToken::stroke_ref, IWORKStroke> ParagraphStrokeElement;
 typedef IWORKPropertyContext<property::TailLineEnd, IWORKLineEndElement, IWORKToken::NS_URI_SF | IWORKToken::line_end> TailLineEndElement;
 typedef IWORKPropertyContext<property::SFTCellStylePropertyDateTimeFormat, DateTimeFormatElement, IWORKToken::NS_URI_SF | IWORKToken::date_format> SFTCellStylePropertyDateTimeFormatElement;
 typedef IWORKPropertyContext<property::SFTCellStylePropertyDurationFormat, DurationFormatElement, IWORKToken::NS_URI_SF | IWORKToken::duration_format> SFTCellStylePropertyDurationFormatElement;
 typedef IWORKPropertyContext<property::SFTCellStylePropertyNumberFormat, NumberFormatElement, IWORKToken::NS_URI_SF | IWORKToken::number_format> SFTCellStylePropertyNumberFormatElement;
-typedef IWORKPropertyContext<property::SFTStrokeProperty, StrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke> SFTStrokePropertyElement;
-typedef IWORKPropertyContext<property::Stroke, StrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke> StrokeProperty;
+typedef RefPropertyContext<property::SFTStrokeProperty, IWORKStrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke, IWORKToken::NS_URI_SF | IWORKToken::stroke_ref, IWORKStroke> SFTStrokePropertyElement;
+typedef RefPropertyContext<property::Stroke, IWORKStrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke, IWORKToken::NS_URI_SF | IWORKToken::stroke_ref, IWORKStroke> StrokePropertyElement;
 typedef IWORKPropertyContext<property::TextBackground, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> TextBackgroundElement;
 
 typedef IWORKPtrPropertyContext<property::Geometry, IWORKGeometryElement, IWORKToken::NS_URI_SF | IWORKToken::geometry> GeometryElement;
@@ -1443,7 +1301,7 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::leftIndent :
     return makeContext<LeftIndentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::lineSpacing :
-    return makeContext<LineSpacingElement>(getState(), *m_propMap);
+    return makeContext<LineSpacingElement>(getState(), *m_propMap, getState().getDictionary().m_lineSpacings);
   case IWORKToken::NS_URI_SF | IWORKToken::listLabelGeometries :
     return makeContext<IWORKListLabelGeometriesProperty>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::listLabelIndents :
@@ -1465,7 +1323,7 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphFill :
     return makeContext<ParagraphFillElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphStroke :
-    return makeContext<ParagraphStrokeElement>(getState(), *m_propMap);
+    return makeContext<ParagraphStrokeElement>(getState(), *m_propMap, getState().getDictionary().m_strokes);
   case IWORKToken::NS_URI_SF | IWORKToken::rightIndent :
     return makeContext<RightIndentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::tailLineEnd :
@@ -1523,7 +1381,7 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::SFTHeaderRowRepeatsProperty :
     return makeContext<SFTHeaderRowRepeatsPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTStrokeProperty :
-    return makeContext<SFTStrokePropertyElement>(getState(), *m_propMap);
+    return makeContext<SFTStrokePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_strokes);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTTableBandedRowsProperty :
     return makeContext<SFTTableBandedRowsPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceAfter :
@@ -1533,7 +1391,7 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::strikethru :
     return makeContext<StrikethruElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::stroke :
-    return makeContext<StrokeProperty>(getState(), *m_propMap);
+    return makeContext<StrokePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_strokes);
   case IWORKToken::NS_URI_SF | IWORKToken::superscript :
     return makeContext<SuperscriptElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::tabs :

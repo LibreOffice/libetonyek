@@ -74,7 +74,7 @@ public:
   void collectRoundedRectanglePath(const IWORKSize &size, double radius);
   void collectArrowPath(const IWORKSize &size, double headWidth, double stemRelYPos, bool doubleSided);
   void collectStarPath(const IWORKSize &size, unsigned points, double innerRadius);
-  void collectConnectionPath(const IWORKSize &size, double middleX, double middleY);
+  void collectConnectionPath(const IWORKSize &size, const boost::optional<IWORKPosition> &middle);
   void collectCalloutPath(const IWORKSize &size, double radius, double tailSize, double tailX, double tailY, bool quoteBubble);
 
   void collectMedia(const IWORKMediaContentPtr_t &content);

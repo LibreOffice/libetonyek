@@ -313,19 +313,19 @@ void IWAParser::readStroke(const IWAMessage &msg, IWORKStroke &stroke)
   }
   if (msg.message(6))
   {
-    stroke.m_type = IWORK_STROKE_TYPE_SOLID;
+    stroke.m_pattern.m_type = IWORK_STROKE_TYPE_SOLID;
     if (msg.message(6).uint32(1))
     {
       const optional<IWORKStrokeType> &strokeType = convert<IWORKStrokeType>(get(msg.message(6).uint32(1)));
       if (strokeType)
-        stroke.m_type = get(strokeType);
+        stroke.m_pattern.m_type = get(strokeType);
     }
     unsigned remaining = 0;
     if (msg.message(6).uint32(3))
       remaining = get(msg.message(6).uint32(3));
     const deque<float> &elements = msg.message(6).float_(4).repeated();
     for (auto it = elements.begin(); it != elements.end() && remaining != 0; ++it)
-      stroke.m_pattern.push_back(*it);
+      stroke.m_pattern.m_values.push_back(*it);
   }
 }
 

@@ -186,6 +186,7 @@ struct IWORKLineSpacing
   double m_amount;
   bool m_relative;
 };
+typedef std::unordered_map<ID_t, IWORKLineSpacing> IWORKLineSpacingMap_t;
 
 struct IWORKDateTimeData
 {
@@ -221,17 +222,26 @@ struct IWORKTableData
   IWORKCellType m_type;
 };
 
+struct IWORKPattern
+{
+  IWORKPattern();
+
+  IWORKStrokeType m_type;
+  std::deque<double> m_values;
+};
+typedef std::unordered_map<ID_t, IWORKPattern> IWORKPatternMap_t;
+
 struct IWORKStroke
 {
   IWORKStroke();
 
-  IWORKStrokeType m_type;
   double m_width;
   IWORKColor m_color;
   IWORKLineJoin m_join;
   IWORKLineCap m_cap;
-  std::deque<double> m_pattern;
+  IWORKPattern m_pattern;
 };
+typedef std::unordered_map<ID_t, IWORKStroke> IWORKStrokeMap_t;
 
 struct IWORKGradientStop
 {

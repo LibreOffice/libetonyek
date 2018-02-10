@@ -235,8 +235,8 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props, bool
   if (style->has<Stroke>())
   {
     const IWORKStroke &stroke = style->get<Stroke>();
-    IWORKStrokeType type = stroke.m_type;
-    if ((type == IWORK_STROKE_TYPE_DASHED) && stroke.m_pattern.size() < 2)
+    IWORKStrokeType type = stroke.m_pattern.m_type;
+    if ((type == IWORK_STROKE_TYPE_DASHED) && stroke.m_pattern.m_values.size() < 2)
       type = IWORK_STROKE_TYPE_SOLID;
 
     switch (type)
@@ -250,10 +250,10 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props, bool
     case IWORK_STROKE_TYPE_DASHED :
       props.insert("draw:stroke", "dash");
       props.insert("draw:dots1", 1);
-      props.insert("draw:dots1-length", stroke.m_pattern[0], RVNG_PERCENT);
+      props.insert("draw:dots1-length", stroke.m_pattern.m_values[0], RVNG_PERCENT);
       props.insert("draw:dots2", 1);
-      props.insert("draw:dots2-length", stroke.m_pattern[0], RVNG_PERCENT);
-      props.insert("draw:distance", stroke.m_pattern[1], RVNG_PERCENT);
+      props.insert("draw:dots2-length", stroke.m_pattern.m_values[0], RVNG_PERCENT);
+      props.insert("draw:distance", stroke.m_pattern.m_values[1], RVNG_PERCENT);
       break;
     case IWORK_STROKE_TYPE_AUTO :
       if (style->has<Fill>())
@@ -565,9 +565,10 @@ void IWORKCollector::collectStarPath(const IWORKSize &size, const unsigned point
     m_currentPath = path;
 }
 
-void IWORKCollector::collectConnectionPath(const IWORKSize &size, const double middleX, const double middleY)
+void IWORKCollector::collectConnectionPath(const IWORKSize &size, const boost::optional<IWORKPosition> &middle)
 {
-  const IWORKPathPtr_t path(makeConnectionPath(size, middleX, middleY));
+  const IWORKPathPtr_t path;
+  makeConnectionPath(size, middle ? get(middle).m_x : 0, middle ? get(middle).m_y : 0);
   if (bool(m_recorder))
     m_recorder->collectPath(path);
   else

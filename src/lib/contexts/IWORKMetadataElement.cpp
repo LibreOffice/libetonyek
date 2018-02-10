@@ -73,6 +73,10 @@ IWORKXMLContextPtr_t IWORKMetadataElement::element(const int name)
     return makeContext<StringContext>(getState(), m_keywords);
   case IWORKToken::NS_URI_SF | IWORKToken::title :
     return makeContext<StringContext>(getState(), m_title);
+  case IWORKToken::NS_URI_SF | IWORKToken::copyright :
+  case IWORKToken::NS_URI_SF | IWORKToken::projects :
+    // TODO: retrieve them as generic metadata
+    return IWORKXMLContextPtr_t();
   default:
     ETONYEK_DEBUG_MSG(("IWORKMetadataElement::element: unknown element %d\n", name));
   }
