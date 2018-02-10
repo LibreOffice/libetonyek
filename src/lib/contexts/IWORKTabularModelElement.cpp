@@ -39,7 +39,7 @@ using std::shared_ptr;
 using std::string;
 namespace
 {
-// condition
+// cell format ?
 class CfElement : public IWORKXMLEmptyContextBase
 {
 public:

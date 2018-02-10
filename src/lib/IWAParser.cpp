@@ -105,10 +105,10 @@ deque<double> makeSizes(const mdds::flat_segment_tree<unsigned, float> &sizes)
   deque<double> out(sizes.max_key(), sizes.default_value());
   for (mdds::flat_segment_tree<unsigned, float>::const_iterator it = sizes.begin(); it != sizes.end();)
   {
-    const deque<double>::iterator start(out.begin() + it->first);
+    const deque<double>::iterator start(out.begin() + deque<double>::iterator::difference_type(it->first));
     const double size = it->second;
     ++it;
-    const deque<double>::iterator end(it == sizes.end() ? out.end() : out.begin() + it->first);
+    const deque<double>::iterator end(it == sizes.end() ? out.end() : out.begin() +  deque<double>::iterator::difference_type(it->first));
     std::fill(start, end, size);
   }
   return out;
@@ -456,6 +456,15 @@ bool IWAParser::dispatchShape(const unsigned id)
     return parseImage(get(msg));
   case IWAObjectType::TabularInfo :
     return parseTabularInfo(get(msg));
+  default:
+  {
+    static bool first=true;
+    if (first)
+    {
+      first=false;
+      ETONYEK_DEBUG_MSG(("IWAParser::dispatchShape: find some unknown shapes\n"));
+    }
+  }
   }
 
   return false;
@@ -1275,6 +1284,8 @@ void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
         case 2 :
           label.m_format.m_suffix = IWORK_LABEL_NUM_FORMAT_SURROUNDING_PARENTHESIS;
           break;
+        default:
+          break;
         }
       }
       if (level < tiered.size())
@@ -1626,7 +1637,7 @@ void IWAParser::parseTile(const unsigned id)
       // so we catch possible over-reading exceptions and continue.
       try
       {
-        input->seek(get(*offIt) + 4, librevenge::RVNG_SEEK_SET);
+        input->seek((long) get(*offIt) + 4, librevenge::RVNG_SEEK_SET);
         const unsigned flags = readU16(input);
         input->seek(6, librevenge::RVNG_SEEK_CUR);
         if (flags & 0x2) // cell style

@@ -36,6 +36,7 @@ using std::string;
 KEY6Parser::KEY6Parser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package, KEYCollector &collector)
   : IWAParser(fragments, package, collector)
   , m_collector(collector)
+  , m_slideStyles()
 {
 }
 

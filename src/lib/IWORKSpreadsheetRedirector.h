@@ -157,6 +157,8 @@ public:
   void insertEffect(const librevenge::RVNGPropertyList &propList) override;
 
 private:
+  IWORKSpreadsheetRedirector(const IWORKSpreadsheetRedirector &);
+  IWORKSpreadsheetRedirector &operator=(const IWORKSpreadsheetRedirector &);
   librevenge::RVNGSpreadsheetInterface *const m_iface;
 };
 

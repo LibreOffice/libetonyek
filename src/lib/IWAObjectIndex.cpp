@@ -172,7 +172,7 @@ try
     if (header.uint32(1))
     {
       const optional<unsigned> type = header.message(2).uint32(1).optional();
-      const ObjectRecord rec(stream, get_optional_value_or(type, 0), start, long(headerLen), long(dataLen));
+      const ObjectRecord rec(stream, get_optional_value_or(type, 0), start, (unsigned long)(headerLen), (unsigned long)(dataLen));
       m_fragmentObjectMap[header.uint32(1).get()] = make_pair(id, rec);
     }
     if (stream->seek(start + long(headerLen) + long(dataLen), librevenge::RVNG_SEEK_SET) != 0)

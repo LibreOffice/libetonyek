@@ -45,6 +45,8 @@ void IWORKNumberElement<T>::attribute(const int name, const char *const value)
   case IWORKToken::NS_URI_SFA | IWORKToken::number :
     m_value = IWORKNumberConverter<T>::convert(value);
     break;
+  default:
+    break;
   }
 }
 

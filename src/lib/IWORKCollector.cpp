@@ -134,6 +134,8 @@ struct FillWriter : public boost::static_visitor<void>
       m_props.insert("draw:cx", 0.5, RVNG_PERCENT);
       m_props.insert("draw:cy", 0.5, RVNG_PERCENT);
       break;
+    default:
+      break;
     }
     // TODO: use svg:linearGradient/svg:radialGradient?
     if (gradient.m_stops.front().m_fraction<=0 && gradient.m_stops.back().m_fraction>=1)
@@ -194,6 +196,8 @@ struct FillWriter : public boost::static_visitor<void>
           break;
         case IWORK_FILL_IMAGE_TYPE_TILE :
           m_props.insert("style:repeat", "repeat");
+          break;
+        default:
           break;
         }
         m_props.insert("draw:fill-image-width", bitmap.m_size.m_width, RVNG_POINT);
@@ -256,6 +260,10 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props, bool
         props.insert("draw:stroke", "none");
       else
         props.insert("draw:stroke", "solid");
+      break;
+    default:
+      ETONYEK_DEBUG_MSG(("fillGraphicProps[IWORKCollector]: unexpected stroke type\n"));
+      break;
     }
 
     props.insert("svg:stroke-width", pt2in(stroke.m_width));
@@ -358,13 +366,21 @@ IWORKCollector::IWORKCollector(IWORKDocumentInterface *const document)
   : m_document(document)
   , m_recorder()
   , m_levelStack()
+  , m_styleStack()
   , m_stylesheetStack()
+  , m_outputManager()
   , m_newStyles()
   , m_currentTable()
   , m_currentText()
   , m_headers()
   , m_footers()
   , m_currentPath()
+  , m_currentData()
+  , m_currentUnfiltered()
+  , m_currentFiltered()
+  , m_currentLeveled()
+  , m_currentContent()
+  , m_metadata()
   , m_groupLevel(0)
 {
 }

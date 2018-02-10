@@ -74,6 +74,8 @@ void IWORKColorElement::attribute(const int name, const char *const value)
     case IWORKToken::NS_URI_XSI | IWORKToken::type :
       m_type = value;
       break;
+    default:
+      break;
     }
   }
   catch (const boost::bad_lexical_cast &)
@@ -96,6 +98,8 @@ IWORKXMLContextPtr_t IWORKColorElement::element(int name)
     }
     return IWORKXMLContextPtr_t();
   }
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKColorElement::element: found unknown element\n"));
   }
   return IWORKXMLEmptyContextBase::element(name);
 }

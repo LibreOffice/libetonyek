@@ -55,7 +55,7 @@ IWORKMemoryStream::IWORKMemoryStream(const std::vector<unsigned char> &data)
 
 IWORKMemoryStream::IWORKMemoryStream(const unsigned char *const data, const unsigned length)
   : m_data(nullptr)
-  , m_length(length)
+  , m_length(long(length))
   , m_pos(0)
 {
   if (0 == length)
@@ -173,7 +173,7 @@ void IWORKMemoryStream::read(const RVNGInputStreamPtr_t &input, const unsigned l
   if (length != readBytes)
     throw EndOfStreamException();
 
-  m_length = length;
+  m_length = (long) length;
   assign(data, length);
 }
 

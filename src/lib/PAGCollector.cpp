@@ -109,6 +109,7 @@ PAGCollector::PAGCollector(IWORKDocumentInterface *const document)
   : IWORKCollector(document)
   , m_currentSection()
   , m_firstPageSpan(true)
+  , m_pubInfo()
   , m_pageGroups()
   , m_page(0)
   , m_attachmentPosition()
@@ -262,14 +263,18 @@ void PAGCollector::drawTable()
   {
     frameProps.insert("text:anchor-type", "page");
     frameProps.insert("text:anchor-page-number", m_page);
+    frameProps.insert("style:vertical-pos", "from-top");
+    frameProps.insert("style:vertical-rel", "page");
+
+    const glm::dmat3 trafo = m_levelStack.top().m_trafo;
+    const glm::dvec3 pos(trafo * glm::dvec3(0, 0, 1));
+    frameProps.insert("svg:x", pos[0], librevenge::RVNG_POINT);
+    frameProps.insert("svg:y", pos[1], librevenge::RVNG_POINT);
     if (geometry)
     {
-      const glm::dvec3 pos(m_levelStack.top().m_trafo * glm::dvec3(geometry->m_position.m_x, geometry->m_position.m_y, 0));
-      const glm::dvec3 dim(m_levelStack.top().m_trafo * glm::dvec3(geometry->m_naturalSize.m_width, geometry->m_naturalSize.m_height, 0));
-      frameProps.insert("svg:x", pt2in(pos[0]));
-      frameProps.insert("svg:y", pt2in(pos[1]));
-      frameProps.insert("svg:width", pt2in(dim[0]));
-      frameProps.insert("svg:height", pt2in(dim[1]));
+      const glm::dvec3 dim(trafo * glm::dvec3(geometry->m_naturalSize.m_width, geometry->m_naturalSize.m_height, 0));
+      frameProps.insert("svg:width", pt2in(dim[0]), librevenge::RVNG_INCH);
+      frameProps.insert("svg:height", pt2in(dim[1]), librevenge::RVNG_INCH);
     }
   }
 

@@ -34,12 +34,23 @@ using std::vector;
 
 struct Coord
 {
+  Coord()
+    : m_coord(0)
+    , m_absolute(false)
+  {
+  }
   unsigned m_coord;
   bool m_absolute;
 };
 
 struct Address
 {
+  Address()
+    : m_column()
+    , m_row()
+    , m_table()
+  {
+  }
   optional<Coord> m_column;
   optional<Coord> m_row;
   optional<string> m_table;
@@ -49,6 +60,10 @@ typedef std::pair<Address, Address> AddressRange;
 
 struct TrueOrFalseFunc
 {
+  TrueOrFalseFunc()
+    : m_name()
+  {
+  }
   string m_name;
 };
 
@@ -62,12 +77,24 @@ typedef variant<double, string, TrueOrFalseFunc, Address, AddressRange, recursiv
 
 struct PrefixOp
 {
+  PrefixOp()
+    : m_op(' ')
+    , m_expr()
+  {
+  }
   char m_op;
   Expression m_expr;
 };
 
 struct InfixOp
 {
+  InfixOp()
+    : m_op()
+    , m_left()
+    , m_right()
+  {
+  }
+
   string m_op;
   Expression m_left;
   Expression m_right;
@@ -75,18 +102,32 @@ struct InfixOp
 
 struct PostfixOp
 {
+  PostfixOp()
+    : m_op(' ')
+    , m_expr()
+  {
+  }
   char m_op;
   Expression m_expr;
 };
 
 struct Function
 {
+  Function()
+    : m_name()
+    , m_args()
+  {
+  }
   string m_name;
   vector<Expression> m_args;
 };
 
 struct PExpr
 {
+  PExpr()
+    : m_expr()
+  {
+  }
   Expression m_expr;
 };
 
@@ -171,6 +212,31 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
 {
   FormulaGrammar()
     : FormulaGrammar::base_type(formula, "formula")
+    , function()
+    , trueOrFalseFunction()
+    , expression()
+    , formula()
+    , term()
+    , pExpr()
+    , address()
+    , addressSpecialColumn()
+    , addressSpecialRow()
+    , range()
+    , columnName()
+    , column()
+    , row()
+    , number()
+    , str()
+    , table()
+    , infixLit()
+    , trueOrFalseFunctionLit()
+    , prefixOp()
+    , infixOp()
+    , postfixOp()
+    , prefixLit()
+    , postfixLit()
+    , rangeSpecial()
+    , mappedName()
   {
     using ascii::char_;
     using ascii::string;
@@ -417,7 +483,7 @@ private:
       {
         if (column > 0)
           --column;
-        columnNumerals.push_back('A' + column % 26);
+        columnNumerals.push_back(char('A' + column % 26));
         column /= 26;
       }
       copy(columnNumerals.rbegin(), columnNumerals.rend(), std::ostream_iterator<char>(m_out));
@@ -623,6 +689,10 @@ private:
 
 struct IWORKFormula::Impl
 {
+  Impl() :
+    m_formula()
+  {
+  }
   Expression m_formula;
 };
 

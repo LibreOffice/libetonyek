@@ -82,6 +82,11 @@ public:
   typedef typename container_type::const_reverse_iterator const_reverse_iterator;
 
 public:
+  IWAFieldImpl()
+    : IWAField()
+    , m_values()
+  {
+  }
   // classification
 
   IWAField::Tag tag() const override

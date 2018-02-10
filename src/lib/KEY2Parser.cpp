@@ -68,6 +68,8 @@ unsigned getVersion(const int token)
     return 4;
   case KEY2Token::VERSION_STR_5 :
     return 5;
+  default:
+    break;
   }
 
   return 0;
@@ -145,6 +147,8 @@ IWORKXMLContextPtr_t MetadataElement::element(const int name)
     return makeContext<StringContentContext>(getState(), m_keywords);
   case KEY2Token::NS_URI_KEY | KEY2Token::title :
     return makeContext<StringContentContext>(getState(), m_title);
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -194,6 +198,8 @@ IWORKXMLContextPtr_t StylesContext::element(const int name)
     return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_placeholderStyles);
   case KEY2Token::NS_URI_KEY | KEY2Token::slide_style :
     return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_slideStyles);
+  default:
+    break;
   }
 
   return KEY2XMLContextBase<IWORKStylesContext>::element(name);
@@ -219,6 +225,7 @@ private:
 
 StylesheetElement::StylesheetElement(KEY2ParserState &state)
   : KEY2XMLContextBase<IWORKStylesheetBase>(state)
+  , m_parent()
 {
 }
 
@@ -232,6 +239,8 @@ IWORKXMLContextPtr_t StylesheetElement::element(const int name)
     return makeContext<StylesContext>(getState(), false);
   case IWORKToken::NS_URI_SF | IWORKToken::parent_ref :
     return makeContext<IWORKRefContext>(getState(), m_parent);
+  default:
+    break;
   }
 
   return KEY2XMLContextBase<IWORKStylesheetBase>::element(name);
@@ -281,6 +290,8 @@ IWORKXMLContextPtr_t ProxyMasterLayerElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::layer_ref :
     return makeContext<IWORKRefContext>(getState(), m_ref);
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -347,6 +358,8 @@ IWORKXMLContextPtr_t ImageElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::geometry :
     return makeContext<IWORKGeometryElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -426,6 +439,8 @@ IWORKXMLContextPtr_t ConnectionLineElement::element(const int name)
     return makeContext<IWORKGeometryElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::path :
     return makeContext<IWORKPathElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -476,6 +491,8 @@ IWORKXMLContextPtr_t StickyNoteElement::element(const int name)
     return makeContext<IWORKGeometryElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::text :
     return makeContext<IWORKTextElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -551,6 +568,8 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
     return makeContext<PlaceholderRefContext>(getState(), true);
   case KEY2Token::NS_URI_KEY | KEY2Token::sticky_note :
     return makeContext<StickyNoteElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -595,6 +614,8 @@ IWORKXMLContextPtr_t LayerElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::drawables :
     return makeContext<DrawablesElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -642,6 +663,8 @@ IWORKXMLContextPtr_t LayersElement::element(const int name)
     return makeContext<LayerElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::proxy_master_layer :
     return makeContext<ProxyMasterLayerElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -668,6 +691,7 @@ private:
 
 PageElement::PageElement(KEY2ParserState &state)
   : KEY2XMLElementContextBase(state)
+  , m_size()
 {
 }
 
@@ -679,6 +703,8 @@ IWORKXMLContextPtr_t PageElement::element(const int name)
     return makeContext<IWORKSizeElement>(getState(), m_size);
   case IWORKToken::NS_URI_SF | IWORKToken::layers :
     return makeContext<LayersElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -766,6 +792,8 @@ IWORKXMLContextPtr_t PlaceholderContext::element(const int name)
     return makeContext<StyleElement>(getState(), m_ref);
   case KEY2Token::NS_URI_KEY | KEY2Token::text :
     return makeContext<IWORKTextElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -838,6 +866,8 @@ IWORKXMLContextPtr_t MasterSlideElement::element(const int name)
     return makeContext<PlaceholderContext>(getState(), false);
   case KEY2Token::NS_URI_KEY | KEY2Token::sticky_notes :
     return makeContext<StickyNoteElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -877,6 +907,8 @@ IWORKXMLContextPtr_t MasterSlidesElement::element(const int name)
   {
   case KEY2Token::NS_URI_KEY | KEY2Token::master_slide :
     return makeContext<MasterSlideElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -916,6 +948,8 @@ IWORKXMLContextPtr_t ThemeElement::element(const int name)
     return makeContext<StylesheetElement>(getState());
   case KEY2Token::NS_URI_KEY | KEY2Token::master_slides :
     return makeContext<MasterSlidesElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -954,6 +988,8 @@ IWORKXMLContextPtr_t ThemeListElement::element(const int name)
   {
   case KEY2Token::NS_URI_KEY | KEY2Token::theme :
     return makeContext<ThemeElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -1001,6 +1037,8 @@ IWORKXMLContextPtr_t NotesElement::element(const int name)
   {
   case IWORKToken::text_storage | IWORKToken::NS_URI_SF :
     return makeContext<IWORKTextStorageElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -1041,6 +1079,8 @@ IWORKXMLContextPtr_t StickyNotesElement::element(const int name)
   {
   case KEY2Token::NS_URI_KEY | KEY2Token::sticky_note :
     return makeContext<StickyNoteElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -1095,6 +1135,8 @@ IWORKXMLContextPtr_t SlideElement::element(const int name)
     return makeContext<PlaceholderContext>(getState(), false);
   case KEY2Token::NS_URI_KEY | KEY2Token::sticky_notes :
     return makeContext<StickyNotesElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -1148,6 +1190,8 @@ IWORKXMLContextPtr_t SlideListElement::element(const int name)
   {
   case KEY2Token::NS_URI_KEY | KEY2Token::slide :
     return makeContext<SlideElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -1206,6 +1250,8 @@ void PresentationElement::attribute(const int name, const char *const value)
     }
   }
   break;
+  default:
+    break;
   }
 }
 
@@ -1229,6 +1275,8 @@ IWORKXMLContextPtr_t PresentationElement::element(const int name)
   case KEY2Token::NS_URI_KEY | KEY2Token::size :
     m_pendingSize = true;
     return makeContext<IWORKSizeElement>(getState(), m_size);
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -1265,6 +1313,8 @@ IWORKXMLContextPtr_t XMLDocument::element(const int name)
   {
   case KEY2Token::NS_URI_KEY | KEY2Token::presentation :
     return makeContext<PresentationElement>(m_state);
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -1318,6 +1368,8 @@ IWORKXMLContextPtr_t DiscardContext::element(const int name)
       m_state.m_stylesheet.reset();
     }
     return makeContext<StylesheetElement>(getState());
+  default:
+    break;
   }
 
   return KEY2XMLContextBase<IWORKDiscardContext>::element(name);

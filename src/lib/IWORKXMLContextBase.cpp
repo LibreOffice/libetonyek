@@ -15,7 +15,6 @@
 
 namespace libetonyek
 {
-
 IWORKXMLContextMinimal::IWORKXMLContextMinimal()
 {
 }
@@ -34,6 +33,7 @@ void IWORKXMLContextMinimal::endOfElement()
 
 IWORKXMLContextElement::IWORKXMLContextElement(IWORKXMLParserState &)
   : IWORKXMLContextMinimal()
+  , m_id()
 {
 }
 
@@ -71,6 +71,8 @@ IWORKXMLContextMixed::IWORKXMLContextMixed(IWORKXMLParserState &)
 
 IWORKXMLContextEmpty::IWORKXMLContextEmpty(IWORKXMLParserState &)
   : IWORKXMLContextMinimal()
+  , m_id()
+  , m_ref()
 {
 }
 
@@ -83,6 +85,8 @@ void IWORKXMLContextEmpty::attribute(const int name, const char *const value)
     break;
   case IWORKToken::NS_URI_SFA | IWORKToken::IDREF :
     m_ref = value;
+    break;
+  default:
     break;
   }
 }

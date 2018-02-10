@@ -157,6 +157,8 @@ public:
   void insertEffect(const librevenge::RVNGPropertyList &propList) override;
 
 private:
+  IWORKTextRedirector(const IWORKTextRedirector &);
+  IWORKTextRedirector &operator=(const IWORKTextRedirector &);
   librevenge::RVNGTextInterface *const m_iface;
 };
 

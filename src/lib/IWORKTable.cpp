@@ -86,6 +86,8 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStyleStack 
         props.insert("librevenge:value-type", "double");
         props.insert("number:decimal-places", format.m_decimalPlaces);
         break;
+      default:
+        ETONYEK_DEBUG_MSG(("writeCellFormat: unexpected number format\n"));
       }
     }
     break;
@@ -173,6 +175,8 @@ void writeCellStyle(librevenge::RVNGPropertyList &props, const IWORKStyleStack &
   case IWORK_VERTICAL_ALIGNMENT_BOTTOM :
     props.insert("fo:vertical-align", "bottom");
     break;
+  default:
+    ETONYEK_DEBUG_MSG(("writeCellStyle: unexpected alignement\n"));
   }
 
   if (style.has<TopBorder>())
@@ -247,6 +251,8 @@ librevenge::RVNGString convertCellValueInText(const IWORKStyleStack &style, cons
     case IWORK_CELL_NUMBER_TYPE_DOUBLE :
       s << val;
       break;
+    default:
+      ETONYEK_DEBUG_MSG(("convertCellValueInText: unexpected number format\n"));
     }
     return s.str().c_str();
   }
@@ -265,7 +271,7 @@ librevenge::RVNGString convertCellValueInText(const IWORKStyleStack &style, cons
     boost::optional<double> seconds=try_double_cast(get(value).c_str());
     if (!seconds)
     {
-      ETONYEK_DEBUG_MSG(("convertCellValueInTexwt: can not read seconds\n"));
+      ETONYEK_DEBUG_MSG(("convertCellValueInText: can not read seconds\n"));
       break;
     }
     const std::time_t t = std::time_t(ETONYEK_EPOCH_BEGIN + get(seconds));
@@ -314,6 +320,7 @@ IWORKTable::IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLa
   : m_tableNameMap(tableNameMap)
   , m_langManager(langManager)
   , m_table()
+  , m_style()
   , m_columnSizes()
   , m_rowSizes()
   , m_verticalLines()

@@ -157,6 +157,9 @@ public:
   void insertEffect(const librevenge::RVNGPropertyList &propList) override;
 
 private:
+  IWORKPresentationRedirector(const IWORKPresentationRedirector &);
+  IWORKPresentationRedirector &operator=(const IWORKPresentationRedirector &);
+
   librevenge::RVNGPresentationInterface *const m_iface;
 };
 

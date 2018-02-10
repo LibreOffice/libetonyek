@@ -45,7 +45,7 @@ int Tokenizer::queryId(const char *const name) const
   const size_t length = strlen(name);
   assert(0 < length);
 
-  const Token *const token = Perfect_Hash::in_word_set(name, length);
+  const Token *const token = Perfect_Hash::in_word_set(name, (unsigned) length);
   return token ? token->id : 0;
 }
 

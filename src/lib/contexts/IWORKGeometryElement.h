@@ -30,6 +30,9 @@ protected:
   void endOfElement() override;
 
 private:
+  IWORKGeometryElement(const IWORKGeometryElement &);
+  IWORKGeometryElement &operator=(const IWORKGeometryElement &);
+
   IWORKGeometryPtr_t *const m_geometry;
   boost::optional<IWORKSize> m_naturalSize;
   boost::optional<IWORKSize> m_size;

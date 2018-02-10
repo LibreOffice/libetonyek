@@ -136,6 +136,9 @@ private:
   virtual void drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox) = 0;
 
 protected:
+  IWORKCollector(const IWORKCollector &);
+  IWORKCollector &operator=(const IWORKCollector &);
+
   IWORKDocumentInterface *m_document;
   std::shared_ptr<IWORKRecorder> m_recorder;
 

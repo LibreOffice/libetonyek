@@ -199,6 +199,7 @@ IWORKFillImage::IWORKFillImage()
   , m_color()
   , m_size()
   , m_stream()
+  , m_mimeType()
 {
 }
 

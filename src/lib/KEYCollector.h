@@ -65,6 +65,11 @@ protected:
 private:
   struct Slide
   {
+    Slide()
+      : m_content()
+      , m_style()
+    {
+    }
     IWORKOutputElements m_content;
     IWORKStylePtr_t m_style;
   };

@@ -32,6 +32,17 @@ namespace libetonyek
 
 struct IWORKDiscardContext::Data
 {
+  Data()
+    : m_data()
+    , m_mediaContent()
+    , m_tabStops()
+    , m_isShadow()
+    , m_propertyMap()
+    , m_listLabelGeometry()
+    , m_listLabelTypeInfo()
+  {
+  }
+
   IWORKDataPtr_t m_data;
   IWORKMediaContentPtr_t m_mediaContent;
   IWORKTabStops_t m_tabStops;
@@ -102,6 +113,8 @@ IWORKXMLContextPtr_t IWORKDiscardContext::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::unfiltered :
     m_data->m_mediaContent.reset();
     return makeContext<IWORKUnfilteredElement>(m_state, m_data->m_mediaContent);
+  default:
+    break;
   }
 
   return shared_from_this();

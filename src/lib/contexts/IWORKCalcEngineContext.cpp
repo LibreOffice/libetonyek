@@ -44,6 +44,8 @@ IWORKXMLContextPtr_t CalcEngineEntities::element(const int name)
   {
   case IWORKToken::tabular_model | IWORKToken::NS_URI_SF :
     return makeContext<IWORKTabularModelElement>(getState(), true);
+  default:
+    break;
   }
   ETONYEK_DEBUG_MSG(("CalcEngineEntities::element: found unexpected element\n"));
   return IWORKXMLContextPtr_t();
@@ -62,6 +64,8 @@ IWORKXMLContextPtr_t IWORKCalcEngineContext::element(const int name)
   {
   case IWORKToken::calc_engine_entities | IWORKToken::NS_URI_SF :
     return makeContext<CalcEngineEntities>(getState());
+  default:
+    break;
   }
   ETONYEK_DEBUG_MSG(("IWORKCalcEngineContext::element: found unexpected element\n"));
   return IWORKXMLContextPtr_t();

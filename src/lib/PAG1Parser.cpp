@@ -57,6 +57,8 @@ unsigned getVersion(const int token)
   {
   case PAG1Token::VERSION_STR_4 :
     return 4;
+  default:
+    break;
   }
 
   return 0;
@@ -142,6 +144,10 @@ IWORKXMLContextPtr_t GroupElement::element(const int name)
     return makeContext<PAG1ShapeContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::group :
     return makeContext<GroupElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
+    return makeContext<IWORKTabularInfoElement>(getState());
+  default:
+    break;
   }
 
   return PAG1XMLContextBase<IWORKGroupElement>::element(name);
@@ -203,6 +209,8 @@ IWORKXMLContextPtr_t StylesContext::element(const int name)
     return makeContext<PAG1StyleContext>(getState(), &getState().getDictionary().m_sectionStyles, "section-style-default");
   case IWORKToken::NS_URI_SF | IWORKToken::sectionstyle_ref :
     return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_sectionStyles);
+  default:
+    break;
   }
 
   return PAG1XMLContextBase<IWORKStylesContext>::element(name);
@@ -235,6 +243,8 @@ IWORKXMLContextPtr_t StylesheetElement::element(const int name)
     return makeContext<StylesContext>(getState(), true);
   case IWORKToken::NS_URI_SF | IWORKToken::styles :
     return makeContext<StylesContext>(getState(), false);
+  default:
+    break;
   }
 
   return PAG1XMLContextBase<IWORKStylesheetBase>::element(name);
@@ -401,6 +411,8 @@ optional<PAGFootnoteKind> IWORKNumberConverter<PAGFootnoteKind>::convert(const c
       return PAG_FOOTNOTE_KIND_ENDNOTE;
     case 2 :
       return PAG_FOOTNOTE_KIND_SECTION_ENDNOTE;
+    default:
+      break;
     }
   }
 
@@ -435,6 +447,7 @@ private:
 PublicationInfoElement::PublicationInfoElement(PAG1ParserState &state)
   : PAG1XMLElementContextBase(state)
   , m_pubInfo()
+  , m_footnoteKind()
 {
 }
 
@@ -448,6 +461,8 @@ IWORKXMLContextPtr_t PublicationInfoElement::element(const int name)
     return makeContext<KSFWPFootnoteKindPropertyElement>(getState(), m_footnoteKind);
   case PAG1Token::NS_URI_SL | PAG1Token::SLCreationDateProperty :
     return makeContext<SLCreationDatePropertyElement>(getState(), m_pubInfo.m_creationDate);
+  default:
+    break;
   }
   return IWORKXMLContextPtr_t();
 }
@@ -505,6 +520,8 @@ void PageGroupElement::attribute(const int name, const char *const value)
   case PAG1Token::NS_URI_SL | PAG1Token::rpage :
     m_rpage = try_int_cast(value);
     break;
+  default:
+    break;
   }
 }
 
@@ -523,6 +540,8 @@ IWORKXMLContextPtr_t PageGroupElement::element(const int name)
     return makeContext<IWORKMediaElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
     return makeContext<IWORKTabularInfoElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -575,6 +594,8 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   {
   case PAG1Token::NS_URI_SL | PAG1Token::page_group :
     return makeContext<PageGroupElement>(getState());
+  default:
+    break;
   }
   return IWORKXMLContextPtr_t();
 }
@@ -624,6 +645,8 @@ void DocumentElement::attribute(const int name, const char *const value)
     }
   }
   break;
+  default:
+    break;
   }
 }
 
@@ -651,6 +674,8 @@ IWORKXMLContextPtr_t DocumentElement::element(const int name)
     return makeContext<SectionPrototypesElement>(getState());
   case PAG1Token::NS_URI_SL | PAG1Token::stylesheet :
     return makeContext<StylesheetElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -687,6 +712,8 @@ IWORKXMLContextPtr_t XMLDocument::element(const int name)
   {
   case PAG1Token::NS_URI_SL | PAG1Token::document :
     return makeContext<DocumentElement>(m_state);
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -719,6 +746,8 @@ IWORKXMLContextPtr_t DiscardContext::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::stylesheet :
   case PAG1Token::NS_URI_SL | PAG1Token::stylesheet :
     return makeContext<StylesheetElement>(getState());
+  default:
+    break;
   }
 
   return PAG1XMLContextBase<IWORKDiscardContext>::element(name);

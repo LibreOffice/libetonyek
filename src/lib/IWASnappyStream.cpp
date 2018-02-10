@@ -53,19 +53,19 @@ void appendRef(Data &data, const unsigned offset, const unsigned length)
 
   data.m_data.resize(data.m_data.size() + length);
   const vector<unsigned char>::iterator end = data.m_data.end();
-  auto dest = data.m_data.end() - length;
-  auto src = dest - offset;
+  auto dest = data.m_data.end() - vector<unsigned char>::difference_type(length);
+  auto src = dest - vector<unsigned char>::difference_type(offset);
 
   if (offset >= length)
   {
-    std::copy(src, src + length, dest);
+    std::copy(src, src + vector<unsigned char>::difference_type(length), dest);
   }
   else // the run is inserted repeatedly
   {
     while (size_t(end - dest) >= offset) // as long as the whole run fits
     {
-      std::copy(src, src + offset, dest);
-      dest += offset;
+      std::copy(src, src + vector<unsigned char>::difference_type(offset), dest);
+      dest += vector<unsigned char>::difference_type(offset);
     }
     if (dest != end) // copy the remainder
       std::copy(src, src + (end - dest), dest);
@@ -77,7 +77,7 @@ bool uncompressBlock(const RVNGInputStreamPtr_t &input, const unsigned long leng
   Data data(uncompressed);
 
   const long blockEnd = input->tell() + long(length);
-  const unsigned long uncompressedLength = readUVar(input);
+  const unsigned long uncompressedLength = (unsigned long) readUVar(input);
   const size_t maxSize = size_t((std::min)(2 * length, uncompressedLength)); // don't want unbounded allocation
   size_t newSize = data.m_data.size() + maxSize;
   data.m_data.reserve(newSize);

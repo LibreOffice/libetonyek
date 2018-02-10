@@ -171,6 +171,8 @@ void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props
     case IWORK_ALIGNMENT_JUSTIFY :
       props.insert("fo:text-align", "justify");
       break;
+    default:
+      ETONYEK_DEBUG_MSG(("fillParaPropList[IWORKText.cpp]: unexpected alignement\n"));
     }
   }
 
@@ -298,6 +300,8 @@ public:
     case IWORK_LABEL_NUM_FORMAT_ROMAN_LOWERCASE :
       m_props->insert("style:num-format", "i");
       break;
+    default:
+      ETONYEK_DEBUG_MSG(("FillListLabelProps::operator(IWORKTextLabel)[IWORKText.cpp]: unexpected format\n"));
     }
     m_props->insert("text:display-levels", boost::apply_visitor(GetDisplayLevels(m_listStyle, m_current, 1), m_typeInfo));
     return true;
@@ -325,6 +329,9 @@ private:
       break;
     case IWORK_LABEL_NUM_FORMAT_SURROUNDING_DOT :
       m_props->insert(name, ".");
+      break;
+    default:
+      ETONYEK_DEBUG_MSG(("FillListLabelProps::operator(IWORKTextLabel)[IWORKText.cpp]: unexpected surrounding\n"));
       break;
     }
   }
@@ -475,6 +482,7 @@ IWORKText::IWORKText(const IWORKLanguageManager &langManager, const bool discard
   , m_ignoreEmptyPara(discardEmptyContent)
   , m_inLink(false)
   , m_spanStyle()
+  , m_langStyle()
   , m_spanStyleChanged(false)
   , m_inSpan(false)
   , m_oldSpanStyle()
@@ -703,6 +711,7 @@ void IWORKText::insertField(IWORKFieldType type)
     propList.insert("style:num-format", "1"); // FIXME
     break;
   case IWORK_FIELD_DATETIME:
+  default:
     ETONYEK_DEBUG_MSG(("IWORKText::insertField: unexpected field\n"));
     return;
   }

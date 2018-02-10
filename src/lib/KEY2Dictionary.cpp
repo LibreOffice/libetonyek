@@ -18,6 +18,7 @@ KEY2Dictionary::KEY2Dictionary()
   , m_slideStyles()
   , m_bodyPlaceholders()
   , m_titlePlaceholders()
+  , m_layers()
 {
 }
 

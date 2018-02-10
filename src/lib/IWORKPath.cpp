@@ -80,7 +80,6 @@ struct IWORKPath::Impl
 
   Path_t m_path;
   bool m_closed;
-  bool m_segmented;
 };
 
 IWORKPath::Impl::Impl()
@@ -150,6 +149,13 @@ struct PathGrammar : public qi::grammar<Iterator, IWORKPath::Impl(), ascii::spac
 {
   PathGrammar()
     : PathGrammar::base_type(path, "path")
+    , path()
+    , curve()
+    , move()
+    , line()
+    , cCurve()
+    , qCurve()
+    , close()
   {
     using qi::attr;
     using qi::as;

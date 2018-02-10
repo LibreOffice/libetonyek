@@ -82,7 +82,8 @@ private:
       m_elements.push_back(it->second);
     m_ref.reset();
   }
-
+  IWORKContainerContext(IWORKContainerContext &);
+  IWORKContainerContext &operator=(IWORKContainerContext &);
 private:
   Dict_t *const m_dict;
   boost::optional<ID_t> m_ref;

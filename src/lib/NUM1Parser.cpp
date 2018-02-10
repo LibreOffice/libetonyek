@@ -36,6 +36,8 @@ unsigned getVersion(const int token)
   {
   case NUM1Token::VERSION_STR_2 :
     return 2;
+  default:
+    break;
   }
 
   return 0;
@@ -97,9 +99,10 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
     return makeContext<IWORKTabularInfoElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::chart_info :
     return makeContext<IWORKChartInfoElement>(getState());
-    // case IWORKToken::NS_URI_SF | IWORKToken::title_placeholder_ref :
-    //   return makeContext<PlaceholderRefContext>(getState(), true);
-
+  // case IWORKToken::NS_URI_SF | IWORKToken::title_placeholder_ref :
+  //   return makeContext<PlaceholderRefContext>(getState(), true);
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -142,6 +145,8 @@ IWORKXMLContextPtr_t LayerElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::drawables :
     return makeContext<DrawablesElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -176,6 +181,8 @@ IWORKXMLContextPtr_t LayersElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::layer :
     return makeContext<LayerElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -212,6 +219,8 @@ IWORKXMLContextPtr_t PageInfoElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::layers :
     return makeContext<LayersElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -268,6 +277,8 @@ IWORKXMLContextPtr_t WorkSpaceElement::element(const int name)
   {
   case NUM1Token::NS_URI_LS | NUM1Token::page_info:
     return makeContext<PageInfoElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -302,6 +313,8 @@ IWORKXMLContextPtr_t WorkSpaceArrayElement::element(const int name)
   {
   case NUM1Token::NS_URI_LS | NUM1Token::workspace:
     return makeContext<WorkSpaceElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -348,6 +361,8 @@ void DocumentElement::attribute(const int name, const char *const value)
     }
   }
   break;
+  default:
+    break;
   }
 }
 
@@ -361,6 +376,8 @@ IWORKXMLContextPtr_t DocumentElement::element(const int name)
     return makeContext<StylesheetElement>(getState());
   case NUM1Token::NS_URI_LS | NUM1Token::workspace_array :
     return makeContext<WorkSpaceArrayElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -397,6 +414,8 @@ IWORKXMLContextPtr_t XMLDocument::element(const int name)
   {
   case NUM1Token::NS_URI_LS | NUM1Token::document :
     return makeContext<DocumentElement>(m_state);
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -427,6 +446,8 @@ IWORKXMLContextPtr_t DiscardContext::element(const int name)
   {
   case NUM1Token::NS_URI_LS | NUM1Token::stylesheet :
     return makeContext<StylesheetElement>(getState());
+  default:
+    break;
   }
 
   return shared_from_this();
