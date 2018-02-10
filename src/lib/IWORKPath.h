@@ -43,11 +43,12 @@ public:
 
   void appendMoveTo(double x, double y);
   void appendLineTo(double x, double y);
-  void appendCurveTo(double x1, double y1, double x2, double y2, double x, double y);
   void appendQCurveTo(double x1, double y1, double x, double y);
+  void appendCCurveTo(double x1, double y1, double x2, double y2, double x, double y);
   void appendClose();
 
-  void checkIfClosedPath();
+  void closePath(bool closeOnlyIsSamePoint=true);
+  void computeBoundingBox(double &minX, double &minY, double &maxX, double &maxY) const;
   /** Transform all elements of the path.
     *
     * @arg[in] tr the transformation

@@ -158,12 +158,14 @@ duration-format,duration_format
 editable-bezier-path,editable_bezier_path
 element,element
 empty,empty
+end-point,end_point
 equal-columns,equal_columns
 evenPageMaster,evenPageMaster
 f,f
 false,false_
 filename,filename
 fill,fill
+filled,filled
 filterClassName,filterClassName
 filtered,filtered
 filtered-image,filtered_image
@@ -228,6 +230,7 @@ head,head
 header,header
 headers,headers
 headline-style,headline_style
+headLineEnd,headLineEnd
 height,height
 hfs-type,hfs_type
 host-cell-ID,host_cell_ID
@@ -243,6 +246,7 @@ http://developer.apple.com/namespaces/sfa,NS_URI_SFA
 http://www.w3.org/2001/XMLSchema-instance,NS_URI_XSI
 id,id
 ident,ident
+identifier,identifier
 image,image
 image-media,image_media
 implicit-format-type,implicit_format_type
@@ -277,6 +281,7 @@ line,line
 lineSpacing,lineSpacing
 linear,linear
 linespacing,linespacing
+line-end,line_end
 link,link
 list-label-geometry,list_label_geometry
 list-label-geometry-ref,list_label_geometry_ref
@@ -341,6 +346,7 @@ paragraphstyle-ref,paragraphstyle_ref
 parent-ident,parent_ident
 parent-ref,parent_ref
 path,path
+path-join,path_join
 pattern,pattern
 placeholder-style,placeholder_style
 placeholder-style-ref,placeholder_style_ref
@@ -424,6 +430,7 @@ tabular-style,tabular_style
 tabular-style-ref,tabular_style_ref
 tail,tail
 tailAtCenter,tailAtCenter
+tailLineEnd,tailLineEnd,
 tailPositionX,tailPositionX
 tailPositionY,tailPositionY
 tailSize,tailSize
@@ -456,6 +463,7 @@ value,value
 value-title,value_title
 vector-style,vector_style
 vector-style-ref,vector_style_ref
+version,version
 vertical-gridline-styles,vertical_gridline_styles,
 vertical-offset,vertical_offset
 verticalFlip,verticalFlip

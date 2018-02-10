@@ -221,6 +221,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKLayoutElement.h \
 	contexts/IWORKLineElement.cpp \
 	contexts/IWORKLineElement.h \
+	contexts/IWORKLineEndElement.cpp \
+	contexts/IWORKLineEndElement.h \
 	contexts/IWORKLinkElement.cpp \
 	contexts/IWORKLinkElement.h \
 	contexts/IWORKListLabelGeometriesProperty.cpp \

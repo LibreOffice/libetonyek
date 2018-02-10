@@ -288,6 +288,44 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props, bool
     }
   }
 
+  for (int marker=0; marker<2; ++marker)
+  {
+    if ((marker==0 && !style->has<TailLineEnd>()) || (marker==1 && !style->has<HeadLineEnd>()))
+      continue;
+    const IWORKMarker &lineEnd=marker==0 ? style->get<TailLineEnd>() : style->get<HeadLineEnd>();
+    try
+    {
+      if (lineEnd.m_path)
+      {
+        IWORKPathPtr_t path;
+        path.reset(new IWORKPath(get(lineEnd.m_path)));
+        /*if (lineEnd.m_filled) path->closePath(false); */
+        (*path)*=glm::dmat3(-1,0,0,0,-1,0,0,0,1);
+        std::string finalStr=path->str();
+        double bdbox[4];
+        path->computeBoundingBox(bdbox[0],bdbox[1],bdbox[2],bdbox[3]);
+        if (!finalStr.empty())
+        {
+          props.insert(marker==0 ? "draw:marker-start-path" : "draw:marker-end-path", finalStr.c_str());
+          std::stringstream s;
+          s << bdbox[0] << " " << bdbox[1] << " " << bdbox[2] << " "<< bdbox[3];
+          props.insert(marker==0 ? "draw:marker-start-viewbox" : "draw:marker-end-viewbox", s.str().c_str());
+          if (lineEnd.m_scale>0 && bdbox[2]>bdbox[0]) // unsure
+            props.insert(marker==0 ? "draw:marker-start-width" : "draw:marker-end-width",
+                         1.5*(bdbox[2]-bdbox[0])*lineEnd.m_scale, librevenge::RVNG_POINT);
+          if (lineEnd.m_endPoint && bdbox[3]>bdbox[1])
+            props.insert(marker==0 ? "draw:marker-start-center" : "draw:marker-end-center",
+                         (lineEnd.m_endPoint->m_y-bdbox[3])/(bdbox[1]-bdbox[3]), librevenge::RVNG_GENERIC);
+          else
+            props.insert(marker==0 ? "draw:marker-start-center" : "draw:marker-end-center", true);
+        }
+      }
+    }
+    catch (const IWORKPath::InvalidException &)
+    {
+      ETONYEK_DEBUG_MSG(("fillGraphicProps[IWORKCollector]: '%s' is not a valid path\n", get(lineEnd.m_path).c_str()));
+    }
+  }
   if (style->has<Shadow>())
   {
     const IWORKShadow &shadow = style->get<Shadow>();
@@ -394,7 +432,7 @@ void IWORKCollector::collectBezier(const IWORKPathPtr_t &path)
   else
   {
     m_currentPath = path;
-    if (m_currentPath) m_currentPath->checkIfClosedPath();
+    if (m_currentPath) m_currentPath->closePath(true);
   }
 }
 

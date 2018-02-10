@@ -91,15 +91,15 @@ IWORKXMLContextPtr_t IWORKLineElement::element(const int name)
 void IWORKLineElement::endOfElement()
 {
   IWORKLinePtr_t line(new IWORKLine());
-  if (m_head)
-  {
-    line->m_x1 = get(m_head).m_x;
-    line->m_y1 = get(m_head).m_y;
-  }
   if (m_tail)
   {
-    line->m_x2 = get(m_tail).m_x;
-    line->m_y2 = get(m_tail).m_y;
+    line->m_x1 = get(m_tail).m_x;
+    line->m_y1 = get(m_tail).m_y;
+  }
+  if (m_head)
+  {
+    line->m_x2 = get(m_head).m_x;
+    line->m_y2 = get(m_head).m_y;
   }
   if (isCollector())
   {

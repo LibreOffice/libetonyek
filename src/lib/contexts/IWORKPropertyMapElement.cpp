@@ -20,6 +20,8 @@
 #include "IWORKDirectCollector.h"
 #include "IWORKFilteredImageElement.h"
 #include "IWORKGeometryElement.h"
+#include "IWORKLineElement.h"
+#include "IWORKLineEndElement.h"
 #include "IWORKListLabelGeometriesProperty.h"
 #include "IWORKListLabelIndentsProperty.h"
 #include "IWORKListLabelTypesProperty.h"
@@ -1292,10 +1294,12 @@ namespace
 typedef IWORKPropertyContext<property::Columns, ColumnsElement, IWORKToken::NS_URI_SF | IWORKToken::columns> ColumnsProperty;
 typedef IWORKPropertyContext<property::FontColor, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> FontColorElement;
 typedef IWORKPropertyContext<property::FontName, IWORKStringElement, IWORKToken::NS_URI_SF | IWORKToken::string> FontNameElement;
+typedef IWORKPropertyContext<property::HeadLineEnd, IWORKLineEndElement, IWORKToken::NS_URI_SF | IWORKToken::line_end> HeadLineEndElement;
 typedef IWORKPropertyContext<property::LayoutMargins, PaddingElement, IWORKToken::NS_URI_SF | IWORKToken::padding> LayoutMarginsElement;
 typedef IWORKPropertyContext<property::LineSpacing, LinespacingElement, IWORKToken::NS_URI_SF | IWORKToken::linespacing> LineSpacingElement;
 typedef IWORKPropertyContext<property::ParagraphFill, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> ParagraphFillElement;
 typedef IWORKPropertyContext<property::ParagraphStroke, StrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke> ParagraphStrokeElement;
+typedef IWORKPropertyContext<property::TailLineEnd, IWORKLineEndElement, IWORKToken::NS_URI_SF | IWORKToken::line_end> TailLineEndElement;
 typedef IWORKPropertyContext<property::SFTCellStylePropertyDateTimeFormat, DateTimeFormatElement, IWORKToken::NS_URI_SF | IWORKToken::date_format> SFTCellStylePropertyDateTimeFormatElement;
 typedef IWORKPropertyContext<property::SFTCellStylePropertyDurationFormat, DurationFormatElement, IWORKToken::NS_URI_SF | IWORKToken::duration_format> SFTCellStylePropertyDurationFormatElement;
 typedef IWORKPropertyContext<property::SFTCellStylePropertyNumberFormat, NumberFormatElement, IWORKToken::NS_URI_SF | IWORKToken::number_format> SFTCellStylePropertyNumberFormatElement;
@@ -1404,6 +1408,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<FontSizeElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::geometry :
     return makeContext<GeometryElement>(getState(), *m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::headLineEnd :
+    return makeContext<HeadLineEndElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::italic :
     return makeContext<ItalicElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::keepLinesTogether :
@@ -1446,6 +1452,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<ParagraphStrokeElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::rightIndent :
     return makeContext<RightIndentElement>(getState(), *m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::tailLineEnd :
+    return makeContext<TailLineEndElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyNumberFormat :
     return makeContext<SFTCellStylePropertyNumberFormatElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyDateTimeFormat :

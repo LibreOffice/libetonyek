@@ -64,13 +64,13 @@ void  IWORKPathTest::testConstruction()
   {
     const string src = "M 0 0 L 1 0 L 1 1 L 0 1 Z M 0 0";
     CPPUNIT_ASSERT_NO_THROW((IWORKPath(src)));
-    CPPUNIT_ASSERT_EQUAL(string("M 0 0 L 1 0 L 1 1 L 0 1 Z"), IWORKPath(src).str());
+    CPPUNIT_ASSERT_EQUAL(string("M 0 0 L 1 0 L 1 1 L 0 1 Q"), IWORKPath(src).str());
   }
 
   {
     const string src = "M 0.0 0.0 L 0 1 C 1 1 0.5 0.5 0 0 Z M 0 0";
     CPPUNIT_ASSERT_NO_THROW((IWORKPath(src)));
-    CPPUNIT_ASSERT_EQUAL(string("M 0 0 L 0 1 C 1 1 0.5 0.5 0 0 Z"), IWORKPath(src).str());
+    CPPUNIT_ASSERT_EQUAL(string("M 0 0 L 0 1 C 1 1 0.5 0.5 0 0 Q"), IWORKPath(src).str());
   }
 }
 
@@ -85,22 +85,6 @@ void  IWORKPathTest::testConversion()
   }
 
   {
-    const string ref = "L 0 0";
-    IWORKPath path;
-    path.appendLineTo(0, 0);
-
-    CPPUNIT_ASSERT_EQUAL(ref, path.str());
-  }
-
-  {
-    const string ref = "C 1 1 0 0 0.5 0.5";
-    IWORKPath path;
-    path.appendCurveTo(1, 1, 0, 0, 0.5, 0.5);
-
-    CPPUNIT_ASSERT_EQUAL(ref, path.str());
-  }
-
-  {
     const string ref = "M 0 0 L 1 1";
     IWORKPath path;
     path.appendMoveTo(0, 0);
@@ -110,7 +94,16 @@ void  IWORKPathTest::testConversion()
   }
 
   {
-    const string ref = "M 0 0 L 1 0 L 1 1 L 0 1 L 0 0 Z";
+    const string ref = "M 0 0 C 1 1 0 0 0.5 0.5";
+    IWORKPath path;
+    path.appendMoveTo(0, 0);
+    path.appendCCurveTo(1, 1, 0, 0, 0.5, 0.5);
+
+    CPPUNIT_ASSERT_EQUAL(ref, path.str());
+  }
+
+  {
+    const string ref = "M 0 0 L 1 0 L 1 1 L 0 1 L 0 0 Q";
     IWORKPath path;
     path.appendMoveTo(0, 0);
     path.appendLineTo(1, 0);
@@ -123,11 +116,11 @@ void  IWORKPathTest::testConversion()
   }
 
   {
-    const string ref = "M 0 0 L 0 1 C 1 1 0.5 0.5 0 0 Z";
+    const string ref = "M 0 0 L 0 1 C 1 1 0.5 0.5 0 0 Q";
     IWORKPath path;
     path.appendMoveTo(0, 0);
     path.appendLineTo(0, 1);
-    path.appendCurveTo(1, 1, 0.5, 0.5, 0, 0);
+    path.appendCCurveTo(1, 1, 0.5, 0.5, 0, 0);
     path.appendClose();
 
     CPPUNIT_ASSERT_EQUAL(ref, path.str());

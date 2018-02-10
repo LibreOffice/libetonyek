@@ -38,7 +38,6 @@ struct IWORKSize
 {
   double m_width;
   double m_height;
-
   IWORKSize();
   IWORKSize(double w, double h);
 };
@@ -77,6 +76,16 @@ struct IWORKColor
 
   IWORKColor();
   IWORKColor(double r, double g, double b, double a);
+};
+
+struct IWORKMarker
+{
+  IWORKMarker();
+  bool m_filled;
+  double m_scale;
+  int m_pathJoin;
+  boost::optional<std::string> m_path;
+  boost::optional<IWORKPosition> m_endPoint;
 };
 
 struct IWORKPadding

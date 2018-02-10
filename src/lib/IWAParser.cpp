@@ -740,9 +740,9 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
                     const optional<float> &y1 = positions[1].float_(2).optional();
                     const optional<float> &x2 = positions[2].float_(1).optional();
                     const optional<float> &y2 = positions[2].float_(2).optional();
-                    bezierPath->appendCurveTo(get_optional_value_or(x, 0), get_optional_value_or(y, 0),
-                                              get_optional_value_or(x1, 0), get_optional_value_or(y1, 0),
-                                              get_optional_value_or(x2, 0), get_optional_value_or(y2, 0));
+                    bezierPath->appendCCurveTo(get_optional_value_or(x, 0), get_optional_value_or(y, 0),
+                                               get_optional_value_or(x1, 0), get_optional_value_or(y1, 0),
+                                               get_optional_value_or(x2, 0), get_optional_value_or(y2, 0));
                   }
                   else
                   {

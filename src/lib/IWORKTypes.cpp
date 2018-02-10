@@ -68,6 +68,15 @@ IWORKColor::IWORKColor(const double r, const double g, const double b, const dou
 {
 }
 
+IWORKMarker::IWORKMarker()
+  : m_filled(true)
+  , m_scale(1)
+  , m_pathJoin(0)
+  , m_path()
+  , m_endPoint()
+{
+}
+
 IWORKPadding::IWORKPadding()
   : m_top()
   , m_right()
