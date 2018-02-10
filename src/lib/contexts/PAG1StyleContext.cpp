@@ -137,10 +137,10 @@ IWORKXMLContextPtr_t PropertyMapElement::element(const int name)
 
 }
 
-PAG1StyleContext::PAG1StyleContext(PAG1ParserState &state, IWORKStyleMap_t *const styleMap, const char *const defaultParent, const bool nested)
+PAG1StyleContext::PAG1StyleContext(PAG1ParserState &state, IWORKStyleMap_t *const styleMap, const char *const defaultParent, const bool /*nested*/)
   : PAG1XMLElementContextBase(state)
   , m_props()
-  , m_base(state, m_props, styleMap, defaultParent, nested)
+  , m_base(state, m_props, styleMap, defaultParent/*, nested*/)
 {
 }
 

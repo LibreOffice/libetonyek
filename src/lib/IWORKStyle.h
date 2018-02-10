@@ -70,6 +70,13 @@ public:
 
   const boost::optional<std::string> &getIdent() const;
 
+  /// Creates the list level properties of a list style if it does not exists
+  void createListLevelStyles();
+
+protected:
+  const boost::optional<std::string> &getParentIdent() const;
+  const IWORKStylePtr_t getParent() const;
+
 private:
   IWORKPropertyMap m_props;
 

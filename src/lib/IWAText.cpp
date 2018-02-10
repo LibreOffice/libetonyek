@@ -174,21 +174,7 @@ void IWAText::parse(IWORKText &collector)
     // handle list level change
     if ((listLevelIt != m_listLevels.end()) && (listLevelIt->first == pos))
     {
-      // paragraphs at level 0 with type "none" aren't part of any list
-      bool isList = listLevelIt->second != 0;
-      if ((listLevelIt->second == 0) && bool(currentListStyle) && currentListStyle->has<property::ListLevelStyles>())
-      {
-        const IWORKListStyle_t &levelStyles = currentListStyle->get<property::ListLevelStyles>();
-        const IWORKListStyle_t::const_iterator it = levelStyles.find(listLevelIt->second);
-        if (it == levelStyles.end())
-          isList = false;
-        else
-          isList = bool(it->second) && it->second->has<property::ListLabelTypeInfo>() && !boost::get<bool>(&it->second->get<property::ListLabelTypeInfo>());
-      }
-      if (isList)
-        collector.setListLevel(listLevelIt->second + 1);
-      else
-        collector.setListLevel(0);
+      collector.setListLevel(listLevelIt->second + 1);
       ++listLevelIt;
     }
 

@@ -355,9 +355,7 @@ struct IWORKTextLabel
 typedef boost::variant<bool, std::string, IWORKTextLabel, IWORKMediaContentPtr_t> IWORKListLabelTypeInfo_t;
 typedef std::unordered_map<ID_t, IWORKListLabelTypeInfo_t> IWORKListLabelTypeInfoMap_t;
 
-typedef std::map<unsigned, IWORKStylePtr_t> IWORKListStyle_t;
-typedef std::unordered_map<ID_t, IWORKListStyle_t> IWORKListStyleMap_t;
-
+typedef std::map<unsigned, IWORKStylePtr_t> IWORKListLevels_t;
 }
 
 #endif //  IWORKTYPES_H_INCLUDED

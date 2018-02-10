@@ -10,6 +10,8 @@
 #ifndef IWORKLISTLABELTYPESPROPERTY_H_INCLUDED
 #define IWORKLISTLABELTYPESPROPERTY_H_INCLUDED
 
+#include <boost/optional.hpp>
+
 #include <deque>
 
 #include "IWORKTypes.h"
@@ -17,17 +19,21 @@
 
 namespace libetonyek
 {
+class IWORKPropertyMap;
 
 class IWORKListLabelTypesProperty : public IWORKXMLElementContextBase
 {
 public:
-  IWORKListLabelTypesProperty(IWORKXMLParserState &state, std::deque<IWORKListLabelTypeInfo_t> &elements);
+  IWORKListLabelTypesProperty(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
   IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
-  std::deque<IWORKListLabelTypeInfo_t> &m_elements;
+  IWORKPropertyMap &m_propertyMap;
+  std::deque<IWORKListLabelTypeInfo_t> m_elements;
+  boost::optional<ID_t> m_ref;
 };
 
 }

@@ -64,7 +64,7 @@ IWORKXMLContextPtr_t IWORKTextBodyElement::element(const int name)
 
 void IWORKTextBodyElement::endOfElement()
 {
-  if (bool(getState().m_currentText) && m_para)
+  if (bool(getState().m_currentText))
     getState().m_currentText->flushList();
 }
 

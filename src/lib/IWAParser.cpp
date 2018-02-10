@@ -1304,12 +1304,12 @@ void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
 
   if (bool(parent) && parent->has<ListLevelStyles>())
   {
-    const IWORKListStyle_t &parentStyle = parent->get<ListLevelStyles>();
-    for (const auto &it : parentStyle)
-      levelProps[it.first].setParent(&it.second->getPropertyMap());
+    const IWORKListLevels_t &parentStyle = parent->get<ListLevelStyles>();
+    for (IWORKListLevels_t::const_iterator it = parentStyle.begin(); it != parentStyle.end(); ++it)
+      levelProps[it->first].setParent(&it->second->getPropertyMap());
   }
 
-  IWORKListStyle_t listStyle;
+  IWORKListLevels_t listStyle;
   for (map<unsigned, IWORKPropertyMap>::const_iterator it = levelProps.begin(); it != levelProps.end(); ++it)
     listStyle[it->first].reset(new IWORKStyle(it->second, none, none));
 

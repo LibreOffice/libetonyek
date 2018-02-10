@@ -13,6 +13,7 @@
 #include "IWORKDictionary.h"
 #include "IWORKFieldElement.h"
 #include "IWORKLinkElement.h"
+#include "IWORKProperties.h"
 #include "IWORKSpanElement.h"
 #include "IWORKStyle.h"
 #include "IWORKTabElement.h"
@@ -100,7 +101,6 @@ void IWORKPElement::endOfElement()
   if (bool(getState().m_currentText))
   {
     getState().m_currentText->flushParagraph();
-    // getState().m_currentText->setListLevel(0);
     if (m_delayedPageBreak)
       getState().m_currentText->insertPageBreak();
   }
@@ -113,11 +113,12 @@ void IWORKPElement::ensureOpened()
     if (bool(getState().m_currentText))
     {
       getState().m_currentText->setParagraphStyle(m_style);
-      // if (m_listLevel)
-      // getState().m_currentText->setListLevel(get(m_listLevel));
-      // else
-      getState().m_currentText->setListLevel(0);
-      getState().m_currentText->setListStyle(m_style);
+      if (m_listLevel)
+        getState().m_currentText->setListLevel(get(m_listLevel));
+      if (m_style && m_style->has<property::ListStyle>())
+        getState().m_currentText->setListStyle(m_style->get<property::ListStyle>());
+      else
+        getState().m_currentText->setListStyle(IWORKStylePtr_t());
     }
     m_opened = true;
   }

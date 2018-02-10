@@ -250,7 +250,7 @@ void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props
 struct FillListLabelProps : public boost::static_visitor<bool>
 {
 public:
-  FillListLabelProps(const IWORKListStyle_t &listStyle, const IWORKListStyle_t::const_iterator &level, const IWORKListLabelGeometry *const geometry, const IWORKListLabelTypeInfo_t &typeInfo, RVNGPropertyList &props)
+  FillListLabelProps(const IWORKListLevels_t &listStyle, const IWORKListLevels_t::const_iterator &level, const IWORKListLabelGeometry *const geometry, const IWORKListLabelTypeInfo_t &typeInfo, RVNGPropertyList &props)
     : m_listStyle(listStyle)
     , m_current(level)
     , m_geometry(geometry)
@@ -261,7 +261,7 @@ public:
 
   bool operator()(const bool) const
   {
-    m_props->insert("style:num-format", "");
+    m_props->insert("text:bullet-char", " ");
     return false;
   }
 
@@ -328,7 +328,7 @@ private:
 
   struct GetDisplayLevels : public boost::static_visitor<int>
   {
-    GetDisplayLevels(const IWORKListStyle_t &listStyle, const IWORKListStyle_t::const_iterator &current, const int initial = 1)
+    GetDisplayLevels(const IWORKListLevels_t &listStyle, const IWORKListLevels_t::const_iterator &current, const int initial = 1)
       : m_listStyle(listStyle)
       , m_current(current)
       , m_initial(initial)
@@ -349,7 +349,7 @@ private:
     {
       if (m_current == m_listStyle.begin())
         return m_initial;
-      IWORKListStyle_t::const_iterator prev(m_current);
+      IWORKListLevels_t::const_iterator prev(m_current);
       --prev;
       if (prev->first != m_current->first - 1) // missing level spec
         return m_initial;
@@ -366,14 +366,14 @@ private:
     }
 
   private:
-    const IWORKListStyle_t &m_listStyle;
-    const IWORKListStyle_t::const_iterator m_current;
+    const IWORKListLevels_t &m_listStyle;
+    const IWORKListLevels_t::const_iterator m_current;
     const int m_initial;
   };
 
 private:
-  const IWORKListStyle_t &m_listStyle;
-  const IWORKListStyle_t::const_iterator m_current;
+  const IWORKListLevels_t &m_listStyle;
+  const IWORKListLevels_t::const_iterator m_current;
   const IWORKListLabelGeometry *const m_geometry;
   const IWORKListLabelTypeInfo_t &m_typeInfo;
   RVNGPropertyList *const m_props;
@@ -391,8 +391,8 @@ bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPr
 
   if (style.has<ListLevelStyles>())
   {
-    const IWORKListStyle_t &listStyle = style.get<ListLevelStyles>();
-    const IWORKListStyle_t::const_iterator levelIt = listStyle.find(level - 1);
+    const IWORKListLevels_t &listStyle = style.get<ListLevelStyles>();
+    const IWORKListLevels_t::const_iterator levelIt = listStyle.find(level - 1);
     if ((levelIt != listStyle.end()) && bool(levelIt->second))
     {
       const IWORKStylePtr_t &levelStyle = levelIt->second;
@@ -422,8 +422,13 @@ bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPr
       if (levelStyle->has<ListLabelIndent>())
         props.insert("text:space-before", levelStyle->get<ListLabelIndent>(), librevenge::RVNG_POINT);
 
-      if (style.has<FontSize>() && levelStyle->has<ListTextIndent>())
-        props.insert("text:min-label-width", levelStyle->get<ListTextIndent>() * style.get<FontSize>(), librevenge::RVNG_POINT);
+      if (levelStyle->has<ListTextIndent>())
+      {
+        if (style.has<FontSize>()) // checkme: does not make any sense, probably levelStyle->get<ListTextIndent>()*geometry.m_scale
+          props.insert("text:min-label-width", levelStyle->get<ListTextIndent>() + style.get<FontSize>(), librevenge::RVNG_POINT);
+        else
+          props.insert("text:min-label-width", levelStyle->get<ListTextIndent>(), librevenge::RVNG_POINT);
+      }
     }
   }
 
@@ -441,7 +446,7 @@ void IWORKText::draw(IWORKOutputElements &elements)
   elements.append(m_elements);
 }
 
-IWORKText::IWORKText(const IWORKLanguageManager &langManager, const bool discardEmptyContent)
+IWORKText::IWORKText(const IWORKLanguageManager &langManager, const bool discardEmptyContent, bool allowListInsertion)
   : m_langManager(langManager)
   , m_layoutStyleStack()
   , m_paraStyleStack()
@@ -451,6 +456,9 @@ IWORKText::IWORKText(const IWORKLanguageManager &langManager, const bool discard
   , m_sectionProps()
   , m_checkedSection(false)
   , m_listStyle()
+  , m_previousListStyle()
+  , m_listAllowed(allowListInsertion)
+  , m_listHasLevel0(false)
   , m_listLevel(0)
   , m_inListLevel(0)
   , m_isOrderedStack()
@@ -461,6 +469,7 @@ IWORKText::IWORKText(const IWORKLanguageManager &langManager, const bool discard
     // empty paragraph. But it will cause a loss of a leading empty paragraph otherwise. It is
     // good enough for now, though.
   , m_ignoreEmptyPara(discardEmptyContent)
+  , m_inLink(false)
   , m_spanStyle()
   , m_spanStyleChanged(false)
   , m_inSpan(false)
@@ -562,8 +571,22 @@ void IWORKText::setListStyle(const IWORKStylePtr_t &style)
     m_recorder->setListStyle(style);
     return;
   }
+  if (m_listStyle==style) return;
 
   m_listStyle = style;
+  m_listHasLevel0=false;
+  if (!m_listStyle) return;
+
+  m_listStyle->createListLevelStyles();
+  // check if the first level is none or not
+  using namespace property;
+  if (!m_listStyle->has<ListLevelStyles>()) return;
+
+  const IWORKListLevels_t &listStyle = m_listStyle->get<ListLevelStyles>();
+  if (listStyle.empty() || listStyle.find(0)==listStyle.end() || !listStyle.find(0)->second)
+    return;
+  IWORKStylePtr_t level0=listStyle.find(0)->second;
+  m_listHasLevel0=level0->has<ListLabelTypeInfo>() && !boost::get<bool>(&level0->get<ListLabelTypeInfo>());
 }
 
 void IWORKText::setListLevel(const unsigned level)
@@ -704,6 +727,7 @@ void IWORKText::openLink(const std::string &url)
   props.insert("xlink:type", "simple");
   props.insert("xlink:href", url.c_str());
   m_elements.addOpenLink(props);
+  m_inLink=true;
 }
 
 void IWORKText::closeLink()
@@ -718,7 +742,7 @@ void IWORKText::closeLink()
     closeSpan();
   m_spanStyle = m_oldSpanStyle;
   m_oldSpanStyle.reset();
-
+  m_inLink=false;
   m_elements.addCloseLink();
 }
 
@@ -730,10 +754,17 @@ void IWORKText::insertText(const std::string &text)
     return;
   }
 
-  if (m_inSpan && m_spanStyleChanged)
-    closeSpan();
-  if (!m_inSpan)
-    openSpan();
+  /* FIXME: do not open span in link as odp does not accept it (and
+     libodfgen does contain code to remove such span which may appear
+     in link )
+  */
+  if (!m_inLink)
+  {
+    if (m_inSpan && m_spanStyleChanged)
+      closeSpan();
+    if (!m_inSpan)
+      openSpan();
+  }
   m_elements.addInsertText(librevenge::RVNGString(text.c_str()));
 }
 
@@ -817,16 +848,24 @@ bool IWORKText::empty() const
 
 void IWORKText::handleListLevelChange(const unsigned level)
 {
-  if (level > m_inListLevel)
+  unsigned newLevel=m_listAllowed ? level : 0;
+  if (newLevel==1 && m_previousListStyle.get()!=m_listStyle.get())
+    handleListLevelChange(0);
+  else if (newLevel == m_inListLevel)
+    return;
+  if (newLevel > m_inListLevel)
   {
-    RVNGPropertyList paraProps;
-    fillParaPropList(paraProps);
-
-    for (; level > m_inListLevel;)
-    {
-      IWORKStyleStack styleStack(m_paraStyleStack);
-      styleStack.push(m_paraStyle);
+    IWORKStyleStack styleStack(m_paraStyleStack);
+    styleStack.push(m_paraStyle);
+    if (m_listStyle)
       styleStack.push(m_listStyle);
+
+    RVNGPropertyList charProps, paraProps;
+    fillParaPropList(paraProps, false);
+    paraProps.insert("fo:line-height", 0, librevenge::RVNG_POINT);
+    charProps.insert("fo:font-size", 1, librevenge::RVNG_POINT);
+    for (; newLevel > m_inListLevel;)
+    {
       ++m_inListLevel;
       RVNGPropertyList listProps;
       m_isOrderedStack.push(fillListPropList(m_inListLevel, styleStack, listProps));
@@ -834,15 +873,20 @@ void IWORKText::handleListLevelChange(const unsigned level)
         m_elements.addOpenOrderedListLevel(listProps);
       else
         m_elements.addOpenUnorderedListLevel(listProps);
-      if (m_inListLevel != level)
+      if (m_inListLevel != newLevel)
+      {
+        // open a list element with minimum height
         m_elements.addOpenListElement(paraProps);
+        m_elements.addOpenSpan(charProps);
+        m_elements.addCloseSpan();
+      }
     }
   }
-  if (level < m_inListLevel)
+  if (newLevel < m_inListLevel)
   {
     if (m_inPara)
       closePara();
-    for (; level < m_inListLevel; --m_inListLevel)
+    for (; newLevel < m_inListLevel; --m_inListLevel)
     {
       assert(!m_isOrderedStack.empty());
       if (m_isOrderedStack.top())
@@ -852,6 +896,7 @@ void IWORKText::handleListLevelChange(const unsigned level)
       m_isOrderedStack.pop();
     }
   }
+  m_previousListStyle=m_listStyle;
 }
 
 void IWORKText::openPara()
@@ -860,7 +905,8 @@ void IWORKText::openPara()
 
   if (!m_inSection && needsSection())
     openSection();
-  handleListLevelChange(m_listLevel);
+  unsigned newLevel=(m_listLevel==1 && !m_listHasLevel0) ? 0 : m_listLevel;
+  handleListLevelChange(newLevel);
 
   librevenge::RVNGPropertyList paraProps;
   fillParaPropList(paraProps);

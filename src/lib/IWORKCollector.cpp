@@ -682,9 +682,9 @@ std::shared_ptr<IWORKTable> IWORKCollector::createTable(const IWORKTableNameMapP
   return shared_ptr<IWORKTable>(new IWORKTable(tableNameMap, langManager));
 }
 
-std::shared_ptr<IWORKText> IWORKCollector::createText(const IWORKLanguageManager &langManager, bool discardEmptyContent) const
+std::shared_ptr<IWORKText> IWORKCollector::createText(const IWORKLanguageManager &langManager, bool discardEmptyContent, bool allowListInsertion) const
 {
-  return make_shared<IWORKText>(langManager, discardEmptyContent);
+  return make_shared<IWORKText>(langManager, discardEmptyContent, allowListInsertion);
 }
 
 void IWORKCollector::startLevel()

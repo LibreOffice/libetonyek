@@ -14,7 +14,6 @@
 #include "IWORKStyleContext.h"
 #include "IWORKStyleRefContext.h"
 #include "IWORKToken.h"
-#include "IWORKListstyleElement.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
@@ -33,7 +32,7 @@ IWORKXMLContextPtr_t IWORKStylesContext::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::headline_style :
     return makeContext<IWORKStyleContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
-    return makeContext<IWORKListstyleElement>(getState());
+    return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_listStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::cell_style :
     return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::graphic_style :
@@ -48,15 +47,14 @@ IWORKXMLContextPtr_t IWORKStylesContext::element(const int name)
     return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_tabularStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::vector_style :
     return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_vectorStyles);
-
-  case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
-    return IWORKXMLContextPtr_t();
   case IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref :
     return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::characterstyle_ref :
     return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_characterStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
     return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_layoutStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
+    return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_listStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref :
     return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_style_ref :

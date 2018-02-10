@@ -24,22 +24,29 @@ namespace libetonyek
 class IWORKStyleContext : public IWORKXMLElementContextBase
 {
 public:
-  IWORKStyleContext(IWORKXMLParserState &state, IWORKStyleMap_t *styleMap = nullptr,  bool nested = false);
-  IWORKStyleContext(IWORKXMLParserState &state, IWORKPropertyMap &props, IWORKStyleMap_t *styleMap = nullptr, bool nested = false);
-  IWORKStyleContext(IWORKXMLParserState &state, IWORKPropertyMap &props, IWORKStyleMap_t *styleMap = nullptr, const char *defaultParent = nullptr, bool nested = false);
+  IWORKStyleContext(IWORKXMLParserState &state, IWORKStyleMap_t *styleMap = nullptr);
+  IWORKStyleContext(IWORKXMLParserState &state, IWORKPropertyMap &props, IWORKStyleMap_t *styleMap = nullptr, const char *defaultParent = nullptr);
 
   void attribute(int name, const char *value) override;
   void endOfElement() override;
 
+  /** returns the created style
+
+      \note must be called after the style is read, ie. after endOfElement have been called*/
+  IWORKStylePtr_t getStyle()
+  {
+    return m_style;
+  }
 private:
   IWORKXMLContextPtr_t element(int name) override;
 
 private:
   IWORKStyleMap_t *const m_styleMap;
   const std::string m_defaultParent;
-  const bool m_nested;
   IWORKPropertyMap m_ownProps;
   IWORKPropertyMap &m_props;
+  //! the final style
+  IWORKStylePtr_t m_style;
   boost::optional<std::string> m_ident;
   boost::optional<std::string> m_parentIdent;
 };

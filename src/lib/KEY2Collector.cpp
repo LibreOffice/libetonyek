@@ -33,9 +33,9 @@ std::shared_ptr<IWORKTable> KEY2Collector::createTable(const IWORKTableNameMapPt
   return table;
 }
 
-std::shared_ptr<IWORKText> KEY2Collector::createText(const IWORKLanguageManager &langManager, const bool discardEmptyContent) const
+std::shared_ptr<IWORKText> KEY2Collector::createText(const IWORKLanguageManager &langManager, const bool discardEmptyContent, bool allowListInsertion) const
 {
-  const std::shared_ptr<IWORKText> text(IWORKCollector::createText(langManager, discardEmptyContent));
+  const std::shared_ptr<IWORKText> text(IWORKCollector::createText(langManager, discardEmptyContent, allowListInsertion));
   if (m_paint)
     text->setRecorder(std::make_shared<IWORKTextRecorder>());
   return text;

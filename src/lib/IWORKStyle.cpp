@@ -12,6 +12,8 @@
 #include "libetonyek_utils.h"
 #include "IWORKStyleStack.h"
 
+#include "IWORKProperties.h"
+
 namespace libetonyek
 {
 
@@ -37,7 +39,6 @@ bool IWORKStyle::link(const IWORKStylesheetPtr_t &stylesheet)
 {
   if (m_parent || !m_parentIdent)
     return true;
-
   IWORKStylesheetPtr_t currentStylesheet = stylesheet;
 
   if (currentStylesheet && (m_ident == m_parentIdent))
@@ -47,7 +48,10 @@ bool IWORKStyle::link(const IWORKStylesheetPtr_t &stylesheet)
   }
 
   if (!currentStylesheet)
+  {
+    ETONYEK_DEBUG_MSG(("IWORKStyle::find: can not find parent %s\n", m_parentIdent.get().c_str()));
     return false;
+  }
   m_parent=currentStylesheet->find(m_parentIdent.get());
   if (m_parent)
     m_props.setParent(&m_parent->getPropertyMap());
@@ -68,6 +72,54 @@ const IWORKPropertyMap &IWORKStyle::getPropertyMap() const
 const boost::optional<std::string> &IWORKStyle::getIdent() const
 {
   return m_ident;
+}
+
+const boost::optional<std::string> &IWORKStyle::getParentIdent() const
+{
+  return m_parentIdent;
+}
+
+const IWORKStylePtr_t IWORKStyle::getParent() const
+{
+  return m_parent;
+}
+
+void IWORKStyle::createListLevelStyles()
+{
+  using namespace property;
+  if (m_props.has<ListLevelStyles>(false))
+    return;
+  std::deque<IWORKListLabelGeometry> const emptyLabelGeometries;
+  std::deque<IWORKListLabelTypeInfo_t> const emptyTypeInfos;
+  std::deque<double> const emptyDoubleQue;
+  std::deque<IWORKListLabelGeometry> const &labelGeometries=
+    has<ListLabelGeometries>() ? get<ListLabelGeometries>() : emptyLabelGeometries;
+  std::deque<double> const &labelIndents=
+    has<ListLabelIndents>() ? get<ListLabelIndents>() : emptyDoubleQue;
+  std::deque<double> const &textIndents=
+    has<ListTextIndents>() ? get<ListTextIndents>() : emptyDoubleQue;
+  std::deque<IWORKListLabelTypeInfo_t> const &typeInfos=
+    has<ListLabelTypes>() ? get<ListLabelTypes>() : emptyTypeInfos;
+  using std::max;
+
+  const std::size_t levels = (max)((max)(labelGeometries.size(), typeInfos.size()),
+                                   (max)(labelIndents.size(), textIndents.size()));
+  std::deque<IWORKPropertyMap> levelProps(levels);
+  for (std::size_t i = 0; i != levels; ++i)
+  {
+    if (i < labelGeometries.size())
+      levelProps[i].put<ListLabelGeometry>(labelGeometries[i]);
+    if (i < typeInfos.size())
+      levelProps[i].put<ListLabelTypeInfo>(typeInfos[i]);
+    if (i < labelIndents.size())
+      levelProps[i].put<ListLabelIndent>(labelIndents[i]);
+    if (i < textIndents.size())
+      levelProps[i].put<ListTextIndent>(textIndents[i]);
+  }
+  IWORKListLevels_t levelsStyle;
+  for (std::size_t i = 0; i != levels; ++i)
+    levelsStyle[i] = std::make_shared<IWORKStyle>(levelProps[i], boost::none, boost::none);
+  m_props.put<ListLevelStyles>(levelsStyle);
 }
 
 }

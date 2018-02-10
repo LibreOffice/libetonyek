@@ -113,7 +113,7 @@ public:
 
 public:
   virtual std::shared_ptr<IWORKTable> createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const;
-  virtual std::shared_ptr<IWORKText> createText(const IWORKLanguageManager &langManager, bool discardEmptyContent = false) const;
+  virtual std::shared_ptr<IWORKText> createText(const IWORKLanguageManager &langManager, bool discardEmptyContent = false, bool allowListInsertion=true) const;
 
 protected:
   void fillMetadata(librevenge::RVNGPropertyList &props);

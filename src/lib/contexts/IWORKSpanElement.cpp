@@ -24,6 +24,7 @@ IWORKSpanElement::IWORKSpanElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_style()
   , m_opened(false)
+  , m_delayedPageBreak(false)
 {
 }
 
@@ -56,6 +57,9 @@ IWORKXMLContextPtr_t IWORKSpanElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
     ensureOpened();
     return makeContext<IWORKBrContext>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::pgbr :
+    m_delayedPageBreak=true;
+    return IWORKXMLContextPtr_t();
   case IWORKToken::NS_URI_SF | IWORKToken::tab :
     ensureOpened();
     return makeContext<IWORKTabElement>(getState());
@@ -89,6 +93,8 @@ void IWORKSpanElement::endOfElement()
   {
     if (m_opened)
       getState().m_currentText->flushSpan();
+    if (m_delayedPageBreak)
+      getState().m_currentText->insertPageBreak();
     // This is needed to handle mixed paragraph content correctly. If
     // there is a plain text following a span, it must not have the
     // style of the preceding span.

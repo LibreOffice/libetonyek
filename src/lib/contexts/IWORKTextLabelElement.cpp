@@ -16,6 +16,7 @@
 #include <boost/spirit/include/qi_sequence.hpp>
 #include <boost/spirit/include/qi_symbols.hpp>
 
+#include "IWORKDictionary.h"
 #include "IWORKToken.h"
 #include "IWORKTokenizer.h"
 #include "IWORKXMLParserState.h"
@@ -124,7 +125,6 @@ void IWORKTextLabelElement::endOfElement()
   {
     ETONYEK_DEBUG_MSG(("IWORKTextLabelElement::endOfElement: no label type found\n"));
   }
-
   if (m_type)
   {
     IWORKTextLabel label;
@@ -138,6 +138,8 @@ void IWORKTextLabelElement::endOfElement()
   {
     m_value = m_format;
   }
+  if (getId())
+    getState().getDictionary().m_textLabels[get(getId())]=get_optional_value_or(m_value, IWORKListLabelTypeInfo_t());
 }
 
 }

@@ -34,6 +34,8 @@ IWORKDictionary::IWORKDictionary()
   , m_textLabels()
   , m_listLabelGeometries()
   , m_doubleArrays()
+  , m_listLabelGeometriesArrays()
+  , m_listLabelTypesArrays()
 {
 }
 

@@ -10,6 +10,8 @@
 #ifndef IWORKLISTLABELGEOMETRIESPROPERTY_H_INCLUDED
 #define IWORKLISTLABELGEOMETRIESPROPERTY_H_INCLUDED
 
+#include <boost/optional.hpp>
+
 #include <deque>
 
 #include "IWORKTypes.h"
@@ -17,17 +19,21 @@
 
 namespace libetonyek
 {
+class IWORKPropertyMap;
 
 class IWORKListLabelGeometriesProperty : public IWORKXMLElementContextBase
 {
 public:
-  IWORKListLabelGeometriesProperty(IWORKXMLParserState &state, std::deque<IWORKListLabelGeometry> &elements);
+  IWORKListLabelGeometriesProperty(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
   IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
-  std::deque<IWORKListLabelGeometry> &m_elements;
+  IWORKPropertyMap &m_propertyMap;
+  std::deque<IWORKListLabelGeometry> m_elements;
+  boost::optional<ID_t> m_ref;
 };
 
 }

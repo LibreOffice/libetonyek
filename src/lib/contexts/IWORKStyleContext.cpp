@@ -19,31 +19,20 @@
 namespace libetonyek
 {
 
-IWORKStyleContext::IWORKStyleContext(IWORKXMLParserState &state, IWORKStyleMap_t *const styleMap, const bool nested)
+IWORKStyleContext::IWORKStyleContext(IWORKXMLParserState &state, IWORKStyleMap_t *const styleMap)
   : IWORKXMLElementContextBase(state)
   , m_styleMap(styleMap)
   , m_defaultParent()
-  , m_nested(nested)
   , m_ownProps()
   , m_props(m_ownProps)
+  , m_style()
 {
 }
 
-IWORKStyleContext::IWORKStyleContext(IWORKXMLParserState &state, IWORKPropertyMap &props, IWORKStyleMap_t *const styleMap, const bool nested)
+IWORKStyleContext::IWORKStyleContext(IWORKXMLParserState &state, IWORKPropertyMap &props, IWORKStyleMap_t *const styleMap, const char *const defaultParent)
   : IWORKXMLElementContextBase(state)
   , m_styleMap(styleMap)
-  , m_defaultParent()
-  , m_nested(nested)
-  , m_ownProps()
-  , m_props(props)
-{
-}
-
-IWORKStyleContext::IWORKStyleContext(IWORKXMLParserState &state, IWORKPropertyMap &props, IWORKStyleMap_t *const styleMap, const char *const defaultParent, const bool nested)
-  : IWORKXMLElementContextBase(state)
-  , m_styleMap(styleMap)
-  , m_defaultParent(defaultParent)
-  , m_nested(nested)
+  , m_defaultParent(defaultParent ? defaultParent : "")
   , m_ownProps()
   , m_props(props)
 {
@@ -78,15 +67,21 @@ IWORKXMLContextPtr_t IWORKStyleContext::element(const int name)
 
 void IWORKStyleContext::endOfElement()
 {
-  if (!m_parentIdent && !m_defaultParent.empty() && (!m_ident || (m_defaultParent != get(m_ident))))
+  bool hasParentIdent=bool(m_parentIdent);
+  if (!hasParentIdent && !m_defaultParent.empty() && (!m_ident || (m_defaultParent != get(m_ident))))
     m_parentIdent = m_defaultParent;
-  const IWORKStylePtr_t style(new IWORKStyle(m_props, m_ident, m_parentIdent));
+  m_style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));
   if (getId() && bool(m_styleMap))
-    (*m_styleMap)[get(getId())] = style;
-  if (m_ident && !m_nested && getState().m_stylesheet)
-    getState().m_stylesheet->m_styles[get(m_ident)] = style;
+    (*m_styleMap)[get(getId())] = m_style;
+  if (getState().m_stylesheet)
+  {
+    if (m_ident)
+      getState().m_stylesheet->m_styles[get(m_ident)] = m_style;
+    else if (hasParentIdent && getId())
+      getState().m_stylesheet->m_styles[get(getId())] = m_style;
+  }
   if (isCollector())
-    getCollector().collectStyle(style);
+    getCollector().collectStyle(m_style);
 }
 
 }

@@ -45,6 +45,7 @@ public:
   {
     assert(m_value);
     m_collection.push_back(get(m_value));
+    m_value.reset();
   }
 
 private:

@@ -71,6 +71,7 @@ IWORKXMLContextPtr_t IWORKListLabelTypeinfoElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::text_label_ref :
     return makeContext<IWORKRefContext>(getState(), m_textRef);
   }
+  ETONYEK_DEBUG_MSG(("IWORKListLabelTypeinfoElement::element: unknown name %d\n", name));
   return IWORKXMLContextPtr_t();
 }
 
@@ -80,7 +81,6 @@ void IWORKListLabelTypeinfoElement::endOfElement()
   {
     ETONYEK_DEBUG_MSG(("IWORKListLabelTypeinfoElement::endOfElement: no label def. found\n"));
   }
-
   if (m_isImage)
   {
     if (bool(m_image))
@@ -92,19 +92,25 @@ void IWORKListLabelTypeinfoElement::endOfElement()
       const IWORKMediaContentMap_t::const_iterator it = getState().getDictionary().m_binaries.find(get(m_imageRef));
       if (it != getState().getDictionary().m_binaries.end())
         m_value = it->second;
+      else
+      {
+        ETONYEK_DEBUG_MSG(("IWORKListLabelTypeinfoElement::endOfElement: unknown image ref \"%s\"\n", get(m_imageRef).c_str()));
+      }
     }
   }
   else if (m_isText)
   {
     if (m_text)
-    {
       m_value = get(m_text);
-    }
     else if (m_textRef)
     {
       const IWORKListLabelTypeInfoMap_t::const_iterator it = getState().getDictionary().m_textLabels.find(get(m_textRef));
       if (it != getState().getDictionary().m_textLabels.end())
         m_value = it->second;
+      else
+      {
+        ETONYEK_DEBUG_MSG(("IWORKListLabelTypeinfoElement::endOfElement: unknown text ref \"%s\"\n", get(m_textRef).c_str()));
+      }
     }
   }
   else

@@ -74,9 +74,13 @@ private:
 
     const typename Dict_t::const_iterator it = m_dict->find(get(m_ref));
     if (it == m_dict->end())
+    {
+      ETONYEK_DEBUG_MSG(("IWORKContainerContext::handleRef: unknown ref \"%s\"\n", get(m_ref).c_str()));
       m_elements.push_back(Type());
+    }
     else
       m_elements.push_back(it->second);
+    m_ref.reset();
   }
 
 private:

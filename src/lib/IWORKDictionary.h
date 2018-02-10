@@ -43,7 +43,7 @@ struct IWORKDictionary
   IWORKStyleMap_t m_characterStyles;
   IWORKStyleMap_t m_graphicStyles;
   IWORKStyleMap_t m_layoutStyles;
-  IWORKListStyleMap_t m_listStyles;
+  IWORKStyleMap_t m_listStyles;
   IWORKStyleMap_t m_paragraphStyles;
   IWORKStyleMap_t m_tabularStyles;
   IWORKStyleMap_t m_vectorStyles;
@@ -67,6 +67,8 @@ struct IWORKDictionary
   IWORKListLabelGeometryMap_t m_listLabelGeometries;
 
   std::unordered_map<ID_t, std::deque<double> > m_doubleArrays;
+  std::unordered_map<ID_t, std::deque<IWORKListLabelGeometry> > m_listLabelGeometriesArrays;
+  std::unordered_map<ID_t, std::deque<IWORKListLabelTypeInfo_t> > m_listLabelTypesArrays;
 };
 
 }

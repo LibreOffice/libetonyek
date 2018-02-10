@@ -58,7 +58,7 @@ IWORKXMLContextPtr_t PropertyMapElement::element(const int name)
 KEY2StyleContext::KEY2StyleContext(KEY2ParserState &state, IWORKStyleMap_t *const styleMap, const bool nested)
   : KEY2XMLElementContextBase(state)
   , m_props()
-  , m_base(state, m_props, styleMap, nested)
+  , m_base(state, m_props, styleMap/*, nested*/)
   , m_styleMap(styleMap)
   , m_nested(nested)
 {

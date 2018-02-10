@@ -33,7 +33,7 @@ class IWORKTextRecorder;
 class IWORKText
 {
 public:
-  IWORKText(const IWORKLanguageManager &langManager, bool discardEmptyContent);
+  IWORKText(const IWORKLanguageManager &langManager, bool discardEmptyContent, bool allowListInsertion);
   ~IWORKText();
 
   void setRecorder(const std::shared_ptr<IWORKTextRecorder> &recorder);
@@ -115,6 +115,11 @@ private:
   mutable bool m_checkedSection;
 
   IWORKStylePtr_t m_listStyle;
+  /// the previous list style
+  IWORKStylePtr_t m_previousListStyle;
+  bool m_listAllowed;
+  /// flag to know if the list level 0 is defined
+  bool m_listHasLevel0;
   unsigned m_listLevel;
   unsigned m_inListLevel;
   /// Saves info about the currently opened list levels being ordered or unordered.
@@ -125,6 +130,7 @@ private:
   bool m_inPara;
   bool m_ignoreEmptyPara;
 
+  bool m_inLink;
   IWORKStylePtr_t m_spanStyle;
   IWORKStylePtr_t m_langStyle;
   bool m_spanStyleChanged;

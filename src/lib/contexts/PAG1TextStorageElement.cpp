@@ -471,7 +471,8 @@ void PElement::endOfElement()
     getState().m_currentText->draw(fs.m_footnotes.back());
     // prepare for possible next footnote
     // TODO: introduce IN_FOOTNOTES state and move this to startOfElement
-    getState().m_currentText = getCollector().createText(getState().m_langManager, false);
+    getState().m_currentText = getCollector().createText(getState().m_langManager, false, false);
+
     if (getCollector().getFootnoteKind() == PAG_FOOTNOTE_KIND_FOOTNOTE)
       fs.m_footnotes.back().addCloseFootnote();
     else

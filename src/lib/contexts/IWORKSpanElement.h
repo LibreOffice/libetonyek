@@ -33,6 +33,7 @@ protected:
 private:
   IWORKStylePtr_t m_style;
   bool m_opened;
+  bool m_delayedPageBreak;
 };
 
 }

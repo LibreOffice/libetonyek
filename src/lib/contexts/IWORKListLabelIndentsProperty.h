@@ -18,18 +18,20 @@
 
 namespace libetonyek
 {
+class IWORKPropertyMap;
 
 class IWORKListLabelIndentsProperty : public IWORKXMLElementContextBase
 {
 public:
-  IWORKListLabelIndentsProperty(IWORKXMLParserState &state, std::deque<double> &elements);
+  IWORKListLabelIndentsProperty(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 
 private:
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
 
 private:
-  std::deque<double> &m_elements;
+  IWORKPropertyMap &m_propertyMap;
+  std::deque<double> m_elements;
   boost::optional<ID_t> m_ref;
 };
 

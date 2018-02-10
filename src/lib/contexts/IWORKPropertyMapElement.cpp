@@ -20,10 +20,14 @@
 #include "IWORKDirectCollector.h"
 #include "IWORKFilteredImageElement.h"
 #include "IWORKGeometryElement.h"
-#include "IWORKListstyleElement.h"
+#include "IWORKListLabelGeometriesProperty.h"
+#include "IWORKListLabelIndentsProperty.h"
+#include "IWORKListLabelTypesProperty.h"
+#include "IWORKListTextIndentsProperty.h"
 #include "IWORKNumericPropertyContext.h"
 #include "IWORKProperties.h"
 #include "IWORKPropertyContext.h"
+#include "IWORKPropertyHandler.h"
 #include "IWORKPropertyMap.h"
 #include "IWORKPtrPropertyContext.h"
 #include "IWORKRefContext.h"
@@ -61,7 +65,7 @@ private:
 
 private:
   IWORKStyleMap_t &m_styleMap;
-  IWORKPropertyMap m_stylePropMap;
+  std::shared_ptr<IWORKStyleContext> m_context;
   optional<ID_t> m_ref;
 };
 
@@ -69,7 +73,7 @@ template<typename Property, int TokenId, int RefTokenId>
 StylePropertyContext<Property, TokenId, RefTokenId>::StylePropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap, IWORKStyleMap_t &styleMap)
   : IWORKPropertyContextBase(state, propMap)
   , m_styleMap(styleMap)
-  , m_stylePropMap()
+  , m_context()
   , m_ref()
 {
 }
@@ -80,7 +84,8 @@ IWORKXMLContextPtr_t StylePropertyContext<Property, TokenId, RefTokenId>::elemen
   switch (name)
   {
   case TokenId :
-    return makeContext<IWORKStyleContext>(getState(), m_stylePropMap, &m_styleMap, true);
+    m_context.reset(new IWORKStyleContext(getState(), &m_styleMap));
+    return m_context;
   case RefTokenId :
     return makeContext<IWORKRefContext>(getState(), m_ref);
   }
@@ -101,9 +106,9 @@ void StylePropertyContext<Property, TokenId, RefTokenId>::endOfElement()
       ETONYEK_DEBUG_MSG(("StylePropertyContext<...>::endOfElement: unknown style %s\n", get(m_ref).c_str()));
     }
   }
-  else
+  else if (m_context)
   {
-    m_propMap.put<Property>(make_shared<IWORKStyle>(m_stylePropMap, none, none));
+    m_propMap.put<Property>(m_context->getStyle());
   }
 }
 
@@ -1303,8 +1308,10 @@ typedef IWORKPtrPropertyContext<property::Geometry, IWORKGeometryElement, IWORKT
 typedef StylePropertyContext<property::FollowingLayoutStyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref> FollowingLayoutStyleElement;
 typedef StylePropertyContext<property::FollowingParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> FollowingParagraphStyleElement;
 typedef StylePropertyContext<property::LayoutParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> LayoutParagraphStyleElement;
+typedef StylePropertyContext<property::ListStyle, IWORKToken::NS_URI_SF | IWORKToken::liststyle, IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref> ListStyleElement;
 typedef StylePropertyContext<property::SFTDefaultBodyCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultBodyCellStylePropertyElement;
 typedef StylePropertyContext<property::SFTDefaultFooterRowCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultFooterRowCellStylePropertyElement;
+typedef StylePropertyContext<property::SFTDefaultGroupingRowCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultGroupingRowCellStylePropertyElement;
 typedef StylePropertyContext<property::SFTDefaultHeaderColumnCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultHeaderColumnCellStylePropertyElement;
 typedef StylePropertyContext<property::SFTDefaultHeaderRowCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultHeaderRowCellStylePropertyElement;
 typedef StylePropertyContext<property::SFTCellStylePropertyParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> SFTCellStylePropertyParagraphStylePropertyElement;
@@ -1335,62 +1342,6 @@ typedef IWORKNumericPropertyContext<property::Strikethru> StrikethruElement;
 typedef IWORKNumericPropertyContext<property::Tracking> TrackingElement;
 typedef IWORKNumericPropertyContext<property::Underline> UnderlineElement;
 typedef IWORKNumericPropertyContext<property::WidowControl> WidowControlElement;
-
-}
-
-namespace
-{
-
-class ListStyleProperty : public IWORKPropertyContextBase
-{
-public:
-  ListStyleProperty(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
-
-private:
-  IWORKXMLContextPtr_t element(int name) override;
-  void endOfElement() override;
-
-private:
-  IWORKListStyle_t m_style;
-  boost::optional<ID_t> m_ref;
-};
-
-ListStyleProperty::ListStyleProperty(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : IWORKPropertyContextBase(state, propMap)
-  , m_style()
-  , m_ref()
-{
-}
-
-IWORKXMLContextPtr_t ListStyleProperty::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
-    m_default = false;
-    return makeContext<IWORKListstyleElement>(getState(), m_style);
-  case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
-    return makeContext<IWORKRefContext>(getState(), m_ref);
-  }
-  return IWORKXMLContextPtr_t();
-}
-
-void ListStyleProperty::endOfElement()
-{
-  if (m_ref)
-  {
-    const IWORKListStyleMap_t::const_iterator it = getState().getDictionary().m_listStyles.find(get(m_ref));
-    if (it != getState().getDictionary().m_listStyles.end())
-      m_style = it->second;
-    // argh, no sure how to retrieve the list styles here...
-    else
-    {
-      ETONYEK_DEBUG_MSG(("ListStyleProperty::attribute: unknown style %s\n", get(m_ref).c_str()));
-    }
-  }
-
-  m_propMap.put<property::ListLevelStyles>(m_style);
-}
 
 }
 
@@ -1459,8 +1410,16 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<LeftIndentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::lineSpacing :
     return makeContext<LineSpacingElement>(getState(), *m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::listLabelGeometries :
+    return makeContext<IWORKListLabelGeometriesProperty>(getState(), *m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::listLabelIndents :
+    return makeContext<IWORKListLabelIndentsProperty>(getState(), *m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::listLabelTypes :
+    return makeContext<IWORKListLabelTypesProperty>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::listStyle :
-    return makeContext<ListStyleProperty>(getState(), *m_propMap);
+    return makeContext<ListStyleElement>(getState(), *m_propMap, getState().getDictionary().m_listStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::listTextIndents :
+    return makeContext<IWORKListTextIndentsProperty>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::opacity :
     return makeContext<OpacityElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::outline :
@@ -1489,6 +1448,13 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<SFTDefaultBodyCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultFooterRowCellStyleProperty :
     return makeContext<SFTDefaultFooterRowCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingRowCell0StyleProperty :
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingRowCell1StyleProperty :
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingRowCell2StyleProperty :
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingRowCell3StyleProperty :
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingRowCell4StyleProperty :
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingRowCell5StyleProperty :
+    return makeContext<SFTDefaultGroupingRowCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultHeaderColumnCellStyleProperty :
     return makeContext<SFTDefaultHeaderColumnCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultHeaderRowCellStyleProperty :
