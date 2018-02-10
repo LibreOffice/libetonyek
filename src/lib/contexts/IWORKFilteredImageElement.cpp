@@ -51,6 +51,8 @@ IWORKXMLContextPtr_t IWORKFilteredImageElement::element(const int name)
     return makeContext<IWORKFilteredElement>(getState(), m_filtered);
   case IWORKToken::NS_URI_SF | IWORKToken::leveled :
     return makeContext<LeveledElement>(getState(), m_leveled);
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();

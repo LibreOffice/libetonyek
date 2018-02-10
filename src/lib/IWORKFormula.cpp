@@ -471,28 +471,36 @@ private:
     if (val.m_table)
       m_out << get(val.m_table);
     m_out  << '.';
-    if (val.m_column && int(get(val.m_column).m_coord)+m_offsetColumn>=0)
+    if (val.m_column)
     {
-      if (get(val.m_column).m_absolute)
-        m_out << '$';
-
-      unsigned column = unsigned(int(get(val.m_column).m_coord)+m_offsetColumn);
-      vector<char> columnNumerals;
-      columnNumerals.reserve(4);
-      while (column != 0)
+      int offsetColumn=get(val.m_column).m_absolute ? 0 : m_offsetColumn;
+      if (int(get(val.m_column).m_coord)+offsetColumn>=0)
       {
-        if (column > 0)
-          --column;
-        columnNumerals.push_back(char('A' + column % 26));
-        column /= 26;
+        if (get(val.m_column).m_absolute)
+          m_out << '$';
+
+        unsigned column = unsigned(int(get(val.m_column).m_coord)+offsetColumn);
+        vector<char> columnNumerals;
+        columnNumerals.reserve(4);
+        while (column != 0)
+        {
+          if (column > 0)
+            --column;
+          columnNumerals.push_back(char('A' + column % 26));
+          column /= 26;
+        }
+        copy(columnNumerals.rbegin(), columnNumerals.rend(), std::ostream_iterator<char>(m_out));
       }
-      copy(columnNumerals.rbegin(), columnNumerals.rend(), std::ostream_iterator<char>(m_out));
     }
-    if (val.m_row && int(get(val.m_row).m_coord)+m_offsetRow>=0)
+    if (val.m_row)
     {
-      if (get(val.m_row).m_absolute)
-        m_out << '$';
-      m_out << int(get(val.m_row).m_coord)+m_offsetRow;
+      int offsetRow=get(val.m_row).m_absolute ? 0 : m_offsetRow;
+      if (int(get(val.m_row).m_coord)+offsetRow>=0)
+      {
+        if (get(val.m_row).m_absolute)
+          m_out << '$';
+        m_out << int(get(val.m_row).m_coord)+offsetRow;
+      }
     }
   }
 
@@ -562,16 +570,24 @@ struct Collector : public boost::static_visitor<>
         props.insert("librevenge:sheet-name", get(val.m_table).c_str());
     }
 
-    if (val.m_column && int(get(val.m_column).m_coord)+m_offsetColumn>0)
+    if (val.m_column)
     {
-      props.insert("librevenge:column-absolute", get(val.m_column).m_absolute);
-      props.insert("librevenge:column", int(get(val.m_column).m_coord)-1+m_offsetColumn);
+      int offsetColumn=get(val.m_column).m_absolute ? 0 : m_offsetColumn;
+      if (int(get(val.m_column).m_coord)+offsetColumn>0)
+      {
+        props.insert("librevenge:column-absolute", get(val.m_column).m_absolute);
+        props.insert("librevenge:column", int(get(val.m_column).m_coord)-1+offsetColumn);
+      }
     }
 
-    if (val.m_row && int(get(val.m_row).m_coord)+m_offsetRow>0)
+    if (val.m_row)
     {
-      props.insert("librevenge:row-absolute", get(val.m_row).m_absolute);
-      props.insert("librevenge:row", int(get(val.m_row).m_coord)-1+m_offsetRow);
+      int offsetRow=get(val.m_row).m_absolute ? 0 : m_offsetRow;
+      if (int(get(val.m_row).m_coord)+offsetRow>0)
+      {
+        props.insert("librevenge:row-absolute", get(val.m_row).m_absolute);
+        props.insert("librevenge:row", int(get(val.m_row).m_coord)-1+offsetRow);
+      }
     }
 
     m_propsVector.append(props);
@@ -582,25 +598,41 @@ struct Collector : public boost::static_visitor<>
     librevenge::RVNGPropertyList props;
     props.insert("librevenge:type", "librevenge-cells");
 
-    if (val.first.m_column && int(get(val.first.m_column).m_coord)+m_offsetColumn>0)
+    if (val.first.m_column)
     {
-      props.insert("librevenge:start-column-absolute", get(val.first.m_column).m_absolute);
-      props.insert("librevenge:start-column", int(get(val.first.m_column).m_coord)-1+m_offsetColumn);
+      int offsetColumn=get(val.first.m_column).m_absolute ? 0 : m_offsetColumn;
+      if (int(get(val.first.m_column).m_coord)+offsetColumn>0)
+      {
+        props.insert("librevenge:start-column-absolute", get(val.first.m_column).m_absolute);
+        props.insert("librevenge:start-column", int(get(val.first.m_column).m_coord)-1+offsetColumn);
+      }
     }
-    if (val.first.m_row && int(get(val.first.m_row).m_coord)+m_offsetRow>0)
+    if (val.first.m_row)
     {
-      props.insert("librevenge:start-row-absolute", get(val.first.m_row).m_absolute);
-      props.insert("librevenge:start-row", int(get(val.first.m_row).m_coord)-1+m_offsetRow);
+      int offsetRow=get(val.first.m_row).m_absolute ? 0 : m_offsetRow;
+      if (int(get(val.first.m_row).m_coord)+offsetRow>0)
+      {
+        props.insert("librevenge:start-row-absolute", get(val.first.m_row).m_absolute);
+        props.insert("librevenge:start-row", int(get(val.first.m_row).m_coord)-1+offsetRow);
+      }
     }
-    if (val.second.m_column && int(get(val.second.m_column).m_coord)+m_offsetColumn>0)
+    if (val.second.m_column)
     {
-      props.insert("librevenge:end-column-absolute", get(val.second.m_column).m_absolute);
-      props.insert("librevenge:end-column", int(get(val.second.m_column).m_coord)-1+m_offsetColumn);
+      int offsetColumn=get(val.second.m_column).m_absolute ? 0 : m_offsetColumn;
+      if (int(get(val.second.m_column).m_coord)+offsetColumn>0)
+      {
+        props.insert("librevenge:end-column-absolute", get(val.second.m_column).m_absolute);
+        props.insert("librevenge:end-column", int(get(val.second.m_column).m_coord)-1+offsetColumn);
+      }
     }
-    if (val.second.m_row && int(get(val.second.m_row).m_coord)+m_offsetRow>0)
+    if (val.second.m_row)
     {
-      props.insert("librevenge:end-row-absolute", get(val.second.m_row).m_absolute);
-      props.insert("librevenge:end-row", int(get(val.second.m_row).m_coord)-1+m_offsetRow);
+      int offsetRow=get(val.second.m_row).m_absolute ? 0 : m_offsetRow;
+      if (int(get(val.second.m_row).m_coord)+offsetRow>0)
+      {
+        props.insert("librevenge:end-row-absolute", get(val.second.m_row).m_absolute);
+        props.insert("librevenge:end-row", int(get(val.second.m_row).m_coord)-1+offsetRow);
+      }
     }
     m_propsVector.append(props);
   }

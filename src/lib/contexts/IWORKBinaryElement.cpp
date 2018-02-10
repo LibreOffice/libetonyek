@@ -34,6 +34,8 @@ IWORKXMLContextPtr_t IWORKBinaryElement::element(const int name)
     return makeContext<IWORKDataElement>(getState(), m_data);
   case IWORKToken::NS_URI_SF | IWORKToken::size :
     return makeContext<IWORKSizeElement>(getState(), m_size);
+  default:
+    break;
   }
   return IWORKXMLContextPtr_t();
 }

@@ -44,6 +44,8 @@ IWORKXMLContextPtr_t IWORKListTextIndentsProperty::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::array_ref :
   case IWORKToken::NS_URI_SF | IWORKToken::mutable_array_ref :
     return makeContext<IWORKRefContext>(getState(), m_ref);
+  default:
+    break;
   }
   ETONYEK_DEBUG_MSG(("IWORKListTextIndentsProperty::element: unknown element %d\n", name));
   return IWORKXMLContextPtr_t();

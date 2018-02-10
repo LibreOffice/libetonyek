@@ -32,6 +32,9 @@ private:
   void endOfElement() override;
 
 private:
+  KEY2StyleContext(const KEY2StyleContext &);
+  KEY2StyleContext &operator=(const KEY2StyleContext &);
+
   IWORKPropertyMap m_props;
   IWORKStyleContext m_base;
   IWORKStyleMap_t *const m_styleMap;

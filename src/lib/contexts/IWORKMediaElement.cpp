@@ -55,6 +55,8 @@ IWORKXMLContextPtr_t ImageMediaElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::filtered_image :
     return makeContext<IWORKFilteredImageElement>(getState(), m_content);
+  default:
+    ETONYEK_DEBUG_MSG(("ImageMediaElement::element[IWORKMediaElement.cpp]: unknown element %d\n", name));
   }
 
   return IWORKXMLContextPtr_t();
@@ -94,6 +96,8 @@ IWORKXMLContextPtr_t OtherDatasElement::element(const int name)
     return makeContext<IWORKDataElement>(getState(), m_data);
   case IWORKToken::NS_URI_SF | IWORKToken::data_ref :
     return makeContext<IWORKRefContext>(getState(), m_dataRef);
+  default:
+    ETONYEK_DEBUG_MSG(("OtherDatasElement::element[IWORKMediaElement.cpp]: unknown element %d\n", name));
   }
 
   return IWORKXMLContextPtr_t();
@@ -138,6 +142,8 @@ IWORKXMLContextPtr_t SelfContainedMovieElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::other_datas :
     return makeContext<OtherDatasElement>(getState(), m_data);
+  default:
+    ETONYEK_DEBUG_MSG(("SelfContainedMovieElement::element[IWORKMediaElement.cpp]: unknown element %d\n", name));
   }
 
   return IWORKXMLContextPtr_t();
@@ -175,6 +181,8 @@ IWORKXMLContextPtr_t MovieMediaElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::self_contained_movie :
     return makeContext<SelfContainedMovieElement>(getState(), m_data);
+  default:
+    ETONYEK_DEBUG_MSG(("MovieMediaElement::element[IWORKMediaElement.cpp]: unknown element %d\n", name));
   }
 
   return IWORKXMLContextPtr_t();
@@ -222,6 +230,8 @@ IWORKXMLContextPtr_t ContentElement::element(const int name)
     return makeContext<ImageMediaElement>(getState(), m_content);
   case IWORKToken::NS_URI_SF | IWORKToken::movie_media :
     return makeContext<MovieMediaElement>(getState(), m_content);
+  default:
+    ETONYEK_DEBUG_MSG(("ContentElement::element[IWORKMediaElement.cpp]: unknown element %d\n", name));
   }
 
   return IWORKXMLContextPtr_t();
@@ -231,6 +241,7 @@ IWORKXMLContextPtr_t ContentElement::element(const int name)
 
 IWORKMediaElement::IWORKMediaElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
+  , m_content()
 {
 }
 
@@ -248,6 +259,15 @@ IWORKXMLContextPtr_t IWORKMediaElement::element(const int name)
     return makeContext<IWORKGeometryElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::content :
     return makeContext<ContentElement>(getState(), m_content);
+  default:
+  {
+    static bool first=true;
+    if (first)
+    {
+      first=false;
+      ETONYEK_DEBUG_MSG(("IWORKMediaElement::element: find some unknown elements\n"));
+    }
+  }
   }
 
   return IWORKXMLContextPtr_t();

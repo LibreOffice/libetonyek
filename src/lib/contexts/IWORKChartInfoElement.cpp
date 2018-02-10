@@ -137,6 +137,8 @@ IWORKXMLContextPtr_t FormulaChartModelElement::element(const int name)
     return makeContext<IWORKStringElement>(getState(), m_chart.m_categoryTitle);
   case IWORKToken::cached_data | IWORKToken::NS_URI_SF :
     return makeContext<CachedDataElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -172,6 +174,8 @@ IWORKXMLContextPtr_t ChartModelObjectElement::element(const int name)
   {
   case IWORKToken::formula_chart_model | IWORKToken::NS_URI_SF :
     return makeContext<FormulaChartModelElement>(getState(), m_chart);
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -195,6 +199,8 @@ void IWORKChartInfoElement::attribute(const int name, const char *value)
   {
   case IWORKToken::chart_type | IWORKToken::NS_URI_SF :
     m_chart.m_chartType = (unsigned) int_cast(value);
+  default:
+    break;
   }
 }
 
@@ -206,6 +212,8 @@ IWORKXMLContextPtr_t IWORKChartInfoElement::element(const int name)
     return makeContext<IWORKGeometryElement>(getState());
   case IWORKToken::chart_model_object | IWORKToken::NS_URI_SF :
     return makeContext<ChartModelObjectElement>(getState(), m_chart);
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();

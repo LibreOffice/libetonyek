@@ -51,6 +51,8 @@ IWORKXMLContextPtr_t IWORKGroupElement::element(const int name)
     return makeContext<IWORKMediaElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::shape :
     return makeContext<IWORKShapeContext>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();

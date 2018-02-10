@@ -73,6 +73,8 @@ IWORKXMLContextPtr_t IWORKMetadataElement::element(const int name)
     return makeContext<StringContext>(getState(), m_keywords);
   case IWORKToken::NS_URI_SF | IWORKToken::title :
     return makeContext<StringContext>(getState(), m_title);
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKMetadataElement::element: unknown element %d\n", name));
   }
 
   return IWORKXMLContextPtr_t();

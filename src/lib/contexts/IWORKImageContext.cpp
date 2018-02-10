@@ -33,6 +33,9 @@ IWORKXMLContextPtr_t IWORKImageContext::element(const int name)
     return makeContext<IWORKDataElement>(getState(), m_data);
   case IWORKToken::NS_URI_SF | IWORKToken::size :
     return makeContext<IWORKSizeElement>(getState(), m_size);
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKImageContext::element: find unknown element\n"));
+    break;
   }
 
   return IWORKXMLContextPtr_t();

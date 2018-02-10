@@ -70,6 +70,8 @@ IWORKXMLContextPtr_t IWORKListLabelTypeinfoElement::element(const int name)
     return makeContext<IWORKTextLabelElement>(getState(), m_text);
   case IWORKToken::NS_URI_SF | IWORKToken::text_label_ref :
     return makeContext<IWORKRefContext>(getState(), m_textRef);
+  default:
+    break;
   }
   ETONYEK_DEBUG_MSG(("IWORKListLabelTypeinfoElement::element: unknown name %d\n", name));
   return IWORKXMLContextPtr_t();

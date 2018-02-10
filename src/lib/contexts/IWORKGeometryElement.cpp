@@ -27,12 +27,32 @@ using boost::lexical_cast;
 IWORKGeometryElement::IWORKGeometryElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_geometry(nullptr)
+  , m_naturalSize()
+  , m_size()
+  , m_pos()
+  , m_angle()
+  , m_shearXAngle()
+  , m_shearYAngle()
+  , m_aspectRatioLocked()
+  , m_sizesLocked()
+  , m_horizontalFlip()
+  , m_verticalFlip()
 {
 }
 
 IWORKGeometryElement::IWORKGeometryElement(IWORKXMLParserState &state, IWORKGeometryPtr_t &geometry)
   : IWORKXMLElementContextBase(state)
   , m_geometry(&geometry)
+  , m_naturalSize()
+  , m_size()
+  , m_pos()
+  , m_angle()
+  , m_shearXAngle()
+  , m_shearYAngle()
+  , m_aspectRatioLocked()
+  , m_sizesLocked()
+  , m_horizontalFlip()
+  , m_verticalFlip()
 {
 }
 
@@ -77,6 +97,9 @@ IWORKXMLContextPtr_t IWORKGeometryElement::element(const int name)
     return makeContext<IWORKPositionElement>(getState(), m_pos);
   case IWORKToken::NS_URI_SF | IWORKToken::size :
     return makeContext<IWORKSizeElement>(getState(), m_size);
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKGeometryElement::element: find unknown element\n"));
+    break;
   }
 
   return IWORKXMLContextPtr_t();

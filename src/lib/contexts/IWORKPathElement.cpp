@@ -34,7 +34,7 @@ using std::pair;
 
 namespace
 {
-
+// TODO: replace this element by a IWORKPositionElement
 class PointElement : public IWORKXMLEmptyContextBase
 {
 public:
@@ -63,6 +63,8 @@ void PointElement::attribute(const int name, const char *const value)
   case IWORKToken::NS_URI_SFA | IWORKToken::y :
     m_point.second = double_cast(value);
     break;
+  default:
+    ETONYEK_DEBUG_MSG(("PointElement::attribute[IWORKPathElement.cpp]: find unknown attribute\n"));
   }
 }
 
@@ -87,6 +89,8 @@ private:
 
 ConnectionPathElement::ConnectionPathElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
+  , m_size()
+  , m_point()
 {
 }
 
@@ -98,6 +102,8 @@ IWORKXMLContextPtr_t ConnectionPathElement::element(const int name)
     return makeContext<PointElement>(getState(), m_point);
   case IWORKToken::NS_URI_SF | IWORKToken::size :
     return makeContext<IWORKSizeElement>(getState(), m_size);
+  default:
+    ETONYEK_DEBUG_MSG(("ConnectionPathElement::element[IWORKPathElement.cpp]: find unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();
@@ -135,6 +141,8 @@ PointPathElement::PointPathElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_star(false)
   , m_doubleArrow(false) // right arrow is the default (by my decree .-)
+  , m_size()
+  , m_point()
 {
 }
 
@@ -174,6 +182,8 @@ IWORKXMLContextPtr_t PointPathElement::element(const int name)
     return makeContext<PointElement>(getState(), m_point);
   case IWORKToken::NS_URI_SF | IWORKToken::size :
     return makeContext<IWORKSizeElement>(getState(), m_size);
+  default:
+    ETONYEK_DEBUG_MSG(("PointPathElement::element[IWORKPathElement.cpp]: find unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();
@@ -257,6 +267,8 @@ IWORKXMLContextPtr_t ScalarPathElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::size :
     return makeContext<IWORKSizeElement>(getState(), m_size);
+  default:
+    ETONYEK_DEBUG_MSG(("ScalarPathElement::element[IWORKPathElement.cpp]: find unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();
@@ -334,6 +346,8 @@ IWORKXMLContextPtr_t BezierPathElement::element(const int name)
     return makeContext<IWORKBezierElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::bezier_ref :
     return makeContext<BezierRefElement>(getState());
+  default:
+    ETONYEK_DEBUG_MSG(("BezierPathElement::element[IWORKPathElement.cpp]: find unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();
@@ -411,6 +425,8 @@ IWORKXMLContextPtr_t Callout2PathElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::size :
     return makeContext<IWORKSizeElement>(getState(), m_size);
+  default:
+    ETONYEK_DEBUG_MSG(("Callout2PathElement::element[IWORKPathElement.cpp]: find unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();
@@ -444,6 +460,8 @@ IWORKXMLContextPtr_t IWORKPathElement::element(const int name)
     return makeContext<PointPathElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::scalar_path :
     return makeContext<ScalarPathElement>(getState());
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKPathElement::element: find unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();

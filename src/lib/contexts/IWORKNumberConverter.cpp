@@ -67,7 +67,18 @@ optional<IWORKAlignment> IWORKNumberConverter<IWORKAlignment>::convert(const uns
     return IWORK_ALIGNMENT_CENTER;
   case 3 :
     return IWORK_ALIGNMENT_JUSTIFY;
-  case 4 : // TODO: what is this?
+  case 4 :   // TODO: what is this?
+  {
+    static bool first=true;
+    if (first)
+    {
+      ETONYEK_DEBUG_MSG(("IWORKNumberConverter<IWORKAlignment>::convert: find some 4 values\n"));
+      first=false;
+    }
+    break;
+  }
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKNumberConverter<IWORKAlignment>::convert: unknown value %d\n", int(value)));
     break;
   }
   return none;
@@ -85,10 +96,14 @@ optional<IWORKBaseline> IWORKNumberConverter<IWORKBaseline>::convert(const unsig
 {
   switch (value)
   {
+  case 0:
+    return none;
   case 1 :
     return IWORK_BASELINE_SUPER;
   case 2 :
     return IWORK_BASELINE_SUB;
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKNumberConverter<IWORKBaseline>::convert: unknown value %d\n", int(value)));
   }
   return none;
 }
@@ -105,6 +120,8 @@ optional<IWORKBorderType> IWORKNumberConverter<IWORKBorderType>::convert(const u
 {
   switch (value)
   {
+  case 0:
+    return none;
   case 1 :
     return IWORK_BORDER_TYPE_TOP;
   case 2 :
@@ -113,6 +130,8 @@ optional<IWORKBorderType> IWORKNumberConverter<IWORKBorderType>::convert(const u
     return IWORK_BORDER_TYPE_TOP_AND_BOTTOM;
   case 4 :
     return IWORK_BORDER_TYPE_ALL;
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKNumberConverter<IWORKBorderType>::convert: unknown value %d\n", int(value)));
   }
   return none;
 }
@@ -137,6 +156,8 @@ optional<IWORKCapitalization> IWORKNumberConverter<IWORKCapitalization>::convert
     return IWORK_CAPITALIZATION_SMALL_CAPS;
   case 3 :
     return IWORK_CAPITALIZATION_TITLE;
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKNumberConverter<IWORKCapitalization>::convert: unknown value %d\n", int(value)));
   }
   return none;
 }
@@ -184,6 +205,8 @@ optional<IWORKStrokeType> IWORKNumberConverter<IWORKStrokeType>::convert(const u
     return IWORK_STROKE_TYPE_SOLID;
   case 2 :
     return IWORK_STROKE_TYPE_AUTO;
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKNumberConverter<IWORKStrokeType>::convert: unknown value %d\n", int(value)));
   }
   return none;
 }

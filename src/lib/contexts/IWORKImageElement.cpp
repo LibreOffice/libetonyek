@@ -50,6 +50,16 @@ IWORKXMLContextPtr_t IWORKImageElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::geometry :
     return makeContext<IWORKGeometryElement>(getState());
+  default:
+  {
+    static bool first=true;
+    if (first)
+    {
+      first=false;
+      ETONYEK_DEBUG_MSG(("IWORKImageElement::element: find some unknown elements\n"));
+    }
+    break;
+  }
   }
 
   return IWORKXMLContextPtr_t();

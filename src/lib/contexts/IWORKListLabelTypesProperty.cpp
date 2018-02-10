@@ -32,6 +32,7 @@ IWORKListLabelTypesProperty::IWORKListLabelTypesProperty(IWORKXMLParserState &st
   : IWORKXMLElementContextBase(state)
   , m_propertyMap(propMap)
   , m_elements()
+  , m_ref()
 {
 }
 
@@ -46,6 +47,8 @@ IWORKXMLContextPtr_t IWORKListLabelTypesProperty::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::array_ref :
   case IWORKToken::NS_URI_SF | IWORKToken::mutable_array_ref :
     return makeContext<IWORKRefContext>(getState(), m_ref);
+  default:
+    break;
   }
   ETONYEK_DEBUG_MSG(("IWORKListLabelTypesProperty::element: unknown element %d\n", name));
   return IWORKXMLContextPtr_t();

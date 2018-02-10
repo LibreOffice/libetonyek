@@ -81,6 +81,8 @@ IWORKXMLContextPtr_t IWORKPElement::element(const int name)
     return makeContext<IWORKFieldElement>(getState(),IWORK_FIELD_PAGECOUNT);
   case IWORKToken::NS_URI_SF | IWORKToken::page_number :
     return makeContext<IWORKFieldElement>(getState(),IWORK_FIELD_PAGENUMBER);
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();

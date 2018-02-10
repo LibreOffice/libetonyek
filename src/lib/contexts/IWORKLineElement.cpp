@@ -61,6 +61,8 @@ void StyleElement::endOfElement()
 
 IWORKLineElement::IWORKLineElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
+  , m_head()
+  , m_tail()
   , m_style()
 {
 }
@@ -83,6 +85,8 @@ IWORKXMLContextPtr_t IWORKLineElement::element(const int name)
     return makeContext<StyleElement>(getState(), m_style);
   case IWORKToken::NS_URI_SF | IWORKToken::tail :
     return makeContext<IWORKPositionElement>(getState(), m_tail);
+  default:
+    break;
   }
   ETONYEK_DEBUG_MSG(("IWORKLineElement::element: find unknown element\n"));
   return IWORKXMLContextPtr_t();

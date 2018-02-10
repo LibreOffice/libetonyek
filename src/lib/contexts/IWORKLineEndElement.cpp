@@ -69,6 +69,7 @@ IWORKXMLContextPtr_t PathElement::element(int /*name*/)
 IWORKLineEndElement::IWORKLineEndElement(IWORKXMLParserState &state, boost::optional<IWORKMarker> &value)
   : IWORKXMLElementContextBase(state)
   , m_value(value)
+  , m_id()
 {
   m_value=IWORKMarker();
 }
@@ -107,6 +108,8 @@ IWORKXMLContextPtr_t IWORKLineEndElement::element(const int name)
     return makeContext<PathElement>(getState(), m_value->m_path);
   case IWORKToken::NS_URI_SF | IWORKToken::end_point :
     return makeContext<IWORKPositionElement>(getState(), m_value->m_endPoint);
+  default:
+    break;
   }
 
   ETONYEK_DEBUG_MSG(("IWORKLineEndElement::element: find unknown element\n"));

@@ -70,6 +70,9 @@ protected:
   }
 
 private:
+  IWORKValueContext(const IWORKValueContext &);
+  IWORKValueContext &operator=(const IWORKValueContext &);
+
   boost::optional<Type> m_value;
   boost::optional<Type> &m_optional;
   Type *const m_direct;

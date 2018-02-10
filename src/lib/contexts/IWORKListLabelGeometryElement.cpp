@@ -39,6 +39,8 @@ void IWORKListLabelGeometryElement::attribute(const int name, const char *const 
   case IWORKToken::NS_URI_SF | IWORKToken::scale_with_text :
     m_scaleWithText = try_bool_cast(value);
     break;
+  default:
+    break;
   }
   IWORKXMLEmptyContextBase::attribute(name, value);
 }

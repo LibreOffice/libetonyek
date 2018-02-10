@@ -41,6 +41,9 @@ private:
   IWORKXMLContextPtr_t element(int name) override;
 
 private:
+  IWORKStyleContext(IWORKStyleContext &);
+  IWORKStyleContext operator=(IWORKStyleContext &);
+
   IWORKStyleMap_t *const m_styleMap;
   const std::string m_defaultParent;
   IWORKPropertyMap m_ownProps;

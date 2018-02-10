@@ -91,6 +91,8 @@ IWORKXMLContextPtr_t IWORKFormulaElement::element(int name)
   case IWORKToken::fm | IWORKToken::NS_URI_SF :
     return makeContext<IWORKFmElement>(getState());
     break;
+  default:
+    break;
   }
 
   ETONYEK_DEBUG_MSG(("IWORKFormulaElement::element: find unknown element %d\n", name));
@@ -143,6 +145,8 @@ IWORKXMLContextPtr_t IWORKOfElement::element(int name)
     break;
   case IWORKToken::mf_ref | IWORKToken::NS_URI_SF :
     return makeContext<IWORKRefContext>(getState(), m_ref);
+  default:
+    break;
   }
 
   ETONYEK_DEBUG_MSG(("IWORKOfElement::element: find unknown element %d\n", name));

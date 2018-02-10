@@ -21,6 +21,8 @@ namespace libetonyek
 IWORKPositionElement::IWORKPositionElement(IWORKXMLParserState &state, boost::optional<IWORKPosition> &position)
   : IWORKXMLEmptyContextBase(state)
   , m_position(position)
+  , m_x()
+  , m_y()
 {
 }
 
@@ -34,6 +36,8 @@ void IWORKPositionElement::attribute(const int name, const char *const value)
   case IWORKToken::NS_URI_SFA | IWORKToken::y :
     m_y = try_double_cast(value);
     break;
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKPositionElement::attribute: find unknown attribute\n"));
   }
 }
 

@@ -34,7 +34,6 @@ private:
   IWORKFieldType m_type;
   boost::optional<unsigned> m_value;
   boost::optional<std::string> m_val;
-  boost::optional<std::string> m_format;
 };
 
 }

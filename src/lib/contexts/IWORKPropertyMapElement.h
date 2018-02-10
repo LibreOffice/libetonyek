@@ -28,6 +28,9 @@ public:
   IWORKXMLContextPtr_t element(int name) override;
 
 private:
+  IWORKPropertyMapElement(const IWORKPropertyMapElement &);
+  IWORKPropertyMapElement &operator=(const IWORKPropertyMapElement &);
+
   IWORKPropertyMap *m_propMap;
   IWORKPropertyHandler *m_propHandler;
 };

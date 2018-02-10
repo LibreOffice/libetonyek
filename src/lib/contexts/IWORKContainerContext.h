@@ -31,6 +31,7 @@ public:
   IWORKContainerContext(IWORKXMLParserState &state, std::deque<Type> &elements)
     : IWORKXMLElementContextBase(state)
     , m_dict(nullptr)
+    , m_ref()
     , m_elements(elements)
     , m_collector(elements)
   {
@@ -39,6 +40,7 @@ public:
   IWORKContainerContext(IWORKXMLParserState &state, Dict_t &dict, std::deque<Type> &elements)
     : IWORKXMLElementContextBase(state)
     , m_dict(&dict)
+    , m_ref()
     , m_elements(elements)
     , m_collector(elements)
   {

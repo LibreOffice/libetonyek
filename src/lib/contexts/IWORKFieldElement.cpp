@@ -52,6 +52,8 @@ IWORKXMLContextPtr_t IWORKFieldElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::span :
     return makeContext<IWORKSpanElement>(getState());
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();

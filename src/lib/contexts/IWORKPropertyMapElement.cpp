@@ -90,6 +90,8 @@ IWORKXMLContextPtr_t StylePropertyContext<Property, TokenId, RefTokenId>::elemen
     return m_context;
   case RefTokenId :
     return makeContext<IWORKRefContext>(getState(), m_ref);
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -150,6 +152,8 @@ IWORKXMLContextPtr_t TabsProperty::element(const int name)
     return makeContext<IWORKTabsElement>(getState(), m_tabs);
   case IWORKToken::NS_URI_SF | IWORKToken::tabs_ref :
     return makeContext<IWORKRefContext>(getState(), m_ref);
+  default:
+    ETONYEK_DEBUG_MSG(("TabsProperty::element[IWORKPropertyMapElement.cpp]: find unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();
@@ -211,6 +215,8 @@ void LinespacingElement::attribute(const int name, const char *const value)
   case IWORKToken::NS_URI_SF | IWORKToken::mode :
     m_relative = IWORKToken::relative == getToken(value);
     break;
+  default:
+    ETONYEK_DEBUG_MSG(("Linespacing::element[IWORKPropertyMapElement.cpp]: find unknown element\n"));
   }
 }
 
@@ -402,6 +408,8 @@ void StrokeElement::attribute(const int name, const char *const value)
     case IWORKToken::round :
       m_cap = IWORK_LINE_CAP_ROUND;
       break;
+    default:
+      ETONYEK_DEBUG_MSG(("StrokeElement::attribute[IWORKPropertyMapElement.cpp]: find unknown cap\n"));
     }
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::join :
@@ -413,6 +421,8 @@ void StrokeElement::attribute(const int name, const char *const value)
     case IWORKToken::round :
       m_join = IWORK_LINE_JOIN_ROUND;
       break;
+    default:
+      ETONYEK_DEBUG_MSG(("StrokeElement::attribute[IWORKPropertyMapElement.cpp]: find unknown join\n"));
     }
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::width :
@@ -429,6 +439,8 @@ IWORKXMLContextPtr_t StrokeElement::element(const int name)
     return makeContext<IWORKColorElement>(getState(), m_color);
   case IWORKToken::NS_URI_SF | IWORKToken::pattern :
     return makeContext<PatternElement>(getState(), m_type, m_pattern);
+  default:
+    ETONYEK_DEBUG_MSG(("StrokeElement::element[IWORKPropertyMapElement.cpp]: find unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();
@@ -489,6 +501,8 @@ void GradientStopElement::attribute(const int name, const char *const value)
   case IWORKToken::NS_URI_SF | IWORKToken::inflection :
     m_inflection = double_cast(value);
     break;
+  default:
+    ETONYEK_DEBUG_MSG(("GradientStopElement::attribute[IWORKPropertyMapElement.cpp]: find unknown attribute\n"));
   }
 }
 
@@ -498,6 +512,8 @@ IWORKXMLContextPtr_t GradientStopElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::color :
     return makeContext<IWORKColorElement>(getState(), m_color);
+  default:
+    ETONYEK_DEBUG_MSG(("GradientStopElement::element[IWORKPropertyMapElement.cpp]: find unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();
