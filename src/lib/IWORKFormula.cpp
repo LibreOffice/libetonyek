@@ -260,7 +260,8 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
       ;
 
     expression %=
-      infixOp
+      lit(' ') >> expression
+      | infixOp
       | postfixOp
       | term
       ;

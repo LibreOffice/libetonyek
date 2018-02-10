@@ -915,7 +915,7 @@ public:
   explicit StElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 };
 
 StElement::StElement(IWORKXMLParserState &state)
@@ -987,8 +987,8 @@ public:
   explicit ContentSizeElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 ContentSizeElement::ContentSizeElement(IWORKXMLParserState &state)
@@ -1026,20 +1026,25 @@ namespace
 class GenericCellElement : public IWORKXMLEmptyContextBase
 {
 public:
-  explicit GenericCellElement(IWORKXMLParserState &state);
+  explicit GenericCellElement(IWORKXMLParserState &state, bool isResult=false);
 protected:
   void emitCell(const bool covered);
 
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
+protected:
+  bool m_isResult;
 private:
+  boost::optional<std::string> m_id;
   boost::optional<ID_t> m_styleRef;
 };
 
-GenericCellElement::GenericCellElement(IWORKXMLParserState &state)
+GenericCellElement::GenericCellElement(IWORKXMLParserState &state, bool isResult)
   : IWORKXMLEmptyContextBase(state)
+  , m_isResult(isResult)
+  , m_id()
   , m_styleRef()
 {
 }
@@ -1048,8 +1053,17 @@ void GenericCellElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
+  case IWORKToken::ID | IWORKToken::NS_URI_SFA :
+    if (!m_isResult)
+    {
+      ETONYEK_DEBUG_MSG(("GenericCellElement::attribute: found unexpected id field\n"));
+    }
+    m_id=value;
+    break;
   case IWORKToken::col | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_column = (unsigned) int_cast(value);
+    break;
+  case IWORKToken::flags | IWORKToken::NS_URI_SF : // find 4 ?
     break;
   case IWORKToken::row | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_row = (unsigned) int_cast(value);
@@ -1081,7 +1095,8 @@ IWORKXMLContextPtr_t GenericCellElement::element(int name)
 
 void GenericCellElement::endOfElement()
 {
-  emitCell(false);
+  if (!m_isResult)
+    emitCell(false);
 }
 
 void GenericCellElement::emitCell(const bool covered)
@@ -1133,31 +1148,33 @@ void GenericCellElement::emitCell(const bool covered)
 
 namespace
 {
-class ResultCellElement : public IWORKXMLEmptyContextBase
+
+class BoolCellElement : public GenericCellElement
 {
 public:
-  explicit ResultCellElement(IWORKXMLParserState &state);
-
+  explicit BoolCellElement(IWORKXMLParserState &state, bool isResult=false);
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-
-  boost::optional<ID_t> m_resultRef;
+  void attribute(int name, const char *value) override;
 };
 
-ResultCellElement::ResultCellElement(IWORKXMLParserState &state)
-  : IWORKXMLEmptyContextBase(state)
+BoolCellElement::BoolCellElement(IWORKXMLParserState &state, bool isResult)
+  : GenericCellElement(state, isResult)
 {
+  if (!m_isResult)
+    getState().m_tableData->m_type = IWORK_CELL_TYPE_BOOL;
 }
 
-IWORKXMLContextPtr_t ResultCellElement::element(int name)
+void BoolCellElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::result_number_cell | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKRefContext>(getState(), m_resultRef);
+  case IWORKToken::value | IWORKToken::NS_URI_SF :
+    getState().m_tableData->m_type = IWORK_CELL_TYPE_BOOL;
+    getState().m_tableData->m_content = value;
+    break;
+  default :
+    GenericCellElement::attribute(name, value);
   }
-  ETONYEK_DEBUG_MSG(("ResultCellElement::element: found unexpected element\n"));
-  return IWORKXMLContextPtr_t();
 }
 
 }
@@ -1167,16 +1184,17 @@ namespace
 class DateCellElement : public GenericCellElement
 {
 public:
-  explicit DateCellElement(IWORKXMLParserState &state);
+  explicit DateCellElement(IWORKXMLParserState &state, bool isResult=false);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 };
 
-DateCellElement::DateCellElement(IWORKXMLParserState &state)
-  : GenericCellElement(state)
+DateCellElement::DateCellElement(IWORKXMLParserState &state, bool isResult)
+  : GenericCellElement(state, isResult)
 {
-  getState().m_tableData->m_type = IWORK_CELL_TYPE_DATE_TIME;
+  if (!m_isResult)
+    getState().m_tableData->m_type = IWORK_CELL_TYPE_DATE_TIME;
 }
 
 void DateCellElement::attribute(const int name, const char *const value)
@@ -1187,7 +1205,10 @@ void DateCellElement::attribute(const int name, const char *const value)
   {
     IWORKDateTimeData time;
     if (value && sscanf(value,"%d-%d-%dT%d:%d:%f",&time.m_year, &time.m_month, &time.m_day, &time.m_hour, &time.m_minute, &time.m_second)==6)
+    {
+      getState().m_tableData->m_type = IWORK_CELL_TYPE_DATE_TIME;
       getState().m_tableData->m_dateTime = time;
+    }
     else
     {
       ETONYEK_DEBUG_MSG(("DateCellElement::attribute: can not convert %s\n", value));
@@ -1202,49 +1223,20 @@ void DateCellElement::attribute(const int name, const char *const value)
 
 namespace
 {
-class FormulaCellElement : public GenericCellElement
-{
-public:
-  explicit FormulaCellElement(IWORKXMLParserState &state);
-
-private:
-  virtual IWORKXMLContextPtr_t element(int name);
-};
-
-FormulaCellElement::FormulaCellElement(IWORKXMLParserState &state)
-  : GenericCellElement(state)
-{
-}
-
-IWORKXMLContextPtr_t FormulaCellElement::element(int name)
-{
-  switch (name)
-  {
-  case IWORKToken::formula | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKFormulaElement>(getState());
-  case IWORKToken::result_cell | IWORKToken::NS_URI_SF :
-    return makeContext<ResultCellElement>(getState());
-  }
-
-  return GenericCellElement::element(name);
-}
-}
-
-namespace
-{
 class NumberCellElement : public GenericCellElement
 {
 public:
-  explicit NumberCellElement(IWORKXMLParserState &state);
+  explicit NumberCellElement(IWORKXMLParserState &state, bool isResult=false);
 
 private:
-  virtual void attribute(int name, const char *value);
+  void attribute(int name, const char *value) override;
 };
 
-NumberCellElement::NumberCellElement(IWORKXMLParserState &state)
-  : GenericCellElement(state)
+NumberCellElement::NumberCellElement(IWORKXMLParserState &state, bool isResult)
+  : GenericCellElement(state, isResult)
 {
-  getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
+  if (!m_isResult)
+    getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
 }
 
 void NumberCellElement::attribute(const int name, const char *const value)
@@ -1252,6 +1244,7 @@ void NumberCellElement::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::value | IWORKToken::NS_URI_SF :
+    getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
     getState().m_tableData->m_content = value;
     break;
   default:
@@ -1262,66 +1255,14 @@ void NumberCellElement::attribute(const int name, const char *const value)
 
 namespace
 {
-class TextCellElement : public GenericCellElement
-{
-public:
-  explicit TextCellElement(IWORKXMLParserState &state);
-
-private:
-  virtual void attribute(int name, const char *value);
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-};
-
-TextCellElement::TextCellElement(IWORKXMLParserState &state)
-  : GenericCellElement(state)
-{
-}
-
-void TextCellElement::startOfElement()
-{
-  if (isCollector())
-  {
-    // CHECKME: can we move this code in the constructor ?
-    assert(!getState().m_currentText);
-    getState().m_currentText = getCollector().createText(getState().m_langManager, false);
-  }
-}
-
-void TextCellElement::attribute(const int name, const char *const value)
-{
-  switch (name)
-  {
-  case IWORKToken::flags | IWORKToken::NS_URI_SF : // find 4 ?
-    break;
-  default:
-    return GenericCellElement::attribute(name,value);
-  }
-}
-
-IWORKXMLContextPtr_t TextCellElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::cell_text | IWORKToken::NS_URI_SF :
-    return makeContext<CtElement>(getState());
-  }
-
-  return GenericCellElement::element(name);
-}
-
-}
-
-namespace
-{
 class SpanCellElement : public GenericCellElement
 {
 public:
   explicit SpanCellElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 };
 
 SpanCellElement::SpanCellElement(IWORKXMLParserState &state)
@@ -1344,6 +1285,113 @@ void SpanCellElement::attribute(const int name, const char *const value)
 void SpanCellElement::endOfElement()
 {
   emitCell(true);
+}
+}
+
+namespace
+{
+class TextCellElement : public GenericCellElement
+{
+public:
+  explicit TextCellElement(IWORKXMLParserState &state, bool isResult=false);
+
+private:
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+};
+
+TextCellElement::TextCellElement(IWORKXMLParserState &state, bool isResult)
+  : GenericCellElement(state, isResult)
+{
+}
+
+void TextCellElement::startOfElement()
+{
+  if (isCollector())
+  {
+    // CHECKME: can we move this code in the constructor ?
+    assert(!getState().m_currentText);
+    getState().m_currentText = getCollector().createText(getState().m_langManager, false);
+  }
+}
+
+IWORKXMLContextPtr_t TextCellElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::cell_text | IWORKToken::NS_URI_SF :
+    return makeContext<CtElement>(getState());
+  }
+
+  return GenericCellElement::element(name);
+}
+
+}
+
+namespace
+{
+class ResultCellElement : public IWORKXMLEmptyContextBase
+{
+public:
+  explicit ResultCellElement(IWORKXMLParserState &state);
+
+private:
+  IWORKXMLContextPtr_t element(int name) override;
+
+  boost::optional<ID_t> m_resultRef;
+};
+
+ResultCellElement::ResultCellElement(IWORKXMLParserState &state)
+  : IWORKXMLEmptyContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t ResultCellElement::element(int name)
+{
+  switch (name)
+  {
+  case IWORKToken::result_bool_cell | IWORKToken::NS_URI_SF :
+    return makeContext<BoolCellElement>(getState(), true);
+  case IWORKToken::result_date_cell | IWORKToken::NS_URI_SF :
+    return makeContext<DateCellElement>(getState(), true);
+  case IWORKToken::result_number_cell | IWORKToken::NS_URI_SF :
+    return makeContext<NumberCellElement>(getState(), true);
+  case IWORKToken::result_text_cell | IWORKToken::NS_URI_SF :
+    return makeContext<TextCellElement>(getState(), true);
+  }
+  ETONYEK_DEBUG_MSG(("ResultCellElement::element: found unexpected element\n"));
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+class FormulaCellElement : public GenericCellElement
+{
+public:
+  explicit FormulaCellElement(IWORKXMLParserState &state);
+
+private:
+  IWORKXMLContextPtr_t element(int name) override;
+};
+
+FormulaCellElement::FormulaCellElement(IWORKXMLParserState &state)
+  : GenericCellElement(state)
+{
+}
+
+IWORKXMLContextPtr_t FormulaCellElement::element(int name)
+{
+  switch (name)
+  {
+  case IWORKToken::formula | IWORKToken::NS_URI_SF :
+    return makeContext<IWORKFormulaElement>(getState());
+  case IWORKToken::result_cell | IWORKToken::NS_URI_SF :
+    return makeContext<ResultCellElement>(getState());
+  }
+
+  return GenericCellElement::element(name);
 }
 }
 

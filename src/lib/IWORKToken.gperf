@@ -350,8 +350,11 @@ r,r
 radial,radial
 rb,rb
 relative,relative
+result-bool-cell,result_bool_cell
 result-cell,result_cell
+result-date-cell,result_date_cell
 result-number-cell,result_number_cell
+result-text-cell,result_text_cell
 right,right
 rightIndent,rightIndent
 rn,rn
