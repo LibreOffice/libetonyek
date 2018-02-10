@@ -392,7 +392,10 @@ void IWORKCollector::collectBezier(const IWORKPathPtr_t &path)
   if (bool(m_recorder))
     m_recorder->collectPath(path);
   else
+  {
     m_currentPath = path;
+    if (m_currentPath) m_currentPath->checkIfClosedPath();
+  }
 }
 
 void IWORKCollector::collectImage(const IWORKImagePtr_t &image)

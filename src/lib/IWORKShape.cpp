@@ -185,16 +185,28 @@ IWORKPathPtr_t makePolygonPath(const IWORKSize &size, const unsigned edges)
 
 IWORKPathPtr_t makeRoundedRectanglePath(const IWORKSize &size, const double radius)
 {
-  // user space canvas: [-1:1] x [-1:1]
+  if (radius<=0)
+  {
+    // user space canvas: [-1:1] x [-1:1]
+    deque<Point> points= rotatePoint(Point(1, 1), 4);
 
-  // TODO: draw rounded corners
-  (void) radius;
+    transform(points, scale(size.m_width, size.m_height) * scale(0.5, 0.5) * translate(1, 1));
+    const IWORKPathPtr_t path = makePolyLine(points);
 
-  deque<Point> points = rotatePoint(Point(1, 1), 4);
-
-  transform(points, scale(size.m_width, size.m_height) * scale(0.5, 0.5) * translate(1, 1));
-  const IWORKPathPtr_t path = makePolyLine(points);
-
+    return path;
+  }
+  double wRadius=2*radius<size.m_width ? radius : size.m_width/2;
+  double hRadius=2*radius<size.m_height ? radius : size.m_height/2;
+  IWORKPathPtr_t path(new IWORKPath);
+  path->appendMoveTo(size.m_width-wRadius,0);
+  path->appendQCurveTo(size.m_width,0, size.m_width,hRadius);
+  path->appendLineTo(size.m_width,size.m_height-hRadius);
+  path->appendQCurveTo(size.m_width,size.m_height, size.m_width-wRadius,size.m_height);
+  path->appendLineTo(wRadius,size.m_height);
+  path->appendQCurveTo(0,size.m_height, 0,size.m_height-hRadius);
+  path->appendLineTo(0,hRadius);
+  path->appendQCurveTo(0,0, wRadius,0);
+  path->appendClose();
   return path;
 }
 

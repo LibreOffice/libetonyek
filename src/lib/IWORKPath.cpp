@@ -56,7 +56,15 @@ struct CurveTo
   double m_y;
 };
 
-typedef boost::variant<MoveTo, LineTo, CurveTo> PathElement_t;
+struct QCurveTo
+{
+  double m_x1;
+  double m_y1;
+  double m_x;
+  double m_y;
+};
+
+typedef boost::variant<MoveTo, LineTo, CurveTo, QCurveTo> PathElement_t;
 typedef std::deque<PathElement_t> Path_t;
 
 struct IWORKPath::Impl
@@ -100,6 +108,14 @@ BOOST_FUSION_ADAPT_STRUCT(
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
+  libetonyek::QCurveTo,
+  (double, m_x1)
+  (double, m_y1)
+  (double, m_x)
+  (double, m_y)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
   libetonyek::IWORKPath::Impl,
   (libetonyek::Path_t, m_path)
   (bool, m_closed)
@@ -137,6 +153,8 @@ struct PathGrammar : public qi::grammar<Iterator, IWORKPath::Impl(), ascii::spac
 
     line %= 'L' >> double_ >> double_;
 
+    qCurve %= 'Q' >> double_ >> double_ >> double_ >> double_;
+
     curve %= 'C' >> double_ >> double_ >> double_ >> double_ >> double_ >> double_;
 
     path %= as<Path_t>()[move >> +(line | curve)] >> (close >> attr(true) >> omit[move] | attr(false));
@@ -145,6 +163,7 @@ struct PathGrammar : public qi::grammar<Iterator, IWORKPath::Impl(), ascii::spac
     move.name("move");
     line.name("line");
     curve.name("curve");
+    qCurve.name("qCurve");
     path.name("path");
   }
 
@@ -152,6 +171,7 @@ struct PathGrammar : public qi::grammar<Iterator, IWORKPath::Impl(), ascii::spac
   qi::rule<Iterator, MoveTo(), ascii::space_type> move;
   qi::rule<Iterator, LineTo(), ascii::space_type> line;
   qi::rule<Iterator, CurveTo(), ascii::space_type> curve;
+  qi::rule<Iterator, QCurveTo(), ascii::space_type> qCurve;
   qi::rule<Iterator, void(), ascii::space_type> close;
 };
 
@@ -181,6 +201,12 @@ struct Transformer : public static_visitor<void>
   {
     transform(element.m_x1, element.m_y1);
     transform(element.m_x2, element.m_y2);
+    transform(element.m_x, element.m_y);
+  }
+
+  void operator()(QCurveTo &element) const
+  {
+    transform(element.m_x1, element.m_y1);
     transform(element.m_x, element.m_y);
   }
 
@@ -240,6 +266,17 @@ struct Writer : public static_visitor<void>
     m_path.append(command);
   }
 
+  void operator()(const QCurveTo &element) const
+  {
+    RVNGPropertyList command;
+    command.insert("librevenge:path-action", "Q");
+    command.insert("svg:x", pt2in(element.m_x));
+    command.insert("svg:y", pt2in(element.m_y));
+    command.insert("svg:x1", pt2in(element.m_x1));
+    command.insert("svg:y1", pt2in(element.m_y1));
+    m_path.append(command);
+  }
+
 private:
   RVNGPropertyListVector &m_path;
 };
@@ -274,6 +311,14 @@ private:
   {
     using libetonyek::approxEqual;
     return approxEqual(left.m_x, right.m_x, m_eps) && approxEqual(left.m_y, right.m_y, m_eps);
+  }
+
+  bool approxEqual(const QCurveTo &left, const QCurveTo &right) const
+  {
+    using libetonyek::approxEqual;
+    return approxEqual(left.m_x1, right.m_x1, m_eps) && approxEqual(left.m_y1, right.m_y1, m_eps)
+           && approxEqual(left.m_x, right.m_x, m_eps) && approxEqual(left.m_y, right.m_y, m_eps)
+           ;
   }
 
   bool approxEqual(const CurveTo &left, const CurveTo &right) const
@@ -319,6 +364,15 @@ struct SVGPrinter : public static_visitor<void>
         << 'C'
         << ' ' << element.m_x1 << ' ' << element.m_y1
         << ' ' << element.m_x2 << ' ' << element.m_y2
+        << ' ' << element.m_x << ' ' << element.m_y
+        ;
+  }
+
+  void operator()(const QCurveTo &element) const
+  {
+    m_sink
+        << 'Q'
+        << ' ' << element.m_x1 << ' ' << element.m_y1
         << ' ' << element.m_x << ' ' << element.m_y
         ;
   }
@@ -408,6 +462,18 @@ void IWORKPath::appendCurveTo(const double x1, const double y1, const double x2,
   m_impl->m_path.push_back(element);
 }
 
+void IWORKPath::appendQCurveTo(const double x1, const double y1, const double x, const double y)
+{
+  assert(!m_impl->m_closed);
+
+  QCurveTo element;
+  element.m_x1 = x1;
+  element.m_y1 = y1;
+  element.m_x = x;
+  element.m_y = y;
+  m_impl->m_path.push_back(element);
+}
+
 void IWORKPath::appendClose()
 {
   assert(!m_impl->m_closed);
@@ -420,6 +486,36 @@ void IWORKPath::operator*=(const glm::dmat3 &tr)
 {
   for (auto &it : m_impl->m_path)
     apply_visitor(Transformer(tr), it);
+}
+
+void IWORKPath::checkIfClosedPath()
+{
+  if (m_impl->m_closed || m_impl->m_path.size()<1) return;
+  const PathElement_t front=m_impl->m_path.front();
+  const PathElement_t back=m_impl->m_path.back();
+  if (!boost::get<MoveTo>(&front)) return;
+  double origin[2]= {boost::get<MoveTo>(&front)->m_x,boost::get<MoveTo>(&front)->m_y};
+  double dest[2];
+  if (boost::get<LineTo>(&back))
+  {
+    dest[0]=boost::get<LineTo>(&back)->m_x;
+    dest[1]=boost::get<LineTo>(&back)->m_y;
+  }
+  else if (boost::get<CurveTo>(&back))
+  {
+    dest[0]=boost::get<CurveTo>(&back)->m_x;
+    dest[1]=boost::get<CurveTo>(&back)->m_y;
+  }
+  else if (boost::get<QCurveTo>(&back))
+  {
+    dest[0]=boost::get<QCurveTo>(&back)->m_x;
+    dest[1]=boost::get<QCurveTo>(&back)->m_y;
+  }
+  else
+    return;
+  if (origin[0]<=dest[0] && origin[0]>=dest[0] &&
+      origin[1]<=dest[1] && origin[1]>=dest[1])
+    m_impl->m_closed=true;
 }
 
 const std::string IWORKPath::str() const

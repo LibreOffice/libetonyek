@@ -44,8 +44,10 @@ public:
   void appendMoveTo(double x, double y);
   void appendLineTo(double x, double y);
   void appendCurveTo(double x1, double y1, double x2, double y2, double x, double y);
+  void appendQCurveTo(double x1, double y1, double x, double y);
   void appendClose();
 
+  void checkIfClosedPath();
   /** Transform all elements of the path.
     *
     * @arg[in] tr the transformation
