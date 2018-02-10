@@ -243,18 +243,46 @@ void PAGCollector::drawTable()
   assert(bool(m_currentTable));
   assert(!m_levelStack.empty());
 
+  RVNGPropertyList frameProps;
   librevenge::RVNGPropertyList props;
 
   // TODO: I am not sure this is the default for Pages...
   props.insert("table:align", "center");
 
   const IWORKGeometryPtr_t geometry(m_levelStack.top().m_geometry);
-  if (geometry)
+  if (m_inAttachments)
   {
-    const glm::dvec3 dim(m_levelStack.top().m_trafo * glm::dvec3(geometry->m_naturalSize.m_width, 0, 0));
-    props.insert("style:width", pt2in(dim[0]));
+    if (geometry)
+    {
+      const glm::dvec3 dim(m_levelStack.top().m_trafo * glm::dvec3(geometry->m_naturalSize.m_width, 0, 0));
+      props.insert("style:width", pt2in(dim[0]));
+    }
   }
-  m_currentTable->draw(props, m_outputManager.getCurrent(), true);
+  else
+  {
+    frameProps.insert("text:anchor-type", "page");
+    frameProps.insert("text:anchor-page-number", m_page);
+    if (geometry)
+    {
+      const glm::dvec3 pos(m_levelStack.top().m_trafo * glm::dvec3(geometry->m_position.m_x, geometry->m_position.m_y, 0));
+      const glm::dvec3 dim(m_levelStack.top().m_trafo * glm::dvec3(geometry->m_naturalSize.m_width, geometry->m_naturalSize.m_height, 0));
+      frameProps.insert("svg:x", pt2in(pos[0]));
+      frameProps.insert("svg:y", pt2in(pos[1]));
+      frameProps.insert("svg:width", pt2in(dim[0]));
+      frameProps.insert("svg:height", pt2in(dim[1]));
+    }
+  }
+
+  if (m_inAttachments)
+    m_currentTable->draw(props, m_outputManager.getCurrent(), true);
+  else
+  {
+    getOutputManager().getCurrent().addOpenFrame(frameProps);
+    getOutputManager().getCurrent().addStartTextObject(RVNGPropertyList());
+    m_currentTable->draw(props, m_outputManager.getCurrent(), true);
+    getOutputManager().getCurrent().addEndTextObject();
+    getOutputManager().getCurrent().addCloseFrame();
+  }
 }
 
 void PAGCollector::drawMedia(
@@ -273,15 +301,18 @@ void PAGCollector::drawMedia(
   }
   if (m_inAttachments)
   {
-    frameProps.insert("svg:x", 0);
-    frameProps.insert("svg:y", 0);
+    if (m_attachmentPosition)
+    {
+      frameProps.insert("svg:x", pt2in(get(m_attachmentPosition).m_x));
+      frameProps.insert("svg:y", pt2in(get(m_attachmentPosition).m_y));
+    }
+    else
+    {
+      frameProps.insert("svg:x", 0);
+      frameProps.insert("svg:y", 0);
+    }
     frameProps.insert("style:vertical-pos", "bottom");
     frameProps.insert("style:vertical-rel", "text");
-  }
-  else if (m_attachmentPosition)
-  {
-    frameProps.insert("svg:x", pt2in(get(m_attachmentPosition).m_x));
-    frameProps.insert("svg:y", pt2in(get(m_attachmentPosition).m_y));
   }
   else
   {

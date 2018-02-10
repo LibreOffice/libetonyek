@@ -24,6 +24,7 @@
 #include "IWORKStyleRefContext.h"
 #include "IWORKStylesContext.h"
 #include "IWORKStylesheetBase.h"
+#include "IWORKTabularInfoElement.h"
 #include "IWORKToken.h"
 #include "PAG1AnnotationContext.h"
 #include "PAG1Dictionary.h"
@@ -485,6 +486,8 @@ IWORKXMLContextPtr_t PageGroupElement::element(const int name)
     return makeContext<IWORKMediaElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::drawable_shape :
     return makeContext<IWORKShapeContext>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
+    return makeContext<IWORKTabularInfoElement>(getState());
   }
 
   return IWORKXMLContextPtr_t();
