@@ -14,6 +14,7 @@ namespace libetonyek
 
 NUM1Dictionary::NUM1Dictionary()
   : IWORKDictionary()
+  , m_workspaceStyles()
 {
 }
 

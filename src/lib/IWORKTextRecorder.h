@@ -52,6 +52,7 @@ public:
   void insertText(const std::string &text);
   void insertTab();
   void insertSpace();
+  void insertColumnBreak();
   void insertLineBreak();
   void insertPageBreak();
 

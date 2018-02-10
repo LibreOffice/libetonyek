@@ -482,11 +482,11 @@ void IWORKCollector::collectLine(const IWORKLinePtr_t &line)
   drawLine(line);
 }
 
-void IWORKCollector::collectShape()
+void IWORKCollector::collectShape(bool locked)
 {
   if (bool(m_recorder))
   {
-    m_recorder->collectShape();
+    m_recorder->collectShape(locked);
     return;
   }
 
@@ -510,6 +510,7 @@ void IWORKCollector::collectShape()
     m_currentText.reset();
   }
 
+  shape->m_locked = locked;
   shape->m_style = m_levelStack.top().m_graphicStyle;
   m_levelStack.top().m_graphicStyle.reset();
 
@@ -929,7 +930,8 @@ void IWORKCollector::drawShape(const IWORKShapePtr_t &shape)
 
     if (bool(shape->m_style))
       fillGraphicProps(shape->m_style, styleProps);
-
+    if (shape->m_locked) // CHECKME: maybe also content
+      styleProps.insert("style:protect", "position size");
     librevenge::RVNGPropertyList shapeProps;
 
     librevenge::RVNGPropertyListVector vec;

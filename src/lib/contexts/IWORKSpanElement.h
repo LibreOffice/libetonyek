@@ -12,6 +12,7 @@
 
 #include "IWORKXMLContextBase.h"
 
+#include "IWORKEnum.h"
 #include "IWORKStyle.h"
 
 namespace libetonyek
@@ -33,7 +34,7 @@ protected:
 private:
   IWORKStylePtr_t m_style;
   bool m_opened;
-  bool m_delayedPageBreak;
+  IWORKBreakType m_delayedBreak;
 };
 
 }

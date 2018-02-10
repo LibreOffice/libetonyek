@@ -28,6 +28,7 @@
 #include "IWORKShapeContext.h"
 #include "IWORKSizeElement.h"
 #include "IWORKStringElement.h"
+#include "IWORKStyleContext.h"
 #include "IWORKStyleRefContext.h"
 #include "IWORKStylesContext.h"
 #include "IWORKStylesheetBase.h"
@@ -40,7 +41,6 @@
 #include "IWORKTypes.h"
 #include "KEY2Dictionary.h"
 #include "KEY2ParserState.h"
-#include "KEY2StyleContext.h"
 #include "KEY2Token.h"
 #include "KEY2XMLContextBase.h"
 #include "KEYCollector.h"
@@ -195,9 +195,9 @@ IWORKXMLContextPtr_t StylesContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style :
-    return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_placeholderStyles);
+    return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_placeholderStyles);
   case KEY2Token::NS_URI_KEY | KEY2Token::slide_style :
-    return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_slideStyles);
+    return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_slideStyles);
   default:
     break;
   }
@@ -236,7 +236,7 @@ IWORKXMLContextPtr_t StylesheetElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::styles :
     return makeContext<StylesContext>(getState(), false);
   case IWORKToken::NS_URI_SF | IWORKToken::anon_styles :
-    return makeContext<StylesContext>(getState(), false);
+    return makeContext<StylesContext>(getState(), true);
   case IWORKToken::NS_URI_SF | IWORKToken::parent_ref :
     return makeContext<IWORKRefContext>(getState(), m_parent);
   default:
@@ -380,7 +380,7 @@ IWORKXMLContextPtr_t ConnectionLineElement::element(const int name)
 void ConnectionLineElement::endOfElement()
 {
   if (isCollector())
-    getCollector().collectShape();
+    getCollector().collectShape(false);
 }
 
 }
@@ -1288,9 +1288,9 @@ IWORKXMLContextPtr_t DiscardContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::placeholder_style :
-    return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_placeholderStyles);
+    return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_placeholderStyles);
   case KEY2Token::NS_URI_KEY | KEY2Token::slide_style :
-    return makeContext<KEY2StyleContext>(getState(), &getState().getDictionary().m_slideStyles);
+    return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_slideStyles);
   case KEY2Token::NS_URI_KEY | KEY2Token::stylesheet :
     if (!m_savedStylesheet)
     {

@@ -13,6 +13,7 @@
 
 #include <boost/optional.hpp>
 
+#include "libetonyek_xml.h"
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKGeometryElement.h"
@@ -29,6 +30,7 @@ namespace libetonyek
 IWORKShapeContext::IWORKShapeContext(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_style()
+  , m_locked(false)
 {
 }
 
@@ -38,8 +40,23 @@ void IWORKShapeContext::attribute(const int name, const char *const value)
   {
   case IWORKToken::sfclass | IWORKToken::NS_URI_SFA : // shape
     break;
-  default :
+  case IWORKToken::locked | IWORKToken::NS_URI_SF :
+    m_locked=bool_cast(value);
+    break;
+  case IWORKToken::ID | IWORKToken::NS_URI_SFA :
     IWORKXMLElementContextBase::attribute(name, value);
+    break;
+  default :
+  {
+    // find also can-autosize-h, can-autosize-v, key:inheritance, key:tag
+    static bool first=true;
+    if (first)
+    {
+      first=false;
+      ETONYEK_DEBUG_MSG(("IWORKShapeContext::attribute: find some unknown attributes\n"));
+    }
+    IWORKXMLElementContextBase::attribute(name, value);
+  }
   }
 }
 
@@ -65,6 +82,11 @@ IWORKXMLContextPtr_t IWORKShapeContext::element(const int name)
     return makeContext<IWORKGraphicStyleContext>(getState(), m_style);
   case IWORKToken::NS_URI_SF | IWORKToken::text :
     return makeContext<IWORKTextElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::wrap : // README
+    return IWORKXMLContextPtr_t();
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKShapeContext::element: find some unknown element\n"));
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -72,13 +94,14 @@ IWORKXMLContextPtr_t IWORKShapeContext::element(const int name)
 
 void IWORKShapeContext::endOfElement()
 {
+  // CHECKME: do we need to store shape with ID ?
   if (isCollector())
   {
     if (m_style)
       getCollector().setGraphicStyle(m_style);
     getCollector().collectText(getState().m_currentText);
     getState().m_currentText.reset();
-    getCollector().collectShape();
+    getCollector().collectShape(m_locked);
     getCollector().endLevel();
   }
 }

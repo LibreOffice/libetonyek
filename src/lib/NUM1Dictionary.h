@@ -18,6 +18,8 @@ namespace libetonyek
 struct NUM1Dictionary : public IWORKDictionary
 {
   NUM1Dictionary();
+
+  IWORKStyleMap_t m_workspaceStyles;
 };
 
 }

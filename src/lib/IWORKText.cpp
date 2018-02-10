@@ -476,7 +476,7 @@ IWORKText::IWORKText(const IWORKLanguageManager &langManager, const bool discard
   , m_inListLevel(0)
   , m_isOrderedStack()
   , m_paraStyle()
-  , m_pageBreakDelayed(false)
+  , m_breakDelayed(IWORK_BREAK_NONE)
   , m_inPara(false)
     // FIXME: This will work fine when encountering real empty text block, i.e., with a single
     // empty paragraph. But it will cause a loss of a leading empty paragraph otherwise. It is
@@ -818,6 +818,18 @@ void IWORKText::insertSpace()
   m_elements.addInsertSpace();
 }
 
+void IWORKText::insertColumnBreak()
+{
+  if (bool(m_recorder))
+  {
+    m_recorder->insertColumnBreak();
+    return;
+  }
+
+  m_hasContent=true;
+  m_breakDelayed=IWORK_BREAK_COLUMN;
+}
+
 void IWORKText::insertLineBreak()
 {
   if (bool(m_recorder))
@@ -843,7 +855,7 @@ void IWORKText::insertPageBreak()
   }
 
   m_hasContent=true;
-  m_pageBreakDelayed=true;
+  m_breakDelayed=IWORK_BREAK_PAGE;
 }
 
 void IWORKText::insertInlineContent(const IWORKOutputElements &elements)
@@ -963,11 +975,11 @@ void IWORKText::fillParaPropList(librevenge::RVNGPropertyList &propList, bool re
   if (realParagraph)
   {
     using namespace property;
-    if (m_pageBreakDelayed || (m_paraStyleStack.has<PageBreakBefore>() && m_paraStyleStack.get<PageBreakBefore>()))
-    {
+    if (m_breakDelayed==IWORK_BREAK_PAGE || (m_paraStyleStack.has<PageBreakBefore>() && m_paraStyleStack.get<PageBreakBefore>()))
       propList.insert("fo:break-before", "page");
-      m_pageBreakDelayed=false;
-    }
+    else if (m_breakDelayed==IWORK_BREAK_COLUMN)
+      propList.insert("fo:break-before", "column");
+    m_breakDelayed=IWORK_BREAK_NONE;
   }
   m_paraStyleStack.pop();
 }

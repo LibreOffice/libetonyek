@@ -59,12 +59,13 @@ void CfElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::implicit_format_type | IWORKToken::NS_URI_SF :
-  {
-    // find 256
+  case IWORKToken::implicit_format_type | IWORKToken::NS_URI_SF : // find 256|261|269
     break;
-  }
+  case IWORKToken::ID | IWORKToken::NS_URI_SFA : // must we store this element ?
+    IWORKXMLEmptyContextBase::attribute(name, value);
+    break;
   default :
+    ETONYEK_DEBUG_MSG(("CfElement::attribute[IWORKTabularModelElement.cpp]: find some unknown attribute\n"));
     IWORKXMLEmptyContextBase::attribute(name, value);
   }
 }
@@ -95,6 +96,8 @@ IWORKXMLContextPtr_t CfElement::element(int name)
     }
     return IWORKXMLContextPtr_t();
   }
+  default:
+    ETONYEK_DEBUG_MSG(("CfElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
   }
   return IWORKXMLEmptyContextBase::element(name);
 }
@@ -106,7 +109,7 @@ namespace
 class CellContextBase : public IWORKXMLEmptyContextBase
 {
 protected:
-  explicit CellContextBase(IWORKXMLParserState &state);
+  explicit CellContextBase(IWORKXMLParserState &state, bool isResult=false);
 
   void attribute(int name, const char *value) override;
   IWORKXMLContextPtr_t element(int name) override;
@@ -115,10 +118,13 @@ protected:
   void emitCell(const bool covered = false);
 
   boost::optional<ID_t> m_ref;
+  bool m_isResult;
 };
 
-CellContextBase::CellContextBase(IWORKXMLParserState &state)
+CellContextBase::CellContextBase(IWORKXMLParserState &state, bool isResult)
   : IWORKXMLEmptyContextBase(state)
+  , m_ref()
+  , m_isResult(isResult)
 {
 }
 
@@ -138,6 +144,15 @@ void CellContextBase::attribute(const int name, const char *const value)
   case IWORKToken::s | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_style = getState().getStyleByName(value, getState().getDictionary().m_cellStyles);
     break;
+  case IWORKToken::f | IWORKToken::NS_URI_SF : // format?
+  case IWORKToken::h | IWORKToken::NS_URI_SF : // height
+  case IWORKToken::w | IWORKToken::NS_URI_SF : // width
+    break;
+  case IWORKToken::ID | IWORKToken::NS_URI_SFA : // can appear in result, store me?
+    IWORKXMLEmptyContextBase::attribute(name,value);
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("CellContextBase::attribute[IWORKTabularModelElement.cpp]: find some unknown attribute\n"));
   }
 }
 
@@ -149,13 +164,16 @@ IWORKXMLContextPtr_t CellContextBase::element(int name)
     return makeContext<CfElement>(getState());
   case IWORKToken::cf_ref | IWORKToken::NS_URI_SF:
     return makeContext<IWORKRefContext>(getState(), m_ref);
+  default:
+    ETONYEK_DEBUG_MSG(("CellContextBase::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
   }
   return IWORKXMLEmptyContextBase::element(name);
 }
 
 void CellContextBase::endOfElement()
 {
-  emitCell();
+  if (!m_isResult)
+    emitCell();
 }
 
 void CellContextBase::emitCell(const bool covered)
@@ -249,10 +267,18 @@ void GridColumnElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
+  case IWORKToken::fitting_width | IWORKToken::NS_URI_SF :
+  case IWORKToken::nc | IWORKToken::NS_URI_SF : // look like the number of cells in column
+  case IWORKToken::ncoc | IWORKToken::NS_URI_SF :
+  case IWORKToken::nsc | IWORKToken::NS_URI_SF : // look like the number of special cells in column, ie covered cell
+  case IWORKToken::manually_sized | IWORKToken::NS_URI_SF :
+  case IWORKToken::preferred_width | IWORKToken::NS_URI_SF :
+    break;
   case IWORKToken::width | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_columnSizes.push_back(lexical_cast<double>(value));
     break;
   default :
+    ETONYEK_DEBUG_MSG(("GridColumnElement::attribute[IWORKTabularModelElement.cpp]: find some unknown attribute\n"));
     break;
   }
 }
@@ -271,6 +297,8 @@ IWORKXMLContextPtr_t GridColumnElement::element(const int name)
     }
     return IWORKXMLContextPtr_t();
   }
+  default:
+    ETONYEK_DEBUG_MSG(("GridColumnElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
   }
 
   return IWORKXMLEmptyContextBase::element(name);
@@ -301,6 +329,8 @@ IWORKXMLContextPtr_t ColumnsElement::element(const int name)
   {
   case IWORKToken::grid_column | IWORKToken::NS_URI_SF :
     return makeContext<GridColumnElement>(getState());
+  default:
+    ETONYEK_DEBUG_MSG(("ColumnsElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();
@@ -413,24 +443,58 @@ public:
 
 private:
   IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
+
+  boost::optional<ID_t> m_stylesheetId;
+  bool m_hasStylesheet;
 };
 
 SoElement::SoElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
+  , m_stylesheetId()
+  , m_hasStylesheet(false)
 {
 }
 
 IWORKXMLContextPtr_t SoElement::element(const int name)
 {
+  if (!m_hasStylesheet && m_stylesheetId && isCollector())
+  {
+    auto it = getState().getDictionary().m_stylesheets.find(get(m_stylesheetId));
+    if (it != getState().getDictionary().m_stylesheets.end())
+    {
+      getCollector().pushStylesheet(it->second);
+      getState().m_stylesheet=it->second;
+      m_hasStylesheet = true;
+    }
+    else
+    {
+      ETONYEK_DEBUG_MSG(("SoElement::element: can not find stylesheet %s\n", get(m_stylesheetId).c_str()));
+    }
+    m_stylesheetId.reset();
+  }
   switch (name)
   {
   case IWORKToken::text_body | IWORKToken::NS_URI_SF :
     return makeContext<IWORKTextBodyElement>(getState());
+  case IWORKToken::stylesheet_ref | IWORKToken::NS_URI_SF :
+    return makeContext<IWORKRefContext>(getState(), m_stylesheetId);
+  default :
+    ETONYEK_DEBUG_MSG(("SoElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();
 }
 
+void SoElement::endOfElement()
+{
+  if (isCollector() && m_hasStylesheet)
+  {
+    getCollector().popStylesheet();
+    getState().m_stylesheet=getCollector().getStylesheet();
+    m_hasStylesheet=false;
+  }
+}
 }
 
 namespace
@@ -461,6 +525,7 @@ void CtElement::attribute(const int name, const char *const value)
     getState().m_tableData->m_type = IWORK_CELL_TYPE_TEXT;
     break;
   default :
+    ETONYEK_DEBUG_MSG(("CtElement::attribute[IWORKTabularModelElement.cpp]: find some unknown attribute\n"));
     break;
   }
 }
@@ -476,6 +541,9 @@ IWORKXMLContextPtr_t CtElement::element(const int name)
       ETONYEK_DEBUG_MSG(("found a text cell with both simple and formatted content\n"));
     }
     return makeContext<SoElement>(getState());
+  default :
+    ETONYEK_DEBUG_MSG(("CtElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -486,7 +554,82 @@ IWORKXMLContextPtr_t CtElement::element(const int name)
 namespace
 {
 
-class RbElement : public IWORKXMLEmptyContextBase
+class NElement : public CellContextBase
+{
+public:
+  explicit NElement(IWORKXMLParserState &state, bool isResult=false);
+
+private:
+  void attribute(int name, const char *value) override;
+};
+
+NElement::NElement(IWORKXMLParserState &state, bool isResult)
+  : CellContextBase(state, isResult)
+{
+  getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
+}
+
+void NElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::v | IWORKToken::NS_URI_SF :
+    getState().m_tableData->m_content = value;
+    break;
+  default :
+    CellContextBase::attribute(name, value);
+  }
+}
+}
+
+namespace
+{
+
+class TElement : public CellContextBase
+{
+public:
+  explicit TElement(IWORKXMLParserState &state, bool isResult=false);
+
+private:
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+};
+
+TElement::TElement(IWORKXMLParserState &state, bool isResult)
+  : CellContextBase(state, isResult)
+{
+}
+
+void TElement::startOfElement()
+{
+  if (isCollector() && !m_isResult)
+  {
+    // CHECKME: can we move this code in the constructor ?
+    assert(!getState().m_currentText);
+    getState().m_currentText = getCollector().createText(getState().m_langManager, false);
+  }
+}
+
+IWORKXMLContextPtr_t TElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::ct | IWORKToken::NS_URI_SF :
+    if (m_isResult && !getState().m_currentText)
+      getState().m_currentText = getCollector().createText(getState().m_langManager, false);
+    return makeContext<CtElement>(getState());
+  default:
+    break;
+  }
+
+  return CellContextBase::element(name);
+}
+}
+
+namespace
+{
+
+class RbElement : public CellContextBase
 {
 public:
   explicit RbElement(IWORKXMLParserState &state);
@@ -496,7 +639,7 @@ private:
 };
 
 RbElement::RbElement(IWORKXMLParserState &state)
-  : IWORKXMLEmptyContextBase(state)
+  : CellContextBase(state, true)
 {
   getState().m_tableData->m_type = IWORK_CELL_TYPE_BOOL;
 }
@@ -508,83 +651,10 @@ void RbElement::attribute(const int name, const char *const value)
   case IWORKToken::v | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
     break;
+  default :
+    CellContextBase::attribute(name, value);
   }
 }
-}
-
-namespace
-{
-
-class RnElement : public IWORKXMLEmptyContextBase
-{
-public:
-  explicit RnElement(IWORKXMLParserState &state);
-
-private:
-  void attribute(int name, const char *value) override;
-  IWORKXMLContextPtr_t element(int name) override;
-
-  boost::optional<ID_t> m_ref;
-};
-
-RnElement::RnElement(IWORKXMLParserState &state)
-  : IWORKXMLEmptyContextBase(state)
-{
-  getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
-}
-
-void RnElement::attribute(const int name, const char *const value)
-{
-  switch (name)
-  {
-  case IWORKToken::v | IWORKToken::NS_URI_SF :
-    getState().m_tableData->m_content = value;
-    break;
-  }
-}
-
-IWORKXMLContextPtr_t RnElement::element(int name)
-{
-  switch (name)
-  {
-  case IWORKToken::cf | IWORKToken::NS_URI_SF :
-    return makeContext<CfElement>(getState());
-  case IWORKToken::cf_ref | IWORKToken::NS_URI_SF:
-    return makeContext<IWORKRefContext>(getState(), m_ref);
-  }
-  return IWORKXMLEmptyContextBase::element(name);
-}
-}
-
-namespace
-{
-
-class RtElement : public IWORKXMLEmptyContextBase
-{
-public:
-  explicit RtElement(IWORKXMLParserState &state);
-
-private:
-  IWORKXMLContextPtr_t element(int name) override;
-};
-
-RtElement::RtElement(IWORKXMLParserState &state)
-  : IWORKXMLEmptyContextBase(state)
-{
-  getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
-}
-
-IWORKXMLContextPtr_t RtElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::ct | IWORKToken::NS_URI_SF :
-    return makeContext<CtElement>(getState());
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
 }
 
 namespace
@@ -612,10 +682,10 @@ IWORKXMLContextPtr_t RElement::element(int name)
     return makeContext<RbElement>(getState());
     break;
   case IWORKToken::rn | IWORKToken::NS_URI_SF :
-    return makeContext<RnElement>(getState());
+    return makeContext<NElement>(getState(), true);
     break;
   case IWORKToken::rt | IWORKToken::NS_URI_SF :
-    return makeContext<RtElement>(getState());
+    return makeContext<TElement>(getState(), true);
     break;
   }
 
@@ -712,38 +782,6 @@ IWORKXMLContextPtr_t GroupingElement::element(int name)
 
   return CellContextBase::element(name);
 }
-}
-
-namespace
-{
-
-class NElement : public CellContextBase
-{
-public:
-  explicit NElement(IWORKXMLParserState &state);
-
-private:
-  void attribute(int name, const char *value) override;
-};
-
-NElement::NElement(IWORKXMLParserState &state)
-  : CellContextBase(state)
-{
-  getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
-}
-
-void NElement::attribute(const int name, const char *const value)
-{
-  switch (name)
-  {
-  case IWORKToken::v | IWORKToken::NS_URI_SF :
-    getState().m_tableData->m_content = value;
-    break;
-  default :
-    CellContextBase::attribute(name, value);
-  }
-}
-
 }
 
 namespace
@@ -918,8 +956,11 @@ void SElement::attribute(const int name, const char *const value)
   case IWORKToken::ct | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_cellMove = lexical_cast<unsigned>(value);
     break;
-  default :
+  case IWORKToken::ho | IWORKToken::NS_URI_SF : // offset to main cell
+  case IWORKToken::vo | IWORKToken::NS_URI_SF :
     break;
+  default :
+    CellContextBase::attribute(name,value);
   }
 }
 
@@ -955,6 +996,12 @@ void SlElement::attribute(const int name, const char *const value)
   case IWORKToken::v | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
     break;
+  case IWORKToken::increment | IWORKToken::NS_URI_SF :
+  case IWORKToken::min_value | IWORKToken::NS_URI_SF :
+  case IWORKToken::max_value | IWORKToken::NS_URI_SF :
+  case IWORKToken::slider_orientation | IWORKToken::NS_URI_SF :
+  case IWORKToken::slider_position | IWORKToken::NS_URI_SF :
+    break;
   default :
     CellContextBase::attribute(name, value);
   }
@@ -987,51 +1034,15 @@ void StElement::attribute(const int name, const char *const value)
   case IWORKToken::v | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
     break;
+  case IWORKToken::increment | IWORKToken::NS_URI_SF :
+  case IWORKToken::min_value | IWORKToken::NS_URI_SF :
+  case IWORKToken::max_value | IWORKToken::NS_URI_SF :
+    break;
   default :
     CellContextBase::attribute(name, value);
   }
 }
 
-}
-
-namespace
-{
-
-class TElement : public CellContextBase
-{
-public:
-  explicit TElement(IWORKXMLParserState &state);
-
-private:
-  void startOfElement() override;
-  IWORKXMLContextPtr_t element(int name) override;
-};
-
-TElement::TElement(IWORKXMLParserState &state)
-  : CellContextBase(state)
-{
-}
-
-void TElement::startOfElement()
-{
-  if (isCollector())
-  {
-    // CHECKME: can we move this code in the constructor ?
-    assert(!getState().m_currentText);
-    getState().m_currentText = getCollector().createText(getState().m_langManager, false);
-  }
-}
-
-IWORKXMLContextPtr_t TElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::ct | IWORKToken::NS_URI_SF :
-    return makeContext<CtElement>(getState());
-  }
-
-  return CellContextBase::element(name);
-}
 }
 
 namespace
@@ -1713,7 +1724,15 @@ void GridRowElement::attribute(const int name, const char *const value)
   case IWORKToken::height | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_rowSizes.push_back(lexical_cast<double>(value));
     break;
+  case IWORKToken::fitting_height | IWORKToken::NS_URI_SF :
+  case IWORKToken::manually_sized | IWORKToken::NS_URI_SF :
+  case IWORKToken::nc | IWORKToken::NS_URI_SF : // look like the number of cells in row...
+  case IWORKToken::ncoc | IWORKToken::NS_URI_SF :
+  case IWORKToken::nsc | IWORKToken::NS_URI_SF : // look like the number of special cells in row, ie covered cell
+  case IWORKToken::preferred_height | IWORKToken::NS_URI_SF :
+    break;
   default :
+    ETONYEK_DEBUG_MSG(("GridRowElement::attribute[IWORKTabularModelElement.cpp]: find some unknown attribute\n"));
     break;
   }
 }

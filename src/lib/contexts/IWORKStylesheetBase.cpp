@@ -39,6 +39,8 @@ IWORKXMLContextPtr_t IWORKStylesheetBase::element(const int name)
     return makeContext<IWORKStylesContext>(getState(), false);
   case IWORKToken::NS_URI_SF | IWORKToken::anon_styles :
     return makeContext<IWORKStylesContext>(getState(), true);
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKStylesContext::element: find some unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();

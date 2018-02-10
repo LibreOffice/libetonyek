@@ -36,6 +36,8 @@ void IWORKSizeElement::attribute(const int name, const char *const value)
   case IWORKToken::NS_URI_SFA | IWORKToken::h :
     m_height = try_double_cast(value);
     break;
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKSizeElement::attribute: find some unknown attribute\n"));
   }
 }
 

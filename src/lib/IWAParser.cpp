@@ -844,7 +844,7 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
   }
 
   if (shape || textRef)
-    m_collector.collectShape();
+    m_collector.collectShape(false);
   m_currentText.reset();
 
   m_collector.endLevel();

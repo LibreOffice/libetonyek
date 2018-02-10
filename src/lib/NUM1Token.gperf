@@ -29,4 +29,5 @@ stylesheet,stylesheet
 version,version
 workspace,workspace
 workspace-array,workspace_array
+workspace-style,workspace_style
 %%

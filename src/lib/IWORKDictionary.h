@@ -41,11 +41,18 @@ struct IWORKDictionary
 
   IWORKStyleMap_t m_cellStyles;
   IWORKStyleMap_t m_characterStyles;
+  IWORKStyleMap_t m_chartStyles;
+  IWORKStyleMap_t m_chartSeriesStyles;
   IWORKStyleMap_t m_graphicStyles;
   IWORKStyleMap_t m_layoutStyles;
   IWORKStyleMap_t m_listStyles;
   IWORKStyleMap_t m_paragraphStyles;
+  IWORKStyleMap_t m_slideStyles;
+  IWORKStyleMap_t m_tableStyles;
+  IWORKStyleMap_t m_tableCellStyles;
+  IWORKStyleMap_t m_tableVectorStyles;
   IWORKStyleMap_t m_tabularStyles;
+  IWORKStyleMap_t m_tocStyles;
   IWORKStyleMap_t m_vectorStyles;
 
   IWORKStylesheetMap_t m_stylesheets;

@@ -31,6 +31,7 @@ IWORKShape::IWORKShape()
   , m_style()
   , m_path()
   , m_text()
+  , m_locked(false)
 {
 }
 

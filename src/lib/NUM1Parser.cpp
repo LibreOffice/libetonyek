@@ -17,10 +17,13 @@
 #include "IWORKMediaElement.h"
 #include "IWORKMetadataElement.h"
 #include "IWORKShapeContext.h"
+#include "IWORKStyleContext.h"
+#include "IWORKStylesContext.h"
 #include "IWORKStylesheetBase.h"
 #include "IWORKTabularInfoElement.h"
 #include "IWORKToken.h"
 #include "NUMCollector.h"
+#include "NUM1Dictionary.h"
 #include "NUM1Token.h"
 #include "NUM1XMLContextBase.h"
 
@@ -235,10 +238,44 @@ void PageInfoElement::endOfElement()
 namespace
 {
 
+class StylesContext : public NUM1XMLContextBase<IWORKStylesContext>
+{
+public:
+  StylesContext(NUM1ParserState &state, bool anonymous);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+StylesContext::StylesContext(NUM1ParserState &state, const bool anonymous)
+  : NUM1XMLContextBase<IWORKStylesContext>(state, anonymous)
+{
+}
+
+IWORKXMLContextPtr_t StylesContext::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::workspace_style :
+  case NUM1Token::NS_URI_LS | NUM1Token::workspace_style :
+    return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_workspaceStyles);
+  default:
+    break;
+  }
+
+  return NUM1XMLContextBase<IWORKStylesContext>::element(name);
+}
+
+}
+
+namespace
+{
+
 class StylesheetElement : public NUM1XMLContextBase<IWORKStylesheetBase>
 {
 public:
   explicit StylesheetElement(NUM1ParserState &state);
+  virtual IWORKXMLContextPtr_t element(int name);
 };
 
 StylesheetElement::StylesheetElement(NUM1ParserState &state)
@@ -246,6 +283,19 @@ StylesheetElement::StylesheetElement(NUM1ParserState &state)
 {
 }
 
+IWORKXMLContextPtr_t StylesheetElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::styles :
+    return makeContext<StylesContext>(getState(), false);
+  case IWORKToken::NS_URI_SF | IWORKToken::anon_styles :
+    return makeContext<StylesContext>(getState(), true);
+  default:
+    break;
+  }
+  return NUM1XMLContextBase<IWORKStylesheetBase>::element(name);
+}
 }
 
 namespace
@@ -446,6 +496,8 @@ IWORKXMLContextPtr_t DiscardContext::element(const int name)
   {
   case NUM1Token::NS_URI_LS | NUM1Token::stylesheet :
     return makeContext<StylesheetElement>(getState());
+  case NUM1Token::NS_URI_LS | NUM1Token::workspace_style :
+    return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_workspaceStyles);
   default:
     break;
   }

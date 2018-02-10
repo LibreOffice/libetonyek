@@ -24,9 +24,59 @@
 
 namespace libetonyek
 {
+
+namespace
+{
+
+class StyleContext : public IWORKXMLElementContextBase
+{
+public:
+  StyleContext(IWORKXMLParserState &state, IWORKStylePtr_t &style);
+
+private:
+  virtual void endOfElement();
+  virtual IWORKXMLContextPtr_t element(int name);
+
+private:
+  StyleContext(StyleContext &);
+  StyleContext operator=(StyleContext &);
+
+  IWORKStylePtr_t &m_style;
+  boost::optional<ID_t> m_ref;
+};
+
+StyleContext::StyleContext(IWORKXMLParserState &state, IWORKStylePtr_t &style)
+  : IWORKXMLElementContextBase(state)
+  , m_style(style)
+  , m_ref()
+{
+}
+
+IWORKXMLContextPtr_t StyleContext::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::tabular_style_ref:
+    return makeContext<IWORKRefContext>(getState(), m_ref);
+  default:
+    ETONYEK_DEBUG_MSG(("StyleContext::element[IWORKTabularInfo.cpp]: Oops, find some unknown elements\n"));
+    break;
+  }
+  return IWORKXMLContextPtr_t();
+}
+
+void StyleContext::endOfElement()
+{
+  if (m_ref)
+    m_style = getState().getStyleByName(get(m_ref).c_str(), getState().getDictionary().m_tabularStyles);
+}
+
+}
+
 IWORKTabularInfoElement::IWORKTabularInfoElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_tableRef()
+  , m_style()
 {
 }
 
@@ -45,10 +95,16 @@ IWORKXMLContextPtr_t IWORKTabularInfoElement::element(const int name)
   {
   case IWORKToken::geometry | IWORKToken::NS_URI_SF :
     return makeContext<IWORKGeometryElement>(getState());
+  case IWORKToken::style | IWORKToken::NS_URI_SF :
+    return makeContext<StyleContext>(getState(), m_style);
   case IWORKToken::tabular_model | IWORKToken::NS_URI_SF :
     return makeContext<IWORKTabularModelElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_model_ref :
     return makeContext<IWORKRefContext>(getState(), m_tableRef);
+  case IWORKToken::NS_URI_SF | IWORKToken::wrap : // TODO readme
+    return IWORKXMLContextPtr_t();
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKTabularInfoElement::element: find some unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();
@@ -69,6 +125,8 @@ void IWORKTabularInfoElement::endOfElement()
       ETONYEK_DEBUG_MSG(("IWORKTabularInfoElement::endOfElement: can not find the table %s\n", get(m_tableRef).c_str()));
     }
   }
+  if (m_style && getState().m_currentTable)
+    getState().m_currentTable->setStyle(m_style);
   getCollector().collectTable(getState().m_currentTable);
   getState().m_currentTable.reset();
   getCollector().endLevel();

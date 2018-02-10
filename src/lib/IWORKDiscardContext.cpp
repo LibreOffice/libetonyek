@@ -103,6 +103,8 @@ IWORKXMLContextPtr_t IWORKDiscardContext::element(const int name)
     return makeContext<IWORKListLabelTypeinfoElement>(m_state, m_data->m_listLabelTypeInfo);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
     return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_paragraphStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::slide_style :
+    return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_slideStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::tabs :
     m_data->m_tabStops.clear();
     return makeContext<IWORKTabsElement>(m_state, m_data->m_tabStops);

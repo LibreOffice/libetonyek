@@ -13,6 +13,7 @@
 
 #include <boost/variant.hpp>
 
+#include "libetonyek_utils.h"
 #include "IWORKText.h"
 
 namespace libetonyek
@@ -159,12 +160,13 @@ struct InsertSpace
 {
 };
 
-struct InsertLineBreak
+struct InsertBreak
 {
-};
-
-struct InsertPageBreak
-{
+  InsertBreak(IWORKBreakType type)
+    : m_type(type)
+  {
+  }
+  IWORKBreakType m_type;
 };
 
 typedef boost::variant
@@ -186,8 +188,7 @@ typedef boost::variant
 , InsertText
 , InsertTab
 , InsertSpace
-, InsertLineBreak
-, InsertPageBreak
+, InsertBreak
 >
 Element_t;
 
@@ -293,14 +294,25 @@ struct Sender : public boost::static_visitor<void>
     m_text.insertSpace();
   }
 
-  void operator()(const InsertLineBreak &) const
+  void operator()(const InsertBreak &value) const
   {
-    m_text.insertLineBreak();
-  }
-
-  void operator()(const InsertPageBreak &) const
-  {
-    m_text.insertPageBreak();
+    switch (value.m_type)
+    {
+    case IWORK_BREAK_NONE :
+      break;
+    case IWORK_BREAK_COLUMN:
+      m_text.insertColumnBreak();
+      break;
+    case IWORK_BREAK_LINE :
+      m_text.insertLineBreak();
+      break;
+    case IWORK_BREAK_PAGE:
+      m_text.insertPageBreak();
+      break;
+    default:
+      ETONYEK_DEBUG_MSG(("Sender::operator(InsertBreak)[IWORKTextRecorder.cpp]: unexpected break\n"));
+      break;
+    }
   }
 
 private:
@@ -423,14 +435,19 @@ void IWORKTextRecorder::insertSpace()
   m_impl->m_elements.push_back(InsertSpace());
 }
 
+void IWORKTextRecorder::insertColumnBreak()
+{
+  m_impl->m_elements.push_back(InsertBreak(IWORK_BREAK_COLUMN));
+}
+
 void IWORKTextRecorder::insertLineBreak()
 {
-  m_impl->m_elements.push_back(InsertLineBreak());
+  m_impl->m_elements.push_back(InsertBreak(IWORK_BREAK_LINE));
 }
 
 void IWORKTextRecorder::insertPageBreak()
 {
-  m_impl->m_elements.push_back(InsertPageBreak());
+  m_impl->m_elements.push_back(InsertBreak(IWORK_BREAK_PAGE));
 }
 
 }

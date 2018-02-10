@@ -29,6 +29,7 @@ struct IWORKShape
   IWORKStylePtr_t m_style;
   IWORKPathPtr_t m_path;
   IWORKTextPtr_t m_text;
+  bool m_locked;
 
   IWORKShape();
 };

@@ -26,6 +26,8 @@ IWORKStyleContext::IWORKStyleContext(IWORKXMLParserState &state, IWORKStyleMap_t
   , m_ownProps()
   , m_props(m_ownProps)
   , m_style()
+  , m_ident()
+  , m_parentIdent()
 {
 }
 
@@ -35,6 +37,9 @@ IWORKStyleContext::IWORKStyleContext(IWORKXMLParserState &state, IWORKPropertyMa
   , m_defaultParent(defaultParent ? defaultParent : "")
   , m_ownProps()
   , m_props(props)
+  , m_style()
+  , m_ident()
+  , m_parentIdent()
 {
 }
 
@@ -48,7 +53,18 @@ void IWORKStyleContext::attribute(const int name, const char *const value)
   case IWORKToken::NS_URI_SF | IWORKToken::parent_ident :
     m_parentIdent = value;
     break;
+  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+    IWORKXMLElementContextBase::attribute(name, value);
+    break;
+  case IWORKToken::NS_URI_SFA | IWORKToken::sfclass :
+  case IWORKToken::NS_URI_SF | IWORKToken::cell_style_default_line_height : // attribute of cell-style USEME
+  case IWORKToken::NS_URI_SF | IWORKToken::locked : // attribute of graphic-style
+  case IWORKToken::NS_URI_SF | IWORKToken::name :
+  case IWORKToken::NS_URI_SF | IWORKToken::seriesIndex : // attribute of chart-series-style
+  case IWORKToken::NS_URI_SF | IWORKToken::tabular_style_name_internal : // attribute of tabular-style
+    break;
   default :
+    ETONYEK_DEBUG_MSG(("IWORKStyleContext::attribute: find some unknown attribute\n"));
     IWORKXMLElementContextBase::attribute(name, value);
     break;
   }
@@ -60,6 +76,8 @@ IWORKXMLContextPtr_t IWORKStyleContext::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::property_map :
     return makeContext<IWORKPropertyMapElement>(getState(), m_props);
+  default :
+    ETONYEK_DEBUG_MSG(("IWORKStyleContext::element: find some unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();

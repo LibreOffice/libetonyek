@@ -28,6 +28,7 @@ private:
   void endOfElement() override;
 
   boost::optional<ID_t> m_tableRef;
+  IWORKStylePtr_t m_style;
 };
 
 }

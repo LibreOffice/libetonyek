@@ -29,6 +29,7 @@ protected:
 
 private:
   IWORKStylePtr_t m_style;
+  bool m_locked;
 };
 
 }

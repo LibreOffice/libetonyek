@@ -66,7 +66,7 @@ public:
 
   void collectBezier(const IWORKPathPtr_t &path);
   void collectLine(const IWORKLinePtr_t &line);
-  void collectShape();
+  void collectShape(bool locked);
 
   void collectBezierPath();
   void collectPolygonPath(const IWORKSize &size, unsigned edges);

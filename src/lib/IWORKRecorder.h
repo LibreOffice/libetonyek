@@ -46,7 +46,7 @@ public:
   void collectPath(const IWORKPathPtr_t &path);
   void collectImage(const IWORKMediaContentPtr_t &image, bool locked);
   void collectLine(const IWORKLinePtr_t &line);
-  void collectShape();
+  void collectShape(bool locked);
 
   void collectMedia(const IWORKMediaContentPtr_t &content);
 

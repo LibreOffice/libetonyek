@@ -24,7 +24,7 @@ IWORKSpanElement::IWORKSpanElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_style()
   , m_opened(false)
-  , m_delayedPageBreak(false)
+  , m_delayedBreak(IWORK_BREAK_NONE)
 {
 }
 
@@ -45,13 +45,18 @@ IWORKXMLContextPtr_t IWORKSpanElement::element(const int name)
 {
   switch (name)
   {
+  case IWORKToken::NS_URI_SF | IWORKToken::br : // ok to ignore ?
+    return IWORKXMLContextPtr_t();
   case IWORKToken::NS_URI_SF | IWORKToken::crbr :
   case IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
   case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
     ensureOpened();
     return makeContext<IWORKBrContext>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::contbr :
+    m_delayedBreak=IWORK_BREAK_COLUMN;
+    return IWORKXMLContextPtr_t();
   case IWORKToken::NS_URI_SF | IWORKToken::pgbr :
-    m_delayedPageBreak=true;
+    m_delayedBreak=IWORK_BREAK_PAGE;
     return IWORKXMLContextPtr_t();
   case IWORKToken::NS_URI_SF | IWORKToken::tab :
     ensureOpened();
@@ -68,6 +73,10 @@ IWORKXMLContextPtr_t IWORKSpanElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::page_number :
     ensureOpened();
     return makeContext<IWORKFieldElement>(getState(),IWORK_FIELD_PAGENUMBER);
+  case IWORKToken::NS_URI_SF | IWORKToken::insertion_point :
+    return IWORKXMLContextPtr_t();
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKSpanElement::element: find some unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();
@@ -86,8 +95,10 @@ void IWORKSpanElement::endOfElement()
   {
     if (m_opened)
       getState().m_currentText->flushSpan();
-    if (m_delayedPageBreak)
+    if (m_delayedBreak==IWORK_BREAK_PAGE)
       getState().m_currentText->insertPageBreak();
+    else if (m_delayedBreak==IWORK_BREAK_COLUMN)
+      getState().m_currentText->insertColumnBreak();
     // This is needed to handle mixed paragraph content correctly. If
     // there is a plain text following a span, it must not have the
     // style of the preceding span.

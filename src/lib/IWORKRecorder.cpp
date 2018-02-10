@@ -90,6 +90,11 @@ struct CollectLine
 
 struct CollectShape
 {
+  CollectShape(bool locked)
+    : m_locked(locked)
+  {
+  }
+  bool m_locked;
 };
 
 struct CollectMedia
@@ -225,9 +230,9 @@ struct Sender : public boost::static_visitor<void>
     m_collector.collectLine(value.m_line);
   }
 
-  void operator()(const CollectShape &) const
+  void operator()(const CollectShape &value) const
   {
-    m_collector.collectShape();
+    m_collector.collectShape(value.m_locked);
   }
 
   void operator()(const CollectMedia &value) const
@@ -348,9 +353,9 @@ void IWORKRecorder::collectLine(const IWORKLinePtr_t &line)
   m_impl->m_elements.push_back(CollectLine(line));
 }
 
-void IWORKRecorder::collectShape()
+void IWORKRecorder::collectShape(bool locked)
 {
-  m_impl->m_elements.push_back(CollectShape());
+  m_impl->m_elements.push_back(CollectShape(locked));
 }
 
 void IWORKRecorder::collectMedia(const IWORKMediaContentPtr_t &content)

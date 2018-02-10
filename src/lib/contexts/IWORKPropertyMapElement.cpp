@@ -1192,6 +1192,10 @@ typedef StylePropertyContext<property::LabelCharacterStyle, IWORKToken::NS_URI_S
 typedef StylePropertyContext<property::LayoutParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> LayoutParagraphStyleElement;
 typedef StylePropertyContext<property::LayoutStyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref> LayoutStyleElement;
 typedef StylePropertyContext<property::ListStyle, IWORKToken::NS_URI_SF | IWORKToken::liststyle, IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref> ListStyleElement;
+typedef StylePropertyContext<property::SFSeries, IWORKToken::NS_URI_SF | IWORKToken::chart_series_style, IWORKToken::NS_URI_SF | IWORKToken::chart_series_style_ref> SFSeriesElement;
+typedef StylePropertyContext<property::SFTableStylePropertyCellStyle, IWORKToken::NS_URI_SF | IWORKToken::table_cell_style, IWORKToken::NS_URI_SF | IWORKToken::table_cell_style_ref> SFTableStylePropertyCellStyleElement;
+typedef StylePropertyContext<property::SFTableStylePropertyHeaderColumnCellStyle, IWORKToken::NS_URI_SF | IWORKToken::table_cell_style, IWORKToken::NS_URI_SF | IWORKToken::table_cell_style_ref> SFTableStylePropertyHeaderColumnCellStyleElement;
+typedef StylePropertyContext<property::SFTableStylePropertyHeaderRowCellStyle, IWORKToken::NS_URI_SF | IWORKToken::table_cell_style, IWORKToken::NS_URI_SF | IWORKToken::table_cell_style_ref> SFTableStylePropertyHeaderRowCellStyleElement;
 typedef StylePropertyContext<property::SFTCellStylePropertyLayoutStyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref> SFTCellStylePropertyLayoutStylePropertyElement;
 typedef StylePropertyContext<property::SFTCellStylePropertyParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> SFTCellStylePropertyParagraphStylePropertyElement;
 typedef StylePropertyContext<property::SFTDefaultBodyCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultBodyCellStylePropertyElement;
@@ -1343,6 +1347,22 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<RightIndentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::tailLineEnd :
     return makeContext<TailLineEndElement>(getState(), *m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::Series_0 :
+  case IWORKToken::NS_URI_SF | IWORKToken::Series_1 :
+  case IWORKToken::NS_URI_SF | IWORKToken::Series_2 :
+  case IWORKToken::NS_URI_SF | IWORKToken::Series_3 :
+  case IWORKToken::NS_URI_SF | IWORKToken::Series_4 :
+  case IWORKToken::NS_URI_SF | IWORKToken::Series_5 :
+  case IWORKToken::NS_URI_SF | IWORKToken::Series_6 :
+  case IWORKToken::NS_URI_SF | IWORKToken::Series_7 :
+    // CHANGEME
+    return makeContext<SFSeriesElement>(getState(), *m_propMap, getState().getDictionary().m_chartSeriesStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyCellStyle :
+    return makeContext<SFTableStylePropertyCellStyleElement>(getState(), *m_propMap, getState().getDictionary().m_tableCellStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyHeaderColumnCellStyle :
+    return makeContext<SFTableStylePropertyHeaderColumnCellStyleElement>(getState(), *m_propMap, getState().getDictionary().m_tableCellStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyHeaderRowCellStyle :
+    return makeContext<SFTableStylePropertyHeaderRowCellStyleElement>(getState(), *m_propMap, getState().getDictionary().m_tableCellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyNumberFormat :
     return makeContext<SFTCellStylePropertyNumberFormatElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyDateTimeFormat :
