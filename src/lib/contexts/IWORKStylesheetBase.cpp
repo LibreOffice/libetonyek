@@ -38,7 +38,7 @@ IWORKXMLContextPtr_t IWORKStylesheetBase::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::styles :
     return makeContext<IWORKStylesContext>(getState(), false);
   case IWORKToken::NS_URI_SF | IWORKToken::anon_styles :
-    return makeContext<IWORKStylesContext>(getState(), false);
+    return makeContext<IWORKStylesContext>(getState(), true);
   }
 
   return IWORKXMLContextPtr_t();

@@ -36,6 +36,7 @@ private:
   bool m_opened;
   bool m_delayedPageBreak;
   boost::optional<unsigned> m_listLevel;
+  boost::optional<bool> m_restartList;
 };
 
 }

@@ -30,6 +30,8 @@ IWORKPElement::IWORKPElement(IWORKXMLParserState &state)
   , m_style()
   , m_opened(false)
   , m_delayedPageBreak(false)
+  , m_listLevel()
+  , m_restartList()
 {
 }
 
@@ -39,6 +41,9 @@ void IWORKPElement::attribute(const int name, const char *const value)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::list_level :
     m_listLevel = try_int_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::restart_list :
+    m_restartList = try_bool_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::style :
     m_style = getState().getStyleByName(value, getState().getDictionary().m_paragraphStyles);
@@ -105,6 +110,8 @@ void IWORKPElement::ensureOpened()
   {
     if (bool(getState().m_currentText))
     {
+      if (m_restartList && get(m_restartList))
+        getState().m_currentText->flushList();
       getState().m_currentText->setParagraphStyle(m_style);
       if (m_listLevel)
         getState().m_currentText->setListLevel(get(m_listLevel));

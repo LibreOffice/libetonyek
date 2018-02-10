@@ -1308,6 +1308,7 @@ typedef IWORKPtrPropertyContext<property::Geometry, IWORKGeometryElement, IWORKT
 typedef StylePropertyContext<property::FollowingLayoutStyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref> FollowingLayoutStyleElement;
 typedef StylePropertyContext<property::FollowingParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> FollowingParagraphStyleElement;
 typedef StylePropertyContext<property::LayoutParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> LayoutParagraphStyleElement;
+typedef StylePropertyContext<property::LayoutStyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref> LayoutStyleElement;
 typedef StylePropertyContext<property::ListStyle, IWORKToken::NS_URI_SF | IWORKToken::liststyle, IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref> ListStyleElement;
 typedef StylePropertyContext<property::SFTCellStylePropertyLayoutStyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref> SFTCellStylePropertyLayoutStylePropertyElement;
 typedef StylePropertyContext<property::SFTCellStylePropertyParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> SFTCellStylePropertyParagraphStylePropertyElement;
@@ -1415,6 +1416,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<LayoutMarginsElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutParagraphStyle :
     return makeContext<LayoutParagraphStyleElement>(getState(), *m_propMap, getState().getDictionary().m_paragraphStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::layoutStyle :
+    return makeContext<LayoutStyleElement>(getState(), *m_propMap, getState().getDictionary().m_layoutStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::leftIndent :
     return makeContext<LeftIndentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::lineSpacing :

@@ -218,6 +218,10 @@ grid-column,grid_column
 grid-row,grid_row
 gridline-index,gridline_index,
 group,group
+group-value,group_value
+grouping,grouping
+grouping-display,grouping_display
+groupings-element,groupings_element
 h,h
 head,head
 header,header
@@ -264,6 +268,7 @@ layoutParagraphStyle,layoutParagraphStyle
 layoutParagraphStyle-ref,layoutParagraphStyle_ref
 layoutstyle,layoutstyle
 layoutstyle-ref,layoutstyle_ref
+layoutStyle,layoutStyle
 left,left
 leftIndent,leftIndent
 leveled,leveled
@@ -350,6 +355,7 @@ r,r
 radial,radial
 rb,rb
 relative,relative
+restart-list,restart_list
 result-bool-cell,result_bool_cell
 result-cell,result_cell
 result-date-cell,result_date_cell

@@ -240,6 +240,7 @@ public:
 
 private:
   void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 GridColumnElement::GridColumnElement(IWORKXMLParserState &state)
@@ -259,6 +260,24 @@ void GridColumnElement::attribute(const int name, const char *const value)
   }
 }
 
+IWORKXMLContextPtr_t GridColumnElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::grouping_display | IWORKToken::NS_URI_SF :
+  {
+    static bool first=true;
+    if (first)
+    {
+      ETONYEK_DEBUG_MSG(("GridColumnElement::element: find some grouping-display\n"));
+      first=false;
+    }
+    return IWORKXMLContextPtr_t();
+  }
+  }
+
+  return IWORKXMLEmptyContextBase::element(name);
+}
 }
 
 namespace
@@ -657,6 +676,44 @@ GElement::GElement(IWORKXMLParserState &state)
 {
 }
 
+}
+
+namespace
+{
+
+class GroupingElement : public CellContextBase
+{
+public:
+  explicit GroupingElement(IWORKXMLParserState &state);
+private:
+  IWORKXMLContextPtr_t element(int name) override;
+};
+
+GroupingElement::GroupingElement(IWORKXMLParserState &state)
+  : CellContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t GroupingElement::element(int name)
+{
+  switch (name)
+  {
+  case IWORKToken::groupings_element | IWORKToken::NS_URI_SF :
+  {
+    static bool first=true;
+    if (first)
+    {
+      first=false;
+      ETONYEK_DEBUG_MSG(("GroupingElement::element: oops, find some grouping elements\n"));
+    }
+    return IWORKXMLContextPtr_t();
+  }
+  case IWORKToken::fo | IWORKToken::NS_URI_SF :
+    return makeContext<IWORKFormulaElement>(getState());
+  }
+
+  return CellContextBase::element(name);
+}
 }
 
 namespace
@@ -1439,6 +1496,8 @@ IWORKXMLContextPtr_t DatasourceElement::element(const int name)
     return makeContext<FElement>(getState());
   case IWORKToken::g | IWORKToken::NS_URI_SF :
     return makeContext<GElement>(getState());
+  case IWORKToken::grouping | IWORKToken::NS_URI_SF :
+    return makeContext<GroupingElement>(getState());
   case IWORKToken::n | IWORKToken::NS_URI_SF :
     return makeContext<NElement>(getState());
   case IWORKToken::pm | IWORKToken::NS_URI_SF :
