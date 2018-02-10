@@ -252,9 +252,9 @@ librevenge::RVNGString makeColor(const IWORKColor &color)
 {
   // TODO: alpha
 
-  const unsigned r = color.m_red * 256 - 0.5;
-  const unsigned g = color.m_green * 256 - 0.5;
-  const unsigned b = color.m_blue * 256 - 0.5;
+  const unsigned r = unsigned(color.m_red * 256 - 0.5);
+  const unsigned g = unsigned(color.m_green * 256 - 0.5);
+  const unsigned b = unsigned(color.m_blue * 256 - 0.5);
 
   librevenge::RVNGString str;
   str.sprintf("#%.2x%.2x%.2x", r, g, b);
@@ -270,12 +270,12 @@ librevenge::RVNGString makeColor(const IWORKGradient &gradient)
     return "#ffffff";
   }
   const double middle=(gradient.m_stops.front().m_fraction+gradient.m_stops.back().m_fraction)/2;
-  const unsigned red = (middle*gradient.m_stops.front().m_color.m_red+
-                        (1-middle)*gradient.m_stops.back().m_color.m_red)* 256 - 0.5;
-  const unsigned green = (middle*gradient.m_stops.front().m_color.m_green+
-                          (1-middle)*gradient.m_stops.back().m_color.m_green)* 256 - 0.5;
-  const unsigned blue = (middle*gradient.m_stops.front().m_color.m_blue+
-                         (1-middle)*gradient.m_stops.back().m_color.m_blue)* 256 - 0.5;
+  const unsigned red = unsigned((middle*gradient.m_stops.front().m_color.m_red+
+                                 (1-middle)*gradient.m_stops.back().m_color.m_red)* 256 - 0.5);
+  const unsigned green = unsigned((middle*gradient.m_stops.front().m_color.m_green+
+                                   (1-middle)*gradient.m_stops.back().m_color.m_green)* 256 - 0.5);
+  const unsigned blue = unsigned((middle*gradient.m_stops.front().m_color.m_blue+
+                                  (1-middle)*gradient.m_stops.back().m_color.m_blue)* 256 - 0.5);
 
   librevenge::RVNGString str;
   str.sprintf("#%.2x%.2x%.2x", red, green, blue);

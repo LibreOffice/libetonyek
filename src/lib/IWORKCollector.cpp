@@ -100,44 +100,6 @@ void drawImage(const IWORKImagePtr_t &image, const glm::dmat3 &trafo, IWORKOutpu
 
 }
 
-void drawLine(const IWORKLinePtr_t &line, const glm::dmat3 &trafo, IWORKOutputElements &elements)
-{
-  // TODO: transform the line
-  (void) trafo;
-
-  if (line->m_x1 && line->m_y1 && line->m_x2 && line->m_y2)
-  {
-    librevenge::RVNGPropertyList props;
-#if 0
-    if (line->style)
-    {
-      // TODO: is it graphic style?
-      const IWORKStyleMap_t::const_iterator styleIt = dict.graphicStyles.find(get(line->style));
-      if (dict.graphicStyles.end() != styleIt)
-      {
-        IWORKStyle style = *styleIt->second;
-        resolveStyle(style, dict.graphicStyles);
-        props = makeLineStyle(style);
-      }
-    }
-#endif
-    elements.addSetStyle(props);
-
-    librevenge::RVNGPropertyListVector vertices;
-    vertices.append(makePoint(get(line->m_x1), get(line->m_y1)));
-    vertices.append(makePoint(get(line->m_x2), get(line->m_y2)));
-
-    librevenge::RVNGPropertyList points;
-    points.insert("svg:points", vertices);
-
-    elements.addDrawPolyline(points);
-  }
-  else
-  {
-    ETONYEK_DEBUG_MSG(("line is missing head or tail point\n"));
-  }
-}
-
 struct FillWriter : public boost::static_visitor<void>
 {
   explicit FillWriter(RVNGPropertyList &props)
@@ -250,14 +212,14 @@ private:
   mutable double m_opacity;
 };
 
-void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
+void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props, bool isSurface=true)
 {
   assert(bool(style));
 
   using namespace property;
 
   double opacity=style->has<Opacity>() ? style->get<Opacity>() : 1.;
-  if (style->has<Fill>())
+  if (isSurface && style->has<Fill>())
   {
     FillWriter fillWriter(props);
     apply_visitor(fillWriter, style->get<Fill>());
@@ -302,6 +264,8 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
     switch (stroke.m_cap)
     {
     default :
+    case IWORK_LINE_CAP_NONE :
+
     case IWORK_LINE_CAP_BUTT :
       props.insert("svg:stroke-linecap", "butt");
       break;
@@ -318,6 +282,7 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props)
     case IWORK_LINE_JOIN_ROUND :
       props.insert("svg:stroke-linejoin", "round");
       break;
+    case IWORK_LINE_JOIN_NONE :
     default :
       props.insert("svg:stroke-linejoin", "none");
     }
@@ -458,8 +423,10 @@ void IWORKCollector::collectLine(const IWORKLinePtr_t &line)
 
   line->m_geometry = m_levelStack.top().m_geometry;
   m_levelStack.top().m_geometry.reset();
+  line->m_style = m_levelStack.top().m_graphicStyle;
+  m_levelStack.top().m_graphicStyle.reset();
 
-  drawLine(line, m_levelStack.top().m_trafo, m_outputManager.getCurrent());
+  drawLine(line);
 }
 
 void IWORKCollector::collectShape()
@@ -790,6 +757,74 @@ IWORKOutputManager &IWORKCollector::getOutputManager()
   return m_outputManager;
 }
 
+void IWORKCollector::drawLine(const IWORKLinePtr_t &line)
+{
+  // TODO: transform the line
+  IWORKOutputElements &elements = m_outputManager.getCurrent();
+  double origPos[2], endPos[2];
+  if (line->m_x1 && line->m_y1 && line->m_x2 && line->m_y2)
+  {
+    origPos[0]=get(line->m_x1);
+    origPos[1]=get(line->m_y1);
+    endPos[0]=get(line->m_x2);
+    endPos[1]=get(line->m_y2);
+  }
+  else if (line->m_geometry && !line->m_x1 && !line->m_y1 && !line->m_x2 && !line->m_y2)
+  {
+    IWORKGeometry const &geometry=*line->m_geometry;
+    origPos[0]=geometry.m_position.m_x;
+    origPos[1]=geometry.m_position.m_y;
+    double dir[2]= {geometry.m_size.m_width, geometry.m_size.m_height};
+    double finalDir[2];
+    if (geometry.m_angle)
+    {
+      const double angle = -get(geometry.m_angle);
+      double c = std::cos(angle);
+      double s = std::sin(angle);
+      finalDir[0]=dir[0]*c-dir[1]*s;
+      finalDir[1]=dir[0]*s+dir[1]*c;
+    }
+    else
+    {
+      finalDir[0]=dir[0];
+      finalDir[1]=dir[1];
+    }
+    // geometry.m_position is always the boundary top left point
+    if (finalDir[0]<0)
+    {
+      endPos[0]=origPos[0];
+      origPos[0]=endPos[0]-finalDir[0];
+    }
+    else
+      endPos[0]=origPos[0]+finalDir[0];
+    if (finalDir[1]<0)
+    {
+      endPos[1]=origPos[1];
+      origPos[1]=endPos[1]-finalDir[1];
+    }
+    else
+      endPos[1]=origPos[1]+finalDir[1];
+  }
+  else
+  {
+    ETONYEK_DEBUG_MSG(("drawLine[IWORKCollector]: line is missing head or tail point\n"));
+    return;
+  }
+  librevenge::RVNGPropertyList props;
+  if (bool(line->m_style))
+    fillGraphicProps(line->m_style, props, false);
+  elements.addSetStyle(props);
+
+  librevenge::RVNGPropertyListVector vertices;
+  vertices.append(makePoint(origPos[0],origPos[1]));
+  vertices.append(makePoint(endPos[0],endPos[1]));
+
+  librevenge::RVNGPropertyList points;
+  points.insert("svg:points", vertices);
+
+  elements.addDrawPolyline(points);
+}
+
 void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
 {
   if (bool(media)
@@ -808,7 +843,7 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
     if (!mimetype.empty())
     {
       input->seek(0, librevenge::RVNG_SEEK_END);
-      const unsigned long size = input->tell();
+      const unsigned long size = (unsigned long) input->tell();
       input->seek(0, librevenge::RVNG_SEEK_SET);
 
       unsigned long readBytes = 0;

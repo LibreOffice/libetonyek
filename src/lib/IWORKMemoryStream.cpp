@@ -22,14 +22,14 @@ IWORKMemoryStream::IWORKMemoryStream(const RVNGInputStreamPtr_t &input)
   , m_length(0)
   , m_pos(0)
 {
-  const unsigned long begin = input->tell();
+  const unsigned long begin = (unsigned long) input->tell();
   if (input->seek(0, librevenge::RVNG_SEEK_END))
   {
     while (!input->isEnd())
       readU8(input);
   }
-  const unsigned long end = input->tell();
-  input->seek(begin, librevenge::RVNG_SEEK_SET);
+  const unsigned long end = (unsigned long) input->tell();
+  input->seek((long) begin, librevenge::RVNG_SEEK_SET);
 
   read(input, static_cast<unsigned>(end - begin));
 }
@@ -44,13 +44,13 @@ IWORKMemoryStream::IWORKMemoryStream(const RVNGInputStreamPtr_t &input, const un
 
 IWORKMemoryStream::IWORKMemoryStream(const std::vector<unsigned char> &data)
   : m_data()
-  , m_length(data.size())
+  , m_length(long(data.size()))
   , m_pos(0)
 {
   if (data.empty())
     throw GenericException();
 
-  assign(&data[0], data.size());
+  assign(&data[0], (unsigned) data.size());
 }
 
 IWORKMemoryStream::IWORKMemoryStream(const unsigned char *const data, const unsigned length)
@@ -100,7 +100,7 @@ const unsigned char *IWORKMemoryStream::read(unsigned long numBytes, unsigned lo
   if (0 == numBytes)
     return nullptr;
 
-  if ((m_pos + numBytes) >= static_cast<unsigned long>(m_length))
+  if (numBytes >= static_cast<unsigned long>(m_length-m_pos))
     numBytes = static_cast<unsigned long>(m_length - m_pos);
 
   const long oldPos = m_pos;

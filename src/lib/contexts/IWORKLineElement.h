@@ -12,6 +12,7 @@
 
 #include <boost/optional.hpp>
 
+#include "IWORKStyle_fwd.h"
 #include "IWORKTypes.h"
 #include "IWORKXMLContextBase.h"
 
@@ -31,6 +32,7 @@ private:
 private:
   boost::optional<IWORKPosition> m_head;
   boost::optional<IWORKPosition> m_tail;
+  IWORKStylePtr_t m_style;
 };
 
 }

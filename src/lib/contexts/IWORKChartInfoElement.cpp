@@ -194,7 +194,7 @@ void IWORKChartInfoElement::attribute(const int name, const char *value)
   switch (name)
   {
   case IWORKToken::chart_type | IWORKToken::NS_URI_SF :
-    m_chart.m_chartType = int_cast(value);
+    m_chart.m_chartType = (unsigned) int_cast(value);
   }
 }
 

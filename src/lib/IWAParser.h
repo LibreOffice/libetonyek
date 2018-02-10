@@ -42,9 +42,11 @@ class IWAParser
   // disable copying
   IWAParser(const IWAParser &);
   IWAParser &operator=(const IWAParser &);
-
 public:
   IWAParser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package, IWORKCollector &collector);
+  virtual ~IWAParser()
+  {
+  }
 
   bool parse();
 

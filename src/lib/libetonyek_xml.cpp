@@ -33,9 +33,9 @@ extern "C" int readFromStream(void *context, char *buffer, int len)
     auto *const input = reinterpret_cast<librevenge::RVNGInputStream *>(context);
 
     unsigned long bytesRead = 0;
-    const unsigned char *const bytes = input->read(len, bytesRead);
+    const unsigned char *const bytes = input->read((unsigned long)len, bytesRead);
 
-    std::memcpy(buffer, bytes, static_cast<int>(bytesRead));
+    std::memcpy(buffer, bytes, static_cast<size_t>(bytesRead));
     return static_cast<int>(bytesRead);
   }
   catch (...)

@@ -10,16 +10,58 @@
 #include "IWORKLineElement.h"
 
 #include "IWORKCollector.h"
+#include "IWORKDictionary.h"
 #include "IWORKGeometryElement.h"
 #include "IWORKPositionElement.h"
+#include "IWORKRefContext.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
 {
 
+namespace
+{
+// TODO: merge this code with IWORKShapeContent.cpp
+class StyleElement : public IWORKXMLElementContextBase
+{
+public:
+  StyleElement(IWORKXMLParserState &state, IWORKStylePtr_t &style);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  IWORKStylePtr_t &m_style;
+  boost::optional<ID_t> m_ref;
+};
+
+StyleElement::StyleElement(IWORKXMLParserState &state, IWORKStylePtr_t &style)
+  : IWORKXMLElementContextBase(state)
+  , m_style(style)
+  , m_ref()
+{
+}
+
+IWORKXMLContextPtr_t StyleElement::element(const int name)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref))
+    return makeContext<IWORKRefContext>(getState(), m_ref);
+  return IWORKXMLContextPtr_t();
+}
+
+void StyleElement::endOfElement()
+{
+  if (m_ref)
+    m_style = getState().getStyleByName(get(m_ref).c_str(), getState().getDictionary().m_graphicStyles);
+}
+
+}
+
 IWORKLineElement::IWORKLineElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
+  , m_style()
 {
 }
 
@@ -37,10 +79,12 @@ IWORKXMLContextPtr_t IWORKLineElement::element(const int name)
     return makeContext<IWORKGeometryElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::head :
     return makeContext<IWORKPositionElement>(getState(), m_head);
+  case IWORKToken::NS_URI_SF | IWORKToken::style :
+    return makeContext<StyleElement>(getState(), m_style);
   case IWORKToken::NS_URI_SF | IWORKToken::tail :
     return makeContext<IWORKPositionElement>(getState(), m_tail);
   }
-
+  ETONYEK_DEBUG_MSG(("IWORKLineElement::element: find unknown element\n"));
   return IWORKXMLContextPtr_t();
 }
 
@@ -59,6 +103,8 @@ void IWORKLineElement::endOfElement()
   }
   if (isCollector())
   {
+    if (m_style)
+      getCollector().setGraphicStyle(m_style);
     getCollector().collectLine(line);
     getCollector().endLevel();
   }

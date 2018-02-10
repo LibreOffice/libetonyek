@@ -104,6 +104,7 @@ void IWORKText::fillCharPropList(const IWORKStyleStack &style, const IWORKLangua
     case IWORK_BASELINE_SUPER :
       props.insert("style:text-position", "super");
       break;
+    case IWORK_BASELINE_NORMAL :
     default :
       break;
     }
@@ -126,6 +127,7 @@ void IWORKText::fillCharPropList(const IWORKStyleStack &style, const IWORKLangua
     case IWORK_CAPITALIZATION_TITLE :
       props.insert("fo:text-transform", "capitalize");
       break;
+    case IWORK_CAPITALIZATION_NONE :
     default :
       break;
     }
@@ -241,6 +243,7 @@ void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props
     case IWORK_BORDER_TYPE_ALL :
       writeBorder(stroke, "fo:border", props);
       break;
+    case IWORK_BORDER_TYPE_NONE :
     default :
       break;
     }

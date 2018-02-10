@@ -40,7 +40,7 @@ IWORKOutputID_t IWORKOutputManager::save()
 {
   assert(!m_active.empty());
   m_saved.push_back(m_active.top());
-  return m_saved.size() - 1;
+  return IWORKOutputID_t(m_saved.size() - 1);
 }
 
 IWORKOutputElements &IWORKOutputManager::get(IWORKOutputID_t id)

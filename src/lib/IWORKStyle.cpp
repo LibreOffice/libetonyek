@@ -118,7 +118,7 @@ void IWORKStyle::createListLevelStyles()
   }
   IWORKListLevels_t levelsStyle;
   for (std::size_t i = 0; i != levels; ++i)
-    levelsStyle[i] = std::make_shared<IWORKStyle>(levelProps[i], boost::none, boost::none);
+    levelsStyle[unsigned(i)] = std::make_shared<IWORKStyle>(levelProps[i], boost::none, boost::none);
   m_props.put<ListLevelStyles>(levelsStyle);
 }
 

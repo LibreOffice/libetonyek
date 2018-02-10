@@ -1049,10 +1049,10 @@ void GenericCellElement::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::col | IWORKToken::NS_URI_SF :
-    getState().m_tableData->m_column = int_cast(value);
+    getState().m_tableData->m_column = (unsigned) int_cast(value);
     break;
   case IWORKToken::row | IWORKToken::NS_URI_SF :
-    getState().m_tableData->m_row = int_cast(value);
+    getState().m_tableData->m_row = (unsigned) int_cast(value);
     break;
   case IWORKToken::col_span | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_columnSpan = lexical_cast<unsigned>(value);
@@ -1669,10 +1669,10 @@ void GridElement::attribute(const int name, const char *value)
   switch (name)
   {
   case IWORKToken::numcols | IWORKToken::NS_URI_SF :
-    getState().m_tableData->m_numColumns = int_cast(value);
+    getState().m_tableData->m_numColumns = (unsigned) int_cast(value);
     break;
   case IWORKToken::numrows | IWORKToken::NS_URI_SF :
-    getState().m_tableData->m_numRows = int_cast(value);
+    getState().m_tableData->m_numRows = (unsigned) int_cast(value);
     break;
   default :
     break;
@@ -1721,9 +1721,9 @@ private:
   boost::optional<string> m_tableName;
   boost::optional<string> m_tableId;
   boost::optional<ID_t> m_styleRef;
-  boost::optional<int> m_headerColumns;
-  boost::optional<int> m_headerRows;
-  boost::optional<int> m_footerRows;
+  boost::optional<unsigned> m_headerColumns;
+  boost::optional<unsigned> m_headerRows;
+  boost::optional<unsigned> m_footerRows;
 };
 
 TabularModelElement::TabularModelElement(IWORKXMLParserState &state)

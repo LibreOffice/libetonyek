@@ -52,7 +52,7 @@ private:
 
 public:
   explicit IWORKCollector(IWORKDocumentInterface *document);
-  ~IWORKCollector();
+  virtual ~IWORKCollector();
 
   void setRecorder(const std::shared_ptr<IWORKRecorder> &recorder);
 
@@ -126,6 +126,7 @@ private:
 
   void collectHeaderFooter(const std::string &name, IWORKHeaderFooterMap_t &map);
 
+  void drawLine(const IWORKLinePtr_t &line);
   void drawMedia(const IWORKMediaPtr_t &media);
   void drawShape(const IWORKShapePtr_t &shape);
 

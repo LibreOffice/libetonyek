@@ -45,11 +45,11 @@ RVNGInputStreamPtr_t getInflatedStream(const RVNGInputStreamPtr_t &input)
   if (uncompressed)
     offset = 0;
 
-  unsigned long begin = input->tell();
+  unsigned long begin = (unsigned long) input->tell();
   input->seek(0, librevenge::RVNG_SEEK_END);
-  unsigned long end = input->tell();
+  unsigned long end = (unsigned long) input->tell();
   unsigned long compressedSize = end - begin + offset;
-  input->seek(begin - offset, librevenge::RVNG_SEEK_SET);
+  input->seek(long(begin - offset), librevenge::RVNG_SEEK_SET);
 
   unsigned long numBytesRead = 0;
   auto *compressedData = const_cast<unsigned char *>(input->read(compressedSize, numBytesRead));
@@ -82,7 +82,7 @@ RVNGInputStreamPtr_t getInflatedStream(const RVNGInputStreamPtr_t &input)
     while (true)
     {
       strm.next_out = reinterpret_cast<Bytef *>(&data[strm.total_out]);
-      strm.avail_out = data.size() - strm.total_out;
+      strm.avail_out = unsigned(data.size() - strm.total_out);
       ret = inflate(&strm, Z_SYNC_FLUSH);
 
       if (Z_STREAM_END == ret)
@@ -100,7 +100,7 @@ RVNGInputStreamPtr_t getInflatedStream(const RVNGInputStreamPtr_t &input)
 
     (void)inflateEnd(&strm);
 
-    return RVNGInputStreamPtr_t(new IWORKMemoryStream(&data[0], strm.total_out));
+    return RVNGInputStreamPtr_t(new IWORKMemoryStream(&data[0], (unsigned) strm.total_out));
   }
 }
 

@@ -81,7 +81,7 @@ void IWAMessage::parse(const unsigned long length) try
     {
       const uint64_t len = readUVar(m_input);
       start = m_input->tell(); // the field parser expects just the actual data
-      if (m_input->seek(len, librevenge::RVNG_SEEK_CUR) != 0)
+      if (m_input->seek((long) len, librevenge::RVNG_SEEK_CUR) != 0)
         throw ParseError();
       break;
     }
@@ -181,7 +181,7 @@ const IWAFloatField &IWAMessage::float_(const std::size_t field) const
 template<typename FieldT>
 const FieldT &IWAMessage::getField(const std::size_t field, const WireType wireType, const IWAField::Tag tag) const
 {
-  const FieldList_t::iterator fieldIt = m_fields.find(field);
+  const FieldList_t::iterator fieldIt = m_fields.find((unsigned) field);
 
   if (fieldIt == m_fields.end())
   {

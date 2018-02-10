@@ -156,7 +156,7 @@ unsigned parseRowName(const vector<char> &columnName)
   unsigned columnNumber = 0;
 
   for (char it : columnName)
-    columnNumber = 26 * columnNumber + (toupper(it) - 'A') + 1;
+    columnNumber = 26 * columnNumber + unsigned(toupper(it) - 'A') + 1;
 
   return columnNumber;
 }
@@ -409,7 +409,7 @@ private:
       if (get(val.m_column).m_absolute)
         m_out << '$';
 
-      unsigned column = get(val.m_column).m_coord+m_offsetColumn;
+      unsigned column = unsigned(int(get(val.m_column).m_coord)+m_offsetColumn);
       vector<char> columnNumerals;
       columnNumerals.reserve(4);
       while (column != 0)
@@ -498,13 +498,13 @@ struct Collector : public boost::static_visitor<>
     if (val.m_column && int(get(val.m_column).m_coord)+m_offsetColumn>0)
     {
       props.insert("librevenge:column-absolute", get(val.m_column).m_absolute);
-      props.insert("librevenge:column", int(get(val.m_column).m_coord-1+m_offsetColumn));
+      props.insert("librevenge:column", int(get(val.m_column).m_coord)-1+m_offsetColumn);
     }
 
     if (val.m_row && int(get(val.m_row).m_coord)+m_offsetRow>0)
     {
       props.insert("librevenge:row-absolute", get(val.m_row).m_absolute);
-      props.insert("librevenge:row", int(get(val.m_row).m_coord-1+m_offsetRow));
+      props.insert("librevenge:row", int(get(val.m_row).m_coord)-1+m_offsetRow);
     }
 
     m_propsVector.append(props);
@@ -518,22 +518,22 @@ struct Collector : public boost::static_visitor<>
     if (val.first.m_column && int(get(val.first.m_column).m_coord)+m_offsetColumn>0)
     {
       props.insert("librevenge:start-column-absolute", get(val.first.m_column).m_absolute);
-      props.insert("librevenge:start-column", int(get(val.first.m_column).m_coord-1+m_offsetColumn));
+      props.insert("librevenge:start-column", int(get(val.first.m_column).m_coord)-1+m_offsetColumn);
     }
     if (val.first.m_row && int(get(val.first.m_row).m_coord)+m_offsetRow>0)
     {
       props.insert("librevenge:start-row-absolute", get(val.first.m_row).m_absolute);
-      props.insert("librevenge:start-row", int(get(val.first.m_row).m_coord-1+m_offsetRow));
+      props.insert("librevenge:start-row", int(get(val.first.m_row).m_coord)-1+m_offsetRow);
     }
     if (val.second.m_column && int(get(val.second.m_column).m_coord)+m_offsetColumn>0)
     {
       props.insert("librevenge:end-column-absolute", get(val.second.m_column).m_absolute);
-      props.insert("librevenge:end-column", int(get(val.second.m_column).m_coord-1+m_offsetColumn));
+      props.insert("librevenge:end-column", int(get(val.second.m_column).m_coord)-1+m_offsetColumn);
     }
     if (val.second.m_row && int(get(val.second.m_row).m_coord)+m_offsetRow>0)
     {
       props.insert("librevenge:end-row-absolute", get(val.second.m_row).m_absolute);
-      props.insert("librevenge:end-row", int(get(val.second.m_row).m_coord-1+m_offsetRow));
+      props.insert("librevenge:end-row", int(get(val.second.m_row).m_coord)-1+m_offsetRow);
     }
     m_propsVector.append(props);
   }

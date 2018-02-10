@@ -40,7 +40,7 @@ namespace libetonyek
 namespace
 {
 
-void writeBorder(librevenge::RVNGPropertyList &props, const char *name, IWORKGridLine_t &line, std::size_t index)
+void writeBorder(librevenge::RVNGPropertyList &props, const char *name, IWORKGridLine_t &line, unsigned index)
 {
   if (!line.is_tree_valid())
     line.build_tree();
@@ -113,7 +113,7 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStyleStack 
           ETONYEK_DEBUG_MSG(("writeCellFormat: can not read seconds\n"));
           break;
         }
-        const std::time_t t = ETONYEK_EPOCH_BEGIN + get(seconds);
+        const std::time_t t = std::time_t(ETONYEK_EPOCH_BEGIN + get(seconds));
         struct tm *const time = gmtime(&t);
 
         props.insert("librevenge:day", time->tm_mday);
@@ -268,7 +268,7 @@ librevenge::RVNGString convertCellValueInText(const IWORKStyleStack &style, cons
       ETONYEK_DEBUG_MSG(("convertCellValueInTexwt: can not read seconds\n"));
       break;
     }
-    const std::time_t t = ETONYEK_EPOCH_BEGIN + get(seconds);
+    const std::time_t t = std::time_t(ETONYEK_EPOCH_BEGIN + get(seconds));
     struct tm *const time = gmtime(&t);
     librevenge::RVNGString res;
     if (time->tm_hour)
@@ -517,14 +517,14 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
 
       using namespace property;
 
-      if (m_horizontalLines.find(r)!=m_horizontalLines.end())
-        writeBorder(cellProps, "fo:border-top", m_horizontalLines.find(r)->second, c);
-      if (m_horizontalLines.find(r+1)!=m_horizontalLines.end())
-        writeBorder(cellProps, "fo:border-bottom", m_horizontalLines.find(r+1)->second, c);
-      if (m_verticalLines.find(c)!=m_verticalLines.end())
-        writeBorder(cellProps, "fo:border-left", m_verticalLines.find(c)->second, r);
-      if (m_verticalLines.find(c+1)!=m_verticalLines.end())
-        writeBorder(cellProps, "fo:border-right", m_verticalLines.find(c+1)->second, r);
+      if (m_horizontalLines.find(unsigned(r))!=m_horizontalLines.end())
+        writeBorder(cellProps, "fo:border-top", m_horizontalLines.find(unsigned(r))->second, unsigned(c));
+      if (m_horizontalLines.find(unsigned(r)+1)!=m_horizontalLines.end())
+        writeBorder(cellProps, "fo:border-bottom", m_horizontalLines.find(unsigned(r)+1)->second, unsigned(c));
+      if (m_verticalLines.find(unsigned(c))!=m_verticalLines.end())
+        writeBorder(cellProps, "fo:border-left", m_verticalLines.find(unsigned(c))->second, unsigned(r));
+      if (m_verticalLines.find(unsigned(c)+1)!=m_verticalLines.end())
+        writeBorder(cellProps, "fo:border-right", m_verticalLines.find(unsigned(c)+1)->second, unsigned(r));
 
       if (cell.m_covered)
       {
@@ -538,13 +538,13 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
           cellProps.insert("table:number-rows-spanned", numeric_cast<int>(cell.m_rowSpan));
 
         IWORKStyleStack style;
-        style.push(getDefaultCellStyle(c, r));
+        style.push(getDefaultCellStyle(unsigned(c), unsigned(r)));
         style.push(cell.m_style);
         writeCellFormat(cellProps, style, cell.m_type, cell.m_style ? cell.m_style->getIdent() : none, cell.m_value, cell.m_dateTime);
         writeCellStyle(cellProps, style);
 
         IWORKStyleStack pStyle;
-        pStyle.push(getDefaultParagraphStyle(c,r));
+        pStyle.push(getDefaultParagraphStyle(unsigned(c),unsigned(r)));
         if (style.has<SFTCellStylePropertyParagraphStyle>())
           pStyle.push(style.get<SFTCellStylePropertyParagraphStyle>());
         IWORKText::fillCharPropList(pStyle, m_langManager, cellProps);
