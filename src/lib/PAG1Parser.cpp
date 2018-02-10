@@ -14,6 +14,7 @@
 #include <boost/optional.hpp>
 
 #include "IWORKChainedTokenizer.h"
+#include "IWORKCalcEngineContext.h"
 #include "IWORKDiscardContext.h"
 #include "IWORKHeaderFooterContext.h"
 #include "IWORKMediaElement.h"
@@ -496,7 +497,11 @@ IWORKXMLContextPtr_t PageGroupElement::element(const int name)
 void PageGroupElement::endOfElement()
 {
   if (isCollector())
+  {
+    if (!m_opened || !m_page) // ignore empty group
+      return;
     getCollector().closePageGroup();
+  }
 }
 
 void PageGroupElement::open()
@@ -594,6 +599,8 @@ IWORKXMLContextPtr_t DocumentElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::annotations :
     return makeContext<AnnotationsElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::calc_engine :
+    return makeContext<IWORKCalcEngineContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::headers :
     return makeContext<HeadersElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::footers :

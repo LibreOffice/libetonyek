@@ -10,11 +10,13 @@
 #ifndef IWORKTABULARINFOELEMENT_H_INCLUDED
 #define IWORKTABULARINFOELEMENT_H_INCLUDED
 
+#include <boost/optional.hpp>
+#include "IWORKStyle_fwd.h"
+
 #include "IWORKXMLContextBase.h"
 
 namespace libetonyek
 {
-
 class IWORKTabularInfoElement : public IWORKXMLElementContextBase
 {
 public:
@@ -24,6 +26,8 @@ private:
   void startOfElement() override;
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
+
+  boost::optional<ID_t> m_tableRef;
 };
 
 }

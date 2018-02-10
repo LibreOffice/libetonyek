@@ -189,6 +189,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKBinaryElement.h \
 	contexts/IWORKBrContext.cpp \
 	contexts/IWORKBrContext.h \
+	contexts/IWORKCalcEngineContext.cpp \
+	contexts/IWORKCalcEngineContext.h \
 	contexts/IWORKColorElement.cpp \
 	contexts/IWORKColorElement.h \
 	contexts/IWORKContainerContext.h \
@@ -279,6 +281,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKTabsElement.h \
 	contexts/IWORKTabularInfoElement.cpp \
 	contexts/IWORKTabularInfoElement.h \
+	contexts/IWORKTabularModelElement.cpp \
+	contexts/IWORKTabularModelElement.h \
 	contexts/IWORKTextElement.cpp \
 	contexts/IWORKTextElement.h \
 	contexts/IWORKTextBodyElement.cpp \

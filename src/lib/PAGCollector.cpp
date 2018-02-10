@@ -233,7 +233,7 @@ void PAGCollector::closePageGroup()
   const Result_t result = m_pageGroups.insert(PageGroupsMap_t::value_type(m_page, id));
   if (!result.second)
   {
-    ETONYEK_DEBUG_MSG(("Page group for page %u already exists\n", m_page));
+    ETONYEK_DEBUG_MSG(("PAGCollector::closePageGroup: Page group for page %u already exists\n", m_page));
   }
   getOutputManager().pop();
 }

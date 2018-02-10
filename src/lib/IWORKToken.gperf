@@ -98,6 +98,7 @@ butt,butt
 c,c
 cached-data,cached_data
 calc-engine,calc_engine
+calc-engine-entities,calc_engine_entities
 callout2-path,callout2_path
 cap,cap
 capitalization,capitalization
@@ -418,6 +419,7 @@ tabs-ref,tabs_ref
 tabstop,tabstop
 tabular-info,tabular_info
 tabular-model,tabular_model
+tabular-model-ref,tabular_model_ref
 tabular-style,tabular_style
 tabular-style-ref,tabular_style_ref
 tail,tail

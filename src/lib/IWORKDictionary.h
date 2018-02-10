@@ -59,6 +59,7 @@ struct IWORKDictionary
   IWORKMediaContentMap_t m_unfiltereds;
   IWORKMediaContentMap_t m_filteredImages;
   IWORKImageMap_t m_images;
+  IWORKTableMap_t m_tables;
 
   IWORKTabStopsMap_t m_tabs;
 
