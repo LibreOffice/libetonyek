@@ -87,7 +87,7 @@ IWORKXMLContextPtr_t IWORKImageElement::element(const int name)
     return makeContext<IWORKBinaryElement>(getState(), m_content);
   case IWORKToken::NS_URI_SF | IWORKToken::binary_ref :
     return makeContext<IWORKRefContext>(getState(), m_binaryRef);
-  case IWORKToken::NS_URI_SF | IWORKToken::crop_geometry : // USEME
+  case IWORKToken::NS_URI_SF | IWORKToken::crop_geometry :
     return makeContext<IWORKGeometryElement>(getState(), m_cropGeometry);
   case IWORKToken::NS_URI_SF | IWORKToken::data :
     return makeContext<IWORKDataElement>(getState(), m_data);
@@ -144,7 +144,7 @@ void IWORKImageElement::endOfElement()
   if (isCollector())
   {
     if (m_style) getCollector().setGraphicStyle(m_style);
-    getCollector().collectImage(m_content, m_locked ? get(m_locked) : false);
+    getCollector().collectImage(m_content, m_cropGeometry, m_locked ? get(m_locked) : false);
     getCollector().endLevel();
   }
 }

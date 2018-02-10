@@ -78,6 +78,12 @@ string detectMimetype(const RVNGInputStreamPtr_t &stream)
   if (0 == memcmp(sig, SIGNATURE_JPEG, ETONYEK_NUM_ELEMENTS(SIGNATURE_JPEG)))
     return string("image/jpeg");
 
+  static bool first=first;
+  if (first)
+  {
+    ETONYEK_DEBUG_MSG(("detectMimetype[IWORKCollector.cpp]: can not detect some stream types\n"));
+    first=false;
+  }
   return string();
 }
 
@@ -454,11 +460,11 @@ void IWORKCollector::collectBezier(const IWORKPathPtr_t &path)
   }
 }
 
-void IWORKCollector::collectImage(const IWORKMediaContentPtr_t &image, bool locked)
+void IWORKCollector::collectImage(const IWORKMediaContentPtr_t &image, const IWORKGeometryPtr_t &cropGeometry, bool locked)
 {
   if (bool(m_recorder))
   {
-    m_recorder->collectImage(image, locked);
+    m_recorder->collectImage(image, cropGeometry, locked);
     return;
   }
 
@@ -466,6 +472,7 @@ void IWORKCollector::collectImage(const IWORKMediaContentPtr_t &image, bool lock
 
   const IWORKMediaPtr_t media(new IWORKMedia());
   media->m_geometry = m_levelStack.top().m_geometry;
+  media->m_cropGeometry = cropGeometry;
   media->m_locked = locked;
   media->m_style = m_levelStack.top().m_graphicStyle;
   media->m_content = image;
@@ -596,11 +603,11 @@ void IWORKCollector::collectCalloutPath(const IWORKSize &size, const double radi
     m_currentPath = path;
 }
 
-void IWORKCollector::collectMedia(const IWORKMediaContentPtr_t &content)
+void IWORKCollector::collectMedia(const IWORKMediaContentPtr_t &content, const IWORKGeometryPtr_t &cropGeometry)
 {
   if (bool(m_recorder))
   {
-    m_recorder->collectMedia(content);
+    m_recorder->collectMedia(content, cropGeometry);
     return;
   }
 
@@ -608,6 +615,7 @@ void IWORKCollector::collectMedia(const IWORKMediaContentPtr_t &content)
 
   const IWORKMediaPtr_t media(new IWORKMedia());
   media->m_geometry = m_levelStack.top().m_geometry;
+  media->m_cropGeometry = cropGeometry;
   media->m_style = m_levelStack.top().m_graphicStyle;
   media->m_content = content;
 
@@ -905,7 +913,6 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
     string mimetype(media->m_content->m_data->m_mimeType);
     if (mimetype.empty())
       mimetype = detectMimetype(input);
-
     if (!mimetype.empty())
     {
       input->seek(0, librevenge::RVNG_SEEK_END);
@@ -918,10 +925,36 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
         throw GenericException();
 
       const glm::dvec3 pos = trafo * glm::dvec3(0, 0, 1);
-      const double width = media->m_geometry->m_size.m_width;
-      const double height = media->m_geometry->m_size.m_height;
-      const glm::dvec3 dim = trafo * glm::dvec3(width, height, 0);
+      double width = media->m_geometry->m_size.m_width;
+      double height = media->m_geometry->m_size.m_height;
+      glm::dvec3 dim = trafo * glm::dvec3(width, height, 0);
+      if (media->m_cropGeometry && (media->m_cropGeometry->m_size.m_width<media->m_geometry->m_size.m_width ||
+                                    media->m_cropGeometry->m_size.m_height<media->m_geometry->m_size.m_height))
+      {
+        /* cropping seems to pose problem to LibreOffice because
+           sometimes it does not use the real picture size to clip
+           the picture (or I make some mistakes).
 
+           So for now, we only resize the picture to its final size */
+#if 0
+        librevenge::RVNGPropertyList extra;
+        double decalPos[]= {media->m_cropGeometry->m_position.m_x-media->m_geometry->m_position.m_x,
+                            media->m_cropGeometry->m_position.m_y-media->m_geometry->m_position.m_y
+                           };
+        if (decalPos[0]<0) decalPos[0]=0;
+        if (decalPos[0]<1) decalPos[1]=0;
+        const double decalSize[]= {media->m_cropGeometry->m_size.m_width-media->m_geometry->m_size.m_width,
+                                   media->m_cropGeometry->m_size.m_height-media->m_geometry->m_size.m_height
+                                  };
+        std::stringstream s;
+        s << "rect(" << pt2in(decalPos[1]) << "in, " << pt2in(decalPos[0]) << "in, "
+          << pt2in(-decalSize[1]-decalPos[1]) << "in, " << pt2in(-decalSize[0]-decalPos[0]) << "in)";
+        extra.insert("fo:clip", s.str().c_str());
+#endif
+        width = media->m_cropGeometry->m_size.m_width;
+        height = media->m_cropGeometry->m_size.m_height;
+        dim = trafo * glm::dvec3(width, height, 0);
+      }
       drawMedia(pos[0], pos[1], dim[0], dim[1], mimetype, librevenge::RVNGBinaryData(bytes, size));
     }
   }

@@ -44,11 +44,11 @@ public:
   void collectGeometry(const IWORKGeometryPtr_t &geometry);
 
   void collectPath(const IWORKPathPtr_t &path);
-  void collectImage(const IWORKMediaContentPtr_t &image, bool locked);
+  void collectImage(const IWORKMediaContentPtr_t &image, const IWORKGeometryPtr_t &cropGeometry, bool locked);
   void collectLine(const IWORKLinePtr_t &line);
   void collectShape(bool locked);
 
-  void collectMedia(const IWORKMediaContentPtr_t &content);
+  void collectMedia(const IWORKMediaContentPtr_t &content, const IWORKGeometryPtr_t &cropGeometry);
 
   void collectStylesheet(const IWORKStylesheetPtr_t &stylesheet);
 

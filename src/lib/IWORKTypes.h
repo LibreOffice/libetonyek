@@ -147,6 +147,7 @@ struct IWORKMediaContent
 struct IWORKMedia
 {
   IWORKGeometryPtr_t m_geometry;
+  IWORKGeometryPtr_t m_cropGeometry;
   IWORKStylePtr_t m_style;
   bool m_locked;
   boost::optional<bool> m_placeholder;

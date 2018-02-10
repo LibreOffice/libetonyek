@@ -28,6 +28,7 @@ private:
 
 private:
   IWORKMediaContentPtr_t m_content;
+  IWORKGeometryPtr_t m_cropGeometry;
 };
 
 }

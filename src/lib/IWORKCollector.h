@@ -76,8 +76,8 @@ public:
   void collectConnectionPath(const IWORKSize &size, const boost::optional<IWORKPosition> &middle);
   void collectCalloutPath(const IWORKSize &size, double radius, double tailSize, double tailX, double tailY, bool quoteBubble);
 
-  void collectImage(const IWORKMediaContentPtr_t &image, bool locked=false);
-  void collectMedia(const IWORKMediaContentPtr_t &content);
+  void collectImage(const IWORKMediaContentPtr_t &image, const IWORKGeometryPtr_t &cropGeometry=IWORKGeometryPtr_t(), bool locked=false);
+  void collectMedia(const IWORKMediaContentPtr_t &content, const IWORKGeometryPtr_t &cropGeometry=IWORKGeometryPtr_t());
 
   void collectStylesheet(const IWORKStylesheetPtr_t &stylesheet);
 

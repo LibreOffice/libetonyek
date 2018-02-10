@@ -242,6 +242,7 @@ IWORKXMLContextPtr_t ContentElement::element(const int name)
 IWORKMediaElement::IWORKMediaElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_content()
+  , m_cropGeometry()
 {
 }
 
@@ -259,6 +260,8 @@ IWORKXMLContextPtr_t IWORKMediaElement::element(const int name)
     return makeContext<IWORKGeometryElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::content :
     return makeContext<ContentElement>(getState(), m_content);
+  case IWORKToken::NS_URI_SF | IWORKToken::crop_geometry :
+    return makeContext<IWORKGeometryElement>(getState(), m_cropGeometry);
   default:
   {
     static bool first=true;
@@ -277,7 +280,7 @@ void IWORKMediaElement::endOfElement()
 {
   if (isCollector())
   {
-    getCollector().collectMedia(m_content);
+    getCollector().collectMedia(m_content, m_cropGeometry);
     getCollector().endLevel();
   }
 }

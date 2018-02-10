@@ -298,26 +298,20 @@ void PAGCollector::drawMedia(
   if (m_inAttachments)
   {
     frameProps.insert("text:anchor-type", "as-char");
+    frameProps.insert("style:vertical-pos", "bottom");
+    frameProps.insert("style:vertical-rel", "text");
   }
   else
   {
     frameProps.insert("text:anchor-type", "page");
     frameProps.insert("text:anchor-page-number", m_page);
+    frameProps.insert("style:vertical-pos", "from-top");
+    frameProps.insert("style:vertical-rel", "page");
   }
-  if (m_inAttachments)
+  if (m_inAttachments && m_attachmentPosition)
   {
-    if (m_attachmentPosition)
-    {
-      frameProps.insert("svg:x", pt2in(get(m_attachmentPosition).m_x));
-      frameProps.insert("svg:y", pt2in(get(m_attachmentPosition).m_y));
-    }
-    else
-    {
-      frameProps.insert("svg:x", 0);
-      frameProps.insert("svg:y", 0);
-    }
-    frameProps.insert("style:vertical-pos", "bottom");
-    frameProps.insert("style:vertical-rel", "text");
+    frameProps.insert("svg:x", pt2in(get(m_attachmentPosition).m_x));
+    frameProps.insert("svg:y", pt2in(get(m_attachmentPosition).m_y));
   }
   else
   {
@@ -387,6 +381,7 @@ void PAGCollector::flushPageSpan(const bool writeEmpty)
 
   librevenge::RVNGPropertyList props;
 
+  // ARGH: use slprint-info to get the document margins here...
   if (m_currentSection.m_width)
     props.insert("fo:page-width", get(m_currentSection.m_width));
   if (m_currentSection.m_height)

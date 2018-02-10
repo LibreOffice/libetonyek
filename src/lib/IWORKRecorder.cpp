@@ -68,13 +68,15 @@ struct CollectPath
 
 struct CollectImage
 {
-  CollectImage(const IWORKMediaContentPtr_t &image, bool locked)
+  CollectImage(const IWORKMediaContentPtr_t &image, const IWORKGeometryPtr_t &cropGeometry, bool locked)
     : m_image(image)
+    , m_cropGeometry(cropGeometry)
     , m_locked(locked)
   {
   }
 
   const IWORKMediaContentPtr_t m_image;
+  const IWORKGeometryPtr_t m_cropGeometry;
   bool m_locked;
 };
 
@@ -99,12 +101,14 @@ struct CollectShape
 
 struct CollectMedia
 {
-  CollectMedia(const IWORKMediaContentPtr_t &content)
+  CollectMedia(const IWORKMediaContentPtr_t &content, const IWORKGeometryPtr_t &cropGeometry)
     : m_content(content)
+    , m_cropGeometry(cropGeometry)
   {
   }
 
   const IWORKMediaContentPtr_t m_content;
+  const IWORKGeometryPtr_t m_cropGeometry;
 };
 
 struct CollectStylesheet
@@ -222,7 +226,7 @@ struct Sender : public boost::static_visitor<void>
 
   void operator()(const CollectImage &value) const
   {
-    m_collector.collectImage(value.m_image, value.m_locked);
+    m_collector.collectImage(value.m_image, value.m_cropGeometry, value.m_locked);
   }
 
   void operator()(const CollectLine &value) const
@@ -237,7 +241,7 @@ struct Sender : public boost::static_visitor<void>
 
   void operator()(const CollectMedia &value) const
   {
-    m_collector.collectMedia(value.m_content);
+    m_collector.collectMedia(value.m_content, value.m_cropGeometry);
   }
 
   void operator()(const CollectStylesheet &value) const
@@ -343,9 +347,9 @@ void IWORKRecorder::collectPath(const IWORKPathPtr_t &path)
   m_impl->m_elements.push_back(CollectPath(path));
 }
 
-void IWORKRecorder::collectImage(const IWORKMediaContentPtr_t &image, bool locked)
+void IWORKRecorder::collectImage(const IWORKMediaContentPtr_t &image, const IWORKGeometryPtr_t &cropGeometry, bool locked)
 {
-  m_impl->m_elements.push_back(CollectImage(image, locked));
+  m_impl->m_elements.push_back(CollectImage(image, cropGeometry, locked));
 }
 
 void IWORKRecorder::collectLine(const IWORKLinePtr_t &line)
@@ -358,9 +362,9 @@ void IWORKRecorder::collectShape(bool locked)
   m_impl->m_elements.push_back(CollectShape(locked));
 }
 
-void IWORKRecorder::collectMedia(const IWORKMediaContentPtr_t &content)
+void IWORKRecorder::collectMedia(const IWORKMediaContentPtr_t &content, const IWORKGeometryPtr_t &cropGeometry)
 {
-  m_impl->m_elements.push_back(CollectMedia(content));
+  m_impl->m_elements.push_back(CollectMedia(content, cropGeometry));
 }
 
 void IWORKRecorder::collectStylesheet(const IWORKStylesheetPtr_t &stylesheet)

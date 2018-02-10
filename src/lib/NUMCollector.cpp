@@ -53,7 +53,6 @@ void NUMCollector::drawMedia(
   (void) h;
   (void) mimetype;
   (void) data;
-  (void) x;
 }
 
 void NUMCollector::fillShapeProperties(librevenge::RVNGPropertyList &props)

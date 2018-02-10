@@ -117,6 +117,7 @@ IWORKMediaContent::IWORKMediaContent()
 
 IWORKMedia::IWORKMedia()
   : m_geometry()
+  , m_cropGeometry()
   , m_style()
   , m_locked(false)
   , m_placeholder()
