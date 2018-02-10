@@ -150,6 +150,7 @@ color,color
 column,column
 column-label-formulas,column_label_formulas
 columns,columns
+columns-ref,columns_ref
 comment,comment
 connection-line,connection_line
 connection-path,connection_path
@@ -162,10 +163,12 @@ copyright,copyright
 core-image-filter-descriptor,core_image_filter_descriptor
 core-image-filter-descriptor-ref,core_image_filter_descriptor_ref
 core-image-filter-info,core_image_filter_info
+core-image-filter-info-ref,core_image_filter_info_ref
 cornerRadius,cornerRadius
 count,count
 crbr,crbr
 crop-geometry,crop_geometry
+custom,custom
 custom-space-color,custom_space_color
 ct,ct
 d,d
@@ -173,6 +176,7 @@ data,data
 date-cell,date_cell
 data-formulas,data_formulas
 date-format,date_format
+date-format-ref,date_format_ref
 data-ref,data_ref
 date-time,date_time
 datasource,datasource
@@ -184,6 +188,7 @@ drawable-shape,drawable_shape
 drawables,drawables
 du,du
 duration-format,duration_format
+duration-format-ref,duration_format_ref
 editable-bezier-path,editable_bezier_path
 element,element
 empty,empty
@@ -206,6 +211,7 @@ filtered-image-ref,filtered_image_ref
 filter-properties,filter_properties
 filters,filters
 filterset,filterset
+filter_visibility,filter_visibility
 first,first
 firstLineIndent,firstLineIndent
 firstPageMaster,firstPageMaster
@@ -230,9 +236,11 @@ footnotes,footnotes
 format,format
 format-base,format_base
 format-base-places,format_base_places
+format-base-use-minus-sign,format_base_use_minus_sign
 format-currency-code,format_currency_code
 format-decimal-places,format_decimal_places
 format-fraction-accuracy,format_fraction_accuracy
+format-name,format_name
 format-negative-style,format_negative_style
 format-show-thousands-separator,format_show_thousands_separator
 format-string,format_string
@@ -298,11 +306,14 @@ image-media,image_media
 image-ref,image_ref
 implicit-format-type,implicit_format_type
 increment,increment
+index,index
 inflection,inflection
 inputAngle,inputAngle
 inputColor,inputColor
 inputDistance,inputDistance
+inputGlossiness,inputGlossiness
 inputOpacity,inputOpacity
+inputRadius,inputRadius
 insertion-point,insertion_point
 intratopicbr,intratopicbr
 italic,italic
@@ -388,6 +399,7 @@ num-header-rows,num_header_rows
 number,number
 number-cell,number_cell
 number-format,number_format
+number-format-ref,number_format_ref
 numcols, numcols
 numrows, numrows
 oddPageMaster,oddPageMaster
@@ -398,12 +410,14 @@ original-size,original_size
 other-datas,other_datas
 outline,outline
 overrides,overrides
+overrides-ref,overrides_ref
 p,p
 page-count,page_count
 page-number,page_number
 page-start,page_start
 pgbr,pgbr
 padding,padding
+padding-ref,padding_ref
 pageBreakBefore,pageBreakBefore
 pagemaster,pagemaster
 paragraphBorderType,paragraphBorderType
@@ -542,6 +556,7 @@ title,title
 title-placeholder-ref,title_placeholder_ref
 tocstyle,tocstyle
 tocstyle-ref,tocstyle_ref
+tocStyle,tocStyle
 top,top
 tracking,tracking
 transform-gradient,transform_gradient

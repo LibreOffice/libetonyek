@@ -189,8 +189,10 @@ IWORKGradient::IWORKGradient()
 IWORKShadow::IWORKShadow()
   : m_color()
   , m_angle(0)
+  , m_glossiness(0)
   , m_offset(0)
   , m_opacity(0)
+  , m_radius(0)
 {
 }
 
@@ -225,6 +227,7 @@ IWORKNumberFormat::IWORKNumberFormat()
   , m_accountingStyle(false)
   , m_base(0)
   , m_basePlaces(0)
+  , m_baseUseMinusSign(true)
 {
 }
 

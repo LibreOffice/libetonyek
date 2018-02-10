@@ -59,10 +59,15 @@ struct IWORKDictionary
 
   IWORKPathMap_t m_beziers;
   IWORKMediaContentMap_t m_binaries;
+  IWORKColumnsMap_t m_columnSets;
+  IWORKShadowMap_t m_coreImageFilterInfos;
   IWORKDataMap_t m_data;
+  IWORKDateTimeFormatMap_t m_dateTimeFormats;
+  IWORKDurationFormatMap_t m_durationFormats;
   IWORKFillMap_t m_fills;
   IWORKFilterDescriptorMap_t m_filterDescriptors;
   IWORKMediaContentMap_t m_filteredImages;
+  IWORKFiltersMap_t m_filters;
   IWORKFormulaMap_t m_formulas;
   IWORKGradientMap_t m_gradients;
   IWORKGradientStopMap_t m_gradientStops;
@@ -70,7 +75,10 @@ struct IWORKDictionary
   IWORKLineSpacingMap_t m_lineSpacings;
   IWORKListLabelGeometryMap_t m_listLabelGeometries;
   IWORKListLabelTypeInfoMap_t m_listLabelTypeInfos;
+  IWORKNumberFormatMap_t m_numberFormats;
+  IWORKPaddingMap_t m_paddings;
   IWORKPatternMap_t m_patterns;
+  IWORKShadowMap_t m_shadows;
   IWORKStrokeMap_t m_strokes;
   IWORKTableMap_t m_tables;
   IWORKTabStopsMap_t m_tabs;

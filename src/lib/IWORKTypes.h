@@ -97,6 +97,7 @@ struct IWORKPadding
 
   IWORKPadding();
 };
+typedef std::unordered_map<ID_t, IWORKPadding> IWORKPaddingMap_t;
 
 struct IWORKTabStop
 {
@@ -256,9 +257,14 @@ struct IWORKShadow
 
   IWORKColor m_color;
   double m_angle;
+  double m_glossiness;
   double m_offset;
   double m_opacity;
+  double m_radius;
 };
+typedef std::unordered_map<ID_t, IWORKShadow> IWORKShadowMap_t;
+typedef std::deque<IWORKShadow> IWORKFilters_t;
+typedef std::unordered_map<ID_t, IWORKFilters_t> IWORKFiltersMap_t;
 
 struct IWORKMetadata
 {
@@ -287,6 +293,7 @@ struct IWORKColumns
   bool m_equal;
   Columns_t m_columns;
 };
+typedef std::unordered_map<ID_t, IWORKColumns> IWORKColumnsMap_t;
 
 struct IWORKNumberFormat
 {
@@ -302,7 +309,9 @@ struct IWORKNumberFormat
   bool m_accountingStyle;
   int m_base;
   int m_basePlaces;
+  bool m_baseUseMinusSign;
 };
+typedef std::unordered_map<ID_t, IWORKNumberFormat> IWORKNumberFormatMap_t;
 
 struct IWORKDateTimeFormat
 {
@@ -310,6 +319,7 @@ struct IWORKDateTimeFormat
 
   std::string m_format;
 };
+typedef std::unordered_map<ID_t, IWORKDateTimeFormat> IWORKDateTimeFormatMap_t;
 
 struct IWORKDurationFormat
 {
@@ -317,6 +327,7 @@ struct IWORKDurationFormat
 
   std::string m_format;
 };
+typedef std::unordered_map<ID_t, IWORKDurationFormat> IWORKDurationFormatMap_t;
 
 struct IWORKFilterDescriptor
 {

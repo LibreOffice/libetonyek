@@ -207,12 +207,12 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKFillElement.h \
 	contexts/IWORKFilteredImageElement.cpp \
 	contexts/IWORKFilteredImageElement.h \
+	contexts/IWORKFormatElement.cpp \
+	contexts/IWORKFormatElement.h \
 	contexts/IWORKFormulaElement.cpp \
 	contexts/IWORKFormulaElement.h \
 	contexts/IWORKGeometryElement.cpp \
 	contexts/IWORKGeometryElement.h \
-	contexts/IWORKGraphicStyleContext.cpp \
-	contexts/IWORKGraphicStyleContext.h \
 	contexts/IWORKGroupElement.cpp \
 	contexts/IWORKGroupElement.h \
 	contexts/IWORKHeaderFooterContext.cpp \
@@ -275,6 +275,7 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKStringElement.h \
 	contexts/IWORKStrokeElement.cpp \
 	contexts/IWORKStrokeElement.h \
+	contexts/IWORKStyleContainer.h \
 	contexts/IWORKStyleContext.cpp \
 	contexts/IWORKStyleContext.h \
 	contexts/IWORKStyleRefContext.cpp \

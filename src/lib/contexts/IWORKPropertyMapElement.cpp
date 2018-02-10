@@ -14,18 +14,19 @@
 #include "libetonyek_xml.h"
 #include "IWORKCollector.h"
 #include "IWORKColorElement.h"
-#include "IWORKContainerContext.h"
 #include "IWORKCoreImageFilterDescriptorElement.h"
 #include "IWORKDictionary.h"
 #include "IWORKDirectCollector.h"
-#include "IWORKGeometryElement.h"
 #include "IWORKFillElement.h"
+#include "IWORKFormatElement.h"
+#include "IWORKGeometryElement.h"
 #include "IWORKLineElement.h"
 #include "IWORKLineEndElement.h"
 #include "IWORKListLabelGeometriesProperty.h"
 #include "IWORKListLabelIndentsProperty.h"
 #include "IWORKListLabelTypesProperty.h"
 #include "IWORKListTextIndentsProperty.h"
+#include "IWORKMutableArrayElement.h"
 #include "IWORKNumericPropertyContext.h"
 #include "IWORKProperties.h"
 #include "IWORKPropertyContext.h"
@@ -35,6 +36,7 @@
 #include "IWORKRefContext.h"
 #include "IWORKStringElement.h"
 #include "IWORKStrokeElement.h"
+#include "IWORKStyleContainer.h"
 #include "IWORKStyleContext.h"
 #include "IWORKStyleRefContext.h"
 #include "IWORKTabsElement.h"
@@ -98,11 +100,11 @@ class RefPropertyContext : public IWORKPropertyContextBase
 public:
   RefPropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap, RedirectMap_t &dataMap);
 
-private:
+protected:
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
 
-private:
+protected:
   RedirectMap_t &m_dataMap;
   boost::optional<RedirectType> m_data;
   optional<ID_t> m_ref;
@@ -169,68 +171,41 @@ void RefPropertyContext<Property, Context, TokenId, RefTokenId>::endOfElement()
 
 namespace
 {
-template<typename Property, int TokenId, int RefTokenId>
-class StylePropertyContext : public IWORKPropertyContextBase
+template<typename Property, int TokenId, int RefTokenId, int TokenId2=0, int RefTokenId2=0>
+class StylePropertyContext : public IWORKStyleContainer<TokenId, RefTokenId, TokenId2, RefTokenId2>
 {
 public:
   StylePropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap, IWORKStyleMap_t &styleMap);
+  StylePropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap, IWORKStyleMap_t &styleMap, IWORKStyleMap_t &styleMap2);
 
 private:
-  IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
 
-private:
-  IWORKStyleMap_t &m_styleMap;
-  std::shared_ptr<IWORKStyleContext> m_context;
-  optional<ID_t> m_ref;
+  IWORKStylePtr_t m_style;
+  IWORKPropertyMap &m_propertyMap;
 };
 
-template<typename Property, int TokenId, int RefTokenId>
-StylePropertyContext<Property, TokenId, RefTokenId>::StylePropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap, IWORKStyleMap_t &styleMap)
-  : IWORKPropertyContextBase(state, propMap)
-  , m_styleMap(styleMap)
-  , m_context()
-  , m_ref()
+template<typename Property, int TokenId, int RefTokenId, int TokenId2, int RefTokenId2>
+StylePropertyContext<Property, TokenId, RefTokenId, TokenId2, RefTokenId2>::StylePropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap, IWORKStyleMap_t &styleMap)
+  : IWORKStyleContainer<TokenId, RefTokenId, TokenId2, RefTokenId2>(state, m_style, styleMap)
+  , m_style()
+  , m_propertyMap(propMap)
 {
 }
 
-template<typename Property, int TokenId, int RefTokenId>
-IWORKXMLContextPtr_t StylePropertyContext<Property, TokenId, RefTokenId>::element(const int name)
+template<typename Property, int TokenId, int RefTokenId, int TokenId2, int RefTokenId2>
+StylePropertyContext<Property, TokenId, RefTokenId, TokenId2, RefTokenId2>::StylePropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap, IWORKStyleMap_t &styleMap, IWORKStyleMap_t &styleMap2)
+  : IWORKStyleContainer<TokenId, RefTokenId, TokenId2, RefTokenId2>(state, m_style, styleMap, styleMap2)
+  , m_style()
+  , m_propertyMap(propMap)
 {
-  switch (name)
-  {
-  case TokenId :
-    m_context.reset(new IWORKStyleContext(getState(), &m_styleMap));
-    return m_context;
-  case RefTokenId :
-    return makeContext<IWORKRefContext>(getState(), m_ref);
-  case IWORKToken::NS_URI_SF | IWORKToken::null:
-    return IWORKXMLContextPtr_t();
-  default:
-    break;
-  }
-
-  ETONYEK_DEBUG_MSG(("StylePropertyContext<...>::element: unknown element %d\n", name));
-  return IWORKXMLContextPtr_t();
 }
 
-template<typename Property, int TokenId, int RefTokenId>
-void StylePropertyContext<Property, TokenId, RefTokenId>::endOfElement()
+template<typename Property, int TokenId, int RefTokenId, int TokenId2, int RefTokenId2>
+void StylePropertyContext<Property, TokenId, RefTokenId, TokenId2, RefTokenId2>::endOfElement()
 {
-  if (m_ref)
-  {
-    auto it = m_styleMap.find(get(m_ref));
-    if (m_styleMap.end() != it)
-      m_propMap.put<Property>(it->second);
-    else if (!get(m_ref).empty())
-    {
-      ETONYEK_DEBUG_MSG(("StylePropertyContext<...>::endOfElement: unknown style %s\n", get(m_ref).c_str()));
-    }
-  }
-  else if (m_context)
-  {
-    m_propMap.put<Property>(m_context->getStyle());
-  }
+  IWORKStyleContainer<TokenId, RefTokenId, TokenId2, RefTokenId2>::endOfElement();
+  m_propertyMap.template put<Property>(m_style);
 }
 
 }
@@ -287,6 +262,10 @@ void TabsProperty::endOfElement()
     IWORKTabStopsMap_t::const_iterator it = getState().getDictionary().m_tabs.find(get(m_ref));
     if (getState().getDictionary().m_tabs.end() != it)
       m_propMap.put<property::Tabs>(it->second);
+    else if (!get(m_ref).empty())
+    {
+      ETONYEK_DEBUG_MSG(("TabsProperty::endOfElement[IWORKPropertyMapElement.cpp]: unknown tabs %s\n", get(m_ref).c_str()));
+    }
   }
   else if (m_default)
   {
@@ -362,17 +341,14 @@ public:
 
 private:
   void attribute(int name, const char *value) override;
-  void endOfElement() override;
 
 private:
   IWORKColumns::Column &m_value;
-  IWORKColumns::Column m_builder;
 };
 
 ColumnElement::ColumnElement(IWORKXMLParserState &state, IWORKColumns::Column &value)
   : IWORKXMLEmptyContextBase(state)
   , m_value(value)
-  , m_builder()
 {
 }
 
@@ -381,19 +357,18 @@ void ColumnElement::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::spacing :
-    m_builder.m_spacing = get_optional_value_or(try_double_cast(value), 0);
+    m_value.m_spacing = get_optional_value_or(try_double_cast(value), 0);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::width :
-    m_builder.m_width = get_optional_value_or(try_double_cast(value), 0);
+    m_value.m_width = get_optional_value_or(try_double_cast(value), 0);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::index : // column index, probably save to ignore
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("ColumnElement::attribute[IWORKPropertyMapElement.cpp]: find unknown attribute\n"));
     break;
   }
 }
-
-void ColumnElement::endOfElement()
-{
-  m_value = m_builder;
-}
-
 }
 
 namespace
@@ -411,35 +386,48 @@ private:
 
 private:
   optional<IWORKColumns> &m_value;
-  IWORKColumns m_builder;
 };
 
 ColumnsElement::ColumnsElement(IWORKXMLParserState &state, optional<IWORKColumns> &value)
   : IWORKXMLElementContextBase(state)
   , m_value(value)
-  , m_builder()
 {
+  m_value=IWORKColumns();
 }
 
 void ColumnsElement::attribute(const int name, const char *const value)
 {
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::equal_columns))
-    m_builder.m_equal = get_optional_value_or(try_bool_cast(value), false);
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::equal_columns :
+    get(m_value).m_equal = get_optional_value_or(try_bool_cast(value), false);
+    break;
+  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+    IWORKXMLElementContextBase::attribute(name, value);
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("ColumnsElement::attribute[IWORKPropertyMapElement.cpp]: find unknown attribute\n"));
+    break;
+  }
 }
 
 IWORKXMLContextPtr_t ColumnsElement::element(const int name)
 {
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::column))
+  switch (name)
   {
-    m_builder.m_columns.push_back(IWORKColumns::Column());
-    return makeContext<ColumnElement>(getState(), m_builder.m_columns.back());
+  case IWORKToken::NS_URI_SF | IWORKToken::column :
+    get(m_value).m_columns.push_back(IWORKColumns::Column());
+    return makeContext<ColumnElement>(getState(), get(m_value).m_columns.back());
+  default:
+    ETONYEK_DEBUG_MSG(("ColumnsElement::element[IWORKPropertyMapElement.cpp]: find unknown element\n"));
   }
   return IWORKXMLContextPtr_t();
 }
 
 void ColumnsElement::endOfElement()
 {
-  m_value = m_builder;
+  if (getId())
+    getState().getDictionary().m_columnSets.insert(IWORKColumnsMap_t::value_type(get(getId()),get(m_value)));
 }
 
 }
@@ -458,14 +446,13 @@ private:
 
 private:
   optional<IWORKPadding> &m_value;
-  IWORKPadding m_builder;
 };
 
 PaddingElement::PaddingElement(IWORKXMLParserState &state, optional<IWORKPadding> &value)
   : IWORKXMLEmptyContextBase(state)
   , m_value(value)
-  , m_builder()
 {
+  m_value=IWORKPadding();
 }
 
 void PaddingElement::attribute(const int name, const char *const value)
@@ -473,23 +460,30 @@ void PaddingElement::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::bottom :
-    m_builder.m_bottom = try_double_cast(value);
+    get(m_value).m_bottom = try_double_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::left :
-    m_builder.m_left = try_double_cast(value);
+    get(m_value).m_left = try_double_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::right :
-    m_builder.m_right = try_double_cast(value);
+    get(m_value).m_right = try_double_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::top :
-    m_builder.m_top = try_double_cast(value);
+    get(m_value).m_top = try_double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+    IWORKXMLEmptyContextBase::attribute(name, value);
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("PaddingElement::attribute[IWORKPropertyMapElement.cpp]: find unknown attribute\n"));
     break;
   }
 }
 
 void PaddingElement::endOfElement()
 {
-  m_value = m_builder;
+  if (getId())
+    getState().getDictionary().m_paddings.insert(IWORKPaddingMap_t::value_type(get(getId()),get(m_value)));
 }
 
 }
@@ -518,9 +512,16 @@ LanguageElement::LanguageElement(IWORKXMLParserState &state, IWORKPropertyMap &p
 
 IWORKXMLContextPtr_t LanguageElement::element(const int name)
 {
-  m_default = false;
-  if ((IWORKToken::NS_URI_SF | IWORKToken::string) == name)
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::string:
     return makeContext<IWORKStringElement>(getState(), m_lang);
+  case IWORKToken::NS_URI_SF | IWORKToken::null:
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("LanguageElement::element[IWORKPropertyMapElement.cpp]: find unknown element\n"));
+    break;
+  }
   return IWORKXMLContextPtr_t();
 }
 
@@ -547,144 +548,41 @@ void LanguageElement::endOfElement()
 
 namespace
 {
+/* a date time format is either store as a real date-format or a simple string.
 
-class NumberFormatElement : public IWORKXMLEmptyContextBase
+    note: This is probably similar for duration */
+template <typename Property>
+class PropertyDateTimeFormatElement : public RefPropertyContext<Property, IWORKDateTimeFormatElement, IWORKToken::NS_URI_SF | IWORKToken::date_format, IWORKToken::NS_URI_SF | IWORKToken::date_format_ref>
 {
+  typedef RefPropertyContext<Property, IWORKDateTimeFormatElement, IWORKToken::NS_URI_SF | IWORKToken::date_format, IWORKToken::NS_URI_SF | IWORKToken::date_format_ref> Parent;
+  typedef std::unordered_map<ID_t, IWORKDateTimeFormat> RedirectMap_t;
+
 public:
-  NumberFormatElement(IWORKXMLParserState &state, optional<IWORKNumberFormat> &value);
-
-private:
-  void attribute(int name, const char *value) override;
-  void endOfElement() override;
-
-private:
-  optional<IWORKNumberFormat> &m_value;
-  IWORKNumberFormat m_builder;
-};
-
-NumberFormatElement::NumberFormatElement(IWORKXMLParserState &state, optional<IWORKNumberFormat> &value)
-  : IWORKXMLEmptyContextBase(state)
-  , m_value(value)
-  , m_builder()
-{
-}
-
-void NumberFormatElement::attribute(const int name, const char *const value)
-{
-  switch (name)
+  PropertyDateTimeFormatElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap, RedirectMap_t &dataMap)
+    : Parent(state, propMap, dataMap)
+    , m_string()
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::format_type :
-    m_builder.m_type = get(IWORKNumberConverter<IWORKCellNumberType>::convert(value));
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_string :
-    m_builder.m_string = value;
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_decimal_places :
-    m_builder.m_decimalPlaces = int_cast(value);
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_currency_code :
-    m_builder.m_currencyCode = value;
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_negative_style :
-    m_builder.m_negativeStyle = int_cast(value);
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_show_thousands_separator :
-    m_builder.m_thousandsSeperator = bool_cast(value);
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_fraction_accuracy :
-    m_builder.m_fractionAccuracy = int_cast(value);
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_use_accounting_style :
-    m_builder.m_accountingStyle = bool_cast(value);
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_base :
-    m_builder.m_base = int_cast(value);
-    break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_base_places :
-    m_builder.m_basePlaces = int_cast(value);
-    break;
   }
-}
-
-void NumberFormatElement::endOfElement()
-{
-  m_value = m_builder;
-}
-
-}
-
-namespace
-{
-
-class DateTimeFormatElement : public IWORKXMLEmptyContextBase
-{
-public:
-  DateTimeFormatElement(IWORKXMLParserState &state, optional<IWORKDateTimeFormat> &value);
-
 private:
-  void attribute(int name, const char *value) override;
-  void endOfElement() override;
-
-private:
-  optional<IWORKDateTimeFormat> &m_value;
-  IWORKDateTimeFormat m_builder;
+  virtual IWORKXMLContextPtr_t element(int name)
+  {
+    if (name==(IWORKToken::NS_URI_SF | IWORKToken::string))
+      return makeContext<IWORKStringElement>(Parent::getState(), m_string);
+    else
+      return Parent::element(name);
+  }
+  virtual void endOfElement()
+  {
+    if (m_string)
+    {
+      m_data=IWORKDateTimeFormat();
+      get(m_data).m_format=get(m_string);
+    }
+    Parent::endOfElement();
+  }
+  using Parent::m_data;
+  optional<std::string> m_string;
 };
-
-DateTimeFormatElement::DateTimeFormatElement(IWORKXMLParserState &state, optional<IWORKDateTimeFormat> &value)
-  : IWORKXMLEmptyContextBase(state)
-  , m_value(value)
-  , m_builder()
-{
-}
-
-void DateTimeFormatElement::attribute(const int name, const char *const value)
-{
-  if ((IWORKToken::NS_URI_SF | IWORKToken::fmt) == name)
-    m_builder.m_format = value;
-}
-
-void DateTimeFormatElement::endOfElement()
-{
-  m_value = m_builder;
-}
-
-}
-
-namespace
-{
-
-class DurationFormatElement : public IWORKXMLEmptyContextBase
-{
-public:
-  DurationFormatElement(IWORKXMLParserState &state, optional<IWORKDurationFormat> &value);
-
-private:
-  void attribute(int name, const char *value) override;
-  void endOfElement() override;
-
-private:
-  optional<IWORKDurationFormat> &m_value;
-  IWORKDurationFormat m_builder;
-};
-
-DurationFormatElement::DurationFormatElement(IWORKXMLParserState &state, optional<IWORKDurationFormat> &value)
-  : IWORKXMLEmptyContextBase(state)
-  , m_value(value)
-  , m_builder()
-{
-}
-
-void DurationFormatElement::attribute(const int name, const char *const value)
-{
-  if ((IWORKToken::NS_URI_SF | IWORKToken::fmt) == name)
-    m_builder.m_format = value;
-}
-
-void DurationFormatElement::endOfElement()
-{
-  m_value = m_builder;
-}
-
 }
 
 namespace
@@ -700,18 +598,31 @@ private:
   typedef IWORKValueContext<IWORKColor, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> ColorProperty;
 
 private:
+  void attribute(int name, const char *value) override;
   IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKShadow &m_value;
-  IWORKShadow m_builder;
 };
 
 OverridesElement::OverridesElement(IWORKXMLParserState &state, IWORKShadow &value)
   : IWORKXMLElementContextBase(state)
   , m_value(value)
-  , m_builder()
 {
+}
+
+void OverridesElement::attribute(int name, const char *value)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+    IWORKXMLElementContextBase::attribute(name, value);
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("OverridesElement::attribute[IWORKPropertyMapElement.cpp]: find unknown attribute\n"));
+    break;
+  }
 }
 
 IWORKXMLContextPtr_t OverridesElement::element(const int name)
@@ -722,14 +633,25 @@ IWORKXMLContextPtr_t OverridesElement::element(const int name)
     return makeContext<NumberProperty>(getState(), m_value.m_angle);
   case IWORKToken::NS_URI_SF | IWORKToken::inputColor :
     return makeContext<ColorProperty>(getState(), m_value.m_color);
-  case IWORKToken::NS_URI_SF | IWORKToken::inputOpacity :
-    return makeContext<NumberProperty>(getState(), m_value.m_opacity);
   case IWORKToken::NS_URI_SF | IWORKToken::inputDistance :
     return makeContext<NumberProperty>(getState(), m_value.m_offset);
+  case IWORKToken::NS_URI_SF | IWORKToken::inputGlossiness :
+    return makeContext<NumberProperty>(getState(), m_value.m_glossiness);
+  case IWORKToken::NS_URI_SF | IWORKToken::inputOpacity :
+    return makeContext<NumberProperty>(getState(), m_value.m_opacity);
+  case IWORKToken::NS_URI_SF | IWORKToken::inputRadius :
+    return makeContext<NumberProperty>(getState(), m_value.m_radius);
+  default:
+    ETONYEK_DEBUG_MSG(("OverridesElement::element[IWORKPropertyMapElement.cpp]: find unknown element\n"));
   }
   return IWORKXMLContextPtr_t();
 }
 
+void OverridesElement::endOfElement()
+{
+  if (getId())
+    getState().getDictionary().m_shadows.insert(IWORKShadowMap_t::value_type(get(getId()),m_value));
+}
 }
 
 namespace
@@ -741,6 +663,7 @@ public:
   CoreImageFilterInfoElement(IWORKXMLParserState &state, deque<IWORKShadow> &elements);
 
 private:
+  void attribute(int name, const char *value) override;
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
 
@@ -748,6 +671,7 @@ private:
   deque<IWORKShadow> &m_elements;
   bool m_isShadow;
   optional<ID_t> m_descriptorRef;
+  optional<ID_t> m_overridesRef;
   IWORKShadow m_value;
 };
 
@@ -756,8 +680,24 @@ CoreImageFilterInfoElement::CoreImageFilterInfoElement(IWORKXMLParserState &stat
   , m_elements(elements)
   , m_isShadow(false)
   , m_descriptorRef()
+  , m_overridesRef()
   , m_value()
 {
+}
+
+void CoreImageFilterInfoElement::attribute(int name, const char *value)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+    IWORKXMLElementContextBase::attribute(name, value);
+    break;
+  case IWORKToken::filter_visibility: // USEME? a bool
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("CoreImageFilterInfoElement::attribute[IWORKPropertyMapElement.cpp]: find unknown attribute\n"));
+    break;
+  }
 }
 
 IWORKXMLContextPtr_t CoreImageFilterInfoElement::element(const int name)
@@ -770,6 +710,10 @@ IWORKXMLContextPtr_t CoreImageFilterInfoElement::element(const int name)
     return makeContext<IWORKRefContext>(getState(), m_descriptorRef);
   case IWORKToken::NS_URI_SF | IWORKToken::overrides :
     return makeContext<OverridesElement>(getState(), m_value);
+  case IWORKToken::NS_URI_SF | IWORKToken::overrides_ref :
+    return makeContext<IWORKRefContext>(getState(), m_overridesRef);
+  default:
+    ETONYEK_DEBUG_MSG(("CoreImageFilterInfoElement::element[IWORKPropertyMapElement.cpp]: find unknown element\n"));
   }
   return IWORKXMLContextPtr_t();
 }
@@ -781,9 +725,27 @@ void CoreImageFilterInfoElement::endOfElement()
     const IWORKFilterDescriptorMap_t::const_iterator it = getState().getDictionary().m_filterDescriptors.find(get(m_descriptorRef));
     if (it != getState().getDictionary().m_filterDescriptors.end())
       m_isShadow = it->second.m_isShadow;
+    else if (!get(m_descriptorRef).empty())
+    {
+      ETONYEK_DEBUG_MSG(("CoreImageFilterInfoElement::endOfElement[IWORKPropertyMapElement.cpp]: unknown descriptor %s\n", get(m_descriptorRef).c_str()));
+    }
+  }
+  if (m_overridesRef)
+  {
+    const IWORKShadowMap_t::const_iterator it = getState().getDictionary().m_shadows.find(get(m_overridesRef));
+    if (it != getState().getDictionary().m_shadows.end())
+      m_value = it->second;
+    else if (!get(m_overridesRef).empty())
+    {
+      ETONYEK_DEBUG_MSG(("CoreImageFilterInfoElement::endOfElement[IWORKPropertyMapElement.cpp]: unknown overrides %s\n", get(m_overridesRef).c_str()));
+    }
   }
   if (m_isShadow)
+  {
     m_elements.push_back(m_value);
+    if (getId())
+      getState().getDictionary().m_coreImageFilterInfos.insert(IWORKShadowMap_t::value_type(get(getId()),m_value));
+  }
 }
 
 }
@@ -793,7 +755,7 @@ namespace
 
 class FiltersElement : public IWORKXMLElementContextBase
 {
-  typedef IWORKContainerContext<IWORKShadow, CoreImageFilterInfoElement, IWORKDirectCollector, IWORKToken::NS_URI_SF | IWORKToken::core_image_filter_info> MutableArrayElement;
+  typedef IWORKMutableArrayElement<IWORKShadow, CoreImageFilterInfoElement, IWORKDirectCollector, IWORKToken::NS_URI_SF | IWORKToken::core_image_filter_info, IWORKToken::NS_URI_SF | IWORKToken::core_image_filter_info_ref> MutableArrayElement;
 
 public:
   FiltersElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
@@ -805,24 +767,54 @@ private:
 private:
   IWORKPropertyMap &m_propMap;
   deque<IWORKShadow> m_elements;
+  optional<ID_t> m_ref;
+  IWORKStylePtr_t m_layout;
 };
 
 FiltersElement::FiltersElement(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : IWORKXMLElementContextBase(state)
   , m_propMap(propMap)
   , m_elements()
+  , m_ref()
+  , m_layout()
 {
 }
 
+typedef IWORKStyleContainer<IWORKToken::NS_URI_SF | IWORKToken::layoutstyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref> FiltersLayoutStyle;
+
 IWORKXMLContextPtr_t FiltersElement::element(const int name)
 {
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::mutable_array))
-    return makeContext<MutableArrayElement>(getState(), m_elements);
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::mutable_array:
+  case IWORKToken::NS_URI_SF | IWORKToken::array:
+    return makeContext<MutableArrayElement>(getState(), getState().getDictionary().m_filters, getState().getDictionary().m_coreImageFilterInfos, m_elements);
+  case IWORKToken::NS_URI_SF | IWORKToken::mutable_array_ref:
+  case IWORKToken::NS_URI_SF | IWORKToken::array_ref:
+    return makeContext<IWORKRefContext>(getState(), m_ref);
+  case IWORKToken::NS_URI_SF | IWORKToken::layoutStyle: // useme
+    return makeContext<FiltersLayoutStyle>(getState(), m_layout, getState().getDictionary().m_layoutStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::null:
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("FiltersElement::element[FiltersElements.cpp]: find unknown element\n"));
+    break;
+  }
   return IWORKXMLContextPtr_t();
 }
 
 void FiltersElement::endOfElement()
 {
+  if (m_ref)
+  {
+    const IWORKFiltersMap_t::const_iterator it = getState().getDictionary().m_filters.find(get(m_ref));
+    if (it != getState().getDictionary().m_filters.end())
+      m_elements = it->second;
+    else if (!get(m_ref).empty())
+    {
+      ETONYEK_DEBUG_MSG(("FiltersElement::endOfElement[IWORKPropertyMapElement.cpp]: unknown overrides %s\n", get(m_ref).c_str()));
+    }
+  }
   if (m_elements.empty())
     m_propMap.clear<property::Shadow>();
   else
@@ -834,19 +826,19 @@ void FiltersElement::endOfElement()
 namespace
 {
 
-typedef IWORKPropertyContext<property::Columns, ColumnsElement, IWORKToken::NS_URI_SF | IWORKToken::columns> ColumnsProperty;
+typedef RefPropertyContext<property::Columns, ColumnsElement, IWORKToken::NS_URI_SF | IWORKToken::columns, IWORKToken::NS_URI_SF | IWORKToken::columns_ref> ColumnsProperty;
 typedef RedirectPropertyContext<property::Fill, IWORKFillElement> FillPropertyElement;
 typedef IWORKPropertyContext<property::FontColor, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> FontColorElement;
 typedef IWORKPropertyContext<property::FontName, IWORKStringElement, IWORKToken::NS_URI_SF | IWORKToken::string> FontNameElement;
 typedef IWORKPropertyContext<property::HeadLineEnd, IWORKLineEndElement, IWORKToken::NS_URI_SF | IWORKToken::line_end> HeadLineEndElement;
-typedef IWORKPropertyContext<property::LayoutMargins, PaddingElement, IWORKToken::NS_URI_SF | IWORKToken::padding> LayoutMarginsElement;
+typedef RefPropertyContext<property::LayoutMargins, PaddingElement, IWORKToken::NS_URI_SF | IWORKToken::padding, IWORKToken::NS_URI_SF | IWORKToken::padding_ref> LayoutMarginsElement;
 typedef RefPropertyContext<property::LineSpacing, LinespacingElement, IWORKToken::NS_URI_SF | IWORKToken::linespacing, IWORKToken::NS_URI_SF | IWORKToken::linespacing_ref> LineSpacingElement;
 typedef IWORKPropertyContext<property::ParagraphFill, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> ParagraphFillElement;
 typedef RefPropertyContext<property::ParagraphStroke, IWORKStrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke, IWORKToken::NS_URI_SF | IWORKToken::stroke_ref> ParagraphStrokeElement;
 typedef IWORKPropertyContext<property::TailLineEnd, IWORKLineEndElement, IWORKToken::NS_URI_SF | IWORKToken::line_end> TailLineEndElement;
-typedef IWORKPropertyContext<property::SFTCellStylePropertyDateTimeFormat, DateTimeFormatElement, IWORKToken::NS_URI_SF | IWORKToken::date_format> SFTCellStylePropertyDateTimeFormatElement;
-typedef IWORKPropertyContext<property::SFTCellStylePropertyDurationFormat, DurationFormatElement, IWORKToken::NS_URI_SF | IWORKToken::duration_format> SFTCellStylePropertyDurationFormatElement;
-typedef IWORKPropertyContext<property::SFTCellStylePropertyNumberFormat, NumberFormatElement, IWORKToken::NS_URI_SF | IWORKToken::number_format> SFTCellStylePropertyNumberFormatElement;
+typedef PropertyDateTimeFormatElement<property::SFTCellStylePropertyDateTimeFormat> SFTCellStylePropertyDateTimeFormatElement;
+typedef RefPropertyContext<property::SFTCellStylePropertyDurationFormat, IWORKDurationFormatElement, IWORKToken::NS_URI_SF | IWORKToken::duration_format, IWORKToken::NS_URI_SF | IWORKToken::duration_format_ref> SFTCellStylePropertyDurationFormatElement;
+typedef RefPropertyContext<property::SFTCellStylePropertyNumberFormat, IWORKNumberFormatElement, IWORKToken::NS_URI_SF | IWORKToken::number_format, IWORKToken::NS_URI_SF | IWORKToken::number_format_ref> SFTCellStylePropertyNumberFormatElement;
 typedef RefPropertyContext<property::SFTStrokeProperty, IWORKStrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke, IWORKToken::NS_URI_SF | IWORKToken::stroke_ref> SFTStrokePropertyElement;
 typedef RefPropertyContext<property::Stroke, IWORKStrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke, IWORKToken::NS_URI_SF | IWORKToken::stroke_ref> StrokePropertyElement;
 typedef IWORKPropertyContext<property::TextBackground, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> TextBackgroundElement;
@@ -859,6 +851,9 @@ typedef StylePropertyContext<property::LabelCharacterStyle, IWORKToken::NS_URI_S
 typedef StylePropertyContext<property::LayoutParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> LayoutParagraphStyleElement;
 typedef StylePropertyContext<property::LayoutStyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref> LayoutStyleElement;
 typedef StylePropertyContext<property::ListStyle, IWORKToken::NS_URI_SF | IWORKToken::liststyle, IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref> ListStyleElement;
+// in Pages, followed by a tocstyle, in Number by a paragraph-style ?
+typedef StylePropertyContext<property::TocStyle, IWORKToken::NS_URI_SF | IWORKToken::tocstyle, IWORKToken::NS_URI_SF | IWORKToken::tocstyle_ref
+, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> TocStyleElement;
 typedef StylePropertyContext<property::SFSeries, IWORKToken::NS_URI_SF | IWORKToken::chart_series_style, IWORKToken::NS_URI_SF | IWORKToken::chart_series_style_ref> SFSeriesElement;
 typedef RedirectPropertyContext<property::SFC2DAreaFillProperty, IWORKFillElement> SFC2DAreaFillPropertyElement;
 typedef RedirectPropertyContext<property::SFC2DColumnFillProperty, IWORKFillElement> SFC2DColumnFillPropertyElement;
@@ -943,7 +938,7 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::capitalization :
     return makeContext<CapitalizationElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::columns :
-    return makeContext<ColumnsProperty>(getState(), *m_propMap);
+    return makeContext<ColumnsProperty>(getState(), *m_propMap, getState().getDictionary().m_columnSets);
   case IWORKToken::NS_URI_SF | IWORKToken::fill :
     return makeContext<FillPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::filters :
@@ -984,7 +979,7 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::language :
     return makeContext<LanguageElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutMargins :
-    return makeContext<LayoutMarginsElement>(getState(), *m_propMap);
+    return makeContext<LayoutMarginsElement>(getState(), *m_propMap, getState().getDictionary().m_paddings);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutParagraphStyle :
     return makeContext<LayoutParagraphStyleElement>(getState(), *m_propMap, getState().getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutStyle :
@@ -1046,11 +1041,11 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyHeaderRowCellStyle :
     return makeContext<SFTableStylePropertyHeaderRowCellStyleElement>(getState(), *m_propMap, getState().getDictionary().m_tableCellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyNumberFormat :
-    return makeContext<SFTCellStylePropertyNumberFormatElement>(getState(), *m_propMap);
+    return makeContext<SFTCellStylePropertyNumberFormatElement>(getState(), *m_propMap, getState().getDictionary().m_numberFormats);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyDateTimeFormat :
-    return makeContext<SFTCellStylePropertyDateTimeFormatElement>(getState(), *m_propMap);
+    return makeContext<SFTCellStylePropertyDateTimeFormatElement>(getState(), *m_propMap, getState().getDictionary().m_dateTimeFormats);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyDurationFormat :
-    return makeContext<SFTCellStylePropertyDurationFormatElement>(getState(), *m_propMap);
+    return makeContext<SFTCellStylePropertyDurationFormatElement>(getState(), *m_propMap, getState().getDictionary().m_durationFormats);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyLayoutStyle :
     return makeContext<SFTCellStylePropertyLayoutStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_layoutStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyParagraphStyle :
@@ -1115,6 +1110,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<TabsProperty>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::textBackground :
     return makeContext<TextBackgroundElement>(getState(), *m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::tocStyle :
+    return makeContext<TocStyleElement>(getState(), *m_propMap, getState().getDictionary().m_tocStyles, getState().getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::tracking :
     return makeContext<TrackingElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::underline :

@@ -12,14 +12,18 @@
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKGeometryElement.h"
-#include "IWORKGraphicStyleContext.h"
 #include "IWORKPositionElement.h"
 #include "IWORKRefContext.h"
+#include "IWORKStyleContainer.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
 {
+namespace
+{
+typedef IWORKStyleContainer<IWORKToken::NS_URI_SF | IWORKToken::graphic_style, IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref> GraphicStyleContext;
+}
 
 IWORKLineElement::IWORKLineElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
@@ -44,7 +48,7 @@ IWORKXMLContextPtr_t IWORKLineElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::head :
     return makeContext<IWORKPositionElement>(getState(), m_head);
   case IWORKToken::NS_URI_SF | IWORKToken::style :
-    return makeContext<IWORKGraphicStyleContext>(getState(), m_style);
+    return makeContext<GraphicStyleContext>(getState(), m_style, getState().getDictionary().m_graphicStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::tail :
     return makeContext<IWORKPositionElement>(getState(), m_tail);
   default:

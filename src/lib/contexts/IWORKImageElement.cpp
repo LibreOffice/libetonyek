@@ -16,14 +16,19 @@
 #include "IWORKDictionary.h"
 #include "IWORKFilteredImageElement.h"
 #include "IWORKGeometryElement.h"
-#include "IWORKGraphicStyleContext.h"
 #include "IWORKRefContext.h"
 #include "IWORKSizeElement.h"
+#include "IWORKStyleContainer.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
 {
+
+namespace
+{
+typedef IWORKStyleContainer<IWORKToken::NS_URI_SF | IWORKToken::graphic_style, IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref> GraphicStyleContext;
+}
 
 IWORKImageElement::IWORKImageElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
   : IWORKXMLElementContextBase(state)
@@ -105,7 +110,7 @@ IWORKXMLContextPtr_t IWORKImageElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::size :
     return makeContext<IWORKSizeElement>(getState(),m_size);
   case IWORKToken::NS_URI_SF | IWORKToken::style : // USEME
-    return makeContext<IWORKGraphicStyleContext>(getState(), m_style);
+    return makeContext<GraphicStyleContext>(getState(), m_style, getState().getDictionary().m_graphicStyles);
   default:
     ETONYEK_DEBUG_MSG(("IWORKImageElement::element: find some unknown element\n"));
     break;

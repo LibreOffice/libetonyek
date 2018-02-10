@@ -18,6 +18,7 @@
 #include "libetonyek_xml.h"
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
+#include "IWORKFormatElement.h"
 #include "IWORKFormulaElement.h"
 #include "IWORKProperties.h"
 #include "IWORKRefContext.h"
@@ -48,10 +49,17 @@ public:
 private:
   void attribute(int name, const char *value) override;
   IWORKXMLContextPtr_t element(int name) override;
+
+  optional<IWORKDateTimeFormat> m_dateTimeFormat;
+  optional<IWORKDurationFormat> m_durationFormat;
+  optional<IWORKNumberFormat> m_numberFormat;
 };
 
 CfElement::CfElement(IWORKXMLParserState &state)
   : IWORKXMLEmptyContextBase(state)
+  , m_dateTimeFormat()
+  , m_durationFormat()
+  , m_numberFormat()
 {
 }
 
@@ -74,28 +82,12 @@ IWORKXMLContextPtr_t CfElement::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::date_format | IWORKToken::NS_URI_SF :
-  {
-    // TODO: read a date-format elements here...
-    static bool first=true;
-    if (first)
-    {
-      ETONYEK_DEBUG_MSG(("CfElement::element[IWORKTabularModelElement.cpp]: found a date format element\n"));
-      first=false;
-    }
-    return IWORKXMLContextPtr_t();
-  }
-  case IWORKToken::number_format | IWORKToken::NS_URI_SF :
-  {
-    // TODO: read a number-format elements here...
-    static bool first=true;
-    if (first)
-    {
-      ETONYEK_DEBUG_MSG(("CfElement::element[IWORKTabularModelElement.cpp]: found a number format element\n"));
-      first=false;
-    }
-    return IWORKXMLContextPtr_t();
-  }
+  case IWORKToken::date_format | IWORKToken::NS_URI_SF : // USEME
+    return makeContext<IWORKDateTimeFormatElement>(getState(), m_dateTimeFormat);
+  case IWORKToken::duration_format | IWORKToken::NS_URI_SF : // USEME
+    return makeContext<IWORKDurationFormatElement>(getState(), m_durationFormat);
+  case IWORKToken::number_format | IWORKToken::NS_URI_SF : // USEME
+    return makeContext<IWORKNumberFormatElement>(getState(), m_numberFormat);
   default:
     ETONYEK_DEBUG_MSG(("CfElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
   }
