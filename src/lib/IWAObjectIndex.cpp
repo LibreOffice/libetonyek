@@ -151,7 +151,7 @@ void IWAObjectIndex::scanFragment(const unsigned id)
     }
     else
     {
-      ETONYEK_DEBUG_MSG(("IWAObjectIndex::scanFragment: file %s does not exist\n", fragmentIt->second.first.c_str()));
+      ETONYEK_DEBUG_MSG(("IWAObjectIndex::scanFragment: file %s does not exist\n", fragmentIt->second.c_str()));
     }
     m_unparsedFragments.erase(fragmentIt);
   }
