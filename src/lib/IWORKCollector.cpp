@@ -763,7 +763,7 @@ void IWORKCollector::collectHeaderFooter(const std::string &name, IWORKHeaderFoo
   IWORKOutputElements &elements = map[name];
   if (!elements.empty())
   {
-    ETONYEK_DEBUG_MSG(("header '%s' already exists, overwriting\n", name.c_str()));
+    ETONYEK_DEBUG_MSG(("IWORKCollector::collectHeaderFooter: '%s' already exists, overwriting\n", name.c_str()));
     elements.clear();
   }
   if (bool(m_currentText))

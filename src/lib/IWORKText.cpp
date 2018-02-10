@@ -435,8 +435,8 @@ bool fillListPropList(const unsigned level, const IWORKStyleStack &style, RVNGPr
 void IWORKText::draw(IWORKOutputElements &elements)
 {
   assert(!m_recorder);
-
-  setListLevel(0);
+  if (m_inPara)
+    closePara();
   flushList();
   elements.append(m_elements);
 }
@@ -526,7 +526,7 @@ void IWORKText::flushLayout()
     m_recorder->flushLayout();
     return;
   }
-
+  flushList();
   if (m_inSection)
     closeSection();
 }
@@ -584,8 +584,9 @@ void IWORKText::flushList()
     m_recorder->flushList();
     return;
   }
-
-  handleListLevelChange(m_listLevel);
+  if (m_inPara)
+    closePara();
+  handleListLevelChange(0);
 }
 
 void IWORKText::setParagraphStyle(const IWORKStylePtr_t &style)
@@ -650,6 +651,36 @@ void IWORKText::flushSpan()
 
   if (m_inSpan)
     closeSpan();
+}
+
+void IWORKText::insertField(IWORKFieldType type)
+{
+  if (bool(m_recorder))
+  {
+    m_recorder->insertField(type);
+    return;
+  }
+  librevenge::RVNGPropertyList propList;
+  switch (type)
+  {
+  case IWORK_FIELD_FILENAME:
+    propList.insert("librevenge:field-type", "text:title");
+    break;
+  case IWORK_FIELD_PAGECOUNT:
+    propList.insert("librevenge:field-type", "text:page-count");
+    propList.insert("style:num-format", "1"); // FIXME
+    break;
+  case IWORK_FIELD_PAGENUMBER:
+    propList.insert("librevenge:field-type", "text:page-number");
+    propList.insert("style:num-format", "1"); // FIXME
+    break;
+  case IWORK_FIELD_DATETIME:
+    ETONYEK_DEBUG_MSG(("IWORKText::insertField: sending datetime is not implemented\n"));
+    return;
+  }
+  if (!m_inSpan)
+    openSpan();
+  m_elements.addInsertField(propList);
 }
 
 void IWORKText::openLink(const std::string &url)
@@ -855,16 +886,19 @@ void IWORKText::closePara()
   m_inPara = false;
 }
 
-void IWORKText::fillParaPropList(librevenge::RVNGPropertyList &propList)
+void IWORKText::fillParaPropList(librevenge::RVNGPropertyList &propList, bool realParagraph)
 {
   m_paraStyleStack.push(m_paraStyle);
   libetonyek::fillParaPropList(m_paraStyleStack, propList);
 
-  using namespace property;
-  if (m_pageBreakDelayed || (m_paraStyleStack.has<PageBreakBefore>() && m_paraStyleStack.get<PageBreakBefore>()))
+  if (realParagraph)
   {
-    propList.insert("fo:break-before", "page");
-    m_pageBreakDelayed=false;
+    using namespace property;
+    if (m_pageBreakDelayed || (m_paraStyleStack.has<PageBreakBefore>() && m_paraStyleStack.get<PageBreakBefore>()))
+    {
+      propList.insert("fo:break-before", "page");
+      m_pageBreakDelayed=false;
+    }
   }
   m_paraStyleStack.pop();
 }

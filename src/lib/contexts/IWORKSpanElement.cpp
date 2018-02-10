@@ -11,6 +11,7 @@
 
 #include "IWORKBrContext.h"
 #include "IWORKDictionary.h"
+#include "IWORKFieldElement.h"
 #include "IWORKTabElement.h"
 #include "IWORKText.h"
 #include "IWORKToken.h"
@@ -58,6 +59,18 @@ IWORKXMLContextPtr_t IWORKSpanElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::tab :
     ensureOpened();
     return makeContext<IWORKTabElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::date_time :
+    ensureOpened();
+    return makeContext<IWORKFieldElement>(getState(),IWORK_FIELD_DATETIME);
+  case IWORKToken::NS_URI_SF | IWORKToken::filename :
+    ensureOpened();
+    return makeContext<IWORKFieldElement>(getState(),IWORK_FIELD_FILENAME);
+  case IWORKToken::NS_URI_SF | IWORKToken::page_count :
+    ensureOpened();
+    return makeContext<IWORKFieldElement>(getState(),IWORK_FIELD_PAGECOUNT);
+  case IWORKToken::NS_URI_SF | IWORKToken::page_number :
+    ensureOpened();
+    return makeContext<IWORKFieldElement>(getState(),IWORK_FIELD_PAGENUMBER);
   }
 
   return IWORKXMLContextPtr_t();

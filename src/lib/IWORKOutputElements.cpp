@@ -241,6 +241,17 @@ private:
   librevenge::RVNGPropertyList m_propList;
 };
 
+class InsertFieldElement : public IWORKOutputElement
+{
+public:
+  InsertFieldElement(const librevenge::RVNGPropertyList &propList) :
+    m_propList(propList) {}
+  ~InsertFieldElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
 class InsertLineBreakElement : public IWORKOutputElement
 {
 public:
@@ -655,6 +666,12 @@ void InsertCoveredTableCellElement::write(IWORKDocumentInterface *iface) const
     iface->insertCoveredTableCell(m_propList);
 }
 
+void InsertFieldElement::write(IWORKDocumentInterface *iface) const
+{
+  if (iface)
+    iface->insertField(m_propList);
+}
+
 void InsertLineBreakElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
@@ -958,6 +975,11 @@ void IWORKOutputElements::addInsertBinaryObject(const librevenge::RVNGPropertyLi
 void IWORKOutputElements::addInsertCoveredTableCell(const librevenge::RVNGPropertyList &propList)
 {
   m_elements.push_back(make_shared<InsertCoveredTableCellElement>(propList));
+}
+
+void IWORKOutputElements::addInsertField(const librevenge::RVNGPropertyList &propList)
+{
+  m_elements.push_back(make_shared<InsertFieldElement>(propList));
 }
 
 void IWORKOutputElements::addInsertLineBreak()

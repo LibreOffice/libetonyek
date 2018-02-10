@@ -115,6 +115,7 @@ data-formulas,data_formulas
 data-ref,data_ref
 datasource,datasource
 date-format,date_format
+date-time,date_time
 decimal,decimal
 displayname,displayname
 double,double_
@@ -129,6 +130,7 @@ equal-columns,equal_columns
 evenPageMaster,evenPageMaster
 f,f
 false,false_
+filename,filename
 fill,fill
 filterClassName,filterClassName
 filtered,filtered
@@ -274,6 +276,8 @@ other-datas,other_datas
 outline,outline
 overrides,overrides
 p,p
+page-count,page_count
+page-number,page_number
 page-start,page_start
 pgbr,pgbr
 padding,padding
@@ -386,6 +390,7 @@ upper-alpha,upper_alpha
 upper-roman,upper_roman
 v,v
 val,val
+value,value
 value-title,value_title
 vector-style,vector_style
 vector-style-ref,vector_style_ref

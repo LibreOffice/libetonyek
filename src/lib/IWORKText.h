@@ -19,6 +19,7 @@
 
 #include <librevenge/librevenge.h>
 
+#include "IWORKEnum.h"
 #include "IWORKStyle_fwd.h"
 #include "IWORKStyleStack.h"
 #include "IWORKOutputElements.h"
@@ -67,9 +68,9 @@ public:
   /// Flush the current span.
   void flushSpan();
 
+  void insertField(IWORKFieldType fieldType);
   void openLink(const std::string &url);
   void closeLink();
-
   void insertText(const std::string &text);
   void insertTab();
   void insertSpace();
@@ -95,7 +96,7 @@ private:
 
   void openPara();
   void closePara();
-  void fillParaPropList(librevenge::RVNGPropertyList &propList);
+  void fillParaPropList(librevenge::RVNGPropertyList &propList, bool realParagraph=true);
 
   void openSpan();
   void closeSpan();

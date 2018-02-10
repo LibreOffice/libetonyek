@@ -16,6 +16,7 @@
 
 #include <librevenge/librevenge.h>
 
+#include "IWORKEnum.h"
 #include "IWORKTypes_fwd.h"
 
 namespace libetonyek
@@ -62,6 +63,7 @@ public:
   void addEndTextObject();
   void addInsertBinaryObject(const librevenge::RVNGPropertyList &propList);
   void addInsertCoveredTableCell(const librevenge::RVNGPropertyList &propList);
+  void addInsertField(const librevenge::RVNGPropertyList &propList);
   void addInsertLineBreak();
   void addInsertSpace();
   void addInsertTab();

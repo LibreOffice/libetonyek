@@ -117,6 +117,16 @@ struct FlushSpan
 {
 };
 
+struct InsertField
+{
+  InsertField(IWORKFieldType type)
+    : m_type(type)
+  {
+  }
+
+  const IWORKFieldType m_type;
+};
+
 struct OpenLink
 {
   OpenLink(const std::string &url)
@@ -170,6 +180,7 @@ typedef boost::variant
 , SetSpanStyle
 , SetLanguage
 , FlushSpan
+, InsertField
 , OpenLink
 , CloseLink
 , InsertText
@@ -250,6 +261,11 @@ struct Sender : public boost::static_visitor<void>
   void operator()(const FlushSpan &) const
   {
     m_text.flushSpan();
+  }
+
+  void operator()(const InsertField &value) const
+  {
+    m_text.insertField(value.m_type);
   }
 
   void operator()(const OpenLink &value) const
@@ -375,6 +391,11 @@ void IWORKTextRecorder::setLanguage(const IWORKStylePtr_t &style)
 void IWORKTextRecorder::flushSpan()
 {
   m_impl->m_elements.push_back(FlushSpan());
+}
+
+void IWORKTextRecorder::insertField(IWORKFieldType type)
+{
+  m_impl->m_elements.push_back(InsertField(type));
 }
 
 void IWORKTextRecorder::openLink(const std::string &url)

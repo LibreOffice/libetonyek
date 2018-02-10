@@ -13,6 +13,7 @@
 #include <memory>
 #include <string>
 
+#include "IWORKEnum.h"
 #include "IWORKStyle_fwd.h"
 
 namespace libetonyek
@@ -44,6 +45,7 @@ public:
   void setLanguage(const IWORKStylePtr_t &style);
   void flushSpan();
 
+  void insertField(IWORKFieldType fieldType);
   void openLink(const std::string &url);
   void closeLink();
 
