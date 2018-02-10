@@ -1188,6 +1188,7 @@ typedef IWORKPtrPropertyContext<property::Geometry, IWORKGeometryElement, IWORKT
 
 typedef StylePropertyContext<property::FollowingLayoutStyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref> FollowingLayoutStyleElement;
 typedef StylePropertyContext<property::FollowingParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> FollowingParagraphStyleElement;
+typedef StylePropertyContext<property::LabelCharacterStyle, IWORKToken::NS_URI_SF | IWORKToken::characterstyle, IWORKToken::NS_URI_SF | IWORKToken::characterstyle_ref> LabelCharacterStyleElement;
 typedef StylePropertyContext<property::LayoutParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> LayoutParagraphStyleElement;
 typedef StylePropertyContext<property::LayoutStyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref> LayoutStyleElement;
 typedef StylePropertyContext<property::ListStyle, IWORKToken::NS_URI_SF | IWORKToken::liststyle, IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref> ListStyleElement;
@@ -1293,6 +1294,17 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<KeepLinesTogetherElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::keepWithNext :
     return makeContext<KeepWithNextElement>(getState(), *m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::labelCharacterStyle1 :
+  case IWORKToken::NS_URI_SF | IWORKToken::labelCharacterStyle2 :
+  case IWORKToken::NS_URI_SF | IWORKToken::labelCharacterStyle3 :
+  case IWORKToken::NS_URI_SF | IWORKToken::labelCharacterStyle4 :
+  case IWORKToken::NS_URI_SF | IWORKToken::labelCharacterStyle5 :
+  case IWORKToken::NS_URI_SF | IWORKToken::labelCharacterStyle6 :
+  case IWORKToken::NS_URI_SF | IWORKToken::labelCharacterStyle7 :
+  case IWORKToken::NS_URI_SF | IWORKToken::labelCharacterStyle8 :
+  case IWORKToken::NS_URI_SF | IWORKToken::labelCharacterStyle9 :
+    // CHANGE: this must be used to retrieve some Wingdings bullet character
+    return makeContext<LabelCharacterStyleElement>(getState(), *m_propMap, getState().getDictionary().m_characterStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::language :
     return makeContext<LanguageElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutMargins :

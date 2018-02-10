@@ -141,29 +141,11 @@ struct IWORKMediaContent
   IWORKMediaContent();
 };
 
-struct IWORKBinary
-{
-  boost::optional<IWORKSize> m_size;
-  boost::optional<std::string> m_path;
-  boost::optional<std::string> m_type;
-  boost::optional<unsigned> m_dataSize;
-
-  IWORKBinary();
-};
-
-struct IWORKImage
-{
-  boost::optional<bool> m_locked;
-  IWORKGeometryPtr_t m_geometry;
-  boost::optional<IWORKBinary> m_binary;
-
-  IWORKImage();
-};
-
 struct IWORKMedia
 {
   IWORKGeometryPtr_t m_geometry;
   IWORKStylePtr_t m_style;
+  bool m_locked;
   boost::optional<bool> m_placeholder;
   boost::optional<IWORKSize> m_placeholderSize;
   IWORKMediaContentPtr_t m_content;

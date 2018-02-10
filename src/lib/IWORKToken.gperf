@@ -138,6 +138,7 @@ core-image-filter-descriptor-ref,core_image_filter_descriptor_ref
 core-image-filter-info,core_image_filter_info
 cornerRadius,cornerRadius
 crbr,crbr
+crop-geometry,crop_geometry
 custom-space-color,custom_space_color
 ct,ct
 d,d
@@ -266,6 +267,15 @@ keepLinesTogether,keepLinesTogether
 keepWithNext,keepWithNext
 keywords,keywords
 kind,kind
+labelCharacterStyle1,labelCharacterStyle1
+labelCharacterStyle2,labelCharacterStyle2
+labelCharacterStyle3,labelCharacterStyle3
+labelCharacterStyle4,labelCharacterStyle4
+labelCharacterStyle5,labelCharacterStyle5
+labelCharacterStyle6,labelCharacterStyle6
+labelCharacterStyle7,labelCharacterStyle7
+labelCharacterStyle8,labelCharacterStyle8
+labelCharacterStyle9,labelCharacterStyle9
 language,language
 layer,layer
 layer-ref,layer_ref
@@ -305,6 +315,7 @@ lower-alpha,lower_alpha
 lower-roman,lower_roman
 m,m
 mark,mark
+masking-shape-path-source,masking_shape_path_source
 media,media
 menu-choices,menu_choices
 metadata,metadata
@@ -355,6 +366,7 @@ path-join,path_join
 pattern,pattern
 pattern-ref,pattern_ref
 phase,phase
+placeholder-size,placeholder_size
 placeholder-style,placeholder_style
 placeholder-style-ref,placeholder_style_ref
 pm,pm

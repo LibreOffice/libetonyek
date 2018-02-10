@@ -67,16 +67,8 @@ optional<IWORKAlignment> IWORKNumberConverter<IWORKAlignment>::convert(const uns
     return IWORK_ALIGNMENT_CENTER;
   case 3 :
     return IWORK_ALIGNMENT_JUSTIFY;
-  case 4 :   // TODO: what is this?
-  {
-    static bool first=true;
-    if (first)
-    {
-      ETONYEK_DEBUG_MSG(("IWORKNumberConverter<IWORKAlignment>::convert: find some 4 values\n"));
-      first=false;
-    }
-    break;
-  }
+  case 4 :
+    return IWORK_ALIGNMENT_AUTOMATIC;
   default:
     ETONYEK_DEBUG_MSG(("IWORKNumberConverter<IWORKAlignment>::convert: unknown value %d\n", int(value)));
     break;

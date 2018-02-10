@@ -44,7 +44,7 @@ public:
   void collectGeometry(const IWORKGeometryPtr_t &geometry);
 
   void collectPath(const IWORKPathPtr_t &path);
-  void collectImage(const IWORKImagePtr_t &image);
+  void collectImage(const IWORKMediaContentPtr_t &image, bool locked);
   void collectLine(const IWORKLinePtr_t &line);
   void collectShape();
 

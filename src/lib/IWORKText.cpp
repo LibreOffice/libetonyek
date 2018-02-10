@@ -171,6 +171,8 @@ void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props
     case IWORK_ALIGNMENT_JUSTIFY :
       props.insert("fo:text-align", "justify");
       break;
+    case IWORK_ALIGNMENT_AUTOMATIC:
+      break;
     default:
       ETONYEK_DEBUG_MSG(("fillParaPropList[IWORKText.cpp]: unexpected alignement\n"));
     }

@@ -10,6 +10,8 @@
 #ifndef IWORKIMAGEELEMENT_H_INCLUDED
 #define IWORKIMAGEELEMENT_H_INCLUDED
 
+#include <boost/optional.hpp>
+
 #include "IWORKTypes.h"
 #include "IWORKXMLContextBase.h"
 
@@ -28,7 +30,15 @@ private:
   void endOfElement() override;
 
 private:
-  IWORKImagePtr_t m_image;
+  boost::optional<bool> m_locked;
+  IWORKMediaContentPtr_t m_content;
+  IWORKMediaContentPtr_t m_filteredImage;
+  IWORKDataPtr_t m_data;
+  boost::optional<IWORKSize> m_size;
+  boost::optional<ID_t> m_binaryRef;
+  IWORKStylePtr_t m_style;
+  IWORKGeometryPtr_t m_cropGeometry;
+  boost::optional<IWORKSize> m_placeholderSize;
 };
 
 }

@@ -51,6 +51,8 @@ IWORKXMLContextPtr_t IWORKStylesContext::element(const int name)
     return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::characterstyle_ref :
     return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_characterStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref :
+    return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_graphicStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
     return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_layoutStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :

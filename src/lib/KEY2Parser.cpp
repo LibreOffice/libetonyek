@@ -312,75 +312,6 @@ void ProxyMasterLayerElement::endOfElement()
 namespace
 {
 
-class ImageElement : public KEY2XMLElementContextBase
-{
-public:
-  explicit ImageElement(KEY2ParserState &state);
-
-private:
-  void startOfElement() override;
-  void attribute(int name, const char *value) override;
-  IWORKXMLContextPtr_t element(int name) override;
-  void endOfElement() override;
-
-private:
-  IWORKImagePtr_t m_image;
-};
-
-ImageElement::ImageElement(KEY2ParserState &state)
-  : KEY2XMLElementContextBase(state)
-  , m_image(new IWORKImage())
-{
-}
-
-void ImageElement::startOfElement()
-{
-  if (isCollector())
-    getCollector().startLevel();
-}
-
-void ImageElement::attribute(const int name, const char *const value)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::locked :
-    m_image->m_locked = bool_cast(value);
-    break;
-  default :
-    KEY2XMLElementContextBase::attribute(name, value);
-    break;
-  }
-}
-
-IWORKXMLContextPtr_t ImageElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::NS_URI_SF | IWORKToken::geometry :
-    return makeContext<IWORKGeometryElement>(getState());
-  default:
-    break;
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-void ImageElement::endOfElement()
-{
-  if (getId())
-    getState().getDictionary().m_images[get(getId())] = m_image;
-  if (isCollector())
-  {
-    getCollector().collectImage(m_image);
-    getCollector().endLevel();
-  }
-}
-
-}
-
-namespace
-{
-
 class PlaceholderRefContext : public KEY2XMLEmptyContextBase
 {
 public:
@@ -553,7 +484,7 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::group :
     return makeContext<IWORKGroupElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::image :
-    return makeContext<ImageElement>(getState());
+    return makeContext<IWORKImageElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::line :
     return makeContext<IWORKLineElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::media :

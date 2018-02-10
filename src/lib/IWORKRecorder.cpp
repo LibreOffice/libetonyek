@@ -68,12 +68,14 @@ struct CollectPath
 
 struct CollectImage
 {
-  CollectImage(const IWORKImagePtr_t &image)
+  CollectImage(const IWORKMediaContentPtr_t &image, bool locked)
     : m_image(image)
+    , m_locked(locked)
   {
   }
 
-  const IWORKImagePtr_t m_image;
+  const IWORKMediaContentPtr_t m_image;
+  bool m_locked;
 };
 
 struct CollectLine
@@ -215,7 +217,7 @@ struct Sender : public boost::static_visitor<void>
 
   void operator()(const CollectImage &value) const
   {
-    m_collector.collectImage(value.m_image);
+    m_collector.collectImage(value.m_image, value.m_locked);
   }
 
   void operator()(const CollectLine &value) const
@@ -336,9 +338,9 @@ void IWORKRecorder::collectPath(const IWORKPathPtr_t &path)
   m_impl->m_elements.push_back(CollectPath(path));
 }
 
-void IWORKRecorder::collectImage(const IWORKImagePtr_t &image)
+void IWORKRecorder::collectImage(const IWORKMediaContentPtr_t &image, bool locked)
 {
-  m_impl->m_elements.push_back(CollectImage(image));
+  m_impl->m_elements.push_back(CollectImage(image, locked));
 }
 
 void IWORKRecorder::collectLine(const IWORKLinePtr_t &line)

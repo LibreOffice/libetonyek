@@ -18,6 +18,7 @@
 #include "IWORKDiscardContext.h"
 #include "IWORKGroupElement.h"
 #include "IWORKHeaderFooterContext.h"
+#include "IWORKImageElement.h"
 #include "IWORKMediaElement.h"
 #include "IWORKMetadataElement.h"
 #include "IWORKNumberConverter.h"
@@ -144,6 +145,10 @@ IWORKXMLContextPtr_t GroupElement::element(const int name)
     return makeContext<PAG1ShapeContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::group :
     return makeContext<GroupElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::image :
+    return makeContext<IWORKImageElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::media :
+    return makeContext<IWORKMediaElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
     return makeContext<IWORKTabularInfoElement>(getState());
   default:
@@ -536,6 +541,8 @@ IWORKXMLContextPtr_t PageGroupElement::element(const int name)
     return makeContext<PAG1ShapeContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::group :
     return makeContext<GroupElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::image :
+    return makeContext<IWORKImageElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::media :
     return makeContext<IWORKMediaElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :

@@ -209,6 +209,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKFormulaElement.h \
 	contexts/IWORKGeometryElement.cpp \
 	contexts/IWORKGeometryElement.h \
+	contexts/IWORKGraphicStyleContext.cpp \
+	contexts/IWORKGraphicStyleContext.h \
 	contexts/IWORKGroupElement.cpp \
 	contexts/IWORKGroupElement.h \
 	contexts/IWORKHeaderFooterContext.cpp \

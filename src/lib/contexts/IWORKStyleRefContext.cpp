@@ -37,7 +37,7 @@ void IWORKStyleRefContext::endOfElement()
     if (m_styleMap.end() != it)
     {
       const IWORKStylePtr_t &style = it->second;
-      if (style->getIdent() && !m_nested)
+      if (style->getIdent() && getState().m_stylesheet && !m_nested)
         getState().m_stylesheet->m_styles[get(style->getIdent())] = style;
       if (isCollector())
         getCollector().collectStyle(style);

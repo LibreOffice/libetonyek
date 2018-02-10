@@ -113,24 +113,10 @@ IWORKMediaContent::IWORKMediaContent()
 {
 }
 
-IWORKBinary::IWORKBinary()
-  : m_size()
-  , m_path()
-  , m_type()
-  , m_dataSize()
-{
-}
-
-IWORKImage::IWORKImage()
-  : m_locked()
-  , m_geometry()
-  , m_binary()
-{
-}
-
 IWORKMedia::IWORKMedia()
   : m_geometry()
   , m_style()
+  , m_locked(false)
   , m_placeholder()
   , m_placeholderSize()
   , m_content()

@@ -39,6 +39,7 @@ IWORK_DECLARE_PROPERTY(Hyphenate, bool);
 IWORK_DECLARE_PROPERTY(Italic, bool);
 IWORK_DECLARE_PROPERTY(KeepLinesTogether, bool);
 IWORK_DECLARE_PROPERTY(KeepWithNext, bool);
+IWORK_DECLARE_PROPERTY(LabelCharacterStyle, IWORKStylePtr_t);
 IWORK_DECLARE_PROPERTY(Language, std::string);
 IWORK_DECLARE_PROPERTY(LayoutMargins, IWORKPadding);
 IWORK_DECLARE_PROPERTY(LayoutParagraphStyle, IWORKStylePtr_t);

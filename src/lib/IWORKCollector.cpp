@@ -91,15 +91,6 @@ librevenge::RVNGPropertyList makePoint(const double x, const double y)
   return props;
 }
 
-void drawImage(const IWORKImagePtr_t &image, const glm::dmat3 &trafo, IWORKOutputElements &elements)
-{
-  // TODO: implement me
-  (void) image;
-  (void) trafo;
-  (void) elements;
-
-}
-
 struct FillWriter : public boost::static_visitor<void>
 {
   explicit FillWriter(RVNGPropertyList &props)
@@ -452,20 +443,25 @@ void IWORKCollector::collectBezier(const IWORKPathPtr_t &path)
   }
 }
 
-void IWORKCollector::collectImage(const IWORKImagePtr_t &image)
+void IWORKCollector::collectImage(const IWORKMediaContentPtr_t &image, bool locked)
 {
   if (bool(m_recorder))
   {
-    m_recorder->collectImage(image);
+    m_recorder->collectImage(image, locked);
     return;
   }
 
   assert(!m_levelStack.empty());
 
-  image->m_geometry = m_levelStack.top().m_geometry;
+  const IWORKMediaPtr_t media(new IWORKMedia());
+  media->m_geometry = m_levelStack.top().m_geometry;
+  media->m_locked = locked;
+  media->m_style = m_levelStack.top().m_graphicStyle;
+  media->m_content = image;
   m_levelStack.top().m_geometry.reset();
+  m_levelStack.top().m_graphicStyle.reset();
 
-  drawImage(image, m_levelStack.top().m_trafo, m_outputManager.getCurrent());
+  drawMedia(media);
 }
 
 void IWORKCollector::collectLine(const IWORKLinePtr_t &line)

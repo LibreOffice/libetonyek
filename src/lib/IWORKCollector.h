@@ -65,7 +65,6 @@ public:
   void collectGeometry(const IWORKGeometryPtr_t &geometry);
 
   void collectBezier(const IWORKPathPtr_t &path);
-  void collectImage(const IWORKImagePtr_t &image);
   void collectLine(const IWORKLinePtr_t &line);
   void collectShape();
 
@@ -77,6 +76,7 @@ public:
   void collectConnectionPath(const IWORKSize &size, const boost::optional<IWORKPosition> &middle);
   void collectCalloutPath(const IWORKSize &size, double radius, double tailSize, double tailX, double tailY, bool quoteBubble);
 
+  void collectImage(const IWORKMediaContentPtr_t &image, bool locked=false);
   void collectMedia(const IWORKMediaContentPtr_t &content);
 
   void collectStylesheet(const IWORKStylesheetPtr_t &stylesheet);
