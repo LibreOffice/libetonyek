@@ -109,6 +109,7 @@ private:
 
   IWORKOutputElements m_elements;
 
+  bool m_hasContent;
   IWORKStylePtr_t m_layoutStyle;
   bool m_inSection;
   mutable librevenge::RVNGPropertyList m_sectionProps;

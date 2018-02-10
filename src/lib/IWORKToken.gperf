@@ -381,6 +381,7 @@ sectionstyle_ref,sectionstyle_ref
 self-contained-movie,self_contained_movie
 sf,sf
 sfa,sfa
+sfclass,sfclass
 shape,shape
 shearXAngle,shearXAngle
 shearYAngle,shearYAngle

@@ -339,12 +339,6 @@ void PAGCollector::fillShapeProperties(librevenge::RVNGPropertyList &props)
 
 void PAGCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox)
 {
-  (void) text;
-  (void) trafo;
-  (void) boundingBox;
-  // FIXME: Text content is never parsed as empty. And the text boxes
-  // half cover the shapes in the output.
-#if 0
   if (bool(text) && !text->empty())
   {
     librevenge::RVNGPropertyList props;
@@ -373,7 +367,6 @@ void PAGCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &tra
     elements.addEndTextObject();
     elements.addCloseFrame();
   }
-#endif
 }
 
 void PAGCollector::flushPageSpan(const bool writeEmpty)

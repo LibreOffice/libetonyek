@@ -80,6 +80,7 @@ private:
   bool m_known;
   bool m_block;
   optional<IWORKPosition> m_position;
+  std::shared_ptr<IWORKText> m_savedText;
 };
 
 AttachmentElement::AttachmentElement(PAG1ParserState &state)
@@ -87,7 +88,11 @@ AttachmentElement::AttachmentElement(PAG1ParserState &state)
   , m_known(false)
   , m_block(false)
   , m_position()
+  , m_savedText()
 {
+  // saved the current zone of text
+  m_savedText=getState().m_currentText;
+  getState().m_currentText.reset();
 }
 
 IWORKXMLContextPtr_t AttachmentElement::element(const int name)
@@ -131,6 +136,8 @@ void AttachmentElement::endOfElement()
       getCollector().getOutputManager().pop();
     }
   }
+  // reset the current zone of text
+  getState().m_currentText=m_savedText;
 }
 
 }
@@ -754,11 +761,19 @@ IWORKXMLContextPtr_t TextBodyElement::element(const int name)
 
 }
 
-PAG1TextStorageElement::PAG1TextStorageElement(PAG1ParserState &state, const bool footnotes)
+PAG1TextStorageElement::PAG1TextStorageElement(PAG1ParserState &state, PAGTextStorageKind kind)
   : PAG1XMLContextBase<IWORKTextStorageElement>(state)
-  , m_footnotes(footnotes)
+  , m_kind(kind)
   , m_textOpened(false)
 {
+  if (m_kind==PAG_TEXTSTORAGE_KIND_TEXTBOX)
+  {
+    m_textOpened=true;
+    if (!bool(getState().m_currentText))
+    {
+      ETONYEK_DEBUG_MSG(("PAG1TextStorageElement::PAG1TextStorageElement: called in textbox without current tetx\n"));
+    }
+  }
 }
 
 IWORKXMLContextPtr_t PAG1TextStorageElement::element(const int name)
@@ -775,7 +790,7 @@ IWORKXMLContextPtr_t PAG1TextStorageElement::element(const int name)
     if (!m_textOpened)
     {
       assert(!getState().m_currentText);
-      getState().m_currentText = getCollector().createText(getState().m_langManager);
+      getState().m_currentText = getCollector().createText(getState().m_langManager, m_kind==PAG_TEXTSTORAGE_KIND_TEXTBOX);
       m_textOpened = true;
     }
     return makeContext<TextBodyElement>(getState());
@@ -786,17 +801,15 @@ IWORKXMLContextPtr_t PAG1TextStorageElement::element(const int name)
 
 void PAG1TextStorageElement::endOfElement()
 {
-  if (isCollector() && m_textOpened)
+  if (isCollector() && m_textOpened && m_kind==PAG_TEXTSTORAGE_KIND_BASIC)
   {
-    if (!m_footnotes)
-    {
-      assert(getState().m_currentText);
-      if (bool(getState().m_currentText) && !getState().m_currentText->empty())
-        getCollector().collectText(getState().m_currentText);
-      getCollector().collectTextBody();
-    }
-    getState().m_currentText.reset();
+    assert(getState().m_currentText);
+    if (bool(getState().m_currentText) && !getState().m_currentText->empty())
+      getCollector().collectText(getState().m_currentText);
+    getCollector().collectTextBody();
   }
+  if (m_kind!=PAG_TEXTSTORAGE_KIND_TEXTBOX)
+    getState().m_currentText.reset();
 
   PAG1XMLContextBase<IWORKTextStorageElement>::endOfElement();
 }

@@ -298,6 +298,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/PAG1AnnotationElement.h \
 	contexts/PAG1FootnotesElement.cpp \
 	contexts/PAG1FootnotesElement.h \
+	contexts/PAG1ShapeContext.cpp \
+	contexts/PAG1ShapeContext.h \
 	contexts/PAG1StyleContext.cpp \
 	contexts/PAG1StyleContext.h \
 	contexts/PAG1TextStorageElement.cpp \

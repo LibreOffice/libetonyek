@@ -22,7 +22,7 @@ class IWORKTextElement : public IWORKXMLElementContextBase
 public:
   explicit IWORKTextElement(IWORKXMLParserState &state);
 
-private:
+protected:
   void attribute(int name, const char *value) override;
   IWORKXMLContextPtr_t element(int name) override;
 };

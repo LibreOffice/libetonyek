@@ -7,28 +7,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef PAGENUM_H_INCLUDED
-#define PAGENUM_H_INCLUDED
+#ifndef PAG1SHAPECONTEXT_H_INCLUDED
+#define PAG1SHAPECONTEXT_H_INCLUDED
+
+#include "IWORKShapeContext.h"
+#include "PAG1XMLContextBase.h"
 
 namespace libetonyek
 {
 
-enum PAGFootnoteKind
+class PAG1ShapeContext : public PAG1XMLContextBase<IWORKShapeContext>
 {
-  PAG_FOOTNOTE_KIND_FOOTNOTE,
-  PAG_FOOTNOTE_KIND_ENDNOTE,
-  PAG_FOOTNOTE_KIND_SECTION_ENDNOTE
-};
+public:
+  explicit PAG1ShapeContext(PAG1ParserState &state);
 
-enum PAGTextStorageKind
-{
-  PAG_TEXTSTORAGE_KIND_BASIC,
-  PAG_TEXTSTORAGE_KIND_NOTE,
-  PAG_TEXTSTORAGE_KIND_TEXTBOX
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
 };
 
 }
 
-#endif //  PAGENUM_H_INCLUDED
+#endif // PAG1SHAPECONTEXT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

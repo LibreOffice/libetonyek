@@ -10,6 +10,8 @@
 #ifndef PAG1TEXTSTORAGEELEMENT_H_INCLUDED
 #define PAG1TEXTSTORAGEELEMENT_H_INCLUDED
 
+#include "PAGEnum.h"
+
 #include "PAG1XMLContextBase.h"
 
 #include "IWORKTextStorageElement.h"
@@ -20,14 +22,14 @@ namespace libetonyek
 class PAG1TextStorageElement : public PAG1XMLContextBase<IWORKTextStorageElement>
 {
 public:
-  explicit PAG1TextStorageElement(PAG1ParserState &state, bool footnotes = false);
+  explicit PAG1TextStorageElement(PAG1ParserState &state, const PAGTextStorageKind kind=PAG_TEXTSTORAGE_KIND_BASIC);
 
 private:
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
 
 private:
-  bool m_footnotes;
+  PAGTextStorageKind m_kind;
   bool m_textOpened;
 };
 

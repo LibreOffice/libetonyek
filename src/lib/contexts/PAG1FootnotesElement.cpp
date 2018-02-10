@@ -24,7 +24,7 @@ PAG1FootnotesElement::PAG1FootnotesElement(PAG1ParserState &state)
 IWORKXMLContextPtr_t PAG1FootnotesElement::element(const int name)
 {
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::text_storage))
-    return makeContext<PAG1TextStorageElement>(getState(), true);
+    return makeContext<PAG1TextStorageElement>(getState(), PAG_TEXTSTORAGE_KIND_NOTE);
   return IWORKXMLContextPtr_t();
 }
 

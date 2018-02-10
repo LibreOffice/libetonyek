@@ -417,6 +417,7 @@ enum
   scalar,
   scale,
   scale_with_text,
+  sfclass,
   shearXAngle,
   shearYAngle,
   sizesLocked,

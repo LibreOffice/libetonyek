@@ -70,6 +70,17 @@ IWORKShapeContext::IWORKShapeContext(IWORKXMLParserState &state)
 {
 }
 
+void IWORKShapeContext::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::sfclass | IWORKToken::NS_URI_SFA : // shape
+    break;
+  default :
+    IWORKXMLElementContextBase::attribute(name, value);
+  }
+}
+
 void IWORKShapeContext::startOfElement()
 {
   if (isCollector())

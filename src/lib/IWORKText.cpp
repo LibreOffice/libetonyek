@@ -454,6 +454,7 @@ IWORKText::IWORKText(const IWORKLanguageManager &langManager, const bool discard
   , m_layoutStyleStack()
   , m_paraStyleStack()
   , m_elements()
+  , m_hasContent(false)
   , m_layoutStyle()
   , m_inSection(false)
   , m_sectionProps()
@@ -686,6 +687,7 @@ void IWORKText::insertField(IWORKFieldType type)
     m_recorder->insertField(type);
     return;
   }
+  m_hasContent=true;
   librevenge::RVNGPropertyList propList;
   switch (type)
   {
@@ -717,6 +719,7 @@ void IWORKText::openLink(const std::string &url)
     return;
   }
 
+  m_hasContent=true;
   if (!m_inPara)
     openPara();
   if (m_inSpan)
@@ -757,6 +760,7 @@ void IWORKText::insertText(const std::string &text)
     return;
   }
 
+  m_hasContent=true;
   /* FIXME: do not open span in link as odp does not accept it (and
      libodfgen does contain code to remove such span which may appear
      in link )
@@ -779,6 +783,7 @@ void IWORKText::insertTab()
     return;
   }
 
+  m_hasContent=true;
   if (m_inSpan && m_spanStyleChanged)
     closeSpan();
   if (!m_inSpan)
@@ -794,6 +799,7 @@ void IWORKText::insertSpace()
     return;
   }
 
+  m_hasContent=true;
   if (m_inSpan && m_spanStyleChanged)
     closeSpan();
   if (!m_inSpan)
@@ -809,6 +815,7 @@ void IWORKText::insertLineBreak()
     return;
   }
 
+  m_hasContent=true;
   if (m_inSpan && m_spanStyleChanged)
     closeSpan();
   if (!m_inSpan)
@@ -824,6 +831,7 @@ void IWORKText::insertPageBreak()
     return;
   }
 
+  m_hasContent=true;
   m_pageBreakDelayed=true;
 }
 
@@ -831,6 +839,7 @@ void IWORKText::insertInlineContent(const IWORKOutputElements &elements)
 {
   if (!m_inSpan)
     openSpan();
+  m_hasContent=true;
   m_elements.append(elements);
 }
 
@@ -839,13 +848,14 @@ void IWORKText::insertBlockContent(const IWORKOutputElements &elements)
   flushList();
   if (!m_inSection && needsSection())
     openSection();
+  m_hasContent=true;
   m_elements.append(elements);
   m_ignoreEmptyPara = true;
 }
 
 bool IWORKText::empty() const
 {
-  return m_elements.empty();
+  return !m_hasContent;
 }
 
 void IWORKText::handleListLevelChange(const unsigned level)
