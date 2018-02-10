@@ -25,6 +25,7 @@
 #include "IWORKStylesContext.h"
 #include "IWORKStylesheetBase.h"
 #include "IWORKToken.h"
+#include "PAG1AnnotationContext.h"
 #include "PAG1Dictionary.h"
 #include "PAG1StyleContext.h"
 #include "PAG1TextStorageElement.h"
@@ -62,6 +63,33 @@ unsigned getVersion(const int token)
 
 namespace
 {
+
+namespace
+{
+
+class AnnotationsElement : public PAG1XMLElementContextBase
+{
+public:
+  explicit AnnotationsElement(PAG1ParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+AnnotationsElement::AnnotationsElement(PAG1ParserState &state)
+  : PAG1XMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t AnnotationsElement::element(const int name)
+{
+  if (name == (IWORKToken::NS_URI_SF | IWORKToken::annotation))
+    return makeContext<PAG1AnnotationContext>(getState(),
+                                              std::bind(&PAGCollector::collectAnnotation, std::ref(getCollector()), _1));
+  return IWORKXMLContextPtr_t();
+}
+
+}
 
 class FootersElement : public PAG1XMLElementContextBase
 {
@@ -561,6 +589,8 @@ IWORKXMLContextPtr_t DocumentElement::element(const int name)
 {
   switch (name)
   {
+  case IWORKToken::NS_URI_SF | IWORKToken::annotations :
+    return makeContext<AnnotationsElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::headers :
     return makeContext<HeadersElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::footers :

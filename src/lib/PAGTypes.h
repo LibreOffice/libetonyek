@@ -23,6 +23,8 @@
 namespace libetonyek
 {
 
+typedef std::unordered_map<std::string, IWORKOutputElements> PAGAnnotationMap_t;
+
 struct PAGPublicationInfo
 {
   PAGPublicationInfo();

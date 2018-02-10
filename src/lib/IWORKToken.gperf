@@ -58,6 +58,10 @@ amt,amt
 angle,angle
 angle-gradient,angle_gradient
 anon-styles,anon_styles
+annotation,annotation
+annotation-field,annotation_field
+annotation-field-ref,annotation_field_ref
+annotations,annotations
 array,array
 array-ref,array_ref
 aspectRatioLocked,aspectRatioLocked
@@ -86,8 +90,10 @@ capitalization,capitalization
 category-title,category_title
 cb,cb
 cell-date,cell_date
+cell-storage,cell_storage
 cell-style,cell_style
 cell-style-ref,cell_style_ref
+cell-text,cell_text
 cf,cf
 cf-ref,cf_ref
 characterstyle,characterstyle
@@ -98,6 +104,7 @@ chart-model-object,chart_model_object
 chart-name,chart_name
 chart-row_names,chart_row_names
 chart-type,chart_type
+col,col
 col-span,col_span
 color,color
 column,column
@@ -109,6 +116,7 @@ connection-path,connection_path
 connection-style,connection_style
 container-hint,container_hint
 content,content
+content-size,content_size
 core-image-filter-descriptor,core_image_filter_descriptor
 core-image-filter-descriptor-ref,core_image_filter_descriptor_ref
 core-image-filter-info,core_image_filter_info
@@ -118,11 +126,12 @@ custom-space-color,custom_space_color
 ct,ct
 d,d
 data,data
+date-cell,date_cell
 data-formulas,data_formulas
-data-ref,data_ref
-datasource,datasource
 date-format,date_format
+data-ref,data_ref
 date-time,date_time
+datasource,datasource
 decimal,decimal
 decimal-number,number
 displayname,displayname
@@ -148,6 +157,7 @@ first,first
 firstLineIndent,firstLineIndent
 firstPageMaster,firstPageMaster
 fit,fit
+flags,flags
 fm,fm
 fmt,fmt
 fo,fo
@@ -173,7 +183,10 @@ format-show-thousands-separator,format_show_thousands_separator
 format-string,format_string
 format-type,format_type
 format-use-accounting-style,format_use_accounting_style
+formula,formula
+formula-cell,formula_cell
 formula-chart-model,formula_chart_model
+formula-string,formula_string
 fraction,fraction
 frame-h,frame_h
 frame-w,frame_w
@@ -181,6 +194,7 @@ frame-x,frame_x
 frame-y,frame_y
 fs,fs
 g,g
+generic-cell,generic_cell
 geometry,geometry
 gradient-stop,gradient_stop
 graphic-style,graphic_style
@@ -197,9 +211,14 @@ headers,headers
 headline-style,headline_style
 height,height
 hfs-type,hfs_type
+host-cell-ID,host_cell_ID
+host-table-ID,host_table_ID
 horizontal-gridline-styles,horizontal_gridline_styles
+horizontal-offset,horizontal_offset
 horizontalFlip,horizontalFlip
 href,href
+hc,hc
+ht,ht
 http://developer.apple.com/namespaces/sf,NS_URI_SF
 http://developer.apple.com/namespaces/sfa,NS_URI_SFA
 http://www.w3.org/2001/XMLSchema-instance,NS_URI_XSI
@@ -263,6 +282,7 @@ metadata,metadata
 miter,miter
 mode,mode
 movie-media,movie_media
+mf-ref,mf_ref
 mutable-array,mutable_array
 mutable-array-ref,mutable_array_ref
 n,n
@@ -274,10 +294,12 @@ num-footer-rows,num_footer_rows
 num-header-columns,num_header_columns
 num-header-rows,num_header_rows
 number,number
+number-cell,number_cell
 number-format,number_format
 numcols, numcols
 numrows, numrows
 oddPageMaster,oddPageMaster
+of,of
 offset,offset
 opacity,opacity
 other-datas,other_datas
@@ -314,10 +336,13 @@ r,r
 radial,radial
 rb,rb
 relative,relative
+result-cell,result_cell
+result-number-cell,result_number_cell
 right,right
 rightIndent,rightIndent
 rn,rn
 round,round
+row,row
 row-label-formulas,row_label_formulas
 row-span,row_span
 rows,rows
@@ -345,6 +370,7 @@ spaceAfter,spaceAfter
 spaceBefore,spaceBefore
 spacing,spacing
 span,span
+span-cell,span_cell
 st,st
 star,star
 start-index,start_index
@@ -375,9 +401,11 @@ tailAtCenter,tailAtCenter
 tailPositionX,tailPositionX
 tailPositionY,tailPositionY
 tailSize,tailSize
+target,target
 technique,technique
 text,text
 text-body,text_body
+text-cell,text_cell
 text-label,text_label
 text-label-ref,text_label_ref
 text-storage,text_storage
@@ -403,6 +431,7 @@ value-title,value_title
 vector-style,vector_style
 vector-style-ref,vector_style_ref
 vertical-gridline-styles,vertical_gridline_styles,
+vertical-offset,vertical_offset
 verticalFlip,verticalFlip
 w,w
 widowControl,widowControl

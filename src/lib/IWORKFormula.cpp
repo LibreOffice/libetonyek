@@ -322,8 +322,10 @@ using std::ostringstream;
 
 struct Printer : public boost::static_visitor<void>
 {
-  Printer(ostringstream &out)
+  Printer(ostringstream &out, int offsetColumn, int offsetRow)
     : m_out(out)
+    , m_offsetColumn(offsetColumn)
+    , m_offsetRow(offsetRow)
   {
   }
 
@@ -361,19 +363,19 @@ struct Printer : public boost::static_visitor<void>
   void operator()(const recursive_wrapper<PrefixOp> &val) const
   {
     m_out << val.get().m_op;
-    apply_visitor(Printer(m_out), val.get().m_expr);
+    apply_visitor(Printer(m_out, m_offsetColumn, m_offsetRow), val.get().m_expr);
   }
 
   void operator()(const recursive_wrapper<InfixOp> &val) const
   {
-    apply_visitor(Printer(m_out), val.get().m_left);
+    apply_visitor(Printer(m_out, m_offsetColumn, m_offsetRow), val.get().m_left);
     m_out << val.get().m_op;
-    apply_visitor(Printer(m_out), val.get().m_right);
+    apply_visitor(Printer(m_out, m_offsetColumn, m_offsetRow), val.get().m_right);
   }
 
   void operator()(const recursive_wrapper<PostfixOp> &val) const
   {
-    apply_visitor(Printer(m_out), val.get().m_expr);
+    apply_visitor(Printer(m_out, m_offsetColumn, m_offsetRow), val.get().m_expr);
     m_out << val.get().m_op;
   }
 
@@ -384,7 +386,7 @@ struct Printer : public boost::static_visitor<void>
     {
       if (it != val.get().m_args.begin())
         m_out << ';';
-      apply_visitor(Printer(m_out), *it);
+      apply_visitor(Printer(m_out, m_offsetColumn, m_offsetRow), *it);
     }
     m_out << ')';
   }
@@ -392,7 +394,7 @@ struct Printer : public boost::static_visitor<void>
   void operator()(const recursive_wrapper<PExpr> &val) const
   {
     m_out << '(';
-    apply_visitor(Printer(m_out), val.get().m_expr);
+    apply_visitor(Printer(m_out, m_offsetColumn, m_offsetRow), val.get().m_expr);
     m_out << ')';
   }
 
@@ -402,12 +404,12 @@ private:
     if (val.m_table)
       m_out << get(val.m_table);
     m_out  << '.';
-    if (val.m_column)
+    if (val.m_column && int(get(val.m_column).m_coord)+m_offsetColumn>=0)
     {
       if (get(val.m_column).m_absolute)
         m_out << '$';
 
-      unsigned column = get(val.m_column).m_coord;
+      unsigned column = get(val.m_column).m_coord+m_offsetColumn;
       vector<char> columnNumerals;
       columnNumerals.reserve(4);
       while (column != 0)
@@ -419,16 +421,17 @@ private:
       }
       copy(columnNumerals.rbegin(), columnNumerals.rend(), std::ostream_iterator<char>(m_out));
     }
-    if (val.m_row)
+    if (val.m_row && int(get(val.m_row).m_coord)+m_offsetRow>=0)
     {
       if (get(val.m_row).m_absolute)
         m_out << '$';
-      m_out << get(val.m_row).m_coord;
+      m_out << int(get(val.m_row).m_coord)+m_offsetRow;
     }
   }
 
 private:
   ostringstream &m_out;
+  int m_offsetColumn, m_offsetRow;
 };
 
 }
@@ -439,9 +442,12 @@ namespace
 struct Collector : public boost::static_visitor<>
 {
 
-  explicit Collector(librevenge::RVNGPropertyListVector &propsVector, const IWORKTableNameMapPtr_t &tableNameMap)
+  explicit Collector(librevenge::RVNGPropertyListVector &propsVector, const IWORKTableNameMapPtr_t &tableNameMap,
+                     int offsetColumn, int offsetRow)
     : m_propsVector(propsVector)
     , m_tableNameMap(tableNameMap)
+    , m_offsetColumn(offsetColumn)
+    , m_offsetRow(offsetRow)
   { }
 
   void operator()(double val) const
@@ -489,16 +495,16 @@ struct Collector : public boost::static_visitor<>
         props.insert("librevenge:sheet-name", get(val.m_table).c_str());
     }
 
-    if (val.m_column && get(val.m_column).m_coord>0)
+    if (val.m_column && int(get(val.m_column).m_coord)+m_offsetColumn>0)
     {
       props.insert("librevenge:column-absolute", get(val.m_column).m_absolute);
-      props.insert("librevenge:column", int(get(val.m_column).m_coord-1));
+      props.insert("librevenge:column", int(get(val.m_column).m_coord-1+m_offsetColumn));
     }
 
-    if (val.m_row && get(val.m_row).m_coord>0)
+    if (val.m_row && int(get(val.m_row).m_coord)+m_offsetRow>0)
     {
       props.insert("librevenge:row-absolute", get(val.m_row).m_absolute);
-      props.insert("librevenge:row", int(get(val.m_row).m_coord-1));
+      props.insert("librevenge:row", int(get(val.m_row).m_coord-1+m_offsetRow));
     }
 
     m_propsVector.append(props);
@@ -509,25 +515,25 @@ struct Collector : public boost::static_visitor<>
     librevenge::RVNGPropertyList props;
     props.insert("librevenge:type", "librevenge-cells");
 
-    if (val.first.m_column && get(val.first.m_column).m_coord>0)
+    if (val.first.m_column && int(get(val.first.m_column).m_coord)+m_offsetColumn>0)
     {
       props.insert("librevenge:start-column-absolute", get(val.first.m_column).m_absolute);
-      props.insert("librevenge:start-column", int(get(val.first.m_column).m_coord-1));
+      props.insert("librevenge:start-column", int(get(val.first.m_column).m_coord-1+m_offsetColumn));
     }
-    if (val.first.m_row && get(val.first.m_row).m_coord>0)
+    if (val.first.m_row && int(get(val.first.m_row).m_coord)+m_offsetRow>0)
     {
       props.insert("librevenge:start-row-absolute", get(val.first.m_row).m_absolute);
-      props.insert("librevenge:start-row", int(get(val.first.m_row).m_coord-1));
+      props.insert("librevenge:start-row", int(get(val.first.m_row).m_coord-1+m_offsetRow));
     }
-    if (val.second.m_column && get(val.second.m_column).m_coord>0)
+    if (val.second.m_column && int(get(val.second.m_column).m_coord)+m_offsetColumn>0)
     {
       props.insert("librevenge:end-column-absolute", get(val.second.m_column).m_absolute);
-      props.insert("librevenge:end-column", int(get(val.second.m_column).m_coord-1));
+      props.insert("librevenge:end-column", int(get(val.second.m_column).m_coord-1+m_offsetColumn));
     }
-    if (val.second.m_row && get(val.second.m_row).m_coord>0)
+    if (val.second.m_row && int(get(val.second.m_row).m_coord)+m_offsetRow>0)
     {
       props.insert("librevenge:end-row-absolute", get(val.second.m_row).m_absolute);
-      props.insert("librevenge:end-row", int(get(val.second.m_row).m_coord-1));
+      props.insert("librevenge:end-row", int(get(val.second.m_row).m_coord-1+m_offsetRow));
     }
     m_propsVector.append(props);
   }
@@ -538,25 +544,27 @@ struct Collector : public boost::static_visitor<>
     props.insert("librevenge:type", "librevenge-operator");
     props.insert("librevenge:operator", val.get().m_op);
     m_propsVector.append(props);
-    apply_visitor(Collector(m_propsVector, m_tableNameMap), val.get().m_expr);
+    apply_visitor(Collector(m_propsVector, m_tableNameMap, m_offsetColumn, m_offsetRow), val.get().m_expr);
   }
 
   void operator()(const recursive_wrapper<InfixOp> &val) const
   {
-    apply_visitor(Collector(m_propsVector, m_tableNameMap), val.get().m_left);
+    apply_visitor(Collector(m_propsVector, m_tableNameMap, m_offsetColumn, m_offsetRow), val.get().m_left);
     librevenge::RVNGPropertyList props;
     props.insert("librevenge:type", "librevenge-operator");
     props.insert("librevenge:operator", val.get().m_op.c_str());
     m_propsVector.append(props);
-    apply_visitor(Collector(m_propsVector, m_tableNameMap), val.get().m_right);
+    apply_visitor(Collector(m_propsVector, m_tableNameMap, m_offsetColumn, m_offsetRow), val.get().m_right);
   }
 
   void operator()(const recursive_wrapper<PostfixOp> &val) const
   {
-    apply_visitor(Collector(m_propsVector, m_tableNameMap), val.get().m_expr);
+    apply_visitor(Collector(m_propsVector, m_tableNameMap, m_offsetColumn, m_offsetRow), val.get().m_expr);
     librevenge::RVNGPropertyList props;
     props.insert("librevenge:type", "librevenge-operator");
-    props.insert("librevenge:operator", val.get().m_op);
+    std::string op;
+    op+=val.get().m_op;
+    props.insert("librevenge:operator", op.c_str());
     m_propsVector.append(props);
   }
 
@@ -580,7 +588,7 @@ struct Collector : public boost::static_visitor<>
     {
       if (it != val.get().m_args.begin())
         m_propsVector.append(props);
-      apply_visitor(Collector(m_propsVector, m_tableNameMap), *it);
+      apply_visitor(Collector(m_propsVector, m_tableNameMap, m_offsetColumn, m_offsetRow), *it);
     }
     librevenge::RVNGPropertyList props3;
     props3.insert("librevenge:type", "librevenge-operator");
@@ -595,7 +603,7 @@ struct Collector : public boost::static_visitor<>
     props.insert("librevenge:operator", "(");
     m_propsVector.append(props);
 
-    apply_visitor(Collector(m_propsVector, m_tableNameMap), val.get().m_expr);
+    apply_visitor(Collector(m_propsVector, m_tableNameMap, m_offsetColumn, m_offsetRow), val.get().m_expr);
 
     librevenge::RVNGPropertyList props1;
     props1.insert("librevenge:type", "librevenge-operator");
@@ -607,6 +615,7 @@ struct Collector : public boost::static_visitor<>
 private:
   librevenge::RVNGPropertyListVector &m_propsVector;
   const IWORKTableNameMapPtr_t &m_tableNameMap;
+  int m_offsetColumn, m_offsetRow;
 };
 
 }
@@ -616,8 +625,9 @@ struct IWORKFormula::Impl
   Expression m_formula;
 };
 
-IWORKFormula::IWORKFormula()
+IWORKFormula::IWORKFormula(const boost::optional<unsigned> &hc)
   : m_impl(new Impl())
+  , m_hc(hc)
 {
 }
 
@@ -635,17 +645,41 @@ bool IWORKFormula::parse(const std::string &formula)
   return true;
 }
 
-const std::string IWORKFormula::str() const
+const std::string IWORKFormula::str(const boost::optional<unsigned> &hc) const
 {
   ostringstream out;
   out << '=';
-  apply_visitor(Printer(out), m_impl->m_formula);
+  int offsetCol=0, offsetRow=0;
+  if (!computeOffset(hc, offsetCol, offsetRow))
+    offsetCol=offsetRow=0;
+  apply_visitor(Printer(out, offsetCol, offsetRow), m_impl->m_formula);
   return out.str();
 }
 
-void IWORKFormula::write(librevenge::RVNGPropertyListVector &formula, const IWORKTableNameMapPtr_t &tableNameMap) const
+void IWORKFormula::write(const boost::optional<unsigned> &hc, librevenge::RVNGPropertyListVector &formula, const IWORKTableNameMapPtr_t &tableNameMap) const
 {
-  apply_visitor(Collector(formula, tableNameMap), m_impl->m_formula);
+  int offsetCol=0, offsetRow=0;
+  if (!computeOffset(hc, offsetCol, offsetRow))
+    offsetCol=offsetRow=0;
+  apply_visitor(Collector(formula, tableNameMap, offsetCol, offsetRow), m_impl->m_formula);
+}
+
+bool IWORKFormula::computeOffset(const boost::optional<unsigned> &hc, int &offsetColumn, int &offsetRow) const
+{
+  offsetColumn=offsetRow=0;
+  if (!m_hc && !hc)
+    return true;
+  if (!m_hc || !hc)
+  {
+    ETONYEK_DEBUG_MSG(("IWORKFormula::parse: called without cell positions\n"));
+    return false;
+  }
+  if (get(m_hc)==get(hc)) return true;
+  int prevRow=(int) get(m_hc)/256, prevColumn=(int) get(m_hc)%256;
+  int row=(int) get(hc)/256, column=(int) get(hc)%256;
+  offsetColumn=column-prevColumn;
+  offsetRow=row-prevRow;
+  return true;
 }
 
 } // namespace libetonyek

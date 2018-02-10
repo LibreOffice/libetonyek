@@ -1690,7 +1690,7 @@ void IWAParser::parseTile(const unsigned id)
           parseText(get(textRef));
         }
 
-        m_currentTable->m_table->insertCell(column, it->first, text, m_currentText, 1, 1, none, cellStyle, cellType);
+        m_currentTable->m_table->insertCell(column, it->first, text, m_currentText, none, 1, 1, IWORKFormulaPtr_t(), none, cellStyle, cellType);
         m_currentText.reset();
       }
       catch (...)
@@ -1730,7 +1730,7 @@ void IWAParser::parseTile(const unsigned id)
       }
 
       // 3. Insert the cell
-      m_currentTable->m_table->insertCell(column, row, text, m_currentText, 1, 1, none, cellStyle, cellType);
+      m_currentTable->m_table->insertCell(column, row, text, m_currentText, none, 1, 1, IWORKFormulaPtr_t(), none, cellStyle, cellType);
 
       m_currentText.reset();
     }

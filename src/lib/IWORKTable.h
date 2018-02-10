@@ -34,10 +34,12 @@ class IWORKTable
     unsigned m_columnSpan;
     unsigned m_rowSpan;
     bool m_covered;
-    boost::optional<IWORKFormula> m_formula;
+    IWORKFormulaPtr_t m_formula;
+    boost::optional<unsigned> m_formulaHC;
     IWORKStylePtr_t m_style;
     IWORKCellType m_type;
     boost::optional<std::string> m_value;
+    boost::optional<IWORKDateTimeData> m_dateTime;
 
     Cell();
   };
@@ -72,8 +74,10 @@ public:
   void insertCell(unsigned column, unsigned row,
                   const boost::optional<std::string> &value = boost::none,
                   const std::shared_ptr<IWORKText> &text = std::shared_ptr<IWORKText>(),
+                  const boost::optional<IWORKDateTimeData> &dateTime = boost::none,
                   unsigned columnSpan = 1, unsigned rowSpan = 1,
-                  const boost::optional<IWORKFormula> &formula = boost::none,
+                  const IWORKFormulaPtr_t &formula = IWORKFormulaPtr_t(),
+                  const boost::optional<unsigned> &formulaHC = boost::none,
                   const IWORKStylePtr_t &style = IWORKStylePtr_t(),
                   IWORKCellType type = IWORK_CELL_TYPE_TEXT);
   void insertCoveredCell(unsigned column, unsigned row);

@@ -113,7 +113,30 @@ PAGCollector::PAGCollector(IWORKDocumentInterface *const document)
   , m_page(0)
   , m_attachmentPosition()
   , m_inAttachments(false)
+  , m_annotations()
 {
+}
+
+void PAGCollector::collectAnnotation(const std::string &name)
+{
+  IWORKOutputElements &elements = m_annotations[name];
+  if (!elements.empty())
+  {
+    ETONYEK_DEBUG_MSG(("PAGCollector::collectAnnotation '%s' already exists, overwriting\n", name.c_str()));
+    elements.clear();
+  }
+  if (bool(m_currentText))
+  {
+    librevenge::RVNGPropertyList propList;
+    elements.addOpenComment(propList);
+    m_currentText->draw(elements);
+    elements.addCloseComment();
+    m_currentText.reset();
+  }
+  else
+  {
+    ETONYEK_DEBUG_MSG(("PAGCollector::sendAnnotation: called without text\n"));
+  }
 }
 
 void PAGCollector::collectPublicationInfo(const PAGPublicationInfo &pubInfo)
@@ -173,6 +196,25 @@ void PAGCollector::closeAttachments()
 {
   assert(m_inAttachments);
   m_inAttachments = false;
+}
+
+void PAGCollector::sendAnnotation(const std::string &name)
+{
+  if (m_annotations.find(name)==m_annotations.end())
+  {
+    ETONYEK_DEBUG_MSG(("PAGCollector::sendAnnotation can not find annotation'%s'\n", name.c_str()));
+    m_currentText.reset();
+    return;
+  }
+  if (bool(m_currentText))
+  {
+    m_currentText->insertInlineContent(m_annotations.find(name)->second);
+    m_currentText.reset();
+  }
+  else
+  {
+    ETONYEK_DEBUG_MSG(("PAGCollector::sendAnnotation: called without text\n"));
+  }
 }
 
 void PAGCollector::openPageGroup(const boost::optional<int> &page)

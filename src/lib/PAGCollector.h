@@ -49,6 +49,8 @@ public:
   void collectAttachment(const IWORKOutputID_t &id, bool block);
   void collectAttachmentPosition(const IWORKPosition &position);
 
+  void collectAnnotation(const std::string &name);
+
   void openPageGroup(const boost::optional<int> &page);
   void closePageGroup();
 
@@ -59,6 +61,8 @@ public:
 
   void openAttachments();
   void closeAttachments();
+
+  void sendAnnotation(const std::string &name);
 
   PAGFootnoteKind getFootnoteKind() const;
 
@@ -83,6 +87,7 @@ private:
   // FIXME: This is a clumsy workaround.
   boost::optional<IWORKPosition> m_attachmentPosition;
   bool m_inAttachments;
+  PAGAnnotationMap_t m_annotations;
 };
 
 } // namespace libetonyek

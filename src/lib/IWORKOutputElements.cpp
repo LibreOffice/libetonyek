@@ -312,15 +312,17 @@ private:
 class OpenFormulaCellElement : public IWORKOutputElement
 {
 public:
-  OpenFormulaCellElement(const librevenge::RVNGPropertyList &propList, const IWORKFormula &formula, const IWORKTableNameMapPtr_t &tableNameMap)
+  OpenFormulaCellElement(const librevenge::RVNGPropertyList &propList, const IWORKFormula &formula, const boost::optional<unsigned> &formulaHC, const IWORKTableNameMapPtr_t &tableNameMap)
     : m_propList(propList)
     , m_formula(formula)
+    , m_formulaHC(formulaHC)
     , m_tableNameMap(tableNameMap) {}
   ~OpenFormulaCellElement() override {}
   void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
   const IWORKFormula m_formula;
+  const boost::optional<unsigned> m_formulaHC;
   const IWORKTableNameMapPtr_t &m_tableNameMap;
 };
 
@@ -713,7 +715,7 @@ void OpenFormulaCellElement::write(IWORKDocumentInterface *iface) const
   librevenge::RVNGPropertyList cellProps(m_propList);
 
   librevenge::RVNGPropertyListVector propsVector;
-  m_formula.write(propsVector, m_tableNameMap);
+  m_formula.write(m_formulaHC, propsVector, m_tableNameMap);
   cellProps.insert("librevenge:formula", propsVector);
 
   if (iface)
@@ -1012,9 +1014,9 @@ void IWORKOutputElements::addOpenEndnote(const librevenge::RVNGPropertyList &pro
   m_elements.push_back(make_shared<OpenEndnoteElement>(propList));
 }
 
-void IWORKOutputElements::addOpenFormulaCell(const librevenge::RVNGPropertyList &propList, const IWORKFormula &formula, const IWORKTableNameMapPtr_t &tableNameMap)
+void IWORKOutputElements::addOpenFormulaCell(const librevenge::RVNGPropertyList &propList, const IWORKFormula &formula, const boost::optional<unsigned> &formulaHC, const IWORKTableNameMapPtr_t &tableNameMap)
 {
-  m_elements.push_back(std::shared_ptr<OpenFormulaCellElement>(new OpenFormulaCellElement(propList, formula, tableNameMap)));
+  m_elements.push_back(std::shared_ptr<OpenFormulaCellElement>(new OpenFormulaCellElement(propList, formula, formulaHC, tableNameMap)));
 }
 
 void IWORKOutputElements::addOpenFooter(const librevenge::RVNGPropertyList &propList)

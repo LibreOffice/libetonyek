@@ -151,7 +151,9 @@ IWORKTableData::IWORKTableData()
   , m_rowSpan()
   , m_cellMove()
   , m_content()
+  , m_dateTime()
   , m_formula()
+  , m_formulaHC()
   , m_horizontalLines()
   , m_verticalLines()
   , m_style()
@@ -230,6 +232,12 @@ IWORKNumberFormat::IWORKNumberFormat()
   , m_accountingStyle(false)
   , m_base(0)
   , m_basePlaces(0)
+{
+}
+
+IWORKDateTimeData::IWORKDateTimeData()
+  : m_year(0), m_month(1), m_day(0),
+    m_hour(0), m_minute(0), m_second(0)
 {
 }
 

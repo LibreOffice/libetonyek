@@ -698,7 +698,7 @@ void IWORKText::insertField(IWORKFieldType type)
     propList.insert("style:num-format", "1"); // FIXME
     break;
   case IWORK_FIELD_DATETIME:
-    ETONYEK_DEBUG_MSG(("IWORKText::insertField: sending datetime is not implemented\n"));
+    ETONYEK_DEBUG_MSG(("IWORKText::insertField: unexpected field\n"));
     return;
   }
   if (!m_inSpan)

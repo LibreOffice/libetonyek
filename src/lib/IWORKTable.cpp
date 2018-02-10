@@ -51,7 +51,7 @@ void writeBorder(librevenge::RVNGPropertyList &props, const char *name, IWORKGri
     writeBorder(style->get<property::SFTStrokeProperty>(), name, props);
 }
 
-void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStyleStack &style, const IWORKCellType type, const optional<string> &styleName, const boost::optional<std::string> &value)
+void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStyleStack &style, const IWORKCellType type, const optional<string> &styleName, const boost::optional<std::string> &value, const boost::optional<IWORKDateTimeData> &dateTime)
 {
   using namespace property;
 
@@ -90,23 +90,39 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStyleStack 
     }
     break;
   case IWORK_CELL_TYPE_DATE_TIME :
-    if (value)
+    if (value || dateTime)
     {
       if (styleName)
         props.insert("librevenge:name", get(styleName).c_str());
       props.insert("librevenge:value-type", "date");
 
-      const double seconds = double_cast(get(value).c_str());
-      const std::time_t t = ETONYEK_EPOCH_BEGIN + seconds;
-      struct tm *const time = gmtime(&t);
+      if (dateTime)
+      {
+        props.insert("librevenge:day", get(dateTime).m_day);
+        props.insert("librevenge:month", get(dateTime).m_month);
+        props.insert("librevenge:year", get(dateTime).m_year);
+        props.insert("librevenge:hours", get(dateTime).m_hour);
+        props.insert("librevenge:minutes", get(dateTime).m_minute);
+        props.insert("librevenge:seconds", get(dateTime).m_second);
+      }
+      else
+      {
+        boost::optional<double> seconds=try_double_cast(get(value).c_str());
+        if (!seconds)
+        {
+          ETONYEK_DEBUG_MSG(("writeCellFormat: can not read seconds\n"));
+          break;
+        }
+        const std::time_t t = ETONYEK_EPOCH_BEGIN + get(seconds);
+        struct tm *const time = gmtime(&t);
 
-      props.insert("librevenge:day", time->tm_mday);
-      props.insert("librevenge:month", time->tm_mon + 1);
-      props.insert("librevenge:year", time->tm_year + 1900);
-      props.insert("librevenge:hours", time->tm_hour);
-      props.insert("librevenge:minutes", time->tm_min);
-      props.insert("librevenge:seconds", time->tm_sec);
-
+        props.insert("librevenge:day", time->tm_mday);
+        props.insert("librevenge:month", time->tm_mon + 1);
+        props.insert("librevenge:year", time->tm_year + 1900);
+        props.insert("librevenge:hours", time->tm_hour);
+        props.insert("librevenge:minutes", time->tm_min);
+        props.insert("librevenge:seconds", time->tm_sec);
+      }
     }
     break;
   case IWORK_CELL_TYPE_DURATION :
@@ -126,7 +142,7 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStyleStack 
         props.insert("librevenge:name", get(styleName).c_str());
     }
     break;
-  case IWORK_CELL_TYPE_BOOL:
+  case IWORK_CELL_TYPE_BOOL :
     props.insert("librevenge:value-type", "boolean");
     props.insert("librevenge:value", value ? get(value).c_str() : "0"); // false is default
     break;
@@ -197,7 +213,7 @@ void writeCellStyle(librevenge::RVNGPropertyList &props, const IWORKStyleStack &
   }
 }
 
-librevenge::RVNGString convertCellValueInText(const IWORKStyleStack &style, const IWORKCellType type, const boost::optional<std::string> &value)
+librevenge::RVNGString convertCellValueInText(const IWORKStyleStack &style, const IWORKCellType type, const boost::optional<std::string> &value, const boost::optional<IWORKDateTimeData> &dateTime)
 {
   using namespace property;
   switch (type)
@@ -236,12 +252,29 @@ librevenge::RVNGString convertCellValueInText(const IWORKStyleStack &style, cons
   }
   case IWORK_CELL_TYPE_DATE_TIME :
   {
+    if (dateTime)
+    {
+      librevenge::RVNGString res;
+      if (get(dateTime).m_hour)
+        res.sprintf("%d/%d/%d %d:%d", get(dateTime).m_month, get(dateTime).m_day, get(dateTime).m_year, get(dateTime).m_hour, get(dateTime).m_minute);
+      else
+        res.sprintf("%d/%d/%d", get(dateTime).m_month, get(dateTime).m_day, get(dateTime).m_year);
+      return res;
+    }
     if (!value) break;
-    const double seconds = double_cast(get(value).c_str());
-    const std::time_t t = ETONYEK_EPOCH_BEGIN + seconds;
+    boost::optional<double> seconds=try_double_cast(get(value).c_str());
+    if (!seconds)
+    {
+      ETONYEK_DEBUG_MSG(("convertCellValueInTexwt: can not read seconds\n"));
+      break;
+    }
+    const std::time_t t = ETONYEK_EPOCH_BEGIN + get(seconds);
     struct tm *const time = gmtime(&t);
     librevenge::RVNGString res;
-    res.sprintf("%d/%d/%d", time->tm_mon + 1, time->tm_mday, time->tm_year + 1900);
+    if (time->tm_hour)
+      res.sprintf("%d/%d/%d %d:%d", time->tm_mon + 1, time->tm_mday, time->tm_year + 1900, time->tm_hour, time->tm_min);
+    else
+      res.sprintf("%d/%d/%d", time->tm_mon + 1, time->tm_mday, time->tm_year + 1900);
     return res;
   }
   case IWORK_CELL_TYPE_DURATION :
@@ -252,7 +285,7 @@ librevenge::RVNGString convertCellValueInText(const IWORKStyleStack &style, cons
     res.sprintf("%d:%d:%d", seconds / 3600, (seconds % 3600) / 60, (seconds % 3600) % 60);
     return res;
   }
-  case IWORK_CELL_TYPE_BOOL:
+  case IWORK_CELL_TYPE_BOOL :
     return value && get(value)!="0" ? "true" : "false";
   case IWORK_CELL_TYPE_TEXT :
   default:
@@ -269,9 +302,11 @@ IWORKTable::Cell::Cell()
   , m_rowSpan(1)
   , m_covered(false)
   , m_formula()
+  , m_formulaHC()
   , m_style()
   , m_type(IWORK_CELL_TYPE_TEXT)
   , m_value()
+  , m_dateTime()
 {
 }
 
@@ -391,11 +426,11 @@ void IWORKTable::setBorders(const IWORKGridLineMap_t &verticalLines, const IWORK
   m_horizontalLines = horizontalLines;
 }
 
-void IWORKTable::insertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const std::shared_ptr<IWORKText> &text, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, const IWORKCellType type)
+void IWORKTable::insertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const std::shared_ptr<IWORKText> &text, const boost::optional<IWORKDateTimeData> &dateTime, const unsigned columnSpan, const unsigned rowSpan, const IWORKFormulaPtr_t &formula, const boost::optional<unsigned> &formulaHC, const IWORKStylePtr_t &style, const IWORKCellType type)
 {
   if (bool(m_recorder))
   {
-    m_recorder->insertCell(column, row, value, text, columnSpan, rowSpan, formula, style, type);
+    m_recorder->insertCell(column, row, value, text, dateTime, columnSpan, rowSpan, formula, formulaHC, style, type);
     return;
   }
 
@@ -422,9 +457,11 @@ void IWORKTable::insertCell(const unsigned column, const unsigned row, const boo
   cell.m_columnSpan = columnSpan;
   cell.m_rowSpan = rowSpan;
   cell.m_formula = formula;
+  cell.m_formulaHC = formulaHC;
   cell.m_style = style;
   cell.m_type = type;
   cell.m_value = value;
+  cell.m_dateTime = dateTime;
   m_table[row][column] = cell;
 }
 
@@ -503,7 +540,7 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
         IWORKStyleStack style;
         style.push(getDefaultCellStyle(c, r));
         style.push(cell.m_style);
-        writeCellFormat(cellProps, style, cell.m_type, cell.m_style ? cell.m_style->getIdent() : none, cell.m_value);
+        writeCellFormat(cellProps, style, cell.m_type, cell.m_style ? cell.m_style->getIdent() : none, cell.m_value, cell.m_dateTime);
         writeCellStyle(cellProps, style);
 
         IWORKStyleStack pStyle;
@@ -513,7 +550,7 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
         IWORKText::fillCharPropList(pStyle, m_langManager, cellProps);
 
         if (!drawAsSimpleTable && cell.m_formula)
-          elements.addOpenFormulaCell(cellProps, get(cell.m_formula), m_tableNameMap);
+          elements.addOpenFormulaCell(cellProps, *cell.m_formula, cell.m_formulaHC, m_tableNameMap);
         else
           elements.addOpenTableCell(cellProps);
 
@@ -521,7 +558,7 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
           elements.append(cell.m_content);
         else if (drawAsSimpleTable)
         {
-          librevenge::RVNGString value=convertCellValueInText(style, cell.m_type, cell.m_value);
+          librevenge::RVNGString value=convertCellValueInText(style, cell.m_type, cell.m_value, cell.m_dateTime);
           if (!value.empty())
           {
             librevenge::RVNGPropertyList const empty;

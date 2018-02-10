@@ -13,6 +13,8 @@
 #include <memory>
 #include <string>
 
+#include <boost/optional.hpp>
+
 #include "IWORKTypes_fwd.h"
 #include "libetonyek_utils.h"
 
@@ -24,16 +26,18 @@ class IWORKFormula
   struct Impl;
 
 public:
-  IWORKFormula();
+  IWORKFormula(const boost::optional<unsigned> &hc);
 
   bool parse(const std::string &formula);
 
-  const std::string str() const;
+  const std::string str(const boost::optional<unsigned> &hc) const;
 
-  void write(librevenge::RVNGPropertyListVector &formula, const IWORKTableNameMapPtr_t &tableNameMap) const;
+  void write(const boost::optional<unsigned> &hc, librevenge::RVNGPropertyListVector &formula, const IWORKTableNameMapPtr_t &tableNameMap) const;
 
 private:
+  bool computeOffset(const boost::optional<unsigned> &hc, int &offsetColumn, int &offsetRow) const;
   std::shared_ptr<Impl> m_impl;
+  boost::optional<unsigned> m_hc;
 };
 
 } // namespace libetonyek

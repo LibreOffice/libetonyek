@@ -27,6 +27,7 @@
 #include "IWORKText.h"
 #include "IWORKTextBodyElement.h"
 #include "IWORKToken.h"
+#include "PAG1AnnotationElement.h"
 #include "PAG1Dictionary.h"
 #include "PAG1FootnotesElement.h"
 #include "PAG1ParserState.h"
@@ -421,6 +422,10 @@ IWORKXMLContextPtr_t PElement::element(const int name)
     return makeContext<LinkElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::span :
     return makeContext<SpanElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::annotation_field :
+    return makeContext<PAG1AnnotationElement>(getState(),*this);
+  case IWORKToken::NS_URI_SF | IWORKToken::annotation_field_ref :
+    return makeContext<PAG1AnnotationElement>(getState(),*this,true);
   }
 
   const IWORKXMLContextPtr_t context = m_footnoteHelper.element(name);

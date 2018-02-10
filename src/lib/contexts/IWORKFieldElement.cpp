@@ -65,7 +65,7 @@ void IWORKFieldElement::text(const char *const value)
 
 void IWORKFieldElement::endOfElement()
 {
-  if (m_type!=IWORK_FIELD_DATETIME)
+  if (bool(getState().m_currentText) && m_type!=IWORK_FIELD_DATETIME)
     getState().m_currentText->insertField(m_type);
 }
 

@@ -108,14 +108,16 @@ struct SetBorders
 
 struct InsertCell
 {
-  InsertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const std::shared_ptr<IWORKText> &content, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, IWORKCellType type)
+  InsertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const std::shared_ptr<IWORKText> &content, const boost::optional<IWORKDateTimeData> &dateTime, const unsigned columnSpan, const unsigned rowSpan, const IWORKFormulaPtr_t &formula, const boost::optional<unsigned> &formulaHC, const IWORKStylePtr_t &style, IWORKCellType type)
     : m_column(column)
     , m_row(row)
     , m_value(value)
     , m_content(content)
+    , m_dateTime(dateTime)
     , m_columnSpan(columnSpan)
     , m_rowSpan(rowSpan)
     , m_formula(formula)
+    , m_formulaHC(formulaHC)
     , m_style(style)
     , m_type(type)
   {
@@ -125,9 +127,11 @@ struct InsertCell
   const unsigned m_row;
   const boost::optional<std::string> m_value;
   const std::shared_ptr<IWORKText> m_content;
+  const boost::optional<IWORKDateTimeData> m_dateTime;
   const unsigned m_columnSpan;
   const unsigned m_rowSpan;
-  const boost::optional<IWORKFormula> m_formula;
+  const IWORKFormulaPtr_t m_formula;
+  boost::optional<unsigned> m_formulaHC;
   const IWORKStylePtr_t m_style;
   const IWORKCellType m_type;
 };
@@ -249,7 +253,7 @@ struct Sender : public boost::static_visitor<void>
     value.m_content->setRecorder(shared_ptr<IWORKTextRecorder>());
     if (bool(recorder))
       recorder->replay(*value.m_content);
-    m_table.insertCell(value.m_column, value.m_row, value.m_value, value.m_content, value.m_columnSpan, value.m_rowSpan, value.m_formula, value.m_style, value.m_type);
+    m_table.insertCell(value.m_column, value.m_row, value.m_value, value.m_content, value.m_dateTime, value.m_columnSpan, value.m_rowSpan, value.m_formula, value.m_formulaHC, value.m_style, value.m_type);
   }
 
   void operator()(const InsertCoveredCell &value) const
@@ -337,9 +341,9 @@ void IWORKTableRecorder::setBorders(const IWORKGridLineMap_t &verticalLines, con
   m_impl->m_elements.push_back(SetBorders(verticalLines, horizontalLines));
 }
 
-void IWORKTableRecorder::insertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const std::shared_ptr<IWORKText> &content, const unsigned columnSpan, const unsigned rowSpan, const boost::optional<IWORKFormula> &formula, const IWORKStylePtr_t &style, const IWORKCellType type)
+void IWORKTableRecorder::insertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const std::shared_ptr<IWORKText> &content, const boost::optional<IWORKDateTimeData> &dateTime, const unsigned columnSpan, const unsigned rowSpan, const IWORKFormulaPtr_t &formula, const boost::optional<unsigned> &formulaHC, const IWORKStylePtr_t &style, const IWORKCellType type)
 {
-  m_impl->m_elements.push_back(InsertCell(column, row, value, content, columnSpan, rowSpan, formula, style, type));
+  m_impl->m_elements.push_back(InsertCell(column, row, value, content, dateTime, columnSpan, rowSpan, formula, formulaHC, style, type));
 }
 
 void IWORKTableRecorder::insertCoveredCell(const unsigned column, const unsigned row)

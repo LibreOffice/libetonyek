@@ -100,6 +100,8 @@ typedef std::deque<IWORKTabStop> IWORKTabStops_t;
 typedef std::unordered_map<ID_t, IWORKTabStops_t> IWORKTabStopsMap_t;
 typedef mdds::flat_segment_tree<unsigned, IWORKStylePtr_t> IWORKGridLine_t;
 typedef std::map<unsigned,IWORKGridLine_t> IWORKGridLineMap_t;
+typedef std::shared_ptr<IWORKFormula> IWORKFormulaPtr_t;
+typedef std::unordered_map<ID_t, IWORKFormulaPtr_t> IWORKFormulaMap_t;
 
 struct IWORKLine
 {
@@ -176,6 +178,15 @@ struct IWORKLineSpacing
   bool m_relative;
 };
 
+struct IWORKDateTimeData
+{
+  IWORKDateTimeData();
+
+  int m_year, m_month, m_day;
+  int m_hour, m_minute;
+  float m_second;
+};
+
 struct IWORKTableData
 {
   IWORKTableData();
@@ -192,7 +203,9 @@ struct IWORKTableData
   boost::optional<unsigned> m_rowSpan;
   boost::optional<unsigned> m_cellMove;
   boost::optional<std::string> m_content;
-  boost::optional<IWORKFormula> m_formula;
+  boost::optional<IWORKDateTimeData> m_dateTime;
+  IWORKFormulaPtr_t m_formula;
+  boost::optional<unsigned> m_formulaHC;
   IWORKGridLineMap_t m_horizontalLines;
   IWORKGridLineMap_t m_verticalLines;
   IWORKStylePtr_t m_style;

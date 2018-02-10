@@ -203,8 +203,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKFieldElement.h \
 	contexts/IWORKFilteredImageElement.cpp \
 	contexts/IWORKFilteredImageElement.h \
-	contexts/IWORKFoElement.cpp \
-	contexts/IWORKFoElement.h \
+	contexts/IWORKFormulaElement.cpp \
+	contexts/IWORKFormulaElement.h \
 	contexts/IWORKGeometryElement.cpp \
 	contexts/IWORKGeometryElement.h \
 	contexts/IWORKGroupElement.cpp \
@@ -292,6 +292,10 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKValueContext.h \
 	contexts/KEY2StyleContext.cpp \
 	contexts/KEY2StyleContext.h \
+	contexts/PAG1AnnotationContext.cpp \
+	contexts/PAG1AnnotationContext.h \
+	contexts/PAG1AnnotationElement.cpp \
+	contexts/PAG1AnnotationElement.h \
 	contexts/PAG1FootnotesElement.cpp \
 	contexts/PAG1FootnotesElement.h \
 	contexts/PAG1StyleContext.cpp \

@@ -52,6 +52,8 @@ struct IWORKDictionary
 
   IWORKPathMap_t m_beziers;
 
+  IWORKFormulaMap_t m_formulas;
+
   IWORKDataMap_t m_data;
   IWORKMediaContentMap_t m_binaries;
   IWORKMediaContentMap_t m_unfiltereds;

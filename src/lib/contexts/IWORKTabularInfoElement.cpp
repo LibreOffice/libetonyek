@@ -18,7 +18,7 @@
 #include "libetonyek_xml.h"
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
-#include "IWORKFoElement.h"
+#include "IWORKFormulaElement.h"
 #include "IWORKGeometryElement.h"
 #include "IWORKProperties.h"
 #include "IWORKRefContext.h"
@@ -219,9 +219,9 @@ void CellContextBase::emitCell(const bool covered)
       }
       getState().m_currentTable->insertCell(
         tableData->m_column, tableData->m_row,
-        tableData->m_content, cellText,
+        tableData->m_content, cellText, tableData->m_dateTime,
         get_optional_value_or(tableData->m_columnSpan, 1), get_optional_value_or(tableData->m_rowSpan, 1),
-        tableData->m_formula, tableData->m_style, tableData->m_type
+        tableData->m_formula, tableData->m_formulaHC, tableData->m_style, tableData->m_type
       );
     }
   }
@@ -231,6 +231,7 @@ void CellContextBase::emitCell(const bool covered)
   tableData->m_rowSpan.reset();
   tableData->m_cellMove.reset();
   tableData->m_content.reset();
+  tableData->m_dateTime.reset();
   tableData->m_formula.reset();
   tableData->m_style.reset();
   tableData->m_type = IWORK_CELL_TYPE_TEXT;
@@ -346,6 +347,7 @@ private:
 DElement::DElement(IWORKXMLParserState &state)
   : CellContextBase(state)
 {
+  getState().m_tableData->m_type = IWORK_CELL_TYPE_BOOL;
 }
 
 void DElement::attribute(const int name, const char *const value)
@@ -566,6 +568,7 @@ private:
 RtElement::RtElement(IWORKXMLParserState &state)
   : IWORKXMLEmptyContextBase(state)
 {
+  getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
 }
 
 IWORKXMLContextPtr_t RtElement::element(const int name)
@@ -642,6 +645,8 @@ IWORKXMLContextPtr_t FElement::element(int name)
   {
   case IWORKToken::fo | IWORKToken::NS_URI_SF :
     return makeContext<IWORKFoElement>(getState());
+  case IWORKToken::of | IWORKToken::NS_URI_SF :
+    return makeContext<IWORKOfElement>(getState());
   case IWORKToken::r | IWORKToken::NS_URI_SF :
     return makeContext<RElement>(getState());
   }
@@ -898,6 +903,7 @@ private:
 SlElement::SlElement(IWORKXMLParserState &state)
   : CellContextBase(state)
 {
+  getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
 }
 
 void SlElement::attribute(const int name, const char *const value)
@@ -906,7 +912,37 @@ void SlElement::attribute(const int name, const char *const value)
   {
   case IWORKToken::v | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
-    getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
+    break;
+  default :
+    CellContextBase::attribute(name, value);
+  }
+}
+
+}
+
+namespace
+{
+class StElement : public CellContextBase
+{
+public:
+  explicit StElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+};
+
+StElement::StElement(IWORKXMLParserState &state)
+  : CellContextBase(state)
+{
+  getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
+}
+
+void StElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::v | IWORKToken::NS_URI_SF :
+    getState().m_tableData->m_content = value;
     break;
   default :
     CellContextBase::attribute(name, value);
@@ -931,6 +967,7 @@ private:
 TElement::TElement(IWORKXMLParserState &state)
   : CellContextBase(state)
 {
+  getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
 }
 
 void TElement::startOfElement()
@@ -1009,11 +1046,12 @@ IWORKXMLContextPtr_t DatasourceElement::element(const int name)
   case IWORKToken::sl | IWORKToken::NS_URI_SF :
     return makeContext<SlElement>(getState());
   case IWORKToken::st | IWORKToken::NS_URI_SF :
-    return makeContext<SlElement>(getState());
+    return makeContext<StElement>(getState());
   case IWORKToken::t | IWORKToken::NS_URI_SF :
     return makeContext<TElement>(getState());
   }
 
+  ETONYEK_DEBUG_MSG(("DatasourceElement::element: found unexpected element\n"));
   return IWORKXMLContextPtr_t();
 }
 
