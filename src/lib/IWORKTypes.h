@@ -182,6 +182,26 @@ struct IWORKDateTimeData
   float m_second;
 };
 
+struct IWORKTableVector
+{
+  IWORKTableVector();
+  boost::optional<unsigned> m_axis;
+  boost::optional<double> m_along;
+  boost::optional<unsigned> m_beginCell;
+  boost::optional<unsigned> m_endCell;
+  IWORKStylePtr_t m_style;
+};
+typedef std::unordered_map<ID_t, IWORKTableVector> IWORKTableVectorMap_t;
+
+struct IWORKTableCell
+{
+  IWORKTableCell();
+  IWORKStylePtr_t m_style;
+  boost::optional<double> m_preferredHeight;
+  IWORKTableVector m_minXBorder, m_maxXBorder, m_minYBorder, m_maxYBorder;
+};
+typedef std::unordered_map<ID_t, IWORKTableCell> IWORKTableCellMap_t;
+
 struct IWORKTableData
 {
   IWORKTableData();
@@ -203,6 +223,8 @@ struct IWORKTableData
   boost::optional<unsigned> m_formulaHC;
   IWORKGridLineMap_t m_horizontalLines;
   IWORKGridLineMap_t m_verticalLines;
+  std::unordered_map<double, unsigned> m_positionToHorizontalLineMap;
+  std::unordered_map<double, unsigned> m_positionToVerticalLineMap;
   IWORKStylePtr_t m_style;
   IWORKCellType m_type;
 };

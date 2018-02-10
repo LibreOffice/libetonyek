@@ -24,14 +24,16 @@
 #include "IWORKPathElement.h"
 #include "IWORKPositionElement.h"
 #include "IWORKRefContext.h"
-#include "IWORKStyle.h"
 #include "IWORKShapeContext.h"
 #include "IWORKSizeElement.h"
 #include "IWORKStringElement.h"
+#include "IWORKStyle.h"
+#include "IWORKStyleContainer.h"
 #include "IWORKStyleContext.h"
 #include "IWORKStyleRefContext.h"
 #include "IWORKStylesContext.h"
 #include "IWORKStylesheetBase.h"
+#include "IWORKTableInfoElement.h"
 #include "IWORKTabularInfoElement.h"
 #include "IWORKText.h"
 #include "IWORKTextElement.h"
@@ -312,21 +314,25 @@ void ProxyMasterLayerElement::endOfElement()
 namespace
 {
 
+enum PlaceholderRefType
+{
+  PLACEHOLDER_BODY, PLACEHOLDER_OBJECT, PLACEHOLDER_SLIDENUMBER, PLACEHOLDER_TITLE
+};
 class PlaceholderRefContext : public KEY2XMLEmptyContextBase
 {
 public:
-  PlaceholderRefContext(KEY2ParserState &state, bool title);
+  PlaceholderRefContext(KEY2ParserState &state, const PlaceholderRefType kind);
 
 private:
   void endOfElement() override;
 
 private:
-  const bool m_title;
+  const PlaceholderRefType m_kind;
 };
 
-PlaceholderRefContext::PlaceholderRefContext(KEY2ParserState &state, const bool title)
+PlaceholderRefContext::PlaceholderRefContext(KEY2ParserState &state, const PlaceholderRefType kind)
   : KEY2XMLEmptyContextBase(state)
-  , m_title(title)
+  , m_kind(kind)
 {
 }
 
@@ -335,10 +341,17 @@ void PlaceholderRefContext::endOfElement()
   if (getRef() && isCollector())
   {
     KEY2Dictionary &dict = getState().getDictionary();
-    KEYPlaceholderMap_t &placeholderMap = m_title ? dict.m_titlePlaceholders : dict.m_bodyPlaceholders;
+    KEYPlaceholderMap_t &placeholderMap =
+      m_kind==PLACEHOLDER_BODY ? dict.m_bodyPlaceholders :
+      m_kind==PLACEHOLDER_OBJECT ? dict.m_objectPlaceholders :
+      m_kind==PLACEHOLDER_SLIDENUMBER ? dict.m_slidenumberPlaceholders : dict.m_titlePlaceholders;
     const KEYPlaceholderMap_t::const_iterator it = placeholderMap.find(get(getRef()));
     if (placeholderMap.end() != it)
       getCollector().insertTextPlaceholder(it->second);
+    else
+    {
+      ETONYEK_DEBUG_MSG(("PlaceholderRefContext::endOfElement[KEY2Parser.cpp]: can not find placeHolder %s\n", get(getRef()).c_str()));
+    }
   }
 }
 
@@ -388,6 +401,92 @@ void ConnectionLineElement::endOfElement()
 namespace
 {
 
+class HeadlineElement : public KEY2XMLElementContextBase
+{
+public:
+  explicit HeadlineElement(KEY2ParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual void startOfElement();
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+  optional<ID_t> m_styleRef;
+  optional<int> m_depth;
+};
+
+HeadlineElement::HeadlineElement(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
+  , m_styleRef()
+  , m_depth()
+{
+}
+
+void HeadlineElement::attribute(int name, const char *value)
+{
+  switch (name)
+  {
+  case KEY2Token::NS_URI_KEY | KEY2Token::depth :
+    m_depth=try_int_cast(value);
+    break;
+  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+    KEY2XMLElementContextBase::attribute(name, value);
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("HeadlineElement::attribute[KEY2Parser.cpp]: unknown attribute\n"));
+    break;
+  }
+}
+
+void HeadlineElement::startOfElement()
+{
+  if (isCollector())
+  {
+    assert(!getState().m_currentText);
+    getState().m_currentText = getCollector().createText(getState().m_langManager);
+    getCollector().startLevel();
+  }
+}
+
+IWORKXMLContextPtr_t HeadlineElement::element(const int name)
+{
+  switch (name)
+  {
+  case KEY2Token::NS_URI_KEY | KEY2Token::style_ref :
+    return makeContext<IWORKRefContext>(getState(), m_styleRef);
+  case KEY2Token::NS_URI_KEY | KEY2Token::text :
+    return makeContext<IWORKTextElement>(getState());
+  default:
+    ETONYEK_DEBUG_MSG(("HeadlineElement::element[KEY2Parser.cpp]: unknown element\n"));
+    break;
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void HeadlineElement::endOfElement()
+{
+  if (isCollector())
+  {
+    //getCollector().collectText(getState().m_currentText);
+    getState().m_currentText.reset();
+    //getCollector().collectHeadline();
+
+    getCollector().endLevel();
+  }
+}
+
+}
+
+namespace
+{
+typedef IWORKStyleContainer<IWORKToken::NS_URI_SF | IWORKToken::graphic_style, IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref> GraphicStyleContext;
+}
+
+namespace
+{
+
 class StickyNoteElement : public KEY2XMLElementContextBase
 {
 public:
@@ -397,10 +496,13 @@ private:
   void startOfElement() override;
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
+
+  IWORKStylePtr_t m_graphicStyle;
 };
 
 StickyNoteElement::StickyNoteElement(KEY2ParserState &state)
   : KEY2XMLElementContextBase(state)
+  , m_graphicStyle()
 {
 }
 
@@ -420,9 +522,16 @@ IWORKXMLContextPtr_t StickyNoteElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::geometry :
     return makeContext<IWORKGeometryElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::path : // use me
+    return makeContext<IWORKPathElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::style : // use me
+    return makeContext<GraphicStyleContext>(getState(), m_graphicStyle, getState().getDictionary().m_graphicStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::text :
     return makeContext<IWORKTextElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::wrap : // README
+    return IWORKXMLContextPtr_t();
   default:
+    ETONYEK_DEBUG_MSG(("StickyNoteElement::element[KEY2Parser.cpp]: unknown element\n"));
     break;
   }
 
@@ -439,6 +548,40 @@ void StickyNoteElement::endOfElement()
 
     getCollector().endLevel();
   }
+}
+
+}
+
+namespace
+{
+
+class BulletsElement : public KEY2XMLElementContextBase
+{
+public:
+  explicit BulletsElement(KEY2ParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+
+private:
+};
+
+BulletsElement::BulletsElement(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t BulletsElement::element(const int name)
+{
+  switch (name)
+  {
+  case KEY2Token::NS_URI_KEY | KEY2Token::headline :
+    return makeContext<HeadlineElement>(getState());
+  default:
+    break;
+  }
+
+  return IWORKXMLContextPtr_t();
 }
 
 }
@@ -478,7 +621,7 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::body_placeholder_ref :
-    return makeContext<PlaceholderRefContext>(getState(), false);
+    return makeContext<PlaceholderRefContext>(getState(), PLACEHOLDER_BODY);
   case IWORKToken::NS_URI_SF | IWORKToken::connection_line :
     return makeContext<ConnectionLineElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::group :
@@ -493,10 +636,12 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
     return makeContext<IWORKShapeContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::sticky_note :
     return makeContext<StickyNoteElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::table_info :
+    return makeContext<IWORKTableInfoElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
     return makeContext<IWORKTabularInfoElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::title_placeholder_ref :
-    return makeContext<PlaceholderRefContext>(getState(), true);
+    return makeContext<PlaceholderRefContext>(getState(), PLACEHOLDER_TITLE);
   case KEY2Token::NS_URI_KEY | KEY2Token::sticky_note :
     return makeContext<StickyNoteElement>(getState());
   default:
@@ -787,6 +932,8 @@ IWORKXMLContextPtr_t MasterSlideElement::element(const int name)
 {
   switch (name)
   {
+  case KEY2Token::NS_URI_KEY | KEY2Token::bullets :
+    return makeContext<BulletsElement>(getState());
   case KEY2Token::NS_URI_KEY | KEY2Token::page :
     return makeContext<PageElement>(getState());
   case KEY2Token::NS_URI_KEY | KEY2Token::stylesheet :
@@ -1060,10 +1207,14 @@ IWORKXMLContextPtr_t SlideElement::element(const int name)
     return makeContext<IWORKRefContext>(getState(), m_styleRef);
   case KEY2Token::NS_URI_KEY | KEY2Token::stylesheet :
     return makeContext<StylesheetElement>(getState());
-  case KEY2Token::NS_URI_KEY | KEY2Token::title_placeholder :
-    return makeContext<PlaceholderContext>(getState(), true);
   case KEY2Token::NS_URI_KEY | KEY2Token::body_placeholder :
-    return makeContext<PlaceholderContext>(getState(), false);
+    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_BODY);
+  case KEY2Token::NS_URI_KEY | KEY2Token::object_placeholder :
+    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_OBJECT);
+  case KEY2Token::NS_URI_KEY | KEY2Token::slide_number_placeholder :
+    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_SLIDENUMBER);
+  case KEY2Token::NS_URI_KEY | KEY2Token::title_placeholder :
+    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_TITLE);
   case KEY2Token::NS_URI_KEY | KEY2Token::sticky_notes :
     return makeContext<StickyNotesElement>(getState());
   default:
@@ -1082,6 +1233,10 @@ void SlideElement::endOfElement()
       const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_slideStyles.find(get(m_styleRef));
       if (it != getState().getDictionary().m_slideStyles.end())
         getCollector().setSlideStyle(it->second);
+      else
+      {
+        ETONYEK_DEBUG_MSG(("SlideElement::endOfElement[KEY2Parser.cpp]: unknown style %s\n", get(m_styleRef).c_str()));
+      }
     }
     getCollector().collectPage();
     getCollector().endPage();
@@ -1177,7 +1332,7 @@ void PresentationElement::attribute(const int name, const char *const value)
     const unsigned version = getVersion(getToken(value));
     if (0 == version)
     {
-      ETONYEK_DEBUG_MSG(("unknown version %s\n", value));
+      ETONYEK_DEBUG_MSG(("PresentationElement::attribute[KEY2Parser.cpp]: unknown version %s\n", value));
     }
   }
   break;

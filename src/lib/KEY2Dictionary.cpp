@@ -16,6 +16,8 @@ KEY2Dictionary::KEY2Dictionary()
   : IWORKDictionary()
   , m_placeholderStyles()
   , m_bodyPlaceholders()
+  , m_objectPlaceholders()
+  , m_slidenumberPlaceholders()
   , m_titlePlaceholders()
   , m_layers()
 {

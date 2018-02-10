@@ -124,7 +124,6 @@ KEYPlaceholderPtr_t KEYCollector::collectTextPlaceholder(const IWORKStylePtr_t &
     m_styleStack.pop();
   }
   placeholder->m_text = m_currentText;
-
   m_currentText.reset();
 
   return placeholder;
@@ -180,6 +179,7 @@ void KEYCollector::collectStickyNote()
   }
 
   m_levelStack.top().m_geometry.reset();
+  m_currentPath.reset();
 }
 
 void KEYCollector::setSlideStyle(const IWORKStylePtr_t &style)

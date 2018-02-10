@@ -137,6 +137,25 @@ IWORKLineSpacing::IWORKLineSpacing(const double amount, const bool relative)
 {
 }
 
+IWORKTableVector::IWORKTableVector()
+  : m_axis()
+  , m_along()
+  , m_beginCell()
+  , m_endCell()
+  , m_style()
+{
+}
+
+IWORKTableCell::IWORKTableCell()
+  : m_style()
+  , m_preferredHeight()
+  , m_minXBorder()
+  , m_maxXBorder()
+  , m_minYBorder()
+  , m_maxYBorder()
+{
+}
+
 IWORKTableData::IWORKTableData()
   : m_columnSizes()
   , m_rowSizes()
@@ -153,6 +172,8 @@ IWORKTableData::IWORKTableData()
   , m_formulaHC()
   , m_horizontalLines()
   , m_verticalLines()
+  , m_positionToHorizontalLineMap()
+  , m_positionToVerticalLineMap()
   , m_style()
   , m_type(IWORK_CELL_TYPE_TEXT)
 {

@@ -647,7 +647,7 @@ IWORKXMLContextPtr_t FElement::element(int name)
   switch (name)
   {
   case IWORKToken::fo | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKFormulaElement>(getState());
+    return makeContext<IWORKFoElement>(getState());
   case IWORKToken::of | IWORKToken::NS_URI_SF :
     return makeContext<IWORKOfElement>(getState());
   case IWORKToken::r | IWORKToken::NS_URI_SF :
@@ -723,7 +723,7 @@ IWORKXMLContextPtr_t GroupingElement::element(int name)
     return IWORKXMLContextPtr_t();
   }
   case IWORKToken::fo | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKFormulaElement>(getState());
+    return makeContext<IWORKFoElement>(getState());
   default:
     break;
   }
@@ -1900,7 +1900,7 @@ void IWORKTabularModelElement::endOfElement()
     return;
 
   if (m_id)
-    getState().getDictionary().m_tables[get(m_id)]=getState().m_currentTable;
+    getState().getDictionary().m_tabulars[get(m_id)]=getState().m_currentTable;
   else
   {
     ETONYEK_DEBUG_MSG(("IWORKTabularModelElement::endOfElement: can not find the table id\n"));

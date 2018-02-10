@@ -18,6 +18,24 @@
 namespace libetonyek
 {
 //! class to parse the sf:fo element, ie. formula element
+class IWORKFoElement : public IWORKXMLEmptyContextBase
+{
+public:
+  explicit IWORKFoElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+  const boost::optional<ID_t> &getId() const;
+
+private:
+  boost::optional<ID_t> m_id;
+  boost::optional<std::string> m_formula;
+  boost::optional<unsigned> m_hc;
+};
+
+//! class to parse the sf:formula element
 class IWORKFormulaElement : public IWORKXMLEmptyContextBase
 {
 public:
@@ -33,6 +51,24 @@ private:
   boost::optional<ID_t> m_id;
   boost::optional<std::string> m_formula;
   boost::optional<unsigned> m_hc;
+};
+
+//! class to parse the sf:TableCellFormula element
+class IWORKTableCellFormulaElement : public IWORKXMLEmptyContextBase
+{
+public:
+  explicit IWORKTableCellFormulaElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+  const boost::optional<ID_t> &getId() const;
+
+private:
+  boost::optional<ID_t> m_id;
+  boost::optional<std::string> m_formula;
+  boost::optional<std::string> m_tableId;
 };
 
 //! class to parse the sf:of element, ie formula offset element

@@ -155,8 +155,8 @@ protected:
   IWORKHeaderFooterMap_t m_headers;
   IWORKHeaderFooterMap_t m_footers;
 
-private:
   IWORKPathPtr_t m_currentPath;
+private:
   IWORKDataPtr_t m_currentData;
   IWORKMediaContentPtr_t m_currentUnfiltered;
   IWORKMediaContentPtr_t m_currentFiltered;

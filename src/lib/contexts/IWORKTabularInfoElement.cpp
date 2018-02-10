@@ -75,8 +75,8 @@ void IWORKTabularInfoElement::endOfElement()
 
   if (m_tableRef)
   {
-    IWORKTableMap_t::const_iterator it=getState().getDictionary().m_tables.find(get(m_tableRef));
-    if (it!=getState().getDictionary().m_tables.end())
+    IWORKTableMap_t::const_iterator it=getState().getDictionary().m_tabulars.find(get(m_tableRef));
+    if (it!=getState().getDictionary().m_tabulars.end())
       getState().m_currentTable=it->second;
     else
     {

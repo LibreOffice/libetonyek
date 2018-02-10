@@ -44,6 +44,7 @@ struct IWORKDictionary
   IWORKStyleMap_t m_chartStyles;
   IWORKStyleMap_t m_chartSeriesStyles;
   IWORKStyleMap_t m_graphicStyles;
+  IWORKStyleMap_t m_headlineStyles;
   IWORKStyleMap_t m_layoutStyles;
   IWORKStyleMap_t m_listStyles;
   IWORKStyleMap_t m_paragraphStyles;
@@ -80,8 +81,10 @@ struct IWORKDictionary
   IWORKPatternMap_t m_patterns;
   IWORKShadowMap_t m_shadows;
   IWORKStrokeMap_t m_strokes;
-  IWORKTableMap_t m_tables;
+  IWORKTableCellMap_t m_tableCells;
+  IWORKTableVectorMap_t m_tableVectors;
   IWORKTabStopsMap_t m_tabs;
+  IWORKTableMap_t m_tabulars;
   IWORKListLabelTypeInfoMap_t m_textLabels;
   IWORKMediaContentMap_t m_texturedFillImages;
   IWORKMediaContentMap_t m_unfiltereds;

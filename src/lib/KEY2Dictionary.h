@@ -35,6 +35,8 @@ struct KEY2Dictionary : public IWORKDictionary
   IWORKStyleMap_t m_placeholderStyles;
 
   KEYPlaceholderMap_t m_bodyPlaceholders;
+  KEYPlaceholderMap_t m_objectPlaceholders;
+  KEYPlaceholderMap_t m_slidenumberPlaceholders;
   KEYPlaceholderMap_t m_titlePlaceholders;
 
   KEYLayerMap_t m_layers;

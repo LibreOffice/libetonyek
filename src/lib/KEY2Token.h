@@ -33,20 +33,24 @@ enum
   // elements
   authors,
   body_placeholder,
+  bullets,
   c,
   comment,
+  headline,
   headlineParagraphStyle,
   keywords,
   master_slide,
   master_slides,
   metadata,
   notes,
+  object_placeholder,
   page,
   presentation,
   size,
   slide,
   slide_list,
   slide_style,
+  slide_number_placeholder,
   sticky_note,
   sticky_notes,
   string,
@@ -59,6 +63,7 @@ enum
   title_placeholder,
 
   // attributes
+  depth,
   version,
 
   // attribute values
