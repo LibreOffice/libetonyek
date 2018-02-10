@@ -21,6 +21,7 @@ namespace libetonyek
 class IWORKImageElement : public IWORKXMLElementContextBase
 {
 public:
+  explicit IWORKImageElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
   explicit IWORKImageElement(IWORKXMLParserState &state);
 
 private:
@@ -31,7 +32,8 @@ private:
 
 private:
   boost::optional<bool> m_locked;
-  IWORKMediaContentPtr_t m_content;
+  IWORKMediaContentPtr_t &m_content;
+  IWORKMediaContentPtr_t m_localContent;
   IWORKMediaContentPtr_t m_filteredImage;
   IWORKDataPtr_t m_data;
   boost::optional<IWORKSize> m_size;

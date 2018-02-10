@@ -108,8 +108,10 @@ IWORKData::IWORKData()
 }
 
 IWORKMediaContent::IWORKMediaContent()
-  : m_size()
+  : m_type(IWORK_IMAGE_TYPE_ORIGINAL_SIZE)
+  , m_size()
   , m_data()
+  , m_fillColor()
 {
 }
 
@@ -181,15 +183,6 @@ IWORKGradient::IWORKGradient()
   : m_type(IWORK_GRADIENT_TYPE_LINEAR)
   , m_stops()
   , m_angle(0)
-{
-}
-
-IWORKFillImage::IWORKFillImage()
-  : m_type(IWORK_FILL_IMAGE_TYPE_ORIGINAL_SIZE)
-  , m_color()
-  , m_size()
-  , m_stream()
-  , m_mimeType()
 {
 }
 

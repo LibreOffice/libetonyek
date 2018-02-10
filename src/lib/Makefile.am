@@ -203,6 +203,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKDirectCollector.h \
 	contexts/IWORKFieldElement.cpp \
 	contexts/IWORKFieldElement.h \
+	contexts/IWORKFillElement.cpp \
+	contexts/IWORKFillElement.h \
 	contexts/IWORKFilteredImageElement.cpp \
 	contexts/IWORKFilteredImageElement.h \
 	contexts/IWORKFormulaElement.cpp \

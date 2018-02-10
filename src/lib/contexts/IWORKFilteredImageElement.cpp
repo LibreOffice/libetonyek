@@ -43,15 +43,19 @@ IWORKXMLContextPtr_t IWORKFilteredImageElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::unfiltered_ref :
-    return makeContext<IWORKRefContext>(getState(), m_unfilteredId);
   case IWORKToken::NS_URI_SF | IWORKToken::unfiltered :
     return makeContext<IWORKUnfilteredElement>(getState(), m_unfiltered);
+  case IWORKToken::NS_URI_SF | IWORKToken::unfiltered_ref :
+    return makeContext<IWORKRefContext>(getState(), m_unfilteredId);
   case IWORKToken::NS_URI_SF | IWORKToken::filtered :
     return makeContext<IWORKFilteredElement>(getState(), m_filtered);
   case IWORKToken::NS_URI_SF | IWORKToken::leveled :
     return makeContext<LeveledElement>(getState(), m_leveled);
+  case IWORKToken::NS_URI_SF | IWORKToken::extent : // TODO readme
+  case IWORKToken::NS_URI_SF | IWORKToken::filter_properties :
+    break;
   default:
+    ETONYEK_DEBUG_MSG(("IWORKFilteredImageElement::element: unknown element\n"));
     break;
   }
 
@@ -65,6 +69,10 @@ void IWORKFilteredImageElement::endOfElement()
     const IWORKMediaContentMap_t::const_iterator it = getState().getDictionary().m_unfiltereds.find(get(m_unfilteredId));
     if (getState().getDictionary().m_unfiltereds.end() != it)
       m_unfiltered = it->second;
+    else
+    {
+      ETONYEK_DEBUG_MSG(("IWORKFilteredImageElement::endOfElement: can not find image %s\n", get(m_unfilteredId).c_str()));
+    }
   }
 
   // If a filter is applied to an image, the new image is saved next
@@ -78,7 +86,6 @@ void IWORKFilteredImageElement::endOfElement()
     m_content = m_leveled;
   else
     m_content = m_unfiltered;
-
   if (bool(m_content) && getId())
     getState().getDictionary().m_filteredImages[get(getId())] = m_content;
 }

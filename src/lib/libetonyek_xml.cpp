@@ -69,6 +69,8 @@ boost::optional<bool> try_bool_cast(const char *value)
   case IWORKToken::_0 :
   case IWORKToken::false_ :
     return false;
+  default:
+    break;
   }
 
   return none;

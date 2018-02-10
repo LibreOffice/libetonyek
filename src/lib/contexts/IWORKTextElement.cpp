@@ -22,15 +22,22 @@ IWORKTextElement::IWORKTextElement(IWORKXMLParserState &state)
 {
 }
 
-void IWORKTextElement::attribute(const int name, const char *)
+void IWORKTextElement::attribute(const int name, const char *value)
 {
   switch (name)
   {
+  case IWORKToken::NS_URI_SFA | IWORKToken::ID : // TODO: storeme ?
+    IWORKXMLElementContextBase::attribute(name, value);
+    break;
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
     // TODO: handle
     if (isCollector())
       getCollector().collectStyle(IWORKStylePtr_t());
     break;
+  case IWORKToken::NS_URI_SF | IWORKToken::tscale : // find one time with value 90
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKTextElement::attribute: find some unknown attribute\n"));
   }
 }
 
@@ -40,6 +47,8 @@ IWORKXMLContextPtr_t IWORKTextElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::text_storage :
     return makeContext<IWORKTextStorageElement>(getState());
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKTextElement::element: find some unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();

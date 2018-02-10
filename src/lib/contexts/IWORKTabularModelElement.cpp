@@ -24,7 +24,7 @@
 #include "IWORKStyle.h"
 #include "IWORKTable.h"
 #include "IWORKText.h"
-#include "IWORKTextBodyElement.h"
+#include "IWORKTextStorageElement.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 #include "IWORKXMLContextBase.h"
@@ -80,7 +80,7 @@ IWORKXMLContextPtr_t CfElement::element(int name)
     static bool first=true;
     if (first)
     {
-      ETONYEK_DEBUG_MSG(("CfElement::element: found a date format element\n"));
+      ETONYEK_DEBUG_MSG(("CfElement::element[IWORKTabularModelElement.cpp]: found a date format element\n"));
       first=false;
     }
     return IWORKXMLContextPtr_t();
@@ -91,7 +91,7 @@ IWORKXMLContextPtr_t CfElement::element(int name)
     static bool first=true;
     if (first)
     {
-      ETONYEK_DEBUG_MSG(("CfElement::element: found a number format element\n"));
+      ETONYEK_DEBUG_MSG(("CfElement::element[IWORKTabularModelElement.cpp]: found a number format element\n"));
       first=false;
     }
     return IWORKXMLContextPtr_t();
@@ -436,70 +436,6 @@ void DuElement::attribute(const int name, const char *const value)
 namespace
 {
 
-class SoElement : public IWORKXMLElementContextBase
-{
-public:
-  explicit SoElement(IWORKXMLParserState &state);
-
-private:
-  IWORKXMLContextPtr_t element(int name) override;
-  void endOfElement() override;
-
-  boost::optional<ID_t> m_stylesheetId;
-  bool m_hasStylesheet;
-};
-
-SoElement::SoElement(IWORKXMLParserState &state)
-  : IWORKXMLElementContextBase(state)
-  , m_stylesheetId()
-  , m_hasStylesheet(false)
-{
-}
-
-IWORKXMLContextPtr_t SoElement::element(const int name)
-{
-  if (!m_hasStylesheet && m_stylesheetId && isCollector())
-  {
-    auto it = getState().getDictionary().m_stylesheets.find(get(m_stylesheetId));
-    if (it != getState().getDictionary().m_stylesheets.end())
-    {
-      getCollector().pushStylesheet(it->second);
-      getState().m_stylesheet=it->second;
-      m_hasStylesheet = true;
-    }
-    else
-    {
-      ETONYEK_DEBUG_MSG(("SoElement::element: can not find stylesheet %s\n", get(m_stylesheetId).c_str()));
-    }
-    m_stylesheetId.reset();
-  }
-  switch (name)
-  {
-  case IWORKToken::text_body | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKTextBodyElement>(getState());
-  case IWORKToken::stylesheet_ref | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKRefContext>(getState(), m_stylesheetId);
-  default :
-    ETONYEK_DEBUG_MSG(("SoElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-void SoElement::endOfElement()
-{
-  if (isCollector() && m_hasStylesheet)
-  {
-    getCollector().popStylesheet();
-    getState().m_stylesheet=getCollector().getStylesheet();
-    m_hasStylesheet=false;
-  }
-}
-}
-
-namespace
-{
-
 class CtElement : public IWORKXMLElementContextBase
 {
 public:
@@ -540,7 +476,7 @@ IWORKXMLContextPtr_t CtElement::element(const int name)
     {
       ETONYEK_DEBUG_MSG(("found a text cell with both simple and formatted content\n"));
     }
-    return makeContext<SoElement>(getState());
+    return makeContext<IWORKTextStorageElement>(getState());
   default :
     ETONYEK_DEBUG_MSG(("CtElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
     break;
@@ -687,6 +623,8 @@ IWORKXMLContextPtr_t RElement::element(int name)
   case IWORKToken::rt | IWORKToken::NS_URI_SF :
     return makeContext<TElement>(getState(), true);
     break;
+  default:
+    break;
   }
 
   ETONYEK_DEBUG_MSG(("RElement::element: found unexpected element\n"));
@@ -722,6 +660,8 @@ IWORKXMLContextPtr_t FElement::element(int name)
     return makeContext<IWORKOfElement>(getState());
   case IWORKToken::r | IWORKToken::NS_URI_SF :
     return makeContext<RElement>(getState());
+  default:
+    break;
   }
 
   ETONYEK_DEBUG_MSG(("FElement::element: found unexpected element\n"));
@@ -754,12 +694,26 @@ class GroupingElement : public CellContextBase
 public:
   explicit GroupingElement(IWORKXMLParserState &state);
 private:
+  void attribute(int name, const char *value) override;
   IWORKXMLContextPtr_t element(int name) override;
 };
 
 GroupingElement::GroupingElement(IWORKXMLParserState &state)
   : CellContextBase(state)
 {
+}
+
+void GroupingElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::group_formula_string | IWORKToken::NS_URI_SF : // value
+  case IWORKToken::group_formula_value | IWORKToken::NS_URI_SF : // value
+  case IWORKToken::group_formula_value_valid | IWORKToken::NS_URI_SF : // true or false
+    break;
+  default :
+    CellContextBase::attribute(name, value);
+  }
 }
 
 IWORKXMLContextPtr_t GroupingElement::element(int name)
@@ -778,6 +732,8 @@ IWORKXMLContextPtr_t GroupingElement::element(int name)
   }
   case IWORKToken::fo | IWORKToken::NS_URI_SF :
     return makeContext<IWORKFormulaElement>(getState());
+  default:
+    break;
   }
 
   return CellContextBase::element(name);
@@ -910,6 +866,9 @@ IWORKXMLContextPtr_t PmElement::element(int name)
     break;
   case IWORKToken::proxied_cell_ref | IWORKToken::NS_URI_SF :
     return makeContext<IWORKRefContext>(getState(), m_ref);
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("PmElement::element[IWORKTabularModelElement.cpp]: found unexpected element\n"));
     break;
   }
 
@@ -1070,7 +1029,7 @@ void ContentSizeElement::attribute(const int name, const char *const /*value*/)
   case IWORKToken::w | IWORKToken::NS_URI_SFA : // vertical size
     break;
   default :
-    ETONYEK_DEBUG_MSG(("ContentSizeElement::attribute: found unexpected attribute\n"));
+    ETONYEK_DEBUG_MSG(("ContentSizeElement::attribute[IWORKTabularModelElement.cpp]: found unexpected attribute\n"));
     break;
   }
 }
@@ -1081,7 +1040,7 @@ IWORKXMLContextPtr_t ContentSizeElement::element(int)
 IWORKXMLContextPtr_t ContentSizeElement::element(int name)
 #endif
 {
-  ETONYEK_DEBUG_MSG(("ContentSizeElement::attribute: found unexpected element %d\n", name));
+  ETONYEK_DEBUG_MSG(("ContentSizeElement::element[IWORKTabularModelElement.cpp]: found unexpected element %d\n", name));
   return IWORKXMLContextPtr_t();
 }
 }
@@ -1141,7 +1100,7 @@ void GenericCellElement::attribute(const int name, const char *const value)
     getState().m_tableData->m_rowSpan = lexical_cast<unsigned>(value);
     break;
   default :
-    ETONYEK_DEBUG_MSG(("GenericCellElement::attribute: found unexpected attribute\n"));
+    ETONYEK_DEBUG_MSG(("GenericCellElement::attribute[IWORKTabularModelElement.cpp]: found unexpected attribute\n"));
   }
 }
 
@@ -1153,9 +1112,10 @@ IWORKXMLContextPtr_t GenericCellElement::element(int name)
     return makeContext<IWORKRefContext>(getState(), m_styleRef);
   case IWORKToken::NS_URI_SF | IWORKToken::content_size :
     return makeContext<ContentSizeElement>(getState());
+  default:
+    break;
   }
-
-  ETONYEK_DEBUG_MSG(("GenericCellElement::element: found unexpected element\n"));
+  ETONYEK_DEBUG_MSG(("GenericCellElement::element[IWORKTabularModelElement.cpp]: found unexpected element\n"));
   return IWORKXMLContextPtr_t();
 }
 
@@ -1387,6 +1347,8 @@ IWORKXMLContextPtr_t TextCellElement::element(const int name)
   {
   case IWORKToken::cell_text | IWORKToken::NS_URI_SF :
     return makeContext<CtElement>(getState());
+  default:
+    break;
   }
 
   return GenericCellElement::element(name);
@@ -1409,6 +1371,7 @@ private:
 
 ResultCellElement::ResultCellElement(IWORKXMLParserState &state)
   : IWORKXMLEmptyContextBase(state)
+  , m_resultRef()
 {
 }
 
@@ -1424,8 +1387,10 @@ IWORKXMLContextPtr_t ResultCellElement::element(int name)
     return makeContext<NumberCellElement>(getState(), true);
   case IWORKToken::result_text_cell | IWORKToken::NS_URI_SF :
     return makeContext<TextCellElement>(getState(), true);
+  default:
+    break;
   }
-  ETONYEK_DEBUG_MSG(("ResultCellElement::element: found unexpected element\n"));
+  ETONYEK_DEBUG_MSG(("ResultCellElement::element[IWORKTabularModelElement.cpp]: found unexpected element\n"));
   return IWORKXMLContextPtr_t();
 }
 
@@ -1455,6 +1420,8 @@ IWORKXMLContextPtr_t FormulaCellElement::element(int name)
     return makeContext<IWORKFormulaElement>(getState());
   case IWORKToken::result_cell | IWORKToken::NS_URI_SF :
     return makeContext<ResultCellElement>(getState());
+  default:
+    break;
   }
 
   return GenericCellElement::element(name);
@@ -1531,9 +1498,11 @@ IWORKXMLContextPtr_t DatasourceElement::element(const int name)
     return makeContext<SpanCellElement>(getState());
   case IWORKToken::text_cell | IWORKToken::NS_URI_SF :
     return makeContext<TextCellElement>(getState());
+  default:
+    break;
   }
 
-  ETONYEK_DEBUG_MSG(("DatasourceElement::element: found unexpected element\n"));
+  ETONYEK_DEBUG_MSG(("DatasourceElement::element[IWORKTabularModelElement.cpp]: found unexpected element\n"));
   return IWORKXMLContextPtr_t();
 }
 
@@ -1560,12 +1529,13 @@ private:
 VectorStyleRefElement::VectorStyleRefElement(IWORKXMLParserState &state, IWORKGridLine_t &line)
   : IWORKXMLEmptyContextBase(state)
   , m_line(line)
+  , m_startIndex()
+  , m_stopIndex()
 {
 }
 
 void VectorStyleRefElement::attribute(const int name, const char *const value)
 {
-  IWORKXMLEmptyContextBase::attribute(name, value);
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::start_index :
@@ -1574,6 +1544,8 @@ void VectorStyleRefElement::attribute(const int name, const char *const value)
   case IWORKToken::NS_URI_SF | IWORKToken::stop_index :
     m_stopIndex = int_cast(value);
     break;
+  default:
+    IWORKXMLEmptyContextBase::attribute(name, value);
   }
 }
 
@@ -1605,6 +1577,7 @@ private:
   IWORKGridLineMap_t &m_gridLines;
   IWORKGridLine_t m_line;
   optional<unsigned> m_gridlineIndex_;
+  optional<unsigned> m_count;
 };
 
 StyleRunElement::StyleRunElement(IWORKXMLParserState &state, IWORKGridLineMap_t &gridLines, unsigned maxLines)
@@ -1612,6 +1585,7 @@ StyleRunElement::StyleRunElement(IWORKXMLParserState &state, IWORKGridLineMap_t 
   , m_gridLines(gridLines)
   , m_line(0, maxLines, IWORKStylePtr_t())
   , m_gridlineIndex_()
+  , m_count()
 {
 }
 
@@ -1622,7 +1596,11 @@ void StyleRunElement::attribute(const int name, const char *const value)
   case IWORKToken::NS_URI_SF | IWORKToken::gridline_index :
     m_gridlineIndex_=int_cast(value);
     break;
+  case IWORKToken::NS_URI_SF | IWORKToken::count : // number of element
+    m_count=int_cast(value);
+    break;
   default :
+    ETONYEK_DEBUG_MSG(("StyleRunElement::attribute[IWORKTabularModelElement.cpp]: find some unknown attribute\n"));
     break;
   }
 }
@@ -1633,6 +1611,8 @@ IWORKXMLContextPtr_t StyleRunElement::element(const int name)
   {
   case IWORKToken::vector_style_ref | IWORKToken::NS_URI_SF :
     return makeContext<VectorStyleRefElement>(getState(), m_line);
+  default:
+    ETONYEK_DEBUG_MSG(("StyleRunElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();
@@ -1693,6 +1673,8 @@ IWORKXMLContextPtr_t GridlineElement::element(const int name)
   {
   case IWORKToken::style_run | IWORKToken::NS_URI_SF :
     return makeContext<StyleRunElement>(getState(), m_gridLines, m_maxLines);
+  default:
+    ETONYEK_DEBUG_MSG(("GridlineElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();
@@ -1763,6 +1745,8 @@ IWORKXMLContextPtr_t RowsElement::element(const int name)
   {
   case IWORKToken::grid_row | IWORKToken::NS_URI_SF :
     return makeContext<GridRowElement>(getState());
+  default:
+    ETONYEK_DEBUG_MSG(("RowsElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();
@@ -1799,6 +1783,7 @@ void GridElement::attribute(const int name, const char *value)
     getState().m_tableData->m_numRows = (unsigned) int_cast(value);
     break;
   default :
+    // also hiddennumcols hiddennumrows ncc ocnt
     break;
   }
 }
@@ -1817,6 +1802,8 @@ IWORKXMLContextPtr_t GridElement::element(const int name)
     return makeContext<GridlineElement>(getState(), getState().m_tableData->m_verticalLines, getState().m_tableData->m_numRows);
   case IWORKToken::horizontal_gridline_styles | IWORKToken::NS_URI_SF :
     return makeContext<GridlineElement>(getState(), getState().m_tableData->m_horizontalLines, getState().m_tableData->m_numColumns);
+  default:
+    ETONYEK_DEBUG_MSG(("GridElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();
@@ -1859,6 +1846,9 @@ void IWORKTabularModelElement::attribute(const int name, const char *value)
   case IWORKToken::id | IWORKToken::NS_URI_SF :
     m_tableId = "SFTGlobalID_" + string(value);
     break;
+  default:
+    // also name-is-visible,grouping-enabled,header-rows-frozen,header-columns-frozen
+    break;
   }
 }
 
@@ -1886,6 +1876,17 @@ IWORKXMLContextPtr_t IWORKTabularModelElement::element(const int name)
     return makeContext<GridElement>(getState());
   case IWORKToken::tabular_style_ref | IWORKToken::NS_URI_SF :
     return makeContext<IWORKRefContext>(getState(), m_styleRef);
+
+  case IWORKToken::cell_comment_mapping | IWORKToken::NS_URI_SF :
+  case IWORKToken::error_warning_mapping | IWORKToken::NS_URI_SF :
+  case IWORKToken::filterset | IWORKToken::NS_URI_SF :
+  case IWORKToken::grouping_order | IWORKToken::NS_URI_SF :
+  case IWORKToken::grouping_state | IWORKToken::NS_URI_SF :
+  case IWORKToken::sort | IWORKToken::NS_URI_SF :
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKTabularModelElement::element: find some unknown element\n"));
+    break;
   }
 
   return IWORKXMLContextPtr_t();

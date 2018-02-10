@@ -50,6 +50,8 @@ IWORKXMLContextPtr_t TextElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::text_storage :
     return makeContext<PAG1TextStorageElement>(getState(), PAG_TEXTSTORAGE_KIND_TEXTBOX);
+  default:
+    break;
   }
 
   return PAG1XMLContextBase<IWORKTextElement>::element(name);
@@ -68,6 +70,8 @@ IWORKXMLContextPtr_t PAG1ShapeContext::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::text :
     return makeContext<TextElement>(getState());
+  default:
+    break;
   }
 
   return PAG1XMLContextBase<IWORKShapeContext>::element(name);

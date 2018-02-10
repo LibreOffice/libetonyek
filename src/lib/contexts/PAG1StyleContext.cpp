@@ -67,7 +67,11 @@ void PagemasterElement::attribute(const int name, const char *const value)
   case PAG1Token::NS_URI_SL | PAG1Token::header :
     m_header = value;
     break;
+  case IWORKToken::NS_URI_SFA | IWORKToken::ID : // store me?
+    IWORKXMLEmptyContextBase::attribute(name, value);
+    break;
   default :
+    ETONYEK_DEBUG_MSG(("PagemasterElement::attribute[PAG1StyleContext.cpp]: found unexpected attribute\n"));
     IWORKXMLEmptyContextBase::attribute(name, value);
     break;
   }
@@ -130,6 +134,8 @@ IWORKXMLContextPtr_t PropertyMapElement::element(const int name)
     return makeContext<FirstPageMasterElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::oddPageMaster :
     return makeContext<OddPageMasterElement>(getState(), m_propMap);
+  default:
+    break;
   }
 
   return m_base.element(name);
@@ -141,6 +147,8 @@ PAG1StyleContext::PAG1StyleContext(PAG1ParserState &state, IWORKStyleMap_t *cons
   : PAG1XMLElementContextBase(state)
   , m_props()
   , m_base(state, m_props, styleMap, defaultParent/*, nested*/)
+  , m_ident()
+  , m_parentIdent()
 {
 }
 
@@ -168,6 +176,8 @@ IWORKXMLContextPtr_t PAG1StyleContext::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::property_map :
     return makeContext<PropertyMapElement>(getState(), m_props);
+  default:
+    ETONYEK_DEBUG_MSG(("PAG1StyleContext::element: found unexpected element %d\n", name));
   }
 
   return IWORKXMLContextPtr_t();

@@ -117,7 +117,7 @@ uint64_t readUVar(const RVNGInputStreamPtr_t &input)
   while (!input->isEnd() && cont)
   {
     const unsigned char c = readU8(input);
-    bytes.push_back(c & ~0x80);
+    bytes.push_back((unsigned char)(c & ~0x80));
     cont = c & 0x80;
   }
 

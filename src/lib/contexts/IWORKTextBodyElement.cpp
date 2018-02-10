@@ -34,7 +34,7 @@ IWORKXMLContextPtr_t IWORKTextBodyElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::layout :
     if (m_layout || m_para)
     {
-      ETONYEK_DEBUG_MSG(("layout following another element, not allowed, skipping\n"));
+      ETONYEK_DEBUG_MSG(("IWORKTextBodyElement::element: layout following another element, not allowed, skipping\n"));
     }
     else
     {
@@ -45,7 +45,7 @@ IWORKXMLContextPtr_t IWORKTextBodyElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::p :
     if (m_layout)
     {
-      ETONYEK_DEBUG_MSG(("paragraph following layout, not allowed, skipping\n"));
+      ETONYEK_DEBUG_MSG(("IWORKTextBodyElement::element: paragraph following layout, not allowed, skipping\n"));
     }
     else if (m_para)
     {
@@ -57,6 +57,12 @@ IWORKXMLContextPtr_t IWORKTextBodyElement::element(const int name)
       return makeContext<IWORKPElement>(getState());
     }
     break;
+  case IWORKToken::NS_URI_SF | IWORKToken::insertion_point :
+  case IWORKToken::NS_URI_SF | IWORKToken::page_start : // with attribute page-index
+  case IWORKToken::NS_URI_SF | IWORKToken::selection_end :
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKTextBodyElement::element: find some unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();

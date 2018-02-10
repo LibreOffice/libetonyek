@@ -58,27 +58,25 @@ struct IWORKDictionary
   IWORKStylesheetMap_t m_stylesheets;
 
   IWORKPathMap_t m_beziers;
-
-  IWORKFormulaMap_t m_formulas;
-
-  IWORKDataMap_t m_data;
   IWORKMediaContentMap_t m_binaries;
-  IWORKMediaContentMap_t m_unfiltereds;
+  IWORKDataMap_t m_data;
+  IWORKFillMap_t m_fills;
+  IWORKFilterDescriptorMap_t m_filterDescriptors;
   IWORKMediaContentMap_t m_filteredImages;
-  IWORKMediaContentMap_t m_images;
+  IWORKFormulaMap_t m_formulas;
+  IWORKGradientMap_t m_gradients;
   IWORKGradientStopMap_t m_gradientStops;
+  IWORKMediaContentMap_t m_images;
   IWORKLineSpacingMap_t m_lineSpacings;
+  IWORKListLabelGeometryMap_t m_listLabelGeometries;
+  IWORKListLabelTypeInfoMap_t m_listLabelTypeInfos;
   IWORKPatternMap_t m_patterns;
   IWORKStrokeMap_t m_strokes;
   IWORKTableMap_t m_tables;
-
   IWORKTabStopsMap_t m_tabs;
-
-  IWORKFilterDescriptorMap_t m_filterDescriptors;
-
-  IWORKListLabelTypeInfoMap_t m_listLabelTypeInfos;
   IWORKListLabelTypeInfoMap_t m_textLabels;
-  IWORKListLabelGeometryMap_t m_listLabelGeometries;
+  IWORKMediaContentMap_t m_texturedFillImages;
+  IWORKMediaContentMap_t m_unfiltereds;
 
   std::unordered_map<ID_t, std::deque<double> > m_doubleArrays;
   std::unordered_map<ID_t, std::deque<IWORKListLabelGeometry> > m_listLabelGeometriesArrays;

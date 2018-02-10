@@ -346,7 +346,7 @@ bool IWAParser::readFill(const IWAMessage &msg, IWORKFill &fill)
   }
   else if (msg.message(3))
   {
-    IWORKFillImage bitmap;
+    IWORKMediaContent bitmap;
     if (msg.message(3).uint32(2))
     {
       switch (get(msg.message(3).uint32(2)))
@@ -355,31 +355,31 @@ bool IWAParser::readFill(const IWAMessage &msg, IWORKFill &fill)
         ETONYEK_DEBUG_MSG(("IWAParser::readFill: unknown bitmap fill type: %u", get(msg.message(3).uint32(2))));
         ETONYEK_FALLTHROUGH;
       case 0 :
-        bitmap.m_type = IWORK_FILL_IMAGE_TYPE_ORIGINAL_SIZE;
+        bitmap.m_type = IWORK_IMAGE_TYPE_ORIGINAL_SIZE;
         break;
       case 1 :
-        bitmap.m_type = IWORK_FILL_IMAGE_TYPE_STRETCH;
+        bitmap.m_type = IWORK_IMAGE_TYPE_STRETCH;
         break;
       case 2 :
-        bitmap.m_type = IWORK_FILL_IMAGE_TYPE_TILE;
+        bitmap.m_type = IWORK_IMAGE_TYPE_TILE;
         break;
       case 3 :
-        bitmap.m_type = IWORK_FILL_IMAGE_TYPE_SCALE_TO_FILL;
+        bitmap.m_type = IWORK_IMAGE_TYPE_SCALE_TO_FILL;
         break;
       case 4 :
-        bitmap.m_type = IWORK_FILL_IMAGE_TYPE_SCALE_TO_FIT;
+        bitmap.m_type = IWORK_IMAGE_TYPE_SCALE_TO_FIT;
         break;
       }
     }
-    const optional<IWORKColor> &bitmapColor = readColor(get(msg.message(3)), 3);
-    if (bitmapColor)
-      bitmap.m_color = get(bitmapColor);
-    const optional<IWORKSize> &size = readSize(get(msg.message(3)), 4);
-    if (size)
-      bitmap.m_size = get(size);
+    bitmap.m_fillColor = readColor(get(msg.message(3)), 3);
+    bitmap.m_size = readSize(get(msg.message(3)), 4);
+    if (!bitmap.m_size) bitmap.m_size=IWORKSize(); // to do not change result from previous code
     const optional<unsigned> &fileRef = readRef(get(msg.message(3)), 6);
     if (fileRef)
-      bitmap.m_stream = queryFile(get(fileRef));
+    {
+      bitmap.m_data.reset(new IWORKData());
+      bitmap.m_data->m_stream = queryFile(get(fileRef));
+    }
     fill = bitmap;
     return true;
   }

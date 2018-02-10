@@ -36,7 +36,8 @@ IWORKXMLContextPtr_t IWORKTextStorageElement::element(const int name)
     return makeContext<IWORKRefContext>(getState(), m_stylesheetId);
   case IWORKToken::NS_URI_SF | IWORKToken::text_body :
     return makeContext<IWORKTextBodyElement>(getState());
-    break;
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKTextStorageElement::element: find some unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();

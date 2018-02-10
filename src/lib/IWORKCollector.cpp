@@ -160,16 +160,14 @@ struct FillWriter : public boost::static_visitor<void>
     m_props.insert("draw:angle", rad2deg(/*etonyek_two_pi - */gradient.m_angle + etonyek_half_pi));
   }
 
-  void operator()(const IWORKFillImage &bitmap) const
+  void operator()(const IWORKMediaContent &bitmap) const
   {
-    bool filled = false;
-
-    if (bitmap.m_stream)
+    if (bitmap.m_data && bitmap.m_data->m_stream)
     {
-      const unsigned long length = getLength(bitmap.m_stream);
+      const unsigned long length = getLength(bitmap.m_data->m_stream);
       unsigned long readBytes = 0;
-      bitmap.m_stream->seek(0, librevenge::RVNG_SEEK_SET);
-      const unsigned char *const bytes = bitmap.m_stream->read(length, readBytes);
+      bitmap.m_data->m_stream->seek(0, librevenge::RVNG_SEEK_SET);
+      const unsigned char *const bytes = bitmap.m_data->m_stream->read(length, readBytes);
       if (readBytes == length)
       {
         m_props.insert("draw:fill", "bitmap");
@@ -177,28 +175,41 @@ struct FillWriter : public boost::static_visitor<void>
         m_props.insert("librevenge:mime-type", "jpg"); // TODO: fix
         switch (bitmap.m_type)
         {
-        case IWORK_FILL_IMAGE_TYPE_ORIGINAL_SIZE :
+        case IWORK_IMAGE_TYPE_ORIGINAL_SIZE :
           m_props.insert("style:repeat", "no-repeat");
           break;
-        case IWORK_FILL_IMAGE_TYPE_STRETCH :
-        case IWORK_FILL_IMAGE_TYPE_SCALE_TO_FILL :
-        case IWORK_FILL_IMAGE_TYPE_SCALE_TO_FIT :
+        case IWORK_IMAGE_TYPE_STRETCH :
+        case IWORK_IMAGE_TYPE_SCALE_TO_FILL :
+        case IWORK_IMAGE_TYPE_SCALE_TO_FIT :
           m_props.insert("style:repeat", "stretch");
           break;
-        case IWORK_FILL_IMAGE_TYPE_TILE :
+        case IWORK_IMAGE_TYPE_TILE :
           m_props.insert("style:repeat", "repeat");
           break;
         default:
           break;
         }
-        m_props.insert("draw:fill-image-width", bitmap.m_size.m_width, RVNG_POINT);
-        m_props.insert("draw:fill-image-height", bitmap.m_size.m_height, RVNG_POINT);
-        filled = true;
+        if (bitmap.m_size)
+        {
+          m_props.insert("draw:fill-image-width", get(bitmap.m_size).m_width, RVNG_POINT);
+          m_props.insert("draw:fill-image-height", get(bitmap.m_size).m_height, RVNG_POINT);
+        }
+        return;
       }
     }
-
-    if (!filled && bitmap.m_color)
-      (*this)(get(bitmap.m_color));
+    // can happen if data is a path to an Iwork's file
+    if (bitmap.m_fillColor)
+      (*this)(get(bitmap.m_fillColor));
+    else
+    {
+      static bool first=true;
+      if (first)
+      {
+        ETONYEK_DEBUG_MSG(("FillWriter::operator()(IWORKMediaContent)[IWORKCollector.cpp]: can not retrieve some pictures\n"));
+        first=false;
+      }
+      m_props.insert("draw:fill", "none");
+    }
   }
 
 private:

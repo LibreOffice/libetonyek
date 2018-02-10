@@ -25,10 +25,26 @@
 namespace libetonyek
 {
 
+IWORKImageElement::IWORKImageElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
+  : IWORKXMLElementContextBase(state)
+  , m_locked()
+  , m_content(content)
+  , m_localContent()
+  , m_filteredImage()
+  , m_data()
+  , m_size()
+  , m_binaryRef()
+  , m_style()
+  , m_cropGeometry()
+  , m_placeholderSize()
+{
+}
+
 IWORKImageElement::IWORKImageElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_locked()
-  , m_content()
+  , m_content(m_localContent)
+  , m_localContent()
   , m_filteredImage()
   , m_data()
   , m_size()
@@ -119,9 +135,7 @@ void IWORKImageElement::endOfElement()
     m_content->m_data = m_data;
   }
   if (getId() && m_content)
-  {
     getState().getDictionary().m_images[get(getId())]=m_content;
-  }
   if (isCollector())
   {
     if (m_style) getCollector().setGraphicStyle(m_style);

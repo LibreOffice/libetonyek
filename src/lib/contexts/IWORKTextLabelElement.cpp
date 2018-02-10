@@ -83,6 +83,9 @@ void IWORKTextLabelElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
+  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+    IWORKXMLEmptyContextBase::attribute(name, value);
+    break;
   case IWORKToken::NS_URI_SF | IWORKToken::first :
     m_first = try_int_cast(value);
     break;
@@ -115,8 +118,11 @@ void IWORKTextLabelElement::attribute(const int name, const char *const value)
       break;
     }
     break;
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKTextLabelElement::attribute: find some unknown attribute\n"));
+    IWORKXMLEmptyContextBase::attribute(name, value);
+    break;
   }
-  return IWORKXMLEmptyContextBase::attribute(name, value);
 }
 
 void IWORKTextLabelElement::endOfElement()

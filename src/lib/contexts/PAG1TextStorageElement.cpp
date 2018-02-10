@@ -16,12 +16,15 @@
 
 #include <librevenge/librevenge.h>
 
+#include "IWORKGroupElement.h"
 #include "IWORKLayoutElement.h"
 #include "IWORKLinkElement.h"
 #include "IWORKMediaElement.h"
 #include "IWORKPElement.h"
 #include "IWORKPositionElement.h"
 #include "IWORKRefContext.h"
+#include "IWORKSizeElement.h"
+#include "IWORKShapeContext.h"
 #include "IWORKSpanElement.h"
 #include "IWORKTabularInfoElement.h"
 #include "IWORKText.h"
@@ -73,6 +76,7 @@ public:
   explicit AttachmentElement(PAG1ParserState &state);
 
 private:
+  void attribute(int name, const char *value) override;
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
 
@@ -80,6 +84,7 @@ private:
   bool m_known;
   bool m_block;
   optional<IWORKPosition> m_position;
+  optional<IWORKSize> m_originalSize;
   std::shared_ptr<IWORKText> m_savedText;
 };
 
@@ -88,6 +93,7 @@ AttachmentElement::AttachmentElement(PAG1ParserState &state)
   , m_known(false)
   , m_block(false)
   , m_position()
+  , m_originalSize()
   , m_savedText()
 {
   // saved the current zone of text
@@ -95,22 +101,64 @@ AttachmentElement::AttachmentElement(PAG1ParserState &state)
   getState().m_currentText.reset();
 }
 
+void AttachmentElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SFA | IWORKToken::sfclass :
+  case IWORKToken::NS_URI_SF | IWORKToken::kind :
+    break;
+  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+    return PAG1XMLElementContextBase::attribute(name, value);
+  default:
+    ETONYEK_DEBUG_MSG(("AttachmentElement::attribute[PAG1TextStorageElement]: find some unknown attribute\n"));
+    break;
+  }
+}
 IWORKXMLContextPtr_t AttachmentElement::element(const int name)
 {
   IWORKXMLContextPtr_t context;
 
   switch (name)
   {
+  case IWORKToken::NS_URI_SF | IWORKToken::drawable_shape :
+  {
+    static bool first=true;
+    if (first)
+    {
+      ETONYEK_DEBUG_MSG(("AttachmentElement::attribute[PAG1TextStorageElement]: find some shapes attached in textbox, not implemented\n"));
+      first=false;
+    }
+    //m_block = true;
+    //context = makeContext<IWORKShapeContext>(getState());
+    break;
+  }
+  case IWORKToken::NS_URI_SF | IWORKToken::group :
+  {
+    static bool first=true;
+    if (first)
+    {
+      ETONYEK_DEBUG_MSG(("AttachmentElement::attribute[PAG1TextStorageElement]: find some groups attached in textbox, not implemented\n"));
+      first=false;
+    }
+    //m_block = true;
+    //context = makeContext<IWORKGroupElement>(getState());
+    break;
+  }
   case IWORKToken::NS_URI_SF | IWORKToken::media :
     m_block = false;
     context = makeContext<IWORKMediaElement>(getState());
     break;
+  case IWORKToken::NS_URI_SF | IWORKToken::original_size :
+    return makeContext<IWORKSizeElement>(getState(), m_originalSize);
   case IWORKToken::NS_URI_SF | IWORKToken::position :
     return makeContext<IWORKPositionElement>(getState(), m_position);
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
     m_block = true;
     context = makeContext<IWORKTabularInfoElement>(getState());
     break;
+  default:
+    ETONYEK_DEBUG_MSG(("AttachmentElement::element[PAG1TextStorageElement]: find some unknown element\n"));
   }
 
   if (bool(context))
@@ -333,6 +381,10 @@ void FootnoteMarkElement::attribute(const int name, const char *const value)
 {
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::mark))
     m_state.m_footnoteState.m_mark = value;
+  else
+  {
+    ETONYEK_DEBUG_MSG(("FootnoteMarkElement::attribute[PAG1TextStorageElement]: find some unknown attribute\n"));
+  }
 }
 
 void FootnoteMarkElement::endOfElement()
@@ -372,6 +424,8 @@ IWORKXMLContextPtr_t FootnoteHelper::element(const int name)
     return makeContext<FootnotebrElement>(m_state);
   case IWORKToken::NS_URI_SF | IWORKToken::footnote_mark :
     return makeContext<FootnoteMarkElement>(m_state);
+  default:
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -506,6 +560,8 @@ IWORKXMLContextPtr_t PElement::element(const int name)
     return makeContext<PAG1AnnotationElement>(getState(),*this);
   case IWORKToken::NS_URI_SF | IWORKToken::annotation_field_ref :
     return makeContext<PAG1AnnotationElement>(getState(),*this,true);
+  default:
+    break;
   }
 
   const IWORKXMLContextPtr_t context = m_footnoteHelper.element(name);
@@ -612,6 +668,7 @@ SectionElement::SectionElement(PAG1ParserState &state, const PageFrame &pageFram
   : PAG1XMLElementContextBase(state)
   , m_pageFrame(pageFrame)
   , m_opened(false)
+  , m_style()
 {
 }
 
@@ -718,6 +775,9 @@ void ContainerHintElement::attribute(const int name, const char *const value)
   case IWORKToken::NS_URI_SF | IWORKToken::frame_y :
     m_pageFrame.m_y = double_cast(value);
     break;
+  // also page-index, cindex, sindex, lindex, anchor-loc, nlabel=true/false
+  default:
+    break;
   }
 }
 
@@ -754,6 +814,8 @@ IWORKXMLContextPtr_t TextBodyElement::element(const int name)
     return makeContext<PElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::section :
     return makeContext<SectionElement>(getState(), m_pageFrame);
+  default:
+    break;
   }
 
   return IWORKTextBodyElement::element(name);
@@ -794,6 +856,8 @@ IWORKXMLContextPtr_t PAG1TextStorageElement::element(const int name)
       m_textOpened = true;
     }
     return makeContext<TextBodyElement>(getState());
+  default:
+    break;
   }
 
   return PAG1XMLContextBase<IWORKTextStorageElement>::element(name);

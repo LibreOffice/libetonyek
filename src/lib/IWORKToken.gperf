@@ -38,7 +38,12 @@ Series_4,Series_4
 Series_5,Series_5
 Series_6,Series_6
 Series_7,Series_7
+SFC2DAreaFillProperty,SFC2DAreaFillProperty
+SFC2DColumnFillProperty,SFC2DColumnFillProperty
+SFC2DMixedColumnFillProperty,SFC2DMixedColumnFillProperty
+SFC2DPieFillProperty,SFC2DPieFillProperty
 SFIUDropShadow,SFIUDropShadow
+SFTableCellStylePropertyFill,SFTableCellStylePropertyFill
 SFTableStylePropertyCellStyle,SFTableStylePropertyCellStyle
 SFTableStylePropertyHeaderColumnCellStyle,SFTableStylePropertyHeaderColumnCellStyle
 SFTableStylePropertyHeaderRowCellStyle,SFTableStylePropertyHeaderRowCellStyle
@@ -82,6 +87,7 @@ alignment,alignment
 amt,amt
 angle,angle
 angle-gradient,angle_gradient
+angle-gradient-ref,angle_gradient_ref
 anon-styles,anon_styles
 annotation,annotation
 annotation-field,annotation_field
@@ -96,6 +102,7 @@ attachments,attachments
 authors,authors
 b,b
 baselineShift,baselineShift
+baseSize,baseSize
 bezier,bezier
 bezier-path,bezier_path
 bezier-ref,bezier_ref
@@ -116,6 +123,7 @@ cap,cap
 capitalization,capitalization
 category-title,category_title
 cb,cb
+cell-comment-mapping,cell_comment_mapping
 cell-date,cell_date
 cell-storage,cell_storage
 cell-style,cell_style
@@ -155,6 +163,7 @@ core-image-filter-descriptor,core_image_filter_descriptor
 core-image-filter-descriptor-ref,core_image_filter_descriptor_ref
 core-image-filter-info,core_image_filter_info
 cornerRadius,cornerRadius
+count,count
 crbr,crbr
 crop-geometry,crop_geometry
 custom-space-color,custom_space_color
@@ -178,18 +187,25 @@ duration-format,duration_format
 editable-bezier-path,editable_bezier_path
 element,element
 empty,empty
+end,end
 end-point,end_point
 equal-columns,equal_columns
+error_warning_mapping,error_warning_mapping
 evenPageMaster,evenPageMaster
+extent,extent
 f,f
 false,false_
 filename,filename
 fill,fill
+fill-ref,fill_ref
 filled,filled
 filterClassName,filterClassName
 filtered,filtered
 filtered-image,filtered_image
+filtered-image-ref,filtered_image_ref
+filter-properties,filter_properties
 filters,filters
+filterset,filterset
 first,first
 firstLineIndent,firstLineIndent
 firstPageMaster,firstPageMaster
@@ -245,9 +261,14 @@ grid-column,grid_column
 grid-row,grid_row
 gridline-index,gridline_index,
 group,group
+group-formula-string,group_formula_string
+group-formula-value,group_formula_value
+group-formula-value-valid,group_formula_value_valid
 group-value,group_value
 grouping,grouping
 grouping-display,grouping_display
+grouping-order,grouping_order
+grouping-state,grouping_state
 groupings-element,groupings_element
 h,h
 head,head
@@ -274,6 +295,7 @@ ident,ident
 identifier,identifier
 image,image
 image-media,image_media
+image-ref,image_ref
 implicit-format-type,implicit_format_type
 increment,increment
 inflection,inflection
@@ -372,6 +394,7 @@ oddPageMaster,oddPageMaster
 of,of
 offset,offset
 opacity,opacity
+original-size,original_size
 other-datas,other_datas
 outline,outline
 overrides,overrides
@@ -435,7 +458,8 @@ scale,scale
 scale-with-text,scale_with_text
 section,section
 sectionstyle,sectionstyle
-sectionstyle_ref,sectionstyle_ref
+sectionstyle-ref,sectionstyle_ref
+selection-end,selection_end
 self-contained-movie,self_contained_movie
 seriesIndex,seriesIndex
 sf,sf
@@ -453,6 +477,7 @@ slider-orientation,slider_orientation
 slider-position,slider_position
 so,so
 solid,solid
+sort,sort
 spaceAfter,spaceAfter
 spaceBefore,spaceBefore
 spacing,spacing
@@ -460,6 +485,7 @@ span,span
 span-cell,span_cell
 st,st
 star,star
+start,start
 start-index,start_index
 sticky-note,sticky_note
 stop-index,stop_index
@@ -486,6 +512,7 @@ table-vector-style-ref,table_vector_style_ref
 tabs,tabs
 tabs-ref,tabs_ref
 tabstop,tabstop
+# do not remove me, tabular-style-name-internal is mispelled in Keynote 4
 tabuar-style-name-internal,tabular_style_name_internal
 tabular-style-name-internal,tabular_style_name_internal
 tabular-info,tabular_info
@@ -509,6 +536,7 @@ text-label-ref,text_label_ref
 text-storage,text_storage
 textBackground,textBackground
 textured-fill,textured_fill
+textured-fill-ref,textured_fill_ref
 tile,tile
 title,title
 title-placeholder-ref,title_placeholder_ref
@@ -518,6 +546,7 @@ top,top
 tracking,tracking
 transform-gradient,transform_gradient
 true,true_
+tscale,tscale
 type,type
 underline,underline
 unfiltered,unfiltered
