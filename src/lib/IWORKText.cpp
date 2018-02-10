@@ -202,8 +202,8 @@ void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props
     props.insert("fo:keep-with-next", "always");
   // Orphans and widows are covered by a single setting. The number of lines is not adjustable.
   const bool enableWidows = styleStack.has<WidowControl>() && !styleStack.get<WidowControl>();
-  props.insert("orphans", enableWidows ? "0" : "2");
-  props.insert("widows", enableWidows ? "0" : "2");
+  props.insert("fo:orphans", enableWidows ? "0" : "2");
+  props.insert("fo:widows", enableWidows ? "0" : "2");
   if (styleStack.has<Hyphenate>())
     props.insert("fo:hyphenate", styleStack.get<Hyphenate>());
 
