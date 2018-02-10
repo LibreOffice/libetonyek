@@ -47,13 +47,18 @@ struct Address
 
 typedef std::pair<Address, Address> AddressRange;
 
+struct TrueOrFalseFunc
+{
+  string m_name;
+};
+
 struct Function;
 struct PrefixOp;
 struct InfixOp;
 struct PostfixOp;
 struct PExpr;
 
-typedef variant<double, string, Address, AddressRange, recursive_wrapper<PrefixOp>, recursive_wrapper<InfixOp>, recursive_wrapper<PostfixOp>, recursive_wrapper<Function>, recursive_wrapper<PExpr> > Expression;
+typedef variant<double, string, TrueOrFalseFunc, Address, AddressRange, recursive_wrapper<PrefixOp>, recursive_wrapper<InfixOp>, recursive_wrapper<PostfixOp>, recursive_wrapper<Function>, recursive_wrapper<PExpr> > Expression;
 
 struct PrefixOp
 {
@@ -91,6 +96,11 @@ BOOST_FUSION_ADAPT_STRUCT(
   libetonyek::Coord,
   (bool, m_absolute)
   (unsigned, m_coord)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+  libetonyek::TrueOrFalseFunc,
+  (std::string, m_name)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
@@ -181,6 +191,7 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
 
     number %= double_;
     str %= lit('\"') >> +(char_ - '\"') >> '\"';
+    trueOrFalseFunctionLit %= string("TRUE")|string("FALSE");
     prefixLit %= char_('+') | char_('-');
     infixLit %=
       char_('+') | char_('-') | char_('*') | char_('/')
@@ -230,23 +241,20 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
 
     prefixOp %= prefixLit >> term;
     infixOp %= term >> infixLit >> expression;
+    trueOrFalseFunction %= trueOrFalseFunctionLit;
     postfixOp %= term >> postfixLit;
 
-    function %= (no_case[mappedName] | +alnum) >> '(' >> -(argument % ',') >> ')';
-
-    argument %=
-      range
-      | '(' >> range >> ')'
-      | expression
-      ;
+    function %= (no_case[mappedName] | +alnum) >> '(' >> -(expression % ',') >> ')';
 
     pExpr %= '(' >> expression >> ')';
 
     term %=
       str
-      | number
       | function
+      | trueOrFalseFunction
+      | range
       | address
+      | number
       | prefixOp
       | pExpr
       ;
@@ -261,6 +269,7 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
 
     number.name("number");
     str.name("str");
+    trueOrFalseFunction.name("trueOrFalseFunction");
     prefixOp.name("prefixOp");
     infixOp.name("infixOp");
     row.name("row");
@@ -274,7 +283,6 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
     term.name("term");
     formula.name("formula");
     pExpr.name("pExpr");
-    argument.name("argument");
     rangeSpecial.name("rangeSpecial");
   }
 
@@ -283,14 +291,15 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   }
 
   qi::rule<Iterator, Function()> function;
-  qi::rule<Iterator, Expression()> expression, formula, term, argument;
+  qi::rule<Iterator, TrueOrFalseFunc()> trueOrFalseFunction;
+  qi::rule<Iterator, Expression()> expression, formula, term;
   qi::rule<Iterator, PExpr()> pExpr;
   qi::rule<Iterator, Address()> address, addressSpecialColumn, addressSpecialRow;
   qi::rule<Iterator, AddressRange()> range;
   qi::rule<Iterator, unsigned()> columnName;
   qi::rule<Iterator, Coord()> column, row;
   qi::rule<Iterator, double()> number;
-  qi::rule<Iterator, string()> str, table, infixLit;
+  qi::rule<Iterator, string()> str, table, infixLit, trueOrFalseFunctionLit;
   qi::rule<Iterator, PrefixOp()> prefixOp;
   qi::rule<Iterator, InfixOp()> infixOp;
   qi::rule<Iterator, PostfixOp()> postfixOp;
@@ -342,6 +351,11 @@ struct Printer : public boost::static_visitor<void>
     m_out << ':';
     formatAddress(val.second);
     m_out << ']';
+  }
+
+  void operator()(const TrueOrFalseFunc &val) const
+  {
+    m_out << val.m_name << "()";
   }
 
   void operator()(const recursive_wrapper<PrefixOp> &val) const
@@ -444,6 +458,20 @@ struct Collector : public boost::static_visitor<>
     props.insert("librevenge:type", "librevenge-text");
     props.insert("librevenge:text", val.c_str());
     m_propsVector.append(props);
+  }
+
+  void operator()(const TrueOrFalseFunc &val) const
+  {
+    librevenge::RVNGPropertyList props1;
+    props1.insert("librevenge:type", "librevenge-function");
+    props1.insert("librevenge:function", val.m_name.c_str());
+    m_propsVector.append(props1);
+    librevenge::RVNGPropertyList props2;
+    props2.insert("librevenge:type", "librevenge-operator");
+    props2.insert("librevenge:operator", "(");
+    m_propsVector.append(props2);
+    props2.insert("librevenge:operator", ")");
+    m_propsVector.append(props2);
   }
 
   void operator()(const Address &val) const
@@ -599,7 +627,12 @@ bool IWORKFormula::parse(const std::string &formula)
   string::const_iterator it = formula.begin();
   string::const_iterator end = formula.end();
   const bool r = qi::phrase_parse(it, end, grammar, ascii::space, m_impl->m_formula);
-  return r && (it == end);
+  if (!r || it!=end)
+  {
+    ETONYEK_DEBUG_MSG(("IWORKFormula::parse: can not parse %s\n", formula.c_str()));
+    return false;
+  }
+  return true;
 }
 
 const std::string IWORKFormula::str() const
