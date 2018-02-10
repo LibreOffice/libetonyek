@@ -16,6 +16,7 @@
 #include "IWORKChainedTokenizer.h"
 #include "IWORKCalcEngineContext.h"
 #include "IWORKDiscardContext.h"
+#include "IWORKGroupElement.h"
 #include "IWORKHeaderFooterContext.h"
 #include "IWORKMediaElement.h"
 #include "IWORKMetadataElement.h"
@@ -113,6 +114,37 @@ IWORKXMLContextPtr_t FootersElement::element(const int name)
     return makeContext<IWORKHeaderFooterContext>(getState(),
                                                  std::bind(&IWORKCollector::collectFooter, std::ref(getCollector()), _1));
   return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+class GroupElement : public PAG1XMLContextBase<IWORKGroupElement>
+{
+public:
+  GroupElement(PAG1ParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+GroupElement::GroupElement(PAG1ParserState &state)
+  : PAG1XMLContextBase<IWORKGroupElement>(state)
+{
+}
+
+IWORKXMLContextPtr_t GroupElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::drawable_shape :
+    return makeContext<PAG1ShapeContext>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::group :
+    return makeContext<GroupElement>(getState());
+  }
+
+  return PAG1XMLContextBase<IWORKGroupElement>::element(name);
 }
 
 }
@@ -483,10 +515,12 @@ IWORKXMLContextPtr_t PageGroupElement::element(const int name)
 
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::media :
-    return makeContext<IWORKMediaElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::drawable_shape :
     return makeContext<PAG1ShapeContext>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::group :
+    return makeContext<GroupElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::media :
+    return makeContext<IWORKMediaElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
     return makeContext<IWORKTabularInfoElement>(getState());
   }

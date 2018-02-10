@@ -20,7 +20,7 @@ class IWORKGroupElement : public IWORKXMLElementContextBase
 public:
   explicit IWORKGroupElement(IWORKXMLParserState &state);
 
-private:
+protected:
   void startOfElement() override;
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
