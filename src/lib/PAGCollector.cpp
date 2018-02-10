@@ -254,7 +254,6 @@ void PAGCollector::drawTable()
     const glm::dvec3 dim(m_levelStack.top().m_trafo * glm::dvec3(geometry->m_naturalSize.m_width, 0, 0));
     props.insert("style:width", pt2in(dim[0]));
   }
-
   m_currentTable->draw(props, m_outputManager.getCurrent(), true);
 }
 
@@ -265,14 +264,21 @@ void PAGCollector::drawMedia(
   RVNGPropertyList frameProps;
   if (m_inAttachments)
   {
-    frameProps.insert("text:anchor-type", "char");
+    frameProps.insert("text:anchor-type", "as-char");
   }
   else
   {
     frameProps.insert("text:anchor-type", "page");
     frameProps.insert("text:anchor-page-number", m_page);
   }
-  if (m_attachmentPosition)
+  if (m_inAttachments)
+  {
+    frameProps.insert("svg:x", 0);
+    frameProps.insert("svg:y", 0);
+    frameProps.insert("style:vertical-pos", "bottom");
+    frameProps.insert("style:vertical-rel", "text");
+  }
+  else if (m_attachmentPosition)
   {
     frameProps.insert("svg:x", pt2in(get(m_attachmentPosition).m_x));
     frameProps.insert("svg:y", pt2in(get(m_attachmentPosition).m_y));

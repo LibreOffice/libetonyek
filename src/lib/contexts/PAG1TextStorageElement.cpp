@@ -177,6 +177,82 @@ void AttachmentsElement::endOfElement()
 
 namespace
 {
+class AttachmentRef  : public PAG1XMLElementContextBase
+{
+public:
+  AttachmentRef(PAG1ParserState &state);
+
+private:
+  virtual void attribute(const int name, const char *const value);
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+  boost::optional<ID_t> m_ref;
+  boost::optional<std::string> m_kind;
+};
+
+AttachmentRef::AttachmentRef(PAG1ParserState &state)
+  : PAG1XMLElementContextBase(state)
+  , m_ref()
+  , m_kind()
+{
+}
+
+void AttachmentRef::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SFA | IWORKToken::IDREF :
+    m_ref = value;
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::kind :
+    m_kind = value;
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("AttachmentRef::attribute[PAG1TextStorageElement]: find unexpected attribute\n"));
+  }
+}
+
+IWORKXMLContextPtr_t AttachmentRef::element(int /*name*/)
+{
+  ETONYEK_DEBUG_MSG(("AttachmentRef::element[PAG1TextStorageElement]: find unexpected element\n"));
+  return IWORKXMLContextPtr_t();
+}
+
+void AttachmentRef::endOfElement()
+{
+  if (!isCollector())
+    return;
+  if (!m_ref)
+  {
+    ETONYEK_DEBUG_MSG(("AttachmentRef::endOfElement[PAG1TextStorageElement]: called without ref\n"));
+    return;
+  }
+  if (!getState().m_currentText)
+  {
+    ETONYEK_DEBUG_MSG(("AttachmentRef::endOfElement[PAG1TextStorageElement]: can not find attachment current text\n"));
+    return;
+  }
+
+  const PAGAttachmentMap_t::const_iterator it = getState().getDictionary().m_attachments.find(get(m_ref));
+  if (it != getState().getDictionary().m_attachments.end())
+  {
+    const IWORKOutputElements &content = getCollector().getOutputManager().get(it->second.m_id);
+    if (it->second.m_block)
+      getState().m_currentText->insertBlockContent(content);
+    else
+      getState().m_currentText->insertInlineContent(content);
+  }
+  else
+  {
+    ETONYEK_DEBUG_MSG(("AttachmentRef::endOfElement[PAG1TextStorageElement]: can not find attachment %s\n", get(m_ref).c_str()));
+  }
+}
+
+}
+
+namespace
+{
 
 class FootnoteElement : public PAG1XMLEmptyContextBase
 {
@@ -333,6 +409,8 @@ IWORKXMLContextPtr_t SpanElement::element(const int name)
   const IWORKXMLContextPtr_t context = m_footnoteHelper.element(name);
   if (bool(context))
     return context;
+  if (name==(IWORKToken::NS_URI_SF | IWORKToken::attachment_ref))
+    return makeContext<AttachmentRef>(getState());
   return IWORKSpanElement::element(name);
 }
 
@@ -397,13 +475,11 @@ private:
 
 private:
   FootnoteHelper m_footnoteHelper;
-  optional<ID_t> m_ref;
 };
 
 PElement::PElement(PAG1ParserState &state)
   : PAG1XMLContextBase<IWORKPElement>(state)
   , m_footnoteHelper(state)
-  , m_ref()
 {
 }
 
@@ -414,10 +490,7 @@ IWORKXMLContextPtr_t PElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::attachment_ref :
-    // It is possible that there can be 2 or more attachments in the same para.
-    // In that case the code would have to be adapted to handle that.
-    assert(!m_ref);
-    return makeContext<IWORKRefContext>(getState(), m_ref);
+    return makeContext<AttachmentRef>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::link :
     return makeContext<LinkElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::span :
@@ -442,21 +515,6 @@ void PElement::text(const char *value)
 
 void PElement::endOfElement()
 {
-  if (m_ref && isCollector())
-  {
-    assert(getState().m_currentText);
-
-    const PAGAttachmentMap_t::const_iterator it = getState().getDictionary().m_attachments.find(get(m_ref));
-    if (it != getState().getDictionary().m_attachments.end())
-    {
-      const IWORKOutputElements &content = getCollector().getOutputManager().get(it->second.m_id);
-      if (it->second.m_block)
-        getState().m_currentText->insertBlockContent(content);
-      else
-        getState().m_currentText->insertInlineContent(content);
-    }
-  }
-
   IWORKPElement::endOfElement();
 
   if (getState().m_footnoteState.m_pending)

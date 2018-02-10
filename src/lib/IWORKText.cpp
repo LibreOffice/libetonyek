@@ -836,8 +836,7 @@ void IWORKText::insertInlineContent(const IWORKOutputElements &elements)
 
 void IWORKText::insertBlockContent(const IWORKOutputElements &elements)
 {
-  if (m_inPara)
-    closePara();
+  flushList();
   if (!m_inSection && needsSection())
     openSection();
   m_elements.append(elements);
