@@ -28,8 +28,11 @@ struct Token
 92008102400,VERSION_STR_5
 authors,authors
 body-placeholder,body_placeholder
+bullets,bullets
 c,c
 comment,comment
+depth,depth
+headline,headline
 headlineParagraphStyle,headlineParagraphStyle
 http://developer.apple.com/namespaces/keynote2,NS_URI_KEY
 i,i
@@ -39,11 +42,13 @@ master-slide,master_slide
 master-slides,master_slides
 metadata,metadata
 notes,notes
+object-placeholder,object_placeholder
 page,page
 presentation,presentation
 size,size
 slide,slide
 slide-list,slide_list
+slide-number-placeholder,slide_number_placeholder
 slide-style,slide_style
 sticky-note,sticky_note
 sticky-notes,sticky_notes

@@ -367,14 +367,14 @@ namespace
 class DElement : public CellContextBase
 {
 public:
-  explicit DElement(IWORKXMLParserState &state);
+  explicit DElement(IWORKXMLParserState &state, bool isResult=false);
 
 private:
   void attribute(int name, const char *value) override;
 };
 
-DElement::DElement(IWORKXMLParserState &state)
-  : CellContextBase(state)
+DElement::DElement(IWORKXMLParserState &state, bool isResult)
+  : CellContextBase(state, isResult)
 {
   getState().m_tableData->m_type = IWORK_CELL_TYPE_DATE_TIME;
 }
@@ -608,6 +608,9 @@ IWORKXMLContextPtr_t RElement::element(int name)
   {
   case IWORKToken::rb | IWORKToken::NS_URI_SF :
     return makeContext<RbElement>(getState());
+    break;
+  case IWORKToken::rd | IWORKToken::NS_URI_SF :
+    return makeContext<DElement>(getState(), true);
     break;
   case IWORKToken::rn | IWORKToken::NS_URI_SF :
     return makeContext<NElement>(getState(), true);

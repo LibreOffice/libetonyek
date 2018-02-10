@@ -8,8 +8,11 @@
 
 %includes
 %{
-#if defined __GNUC__
+#if defined(__GNUC__)
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
+#if defined(__clang__)
+#pragma clang diagnostic ignored "-Wdeprecated-register"
 #endif
 
 using namespace IWORKToken;
@@ -123,6 +126,7 @@ cap,cap
 capitalization,capitalization
 category-title,category_title
 cb,cb
+cell-address,cell_address
 cell-comment-mapping,cell_comment_mapping
 cell-date,cell_date
 cell-storage,cell_storage
@@ -449,6 +453,7 @@ proxy-master-layer,proxy_master_layer
 r,r
 radial,radial
 rb,rb
+rd,rd
 relative,relative
 restart-list,restart_list
 result-bool-cell,result_bool_cell
@@ -517,12 +522,42 @@ stylesheet-ref,stylesheet_ref
 superscript,superscript
 t,t
 tab,tab
+table-cell,table_cell
+table-cell-ref,table_cell_ref
 table-cell-style,table_cell_style
 table-cell-style-ref,table_cell_style_ref
+table-info,table_info
 table-style,table_style
 table-style-ref,table_style_ref
+table-vector,table_vector
 table-vector-style,table_vector_style
 table-vector-style-ref,table_vector_style_ref
+tableCellArrayCellsByColumn,tableCellArrayCellsByColumn
+tableCellArrayCellsByRow,tableCellArrayCellsByRow
+tableCellContent,tableCellContent
+tableCellFormula,tableCellFormula
+tableCellMinXSide-ref,tableCellMinXSide_ref
+tableCellMaxXSide-ref,tableCellMaxXSide_ref
+tableCellMinYSide-ref,tableCellMinYSide_ref
+tableCellMaxYSide-ref,tableCellMaxYSide_ref
+tableCellPreferredHeight,tableCellPreferredHeight
+tableCellStyle-ref,tableCellStyle_ref
+tableCellValue,tableCellValue
+tableInfoTable,tableInfoTable
+tableModelCells,tableModelCells
+tableModelIsHeaderColumn,tableModelIsHeaderColumn
+tableModelIsHeaderRow,tableModelIsHeaderRow
+tableModelPartitionSource,tableModelPartitionSource
+tableModelStyle-ref,tableModelStyle_ref
+tableModelTableID,tableModelTableID
+tableModelVectors,tableModelVectors
+tableVectorAlong,tableVectorAlong
+tableVectorArrayRowVectors,tableVectorArrayRowVectors
+tableVectorArrayColumnVectors,tableVectorArrayColumnVectors
+tableVectorAxis,tableVectorAxis
+tableVectorBegin,tableVectorBegin
+tableVectorEnd,tableVectorEnd
+tableVectorStyle-ref,tableVectorStyle_ref
 tabs,tabs
 tabs-ref,tabs_ref
 tabstop,tabstop
@@ -585,6 +620,8 @@ width,width
 workspace-style,workspace_style
 wrap,wrap
 x,x
+x-coordinate,x_coordinate
 xsi,xsi
 y,y
+y-coordinate,y_coordinate
 %%

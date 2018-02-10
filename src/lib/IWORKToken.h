@@ -346,6 +346,7 @@ enum
   proxy_master_layer,
   r,
   rb,
+  rd,
   result_bool_cell,
   result_cell,
   result_date_cell,
