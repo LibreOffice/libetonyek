@@ -50,7 +50,7 @@ IWORKXMLContextPtr_t IWORKFmElement::element(int /*name*/)
 namespace libetonyek
 {
 
-IWORKFoElement::IWORKFoElement(IWORKXMLParserState &state)
+IWORKFormulaElement::IWORKFormulaElement(IWORKXMLParserState &state)
   : IWORKXMLEmptyContextBase(state)
   , m_id()
   , m_formula()
@@ -58,12 +58,12 @@ IWORKFoElement::IWORKFoElement(IWORKXMLParserState &state)
 {
 }
 
-const boost::optional<ID_t> &IWORKFoElement::getId() const
+const boost::optional<ID_t> &IWORKFormulaElement::getId() const
 {
   return m_id;
 }
 
-void IWORKFoElement::attribute(const int name, const char *const value)
+void IWORKFormulaElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -84,7 +84,7 @@ void IWORKFoElement::attribute(const int name, const char *const value)
   }
 }
 
-IWORKXMLContextPtr_t IWORKFoElement::element(int name)
+IWORKXMLContextPtr_t IWORKFormulaElement::element(int name)
 {
   switch (name)
   {
@@ -93,11 +93,11 @@ IWORKXMLContextPtr_t IWORKFoElement::element(int name)
     break;
   }
 
-  ETONYEK_DEBUG_MSG(("IWORKFoElement::element: find unknown element %d\n", name));
+  ETONYEK_DEBUG_MSG(("IWORKFormulaElement::element: find unknown element %d\n", name));
   return IWORKXMLContextPtr_t();
 }
 
-void IWORKFoElement::endOfElement()
+void IWORKFormulaElement::endOfElement()
 {
   if (!m_formula) return;
 

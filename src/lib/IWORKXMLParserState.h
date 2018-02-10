@@ -14,6 +14,7 @@
 
 #include "IWORKStylesheet.h"
 #include "IWORKLanguageManager.h"
+#include "IWORKStyle_fwd.h"
 #include "IWORKTypes.h"
 #include "IWORKTypes_fwd.h"
 
@@ -40,6 +41,8 @@ public:
   IWORKDictionary &getDictionary();
   IWORKCollector &getCollector() const;
   const IWORKTokenizer &getTokenizer() const;
+  IWORKStylePtr_t getStyleByName(const char *const name, const IWORKStyleMap_t &mainMap) const;
+
 
 public:
   IWORKTableDataPtr_t m_tableData;

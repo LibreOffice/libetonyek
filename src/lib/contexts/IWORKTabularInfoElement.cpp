@@ -139,16 +139,7 @@ void CellContextBase::attribute(const int name, const char *const value)
     getState().m_tableData->m_rowSpan = lexical_cast<unsigned>(value);
     break;
   case IWORKToken::s | IWORKToken::NS_URI_SF :
-    const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_cellStyles.find(value);
-    if (getState().getDictionary().m_cellStyles.end() != it)
-      getState().m_tableData->m_style = it->second;
-    // checkme: probable but unsure...
-    else if (getState().m_stylesheet && getState().m_stylesheet->m_styles.find(value)!=getState().m_stylesheet->m_styles.end())
-      getState().m_tableData->m_style = getState().m_stylesheet->m_styles.find(value)->second;
-    else
-    {
-      ETONYEK_DEBUG_MSG(("CellContextBase::attribute: unknown style %s\n", value));
-    }
+    getState().m_tableData->m_style = getState().getStyleByName(value, getState().getDictionary().m_cellStyles);
     break;
   }
 }
@@ -347,7 +338,7 @@ private:
 DElement::DElement(IWORKXMLParserState &state)
   : CellContextBase(state)
 {
-  getState().m_tableData->m_type = IWORK_CELL_TYPE_BOOL;
+  getState().m_tableData->m_type = IWORK_CELL_TYPE_DATE_TIME;
 }
 
 void DElement::attribute(const int name, const char *const value)
@@ -355,14 +346,8 @@ void DElement::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::cell_date | IWORKToken::NS_URI_SF :
-  {
-    std::time_t t = ETONYEK_EPOCH_BEGIN + lexical_cast<unsigned>(value);
-    char time_buf[21];
-    strftime(time_buf, 21, "%Y-%m-%dT%H:%S:%MZ", gmtime(&t));
     getState().m_tableData->m_content = value;
-    getState().m_tableData->m_type = IWORK_CELL_TYPE_DATE_TIME;
     break;
-  }
   default :
     CellContextBase::attribute(name, value);
   }
@@ -455,6 +440,7 @@ void CtElement::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::s | IWORKToken::NS_URI_SFA :
+  case IWORKToken::string | IWORKToken::NS_URI_SFA :
     getState().m_tableData->m_content = value;
     getState().m_tableData->m_type = IWORK_CELL_TYPE_TEXT;
     break;
@@ -468,6 +454,7 @@ IWORKXMLContextPtr_t CtElement::element(const int name)
   switch (name)
   {
   case IWORKToken::so | IWORKToken::NS_URI_SF :
+  case IWORKToken::cell_storage | IWORKToken::NS_URI_SF :
     if (getState().m_tableData->m_content)
     {
       ETONYEK_DEBUG_MSG(("found a text cell with both simple and formatted content\n"));
@@ -644,7 +631,7 @@ IWORKXMLContextPtr_t FElement::element(int name)
   switch (name)
   {
   case IWORKToken::fo | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKFoElement>(getState());
+    return makeContext<IWORKFormulaElement>(getState());
   case IWORKToken::of | IWORKToken::NS_URI_SF :
     return makeContext<IWORKOfElement>(getState());
   case IWORKToken::r | IWORKToken::NS_URI_SF :
@@ -967,7 +954,6 @@ private:
 TElement::TElement(IWORKXMLParserState &state)
   : CellContextBase(state)
 {
-  getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
 }
 
 void TElement::startOfElement()
@@ -991,6 +977,374 @@ IWORKXMLContextPtr_t TElement::element(const int name)
   return CellContextBase::element(name);
 }
 
+}
+
+namespace
+{
+class ContentSizeElement : public IWORKXMLElementContextBase
+{
+public:
+  explicit ContentSizeElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+ContentSizeElement::ContentSizeElement(IWORKXMLParserState &state)
+  : IWORKXMLElementContextBase(state)
+{
+}
+
+void ContentSizeElement::attribute(const int name, const char *const /*value*/)
+{
+  switch (name)
+  {
+  case IWORKToken::h | IWORKToken::NS_URI_SFA : // horizontal size
+  case IWORKToken::w | IWORKToken::NS_URI_SFA : // vertical size
+    break;
+  default :
+    ETONYEK_DEBUG_MSG(("ContentSizeElement::attribute: found unexpected attribute\n"));
+    break;
+  }
+}
+
+#ifndef DEBUG
+IWORKXMLContextPtr_t ContentSizeElement::element(int)
+#else
+IWORKXMLContextPtr_t ContentSizeElement::element(int name)
+#endif
+{
+  ETONYEK_DEBUG_MSG(("ContentSizeElement::attribute: found unexpected element %d\n", name));
+  return IWORKXMLContextPtr_t();
+}
+}
+
+namespace
+{
+
+class GenericCellElement : public IWORKXMLEmptyContextBase
+{
+public:
+  explicit GenericCellElement(IWORKXMLParserState &state);
+protected:
+  void emitCell(const bool covered);
+
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  boost::optional<ID_t> m_styleRef;
+};
+
+GenericCellElement::GenericCellElement(IWORKXMLParserState &state)
+  : IWORKXMLEmptyContextBase(state)
+  , m_styleRef()
+{
+}
+
+void GenericCellElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::col | IWORKToken::NS_URI_SF :
+    getState().m_tableData->m_column = int_cast(value);
+    break;
+  case IWORKToken::row | IWORKToken::NS_URI_SF :
+    getState().m_tableData->m_row = int_cast(value);
+    break;
+  case IWORKToken::col_span | IWORKToken::NS_URI_SF :
+    getState().m_tableData->m_columnSpan = lexical_cast<unsigned>(value);
+    break;
+  case IWORKToken::row_span | IWORKToken::NS_URI_SF :
+    getState().m_tableData->m_rowSpan = lexical_cast<unsigned>(value);
+    break;
+  default :
+    ETONYEK_DEBUG_MSG(("GenericCellElement::attribute: found unexpected attribute\n"));
+  }
+}
+
+IWORKXMLContextPtr_t GenericCellElement::element(int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref :
+    return makeContext<IWORKRefContext>(getState(), m_styleRef);
+  case IWORKToken::NS_URI_SF | IWORKToken::content_size :
+    return makeContext<ContentSizeElement>(getState());
+  }
+
+  ETONYEK_DEBUG_MSG(("GenericCellElement::element: found unexpected element\n"));
+  return IWORKXMLContextPtr_t();
+}
+
+void GenericCellElement::endOfElement()
+{
+  emitCell(false);
+}
+
+void GenericCellElement::emitCell(const bool covered)
+{
+  // determine the style
+  if (m_styleRef)
+    getState().m_tableData->m_style = getState().getStyleByName(get(m_styleRef).c_str(), getState().getDictionary().m_cellStyles);
+
+  const IWORKTableDataPtr_t tableData = getState().m_tableData;
+  assert(tableData->m_columnSizes.size() > tableData->m_column);
+  assert(tableData->m_rowSizes.size() > tableData->m_row);
+
+  // send the cell to collector
+  if (bool(getState().m_currentTable))
+  {
+    if (covered)
+    {
+      getState().m_currentTable->insertCoveredCell(tableData->m_column, tableData->m_row);
+    }
+    else
+    {
+      IWORKTextPtr_t text(getState().m_currentText);
+      getState().m_currentText.reset();
+      if (bool(tableData->m_content) && tableData->m_type == IWORK_CELL_TYPE_TEXT)
+      {
+        text = getCollector().createText(getState().m_langManager);
+        text->insertText(get(tableData->m_content));
+        text->flushParagraph();
+      }
+      getState().m_currentTable->insertCell(
+        tableData->m_column, tableData->m_row,
+        tableData->m_content, text, tableData->m_dateTime,
+        get_optional_value_or(tableData->m_columnSpan, 1), get_optional_value_or(tableData->m_rowSpan, 1),
+        tableData->m_formula, tableData->m_formulaHC, tableData->m_style, tableData->m_type
+      );
+    }
+  }
+
+  // reset cell attributes
+  tableData->m_columnSpan.reset();
+  tableData->m_rowSpan.reset();
+  tableData->m_content.reset();
+  tableData->m_dateTime.reset();
+  tableData->m_formula.reset();
+  tableData->m_style.reset();
+  tableData->m_type = IWORK_CELL_TYPE_TEXT;
+}
+}
+
+namespace
+{
+class ResultCellElement : public IWORKXMLEmptyContextBase
+{
+public:
+  explicit ResultCellElement(IWORKXMLParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+
+  boost::optional<ID_t> m_resultRef;
+};
+
+ResultCellElement::ResultCellElement(IWORKXMLParserState &state)
+  : IWORKXMLEmptyContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t ResultCellElement::element(int name)
+{
+  switch (name)
+  {
+  case IWORKToken::result_number_cell | IWORKToken::NS_URI_SF :
+    return makeContext<IWORKRefContext>(getState(), m_resultRef);
+  }
+  ETONYEK_DEBUG_MSG(("ResultCellElement::element: found unexpected element\n"));
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+class DateCellElement : public GenericCellElement
+{
+public:
+  explicit DateCellElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+};
+
+DateCellElement::DateCellElement(IWORKXMLParserState &state)
+  : GenericCellElement(state)
+{
+  getState().m_tableData->m_type = IWORK_CELL_TYPE_DATE_TIME;
+}
+
+void DateCellElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::cell_date | IWORKToken::NS_URI_SF :
+  {
+    IWORKDateTimeData time;
+    if (value && sscanf(value,"%d-%d-%dT%d:%d:%f",&time.m_year, &time.m_month, &time.m_day, &time.m_hour, &time.m_minute, &time.m_second)==6)
+      getState().m_tableData->m_dateTime = time;
+    else
+    {
+      ETONYEK_DEBUG_MSG(("DateCellElement::attribute: can not convert %s\n", value));
+    }
+    break;
+  }
+  default:
+    return GenericCellElement::attribute(name,value);
+  }
+}
+}
+
+namespace
+{
+class FormulaCellElement : public GenericCellElement
+{
+public:
+  explicit FormulaCellElement(IWORKXMLParserState &state);
+
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+FormulaCellElement::FormulaCellElement(IWORKXMLParserState &state)
+  : GenericCellElement(state)
+{
+}
+
+IWORKXMLContextPtr_t FormulaCellElement::element(int name)
+{
+  switch (name)
+  {
+  case IWORKToken::formula | IWORKToken::NS_URI_SF :
+    return makeContext<IWORKFormulaElement>(getState());
+  case IWORKToken::result_cell | IWORKToken::NS_URI_SF :
+    return makeContext<ResultCellElement>(getState());
+  }
+
+  return GenericCellElement::element(name);
+}
+}
+
+namespace
+{
+class NumberCellElement : public GenericCellElement
+{
+public:
+  explicit NumberCellElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+};
+
+NumberCellElement::NumberCellElement(IWORKXMLParserState &state)
+  : GenericCellElement(state)
+{
+  getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
+}
+
+void NumberCellElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::value | IWORKToken::NS_URI_SF :
+    getState().m_tableData->m_content = value;
+    break;
+  default:
+    return GenericCellElement::attribute(name,value);
+  }
+}
+}
+
+namespace
+{
+class TextCellElement : public GenericCellElement
+{
+public:
+  explicit TextCellElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual void startOfElement();
+  virtual IWORKXMLContextPtr_t element(int name);
+};
+
+TextCellElement::TextCellElement(IWORKXMLParserState &state)
+  : GenericCellElement(state)
+{
+}
+
+void TextCellElement::startOfElement()
+{
+  if (isCollector())
+  {
+    // CHECKME: can we move this code in the constructor ?
+    assert(!getState().m_currentText);
+    getState().m_currentText = getCollector().createText(getState().m_langManager, false);
+  }
+}
+
+void TextCellElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::flags | IWORKToken::NS_URI_SF : // find 4 ?
+    break;
+  default:
+    return GenericCellElement::attribute(name,value);
+  }
+}
+
+IWORKXMLContextPtr_t TextCellElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::cell_text | IWORKToken::NS_URI_SF :
+    return makeContext<CtElement>(getState());
+  }
+
+  return GenericCellElement::element(name);
+}
+
+}
+
+namespace
+{
+class SpanCellElement : public GenericCellElement
+{
+public:
+  explicit SpanCellElement(IWORKXMLParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual void endOfElement();
+};
+
+SpanCellElement::SpanCellElement(IWORKXMLParserState &state)
+  : GenericCellElement(state)
+{
+}
+
+void SpanCellElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::horizontal_offset | IWORKToken::NS_URI_SF :
+  case IWORKToken::vertical_offset | IWORKToken::NS_URI_SF :
+    break;
+  default:
+    return GenericCellElement::attribute(name,value);
+  }
+}
+
+void SpanCellElement::endOfElement()
+{
+  emitCell(true);
+}
 }
 
 namespace
@@ -1049,6 +1403,18 @@ IWORKXMLContextPtr_t DatasourceElement::element(const int name)
     return makeContext<StElement>(getState());
   case IWORKToken::t | IWORKToken::NS_URI_SF :
     return makeContext<TElement>(getState());
+  case IWORKToken::date_cell | IWORKToken::NS_URI_SF :
+    return makeContext<DateCellElement>(getState());
+  case IWORKToken::generic_cell | IWORKToken::NS_URI_SF :
+    return makeContext<GenericCellElement>(getState());
+  case IWORKToken::formula_cell | IWORKToken::NS_URI_SF :
+    return makeContext<FormulaCellElement>(getState());
+  case IWORKToken::number_cell | IWORKToken::NS_URI_SF :
+    return makeContext<NumberCellElement>(getState());
+  case IWORKToken::span_cell | IWORKToken::NS_URI_SF :
+    return makeContext<SpanCellElement>(getState());
+  case IWORKToken::text_cell | IWORKToken::NS_URI_SF :
+    return makeContext<TextCellElement>(getState());
   }
 
   ETONYEK_DEBUG_MSG(("DatasourceElement::element: found unexpected element\n"));
@@ -1099,16 +1465,8 @@ void VectorStyleRefElement::endOfElement()
 {
   if (getRef() && m_startIndex && m_stopIndex)
   {
-    const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_vectorStyles.find(get(getRef()));
-    if (getState().getDictionary().m_vectorStyles.end() != it)
-      m_line.insert_back(m_startIndex.get(), m_stopIndex.get(), it->second);
-    // not sure if needed but probable
-    else if (getState().m_stylesheet && getState().m_stylesheet->m_styles.find(get(getRef()))!=getState().m_stylesheet->m_styles.end())
-      m_line.insert_back(m_startIndex.get(), m_stopIndex.get(), getState().m_stylesheet->m_styles.find(get(getRef()))->second);
-    else
-    {
-      ETONYEK_DEBUG_MSG(("VectorStyleRefElement::attribute: unknown style %s\n", get(getRef()).c_str()));
-    }
+    IWORKStylePtr_t style= getState().getStyleByName(get(getRef()).c_str(), getState().getDictionary().m_vectorStyles);
+    if (style) m_line.insert_back(m_startIndex.get(), m_stopIndex.get(), style);
   }
 }
 
@@ -1426,18 +1784,7 @@ void TabularModelElement::endOfElement()
   {
     IWORKStylePtr_t style;
     if (m_styleRef)
-    {
-      const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_tabularStyles.find(get(m_styleRef));
-      if (it != getState().getDictionary().m_tabularStyles.end())
-        style = it->second;
-      // not sure if needed but probable
-      else if (getState().m_stylesheet && getState().m_stylesheet->m_styles.find(get(m_styleRef))!=getState().m_stylesheet->m_styles.end())
-        style=getState().m_stylesheet->m_styles.find(get(m_styleRef))->second;
-      else
-      {
-        ETONYEK_DEBUG_MSG(("TabularModelElement::attribute: unknown style %s\n", get(m_styleRef).c_str()));
-      }
-    }
+      style=getState().getStyleByName(get(m_styleRef).c_str(), getState().getDictionary().m_tabularStyles);
     sendStyle(style, getState().m_currentTable);
     getState().m_currentTable->setHeaders(
       get_optional_value_or(m_headerColumns, 0), get_optional_value_or(m_headerRows, 0),

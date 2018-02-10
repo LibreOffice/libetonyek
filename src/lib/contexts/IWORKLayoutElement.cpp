@@ -29,16 +29,10 @@ IWORKLayoutElement::IWORKLayoutElement(IWORKXMLParserState &state)
 void IWORKLayoutElement::attribute(const int name, const char *const value)
 {
   if ((IWORKToken::NS_URI_SF | IWORKToken::style) == name)
+    m_style=getState().getStyleByName(value, getState().getDictionary().m_layoutStyles);
+  else
   {
-    const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_layoutStyles.find(value);
-    if (it != getState().getDictionary().m_layoutStyles.end())
-      m_style = it->second;
-    else if (getState().m_stylesheet && getState().m_stylesheet->m_styles.find(value)!=getState().m_stylesheet->m_styles.end())
-      m_style=getState().m_stylesheet->m_styles.find(value)->second;
-    else
-    {
-      ETONYEK_DEBUG_MSG(("IWORKLayoutElement::attribute: unknown style %s\n", value));
-    }
+    ETONYEK_DEBUG_MSG(("IWORKLayoutElement::attribute: unknown attribute\n"));
   }
 }
 

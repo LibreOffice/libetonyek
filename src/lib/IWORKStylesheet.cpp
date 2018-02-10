@@ -43,7 +43,6 @@ IWORKStylePtr_t IWORKStylesheet::find(const std::string &name) const
       currentStylesheet = currentStylesheet->parent.get();
     if (!currentStylesheet)
     {
-      // FIXME: we must also look in the anonymous style map...
       ETONYEK_DEBUG_MSG(("IWORKStylesheet::find: can not find parent %s\n", name.c_str()));
     }
   }

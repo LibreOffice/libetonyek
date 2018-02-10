@@ -54,6 +54,22 @@ const IWORKTokenizer &IWORKXMLParserState::getTokenizer() const
   return m_parser.getTokenizer();
 }
 
+IWORKStylePtr_t IWORKXMLParserState::getStyleByName(const char *const name, const IWORKStyleMap_t &mainMap) const
+{
+  if (!name)
+  {
+    ETONYEK_DEBUG_MSG(("IWORKXMLParserState::getStyleByName: called without name\n"));
+    return IWORKStylePtr_t();
+  }
+  const IWORKStyleMap_t::const_iterator it = mainMap.find(name);
+  if (mainMap.end() != it)
+    return it->second;
+  if (m_stylesheet && m_stylesheet->m_styles.find(name)!=m_stylesheet->m_styles.end())
+    return m_stylesheet->m_styles.find(name)->second;
+  ETONYEK_DEBUG_MSG(("IWORKXMLParserState::getStyleByName: unknown style %s\n", name));
+  return IWORKStylePtr_t();
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

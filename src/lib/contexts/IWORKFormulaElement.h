@@ -18,10 +18,10 @@
 namespace libetonyek
 {
 //! class to parse the sf:fo element, ie. formula element
-class IWORKFoElement : public IWORKXMLEmptyContextBase
+class IWORKFormulaElement : public IWORKXMLEmptyContextBase
 {
 public:
-  explicit IWORKFoElement(IWORKXMLParserState &state);
+  explicit IWORKFormulaElement(IWORKXMLParserState &state);
 
 private:
   virtual void attribute(int name, const char *value);

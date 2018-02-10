@@ -1309,13 +1309,22 @@ typedef StylePropertyContext<property::FollowingLayoutStyle, IWORKToken::NS_URI_
 typedef StylePropertyContext<property::FollowingParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> FollowingParagraphStyleElement;
 typedef StylePropertyContext<property::LayoutParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> LayoutParagraphStyleElement;
 typedef StylePropertyContext<property::ListStyle, IWORKToken::NS_URI_SF | IWORKToken::liststyle, IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref> ListStyleElement;
+typedef StylePropertyContext<property::SFTCellStylePropertyLayoutStyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref> SFTCellStylePropertyLayoutStylePropertyElement;
+typedef StylePropertyContext<property::SFTCellStylePropertyParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> SFTCellStylePropertyParagraphStylePropertyElement;
 typedef StylePropertyContext<property::SFTDefaultBodyCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultBodyCellStylePropertyElement;
+typedef StylePropertyContext<property::SFTDefaultBodyVectorStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::vector_style, IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref> SFTDefaultBodyVectorStylePropertyElement;
+typedef StylePropertyContext<property::SFTDefaultBorderVectorStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::vector_style, IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref> SFTDefaultBorderVectorStylePropertyElement;
+typedef StylePropertyContext<property::SFTDefaultFooterBodyVectorStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::vector_style, IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref> SFTDefaultFooterBodyVectorStylePropertyElement;
 typedef StylePropertyContext<property::SFTDefaultFooterRowCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultFooterRowCellStylePropertyElement;
+typedef StylePropertyContext<property::SFTDefaultFooterSeparatorVectorStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::vector_style, IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref> SFTDefaultFooterSeparatorVectorStylePropertyElement;
+typedef StylePropertyContext<property::SFTDefaultGroupingLevelVectorStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::vector_style, IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref> SFTDefaultGroupingLevelVectorStylePropertyElement;
 typedef StylePropertyContext<property::SFTDefaultGroupingRowCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultGroupingRowCellStylePropertyElement;
+typedef StylePropertyContext<property::SFTDefaultHeaderBodyVectorStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::vector_style, IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref> SFTDefaultHeaderBodyVectorStylePropertyElement;
 typedef StylePropertyContext<property::SFTDefaultHeaderColumnCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultHeaderColumnCellStylePropertyElement;
 typedef StylePropertyContext<property::SFTDefaultHeaderRowCellStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::cell_style, IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref> SFTDefaultHeaderRowCellStylePropertyElement;
-typedef StylePropertyContext<property::SFTCellStylePropertyParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> SFTCellStylePropertyParagraphStylePropertyElement;
-typedef StylePropertyContext<property::SFTCellStylePropertyLayoutStyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref> SFTCellStylePropertyLayoutStylePropertyElement;
+typedef StylePropertyContext<property::SFTDefaultHeaderSeparatorVectorStyleProperty, IWORKToken::NS_URI_SF | IWORKToken::vector_style, IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref> SFTDefaultHeaderSeparatorVectorStylePropertyElement;
+typedef StylePropertyContext<property::SFTTableNameStylePropertyLayoutStyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle, IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref> SFTTableNameStylePropertyLayoutStyleElement;
+typedef StylePropertyContext<property::SFTTableNameStylePropertyParagraphStyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle, IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref> SFTTableNameStylePropertyParagraphStyleElement;
 
 typedef IWORKNumericPropertyContext<property::Alignment> AlignmentElement;
 typedef IWORKNumericPropertyContext<property::Baseline> SuperscriptElement;
@@ -1446,8 +1455,23 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<SFTCellStylePropertyParagraphStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultBodyCellStyleProperty :
     return makeContext<SFTDefaultBodyCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultBodyVectorStyleProperty :
+    return makeContext<SFTDefaultBodyVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultBorderVectorStyleProperty :
+    return makeContext<SFTDefaultBorderVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultFooterBodyVectorStyleProperty :
+    return makeContext<SFTDefaultFooterBodyVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultFooterRowCellStyleProperty :
     return makeContext<SFTDefaultFooterRowCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultFooterSeparatorVectorStyleProperty :
+    return makeContext<SFTDefaultFooterSeparatorVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingLevel0VectorStyleProperty:
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingLevel1VectorStyleProperty:
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingLevel2VectorStyleProperty:
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingLevel3VectorStyleProperty:
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingLevel4VectorStyleProperty:
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingLevel5VectorStyleProperty:
+    return makeContext<SFTDefaultGroupingLevelVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingRowCell0StyleProperty :
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingRowCell1StyleProperty :
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingRowCell2StyleProperty :
@@ -1455,10 +1479,18 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingRowCell4StyleProperty :
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingRowCell5StyleProperty :
     return makeContext<SFTDefaultGroupingRowCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultHeaderBodyVectorStyleProperty :
+    return makeContext<SFTDefaultHeaderBodyVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultHeaderColumnCellStyleProperty :
     return makeContext<SFTDefaultHeaderColumnCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultHeaderRowCellStyleProperty :
     return makeContext<SFTDefaultHeaderRowCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultHeaderSeparatorVectorStyleProperty :
+    return makeContext<SFTDefaultHeaderSeparatorVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTTableNameStylePropertyLayoutStyle :
+    return makeContext<SFTTableNameStylePropertyLayoutStyleElement>(getState(), *m_propMap, getState().getDictionary().m_layoutStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFTTableNameStylePropertyParagraphStyle :
+    return makeContext<SFTTableNameStylePropertyParagraphStyleElement>(getState(), *m_propMap, getState().getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTHeaderColumnRepeatsProperty :
     return makeContext<SFTHeaderColumnRepeatsPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTHeaderRowRepeatsProperty :

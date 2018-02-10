@@ -59,11 +59,7 @@ IWORKXMLContextPtr_t StyleElement::element(const int name)
 void StyleElement::endOfElement()
 {
   if (m_ref)
-  {
-    const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_graphicStyles.find(get(m_ref));
-    if (it != getState().getDictionary().m_graphicStyles.end())
-      m_style = it->second;
-  }
+    m_style = getState().getStyleByName(get(m_ref).c_str(), getState().getDictionary().m_graphicStyles);
 }
 
 }

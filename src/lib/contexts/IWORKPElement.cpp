@@ -41,18 +41,11 @@ void IWORKPElement::attribute(const int name, const char *const value)
     m_listLevel = try_int_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::style :
-  {
-    const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_paragraphStyles.find(value);
-    if (getState().getDictionary().m_paragraphStyles.end() != it)
-      m_style = it->second;
-    else if (getState().m_stylesheet && getState().m_stylesheet->m_styles.find(value)!=getState().m_stylesheet->m_styles.end())
-      m_style=getState().m_stylesheet->m_styles.find(value)->second;
-    else
-    {
-      ETONYEK_DEBUG_MSG(("IWORKPElement::attribute: unknown style %s\n", value));
-    }
+    m_style = getState().getStyleByName(value, getState().getDictionary().m_paragraphStyles);
     break;
-  }
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKPElement::attribute: find unknown attributes\n"));
+    break;
   }
 }
 
