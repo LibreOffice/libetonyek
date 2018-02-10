@@ -251,6 +251,7 @@ struct IWORKGradientStop
   double m_fraction;
   double m_inflection;
 };
+typedef std::unordered_map<ID_t, IWORKGradientStop> IWORKGradientStopMap_t;
 
 struct IWORKGradient
 {

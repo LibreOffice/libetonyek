@@ -186,6 +186,7 @@ enum
   geometry,
   generic_cell,
   gradient_stop,
+  gradient_stop_ref,
   graphic_style,
   graphic_style_ref,
   grid,

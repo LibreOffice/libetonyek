@@ -385,6 +385,9 @@ void GradientStopElement::endOfElement()
     m_stops.back().m_color = get_optional_value_or(m_color, IWORKColor());
     m_stops.back().m_fraction = get(m_fraction);
     m_stops.back().m_inflection = get_optional_value_or(m_inflection, 0.5);
+
+    if (getId())
+      getState().getDictionary().m_gradientStops.insert(IWORKGradientStopMap_t::value_type(get(getId()),m_stops.back()));
   }
 }
 
@@ -393,7 +396,7 @@ void GradientStopElement::endOfElement()
 namespace
 {
 
-typedef IWORKContainerContext<IWORKGradientStop, GradientStopElement, IWORKDirectCollector, IWORKToken::NS_URI_SF | IWORKToken::gradient_stop> StopsElement;
+typedef IWORKContainerContext<IWORKGradientStop, GradientStopElement, IWORKDirectCollector, IWORKToken::NS_URI_SF | IWORKToken::gradient_stop, IWORKToken::NS_URI_SF | IWORKToken::gradient_stop_ref> StopsElement;
 
 }
 
@@ -457,7 +460,7 @@ IWORKXMLContextPtr_t AngleGradientElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::stops :
-    return makeContext<StopsElement>(getState(), m_stops);
+    return makeContext<StopsElement>(getState(), getState().getDictionary().m_gradientStops, m_stops);
   }
 
   return IWORKXMLContextPtr_t();
@@ -531,7 +534,7 @@ IWORKXMLContextPtr_t TransformGradientElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::stops :
-    return makeContext<StopsElement>(getState(), m_stops);
+    return makeContext<StopsElement>(getState(), getState().getDictionary().m_gradientStops, m_stops);
   }
 
   return IWORKXMLContextPtr_t();

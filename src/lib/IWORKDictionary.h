@@ -58,6 +58,7 @@ struct IWORKDictionary
   IWORKMediaContentMap_t m_binaries;
   IWORKMediaContentMap_t m_unfiltereds;
   IWORKMediaContentMap_t m_filteredImages;
+  IWORKGradientStopMap_t m_gradientStops;
   IWORKImageMap_t m_images;
   IWORKLineSpacingMap_t m_lineSpacings;
   IWORKPatternMap_t m_patterns;

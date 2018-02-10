@@ -216,6 +216,7 @@ g,g
 generic-cell,generic_cell
 geometry,geometry
 gradient-stop,gradient_stop
+gradient-stop-ref,gradient_stop_ref
 graphic-style,graphic_style
 graphic-style-ref,graphic_style_ref
 grid,grid
