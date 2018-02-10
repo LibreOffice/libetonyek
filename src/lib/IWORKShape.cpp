@@ -293,22 +293,142 @@ IWORKPathPtr_t makeConnectionPath(const IWORKSize &size, const double middleX, c
 
 IWORKPathPtr_t makeCalloutPath(const IWORKSize &size, const double radius, const double tailSize, const double tailX, const double tailY)
 {
-  // user space canvas: [-1:1] x [-1:1]
+  double wRadius=2*radius<size.m_width ? radius : size.m_width/2;
+  double hRadius=2*radius<size.m_height ? radius : size.m_height/2;
+  double tail[2]= {tailX-size.m_width/2, tailY-size.m_height/2};
+  double xPos[4]= {-size.m_width/2,-size.m_width/2+wRadius,size.m_width/2-wRadius,size.m_width/2};
+  double yPos[4]= {-size.m_height/2,-size.m_height/2+hRadius,size.m_height/2-hRadius,size.m_height/2};
+  const double tSize=tailSize<0 ? -tailSize : tailSize;
+  glm::dmat3 trans=translate(size.m_width/2, size.m_height/2);
+  // reorient figure so that the tail is in RB
+  trans=trans*scale(tail[0]<0 ? -1 : 1,tail[1]<0 ? -1 : 1);
+  if (tail[0]<0) tail[0]*=-1;
+  if (tail[1]<0) tail[1]*=-1;
+  // first check if tail is in the round rect
+  if (tailX>=0 && tailX<=size.m_width && tailY>=0 && tailY<=size.m_height &&
+      (tail[0]-xPos[2])*(tail[0]-xPos[2])*hRadius*hRadius+
+      (tail[1]-yPos[2])*(tail[1]-yPos[2])*wRadius*wRadius
+      <= wRadius*wRadius*hRadius*hRadius)
+    return makeRoundedRectanglePath(size,radius);
+  if (tail[0]*yPos[3]<tail[1]*xPos[3])
+  {
+    using std::swap;
+    swap(tail[0],tail[1]);
+    swap(wRadius,hRadius);
+    for (int i=0; i<4; ++i) swap(xPos[i], yPos[i]);
+    trans=trans*glm::dmat3(0, 1, 0, 1, 0, 0, 0, 0, 1);
+  }
+  deque<Point> points;
+  std::vector<char> orders;
+  orders.push_back('M');
+  points.push_back(Point(xPos[1],yPos[3]));
+  orders.push_back('Q');
+  points.push_back(Point(xPos[0],yPos[3]));
+  points.push_back(Point(xPos[0],yPos[2]));
+  orders.push_back('L');
+  points.push_back(Point(xPos[0],yPos[1]));
+  orders.push_back('Q');
+  points.push_back(Point(xPos[0],yPos[0]));
+  points.push_back(Point(xPos[1],yPos[0]));
+  orders.push_back('L');
+  points.push_back(Point(xPos[2],yPos[0]));
+  orders.push_back('Q');
+  points.push_back(Point(xPos[3],yPos[0]));
+  points.push_back(Point(xPos[3],yPos[1]));
 
-  // TODO: draw correctly instead of just approximating
-  (void) radius;
-  (void) tailSize;
-  (void) tailX;
-  (void) tailY;
+  // ok first compute the intersection of OT with the rectangle side x=xPos[3]
+  double y1=tail[0]>0 ? tail[1]*xPos[3]/tail[0] : 0;
+  // go to the y1-tSize
+  if (y1-tSize <= yPos[1]) // ok
+    ;
+  else if (y1-tSize <= yPos[2])
+  {
+    orders.push_back('L');
+    points.push_back(Point(xPos[3],y1-tSize));
+  }
+  else
+  {
+    orders.push_back('L');
+    points.push_back(Point(xPos[3],yPos[2]));
 
-  deque<Point> points = rotatePoint(Point(-1, -1), 4);
-  points.push_back(Point(-1, 0.5));
-  points.push_back(Point(-2, 0));
-  points.push_back(Point(-1, -0.5));
-
-  // create the path
-  transform(points, scale(size.m_width, size.m_height) * scale(0.5, 0.5) * translate(1, 1));
-  const IWORKPathPtr_t path = makePolyLine(points);
+    double delta[2]= {wRadius,y1-tSize-yPos[2]};
+    double alpha=std::atan2(wRadius*delta[1],hRadius*delta[0]);
+    orders.push_back('Q');
+    points.push_back(Point(xPos[3],yPos[2]+hRadius*std::tan(alpha/2)));
+    points.push_back(Point(xPos[2]+wRadius*std::cos(alpha),yPos[2]+hRadius*std::sin(alpha)));
+  }
+  // the tail
+  orders.push_back('L');
+  points.push_back(Point(tail[0],tail[1]));
+  // after the tail
+  if (y1+tSize <= yPos[2])
+  {
+    orders.push_back('L');
+    points.push_back(Point(xPos[3],y1+tSize));
+    orders.push_back('L');
+    points.push_back(Point(xPos[3],yPos[2]));
+    orders.push_back('Q');
+    points.push_back(Point(xPos[3],yPos[3]));
+    points.push_back(Point(xPos[2],yPos[3]));
+  }
+  else if (y1+tSize < yPos[3])
+  {
+    double delta[2]= {wRadius,y1+tSize-yPos[2]};
+    double alpha=std::atan2(wRadius*delta[1],hRadius*delta[0]);
+    // go back to circle
+    orders.push_back('L');
+    points.push_back(Point(xPos[2]+wRadius*std::cos(alpha),yPos[2]+hRadius*std::sin(alpha)));
+    // end circle
+    orders.push_back('Q');
+    points.push_back(Point(xPos[2]+wRadius*std::tan((1.5707963268-alpha)/2),yPos[3]));
+    points.push_back(Point(xPos[2],yPos[3]));
+  }
+  else if (xPos[2]-(y1+tSize-yPos[3])>xPos[1])
+  {
+    // clearly to small but...
+    points.push_back(Point(xPos[2]-(y1+tSize-yPos[3]),yPos[3]));
+    orders.push_back('L');
+  }
+  transform(points, trans);
+  IWORKPathPtr_t path(new IWORKPath);
+  size_t numPoints=points.size();
+  for (size_t i=0, pPos=0; i<orders.size(); ++i)
+  {
+    switch (orders[i])
+    {
+    case 'M':
+      if (pPos>=numPoints)
+      {
+        ETONYEK_DEBUG_MSG(("makeCalloutPath[IWORKShape]: can not find a point\n"));
+        return IWORKPathPtr_t();
+      }
+      path->appendMoveTo(points[pPos].x, points[pPos].y);
+      ++pPos;
+      break;
+    case 'L':
+      if (pPos>=numPoints)
+      {
+        ETONYEK_DEBUG_MSG(("makeCalloutPath[IWORKShape]: can not find a point\n"));
+        return IWORKPathPtr_t();
+      }
+      path->appendLineTo(points[pPos].x, points[pPos].y);
+      ++pPos;
+      break;
+    case 'Q':
+      if (pPos+1>=numPoints)
+      {
+        ETONYEK_DEBUG_MSG(("makeCalloutPath[IWORKShape]: can not find a point\n"));
+        return IWORKPathPtr_t();
+      }
+      path->appendQCurveTo(points[pPos].x, points[pPos].y, points[pPos+1].x, points[pPos+1].y);
+      pPos+=2;
+      break;
+    default:
+      ETONYEK_DEBUG_MSG(("makeCalloutPath[IWORKShape]: unknown order %c\n", orders[i]));
+      return IWORKPathPtr_t();
+    }
+  }
+  path->appendClose();
 
   return path;
 }
