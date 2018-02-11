@@ -14,9 +14,11 @@
 
 #include "IWORKDocumentInterface.h"
 #include "IWORKOutputElements.h"
+#include "IWORKPath.h"
 #include "IWORKTable.h"
 #include "IWORKText.h"
 #include "PAGProperties.h"
+#include "libetonyek_utils.h"
 
 namespace libetonyek
 {
@@ -96,7 +98,6 @@ PAGCollector::PAGCollector(IWORKDocumentInterface *const document)
   , m_pageGroups()
   , m_page(0)
   , m_attachmentPosition()
-  , m_inAttachments(false)
   , m_annotations()
 {
 }
@@ -168,18 +169,6 @@ void PAGCollector::openSection(const std::string &style)
 void PAGCollector::closeSection()
 {
   flushPageSpan();
-}
-
-void PAGCollector::openAttachments()
-{
-  assert(!m_inAttachments);
-  m_inAttachments = true;
-}
-
-void PAGCollector::closeAttachments()
-{
-  assert(m_inAttachments);
-  m_inAttachments = false;
 }
 
 void PAGCollector::sendAnnotation(const std::string &name)
@@ -273,6 +262,38 @@ void PAGCollector::drawTable()
     getOutputManager().getCurrent().addEndTextObject();
     getOutputManager().getCurrent().addCloseFrame();
   }
+}
+
+void PAGCollector::drawShape(const IWORKShapePtr_t &shape)
+{
+  if (!m_inAttachment || !bool(shape) || !bool(shape->m_path))
+  {
+    IWORKCollector::drawShape(shape);
+    return;
+  }
+  IWORKOutputElements &elements = m_outputManager.getCurrent();
+
+  librevenge::RVNGPropertyList styleProps;
+
+  if (bool(shape->m_style))
+    fillGraphicProps(shape->m_style, styleProps);
+  if (shape->m_locked) // CHECKME: maybe also content
+    styleProps.insert("style:protect", "position size");
+  librevenge::RVNGPropertyList shapeProps;
+
+  librevenge::RVNGPropertyListVector vec;
+  shape->m_path->write(vec);
+  shapeProps.insert("svg:d", vec);
+
+  shapeProps.insert("text:anchor-type", "as-char");
+  shapeProps.insert("style:vertical-pos", "bottom");
+  shapeProps.insert("style:vertical-rel", "text");
+  shapeProps.insert("style:run-through", "foreground");
+  shapeProps.insert("style:wrap","run-through");
+  elements.addSetStyle(styleProps);
+  elements.addDrawPath(shapeProps);
+
+  //drawTextBox(shape->m_text, trafo, shape->m_geometry);
 }
 
 void PAGCollector::drawMedia(const double x, const double y, const librevenge::RVNGPropertyList &data)

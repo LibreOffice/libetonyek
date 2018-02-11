@@ -224,140 +224,6 @@ private:
   mutable double m_opacity;
 };
 
-void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props, bool isSurface=true)
-{
-  assert(bool(style));
-
-  using namespace property;
-
-  double opacity=style->has<Opacity>() ? style->get<Opacity>() : 1.;
-  if (isSurface && style->has<Fill>())
-  {
-    FillWriter fillWriter(props);
-    apply_visitor(fillWriter, style->get<Fill>());
-    opacity*=fillWriter.getOpacity();
-  }
-  else
-    props.insert("draw:fill", "none");
-
-  if (style->has<Stroke>())
-  {
-    const IWORKStroke &stroke = style->get<Stroke>();
-    IWORKStrokeType type = stroke.m_pattern.m_type;
-    if ((type == IWORK_STROKE_TYPE_DASHED) && stroke.m_pattern.m_values.size() < 2)
-      type = IWORK_STROKE_TYPE_SOLID;
-
-    switch (type)
-    {
-    case IWORK_STROKE_TYPE_NONE :
-      props.insert("draw:stroke", "none");
-      break;
-    case IWORK_STROKE_TYPE_SOLID :
-      props.insert("draw:stroke", "solid");
-      break;
-    case IWORK_STROKE_TYPE_DASHED :
-      props.insert("draw:stroke", "dash");
-      props.insert("draw:dots1", 1);
-      props.insert("draw:dots1-length", stroke.m_pattern.m_values[0], RVNG_PERCENT);
-      props.insert("draw:dots2", 1);
-      props.insert("draw:dots2-length", stroke.m_pattern.m_values[0], RVNG_PERCENT);
-      props.insert("draw:distance", stroke.m_pattern.m_values[1], RVNG_PERCENT);
-      break;
-    case IWORK_STROKE_TYPE_AUTO :
-      if (style->has<Fill>())
-        props.insert("draw:stroke", "none");
-      else
-        props.insert("draw:stroke", "solid");
-      break;
-    default:
-      ETONYEK_DEBUG_MSG(("fillGraphicProps[IWORKCollector]: unexpected stroke type\n"));
-      break;
-    }
-
-    props.insert("svg:stroke-width", pt2in(stroke.m_width));
-    props.insert("svg:stroke-color", makeColor(stroke.m_color));
-
-    switch (stroke.m_cap)
-    {
-    default :
-    case IWORK_LINE_CAP_NONE :
-
-    case IWORK_LINE_CAP_BUTT :
-      props.insert("svg:stroke-linecap", "butt");
-      break;
-    case IWORK_LINE_CAP_ROUND :
-      props.insert("svg:stroke-linecap", "round");
-      break;
-    }
-
-    switch (stroke.m_join)
-    {
-    case IWORK_LINE_JOIN_MITER :
-      props.insert("svg:stroke-linejoin", "miter");
-      break;
-    case IWORK_LINE_JOIN_ROUND :
-      props.insert("svg:stroke-linejoin", "round");
-      break;
-    case IWORK_LINE_JOIN_NONE :
-    default :
-      props.insert("svg:stroke-linejoin", "none");
-    }
-  }
-
-  for (int marker=0; marker<2; ++marker)
-  {
-    if ((marker==0 && !style->has<TailLineEnd>()) || (marker==1 && !style->has<HeadLineEnd>()))
-      continue;
-    const IWORKMarker &lineEnd=marker==0 ? style->get<TailLineEnd>() : style->get<HeadLineEnd>();
-    try
-    {
-      if (lineEnd.m_path)
-      {
-        IWORKPathPtr_t path;
-        path.reset(new IWORKPath(get(lineEnd.m_path)));
-        /*if (lineEnd.m_filled) path->closePath(false); */
-        (*path)*=glm::dmat3(-1,0,0,0,-1,0,0,0,1);
-        std::string finalStr=path->str();
-        double bdbox[4];
-        path->computeBoundingBox(bdbox[0],bdbox[1],bdbox[2],bdbox[3]);
-        if (!finalStr.empty())
-        {
-          props.insert(marker==0 ? "draw:marker-start-path" : "draw:marker-end-path", finalStr.c_str());
-          std::stringstream s;
-          // checkme: normally viewbox's componant must be integer...
-          s << bdbox[0] << " " << bdbox[1] << " " << bdbox[2] << " "<< bdbox[3];
-          props.insert(marker==0 ? "draw:marker-start-viewbox" : "draw:marker-end-viewbox", s.str().c_str());
-          if (lineEnd.m_scale>0 && bdbox[2]>bdbox[0]) // unsure
-            props.insert(marker==0 ? "draw:marker-start-width" : "draw:marker-end-width",
-                         1.5*(bdbox[2]-bdbox[0])*lineEnd.m_scale, librevenge::RVNG_POINT);
-          props.insert(marker==0 ? "draw:marker-start-center" : "draw:marker-end-center", true);
-        }
-      }
-    }
-    catch (const IWORKPath::InvalidException &)
-    {
-      ETONYEK_DEBUG_MSG(("fillGraphicProps[IWORKCollector]: '%s' is not a valid path\n", get(lineEnd.m_path).c_str()));
-    }
-  }
-  if (style->has<Shadow>())
-  {
-    const IWORKShadow &shadow = style->get<Shadow>();
-
-    props.insert("draw:shadow", "visible");
-    props.insert("draw:shadow-color", makeColor(shadow.m_color));
-    props.insert("draw:shadow-opacity", shadow.m_opacity, RVNG_PERCENT);
-    const double angle = deg2rad(shadow.m_angle);
-    props.insert("draw:shadow-offset-x", shadow.m_offset * std::cos(angle), RVNG_POINT);
-    props.insert("draw:shadow-offset-y", shadow.m_offset * std::sin(angle), RVNG_POINT);
-  }
-
-  if (opacity<1)
-  {
-    props.insert("draw:opacity", opacity, RVNG_PERCENT);
-    props.insert("draw:image-opacity", opacity, RVNG_PERCENT);
-  }
-}
-
 }
 
 IWORKCollector::Level::Level()
@@ -380,7 +246,11 @@ IWORKCollector::IWORKCollector(IWORKDocumentInterface *const document)
   , m_currentText()
   , m_headers()
   , m_footers()
+  , m_pathStack()
   , m_currentPath()
+  , m_attachmentStack()
+  , m_inAttachment(false)
+  , m_inAttachments(false)
   , m_currentData()
   , m_currentUnfiltered()
   , m_currentFiltered()
@@ -522,7 +392,7 @@ void IWORKCollector::collectShape(bool locked)
 
   if (!m_currentPath)
   {
-    ETONYEK_DEBUG_MSG(("the path is empty\n"));
+    ETONYEK_DEBUG_MSG(("IWORKCollector::collectShape: the path is empty\n"));
   }
   shape->m_path = m_currentPath;
   m_currentPath.reset();
@@ -694,6 +564,7 @@ void IWORKCollector::startDocument()
 void IWORKCollector::endDocument()
 {
   assert(m_levelStack.empty());
+  assert(m_pathStack.empty());
   assert(0 == m_groupLevel);
 
   assert(!m_currentPath);
@@ -726,11 +597,11 @@ void IWORKCollector::endGroup()
   --m_groupLevel;
 }
 
-void IWORKCollector::addOpenGroup()
+void IWORKCollector::openGroup()
 {
   if (bool(m_recorder))
   {
-    m_recorder->addOpenGroup();
+    m_recorder->openGroup();
     return;
   }
 
@@ -738,11 +609,11 @@ void IWORKCollector::addOpenGroup()
   m_outputManager.getCurrent().addOpenGroup(librevenge::RVNGPropertyList());
 }
 
-void IWORKCollector::addCloseGroup()
+void IWORKCollector::closeGroup()
 {
   if (bool(m_recorder))
   {
-    m_recorder->addCloseGroup();
+    m_recorder->closeGroup();
     return;
   }
   assert(m_groupLevel > 0);
@@ -792,6 +663,57 @@ void IWORKCollector::endLevel()
   m_levelStack.pop();
 
   popStyle();
+}
+
+void IWORKCollector::startAttachment()
+{
+  if (bool(m_recorder))
+  {
+    m_recorder->startAttachment();
+    return;
+  }
+
+  m_attachmentStack.push(m_inAttachment);
+  m_inAttachment=true;
+
+  m_pathStack.push(m_currentPath);
+  m_currentPath.reset();
+  startLevel();
+}
+
+void IWORKCollector::endAttachment()
+{
+  if (bool(m_recorder))
+  {
+    m_recorder->endAttachment();
+    return;
+  }
+
+  assert(!m_attachmentStack.empty());
+  if (!m_attachmentStack.empty())
+  {
+    m_inAttachment=m_attachmentStack.top();
+    m_attachmentStack.pop();
+  }
+  assert(!m_pathStack.empty());
+  if (!m_pathStack.empty())
+  {
+    m_currentPath=m_pathStack.top();
+    m_pathStack.pop();
+  }
+  endLevel();
+}
+
+void IWORKCollector::startAttachments()
+{
+  assert(!m_inAttachments);
+  m_inAttachments = true;
+}
+
+void IWORKCollector::endAttachments()
+{
+  assert(m_inAttachments);
+  m_inAttachments = false;
 }
 
 void IWORKCollector::pushStyle()
@@ -859,6 +781,140 @@ void IWORKCollector::fillMetadata(librevenge::RVNGPropertyList &props)
     props.insert("meta:keyword", m_metadata.m_keywords.c_str());
   if (!m_metadata.m_comment.empty())
     props.insert("librevenge:comments", m_metadata.m_comment.c_str());
+}
+
+void IWORKCollector::fillGraphicProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props, bool isSurface)
+{
+  assert(bool(style));
+
+  using namespace property;
+
+  double opacity=style->has<Opacity>() ? style->get<Opacity>() : 1.;
+  if (isSurface && style->has<Fill>())
+  {
+    FillWriter fillWriter(props);
+    apply_visitor(fillWriter, style->get<Fill>());
+    opacity*=fillWriter.getOpacity();
+  }
+  else
+    props.insert("draw:fill", "none");
+
+  if (style->has<Stroke>())
+  {
+    const IWORKStroke &stroke = style->get<Stroke>();
+    IWORKStrokeType type = stroke.m_pattern.m_type;
+    if ((type == IWORK_STROKE_TYPE_DASHED) && stroke.m_pattern.m_values.size() < 2)
+      type = IWORK_STROKE_TYPE_SOLID;
+
+    switch (type)
+    {
+    case IWORK_STROKE_TYPE_NONE :
+      props.insert("draw:stroke", "none");
+      break;
+    case IWORK_STROKE_TYPE_SOLID :
+      props.insert("draw:stroke", "solid");
+      break;
+    case IWORK_STROKE_TYPE_DASHED :
+      props.insert("draw:stroke", "dash");
+      props.insert("draw:dots1", 1);
+      props.insert("draw:dots1-length", stroke.m_pattern.m_values[0], RVNG_PERCENT);
+      props.insert("draw:dots2", 1);
+      props.insert("draw:dots2-length", stroke.m_pattern.m_values[0], RVNG_PERCENT);
+      props.insert("draw:distance", stroke.m_pattern.m_values[1], RVNG_PERCENT);
+      break;
+    case IWORK_STROKE_TYPE_AUTO :
+      if (style->has<Fill>())
+        props.insert("draw:stroke", "none");
+      else
+        props.insert("draw:stroke", "solid");
+      break;
+    default:
+      ETONYEK_DEBUG_MSG(("IWORKCollector::fillGraphicProps: unexpected stroke type\n"));
+      break;
+    }
+
+    props.insert("svg:stroke-width", pt2in(stroke.m_width));
+    props.insert("svg:stroke-color", makeColor(stroke.m_color));
+
+    switch (stroke.m_cap)
+    {
+    default :
+    case IWORK_LINE_CAP_NONE :
+
+    case IWORK_LINE_CAP_BUTT :
+      props.insert("svg:stroke-linecap", "butt");
+      break;
+    case IWORK_LINE_CAP_ROUND :
+      props.insert("svg:stroke-linecap", "round");
+      break;
+    }
+
+    switch (stroke.m_join)
+    {
+    case IWORK_LINE_JOIN_MITER :
+      props.insert("svg:stroke-linejoin", "miter");
+      break;
+    case IWORK_LINE_JOIN_ROUND :
+      props.insert("svg:stroke-linejoin", "round");
+      break;
+    case IWORK_LINE_JOIN_NONE :
+    default :
+      props.insert("svg:stroke-linejoin", "none");
+    }
+  }
+
+  for (int marker=0; marker<2; ++marker)
+  {
+    if ((marker==0 && !style->has<TailLineEnd>()) || (marker==1 && !style->has<HeadLineEnd>()))
+      continue;
+    const IWORKMarker &lineEnd=marker==0 ? style->get<TailLineEnd>() : style->get<HeadLineEnd>();
+    try
+    {
+      if (lineEnd.m_path)
+      {
+        IWORKPathPtr_t path;
+        path.reset(new IWORKPath(get(lineEnd.m_path)));
+        /*if (lineEnd.m_filled) path->closePath(false); */
+        (*path)*=glm::dmat3(-1,0,0,0,-1,0,0,0,1);
+        std::string finalStr=path->str();
+        double bdbox[4];
+        path->computeBoundingBox(bdbox[0],bdbox[1],bdbox[2],bdbox[3]);
+        if (!finalStr.empty())
+        {
+          props.insert(marker==0 ? "draw:marker-start-path" : "draw:marker-end-path", finalStr.c_str());
+          std::stringstream s;
+          // checkme: normally viewbox's componant must be integer...
+          s << bdbox[0] << " " << bdbox[1] << " " << bdbox[2] << " "<< bdbox[3];
+          props.insert(marker==0 ? "draw:marker-start-viewbox" : "draw:marker-end-viewbox", s.str().c_str());
+          if (lineEnd.m_scale>0 && bdbox[2]>bdbox[0]) // unsure
+            props.insert(marker==0 ? "draw:marker-start-width" : "draw:marker-end-width",
+                         1.5*(bdbox[2]-bdbox[0])*lineEnd.m_scale, librevenge::RVNG_POINT);
+          props.insert(marker==0 ? "draw:marker-start-center" : "draw:marker-end-center", true);
+        }
+      }
+    }
+    catch (const IWORKPath::InvalidException &)
+    {
+      ETONYEK_DEBUG_MSG(("IWORKCollector::fillGraphicProps: '%s' is not a valid path\n", get(lineEnd.m_path).c_str()));
+    }
+  }
+  if (style->has<Shadow>())
+  {
+    const IWORKShadow &shadow = style->get<Shadow>();
+
+    props.insert("draw:shadow", "visible");
+    props.insert("draw:shadow-color", makeColor(shadow.m_color));
+    props.insert("draw:shadow-opacity", shadow.m_opacity, RVNG_PERCENT);
+    const double angle = deg2rad(shadow.m_angle);
+    props.insert("draw:shadow-offset-x", shadow.m_offset * std::cos(angle), RVNG_POINT);
+    props.insert("draw:shadow-offset-y", shadow.m_offset * std::sin(angle), RVNG_POINT);
+  }
+
+  if (opacity<1)
+  {
+    props.insert("draw:opacity", opacity, RVNG_PERCENT);
+    props.insert("draw:image-opacity", opacity, RVNG_PERCENT);
+  }
 }
 
 IWORKOutputManager &IWORKCollector::getOutputManager()

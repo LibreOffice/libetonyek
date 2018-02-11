@@ -141,29 +141,25 @@ struct CollectText
   const std::shared_ptr<IWORKText> m_text;
 };
 
-struct AddGroup
+enum OperationType { Attachment, Attachments, Group, GroupSymbol, Level };
+struct StartOp
 {
-  AddGroup(bool opened)
-    : m_opened(opened)
+  StartOp(const OperationType &type)
+    : m_type(type)
   {
   }
-  bool m_opened;
+
+  OperationType m_type;
 };
 
-struct StartGroup
+struct EndOp
 {
-};
+  EndOp(OperationType type)
+    : m_type(type)
+  {
+  }
 
-struct EndGroup
-{
-};
-
-struct StartLevel
-{
-};
-
-struct EndLevel
-{
+  OperationType m_type;
 };
 
 struct PushStylesheet
@@ -192,11 +188,8 @@ typedef boost::variant
 , CollectStylesheet
 , CollectTable
 , CollectText
-, AddGroup
-, StartGroup
-, EndGroup
-, StartLevel
-, EndLevel
+, EndOp
+, StartOp
 , PushStylesheet
 , PopStylesheet
 >
@@ -277,32 +270,54 @@ struct Sender : public boost::static_visitor<void>
     m_collector.collectText(value.m_text);
   }
 
-  void operator()(const AddGroup &value) const
+  void operator()(const EndOp &value) const
   {
-    if (value.m_opened)
-      m_collector.addOpenGroup();
-    else
-      m_collector.addCloseGroup();
+    switch (value.m_type)
+    {
+    case OperationType::Attachment:
+      m_collector.endAttachment();
+      break;
+    case OperationType::Attachments:
+      m_collector.endAttachments();
+      break;
+    case OperationType::Group:
+      m_collector.endGroup();
+      break;
+    case OperationType::GroupSymbol:
+      m_collector.closeGroup();
+      break;
+    case OperationType::Level:
+      m_collector.endLevel();
+      break;
+    default:
+      ETONYEK_DEBUG_MSG(("Sender::operator(EndOp)[IWORKRecorder.cpp]: unexpected type\n"));
+      break;
+    }
   }
 
-  void operator()(const StartGroup &) const
+  void operator()(const StartOp &value) const
   {
-    m_collector.startGroup();
-  }
-
-  void operator()(const EndGroup &) const
-  {
-    m_collector.endGroup();
-  }
-
-  void operator()(const StartLevel &) const
-  {
-    m_collector.startLevel();
-  }
-
-  void operator()(const EndLevel &) const
-  {
-    m_collector.endLevel();
+    switch (value.m_type)
+    {
+    case OperationType::Attachment:
+      m_collector.startAttachment();
+      break;
+    case OperationType::Attachments:
+      m_collector.startAttachments();
+      break;
+    case OperationType::Group:
+      m_collector.startGroup();
+      break;
+    case OperationType::GroupSymbol:
+      m_collector.openGroup();
+      break;
+    case OperationType::Level:
+      m_collector.startLevel();
+      break;
+    default:
+      ETONYEK_DEBUG_MSG(("Sender::operator(StartOp)[IWORKRecorder.cpp]: unexpected type\n"));
+      break;
+    }
   }
 
   void operator()(const PushStylesheet &value) const
@@ -400,34 +415,55 @@ void IWORKRecorder::collectText(const std::shared_ptr<IWORKText> &text)
   m_impl->m_elements.push_back(CollectText(text));
 }
 
-void IWORKRecorder::addOpenGroup()
+
+void IWORKRecorder::startAttachment()
 {
-  m_impl->m_elements.push_back(AddGroup(true));
+  m_impl->m_elements.push_back(StartOp(OperationType::Attachment));
 }
 
-void IWORKRecorder::addCloseGroup()
+void IWORKRecorder::endAttachment()
 {
-  m_impl->m_elements.push_back(AddGroup(false));
+  m_impl->m_elements.push_back(EndOp(OperationType::Attachment));
+}
+
+void IWORKRecorder::startAttachments()
+{
+  m_impl->m_elements.push_back(StartOp(OperationType::Attachments));
+}
+
+void IWORKRecorder::endAttachments()
+{
+  m_impl->m_elements.push_back(EndOp(OperationType::Attachments));
+}
+
+void IWORKRecorder::openGroup()
+{
+  m_impl->m_elements.push_back(StartOp(OperationType::GroupSymbol));
+}
+
+void IWORKRecorder::closeGroup()
+{
+  m_impl->m_elements.push_back(EndOp(OperationType::GroupSymbol));
 }
 
 void IWORKRecorder::startGroup()
 {
-  m_impl->m_elements.push_back(StartGroup());
+  m_impl->m_elements.push_back(StartOp(OperationType::Group));
 }
 
 void IWORKRecorder::endGroup()
 {
-  m_impl->m_elements.push_back(EndGroup());
+  m_impl->m_elements.push_back(EndOp(OperationType::Group));
 }
 
 void IWORKRecorder::startLevel()
 {
-  m_impl->m_elements.push_back(StartLevel());
+  m_impl->m_elements.push_back(StartOp(OperationType::Level));
 }
 
 void IWORKRecorder::endLevel()
 {
-  m_impl->m_elements.push_back(EndLevel());
+  m_impl->m_elements.push_back(EndOp(OperationType::Level));
 }
 
 void IWORKRecorder::pushStylesheet(const IWORKStylesheetPtr_t &stylesheet)

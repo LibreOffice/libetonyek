@@ -87,7 +87,7 @@ void IWORKGroupElement::ensureOpened()
 {
   if (m_groupIsOpened || !isCollector())
     return;
-  getCollector().addOpenGroup();
+  getCollector().openGroup();
   m_groupIsOpened=true;
 }
 
@@ -95,7 +95,7 @@ void IWORKGroupElement::ensureClosed()
 {
   if (!m_groupIsOpened || !isCollector())
     return;
-  getCollector().addCloseGroup();
+  getCollector().closeGroup();
   m_groupIsOpened=false;
 }
 

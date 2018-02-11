@@ -47,14 +47,12 @@ public:
   void openSection(const std::string &style); // probably better to look for the style in the calling function
   void closeSection();
 
-  void openAttachments();
-  void closeAttachments();
-
   void sendAnnotation(const std::string &name);
 
   PAGFootnoteKind getFootnoteKind() const;
 
 private:
+  void drawShape(const IWORKShapePtr_t &shape) override;
   void drawTable() override;
   void drawMedia(double x, double y, const librevenge::RVNGPropertyList &data) override;
   void fillShapeProperties(librevenge::RVNGPropertyList &props) override;
@@ -75,7 +73,6 @@ private:
 
   // FIXME: This is a clumsy workaround.
   boost::optional<IWORKPosition> m_attachmentPosition;
-  bool m_inAttachments;
   PAGAnnotationMap_t m_annotations;
 };
 

@@ -77,6 +77,7 @@ public:
 
 private:
   void attribute(int name, const char *value) override;
+  void startOfElement() override;
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
 
@@ -96,9 +97,6 @@ AttachmentElement::AttachmentElement(PAG1ParserState &state)
   , m_originalSize()
   , m_savedText()
 {
-  // saved the current zone of text
-  m_savedText=getState().m_currentText;
-  getState().m_currentText.reset();
 }
 
 void AttachmentElement::attribute(const int name, const char *const value)
@@ -115,6 +113,17 @@ void AttachmentElement::attribute(const int name, const char *const value)
     break;
   }
 }
+
+void AttachmentElement::startOfElement()
+{
+  // saved the current zone of text
+  m_savedText=getState().m_currentText;
+  getState().m_currentText.reset();
+
+  if (isCollector())
+    getCollector().startAttachment();
+}
+
 IWORKXMLContextPtr_t AttachmentElement::element(const int name)
 {
   IWORKXMLContextPtr_t context;
@@ -123,14 +132,8 @@ IWORKXMLContextPtr_t AttachmentElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::drawable_shape :
   {
-    static bool first=true;
-    if (first)
-    {
-      ETONYEK_DEBUG_MSG(("AttachmentElement::attribute[PAG1TextStorageElement]: find some shapes attached in textbox, not implemented\n"));
-      first=false;
-    }
-    //m_block = true;
-    //context = makeContext<IWORKShapeContext>(getState());
+    m_block = false;
+    context = makeContext<IWORKShapeContext>(getState());
     break;
   }
   case IWORKToken::NS_URI_SF | IWORKToken::group :
@@ -173,9 +176,9 @@ IWORKXMLContextPtr_t AttachmentElement::element(const int name)
 
 void AttachmentElement::endOfElement()
 {
-  if (m_known)
+  if (isCollector())
   {
-    if (isCollector())
+    if (m_known)
     {
       if (m_position)
         getCollector().collectAttachmentPosition(get(m_position));
@@ -183,6 +186,7 @@ void AttachmentElement::endOfElement()
         getState().getDictionary().m_attachments[get(getId())] = PAGAttachment(getCollector().getOutputManager().save(), m_block);
       getCollector().getOutputManager().pop();
     }
+    getCollector().endAttachment();
   }
   // reset the current zone of text
   getState().m_currentText=m_savedText;
@@ -212,7 +216,7 @@ AttachmentsElement::AttachmentsElement(PAG1ParserState &state)
 void AttachmentsElement::startOfElement()
 {
   if (isCollector())
-    getCollector().openAttachments();
+    getCollector().startAttachments();
 }
 
 IWORKXMLContextPtr_t AttachmentsElement::element(const int name)
@@ -225,7 +229,7 @@ IWORKXMLContextPtr_t AttachmentsElement::element(const int name)
 void AttachmentsElement::endOfElement()
 {
   if (isCollector())
-    getCollector().closeAttachments();
+    getCollector().endAttachments();
 }
 
 }

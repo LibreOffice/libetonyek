@@ -95,12 +95,18 @@ public:
   void startDocument();
   void endDocument();
 
+  void startAttachment();
+  void endAttachment();
+
+  void startAttachments();
+  void endAttachments();
+
   void startGroup();
   void endGroup();
 
   // really add a group in the final file
-  void addOpenGroup();
-  void addCloseGroup();
+  void openGroup();
+  void closeGroup();
 
   void startLevel();
   void endLevel();
@@ -126,7 +132,11 @@ public:
 protected:
   void fillMetadata(librevenge::RVNGPropertyList &props);
 
+  static void fillGraphicProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props,
+                               bool isSurface=true);
   static void writeFill(const IWORKFill &fill, librevenge::RVNGPropertyList &props);
+
+  virtual void drawShape(const IWORKShapePtr_t &shape);
 
 private:
   void pushStyle(const IWORKStylePtr_t &style);
@@ -136,8 +146,6 @@ private:
 
   void drawLine(const IWORKLinePtr_t &line);
   void drawMedia(const IWORKMediaPtr_t &media);
-  void drawShape(const IWORKShapePtr_t &shape);
-
   virtual void drawTable() = 0;
   virtual void drawMedia(double x, double y, const librevenge::RVNGPropertyList &data) = 0;
   virtual void fillShapeProperties(librevenge::RVNGPropertyList &props) = 0;
@@ -163,7 +171,13 @@ protected:
   IWORKHeaderFooterMap_t m_headers;
   IWORKHeaderFooterMap_t m_footers;
 
+  std::stack<IWORKPathPtr_t> m_pathStack;
   IWORKPathPtr_t m_currentPath;
+
+  std::stack<bool> m_attachmentStack;
+  bool m_inAttachment;
+  bool m_inAttachments;
+
 private:
   IWORKDataPtr_t m_currentData;
   IWORKMediaContentPtr_t m_currentUnfiltered;

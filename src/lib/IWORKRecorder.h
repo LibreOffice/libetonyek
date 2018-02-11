@@ -55,11 +55,17 @@ public:
   void collectTable(const std::shared_ptr<IWORKTable> &table);
   void collectText(const std::shared_ptr<IWORKText> &text);
 
+  void startAttachment();
+  void endAttachment();
+
+  void startAttachments();
+  void endAttachments();
+
   void startGroup();
   void endGroup();
 
-  void addOpenGroup();
-  void addCloseGroup();
+  void openGroup();
+  void closeGroup();
 
   void startLevel();
   void endLevel();
