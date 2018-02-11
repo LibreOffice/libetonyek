@@ -98,6 +98,10 @@ public:
   void startGroup();
   void endGroup();
 
+  // really add a group in the final file
+  void addOpenGroup();
+  void addCloseGroup();
+
   void startLevel();
   void endLevel();
 

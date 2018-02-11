@@ -726,6 +726,29 @@ void IWORKCollector::endGroup()
   --m_groupLevel;
 }
 
+void IWORKCollector::addOpenGroup()
+{
+  if (bool(m_recorder))
+  {
+    m_recorder->addOpenGroup();
+    return;
+  }
+
+  assert(m_groupLevel > 0);
+  m_outputManager.getCurrent().addOpenGroup(librevenge::RVNGPropertyList());
+}
+
+void IWORKCollector::addCloseGroup()
+{
+  if (bool(m_recorder))
+  {
+    m_recorder->addCloseGroup();
+    return;
+  }
+  assert(m_groupLevel > 0);
+  m_outputManager.getCurrent().addCloseGroup();
+}
+
 std::shared_ptr<IWORKTable> IWORKCollector::createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const
 {
   return shared_ptr<IWORKTable>(new IWORKTable(tableNameMap, langManager));

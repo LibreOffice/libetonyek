@@ -141,6 +141,15 @@ struct CollectText
   const std::shared_ptr<IWORKText> m_text;
 };
 
+struct AddGroup
+{
+  AddGroup(bool opened)
+    : m_opened(opened)
+  {
+  }
+  bool m_opened;
+};
+
 struct StartGroup
 {
 };
@@ -183,6 +192,7 @@ typedef boost::variant
 , CollectStylesheet
 , CollectTable
 , CollectText
+, AddGroup
 , StartGroup
 , EndGroup
 , StartLevel
@@ -265,6 +275,14 @@ struct Sender : public boost::static_visitor<void>
     if (bool(recorder))
       recorder->replay(*value.m_text);
     m_collector.collectText(value.m_text);
+  }
+
+  void operator()(const AddGroup &value) const
+  {
+    if (value.m_opened)
+      m_collector.addOpenGroup();
+    else
+      m_collector.addCloseGroup();
   }
 
   void operator()(const StartGroup &) const
@@ -380,6 +398,16 @@ void IWORKRecorder::collectTable(const std::shared_ptr<IWORKTable> &table)
 void IWORKRecorder::collectText(const std::shared_ptr<IWORKText> &text)
 {
   m_impl->m_elements.push_back(CollectText(text));
+}
+
+void IWORKRecorder::addOpenGroup()
+{
+  m_impl->m_elements.push_back(AddGroup(true));
+}
+
+void IWORKRecorder::addCloseGroup()
+{
+  m_impl->m_elements.push_back(AddGroup(false));
 }
 
 void IWORKRecorder::startGroup()

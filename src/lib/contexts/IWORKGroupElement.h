@@ -24,6 +24,11 @@ protected:
   void startOfElement() override;
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
+
+  void ensureOpened();
+  void ensureClosed();
+
+  bool m_groupIsOpened;
 };
 
 }

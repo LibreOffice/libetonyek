@@ -15,6 +15,7 @@
 #include "IWORKLineElement.h"
 #include "IWORKMediaElement.h"
 #include "IWORKShapeContext.h"
+#include "IWORKTabularInfoElement.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 
@@ -23,6 +24,7 @@ namespace libetonyek
 
 IWORKGroupElement::IWORKGroupElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
+  , m_groupIsOpened(false)
 {
 }
 
@@ -42,15 +44,23 @@ IWORKXMLContextPtr_t IWORKGroupElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::geometry :
     return makeContext<IWORKGeometryElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::group :
+    ensureClosed();
     return makeContext<IWORKGroupElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::image :
+    ensureOpened();
     return makeContext<IWORKImageElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::line :
+    ensureOpened();
     return makeContext<IWORKLineElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::media :
+    ensureOpened();
     return makeContext<IWORKMediaElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::drawable_shape :
   case IWORKToken::NS_URI_SF | IWORKToken::shape :
+    ensureClosed();
     return makeContext<IWORKShapeContext>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
+    return makeContext<IWORKTabularInfoElement>(getState());
   default:
     break;
   }
@@ -60,11 +70,28 @@ IWORKXMLContextPtr_t IWORKGroupElement::element(const int name)
 
 void IWORKGroupElement::endOfElement()
 {
+  ensureClosed();
   if (isCollector())
   {
     getCollector().endGroup();
     getCollector().endLevel();
   }
+}
+
+void IWORKGroupElement::ensureOpened()
+{
+  if (m_groupIsOpened || !isCollector())
+    return;
+  getCollector().addOpenGroup();
+  m_groupIsOpened=true;
+}
+
+void IWORKGroupElement::ensureClosed()
+{
+  if (!m_groupIsOpened || !isCollector())
+    return;
+  getCollector().addCloseGroup();
+  m_groupIsOpened=false;
 }
 
 }

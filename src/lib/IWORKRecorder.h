@@ -58,6 +58,9 @@ public:
   void startGroup();
   void endGroup();
 
+  void addOpenGroup();
+  void addCloseGroup();
+
   void startLevel();
   void endLevel();
 
