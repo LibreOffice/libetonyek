@@ -12,6 +12,8 @@
 
 #include "IWORKXMLParserState.h"
 
+#include <IWORKText_fwd.h>
+
 namespace libetonyek
 {
 
@@ -28,12 +30,31 @@ class KEY2ParserState : public IWORKXMLParserState
 public:
   KEY2ParserState(KEY2Parser &parser, KEYCollector &collector, KEY2Dictionary &dict);
 
+  void setVersion(unsigned version);
+  unsigned getVersion() const;
+
   KEY2Dictionary &getDictionary();
   KEYCollector &getCollector();
 
+  // Keynote v2: the title and body content is stored in bullets element
+  void openBullets();
+  void openHeadline(int depth);
+  void closeHeadline();
+  void closeBullets();
+
+  IWORKTextPtr_t getBodyText();
+  IWORKTextPtr_t getTitleText();
+
 private:
+  unsigned m_version;
   KEY2Dictionary &m_dict;
   KEYCollector &m_collector;
+
+  bool m_isHeadlineOpened;
+  bool m_isBulletsOpened;
+
+  IWORKTextPtr_t m_bodyText;
+  IWORKTextPtr_t m_titleText;
 };
 
 }

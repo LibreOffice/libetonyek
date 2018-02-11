@@ -340,7 +340,7 @@ PlaceholderRefContext::PlaceholderRefContext(KEY2ParserState &state, const Place
 
 void PlaceholderRefContext::endOfElement()
 {
-  if (getRef() && isCollector())
+  if (getRef() && isCollector() && getState().getVersion()!=2)
   {
     KEY2Dictionary &dict = getState().getDictionary();
     KEYPlaceholderMap_t &placeholderMap =
@@ -414,14 +414,18 @@ private:
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
+  void ensureOpened();
+
   optional<ID_t> m_styleRef;
   optional<int> m_depth;
+  bool m_opened;
 };
 
 HeadlineElement::HeadlineElement(KEY2ParserState &state)
   : KEY2XMLElementContextBase(state)
   , m_styleRef()
   , m_depth()
+  , m_opened(false)
 {
 }
 
@@ -444,15 +448,12 @@ void HeadlineElement::attribute(int name, const char *value)
 void HeadlineElement::startOfElement()
 {
   if (isCollector())
-  {
-    assert(!getState().m_currentText);
-    getState().m_currentText = getCollector().createText(getState().m_langManager);
     getCollector().startLevel();
-  }
 }
 
 IWORKXMLContextPtr_t HeadlineElement::element(const int name)
 {
+  ensureOpened();
   switch (name)
   {
   case KEY2Token::NS_URI_KEY | KEY2Token::style_ref :
@@ -469,16 +470,24 @@ IWORKXMLContextPtr_t HeadlineElement::element(const int name)
 
 void HeadlineElement::endOfElement()
 {
+  if (m_opened)
+    getState().closeHeadline();
   if (isCollector())
-  {
-    //getCollector().collectText(getState().m_currentText);
-    getState().m_currentText.reset();
-    //getCollector().collectHeadline();
-
     getCollector().endLevel();
-  }
 }
 
+void HeadlineElement::ensureOpened()
+{
+  if (m_opened || !isCollector())
+    return;
+  if (!m_depth)
+  {
+    ETONYEK_DEBUG_MSG(("HeadlineElement::element[KEY2Parser.cpp]: oops can not find the depth\n"));
+    return;
+  }
+  getState().openHeadline(get(m_depth));
+  m_opened=true;
+}
 }
 
 namespace
@@ -560,17 +569,29 @@ namespace
 class BulletsElement : public KEY2XMLElementContextBase
 {
 public:
-  explicit BulletsElement(KEY2ParserState &state);
+  explicit BulletsElement(KEY2ParserState &state, IWORKTextPtr_t &bodyText,
+                          IWORKTextPtr_t &titleText);
 
 private:
+  virtual void startOfElement();
   virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
 
 private:
+  IWORKTextPtr_t &m_bodyText;
+  IWORKTextPtr_t &m_titleText;
 };
 
-BulletsElement::BulletsElement(KEY2ParserState &state)
+BulletsElement::BulletsElement(KEY2ParserState &state, IWORKTextPtr_t &bodyText, IWORKTextPtr_t &titleText)
   : KEY2XMLElementContextBase(state)
+  , m_bodyText(bodyText)
+  , m_titleText(titleText)
 {
+}
+
+void BulletsElement::startOfElement()
+{
+  getState().openBullets();
 }
 
 IWORKXMLContextPtr_t BulletsElement::element(const int name)
@@ -584,6 +605,15 @@ IWORKXMLContextPtr_t BulletsElement::element(const int name)
   }
 
   return IWORKXMLContextPtr_t();
+}
+
+void BulletsElement::endOfElement()
+{
+  m_bodyText=getState().getBodyText();
+  if (m_bodyText && m_bodyText->empty()) m_bodyText.reset();
+  m_titleText=getState().getTitleText();
+  if (m_titleText && m_titleText->empty()) m_titleText.reset();
+  getState().closeBullets();
 }
 
 }
@@ -831,7 +861,7 @@ namespace
 class PlaceholderContext : public KEY2XMLElementContextBase
 {
 public:
-  PlaceholderContext(KEY2ParserState &state, bool title);
+  PlaceholderContext(KEY2ParserState &state, bool title, boost::optional<ID_t> &ref);
 
 private:
   void startOfElement() override;
@@ -840,20 +870,23 @@ private:
 
 private:
   const bool m_title;
-  optional<ID_t> m_ref;
+  optional<ID_t> &m_placeholderRef;
+  optional<ID_t> m_styleRef;
 };
 
-PlaceholderContext::PlaceholderContext(KEY2ParserState &state, const bool title)
+PlaceholderContext::PlaceholderContext(KEY2ParserState &state, const bool title, boost::optional<ID_t> &ref)
   : KEY2XMLElementContextBase(state)
   , m_title(title)
-  , m_ref()
+  , m_placeholderRef(ref)
+  , m_styleRef()
 {
 }
 
 void PlaceholderContext::startOfElement()
 {
-  if (isCollector())
+  if (isCollector() && getState().getVersion()!=2)
   {
+    // the content in version 2 node is defined after
     assert(!getState().m_currentText);
     getState().m_currentText = getCollector().createText(getState().m_langManager);
   }
@@ -867,7 +900,7 @@ IWORKXMLContextPtr_t PlaceholderContext::element(const int name)
     // ignore; the real geometry comes from style
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::style :
-    return makeContext<StyleElement>(getState(), m_ref);
+    return makeContext<StyleElement>(getState(), m_styleRef);
   case KEY2Token::NS_URI_KEY | KEY2Token::text :
     return makeContext<IWORKTextElement>(getState());
   default:
@@ -879,12 +912,13 @@ IWORKXMLContextPtr_t PlaceholderContext::element(const int name)
 
 void PlaceholderContext::endOfElement()
 {
+  if (getId()) m_placeholderRef=getId();
   if (isCollector())
   {
     IWORKStylePtr_t style;
-    if (m_ref)
+    if (m_styleRef)
     {
-      const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_placeholderStyles.find(get(m_ref));
+      const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_placeholderStyles.find(get(m_styleRef));
       if (getState().getDictionary().m_placeholderStyles.end() != it)
         style = it->second;
     }
@@ -1010,6 +1044,15 @@ private:
   optional<ID_t> m_masterRef;
 
   boost::optional<std::string> m_name; // master name
+  // v2: content of the body and title placeholder
+  IWORKTextPtr_t m_bodyText;
+  IWORKTextPtr_t m_titleText;
+
+  // v2: change read these ref in the drawables element
+  boost::optional<ID_t> m_bodyRef;
+  boost::optional<ID_t> m_objectRef;
+  boost::optional<ID_t> m_slidenumberRef;
+  boost::optional<ID_t> m_titleRef;
 };
 
 SlideElement::SlideElement(KEY2ParserState &state, bool isMasterSlide)
@@ -1018,6 +1061,12 @@ SlideElement::SlideElement(KEY2ParserState &state, bool isMasterSlide)
   , m_styleRef()
   , m_masterRef()
   , m_name()
+  , m_bodyText()
+  , m_titleText()
+  , m_bodyRef()
+  , m_objectRef()
+  , m_slidenumberRef()
+  , m_titleRef()
 {
 }
 
@@ -1050,7 +1099,7 @@ IWORKXMLContextPtr_t SlideElement::element(const int name)
   switch (name)
   {
   case KEY2Token::NS_URI_KEY | KEY2Token::bullets :
-    return makeContext<BulletsElement>(getState());
+    return makeContext<BulletsElement>(getState(), m_bodyText, m_titleText);
   case KEY2Token::NS_URI_KEY | KEY2Token::notes :
     return makeContext<NotesElement>(getState());
   case KEY2Token::NS_URI_KEY | KEY2Token::page :
@@ -1064,13 +1113,13 @@ IWORKXMLContextPtr_t SlideElement::element(const int name)
   case KEY2Token::NS_URI_KEY | KEY2Token::stylesheet :
     return makeContext<StylesheetElement>(getState());
   case KEY2Token::NS_URI_KEY | KEY2Token::body_placeholder :
-    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_BODY);
+    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_BODY, m_bodyRef);
   case KEY2Token::NS_URI_KEY | KEY2Token::object_placeholder :
-    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_OBJECT);
+    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_OBJECT, m_objectRef);
   case KEY2Token::NS_URI_KEY | KEY2Token::slide_number_placeholder :
-    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_SLIDENUMBER);
+    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_SLIDENUMBER, m_slidenumberRef);
   case KEY2Token::NS_URI_KEY | KEY2Token::title_placeholder :
-    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_TITLE);
+    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_TITLE, m_titleRef);
   default:
     break;
   }
@@ -1092,6 +1141,50 @@ void SlideElement::endOfElement()
         ETONYEK_DEBUG_MSG(("SlideElement::endOfElement[KEY2Parser.cpp]: unknown style %s\n", get(m_styleRef).c_str()));
       }
     }
+    if ((m_bodyText || m_titleText) && getState().getVersion()==2)
+    {
+      KEY2Dictionary &dict = getState().getDictionary();
+      getCollector().startLayer();
+      if (m_bodyText)
+      {
+        KEYPlaceholderMap_t::const_iterator it =
+          m_bodyRef ? dict.m_bodyPlaceholders.find(get(m_bodyRef)) : dict.m_bodyPlaceholders.end();
+        if (it==dict.m_bodyPlaceholders.end() || !it->second)
+        {
+          ETONYEK_DEBUG_MSG(("SlideElement::endOfElement[KEY2Parser.cpp]: can not find the body ref\n"));
+        }
+        else
+        {
+          KEYPlaceholderPtr_t placeholder=it->second;
+          placeholder->m_text=m_bodyText;
+          getCollector().insertTextPlaceholder(placeholder);
+        }
+      }
+      if (m_titleText)
+      {
+        KEYPlaceholderMap_t::const_iterator it =
+          m_titleRef ? dict.m_titlePlaceholders.find(get(m_titleRef)) : dict.m_titlePlaceholders.end();
+        if (it==dict.m_titlePlaceholders.end() || !it->second)
+        {
+          ETONYEK_DEBUG_MSG(("SlideElement::endOfElement[KEY2Parser.cpp]: can not find the title ref\n"));
+        }
+        else
+        {
+          KEYPlaceholderPtr_t placeholder=it->second;
+          placeholder->m_text=m_titleText;
+          getCollector().insertTextPlaceholder(placeholder);
+        }
+      }
+      const KEYLayerPtr_t layer(getCollector().collectLayer());
+      getCollector().endLayer();
+      if (layer)
+        getCollector().insertLayer(layer);
+    }
+    else if (m_bodyText || m_titleText)
+    {
+      ETONYEK_DEBUG_MSG(("SlideElement::endOfElement[KEY2Parser.cpp]: find unexpected body/title text\n"));
+    }
+
     KEYSlidePtr_t slide=getCollector().collectSlide();
     getCollector().endPage();
     if (!slide)
@@ -1345,6 +1438,7 @@ void PresentationElement::attribute(const int name, const char *const value)
     {
       ETONYEK_DEBUG_MSG(("PresentationElement::attribute[KEY2Parser.cpp]: unknown version %s\n", value));
     }
+    getState().setVersion(version);
     if (isCollector())
       getCollector().setAccumulateTransformTo(version>2);
   }
