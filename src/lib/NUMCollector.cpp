@@ -43,15 +43,12 @@ void NUMCollector::drawTable()
 }
 
 void NUMCollector::drawMedia(
-  const double x, const double y, const double w, const double h,
-  const std::string &mimetype, const librevenge::RVNGBinaryData &data)
+  const double x, const double y,
+  const librevenge::RVNGPropertyList &data)
 {
   // TODO: implement me
   (void) x;
   (void) y;
-  (void) w;
-  (void) h;
-  (void) mimetype;
   (void) data;
 }
 

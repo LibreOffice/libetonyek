@@ -449,6 +449,9 @@ IWORKXMLContextPtr_t IWORKFillElement::element(const int name)
     return makeContext<IWORKRefContext>(getState(), m_gradientRef);
   case IWORKToken::NS_URI_SF | IWORKToken::color :
     return makeContext<IWORKColorElement>(getState(), m_color);
+  case IWORKToken::NS_URI_SF | IWORKToken::texture_fill : // CHECKME: a dictionary
+  case IWORKToken::NS_URI_SF | IWORKToken::texture_fill_ref : // CHECKME: ref to previous element
+    break;
   case IWORKToken::NS_URI_SF | IWORKToken::textured_fill :
     return makeContext<TexturedFillElement>(getState(), m_bitmap);
   case IWORKToken::NS_URI_SF | IWORKToken::textured_fill_ref :

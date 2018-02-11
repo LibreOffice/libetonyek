@@ -70,6 +70,8 @@ void IWORKImageElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
+  case IWORKToken::NS_URI_SFA | IWORKToken::version :
+    break;
   case IWORKToken::NS_URI_SF | IWORKToken::locked :
     m_locked = bool_cast(value);
     break;

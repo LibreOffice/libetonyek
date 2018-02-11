@@ -29,8 +29,9 @@ IWORKXMLContextPtr_t IWORKStylesContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::connection_style :
-  case IWORKToken::NS_URI_SF | IWORKToken::headline_style :
     return makeContext<IWORKStyleContext>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::headline_style :
+    return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_headlineStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
     return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_listStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::cell_style :

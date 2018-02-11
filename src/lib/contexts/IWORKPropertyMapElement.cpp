@@ -859,6 +859,9 @@ typedef RedirectPropertyContext<property::SFC2DAreaFillProperty, IWORKFillElemen
 typedef RedirectPropertyContext<property::SFC2DColumnFillProperty, IWORKFillElement> SFC2DColumnFillPropertyElement;
 typedef RedirectPropertyContext<property::SFC2DMixedColumnFillProperty, IWORKFillElement> SFC2DMixedColumnFillPropertyElement;
 typedef RedirectPropertyContext<property::SFC2DPieFillProperty, IWORKFillElement> SFC2DPieFillPropertyElement;
+typedef RedirectPropertyContext<property::SFC3DAreaFillProperty, IWORKFillElement> SFC3DAreaFillPropertyElement;
+typedef RedirectPropertyContext<property::SFC3DColumnFillProperty, IWORKFillElement> SFC3DColumnFillPropertyElement;
+typedef RedirectPropertyContext<property::SFC3DPieFillProperty, IWORKFillElement> SFC3DPieFillPropertyElement;
 typedef RedirectPropertyContext<property::SFTableCellStylePropertyFill, IWORKFillElement> SFTableCellStylePropertyFillElement;
 typedef StylePropertyContext<property::SFTableStylePropertyCellStyle, IWORKToken::NS_URI_SF | IWORKToken::table_cell_style, IWORKToken::NS_URI_SF | IWORKToken::table_cell_style_ref> SFTableStylePropertyCellStyleElement;
 typedef StylePropertyContext<property::SFTableStylePropertyHeaderColumnCellStyle, IWORKToken::NS_URI_SF | IWORKToken::table_cell_style, IWORKToken::NS_URI_SF | IWORKToken::table_cell_style_ref> SFTableStylePropertyHeaderColumnCellStyleElement;
@@ -1031,6 +1034,12 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::SFC2DMixedColumnFillProperty :
     return makeContext<SFC2DMixedColumnFillPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFC2DPieFillProperty :
+    return makeContext<SFC2DPieFillPropertyElement>(getState(), *m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFC3DAreaFillProperty :
+    return makeContext<SFC3DAreaFillPropertyElement>(getState(), *m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFC3DColumnFillProperty :
+    return makeContext<SFC3DColumnFillPropertyElement>(getState(), *m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::SFC3DPieFillProperty :
     return makeContext<SFC2DPieFillPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTableCellStylePropertyFill :
     return makeContext<SFTableCellStylePropertyFillElement>(getState(), *m_propMap);

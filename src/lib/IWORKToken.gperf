@@ -45,6 +45,9 @@ SFC2DAreaFillProperty,SFC2DAreaFillProperty
 SFC2DColumnFillProperty,SFC2DColumnFillProperty
 SFC2DMixedColumnFillProperty,SFC2DMixedColumnFillProperty
 SFC2DPieFillProperty,SFC2DPieFillProperty
+SFC3DAreaFillProperty,SFC3DAreaFillProperty
+SFC3DColumnFillProperty,SFC3DColumnFillProperty
+SFC3DPieFillProperty,SFC3DPieFillProperty
 SFIUDropShadow,SFIUDropShadow
 SFTableCellStylePropertyFill,SFTableCellStylePropertyFill
 SFTableStylePropertyCellStyle,SFTableStylePropertyCellStyle
@@ -585,6 +588,8 @@ text-label,text_label
 text-label-ref,text_label_ref
 text-storage,text_storage
 textBackground,textBackground
+texture-fill,texture_fill
+texture-fill-ref,texture_fill_ref
 textured-fill,textured_fill
 textured-fill-ref,textured_fill_ref
 tile,tile

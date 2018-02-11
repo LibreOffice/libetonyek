@@ -367,6 +367,7 @@ IWORKCollector::Level::Level()
   : m_geometry()
   , m_graphicStyle()
   , m_trafo()
+  , m_previousTrafo()
 {
 }
 
@@ -389,6 +390,7 @@ IWORKCollector::IWORKCollector(IWORKDocumentInterface *const document)
   , m_currentLeveled()
   , m_currentContent()
   , m_metadata()
+  , m_accumulateTransform(true)
   , m_groupLevel(0)
 {
 }
@@ -435,6 +437,11 @@ void IWORKCollector::setGraphicStyle(const IWORKStylePtr_t &style)
   }
 }
 
+void IWORKCollector::setAccumulateTransformTo(bool accumulate)
+{
+  m_accumulateTransform=accumulate;
+}
+
 void IWORKCollector::collectGeometry(const IWORKGeometryPtr_t &geometry)
 {
   if (bool(m_recorder))
@@ -446,7 +453,11 @@ void IWORKCollector::collectGeometry(const IWORKGeometryPtr_t &geometry)
   assert(!m_levelStack.empty());
 
   m_levelStack.top().m_geometry = geometry;
-  m_levelStack.top().m_trafo *= makeTransformation(*geometry);
+  m_levelStack.top().m_previousTrafo = m_levelStack.top().m_trafo;
+  if (m_accumulateTransform)
+    m_levelStack.top().m_trafo *= makeTransformation(*geometry);
+  else
+    m_levelStack.top().m_trafo = makeTransformation(*geometry);
 }
 
 void IWORKCollector::collectBezier(const IWORKPathPtr_t &path)
@@ -736,11 +747,15 @@ void IWORKCollector::startLevel()
     return;
   }
 
-  glm::dmat3 currentTrafo;
+  glm::dmat3 currentTrafo, prevTrafo;
   if (!m_levelStack.empty())
+  {
     currentTrafo = m_levelStack.top().m_trafo;
+    prevTrafo = m_levelStack.top().m_previousTrafo;
+  }
   m_levelStack.push(Level());
   m_levelStack.top().m_trafo = currentTrafo;
+  m_levelStack.top().m_previousTrafo = prevTrafo;
 
   pushStyle();
 }
@@ -878,6 +893,16 @@ void IWORKCollector::drawLine(const IWORKLinePtr_t &line)
     }
     else
       endPos[1]=origPos[1]+finalDir[1];
+    if (m_accumulateTransform)
+    {
+      const glm::dmat3 trafo = m_levelStack.top().m_previousTrafo;
+      glm::dvec3 pos = trafo * glm::dvec3(origPos[0], origPos[1], 1);
+      origPos[0]=pos[0];
+      origPos[1]=pos[1];
+      pos = trafo * glm::dvec3(endPos[0], endPos[1], 1);
+      endPos[0]=pos[0];
+      endPos[1]=pos[1];
+    }
   }
   else
   {
@@ -924,7 +949,8 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
       if (readBytes != size)
         throw GenericException();
 
-      const glm::dvec3 pos = trafo * glm::dvec3(0, 0, 1);
+      librevenge::RVNGPropertyList props;
+      glm::dvec3 pos = trafo * glm::dvec3(0, 0, 1);
       double width = media->m_geometry->m_size.m_width;
       double height = media->m_geometry->m_size.m_height;
       glm::dvec3 dim = trafo * glm::dvec3(width, height, 0);
@@ -937,7 +963,6 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
 
            So for now, we only resize the picture to its final size */
 #if 0
-        librevenge::RVNGPropertyList extra;
         double decalPos[]= {media->m_cropGeometry->m_position.m_x-media->m_geometry->m_position.m_x,
                             media->m_cropGeometry->m_position.m_y-media->m_geometry->m_position.m_y
                            };
@@ -949,13 +974,40 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
         std::stringstream s;
         s << "rect(" << pt2in(decalPos[1]) << "in, " << pt2in(decalPos[0]) << "in, "
           << pt2in(-decalSize[1]-decalPos[1]) << "in, " << pt2in(-decalSize[0]-decalPos[0]) << "in)";
-        extra.insert("fo:clip", s.str().c_str());
+        props.insert("fo:clip", s.str().c_str());
 #endif
         width = media->m_cropGeometry->m_size.m_width;
         height = media->m_cropGeometry->m_size.m_height;
         dim = trafo * glm::dvec3(width, height, 0);
       }
-      drawMedia(pos[0], pos[1], dim[0], dim[1], mimetype, librevenge::RVNGBinaryData(bytes, size));
+
+      // check if the image is flipped, ...
+      if (dim[0]<0 && dim[1]<0)
+      {
+        props.insert("librevenge:rotate", 180, librevenge::RVNG_GENERIC);
+        pos[0]+=dim[0];
+        pos[1]+=dim[1];
+        dim[0]*=-1;
+        dim[1]*=-1;
+      }
+      else if (dim[0]<0)
+      {
+        props.insert("draw:mirror-horizontal", true);
+        pos[0]+=dim[0];
+        dim[0]*=-1;
+      }
+      else if (dim[1]<0)
+      {
+        props.insert("draw:mirror-vertical", true);
+        pos[1]+=dim[1];
+        dim[1]*=-1;
+      }
+
+      props.insert("librevenge:mime-type", mimetype.c_str());
+      props.insert("office:binary-data", librevenge::RVNGBinaryData(bytes, size));
+      props.insert("svg:width", pt2in(dim[0]));
+      props.insert("svg:height", pt2in(dim[1]));
+      drawMedia(pos[0], pos[1], props);
     }
   }
 }

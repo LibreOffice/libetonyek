@@ -46,6 +46,7 @@ private:
     IWORKGeometryPtr_t m_geometry;
     IWORKStylePtr_t m_graphicStyle;
     glm::dmat3 m_trafo;
+    glm::dmat3 m_previousTrafo;
 
     Level();
   };
@@ -63,6 +64,7 @@ public:
   void setGraphicStyle(const IWORKStylePtr_t &style);
 
   void collectGeometry(const IWORKGeometryPtr_t &geometry);
+  void setAccumulateTransformTo(bool accumulate);
 
   void collectBezier(const IWORKPathPtr_t &path);
   void collectLine(const IWORKLinePtr_t &line);
@@ -76,7 +78,8 @@ public:
   void collectConnectionPath(const IWORKSize &size, const boost::optional<IWORKPosition> &middle);
   void collectCalloutPath(const IWORKSize &size, double radius, double tailSize, double tailX, double tailY, bool quoteBubble);
 
-  void collectImage(const IWORKMediaContentPtr_t &image, const IWORKGeometryPtr_t &cropGeometry=IWORKGeometryPtr_t(), bool locked=false);
+  void collectImage(const IWORKMediaContentPtr_t &image, const IWORKGeometryPtr_t &cropGeometry=IWORKGeometryPtr_t(),
+                    bool locked=false);
   void collectMedia(const IWORKMediaContentPtr_t &content, const IWORKGeometryPtr_t &cropGeometry=IWORKGeometryPtr_t());
 
   void collectStylesheet(const IWORKStylesheetPtr_t &stylesheet);
@@ -109,6 +112,7 @@ public:
       return IWORKStylesheetPtr_t();
     return m_stylesheetStack.top();
   }
+
   IWORKOutputManager &getOutputManager();
 
 public:
@@ -131,7 +135,7 @@ private:
   void drawShape(const IWORKShapePtr_t &shape);
 
   virtual void drawTable() = 0;
-  virtual void drawMedia(double x, double y, double w, double h, const std::string &mimetype, const librevenge::RVNGBinaryData &data) = 0;
+  virtual void drawMedia(double x, double y, const librevenge::RVNGPropertyList &data) = 0;
   virtual void fillShapeProperties(librevenge::RVNGPropertyList &props) = 0;
   virtual void drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox) = 0;
 
@@ -165,6 +169,7 @@ private:
 
   IWORKMetadata m_metadata;
 
+  bool m_accumulateTransform;
   int m_groupLevel;
 };
 

@@ -273,11 +273,13 @@ void PAGCollector::drawTable()
   }
 }
 
-void PAGCollector::drawMedia(
-  const double x, const double y, const double w, const double h,
-  const std::string &mimetype, const librevenge::RVNGBinaryData &data)
+void PAGCollector::drawMedia(const double x, const double y, const librevenge::RVNGPropertyList &data)
 {
-  RVNGPropertyList frameProps;
+  if (!data["office:binary-data"] || !data["librevenge:mime-type"])
+  {
+    ETONYEK_DEBUG_MSG(("PAGCollector::drawMedia: oops can not find the picture\n"));
+  }
+  RVNGPropertyList frameProps(data);
   if (m_inAttachments)
   {
     frameProps.insert("text:anchor-type", "as-char");
@@ -301,12 +303,12 @@ void PAGCollector::drawMedia(
     frameProps.insert("svg:x", pt2in(x));
     frameProps.insert("svg:y", pt2in(y));
   }
-  frameProps.insert("svg:width", pt2in(w));
-  frameProps.insert("svg:height", pt2in(h));
+  frameProps.remove("librevenge:mime-type");
+  frameProps.remove("office:binary-data");
 
   RVNGPropertyList binaryObjectProps;
-  binaryObjectProps.insert("librevenge:mime-type", mimetype.c_str());
-  binaryObjectProps.insert("office:binary-data", data);
+  binaryObjectProps.insert("librevenge:mime-type", data["librevenge:mime-type"]->clone());
+  binaryObjectProps.insert("office:binary-data", data["office:binary-data"]->clone());
 
   getOutputManager().getCurrent().addOpenFrame(frameProps);
   getOutputManager().getCurrent().addInsertBinaryObject(binaryObjectProps);

@@ -1334,6 +1334,8 @@ void PresentationElement::attribute(const int name, const char *const value)
     {
       ETONYEK_DEBUG_MSG(("PresentationElement::attribute[KEY2Parser.cpp]: unknown version %s\n", value));
     }
+    if (isCollector())
+      getCollector().setAccumulateTransformTo(version>2);
   }
   break;
   default:
