@@ -783,7 +783,8 @@ void IWORKCollector::fillMetadata(librevenge::RVNGPropertyList &props)
     props.insert("librevenge:comments", m_metadata.m_comment.c_str());
 }
 
-void IWORKCollector::fillGraphicProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props, bool isSurface)
+void IWORKCollector::fillGraphicProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props,
+                                      bool isSurface, bool isFrame)
 {
   assert(bool(style));
 
@@ -806,60 +807,92 @@ void IWORKCollector::fillGraphicProps(const IWORKStylePtr_t style, librevenge::R
     if ((type == IWORK_STROKE_TYPE_DASHED) && stroke.m_pattern.m_values.size() < 2)
       type = IWORK_STROKE_TYPE_SOLID;
 
-    switch (type)
+    if (isFrame)
     {
-    case IWORK_STROKE_TYPE_NONE :
-      props.insert("draw:stroke", "none");
-      break;
-    case IWORK_STROKE_TYPE_SOLID :
-      props.insert("draw:stroke", "solid");
-      break;
-    case IWORK_STROKE_TYPE_DASHED :
-      props.insert("draw:stroke", "dash");
-      props.insert("draw:dots1", 1);
-      props.insert("draw:dots1-length", stroke.m_pattern.m_values[0], RVNG_PERCENT);
-      props.insert("draw:dots2", 1);
-      props.insert("draw:dots2-length", stroke.m_pattern.m_values[0], RVNG_PERCENT);
-      props.insert("draw:distance", stroke.m_pattern.m_values[1], RVNG_PERCENT);
-      break;
-    case IWORK_STROKE_TYPE_AUTO :
-      if (style->has<Fill>())
-        props.insert("draw:stroke", "none");
+      std::string bType("none");
+      switch (type)
+      {
+      case IWORK_STROKE_TYPE_NONE :
+        break;
+      case IWORK_STROKE_TYPE_SOLID :
+        bType="solid";
+        break;
+      case IWORK_STROKE_TYPE_DASHED :
+        bType=(stroke.m_pattern.m_values[0]<0.1 ? "dotted" : "dashed");
+        break;
+      case IWORK_STROKE_TYPE_AUTO :
+        bType=style->has<Fill>() ? "none" : "solid";
+        break;
+      default:
+        ETONYEK_DEBUG_MSG(("IWORKCollector::fillGraphicProps: unexpected stroke type\n"));
+        break;
+      }
+      if (bType!="none")
+      {
+        std::stringstream s;
+        s << stroke.m_width << "pt " << bType << " " << makeColor(stroke.m_color).cstr();
+        props.insert("fo:border", s.str().c_str());
+      }
       else
+        props.insert("fo:border", "none");
+    }
+    else
+    {
+      switch (type)
+      {
+      case IWORK_STROKE_TYPE_NONE :
+        props.insert("draw:stroke", "none");
+        break;
+      case IWORK_STROKE_TYPE_SOLID :
         props.insert("draw:stroke", "solid");
-      break;
-    default:
-      ETONYEK_DEBUG_MSG(("IWORKCollector::fillGraphicProps: unexpected stroke type\n"));
-      break;
-    }
+        break;
+      case IWORK_STROKE_TYPE_DASHED :
+        props.insert("draw:stroke", "dash");
+        props.insert("draw:dots1", 1);
+        props.insert("draw:dots1-length", stroke.m_pattern.m_values[0], RVNG_PERCENT);
+        props.insert("draw:dots2", 1);
+        props.insert("draw:dots2-length", stroke.m_pattern.m_values[0], RVNG_PERCENT);
+        props.insert("draw:distance", stroke.m_pattern.m_values[1], RVNG_PERCENT);
+        break;
+      case IWORK_STROKE_TYPE_AUTO :
+        if (style->has<Fill>())
+          props.insert("draw:stroke", "none");
+        else
+          props.insert("draw:stroke", "solid");
+        break;
+      default:
+        ETONYEK_DEBUG_MSG(("IWORKCollector::fillGraphicProps: unexpected stroke type\n"));
+        break;
+      }
 
-    props.insert("svg:stroke-width", pt2in(stroke.m_width));
-    props.insert("svg:stroke-color", makeColor(stroke.m_color));
+      props.insert("svg:stroke-width", pt2in(stroke.m_width));
+      props.insert("svg:stroke-color", makeColor(stroke.m_color));
 
-    switch (stroke.m_cap)
-    {
-    default :
-    case IWORK_LINE_CAP_NONE :
+      switch (stroke.m_cap)
+      {
+      default :
+      case IWORK_LINE_CAP_NONE :
 
-    case IWORK_LINE_CAP_BUTT :
-      props.insert("svg:stroke-linecap", "butt");
-      break;
-    case IWORK_LINE_CAP_ROUND :
-      props.insert("svg:stroke-linecap", "round");
-      break;
-    }
+      case IWORK_LINE_CAP_BUTT :
+        props.insert("svg:stroke-linecap", "butt");
+        break;
+      case IWORK_LINE_CAP_ROUND :
+        props.insert("svg:stroke-linecap", "round");
+        break;
+      }
 
-    switch (stroke.m_join)
-    {
-    case IWORK_LINE_JOIN_MITER :
-      props.insert("svg:stroke-linejoin", "miter");
-      break;
-    case IWORK_LINE_JOIN_ROUND :
-      props.insert("svg:stroke-linejoin", "round");
-      break;
-    case IWORK_LINE_JOIN_NONE :
-    default :
-      props.insert("svg:stroke-linejoin", "none");
+      switch (stroke.m_join)
+      {
+      case IWORK_LINE_JOIN_MITER :
+        props.insert("svg:stroke-linejoin", "miter");
+        break;
+      case IWORK_LINE_JOIN_ROUND :
+        props.insert("svg:stroke-linejoin", "round");
+        break;
+      case IWORK_LINE_JOIN_NONE :
+      default :
+        props.insert("svg:stroke-linejoin", "none");
+      }
     }
   }
 

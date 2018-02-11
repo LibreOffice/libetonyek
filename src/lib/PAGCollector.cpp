@@ -274,13 +274,14 @@ void PAGCollector::drawShape(const IWORKShapePtr_t &shape)
   const IWORKPath path = m_inAttachment ? *shape->m_path : (*shape->m_path * trafo);
   bool isRectangle=path.isRectangle();
   bool hasText=bool(shape->m_text) && !shape->m_text->empty();
+  bool createOnlyTextbox=!m_inAttachment && hasText && isRectangle;
   librevenge::RVNGPropertyList styleProps;
 
   if (bool(shape->m_style))
-    fillGraphicProps(shape->m_style, styleProps);
+    fillGraphicProps(shape->m_style, styleProps, true, createOnlyTextbox);
   if (shape->m_locked) // CHECKME: maybe also content
     styleProps.insert("style:protect", "position size");
-  if (!m_inAttachment && hasText && isRectangle)
+  if (createOnlyTextbox)
   {
     // we can create a basic textbox
     drawTextBox(shape->m_text, trafo, shape->m_geometry, styleProps);

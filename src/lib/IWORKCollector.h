@@ -133,7 +133,7 @@ protected:
   void fillMetadata(librevenge::RVNGPropertyList &props);
 
   static void fillGraphicProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props,
-                               bool isSurface=true);
+                               bool isSurface=true, bool isFrame=false);
   static void writeFill(const IWORKFill &fill, librevenge::RVNGPropertyList &props);
 
   virtual void drawShape(const IWORKShapePtr_t &shape);
