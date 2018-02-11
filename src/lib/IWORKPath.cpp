@@ -252,8 +252,10 @@ namespace
 
 struct Writer : public static_visitor<void>
 {
-  explicit Writer(RVNGPropertyListVector &path)
+  explicit Writer(RVNGPropertyListVector &path, double deltaX, double deltaY)
     : m_path(path)
+    , m_deltaX(deltaX)
+    , m_deltaY(deltaY)
   {
   }
 
@@ -261,8 +263,8 @@ struct Writer : public static_visitor<void>
   {
     RVNGPropertyList command;
     command.insert("librevenge:path-action", "M");
-    command.insert("svg:x", pt2in(element.m_x));
-    command.insert("svg:y", pt2in(element.m_y));
+    command.insert("svg:x", pt2in(element.m_x+m_deltaX));
+    command.insert("svg:y", pt2in(element.m_y+m_deltaY));
     m_path.append(command);
   }
 
@@ -270,8 +272,8 @@ struct Writer : public static_visitor<void>
   {
     RVNGPropertyList command;
     command.insert("librevenge:path-action", "L");
-    command.insert("svg:x", pt2in(element.m_x));
-    command.insert("svg:y", pt2in(element.m_y));
+    command.insert("svg:x", pt2in(element.m_x+m_deltaX));
+    command.insert("svg:y", pt2in(element.m_y+m_deltaY));
     m_path.append(command);
   }
 
@@ -279,12 +281,12 @@ struct Writer : public static_visitor<void>
   {
     RVNGPropertyList command;
     command.insert("librevenge:path-action", "C");
-    command.insert("svg:x", pt2in(element.m_x));
-    command.insert("svg:y", pt2in(element.m_y));
-    command.insert("svg:x1", pt2in(element.m_x1));
-    command.insert("svg:y1", pt2in(element.m_y1));
-    command.insert("svg:x2", pt2in(element.m_x2));
-    command.insert("svg:y2", pt2in(element.m_y2));
+    command.insert("svg:x", pt2in(element.m_x+m_deltaX));
+    command.insert("svg:y", pt2in(element.m_y+m_deltaY));
+    command.insert("svg:x1", pt2in(element.m_x1+m_deltaX));
+    command.insert("svg:y1", pt2in(element.m_y1+m_deltaY));
+    command.insert("svg:x2", pt2in(element.m_x2+m_deltaX));
+    command.insert("svg:y2", pt2in(element.m_y2+m_deltaY));
     m_path.append(command);
   }
 
@@ -292,10 +294,10 @@ struct Writer : public static_visitor<void>
   {
     RVNGPropertyList command;
     command.insert("librevenge:path-action", "Q");
-    command.insert("svg:x", pt2in(element.m_x));
-    command.insert("svg:y", pt2in(element.m_y));
-    command.insert("svg:x1", pt2in(element.m_x1));
-    command.insert("svg:y1", pt2in(element.m_y1));
+    command.insert("svg:x", pt2in(element.m_x+m_deltaX));
+    command.insert("svg:y", pt2in(element.m_y+m_deltaY));
+    command.insert("svg:x1", pt2in(element.m_x1+m_deltaX));
+    command.insert("svg:y1", pt2in(element.m_y1+m_deltaY));
     m_path.append(command);
   }
 
@@ -307,6 +309,8 @@ struct Writer : public static_visitor<void>
   }
 private:
   RVNGPropertyListVector &m_path;
+  double m_deltaX;
+  double m_deltaY;
 };
 
 }
@@ -413,7 +417,7 @@ struct SVGPrinter : public static_visitor<void>
   void operator()(const ClosePolygon &) const
   {
     m_sink
-        << 'Q'
+        << 'Z'
         ;
   }
 private:
@@ -664,7 +668,7 @@ void IWORKPath::operator*=(const glm::dmat3 &tr)
   }
 }
 
-void IWORKPath::computeBoundingBox(double &minX, double &minY, double &maxX, double &maxY) const
+void IWORKPath::computeBoundingBox(double &minX, double &minY, double &maxX, double &maxY, double factor) const
 {
   ComputeBoundingBox bdCompute;
   for (auto &it : m_impl->m_path)
@@ -672,10 +676,46 @@ void IWORKPath::computeBoundingBox(double &minX, double &minY, double &maxX, dou
     for (auto &cIt : it)
       apply_visitor(bdCompute, cIt);
   }
-  minX=bdCompute.m_boundX[0];
-  maxX=bdCompute.m_boundX[1];
-  minY=bdCompute.m_boundY[0];
-  maxY=bdCompute.m_boundY[1];
+  minX=factor*bdCompute.m_boundX[0];
+  maxX=factor*bdCompute.m_boundX[1];
+  minY=factor*bdCompute.m_boundY[0];
+  maxY=factor*bdCompute.m_boundY[1];
+}
+
+bool IWORKPath::isRectangle() const
+{
+  if (m_impl->m_path.size()!=1) return false;
+  Curve_t const &curve=m_impl->m_path[0];
+  if (curve.size()!=4 && (curve.size()!=5 || !boost::get<ClosePolygon>(&curve.back())))
+    return false;
+  double x[5], y[5];
+  int pt=0;
+  for (Curve_t::const_iterator it = curve.begin(); it != curve.end(); ++it)
+  {
+    if (pt==0 && boost::get<MoveTo>(&*it))
+    {
+      x[0]=x[4]=boost::get<MoveTo>(&*it)->m_x;
+      y[0]=y[4]=boost::get<MoveTo>(&*it)->m_y;
+    }
+    else if (pt && boost::get<LineTo>(&*it))
+    {
+      x[pt]=boost::get<LineTo>(&*it)->m_x;
+      y[pt]=boost::get<LineTo>(&*it)->m_y;
+    }
+    else
+      return false;
+    if (++pt==4)
+      break;
+  }
+  int id=(x[0]<=x[1] && x[0]>=x[1]) ? 0 : 1;
+  if (x[id]<x[id+1] || x[id]>x[id+1] || // check axis
+      y[id+1]<y[id+2] || y[id+1]>y[id+2] ||
+      x[id+2]<x[id+3] || x[id+2]>x[id+3] ||
+      y[id+3]<y[(id+4)%4] || y[id+3]>y[(id+4)%4] ||
+      (x[id]<=x[id+2] && x[id]>=x[id+2]) || // and not empty diagonal
+      (x[id+1]<=x[id+3] && x[id+1]>=x[id+3]))
+    return false;
+  return true;
 }
 
 void IWORKPath::closePath(bool closeOnlyIsSamePoint)
@@ -748,12 +788,12 @@ const std::string IWORKPath::str() const
   return sink.str();
 }
 
-void IWORKPath::write(librevenge::RVNGPropertyListVector &vec) const
+void IWORKPath::write(librevenge::RVNGPropertyListVector &vec, double deltaX, double deltaY) const
 {
   for (Path_t::const_iterator it = m_impl->m_path.begin(); it != m_impl->m_path.end(); ++it)
   {
     for (Curve_t::const_iterator cIt = it->begin(); cIt != it->end(); ++cIt)
-      apply_visitor(Writer(vec), *cIt);
+      apply_visitor(Writer(vec, deltaX, deltaY), *cIt);
   }
 }
 

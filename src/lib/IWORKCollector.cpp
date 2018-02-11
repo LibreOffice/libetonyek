@@ -1101,7 +1101,7 @@ void IWORKCollector::drawShape(const IWORKShapePtr_t &shape)
     elements.addSetStyle(styleProps);
     elements.addDrawPath(shapeProps);
 
-    drawTextBox(shape->m_text, trafo, shape->m_geometry);
+    drawTextBox(shape->m_text, trafo, shape->m_geometry, librevenge::RVNGPropertyList());
   }
 }
 

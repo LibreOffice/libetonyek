@@ -48,7 +48,8 @@ public:
   void appendClose();
 
   void closePath(bool closeOnlyIsSamePoint=true);
-  void computeBoundingBox(double &minX, double &minY, double &maxX, double &maxY) const;
+  void computeBoundingBox(double &minX, double &minY, double &maxX, double &maxY, double factor=1) const;
+  bool isRectangle() const;
   /** Transform all elements of the path.
     *
     * @arg[in] tr the transformation
@@ -63,8 +64,7 @@ public:
 
   /** Create librevenge representation of this path.
     */
-  void write(librevenge::RVNGPropertyListVector &vec) const;
-
+  void write(librevenge::RVNGPropertyListVector &vec, double deltaX=0, double deltaY=0) const;
 private:
   std::shared_ptr<Impl> m_impl;
 };

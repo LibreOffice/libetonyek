@@ -149,7 +149,7 @@ private:
   virtual void drawTable() = 0;
   virtual void drawMedia(double x, double y, const librevenge::RVNGPropertyList &data) = 0;
   virtual void fillShapeProperties(librevenge::RVNGPropertyList &props) = 0;
-  virtual void drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox) = 0;
+  virtual void drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox, const librevenge::RVNGPropertyList &style) = 0;
 
 protected:
   IWORKCollector(const IWORKCollector &);

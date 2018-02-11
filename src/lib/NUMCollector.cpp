@@ -58,12 +58,13 @@ void NUMCollector::fillShapeProperties(librevenge::RVNGPropertyList &props)
   (void) props;
 }
 
-void NUMCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox)
+void NUMCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox, const librevenge::RVNGPropertyList &style)
 {
   // TODO: implement me
   (void) text;
   (void) trafo;
   (void) boundingBox;
+  (void) style;
 }
 
 }
