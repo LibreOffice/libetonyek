@@ -10,7 +10,10 @@
 #ifndef KEY1PARSER_H_INCLUDED
 #define KEY1PARSER_H_INCLUDED
 
+#include "librevenge/RVNGBinaryData.h"
+
 #include "IWORKParser.h"
+#include "KEY1ParserState.h"
 
 namespace libetonyek
 {
@@ -20,13 +23,17 @@ class KEYCollector;
 class KEY1Parser : public IWORKParser
 {
 public:
-  KEY1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector &collector);
+  KEY1Parser(const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector &collector, KEY1Dictionary &dict);
   ~KEY1Parser() override;
 
 private:
   IWORKXMLContextPtr_t createDocumentContext() override;
   IWORKXMLContextPtr_t createDiscardContext() override;
   const IWORKTokenizer &getTokenizer() const override;
+
+private:
+  KEY1ParserState m_state;
+  librevenge::RVNGBinaryData m_data;
 };
 
 }

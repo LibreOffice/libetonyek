@@ -25,7 +25,9 @@
 #include "IWORKTextRedirector.h"
 #include "IWORKTokenizer.h"
 #include "IWORKZlibStream.h"
+#include "KEY1Dictionary.h"
 #include "KEY1Parser.h"
+#include "KEY1Token.h"
 #include "KEY2Dictionary.h"
 #include "KEY2Parser.h"
 #include "KEY2Token.h"
@@ -138,7 +140,9 @@ bool probeXML(DetectionInfo &info)
   if (probeXMLFormat(FORMAT_XML2, EtonyekDocument::TYPE_PAGES, PAG1Token::NS_URI_SL | PAG1Token::document,
                      PAG1Token::getTokenizer(), name, ns, info))
     return true;
-
+  if (probeXMLFormat(FORMAT_XML1, EtonyekDocument::TYPE_KEYNOTE, KEY1Token::NS_URI_KEY | KEY1Token::presentation,
+                     KEY1Token::getTokenizer(), name, ns, info))
+    return true;
   return false;
 }
 
@@ -230,7 +234,6 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
         info.m_input = getUncompressedSubStream(binaryInput, "Index/Document.iwa", true);
       }
     }
-
     if ((info.m_format == FORMAT_XML2) || (info.m_format == FORMAT_UNKNOWN))
     {
       if ((info.m_type == EtonyekDocument::TYPE_KEYNOTE) || (info.m_type == EtonyekDocument::TYPE_UNKNOWN))
@@ -264,7 +267,7 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
       }
     }
 
-    if ((info.m_format == FORMAT_XML1) || (info.m_format == FORMAT_UNKNOWN))
+    if (info.m_format == FORMAT_XML1 || info.m_format == FORMAT_UNKNOWN)
     {
       if (input->existsSubStream("presentation.apxl"))
       {
@@ -322,25 +325,6 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
 
 }
 
-namespace
-{
-
-shared_ptr<IWORKParser> makeKeynoteParser(const unsigned version, const RVNGInputStreamPtr_t &input, const RVNGInputStreamPtr_t &package, KEYCollector &collector, KEY2Dictionary &dict)
-{
-  shared_ptr<IWORKParser> parser;
-
-  if (1 == version)
-    parser.reset(new KEY1Parser(input, package, collector));
-  else if ((2 <= version) && (5 >= version))
-    parser.reset(new KEY2Parser(input, package, collector, dict));
-  else
-    assert(0);
-
-  return parser;
-}
-
-}
-
 ETONYEKAPI EtonyekDocument::Confidence EtonyekDocument::isSupported(librevenge::RVNGInputStream *const input, EtonyekDocument::Type *type) try
 {
   if (!input)
@@ -379,11 +363,18 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   IWORKPresentationRedirector redirector(generator);
   KEYCollector collector(&redirector);
-  if (info.m_format == FORMAT_XML2)
+  if (info.m_format == FORMAT_XML1)
+  {
+    KEY1Dictionary dict;
+    input->seek(0, librevenge::RVNG_SEEK_SET);
+    shared_ptr<KEY1Parser> key1Parser(new KEY1Parser(info.m_input, info.m_package, collector, dict));
+    return key1Parser->parse();
+  }
+  else if (info.m_format == FORMAT_XML2)
   {
     KEY2Dictionary dict;
-    const shared_ptr<IWORKParser> parser = makeKeynoteParser(info.m_format, info.m_input, info.m_package, collector, dict);
-    return parser->parse();
+    shared_ptr<KEY2Parser> key2Parser(new KEY2Parser(info.m_input, info.m_package, collector, dict));
+    return key2Parser->parse();
   }
   else if (info.m_format == FORMAT_BINARY)
   {

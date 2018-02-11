@@ -221,7 +221,26 @@ void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props
     {
       librevenge::RVNGPropertyList tab;
       tab.insert("style:position", pt2in(it->m_pos));
-      tab.insert("style:type", "left");
+      switch (it->m_align)
+      {
+      case IWORK_TABULATION_CENTER :
+        tab.insert("style:type", "center");
+        break;
+      case IWORK_TABULATION_DECIMAL :
+        tab.insert("style:type", "char");
+        tab.insert("style:char", "."); // TODO store me
+        break;
+      case IWORK_TABULATION_LEFT :
+        tab.insert("style:type", "left");
+        break;
+      case IWORK_TABULATION_RIGHT :
+        tab.insert("style:type", "right");
+        break;
+      default:
+        ETONYEK_DEBUG_MSG(("fillParaPropList[IWORKText.cpp]: unexpected tab type\n"));
+        tab.insert("style:type", "left");
+        break;
+      }
       tabs.append(tab);
     }
 

@@ -38,6 +38,9 @@ public:
 
   virtual const IWORKTokenizer &getTokenizer() const = 0;
 
+protected:
+  void setInput(const RVNGInputStreamPtr_t &input);
+
 private:
   virtual IWORKXMLContextPtr_t createDocumentContext() = 0;
   virtual IWORKXMLContextPtr_t createDiscardContext() = 0;

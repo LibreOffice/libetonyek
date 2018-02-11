@@ -13,7 +13,6 @@
 #include <string>
 
 #include <boost/optional.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "IWORKStyle_fwd.h"
 #include "IWORKStyleContext.h"

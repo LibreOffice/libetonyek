@@ -141,7 +141,6 @@ protected:
 
 private:
   void pushStyle(const IWORKStylePtr_t &style);
-  void resolveStyle(IWORKStyle &style);
 
   void collectHeaderFooter(const std::string &name, IWORKHeaderFooterMap_t &map);
 

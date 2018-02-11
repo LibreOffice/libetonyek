@@ -85,8 +85,15 @@ IWORKPadding::IWORKPadding()
 {
 }
 
-IWORKTabStop::IWORKTabStop(double pos_)
-  : m_pos(pos_)
+IWORKTabStop::IWORKTabStop()
+  : m_align(IWORK_TABULATION_LEFT)
+  , m_pos(0)
+{
+}
+
+IWORKTabStop::IWORKTabStop(IWORKTabulationType align, double pos_)
+  : m_align(align)
+  , m_pos(pos_)
 {
 }
 

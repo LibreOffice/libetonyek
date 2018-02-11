@@ -28,8 +28,12 @@ KEYPlaceholder::KEYPlaceholder()
   : m_title()
   , m_empty()
   , m_style()
+  , m_paragraphStyle()
+  , m_spanStyle()
   , m_geometry()
   , m_text()
+  , m_visible()
+  , m_bulletIndentations()
 {
 }
 

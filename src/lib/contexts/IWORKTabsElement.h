@@ -29,7 +29,7 @@ private:
 
 private:
   IWORKTabStops_t &m_tabs;
-  boost::optional<double> m_current;
+  boost::optional<IWORKTabStop> m_current;
 };
 
 }

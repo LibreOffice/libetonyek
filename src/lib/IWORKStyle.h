@@ -48,6 +48,10 @@ public:
     */
   const IWORKPropertyMap &getPropertyMap() const;
 
+  /** Get the style's property map.
+    */
+  IWORKPropertyMap &getPropertyMap();
+
   /** Check for the presence of a property.
     *
     * @returns true if the property is present
@@ -69,6 +73,8 @@ public:
   }
 
   const boost::optional<std::string> &getIdent() const;
+
+  void setParent(const IWORKStylePtr_t parent);
 
   /// Creates the list level properties of a list style if it does not exists
   void createListLevelStyles();

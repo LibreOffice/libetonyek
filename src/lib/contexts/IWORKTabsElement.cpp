@@ -14,6 +14,7 @@
 #include "libetonyek_xml.h"
 #include "IWORKDictionary.h"
 #include "IWORKToken.h"
+#include "IWORKTokenizer.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
@@ -27,19 +28,20 @@ namespace
 class TabstopElement : public IWORKXMLEmptyContextBase
 {
 public:
-  TabstopElement(IWORKXMLParserState &state, optional<double> &pos);
+  TabstopElement(IWORKXMLParserState &state, optional<IWORKTabStop> &tab);
 
 private:
   void attribute(int name, const char *value) override;
 
 private:
-  optional<double> &m_pos;
+  optional<IWORKTabStop> &m_tab;
 };
 
-TabstopElement::TabstopElement(IWORKXMLParserState &state, optional<double> &pos)
+TabstopElement::TabstopElement(IWORKXMLParserState &state, optional<IWORKTabStop> &tab)
   : IWORKXMLEmptyContextBase(state)
-  , m_pos(pos)
+  , m_tab(tab)
 {
+  tab=IWORKTabStop();
 }
 
 void TabstopElement::attribute(const int name, const char *const value)
@@ -47,10 +49,26 @@ void TabstopElement::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::align :
-    // TODO: parse
+    switch (getState().getTokenizer().getId(value))
+    {
+    case IWORKToken::center :
+      get(m_tab).m_align = IWORK_TABULATION_CENTER;
+      break;
+    case IWORKToken::decimal :
+      get(m_tab).m_align = IWORK_TABULATION_DECIMAL;
+      break;
+    case IWORKToken::left :
+      get(m_tab).m_align = IWORK_TABULATION_LEFT;
+      break;
+    case IWORKToken::right :
+      get(m_tab).m_align = IWORK_TABULATION_RIGHT;
+      break;
+    default:
+      ETONYEK_DEBUG_MSG(("TabstopElement::attribute: unknown alignment %s\n", value));
+    }
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::pos :
-    m_pos = double_cast(value);
+    get(m_tab).m_pos = double_cast(value);
     break;
   default :
     break;
@@ -70,7 +88,7 @@ IWORKXMLContextPtr_t IWORKTabsElement::element(const int name)
 {
   if (m_current)
   {
-    m_tabs.push_back(IWORKTabStop(get(m_current)));
+    m_tabs.push_back(get(m_current));
     m_current.reset();
   }
 
@@ -83,7 +101,7 @@ IWORKXMLContextPtr_t IWORKTabsElement::element(const int name)
 void IWORKTabsElement::endOfElement()
 {
   if (m_current)
-    m_tabs.push_back(IWORKTabStop(get(m_current)));
+    m_tabs.push_back(get(m_current));
 
   if (getId())
     getState().getDictionary().m_tabs[get(getId())] = m_tabs;

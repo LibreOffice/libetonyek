@@ -288,7 +288,7 @@ void TableCellElement::emitCell()
     getState().m_currentTable->insertCell(
       column, row,
       tableData->m_content, text, tableData->m_dateTime,
-      columnSpan ? columnSpan : 0, rowSpan ? rowSpan : 1,
+      columnSpan ? columnSpan : 1, rowSpan ? rowSpan : 1,
       tableData->m_formula, tableData->m_formulaHC, cell.m_style, tableData->m_type
     );
     // finally update the grid

@@ -101,9 +101,11 @@ typedef std::unordered_map<ID_t, IWORKPadding> IWORKPaddingMap_t;
 
 struct IWORKTabStop
 {
+  IWORKTabulationType m_align;
   double m_pos;
 
-  explicit IWORKTabStop(double pos_);
+  IWORKTabStop();
+  IWORKTabStop(IWORKTabulationType align, double pos_);
 };
 
 typedef std::deque<IWORKTabStop> IWORKTabStops_t;

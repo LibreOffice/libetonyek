@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEY1DICTIONARY_H_INCLUDED
-#define KEY1DICTIONARY_H_INCLUDED
+#ifndef KEY2DICTIONARY_H_INCLUDED
+#define KEY2DICTIONARY_H_INCLUDED
 
 #include "IWORKDictionary.h"
 #include "KEYTypes.h"
@@ -48,6 +48,6 @@ struct KEY2Dictionary : public IWORKDictionary
 
 }
 
-#endif //  KEY1DICTIONARY_H_INCLUDED
+#endif //  KEY2DICTIONARY_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

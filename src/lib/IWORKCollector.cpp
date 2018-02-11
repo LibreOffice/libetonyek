@@ -753,12 +753,6 @@ void IWORKCollector::popStylesheet()
   m_stylesheetStack.pop();
 }
 
-void IWORKCollector::resolveStyle(IWORKStyle &style)
-{
-  // TODO: implement me
-  (void) style;
-}
-
 void IWORKCollector::collectHeaderFooter(const std::string &name, IWORKHeaderFooterMap_t &map)
 {
   IWORKOutputElements &elements = map[name];

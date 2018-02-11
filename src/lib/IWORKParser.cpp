@@ -103,6 +103,12 @@ bool IWORKParser::parse()
       contextStack.pop();
       break;
     }
+    case XML_READER_TYPE_CDATA :
+    {
+      const xmlChar *text = xmlTextReaderConstValue(reader);
+      if (text) contextStack.top()->CDATA(char_cast(text));
+      break;
+    }
     case XML_READER_TYPE_TEXT :
     {
       xmlChar *const text = xmlTextReaderReadString(reader);
@@ -136,6 +142,11 @@ RVNGInputStreamPtr_t &IWORKParser::getInput()
 RVNGInputStreamPtr_t IWORKParser::getInput() const
 {
   return m_input;
+}
+
+void IWORKParser::setInput(const RVNGInputStreamPtr_t &input)
+{
+  m_input = input;
 }
 
 RVNGInputStreamPtr_t &IWORKParser::getPackage()

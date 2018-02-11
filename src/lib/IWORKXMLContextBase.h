@@ -84,6 +84,7 @@ protected:
   void text(const char *value) override;
 
   const boost::optional<ID_t> &getId() const;
+  void setId(const char *value);
 
 private:
   boost::optional<ID_t> m_id;
@@ -113,6 +114,7 @@ protected:
   void text(const char *value) override;
 
   const boost::optional<ID_t> &getId() const;
+  void setId(const char *value);
   const boost::optional<ID_t> &getRef() const;
 
 private:

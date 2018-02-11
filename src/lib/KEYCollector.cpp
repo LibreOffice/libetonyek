@@ -59,6 +59,11 @@ KEYLayerPtr_t KEYCollector::collectLayer()
 {
   assert(m_layerOpened);
 
+  const std::shared_ptr<IWORKRecorder> recorder(m_recorder);
+  m_recorder.reset();
+  if (recorder)
+    recorder->replay(*this);
+
   KEYLayerPtr_t layer(new KEYLayer());
 
   layer->m_outputId = getOutputManager().save();
@@ -309,11 +314,6 @@ void KEYCollector::startPage()
 void KEYCollector::endPage()
 {
   assert(m_pageOpened);
-
-  const std::shared_ptr<IWORKRecorder> recorder(m_recorder);
-  m_recorder.reset();
-  if (recorder)
-    recorder->replay(*this);
 
   endLevel();
 

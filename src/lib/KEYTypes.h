@@ -15,7 +15,6 @@
 #include <deque>
 
 #include <boost/optional.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "libetonyek_utils.h"
 #include "IWORKOutputElements.h"
@@ -40,8 +39,12 @@ struct KEYPlaceholder
   boost::optional<bool> m_title;
   boost::optional<bool> m_empty;
   IWORKStylePtr_t m_style;
+  IWORKStylePtr_t m_paragraphStyle;
+  IWORKStylePtr_t m_spanStyle;
   IWORKGeometryPtr_t m_geometry;
   IWORKTextPtr_t m_text;
+  boost::optional<bool> m_visible;
+  std::deque<double> m_bulletIndentations;
 
   KEYPlaceholder();
 };

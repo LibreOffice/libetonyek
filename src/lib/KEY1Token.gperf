@@ -11,6 +11,9 @@
 #if defined __GNUC__
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #endif
+#if defined(__clang__)
+#pragma clang diagnostic ignored "-Wdeprecated-register"
+#endif
 
 using namespace KEY1Token;
 %}
@@ -32,13 +35,18 @@ array,array
 axes,axes
 axis,axis
 background-fill-style,background_fill_style
+bl,bl
 body,body
+bottom,bottom
+br,br
 buildChunkingStyle,buildChunkingStyle
 bullet,bullet
 bullet-characters,bullet_characters
 bullet-indentation,bullet_indentation
 bullets,bullets
 byte-size,byte_size
+center,center
+character,character
 character-bullet-style,character_bullet_style
 chart-prototype,chart_prototype
 chartFrame,chartFrame
@@ -50,10 +58,15 @@ dataFormatterHasThousandsSeparators,dataFormatterHasThousandsSeparators
 dataFormatterNumberOfDecimals,dataFormatterNumberOfDecimals
 dataFormatterPrefix,dataFormatterPrefix
 dataFormatterSuffix,dataFormatterSuffix
+description,description
 dict,dict
+direction,direction
 display-name,display_name
+div,div
 drawables,drawables
 duration,duration
+element,element
+end,end
 end-color,end_color
 file,file
 fill-color,fill_color
@@ -61,26 +74,41 @@ fill-style,fill_style
 fill-type,fill_type
 floating-content,floating_content
 font,font
+font-color,font_color
+font-kerning,font_kerning
+font-ligatures,font_ligatures
 font-name,font_name
 font-size,font_size
+font-superscript,font_superscript
+font-underline,font_underline
 gradient,gradient
 gradient-angle,gradient_angle
 gridOpacity,gridOpacity
+grow-horizontally,grow_horizontally
 guide,guide
 guides,guides
+head,head
+hidden,hidden
+horizontal,horizontal
+http://developer.apple.com/schemas/APXL,NS_URI_KEY
 id,id
+ident,ident
 id-ref,id_ref
 image,image
 image-data,image_data
 image-scale,image_scale
+image-bullet-style,image_bullet_style
+inherited,inherited
 interBarGap,interBarGap
 interSeriesGap,interSeriesGap
 is-filled,is_filled
+justified,justified
 key,key
 labelOpacity,labelOpacity
 labelPosition,labelPosition
 labelVisible,labelVisible
 layerElementsForShadowing,layerElementsForShadowing
+left,left
 legend,legend
 level,level
 line,line
@@ -96,10 +124,15 @@ marker-type,marker_type
 master-slide,master_slide
 master-slide-id,master_slide_id
 master-slides,master_slides
+match-point,match_point
 metadata,metadata
+middle,middle
 minorTickPositions,minorTickPositions
 name,name
 natural-size,natural_size
+node,node
+none,none
+notes,notes
 null,null
 number,number
 numberOfPoints,numberOfPoints
@@ -110,10 +143,15 @@ page-number,page_number
 paragraph-alignment,paragraph_alignment
 paragraph-first-line-indent,paragraph_first_line_indent
 paragraph-head-indent,paragraph_head_indent
+paragraph-tail-indent,paragraph_tail_indent
+path,path
 pattern,pattern
 pieSliceOffset,pieSliceOffset
 pieSlicePercentVisible,pieSlicePercentVisible
+plugin,plugin
+plugin-data,plugin_data
 point_at_top,point_at_top
+pos,pos
 presentation,presentation
 prototype-bullets,prototype_bullets
 prototype-data,prototype_data
@@ -123,6 +161,12 @@ prototype-plugins,prototype_plugins
 radius,radius
 rect,rect
 reference,reference
+relative,relative
+right,right
+scale-to-fit,scale_to_fit
+segment,segment
+sequence,sequence
+sequence-bullet-style,sequence_bullet_style
 serie,serie
 series,series
 seriesDirection,seriesDirection
@@ -135,7 +179,10 @@ size-technique,size_technique
 slide,slide
 slide-list,slide_list
 slide-size,slide_size
+solid,solid
 spacing,spacing
+span,span
+start,start
 start-color,start_color
 steps,steps
 string,string
@@ -145,7 +192,10 @@ stroke-width,stroke_width
 styles,styles
 symbol,symbol
 symbolFillMode,symbolFillMode
+table,table
 tab-stops,tab_stops
+tail,tail
+text,text
 text-attributes,text_attributes
 textbox,textbox
 theme,theme
@@ -155,8 +205,13 @@ tickLabelsAngle,tickLabelsAngle
 tickLabelsOpacity,tickLabelsOpacity
 tickLabelsVisible,tickLabelsVisible
 time-stamp,time_stamp
+tile,tile
 title,title
 titleVisible,titleVisible
+tl,tl
+top,top
+tr,tr
+tracks-master,tracks_master
 transformation,transformation
 transition-style,transition_style
 type,type
@@ -166,6 +221,7 @@ useUserMinimum,useUserMinimum
 userMaximum,userMaximum
 userMinimum,userMinimum
 version,version
+vertical,vertical
 vertical-alignment,vertical_alignment
 visibility,visibility
 visible,visible

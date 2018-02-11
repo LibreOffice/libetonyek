@@ -638,6 +638,7 @@ enum
   both,
   bullet,
   butt,
+  center,
   directional,
   double_,
   empty,

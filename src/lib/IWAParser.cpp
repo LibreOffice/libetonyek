@@ -1007,7 +1007,7 @@ void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
       for (const auto &tabStop : tabStops)
       {
         if (tabStop.float_(1))
-          tabs.push_back(IWORKTabStop(get(tabStop.float_(1))));
+          tabs.push_back(IWORKTabStop(IWORK_TABULATION_LEFT, get(tabStop.float_(1))));
       }
     }
     if (paraProps.bool_(26))

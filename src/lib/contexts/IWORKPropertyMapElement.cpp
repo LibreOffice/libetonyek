@@ -89,7 +89,7 @@ public:
 
 private:
 
-  boost::shared_ptr<IWORKXMLContext> m_context;
+  std::shared_ptr<IWORKXMLContext> m_context;
   boost::optional<typename IWORKPropertyInfo<Property>::ValueType > m_value;
 };
 

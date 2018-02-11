@@ -53,6 +53,11 @@ const boost::optional<ID_t> &IWORKXMLContextElement::getId() const
   return m_id;
 }
 
+void IWORKXMLContextElement::setId(const char *value)
+{
+  m_id = value;
+}
+
 IWORKXMLContextText::IWORKXMLContextText(IWORKXMLParserState &)
   : IWORKXMLContextMinimal()
 {
@@ -105,6 +110,11 @@ void IWORKXMLContextEmpty::text(const char *)
 const boost::optional<ID_t> &IWORKXMLContextEmpty::getId() const
 {
   return m_id;
+}
+
+void IWORKXMLContextEmpty::setId(const char *value)
+{
+  m_id = value;
 }
 
 const boost::optional<ID_t> &IWORKXMLContextEmpty::getRef() const

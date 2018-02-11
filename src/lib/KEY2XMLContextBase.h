@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef KEYXMLCONTEXTBASE_H_INCLUDED
-#define KEYXMLCONTEXTBASE_H_INCLUDED
+#ifndef KEY2XMLCONTEXTBASE_H_INCLUDED
+#define KEY2XMLCONTEXTBASE_H_INCLUDED
 
 #include "IWORKXMLContextBase.h"
 
@@ -43,6 +43,6 @@ typedef KEY2XMLContextBase<IWORKXMLContextEmpty> KEY2XMLEmptyContextBase;
 
 }
 
-#endif // KEYXMLCONTEXTBASE_H_INCLUDED
+#endif // KEY2XMLCONTEXTBASE_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

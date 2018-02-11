@@ -127,12 +127,15 @@ libetonyek_internal_la_SOURCES = \
 	IWORKXMLParserState.h \
 	IWORKZlibStream.cpp \
 	IWORKZlibStream.h \
+	KEY1Dictionary.cpp \
+	KEY1Dictionary.h \
 	KEY1Parser.cpp \
 	KEY1Parser.h \
+	KEY1ParserState.cpp \
+	KEY1ParserState.h \
 	KEY1Token.cpp \
 	KEY1Token.h \
-	KEY2Collector.cpp \
-	KEY2Collector.h \
+	KEY1XMLContextBase.h \
 	KEY2Dictionary.cpp \
 	KEY2Dictionary.h \
 	KEY2Parser.cpp \
@@ -307,6 +310,20 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKValueContext.h \
 	contexts/IWORKWrapElement.cpp \
 	contexts/IWORKWrapElement.h \
+	contexts/KEY1ContentElement.cpp \
+	contexts/KEY1ContentElement.h \
+	contexts/KEY1DivElement.cpp \
+	contexts/KEY1DivElement.h \
+	contexts/KEY1FillElement.cpp \
+	contexts/KEY1FillElement.h \
+	contexts/KEY1SpanElement.cpp \
+	contexts/KEY1SpanElement.h \
+	contexts/KEY1StringConverter.cpp \
+	contexts/KEY1StringConverter.h \
+	contexts/KEY1StylesContext.cpp \
+	contexts/KEY1StylesContext.h \
+	contexts/KEY1TableElement.cpp \
+	contexts/KEY1TableElement.h \
 	contexts/PAG1AnnotationContext.cpp \
 	contexts/PAG1AnnotationContext.h \
 	contexts/PAG1AnnotationElement.cpp \

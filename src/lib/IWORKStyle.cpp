@@ -69,6 +69,11 @@ const IWORKPropertyMap &IWORKStyle::getPropertyMap() const
   return m_props;
 }
 
+IWORKPropertyMap &IWORKStyle::getPropertyMap()
+{
+  return m_props;
+}
+
 const boost::optional<std::string> &IWORKStyle::getIdent() const
 {
   return m_ident;
@@ -82,6 +87,13 @@ const boost::optional<std::string> &IWORKStyle::getParentIdent() const
 const IWORKStylePtr_t IWORKStyle::getParent() const
 {
   return m_parent;
+}
+
+void IWORKStyle::setParent(const IWORKStylePtr_t parent)
+{
+  m_parent=parent;
+  if (m_parent)
+    m_props.setParent(&m_parent->getPropertyMap());
 }
 
 void IWORKStyle::createListLevelStyles()

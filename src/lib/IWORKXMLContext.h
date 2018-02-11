@@ -51,6 +51,11 @@ public:
     */
   virtual void text(const char *value) = 0;
 
+  /** Process CDATA content of an element.
+    *
+    */
+  virtual void CDATA(const char *value);
+
   /** Signalize the end of an element.
     */
   virtual void endOfElement() = 0;
@@ -112,6 +117,12 @@ IWORKXMLContextPtr_t makeContext(Arg1 &arg1, Arg2 &arg2, const Arg3 &arg3, const
 
 template<typename Context, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
 IWORKXMLContextPtr_t makeContext(Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3, const Arg4 &arg4)
+{
+  return IWORKXMLContextPtr_t(new Context(arg1, arg2, arg3, arg4));
+}
+
+template<typename Context, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+IWORKXMLContextPtr_t makeContext(Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3, Arg4 &arg4)
 {
   return IWORKXMLContextPtr_t(new Context(arg1, arg2, arg3, arg4));
 }
