@@ -81,6 +81,7 @@ font-name,font_name
 font-size,font_size
 font-superscript,font_superscript
 font-underline,font_underline
+g,g
 gradient,gradient
 gradient-angle,gradient_angle
 gridOpacity,gridOpacity

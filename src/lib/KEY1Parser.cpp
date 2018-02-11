@@ -1315,6 +1315,67 @@ void PluginElement::endOfElement()
 namespace
 {
 
+class GroupElement : public BasicShapeElement
+{
+public:
+  explicit GroupElement(KEY1ParserState &state);
+
+protected:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+
+private:
+  boost::optional<glm::dmat3> m_transformation;
+};
+
+GroupElement::GroupElement(KEY1ParserState &state)
+  : BasicShapeElement(state)
+  , m_transformation()
+{
+}
+
+void GroupElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case KEY1Token::transformation :
+    m_transformation=KEY1StringConverter<glm::dmat3>::convert(value);
+    break;
+  default :
+    BasicShapeElement::attribute(name,value);
+    break;
+  }
+}
+
+IWORKXMLContextPtr_t GroupElement::element(const int name)
+{
+  switch (name)
+  {
+  case KEY1Token::g | KEY1Token::NS_URI_KEY :
+    return makeContext<GroupElement>(getState());
+  case KEY1Token::image | KEY1Token::NS_URI_KEY :
+    return makeContext<ImageElement>(getState());
+  case KEY1Token::line | KEY1Token::NS_URI_KEY :
+    return makeContext<LineElement>(getState());
+  case KEY1Token::page_number | KEY1Token::NS_URI_KEY :
+    return makeContext<PageNumberElement>(getState());
+  case KEY1Token::plugin | KEY1Token::NS_URI_KEY :
+    return makeContext<PluginElement>(getState());
+  case KEY1Token::shape | KEY1Token::NS_URI_KEY :
+    return makeContext<ShapeElement>(getState());
+  case KEY1Token::textbox | KEY1Token::NS_URI_KEY :
+    return makeContext<TextboxElement>(getState());
+  default :
+    return BasicShapeElement::element(name);
+  }
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
 class DrawablesElement : public KEY1XMLElementContextBase
 {
 public:
@@ -1348,6 +1409,8 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   {
   case KEY1Token::body | KEY1Token::NS_URI_KEY :
     return makeContext<BodyElement>(getState());
+  case KEY1Token::g | KEY1Token::NS_URI_KEY :
+    return makeContext<GroupElement>(getState());
   case KEY1Token::image | KEY1Token::NS_URI_KEY :
     return makeContext<ImageElement>(getState());
   case KEY1Token::line | KEY1Token::NS_URI_KEY :

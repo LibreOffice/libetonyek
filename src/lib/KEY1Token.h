@@ -54,6 +54,7 @@ enum
   element,
   fill_style,
   font,
+  g,
   gradient,
   guide,
   guides,
