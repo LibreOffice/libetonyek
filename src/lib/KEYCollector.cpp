@@ -397,6 +397,8 @@ void KEYCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &tra
     return;
 
   librevenge::RVNGPropertyList props(style);
+  if (!style["draw:fill"]) props.insert("draw:fill", "none");
+  if (!style["draw:stroke"]) props.insert("draw:stroke", "none");
 
   glm::dvec3 vec = trafo * glm::dvec3(0, 0, 1);
 

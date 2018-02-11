@@ -916,8 +916,8 @@ void IWORKCollector::fillGraphicProps(const IWORKStylePtr_t style, librevenge::R
         {
           props.insert(marker==0 ? "draw:marker-start-path" : "draw:marker-end-path", finalStr.c_str());
           std::stringstream s;
-          // checkme: normally viewbox's componant must be integer...
-          s << bdbox[0] << " " << bdbox[1] << " " << bdbox[2] << " "<< bdbox[3];
+          // viewbox's componant must be integer...
+          s << std::floor(bdbox[0]) << " " << std::floor(bdbox[1]) << " " << std::ceil(bdbox[2]) << " " << std::ceil(bdbox[3]);
           props.insert(marker==0 ? "draw:marker-start-viewbox" : "draw:marker-end-viewbox", s.str().c_str());
           if (lineEnd.m_scale>0 && bdbox[2]>bdbox[0]) // unsure
             props.insert(marker==0 ? "draw:marker-start-width" : "draw:marker-end-width",
@@ -1110,32 +1110,38 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
 
 void IWORKCollector::drawShape(const IWORKShapePtr_t &shape)
 {
-  if (bool(shape) && bool(shape->m_path))
+  if (!bool(shape) || !bool(shape->m_path))
   {
-    const glm::dmat3 trafo = m_levelStack.top().m_trafo;
-    IWORKOutputElements &elements = m_outputManager.getCurrent();
-
-
-    const IWORKPath path = *shape->m_path * trafo;
-
-    librevenge::RVNGPropertyList styleProps;
-
-    if (bool(shape->m_style))
-      fillGraphicProps(shape->m_style, styleProps);
-    if (shape->m_locked) // CHECKME: maybe also content
-      styleProps.insert("style:protect", "position size");
-    librevenge::RVNGPropertyList shapeProps;
-
-    librevenge::RVNGPropertyListVector vec;
-    path.write(vec);
-    shapeProps.insert("svg:d", vec);
-    fillShapeProperties(shapeProps);
-
-    elements.addSetStyle(styleProps);
-    elements.addDrawPath(shapeProps);
-
-    drawTextBox(shape->m_text, trafo, shape->m_geometry, librevenge::RVNGPropertyList());
+    ETONYEK_DEBUG_MSG(("IWORKCollector::drawShape: can not find the shape\n"));
+    return;
   }
+  const glm::dmat3 trafo = m_levelStack.top().m_trafo;
+  IWORKOutputElements &elements = m_outputManager.getCurrent();
+
+  const IWORKPath path = *shape->m_path * trafo;
+  bool isRectangle=path.isRectangle();
+  bool hasText=bool(shape->m_text) && !shape->m_text->empty();
+  bool createOnlyTextbox= hasText && isRectangle;
+  librevenge::RVNGPropertyList styleProps;
+
+  if (bool(shape->m_style))
+    fillGraphicProps(shape->m_style, styleProps, true, createOnlyTextbox && createFrameStylesForTextBox());
+  if (shape->m_locked) // CHECKME: maybe also content
+    styleProps.insert("style:protect", "position size");
+  if (createOnlyTextbox)
+    return drawTextBox(shape->m_text, trafo, shape->m_geometry, styleProps);
+
+  librevenge::RVNGPropertyList shapeProps;
+  librevenge::RVNGPropertyListVector vec;
+  path.write(vec);
+  shapeProps.insert("svg:d", vec);
+  fillShapeProperties(shapeProps);
+
+  elements.addSetStyle(styleProps);
+  elements.addDrawPath(shapeProps);
+
+  if (hasText)
+    drawTextBox(shape->m_text, trafo, shape->m_geometry, librevenge::RVNGPropertyList());
 }
 
 void IWORKCollector::writeFill(const IWORKFill &fill, librevenge::RVNGPropertyList &props)

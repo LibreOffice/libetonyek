@@ -68,6 +68,10 @@ private:
   void drawTable() override;
   void drawMedia(double x, double y, const librevenge::RVNGPropertyList &data) override;
   void fillShapeProperties(librevenge::RVNGPropertyList &props) override;
+  bool createFrameStylesForTextBox() const override
+  {
+    return false;
+  }
   void drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox, const librevenge::RVNGPropertyList &style) override;
 
 private:

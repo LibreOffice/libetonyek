@@ -263,53 +263,39 @@ void PAGCollector::drawTable()
 
 void PAGCollector::drawShape(const IWORKShapePtr_t &shape)
 {
+  if (!m_inAttachment)
+    return IWORKCollector::drawShape(shape);
+
   if (!bool(shape) || !bool(shape->m_path))
   {
     ETONYEK_DEBUG_MSG(("PAGCollector::drawShape: can not find the shape\n"));
     return;
   }
-  const glm::dmat3 trafo = m_levelStack.top().m_trafo;
   IWORKOutputElements &elements = m_outputManager.getCurrent();
 
-  const IWORKPath path = m_inAttachment ? *shape->m_path : (*shape->m_path * trafo);
-  bool isRectangle=path.isRectangle();
-  bool hasText=bool(shape->m_text) && !shape->m_text->empty();
-  bool createOnlyTextbox=!m_inAttachment && hasText && isRectangle;
+  const IWORKPath &path = *shape->m_path;
   librevenge::RVNGPropertyList styleProps;
 
   if (bool(shape->m_style))
-    fillGraphicProps(shape->m_style, styleProps, true, createOnlyTextbox);
+    fillGraphicProps(shape->m_style, styleProps, true, false);
   if (shape->m_locked) // CHECKME: maybe also content
     styleProps.insert("style:protect", "position size");
-  if (createOnlyTextbox)
-  {
-    // we can create a basic textbox
-    drawTextBox(shape->m_text, trafo, shape->m_geometry, styleProps);
-    return;
-  }
 
   librevenge::RVNGPropertyList shapeProps;
   librevenge::RVNGPropertyListVector vec;
   path.write(vec);
   shapeProps.insert("svg:d", vec);
 
-  if (m_inAttachment)
-  {
-    shapeProps.insert("text:anchor-type", "as-char");
-    shapeProps.insert("style:vertical-pos", "bottom");
-    shapeProps.insert("style:vertical-rel", "text");
-    shapeProps.insert("style:run-through", "foreground");
-    shapeProps.insert("style:wrap","run-through");
-  }
-  else
-    fillShapeProperties(shapeProps);
+  shapeProps.insert("text:anchor-type", "as-char");
+  shapeProps.insert("style:vertical-pos", "bottom");
+  shapeProps.insert("style:vertical-rel", "text");
+  shapeProps.insert("style:run-through", "foreground");
+  shapeProps.insert("style:wrap","run-through");
 
   elements.addSetStyle(styleProps);
   elements.addDrawPath(shapeProps);
 
-  if (!m_inAttachment && hasText)
-    drawTextBox(shape->m_text, trafo, shape->m_geometry, librevenge::RVNGPropertyList());
-  else if (hasText)
+  if (bool(shape->m_text) && !shape->m_text->empty())
   {
     ETONYEK_DEBUG_MSG(("PAGCollector::drawShape: sorry sending text in a attachment is not implemented\n"));
   }

@@ -135,7 +135,6 @@ protected:
   static void fillGraphicProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props,
                                bool isSurface=true, bool isFrame=false);
   static void writeFill(const IWORKFill &fill, librevenge::RVNGPropertyList &props);
-
   virtual void drawShape(const IWORKShapePtr_t &shape);
 
 private:
@@ -149,6 +148,7 @@ private:
   virtual void drawTable() = 0;
   virtual void drawMedia(double x, double y, const librevenge::RVNGPropertyList &data) = 0;
   virtual void fillShapeProperties(librevenge::RVNGPropertyList &props) = 0;
+  virtual bool createFrameStylesForTextBox() const = 0;
   virtual void drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox, const librevenge::RVNGPropertyList &style) = 0;
 
 protected:
