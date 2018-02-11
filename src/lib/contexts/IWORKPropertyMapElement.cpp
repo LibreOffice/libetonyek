@@ -43,6 +43,7 @@
 #include "IWORKToken.h"
 #include "IWORKTokenizer.h"
 #include "IWORKValueContext.h"
+#include "IWORKWrapElement.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
@@ -826,7 +827,8 @@ void FiltersElement::endOfElement()
 namespace
 {
 
-typedef RefPropertyContext<property::Columns, ColumnsElement, IWORKToken::NS_URI_SF | IWORKToken::columns, IWORKToken::NS_URI_SF | IWORKToken::columns_ref> ColumnsProperty;
+typedef RefPropertyContext<property::Columns, ColumnsElement, IWORKToken::NS_URI_SF | IWORKToken::columns, IWORKToken::NS_URI_SF | IWORKToken::columns_ref> ColumnsPropertyElement;
+typedef IWORKPropertyContext<property::ExternalTextWrap, IWORKExternalTextWrapElement, IWORKToken::NS_URI_SF | IWORKToken::external_text_wrap> ExternalTextWrapElement;
 typedef RedirectPropertyContext<property::Fill, IWORKFillElement> FillPropertyElement;
 typedef IWORKPropertyContext<property::FontColor, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> FontColorElement;
 typedef IWORKPropertyContext<property::FontName, IWORKStringElement, IWORKToken::NS_URI_SF | IWORKToken::string> FontNameElement;
@@ -941,7 +943,9 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::capitalization :
     return makeContext<CapitalizationElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::columns :
-    return makeContext<ColumnsProperty>(getState(), *m_propMap, getState().getDictionary().m_columnSets);
+    return makeContext<ColumnsPropertyElement>(getState(), *m_propMap, getState().getDictionary().m_columnSets);
+  case IWORKToken::NS_URI_SF | IWORKToken::externalTextWrap:
+    return makeContext<ExternalTextWrapElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::fill :
     return makeContext<FillPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::filters :

@@ -157,6 +157,19 @@ struct IWORKMedia
   IWORKMedia();
 };
 
+struct IWORKExternalTextWrap
+{
+  IWORKWrapStyle m_style;
+  bool m_floatingWrapEnabled;
+  bool m_inlineWrapEnabled;
+  IWORKWrapDirection m_direction;
+  IWORKWrapType m_attachmentType;
+  IWORKWrapType m_floatingType;
+  double m_margin;
+  double m_alphaThreshold;
+  IWORKExternalTextWrap();
+};
+
 struct IWORKWrap
 {
   IWORKPathPtr_t m_path;

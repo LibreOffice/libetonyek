@@ -16,6 +16,7 @@
 #include "IWORKGeometryElement.h"
 #include "IWORKPath.h"
 #include "IWORKToken.h"
+#include "IWORKTokenizer.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
@@ -77,6 +78,134 @@ IWORKXMLContextPtr_t PathElement::element(const int name)
 
   return IWORKXMLContextPtr_t();
 }
+}
+
+IWORKExternalTextWrapElement::IWORKExternalTextWrapElement(IWORKXMLParserState &state, boost::optional<IWORKExternalTextWrap> &wrap)
+  : IWORKXMLElementContextBase(state)
+  , m_wrap(wrap)
+{
+  m_wrap=IWORKExternalTextWrap();
+}
+
+void IWORKExternalTextWrapElement::attribute(int name, const char *value)
+{
+  try
+  {
+    switch (name)
+    {
+    case IWORKToken::NS_URI_SFA | IWORKToken::ID : // USEME
+      IWORKXMLElementContextBase::attribute(name, value);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::attachment_wrap_type :
+      switch (getState().getTokenizer().getId(value))
+      {
+      case IWORKToken::aligned:
+        get(m_wrap).m_attachmentType = IWORK_WRAP_TYPE_ALIGNED;
+        break;
+      case IWORKToken::directional:
+        get(m_wrap).m_attachmentType = IWORK_WRAP_TYPE_DIRECTIONAL;
+        break;
+      case IWORKToken::largest:
+        get(m_wrap).m_attachmentType = IWORK_WRAP_TYPE_LARGEST;
+        break;
+      case IWORKToken::neither:
+        get(m_wrap).m_attachmentType = IWORK_WRAP_TYPE_NEITHER;
+        break;
+      case IWORKToken::unaligned:
+        get(m_wrap).m_attachmentType = IWORK_WRAP_TYPE_UNALIGNED;
+        break;
+      default:
+        ETONYEK_DEBUG_MSG(("IWORKExternalTextWrapElement::attribute[IWORKWrapElement.cpp]: find unknown attachment type value=%s\n", value));
+        break;
+      }
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::alpha_threshold :
+      get(m_wrap).m_alphaThreshold=double_cast(value);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::direction :
+      switch (getState().getTokenizer().getId(value))
+      {
+      case IWORKToken::both :
+        get(m_wrap).m_direction=IWORK_WRAP_DIRECTION_BOTH;
+        break;
+      case IWORKToken::left :
+        get(m_wrap).m_direction=IWORK_WRAP_DIRECTION_LEFT;
+        break;
+      case IWORKToken::right :
+        get(m_wrap).m_direction=IWORK_WRAP_DIRECTION_RIGHT;
+        break;
+      default:
+        ETONYEK_DEBUG_MSG(("IWORKExternalTextWrapElement::attribute[IWORKWrapElement.cpp]: find unknown direction value=%s\n", value));
+        break;
+      }
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::floating_wrap_enabled :
+      get(m_wrap).m_floatingWrapEnabled=bool_cast(value);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::floating_wrap_type :
+      switch (getState().getTokenizer().getId(value))
+      {
+      case IWORKToken::aligned:
+        get(m_wrap).m_floatingType = IWORK_WRAP_TYPE_ALIGNED;
+        break;
+      case IWORKToken::directional:
+        get(m_wrap).m_floatingType = IWORK_WRAP_TYPE_DIRECTIONAL;
+        break;
+      case IWORKToken::largest:
+        get(m_wrap).m_floatingType = IWORK_WRAP_TYPE_LARGEST;
+        break;
+      case IWORKToken::neither:
+        get(m_wrap).m_floatingType = IWORK_WRAP_TYPE_NEITHER;
+        break;
+      case IWORKToken::unaligned:
+        get(m_wrap).m_floatingType = IWORK_WRAP_TYPE_UNALIGNED;
+        break;
+      default:
+        ETONYEK_DEBUG_MSG(("IWORKExternalTextWrapElement::attribute[IWORKWrapElement.cpp]: find unknown floating type value=%s\n", value));
+        break;
+      }
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::inline_wrap_enabled :
+      get(m_wrap).m_inlineWrapEnabled=bool_cast(value);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::margin :
+      get(m_wrap).m_margin=double_cast(value);
+      break;
+    case IWORKToken::NS_URI_SF | IWORKToken::wrap_style :
+      switch (getState().getTokenizer().getId(value))
+      {
+      case IWORKToken::regular :
+        get(m_wrap).m_style=IWORK_WRAP_STYLE_REGULAR;
+        break;
+      case IWORKToken::tight :
+        get(m_wrap).m_style=IWORK_WRAP_STYLE_TIGHT;
+        break;
+      default:
+        ETONYEK_DEBUG_MSG(("IWORKExternalTextWrapElement::attribute[IWORKWrapElement.cpp]: find unknown style value=%s\n", value));
+        break;
+      }
+      break;
+    default:
+      ETONYEK_DEBUG_MSG(("IWORKExternalTextWrapElement::attribute[IWORKWrapElement.cpp]: find unknown attribute\n"));
+      break;
+    }
+  }
+  catch (...)
+  {
+    ETONYEK_DEBUG_MSG(("IWORKExternalTextWrapElement::attribute[IWORKWrapElement.cpp]: catch some exception\n"));
+  }
+
+}
+
+#ifndef DEBUG
+IWORKXMLContextPtr_t IWORKExternalTextWrapElement::element(const int)
+#else
+IWORKXMLContextPtr_t IWORKExternalTextWrapElement::element(const int name)
+#endif
+{
+  ETONYEK_DEBUG_MSG(("IWORKExternalTextWrapElement::element[IWORKWrapElement.cpp]: find unknown element %d\n", name));
+
+  return IWORKXMLContextPtr_t();
 }
 
 IWORKWrapElement::IWORKWrapElement(IWORKXMLParserState &state, boost::optional<IWORKWrap> &wrap)

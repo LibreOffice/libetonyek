@@ -18,6 +18,22 @@
 namespace libetonyek
 {
 
+class IWORKExternalTextWrapElement : public IWORKXMLElementContextBase
+{
+public:
+  IWORKExternalTextWrapElement(IWORKXMLParserState &state, boost::optional<IWORKExternalTextWrap> &wrap);
+
+protected:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+
+private:
+  IWORKExternalTextWrapElement(const IWORKExternalTextWrapElement &);
+  IWORKExternalTextWrapElement &operator=(const IWORKExternalTextWrapElement &);
+
+  boost::optional<IWORKExternalTextWrap> &m_wrap;
+};
+
 class IWORKWrapElement : public IWORKXMLElementContextBase
 {
 public:

@@ -89,8 +89,11 @@ SFTTableNameStylePropertyParagraphStyle,SFTTableNameStylePropertyParagraphStyle
 __multilingual,__multilingual
 a,a
 align,align
+aligned,aligned
 alignment,alignment
 alpha-mask-path,alpha_mask_path
+alpha-threshold,alpha_threshold
+attachment-wrap-type,attachment_wrap_type
 amt,amt
 angle,angle
 angle-gradient,angle_gradient
@@ -120,6 +123,7 @@ binary-ref,binary_ref
 body-placeholder-ref,body_placeholder_ref
 bold,bold
 bottom,bottom
+both,both
 br,br
 bullet,bullet
 butt,butt
@@ -194,6 +198,8 @@ date-time,date_time
 datasource,datasource
 decimal,decimal
 decimal-number,number
+direction,direction
+directional,directional
 displayname,displayname
 double,double_
 drawable-shape,drawable_shape
@@ -210,6 +216,8 @@ equal-columns,equal_columns
 error_warning_mapping,error_warning_mapping
 evenPageMaster,evenPageMaster
 extent,extent
+externalTextWrap,externalTextWrap
+external-text-wrap,external_text_wrap
 f,f
 false,false_
 filename,filename
@@ -231,6 +239,8 @@ fit,fit
 fitting-height,fitting_height
 fitting-width,fitting_width
 flags,flags
+floating-wrap-enabled,floating_wrap_enabled
+floating-wrap-type,floating_wrap_type
 fm,fm
 fmt,fmt
 fo,fo
@@ -320,6 +330,7 @@ implicit-format-type,implicit_format_type
 increment,increment
 index,index
 inflection,inflection
+inline-wrap-enabled,inline_wrap_enabled
 inputAngle,inputAngle
 inputColor,inputColor
 inputDistance,inputDistance
@@ -345,6 +356,7 @@ labelCharacterStyle7,labelCharacterStyle7
 labelCharacterStyle8,labelCharacterStyle8
 labelCharacterStyle9,labelCharacterStyle9
 language,language
+largest,largest
 layer,layer
 layer-ref,layer_ref
 layers,layers
@@ -386,6 +398,7 @@ main-movie,main_movie
 main-movie-ref,main_movie_ref
 manipulated-stroke,manipulated_stroke
 manually-sized,manually_sized
+margin,margin
 mark,mark
 masking-shape-path-source,masking_shape_path_source
 max-value,max_value
@@ -405,6 +418,7 @@ natural,natural
 naturalSize,naturalSize
 nc,nc
 ncoc,ncoc
+neither,neither
 nsc,nsc
 none,none
 null,null
@@ -468,6 +482,7 @@ r,r
 radial,radial
 rb,rb
 rd,rd
+regular,regular
 relative,relative
 restart-list,restart_list
 result-bool-cell,result_bool_cell
@@ -602,6 +617,7 @@ texture-fill,texture_fill
 texture-fill-ref,texture_fill_ref
 textured-fill,textured_fill
 textured-fill-ref,textured_fill_ref
+tight,tight
 tile,tile
 title,title
 title-placeholder-ref,title_placeholder_ref
@@ -615,6 +631,7 @@ transform-gradient,transform_gradient
 true,true_
 tscale,tscale
 type,type
+unaligned,unaligned
 underline,underline
 unfiltered,unfiltered
 unfiltered-ref,unfiltered_ref
@@ -636,6 +653,7 @@ widowControl,widowControl
 width,width
 workspace-style,workspace_style
 wrap,wrap
+wrap-style,wrap_style
 x,x
 x-coordinate,x_coordinate
 xsi,xsi

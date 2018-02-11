@@ -126,6 +126,18 @@ IWORKMedia::IWORKMedia()
 {
 }
 
+IWORKExternalTextWrap::IWORKExternalTextWrap()
+  : m_style(IWORK_WRAP_STYLE_TIGHT)
+  , m_floatingWrapEnabled(false)
+  , m_inlineWrapEnabled(false)
+  , m_direction(IWORK_WRAP_DIRECTION_BOTH)
+  , m_attachmentType(IWORK_WRAP_TYPE_ALIGNED)
+  , m_floatingType(IWORK_WRAP_TYPE_DIRECTIONAL)
+  , m_margin(12)
+  , m_alphaThreshold(0.5)
+{
+}
+
 IWORKWrap::IWORKWrap()
   : m_path()
   , m_geometry()
