@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <set>
 
 #include <glm/glm.hpp>
 
@@ -230,6 +231,8 @@ void KEYCollector::sendSlides(const std::deque<KEYSlidePtr_t> &slides)
   m_document->setDocumentMetaData(metadata);
 
   std::map<KEYSlide const *, std::string> masterToNameMap;
+  std::set<std::string> nameSet;
+  unsigned nameId=0;
   for (auto slide : slides)
   {
     if (!slide) continue;
@@ -238,10 +241,20 @@ void KEYCollector::sendSlides(const std::deque<KEYSlidePtr_t> &slides)
     {
       if (masterToNameMap.find(slide->m_masterSlide.get())==masterToNameMap.end())
       {
-        // TODO use master->m_name if possible
-        std::stringstream s;
-        s << "MasterSlide" << masterToNameMap.size();
-        name=s.str();
+        if (slide->m_masterSlide->m_name && nameSet.find(get(slide->m_masterSlide->m_name))==nameSet.end())
+          name=get(slide->m_masterSlide->m_name);
+        else
+        {
+          // ok try to find an unused name
+          do
+          {
+            std::stringstream s;
+            s << "MasterSlide" << nameId++;
+            name=s.str();
+          }
+          while (nameSet.find(get(name))!=nameSet.end());
+        }
+        nameSet.insert(get(name));
         masterToNameMap[slide->m_masterSlide.get()]=get(name);
         insertSlide(slide->m_masterSlide, true, name);
       }

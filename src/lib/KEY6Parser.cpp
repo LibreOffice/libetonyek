@@ -36,6 +36,7 @@ using std::string;
 KEY6Parser::KEY6Parser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package, KEYCollector &collector)
   : IWAParser(fragments, package, collector)
   , m_collector(collector)
+  , m_masterSlides()
   , m_slides()
   , m_slideStyles()
 {
@@ -99,19 +100,23 @@ bool KEY6Parser::parseSlideList(const unsigned id)
   return true;
 }
 
-bool KEY6Parser::parseSlide(const unsigned id, const bool master)
+KEYSlidePtr_t KEY6Parser::parseSlide(const unsigned id, const bool master)
 {
   const ObjectMessage msg(*this, id, KEY6ObjectType::Slide);
   if (!msg)
-    return false;
-
-  if (!master)
-    m_collector.startPage();
+    return KEYSlidePtr_t();
 
   const optional<unsigned> &masterRef = readRef(get(msg), 17);
-  if (masterRef)
-    parseSlide(get(masterRef), true);
+  KEYSlidePtr_t masterSlide;
+  if (!master && masterRef)
+  {
+    if (m_masterSlides.find(get(masterRef))!=m_masterSlides.end())
+      masterSlide=m_masterSlides.find(get(masterRef))->second;
+    else
+      masterSlide=parseSlide(get(masterRef), true);
+  }
 
+  m_collector.startPage();
   m_collector.startLayer();
 
   IWORKStylePtr_t style;
@@ -140,15 +145,18 @@ bool KEY6Parser::parseSlide(const unsigned id, const bool master)
   m_collector.endLayer();
   m_collector.insertLayer(layer);
 
-  if (!master)
-  {
-    KEYSlidePtr_t slide=m_collector.collectSlide();
-    m_collector.endPage();
+  KEYSlidePtr_t slide=m_collector.collectSlide();
+  m_collector.endPage();
 
-    if (!master && slide)
+  if (slide)
+  {
+    slide->m_masterSlide=masterSlide;
+    if (!master)
       m_slides.push_back(slide);
+    else
+      m_masterSlides[id]=slide;
   }
-  return true;
+  return slide;
 }
 
 bool KEY6Parser::parsePlaceholder(const unsigned id)

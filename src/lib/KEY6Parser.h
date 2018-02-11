@@ -31,7 +31,7 @@ private:
 
   bool parsePresentation(unsigned id);
   bool parseSlideList(unsigned id);
-  bool parseSlide(unsigned id, bool master);
+  KEYSlidePtr_t parseSlide(unsigned id, bool master);
   bool parsePlaceholder(unsigned id);
   void parseNotes(unsigned id);
 
@@ -44,6 +44,7 @@ private:
 private:
   KEYCollector &m_collector;
 
+  mutable std::unordered_map<unsigned, KEYSlidePtr_t> m_masterSlides;
   mutable std::deque<KEYSlidePtr_t> m_slides;
   mutable StyleMap_t m_slideStyles;
 };
