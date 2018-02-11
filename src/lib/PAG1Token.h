@@ -41,14 +41,19 @@ enum
   layout,
   number,
   page_group,
+  print_info,
   prototype,
   publication_info,
   section,
   section_prototypes,
+  slprint_info,
   stylesheet,
 
   // attributes
   page,
+  page_height,
+  page_scale,
+  page_width,
   rpage,
   version,
 

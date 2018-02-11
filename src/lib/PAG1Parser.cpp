@@ -467,7 +467,15 @@ IWORKXMLContextPtr_t PublicationInfoElement::element(const int name)
   case PAG1Token::NS_URI_SL | PAG1Token::SLCreationDateProperty :
     return makeContext<SLCreationDatePropertyElement>(getState(), m_pubInfo.m_creationDate);
   default:
+  {
+    static bool first=true;
+    if (first)
+    {
+      first=false;
+      ETONYEK_DEBUG_MSG(("PublicationInfoElement::element[PAG1Parser.cpp]: find some unknown elements\n"));
+    }
     break;
+  }
   }
   return IWORKXMLContextPtr_t();
 }
@@ -480,6 +488,138 @@ void PublicationInfoElement::endOfElement()
       m_pubInfo.m_footnoteKind = get(m_footnoteKind);
     getCollector().collectPublicationInfo(m_pubInfo);
   }
+}
+
+}
+
+namespace
+{
+
+class PageMarginsElement : public PAG1XMLElementContextBase
+{
+public:
+  explicit PageMarginsElement(PAG1ParserState &state, IWORKPrintInfo &printInfo);
+
+private:
+  virtual void attribute(int name, const char *value);
+  IWORKXMLContextPtr_t element(const int name);
+
+private:
+  IWORKPrintInfo &m_printInfo;
+};
+
+PageMarginsElement::PageMarginsElement(PAG1ParserState &state, IWORKPrintInfo &printInfo)
+  : PAG1XMLElementContextBase(state)
+  , m_printInfo(printInfo)
+{
+}
+
+void PageMarginsElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::ID | IWORKToken::NS_URI_SFA :
+    PAG1XMLElementContextBase::attribute(name,value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::bottom:
+    m_printInfo.m_marginBottom=try_double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::left:
+    m_printInfo.m_marginLeft=try_double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::right:
+    m_printInfo.m_marginRight=try_double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::top:
+    m_printInfo.m_marginTop=try_double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::footer:
+    m_printInfo.m_footerHeight=try_double_cast(value);
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::header:
+    m_printInfo.m_headerHeight=try_double_cast(value);
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("PageMarginsElement::attribute[PAG1Parser.cpp]: find unknown attribute\n"));
+    break;
+  }
+}
+
+#ifndef DEBUG
+IWORKXMLContextPtr_t PageMarginsElement::element(const int /*name*/)
+#else
+IWORKXMLContextPtr_t PageMarginsElement::element(const int name)
+#endif
+{
+  ETONYEK_DEBUG_MSG(("PageMarginsElement::element[PAG1Parser.cpp]: find unknown element %d\n", name));
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
+
+class SLPrintInfoElement : public PAG1XMLElementContextBase
+{
+public:
+  explicit SLPrintInfoElement(PAG1ParserState &state);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  IWORKPrintInfo m_printInfo;
+};
+
+SLPrintInfoElement::SLPrintInfoElement(PAG1ParserState &state)
+  : PAG1XMLElementContextBase(state)
+  , m_printInfo()
+{
+}
+
+void SLPrintInfoElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::ID | IWORKToken::NS_URI_SFA :
+    PAG1XMLElementContextBase::attribute(name,value);
+    break;
+  case PAG1Token::NS_URI_SL | PAG1Token::page_height:
+    m_printInfo.m_height=try_double_cast(value);
+    break;
+  case PAG1Token::NS_URI_SL | PAG1Token::page_scale:
+    break;
+  case PAG1Token::NS_URI_SL | PAG1Token::page_width:
+    m_printInfo.m_width=try_double_cast(value);
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("SLPrintInfoElement::attribute[PAG1Parser.cpp]: find unknown attribute\n"));
+    break;
+  }
+}
+
+IWORKXMLContextPtr_t SLPrintInfoElement::element(const int name)
+{
+  switch (name)
+  {
+  case PAG1Token::NS_URI_SL | PAG1Token::print_info:
+    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::page_margins:
+    return makeContext<PageMarginsElement>(getState(), m_printInfo);
+  default:
+    ETONYEK_DEBUG_MSG(("SLPrintInfoElement::element[PAG1Parser.cpp]: find unknown element\n"));
+    break;
+  }
+  return IWORKXMLContextPtr_t();
+}
+
+void SLPrintInfoElement::endOfElement()
+{
+  if (isCollector())
+    getCollector().setPageDimensions(m_printInfo);
 }
 
 }
@@ -648,7 +788,7 @@ void DocumentElement::attribute(const int name, const char *const value)
     const unsigned version = getVersion(getToken(value));
     if (0 == version)
     {
-      ETONYEK_DEBUG_MSG(("unknown version %s\n", value));
+      ETONYEK_DEBUG_MSG(("DocumentElement::attribute[PAG1Parser.cpp]: unknown version %s\n", value));
     }
   }
   break;
@@ -679,6 +819,8 @@ IWORKXMLContextPtr_t DocumentElement::element(const int name)
     return makeContext<PublicationInfoElement>(getState());
   case PAG1Token::NS_URI_SL | PAG1Token::section_prototypes :
     return makeContext<SectionPrototypesElement>(getState());
+  case PAG1Token::NS_URI_SL | PAG1Token::slprint_info :
+    return makeContext<SLPrintInfoElement>(getState());
   case PAG1Token::NS_URI_SL | PAG1Token::stylesheet :
     return makeContext<StylesheetElement>(getState());
   default:

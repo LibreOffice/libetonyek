@@ -47,9 +47,9 @@ using std::string;
 namespace
 {
 
-struct PageFrame
+struct ContainerFrame
 {
-  PageFrame();
+  ContainerFrame();
 
   optional<double> m_w;
   optional<double> m_h;
@@ -57,7 +57,7 @@ struct PageFrame
   optional<double> m_y;
 };
 
-PageFrame::PageFrame()
+ContainerFrame::ContainerFrame()
   : m_w()
   , m_h()
   , m_x()
@@ -648,7 +648,7 @@ namespace
 class SectionElement : public PAG1XMLElementContextBase
 {
 public:
-  SectionElement(PAG1ParserState &state, const PageFrame &pageFrame);
+  SectionElement(PAG1ParserState &state);
 
 private:
   void open();
@@ -659,14 +659,12 @@ private:
   void endOfElement() override;
 
 private:
-  const PageFrame &m_pageFrame;
   bool m_opened;
   optional<string> m_style;
 };
 
-SectionElement::SectionElement(PAG1ParserState &state, const PageFrame &pageFrame)
+SectionElement::SectionElement(PAG1ParserState &state)
   : PAG1XMLElementContextBase(state)
-  , m_pageFrame(pageFrame)
   , m_opened(false)
   , m_style()
 {
@@ -677,15 +675,7 @@ void SectionElement::open()
   assert(!m_opened);
 
   if (isCollector())
-  {
-    const double w(get_optional_value_or(m_pageFrame.m_w, 0));
-    const double h(get_optional_value_or(m_pageFrame.m_h, 0));
-    const double x(get_optional_value_or(m_pageFrame.m_x, 0));
-    const double y(get_optional_value_or(m_pageFrame.m_y, 0));
-
-    // TODO: This assumes that the left/right and top/bottom margins are always equal.
-    getCollector().openSection(get_optional_value_or(m_style, ""), pt2in(w + 2 * x), pt2in(h + 2 * y), pt2in(x), pt2in(y));
-  }
+    getCollector().openSection(get_optional_value_or(m_style, ""));
 
   m_opened = true;
 }
@@ -744,18 +734,18 @@ namespace
 class ContainerHintElement : public PAG1XMLEmptyContextBase
 {
 public:
-  ContainerHintElement(PAG1ParserState &state, PageFrame &pageFrame);
+  ContainerHintElement(PAG1ParserState &state, ContainerFrame &containerFrame);
 
 private:
   void attribute(int name, const char *value) override;
 
 private:
-  PageFrame &m_pageFrame;
+  ContainerFrame &m_containerFrame;
 };
 
-ContainerHintElement::ContainerHintElement(PAG1ParserState &state, PageFrame &pageFrame)
+ContainerHintElement::ContainerHintElement(PAG1ParserState &state, ContainerFrame &containerFrame)
   : PAG1XMLEmptyContextBase(state)
-  , m_pageFrame(pageFrame)
+  , m_containerFrame(containerFrame)
 {
 }
 
@@ -764,16 +754,16 @@ void ContainerHintElement::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::frame_h :
-    m_pageFrame.m_h = double_cast(value);
+    m_containerFrame.m_h = double_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::frame_w :
-    m_pageFrame.m_w = double_cast(value);
+    m_containerFrame.m_w = double_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::frame_x :
-    m_pageFrame.m_x = double_cast(value);
+    m_containerFrame.m_x = double_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::frame_y :
-    m_pageFrame.m_y = double_cast(value);
+    m_containerFrame.m_y = double_cast(value);
     break;
   // also page-index, cindex, sindex, lindex, anchor-loc, nlabel=true/false
   default:
@@ -795,12 +785,12 @@ private:
   IWORKXMLContextPtr_t element(int name) override;
 
 private:
-  PageFrame m_pageFrame;
+  ContainerFrame m_containerFrame;
 };
 
 TextBodyElement::TextBodyElement(PAG1ParserState &state)
   : PAG1XMLContextBase<IWORKTextBodyElement>(state)
-  , m_pageFrame()
+  , m_containerFrame()
 {
 }
 
@@ -809,11 +799,11 @@ IWORKXMLContextPtr_t TextBodyElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::container_hint :
-    return makeContext<ContainerHintElement>(getState(), m_pageFrame);
+    return makeContext<ContainerHintElement>(getState(), m_containerFrame);
   case IWORKToken::NS_URI_SF | IWORKToken::p : // for footnotes
     return makeContext<PElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::section :
-    return makeContext<SectionElement>(getState(), m_pageFrame);
+    return makeContext<SectionElement>(getState());
   default:
     break;
   }

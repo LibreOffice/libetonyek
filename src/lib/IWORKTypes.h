@@ -361,6 +361,20 @@ struct IWORKFilterDescriptor
 
 typedef std::unordered_map<ID_t, IWORKFilterDescriptor> IWORKFilterDescriptorMap_t;
 
+struct IWORKPrintInfo
+{
+  IWORKPrintInfo();
+
+  boost::optional<double> m_height;
+  boost::optional<double> m_width;
+  boost::optional<double> m_marginBottom;
+  boost::optional<double> m_marginLeft;
+  boost::optional<double> m_marginRight;
+  boost::optional<double> m_marginTop;
+  boost::optional<double> m_footerHeight;
+  boost::optional<double> m_headerHeight;
+};
+
 struct IWORKListLabelGeometry
 {
   IWORKListLabelGeometry();

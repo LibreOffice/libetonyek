@@ -22,19 +22,6 @@ class IWORKDocumentInterface;
 
 class PAGCollector : public IWORKCollector
 {
-  struct Section
-  {
-    Section();
-
-    void clear();
-
-    IWORKStylePtr_t m_style;
-    boost::optional<double> m_width;
-    boost::optional<double> m_height;
-    boost::optional<double> m_horizontalMargin;
-    boost::optional<double> m_verticalMargin;
-  };
-
   typedef std::map<unsigned, IWORKOutputID_t> PageGroupsMap_t;
 
 public:
@@ -55,8 +42,9 @@ public:
   void closePageGroup();
 
   // helper functions
+  void setPageDimensions(const IWORKPrintInfo &dimensions);
 
-  void openSection(const std::string &style, double width, double height, double horizontalMargin, double verticalMargin);
+  void openSection(const std::string &style); // probably better to look for the style in the calling function
   void closeSection();
 
   void openAttachments();
@@ -76,7 +64,8 @@ private:
   void writePageGroupsObjects();
 
 private:
-  Section m_currentSection;
+  boost::optional<IWORKPrintInfo> m_pageDimensions;
+  IWORKStylePtr_t m_currentSectionStyle;
   bool m_firstPageSpan;
 
   PAGPublicationInfo m_pubInfo;

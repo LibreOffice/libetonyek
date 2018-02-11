@@ -417,6 +417,7 @@ overrides,overrides
 overrides-ref,overrides_ref
 p,p
 page-count,page_count
+page-margins,page_margins
 page-number,page_number
 page-start,page_start
 pgbr,pgbr

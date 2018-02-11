@@ -87,27 +87,10 @@ void writeHeadersFooters(
 
 }
 
-PAGCollector::Section::Section()
-  : m_style()
-  , m_width()
-  , m_height()
-  , m_horizontalMargin()
-  , m_verticalMargin()
-{
-}
-
-void PAGCollector::Section::clear()
-{
-  m_style.reset();
-  m_width.reset();
-  m_height.reset();
-  m_horizontalMargin.reset();
-  m_verticalMargin.reset();
-}
-
 PAGCollector::PAGCollector(IWORKDocumentInterface *const document)
   : IWORKCollector(document)
-  , m_currentSection()
+  , m_pageDimensions()
+  , m_currentSectionStyle()
   , m_firstPageSpan(true)
   , m_pubInfo()
   , m_pageGroups()
@@ -157,28 +140,28 @@ void PAGCollector::collectAttachmentPosition(const IWORKPosition &position)
   m_attachmentPosition = position;
 }
 
-void PAGCollector::openSection(const std::string &style, const double width, const double height, const double horizontalMargin, const double verticalMargin)
+void PAGCollector::setPageDimensions(const IWORKPrintInfo &dimensions)
 {
-  m_currentSection.m_width = width;
-  m_currentSection.m_height = height;
-  m_currentSection.m_horizontalMargin = horizontalMargin;
-  m_currentSection.m_verticalMargin = verticalMargin;
+  m_pageDimensions=dimensions;
+}
 
+void PAGCollector::openSection(const std::string &style)
+{
   if (!m_stylesheetStack.empty())
   {
     const IWORKStyleMap_t::iterator it = m_stylesheetStack.top()->m_styles.find(style);
     if (it != m_stylesheetStack.top()->m_styles.end())
     {
-      m_currentSection.m_style = it->second;
+      m_currentSectionStyle = it->second;
     }
     else
     {
-      ETONYEK_DEBUG_MSG(("style '%s' not found\n", style.c_str()));
+      ETONYEK_DEBUG_MSG(("PAGCollector::openSection: style '%s' not found\n", style.c_str()));
     }
   }
   else
   {
-    ETONYEK_DEBUG_MSG(("no stylesheet is available\n"));
+    ETONYEK_DEBUG_MSG(("PAGCollector::openSection: no stylesheet is available\n"));
   }
 }
 
@@ -381,22 +364,23 @@ void PAGCollector::flushPageSpan(const bool writeEmpty)
 
   librevenge::RVNGPropertyList props;
 
-  // ARGH: use slprint-info to get the document margins here...
-  if (m_currentSection.m_width)
-    props.insert("fo:page-width", get(m_currentSection.m_width));
-  if (m_currentSection.m_height)
-    props.insert("fo:page-height", get(m_currentSection.m_height));
-  if (m_currentSection.m_horizontalMargin)
+  if (m_pageDimensions)
   {
-    props.insert("fo:margin-left", get(m_currentSection.m_horizontalMargin));
-    props.insert("fo:margin-right", get(m_currentSection.m_horizontalMargin));
+    IWORKPrintInfo const &page=get(m_pageDimensions);
+    if (page.m_width)
+      props.insert("fo:page-width", get(page.m_width), librevenge::RVNG_POINT);
+    if (page.m_height)
+      props.insert("fo:page-height", get(page.m_height), librevenge::RVNG_POINT);
+    if (page.m_marginBottom)
+      props.insert("fo:margin-bottom", get(page.m_marginBottom), librevenge::RVNG_POINT);
+    if (page.m_marginLeft)
+      props.insert("fo:margin-left", get(page.m_marginLeft), librevenge::RVNG_POINT);
+    if (page.m_marginRight)
+      props.insert("fo:margin-right", get(page.m_marginRight), librevenge::RVNG_POINT);
+    if (page.m_marginTop)
+      props.insert("fo:margin-top", get(page.m_marginTop), librevenge::RVNG_POINT);
+    //TODO set also the header/footer height here
   }
-  if (m_currentSection.m_verticalMargin)
-  {
-    props.insert("fo:margin-top", get(m_currentSection.m_verticalMargin));
-    props.insert("fo:margin-bottom", get(m_currentSection.m_verticalMargin));
-  }
-
   IWORKOutputElements text;
 
   if (bool(m_currentText))
@@ -408,18 +392,18 @@ void PAGCollector::flushPageSpan(const bool writeEmpty)
   if (!text.empty() || writeEmpty)
   {
     m_document->openPageSpan(props);
-    if (m_currentSection.m_style)
+    if (m_currentSectionStyle)
     {
-      writeHeadersFooters(m_document, m_currentSection.m_style, m_headers, pickHeader,
+      writeHeadersFooters(m_document, m_currentSectionStyle, m_headers, pickHeader,
                           &IWORKDocumentInterface::openHeader, &IWORKDocumentInterface::closeHeader);
-      writeHeadersFooters(m_document, m_currentSection.m_style, m_footers, pickFooter,
+      writeHeadersFooters(m_document, m_currentSectionStyle, m_footers, pickFooter,
                           &IWORKDocumentInterface::openFooter, &IWORKDocumentInterface::closeFooter);
     }
     text.write(m_document);
     m_document->closePageSpan();
   }
 
-  m_currentSection.clear();
+  m_currentSectionStyle.reset();
 }
 
 void PAGCollector::writePageGroupsObjects()

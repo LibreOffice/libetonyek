@@ -323,6 +323,7 @@ enum
   pagemaster,
   page_count,
   page_number,
+  page_margins,
   page_start,
   paragraphBorderType,
   paragraphFill,

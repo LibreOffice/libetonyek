@@ -11,6 +11,9 @@
 #if defined __GNUC__
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #endif
+#if defined(__clang__)
+#pragma clang diagnostic ignored "-Wdeprecated-register"
+#endif
 
 using namespace PAG1Token;
 %}
@@ -39,10 +42,15 @@ note,note
 number,number
 page,page
 page-group,page_group
+page-height,page_height
+page-scale,page_scale
+page-width,page_width
+print-info,print_info
 prototype,prototype
 publication-info,publication_info
 rpage,rpage
 section-prototypes,section_prototypes
+slprint-info,slprint_info
 stylesheet,stylesheet
 textbox,textbox
 version,version

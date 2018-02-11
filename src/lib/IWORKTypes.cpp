@@ -274,6 +274,18 @@ IWORKFilterDescriptor::IWORKFilterDescriptor()
 {
 }
 
+IWORKPrintInfo::IWORKPrintInfo()
+  : m_height()
+  , m_width()
+  , m_marginBottom()
+  , m_marginLeft()
+  , m_marginRight()
+  , m_marginTop()
+  , m_footerHeight()
+  , m_headerHeight()
+{
+}
+
 IWORKListLabelGeometry::IWORKListLabelGeometry()
   : m_align(IWORK_ALIGNMENT_LEFT)
   , m_scale(1)
