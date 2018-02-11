@@ -32,21 +32,21 @@ using namespace std::placeholders;
 
 KEYCollector::KEYCollector(IWORKDocumentInterface *const document)
   : IWORKCollector(document)
-  , m_paint(false)
+  , m_inSlides(false)
   , m_size()
-  , m_slides()
+  , m_currentSlide()
   , m_notes()
   , m_stickyNotes()
   , m_pageOpened(false)
   , m_layerOpened(false)
   , m_layerCount(0)
 {
-  assert(!m_paint);
+  assert(!m_inSlides);
 }
 
 KEYCollector::~KEYCollector()
 {
-  assert(!m_paint);
+  assert(!m_inSlides);
 }
 
 void KEYCollector::collectPresentationSize(const IWORKSize &size)
@@ -71,19 +71,18 @@ void KEYCollector::insertLayer(const KEYLayerPtr_t &layer)
 
   if (bool(layer))
   {
-    if (m_paint)
+    if (m_currentSlide)
     {
-      assert(!m_slides.empty());
 
       ++m_layerCount;
 
       librevenge::RVNGPropertyList props;
       props.insert("svg:id", m_layerCount);
 
-      m_slides.back().m_content.addStartLayer(props);
+      m_currentSlide->m_content.addStartLayer(props);
       if (layer->m_outputId)
-        m_slides.back().m_content.append(getOutputManager().get(get(layer->m_outputId)));
-      m_slides.back().m_content.addEndLayer();
+        m_currentSlide->m_content.append(getOutputManager().get(get(layer->m_outputId)));
+      m_currentSlide->m_content.addEndLayer();
     }
   }
   else
@@ -92,20 +91,48 @@ void KEYCollector::insertLayer(const KEYLayerPtr_t &layer)
   }
 }
 
-void KEYCollector::collectPage()
+KEYSlidePtr_t KEYCollector::collectSlide()
 {
   assert(m_pageOpened);
 
-  if (m_paint)
+  if (m_currentSlide)
   {
     if (!m_notes.empty())
     {
-      m_slides.back().m_content.addStartNotes(librevenge::RVNGPropertyList());
-      m_slides.back().m_content.append(m_notes);
-      m_slides.back().m_content.addEndNotes();
+      m_currentSlide->m_content.addStartNotes(librevenge::RVNGPropertyList());
+      m_currentSlide->m_content.append(m_notes);
+      m_currentSlide->m_content.addEndNotes();
     }
-    m_slides.back().m_content.append(m_stickyNotes);
+    m_currentSlide->m_content.append(m_stickyNotes);
+    return m_currentSlide;
   }
+
+  return KEYSlidePtr_t();
+}
+
+void KEYCollector::insertSlide(const KEYSlidePtr_t &slide, bool isMaster, const boost::optional<std::string> &pageName)
+{
+  if (!slide)
+  {
+    ETONYEK_DEBUG_MSG(("KEYCollector::insertSlide: called with no slide\n"));
+    return;
+  }
+  librevenge::RVNGPropertyList props;
+  props.insert("svg:width", pt2in(m_size.m_width));
+  props.insert("svg:height", pt2in(m_size.m_height));
+  if (pageName) props.insert("librevenge:master-page-name", get(pageName).c_str());
+  if (bool(slide->m_style) && slide->m_style->has<property::Fill>())
+    writeFill(slide->m_style->get<property::Fill>(), props);
+
+  if (isMaster)
+    m_document->startMasterSlide(props);
+  else
+    m_document->startSlide(props);
+  slide->m_content.write(m_document);
+  if (isMaster)
+    m_document->endMasterSlide();
+  else
+    m_document->endSlide();
 }
 
 KEYPlaceholderPtr_t KEYCollector::collectTextPlaceholder(const IWORKStylePtr_t &style, const bool title)
@@ -143,7 +170,7 @@ void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
   }
   else
   {
-    ETONYEK_DEBUG_MSG(("no text placeholder found\n"));
+    ETONYEK_DEBUG_MSG(("KEYCollector::insertTextPlaceholder: no text placeholder found\n"));
   }
 }
 
@@ -186,8 +213,8 @@ void KEYCollector::setSlideStyle(const IWORKStylePtr_t &style)
 {
   if (m_pageOpened)
   {
-    assert(!m_slides.empty());
-    m_slides.back().m_style = style;
+    assert(m_currentSlide);
+    m_currentSlide->m_style = style;
   }
 }
 
@@ -196,25 +223,49 @@ void KEYCollector::startDocument()
   IWORKCollector::startDocument();
 }
 
-void KEYCollector::endDocument()
+void KEYCollector::sendSlides(const std::deque<KEYSlidePtr_t> &slides)
 {
   RVNGPropertyList metadata;
   fillMetadata(metadata);
   m_document->setDocumentMetaData(metadata);
 
-  std::for_each(m_slides.begin(), m_slides.end(), std::bind(&KEYCollector::writeSlide, this, _1));
+  std::map<KEYSlide const *, std::string> masterToNameMap;
+  for (auto slide : slides)
+  {
+    if (!slide) continue;
+    boost::optional<std::string> name;
+    if (slide->m_masterSlide)
+    {
+      if (masterToNameMap.find(slide->m_masterSlide.get())==masterToNameMap.end())
+      {
+        // TODO use master->m_name if possible
+        std::stringstream s;
+        s << "MasterSlide" << masterToNameMap.size();
+        name=s.str();
+        masterToNameMap[slide->m_masterSlide.get()]=get(name);
+        insertSlide(slide->m_masterSlide, true, name);
+      }
+      else
+        name=masterToNameMap.find(slide->m_masterSlide.get())->second;
+    }
+    insertSlide(slide, false, name);
+  }
 
+}
+
+void KEYCollector::endDocument()
+{
   IWORKCollector::endDocument();
 }
 
 void KEYCollector::startSlides()
 {
-  m_paint = true;
+  m_inSlides = true;
 }
 
 void KEYCollector::endSlides()
 {
-  m_paint = false;
+  m_inSlides = false;
 }
 
 void KEYCollector::startThemes()
@@ -234,8 +285,8 @@ void KEYCollector::startPage()
 
   startLevel();
 
-  if (m_paint)
-    m_slides.push_back(Slide());
+  assert(m_inSlides && !m_currentSlide);
+  m_currentSlide.reset(new KEYSlide);
   m_pageOpened = true;
 }
 
@@ -253,6 +304,7 @@ void KEYCollector::endPage()
   m_notes.clear();
   m_stickyNotes.clear();
 
+  m_currentSlide.reset();
   m_pageOpened = false;
 }
 
@@ -361,20 +413,6 @@ void KEYCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &tra
     text->draw(elements);
     elements.addEndTextObject();
   }
-}
-
-void KEYCollector::writeSlide(const Slide &slide)
-{
-  librevenge::RVNGPropertyList props;
-  props.insert("svg:width", pt2in(m_size.m_width));
-  props.insert("svg:height", pt2in(m_size.m_height));
-
-  if (bool(slide.m_style) && slide.m_style->has<property::Fill>())
-    writeFill(slide.m_style->get<property::Fill>(), props);
-
-  m_document->startSlide(props);
-  slide.m_content.write(m_document);
-  m_document->endSlide();
 }
 
 }

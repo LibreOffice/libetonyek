@@ -41,6 +41,7 @@ enum
   keywords,
   master_slide,
   master_slides,
+  master_ref,
   metadata,
   notes,
   object_placeholder,
@@ -64,6 +65,7 @@ enum
 
   // attributes
   depth,
+  name,
   version,
 
   // attribute values

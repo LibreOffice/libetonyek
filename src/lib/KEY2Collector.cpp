@@ -28,7 +28,7 @@ KEY2Collector::KEY2Collector(IWORKDocumentInterface *const document)
 std::shared_ptr<IWORKTable> KEY2Collector::createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const
 {
   const std::shared_ptr<IWORKTable> table(IWORKCollector::createTable(tableNameMap, langManager));
-  if (m_paint)
+  if (m_inSlides)
     table->setRecorder(std::make_shared<IWORKTableRecorder>());
   return table;
 }
@@ -36,7 +36,7 @@ std::shared_ptr<IWORKTable> KEY2Collector::createTable(const IWORKTableNameMapPt
 std::shared_ptr<IWORKText> KEY2Collector::createText(const IWORKLanguageManager &langManager, const bool discardEmptyContent, bool allowListInsertion) const
 {
   const std::shared_ptr<IWORKText> text(IWORKCollector::createText(langManager, discardEmptyContent, allowListInsertion));
-  if (m_paint)
+  if (m_inSlides)
     text->setRecorder(std::make_shared<IWORKTextRecorder>());
   return text;
 }

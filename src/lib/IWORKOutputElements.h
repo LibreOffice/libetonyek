@@ -46,6 +46,7 @@ public:
   void addCloseFooter();
   void addCloseFootnote();
   void addCloseFrame();
+  void addCloseGroup();
   void addCloseHeader();
   void addCloseLink();
   void addCloseListElement();
@@ -76,6 +77,7 @@ public:
   void addOpenFooter(const librevenge::RVNGPropertyList &propList);
   void addOpenFootnote(const librevenge::RVNGPropertyList &propList);
   void addOpenFrame(const librevenge::RVNGPropertyList &propList);
+  void addOpenGroup(const librevenge::RVNGPropertyList &propList);
   void addOpenHeader(const librevenge::RVNGPropertyList &propList);
   void addOpenLink(const librevenge::RVNGPropertyList &propList);
   void addOpenListElement(const librevenge::RVNGPropertyList &propList);

@@ -20,6 +20,8 @@ KEY2Dictionary::KEY2Dictionary()
   , m_slidenumberPlaceholders()
   , m_titlePlaceholders()
   , m_layers()
+  , m_masterSlides()
+  , m_slides()
 {
 }
 

@@ -15,8 +15,10 @@
 #include <deque>
 
 #include <boost/optional.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include "libetonyek_utils.h"
+#include "IWORKOutputElements.h"
 #include "IWORKPath_fwd.h"
 #include "IWORKStyle_fwd.h"
 #include "IWORKText_fwd.h"
@@ -42,6 +44,16 @@ struct KEYPlaceholder
   IWORKTextPtr_t m_text;
 
   KEYPlaceholder();
+};
+
+struct KEYSlide
+{
+  boost::optional<std::string> m_name;
+  IWORKOutputElements m_content;
+  IWORKStylePtr_t m_style;
+  std::shared_ptr<KEYSlide> m_masterSlide;
+
+  KEYSlide();
 };
 
 }

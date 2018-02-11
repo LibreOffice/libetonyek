@@ -40,7 +40,9 @@ key,key
 keywords,keywords
 master-slide,master_slide
 master-slides,master_slides
+master-ref,master_ref
 metadata,metadata
+name,name
 notes,notes
 object-placeholder,object_placeholder
 page,page

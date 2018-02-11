@@ -265,6 +265,8 @@ void PAGCollector::drawTable()
     m_currentTable->draw(props, m_outputManager.getCurrent(), true);
   else
   {
+    /* in Oasis v1.2, we can add the table directly in a frame, but
+       LibreOffice does not display it, so ...*/
     getOutputManager().getCurrent().addOpenFrame(frameProps);
     getOutputManager().getCurrent().addStartTextObject(RVNGPropertyList());
     m_currentTable->draw(props, m_outputManager.getCurrent(), true);

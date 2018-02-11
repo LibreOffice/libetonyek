@@ -53,8 +53,7 @@ void fillSectionPropList(const IWORKStyleStack &style, RVNGPropertyList &props)
       for (auto column : columns.m_columns)
       {
         RVNGPropertyList columnProps;
-        // TODO: need to have real width of the section to be able to compute indents.
-        columnProps.insert("style:rel-width", column.m_width, librevenge::RVNG_PERCENT);
+        columnProps.insert("style:rel-width", int(column.m_width*10000), librevenge::RVNG_TWIP); // seems valid
         vec.append(columnProps);
       }
       props.insert("style:columns", vec);

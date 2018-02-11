@@ -304,8 +304,10 @@ void ProxyMasterLayerElement::endOfElement()
   if (m_ref && isCollector())
   {
     const KEYLayerMap_t::const_iterator it = getState().getDictionary().m_layers.find(get(m_ref));
-    if (getState().getDictionary().m_layers.end() != it)
-      getCollector().insertLayer(it->second);
+    if (getState().getDictionary().m_layers.end() == it)
+    {
+      ETONYEK_DEBUG_MSG(("ProxyMasterLayerElement::endOfElement[KEY2Parser.cpp]: can not find layer %s\n", get(m_ref).c_str()));
+    }
   }
 }
 
@@ -906,10 +908,10 @@ void PlaceholderContext::endOfElement()
 namespace
 {
 
-class MasterSlideElement : public KEY2XMLElementContextBase
+class NotesElement : public KEY2XMLElementContextBase
 {
 public:
-  explicit MasterSlideElement(KEY2ParserState &state);
+  explicit NotesElement(KEY2ParserState &state);
 
 private:
   void startOfElement() override;
@@ -917,32 +919,67 @@ private:
   void endOfElement() override;
 };
 
-MasterSlideElement::MasterSlideElement(KEY2ParserState &state)
+NotesElement::NotesElement(KEY2ParserState &state)
   : KEY2XMLElementContextBase(state)
 {
 }
 
-void MasterSlideElement::startOfElement()
+void NotesElement::startOfElement()
 {
   if (isCollector())
-    getCollector().startPage();
+  {
+    assert(!getState().m_currentText);
+    getState().m_currentText = getCollector().createText(getState().m_langManager);
+  }
 }
 
-IWORKXMLContextPtr_t MasterSlideElement::element(const int name)
+IWORKXMLContextPtr_t NotesElement::element(const int name)
 {
   switch (name)
   {
-  case KEY2Token::NS_URI_KEY | KEY2Token::bullets :
-    return makeContext<BulletsElement>(getState());
-  case KEY2Token::NS_URI_KEY | KEY2Token::page :
-    return makeContext<PageElement>(getState());
-  case KEY2Token::NS_URI_KEY | KEY2Token::stylesheet :
-    return makeContext<StylesheetElement>(getState());
-  case KEY2Token::NS_URI_KEY | KEY2Token::title_placeholder :
-    return makeContext<PlaceholderContext>(getState(), true);
-  case KEY2Token::NS_URI_KEY | KEY2Token::body_placeholder :
-    return makeContext<PlaceholderContext>(getState(), false);
-  case KEY2Token::NS_URI_KEY | KEY2Token::sticky_notes :
+  case IWORKToken::text_storage | IWORKToken::NS_URI_SF :
+    return makeContext<IWORKTextStorageElement>(getState());
+  default:
+    break;
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void NotesElement::endOfElement()
+{
+  if (isCollector())
+  {
+    getCollector().collectText(getState().m_currentText);
+    getState().m_currentText.reset();
+    getCollector().collectNote();
+  }
+}
+
+}
+
+namespace
+{
+
+class StickyNotesElement : public KEY2XMLElementContextBase
+{
+public:
+  explicit StickyNotesElement(KEY2ParserState &state);
+
+private:
+  IWORKXMLContextPtr_t element(int name) override;
+};
+
+StickyNotesElement::StickyNotesElement(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
+{
+}
+
+IWORKXMLContextPtr_t StickyNotesElement::element(const int name)
+{
+  switch (name)
+  {
+  case KEY2Token::NS_URI_KEY | KEY2Token::sticky_note :
     return makeContext<StickyNoteElement>(getState());
   default:
     break;
@@ -951,13 +988,184 @@ IWORKXMLContextPtr_t MasterSlideElement::element(const int name)
   return IWORKXMLContextPtr_t();
 }
 
-void MasterSlideElement::endOfElement()
+}
+
+namespace
+{
+
+class SlideElement : public KEY2XMLElementContextBase
+{
+public:
+  explicit SlideElement(KEY2ParserState &state, bool isMasterSlide);
+
+private:
+  void attribute(int name, const char *value) override;
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
+
+private:
+  bool m_isMasterSlide;
+  optional<ID_t> m_styleRef;
+  optional<ID_t> m_masterRef;
+
+  boost::optional<std::string> m_name; // master name
+};
+
+SlideElement::SlideElement(KEY2ParserState &state, bool isMasterSlide)
+  : KEY2XMLElementContextBase(state)
+  , m_isMasterSlide(isMasterSlide)
+  , m_styleRef()
+  , m_masterRef()
+  , m_name()
+{
+}
+
+void SlideElement::attribute(int name, const char *value)
+{
+  switch (name)
+  {
+  case KEY2Token::NS_URI_KEY | KEY2Token::name :
+    m_name=value;
+    break;
+  case KEY2Token::NS_URI_KEY | KEY2Token::depth :
+    break;
+  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+    KEY2XMLElementContextBase::attribute(name, value);
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("SlideElement::attribute[KEY2Parser.cpp]: unknown attribute\n"));
+    break;
+  }
+}
+
+void SlideElement::startOfElement()
+{
+  if (isCollector())
+    getCollector().startPage();
+}
+
+IWORKXMLContextPtr_t SlideElement::element(const int name)
+{
+  switch (name)
+  {
+  case KEY2Token::NS_URI_KEY | KEY2Token::bullets :
+    return makeContext<BulletsElement>(getState());
+  case KEY2Token::NS_URI_KEY | KEY2Token::notes :
+    return makeContext<NotesElement>(getState());
+  case KEY2Token::NS_URI_KEY | KEY2Token::page :
+    return makeContext<PageElement>(getState());
+  case KEY2Token::NS_URI_KEY | KEY2Token::master_ref :
+    return makeContext<IWORKRefContext>(getState(), m_masterRef);
+  case KEY2Token::NS_URI_KEY | KEY2Token::sticky_notes :
+    return makeContext<StickyNotesElement>(getState());
+  case KEY2Token::NS_URI_KEY | KEY2Token::style_ref :
+    return makeContext<IWORKRefContext>(getState(), m_styleRef);
+  case KEY2Token::NS_URI_KEY | KEY2Token::stylesheet :
+    return makeContext<StylesheetElement>(getState());
+  case KEY2Token::NS_URI_KEY | KEY2Token::body_placeholder :
+    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_BODY);
+  case KEY2Token::NS_URI_KEY | KEY2Token::object_placeholder :
+    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_OBJECT);
+  case KEY2Token::NS_URI_KEY | KEY2Token::slide_number_placeholder :
+    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_SLIDENUMBER);
+  case KEY2Token::NS_URI_KEY | KEY2Token::title_placeholder :
+    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_TITLE);
+  default:
+    break;
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void SlideElement::endOfElement()
 {
   if (isCollector())
   {
-    getCollector().collectPage();
+    if (m_styleRef)
+    {
+      const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_slideStyles.find(get(m_styleRef));
+      if (it != getState().getDictionary().m_slideStyles.end())
+        getCollector().setSlideStyle(it->second);
+      else
+      {
+        ETONYEK_DEBUG_MSG(("SlideElement::endOfElement[KEY2Parser.cpp]: unknown style %s\n", get(m_styleRef).c_str()));
+      }
+    }
+    KEYSlidePtr_t slide=getCollector().collectSlide();
     getCollector().endPage();
+    if (!slide)
+      return;
+    slide->m_name=m_name;
+    if (m_masterRef && m_isMasterSlide)
+    {
+      ETONYEK_DEBUG_MSG(("SlideElement::endOfElement[KEY2Parser.cpp]: find a master slide with masterRef\n"));
+    }
+    else if (m_masterRef)
+    {
+      auto const it = getState().getDictionary().m_masterSlides.find(get(m_masterRef));
+      if (it != getState().getDictionary().m_masterSlides.end())
+        slide->m_masterSlide=it->second;
+      else
+      {
+        ETONYEK_DEBUG_MSG(("SlideElement::endOfElement[KEY2Parser.cpp]: unknown master %s\n", get(m_masterRef).c_str()));
+      }
+    }
+    if (!m_isMasterSlide)
+      getState().getDictionary().m_slides.push_back(slide);
+    else if (getId())
+      getState().getDictionary().m_masterSlides[get(getId())]=slide;
+    else
+    {
+      ETONYEK_DEBUG_MSG(("SlideElement::endOfElement[KEY2Parser.cpp]: can not find a master id\n"));
+    }
   }
+}
+
+}
+
+namespace
+{
+
+class SlideListElement : public KEY2XMLElementContextBase
+{
+public:
+  explicit SlideListElement(KEY2ParserState &state);
+
+private:
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
+};
+
+SlideListElement::SlideListElement(KEY2ParserState &state)
+  : KEY2XMLElementContextBase(state)
+{
+}
+
+void SlideListElement::startOfElement()
+{
+  if (isCollector())
+    getCollector().startSlides();
+}
+
+IWORKXMLContextPtr_t SlideListElement::element(const int name)
+{
+  switch (name)
+  {
+  case KEY2Token::NS_URI_KEY | KEY2Token::slide :
+    return makeContext<SlideElement>(getState(), false);
+  default:
+    break;
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void SlideListElement::endOfElement()
+{
+  if (isCollector())
+    getCollector().endSlides();
 }
 
 }
@@ -971,7 +1179,9 @@ public:
   explicit MasterSlidesElement(KEY2ParserState &state);
 
 private:
+  void startOfElement() override;
   IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 MasterSlidesElement::MasterSlidesElement(KEY2ParserState &state)
@@ -979,12 +1189,18 @@ MasterSlidesElement::MasterSlidesElement(KEY2ParserState &state)
 {
 }
 
+void MasterSlidesElement::startOfElement()
+{
+  if (isCollector())
+    getCollector().startSlides();
+}
+
 IWORKXMLContextPtr_t MasterSlidesElement::element(const int name)
 {
   switch (name)
   {
   case KEY2Token::NS_URI_KEY | KEY2Token::master_slide :
-    return makeContext<MasterSlideElement>(getState());
+    return makeContext<SlideElement>(getState(), true);
   default:
     break;
   }
@@ -992,6 +1208,11 @@ IWORKXMLContextPtr_t MasterSlidesElement::element(const int name)
   return IWORKXMLContextPtr_t();
 }
 
+void MasterSlidesElement::endOfElement()
+{
+  if (isCollector())
+    getCollector().endSlides();
+}
 }
 
 namespace
@@ -1084,216 +1305,6 @@ void ThemeListElement::endOfElement()
 namespace
 {
 
-class NotesElement : public KEY2XMLElementContextBase
-{
-public:
-  explicit NotesElement(KEY2ParserState &state);
-
-private:
-  void startOfElement() override;
-  IWORKXMLContextPtr_t element(int name) override;
-  void endOfElement() override;
-};
-
-NotesElement::NotesElement(KEY2ParserState &state)
-  : KEY2XMLElementContextBase(state)
-{
-}
-
-void NotesElement::startOfElement()
-{
-  if (isCollector())
-  {
-    assert(!getState().m_currentText);
-    getState().m_currentText = getCollector().createText(getState().m_langManager);
-  }
-}
-
-IWORKXMLContextPtr_t NotesElement::element(const int name)
-{
-  switch (name)
-  {
-  case IWORKToken::text_storage | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKTextStorageElement>(getState());
-  default:
-    break;
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-void NotesElement::endOfElement()
-{
-  if (isCollector())
-  {
-    getCollector().collectText(getState().m_currentText);
-    getState().m_currentText.reset();
-    getCollector().collectNote();
-  }
-}
-
-}
-
-namespace
-{
-
-class StickyNotesElement : public KEY2XMLElementContextBase
-{
-public:
-  explicit StickyNotesElement(KEY2ParserState &state);
-
-private:
-  IWORKXMLContextPtr_t element(int name) override;
-};
-
-StickyNotesElement::StickyNotesElement(KEY2ParserState &state)
-  : KEY2XMLElementContextBase(state)
-{
-}
-
-IWORKXMLContextPtr_t StickyNotesElement::element(const int name)
-{
-  switch (name)
-  {
-  case KEY2Token::NS_URI_KEY | KEY2Token::sticky_note :
-    return makeContext<StickyNoteElement>(getState());
-  default:
-    break;
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-}
-
-namespace
-{
-
-class SlideElement : public KEY2XMLElementContextBase
-{
-public:
-  explicit SlideElement(KEY2ParserState &state);
-
-private:
-  void startOfElement() override;
-  IWORKXMLContextPtr_t element(int name) override;
-  void endOfElement() override;
-
-private:
-  optional<ID_t> m_styleRef;
-};
-
-SlideElement::SlideElement(KEY2ParserState &state)
-  : KEY2XMLElementContextBase(state)
-  , m_styleRef()
-{
-}
-
-void SlideElement::startOfElement()
-{
-  if (isCollector())
-    getCollector().startPage();
-}
-
-IWORKXMLContextPtr_t SlideElement::element(const int name)
-{
-  switch (name)
-  {
-  case KEY2Token::NS_URI_KEY | KEY2Token::notes :
-    return makeContext<NotesElement>(getState());
-  case KEY2Token::NS_URI_KEY | KEY2Token::page :
-    return makeContext<PageElement>(getState());
-  case KEY2Token::NS_URI_KEY | KEY2Token::style_ref :
-    return makeContext<IWORKRefContext>(getState(), m_styleRef);
-  case KEY2Token::NS_URI_KEY | KEY2Token::stylesheet :
-    return makeContext<StylesheetElement>(getState());
-  case KEY2Token::NS_URI_KEY | KEY2Token::body_placeholder :
-    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_BODY);
-  case KEY2Token::NS_URI_KEY | KEY2Token::object_placeholder :
-    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_OBJECT);
-  case KEY2Token::NS_URI_KEY | KEY2Token::slide_number_placeholder :
-    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_SLIDENUMBER);
-  case KEY2Token::NS_URI_KEY | KEY2Token::title_placeholder :
-    return makeContext<PlaceholderContext>(getState(), PLACEHOLDER_TITLE);
-  case KEY2Token::NS_URI_KEY | KEY2Token::sticky_notes :
-    return makeContext<StickyNotesElement>(getState());
-  default:
-    break;
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-void SlideElement::endOfElement()
-{
-  if (isCollector())
-  {
-    if (m_styleRef)
-    {
-      const IWORKStyleMap_t::const_iterator it = getState().getDictionary().m_slideStyles.find(get(m_styleRef));
-      if (it != getState().getDictionary().m_slideStyles.end())
-        getCollector().setSlideStyle(it->second);
-      else
-      {
-        ETONYEK_DEBUG_MSG(("SlideElement::endOfElement[KEY2Parser.cpp]: unknown style %s\n", get(m_styleRef).c_str()));
-      }
-    }
-    getCollector().collectPage();
-    getCollector().endPage();
-  }
-}
-
-}
-
-namespace
-{
-
-class SlideListElement : public KEY2XMLElementContextBase
-{
-public:
-  explicit SlideListElement(KEY2ParserState &state);
-
-private:
-  void startOfElement() override;
-  IWORKXMLContextPtr_t element(int name) override;
-  void endOfElement() override;
-};
-
-SlideListElement::SlideListElement(KEY2ParserState &state)
-  : KEY2XMLElementContextBase(state)
-{
-}
-
-void SlideListElement::startOfElement()
-{
-  if (isCollector())
-    getCollector().startSlides();
-}
-
-IWORKXMLContextPtr_t SlideListElement::element(const int name)
-{
-  switch (name)
-  {
-  case KEY2Token::NS_URI_KEY | KEY2Token::slide :
-    return makeContext<SlideElement>(getState());
-  default:
-    break;
-  }
-
-  return IWORKXMLContextPtr_t();
-}
-
-void SlideListElement::endOfElement()
-{
-  if (isCollector())
-    getCollector().endSlides();
-}
-
-}
-
-namespace
-{
-
 class PresentationElement : public KEY2XMLElementContextBase
 {
 public:
@@ -1373,7 +1384,10 @@ IWORKXMLContextPtr_t PresentationElement::element(const int name)
 void PresentationElement::endOfElement()
 {
   if (isCollector())
+  {
+    getCollector().sendSlides(getState().getDictionary().m_slides);
     getCollector().endDocument();
+  }
 }
 
 }

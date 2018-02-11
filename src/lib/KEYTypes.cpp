@@ -33,6 +33,13 @@ KEYPlaceholder::KEYPlaceholder()
 {
 }
 
+KEYSlide::KEYSlide()
+  : m_name()
+  , m_content()
+  , m_style()
+  , m_masterSlide()
+{
+}
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

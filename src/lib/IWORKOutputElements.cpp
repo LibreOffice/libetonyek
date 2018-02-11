@@ -74,6 +74,14 @@ public:
   void write(IWORKDocumentInterface *iface) const override;
 };
 
+class CloseGroupElement : public IWORKOutputElement
+{
+public:
+  CloseGroupElement() {}
+  ~CloseGroupElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+};
+
 class CloseHeaderElement : public IWORKOutputElement
 {
 public:
@@ -359,6 +367,17 @@ private:
   librevenge::RVNGPropertyList m_propList;
 };
 
+class OpenGroupElement : public IWORKOutputElement
+{
+public:
+  OpenGroupElement(const librevenge::RVNGPropertyList &propList) :
+    m_propList(propList) {}
+  ~OpenGroupElement() {}
+  void write(IWORKDocumentInterface *iface) const;
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
 class OpenHeaderElement : public IWORKOutputElement
 {
 public:
@@ -554,6 +573,12 @@ void CloseFrameElement::write(IWORKDocumentInterface *iface) const
     iface->closeFrame();
 }
 
+void CloseGroupElement::write(IWORKDocumentInterface *iface) const
+{
+  if (iface)
+    iface->closeGroup();
+}
+
 void CloseHeaderElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
@@ -740,6 +765,12 @@ void OpenFrameElement::write(IWORKDocumentInterface *iface) const
     iface->openFrame(m_propList);
 }
 
+void OpenGroupElement::write(IWORKDocumentInterface *iface) const
+{
+  if (iface)
+    iface->openGroup(m_propList);
+}
+
 void OpenHeaderElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
@@ -882,6 +913,11 @@ void IWORKOutputElements::addCloseFootnote()
 void IWORKOutputElements::addCloseFrame()
 {
   m_elements.push_back(make_shared<CloseFrameElement>());
+}
+
+void IWORKOutputElements::addCloseGroup()
+{
+  m_elements.push_back(make_shared<CloseGroupElement>());
 }
 
 void IWORKOutputElements::addCloseHeader()
@@ -1032,6 +1068,11 @@ void IWORKOutputElements::addOpenFootnote(const librevenge::RVNGPropertyList &pr
 void IWORKOutputElements::addOpenFrame(const librevenge::RVNGPropertyList &propList)
 {
   m_elements.push_back(make_shared<OpenFrameElement>(propList));
+}
+
+void IWORKOutputElements::addOpenGroup(const librevenge::RVNGPropertyList &propList)
+{
+  m_elements.push_back(make_shared<OpenGroupElement>(propList));
 }
 
 void IWORKOutputElements::addOpenHeader(const librevenge::RVNGPropertyList &propList)

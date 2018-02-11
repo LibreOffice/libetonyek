@@ -12,6 +12,8 @@
 
 #include "IWAParser.h"
 
+#include "KEYTypes_fwd.h"
+
 namespace libetonyek
 {
 
@@ -42,6 +44,7 @@ private:
 private:
   KEYCollector &m_collector;
 
+  mutable std::deque<KEYSlidePtr_t> m_slides;
   mutable StyleMap_t m_slideStyles;
 };
 

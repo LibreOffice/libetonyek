@@ -36,6 +36,7 @@ using std::string;
 KEY6Parser::KEY6Parser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package, KEYCollector &collector)
   : IWAParser(fragments, package, collector)
   , m_collector(collector)
+  , m_slides()
   , m_slideStyles()
 {
 }
@@ -79,6 +80,8 @@ bool KEY6Parser::parsePresentation(const unsigned id)
     }
   }
   m_collector.endSlides();
+
+  m_collector.sendSlides(m_slides);
   m_collector.endDocument();
   return success;
 }
@@ -111,13 +114,13 @@ bool KEY6Parser::parseSlide(const unsigned id, const bool master)
 
   m_collector.startLayer();
 
+  IWORKStylePtr_t style;
+  const optional<unsigned> &styleRef = readRef(get(msg), 1);
+  if (styleRef)
+    style = querySlideStyle(get(styleRef));
+  m_collector.setSlideStyle(style);
   if (!master)
   {
-    IWORKStylePtr_t style;
-    const optional<unsigned> &styleRef = readRef(get(msg), 1);
-    if (styleRef)
-      style = querySlideStyle(get(styleRef));
-    m_collector.setSlideStyle(style);
     const optional<unsigned> &titlePlaceholderRef = readRef(get(msg), 5);
     if (titlePlaceholderRef)
       parsePlaceholder(get(titlePlaceholderRef));
@@ -139,10 +142,12 @@ bool KEY6Parser::parseSlide(const unsigned id, const bool master)
 
   if (!master)
   {
-    m_collector.collectPage();
+    KEYSlidePtr_t slide=m_collector.collectSlide();
     m_collector.endPage();
-  }
 
+    if (!master && slide)
+      m_slides.push_back(slide);
+  }
   return true;
 }
 

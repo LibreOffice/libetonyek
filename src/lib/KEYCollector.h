@@ -33,7 +33,7 @@ public:
 
   KEYLayerPtr_t collectLayer();
   void insertLayer(const KEYLayerPtr_t &layer);
-  void collectPage();
+  KEYSlidePtr_t collectSlide();
 
   KEYPlaceholderPtr_t collectTextPlaceholder(const IWORKStylePtr_t &style, bool title);
   void insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder);
@@ -47,6 +47,7 @@ public:
   // helper functions
 
   void startDocument();
+  void sendSlides(const std::deque<KEYSlidePtr_t> &slides);
   void endDocument();
 
   void startSlides();
@@ -60,32 +61,19 @@ public:
   void endLayer();
 
 protected:
-  bool m_paint;
+  bool m_inSlides;
 
 private:
-  struct Slide
-  {
-    Slide()
-      : m_content()
-      , m_style()
-    {
-    }
-    IWORKOutputElements m_content;
-    IWORKStylePtr_t m_style;
-  };
-
-private:
+  void insertSlide(const KEYSlidePtr_t &slide, bool isMaster, const boost::optional<std::string> &pageName=boost::none);
   void drawTable() override;
   void drawMedia(double x, double y, const librevenge::RVNGPropertyList &data) override;
   void fillShapeProperties(librevenge::RVNGPropertyList &props) override;
   void drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox) override;
 
-  void writeSlide(const Slide &slide);
-
 private:
   IWORKSize m_size;
 
-  std::deque<Slide> m_slides;
+  KEYSlidePtr_t m_currentSlide;
   IWORKOutputElements m_notes;
   IWORKOutputElements m_stickyNotes;
 

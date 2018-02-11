@@ -324,16 +324,13 @@ void fillGraphicProps(const IWORKStylePtr_t style, RVNGPropertyList &props, bool
         {
           props.insert(marker==0 ? "draw:marker-start-path" : "draw:marker-end-path", finalStr.c_str());
           std::stringstream s;
+          // checkme: normally viewbox's componant must be integer...
           s << bdbox[0] << " " << bdbox[1] << " " << bdbox[2] << " "<< bdbox[3];
           props.insert(marker==0 ? "draw:marker-start-viewbox" : "draw:marker-end-viewbox", s.str().c_str());
           if (lineEnd.m_scale>0 && bdbox[2]>bdbox[0]) // unsure
             props.insert(marker==0 ? "draw:marker-start-width" : "draw:marker-end-width",
                          1.5*(bdbox[2]-bdbox[0])*lineEnd.m_scale, librevenge::RVNG_POINT);
-          if (lineEnd.m_endPoint && bdbox[3]>bdbox[1])
-            props.insert(marker==0 ? "draw:marker-start-center" : "draw:marker-end-center",
-                         (lineEnd.m_endPoint->m_y-bdbox[3])/(bdbox[1]-bdbox[3]), librevenge::RVNG_GENERIC);
-          else
-            props.insert(marker==0 ? "draw:marker-start-center" : "draw:marker-end-center", true);
+          props.insert(marker==0 ? "draw:marker-start-center" : "draw:marker-end-center", true);
         }
       }
     }
