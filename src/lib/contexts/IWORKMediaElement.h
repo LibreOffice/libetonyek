@@ -10,7 +10,9 @@
 #ifndef IWORKMEDIAELEMENT_H_INCLUDED
 #define IWORKMEDIAELEMENT_H_INCLUDED
 
-#include "IWORKTypes_fwd.h"
+#include <boost/optional.hpp>
+
+#include "IWORKTypes.h"
 #include "IWORKXMLContextBase.h"
 
 namespace libetonyek
@@ -28,7 +30,13 @@ private:
 
 private:
   IWORKMediaContentPtr_t m_content;
+  IWORKDataPtr_t m_movieData;
+  IWORKMediaContentPtr_t m_audioOnlyImage;
+  IWORKMediaContentPtr_t m_posterImage;
+  boost::optional<ID_t> m_audioOnlyImageRef;
+  IWORKStylePtr_t m_style;
   IWORKGeometryPtr_t m_cropGeometry;
+  boost::optional<IWORKSize> m_placeholderSize;
 };
 
 }

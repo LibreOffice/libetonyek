@@ -15,6 +15,7 @@
 #include "IWORKLineElement.h"
 #include "IWORKMediaElement.h"
 #include "IWORKShapeContext.h"
+#include "IWORKTableInfoElement.h"
 #include "IWORKTabularInfoElement.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
@@ -59,7 +60,11 @@ IWORKXMLContextPtr_t IWORKGroupElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::shape :
     ensureClosed();
     return makeContext<IWORKShapeContext>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::table_info :
+    ensureClosed();
+    return makeContext<IWORKTableInfoElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
+    ensureClosed();
     return makeContext<IWORKTabularInfoElement>(getState());
   default:
     break;

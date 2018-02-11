@@ -249,7 +249,10 @@ void KEYCollector::sendSlides(const std::deque<KEYSlidePtr_t> &slides)
           do
           {
             std::stringstream s;
-            s << "MasterSlide" << nameId++;
+            if (slide->m_masterSlide->m_name)
+              s << get(slide->m_masterSlide->m_name) << nameId++;
+            else
+              s << "MasterSlide" << nameId++;
             name=s.str();
           }
           while (nameSet.find(get(name))!=nameSet.end());

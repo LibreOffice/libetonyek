@@ -90,6 +90,7 @@ __multilingual,__multilingual
 a,a
 align,align
 alignment,alignment
+alpha-mask-path,alpha_mask_path
 amt,amt
 angle,angle
 angle-gradient,angle_gradient
@@ -105,6 +106,8 @@ aspectRatioLocked,aspectRatioLocked
 attachment,attachment
 attachment-ref,attachment_ref
 attachments,attachments
+audio-only-image,audio_only_image
+audio-only-image-ref,audio_only_image_ref
 authors,authors
 b,b
 baselineShift,baselineShift
@@ -377,6 +380,8 @@ locked,locked
 lower-alpha,lower_alpha
 lower-roman,lower_roman
 m,m
+main-movie,main_movie
+main-movie-ref,main_movie_ref
 manually-sized,manually_sized
 mark,mark
 masking-shape-path-source,masking_shape_path_source
@@ -448,6 +453,7 @@ point,point
 point-path,point_path
 pos,pos
 position,position
+poster-image,poster_image
 preferred-height,preferred_height
 preferred-width,preferred_width
 projects,projects
@@ -599,6 +605,7 @@ tocstyle,tocstyle
 tocstyle-ref,tocstyle_ref
 tocStyle,tocStyle
 top,top
+traced-path,traced_path
 tracking,tracking
 transform-gradient,transform_gradient
 true,true_

@@ -971,34 +971,21 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
 
       librevenge::RVNGPropertyList props;
       glm::dvec3 pos = trafo * glm::dvec3(0, 0, 1);
-      double width = media->m_geometry->m_size.m_width;
-      double height = media->m_geometry->m_size.m_height;
-      glm::dvec3 dim = trafo * glm::dvec3(width, height, 0);
-      if (media->m_cropGeometry && (media->m_cropGeometry->m_size.m_width<media->m_geometry->m_size.m_width ||
-                                    media->m_cropGeometry->m_size.m_height<media->m_geometry->m_size.m_height))
+      glm::dvec3 dim = trafo * glm::dvec3(media->m_geometry->m_size.m_width, media->m_geometry->m_size.m_height, 0);
+      if (media->m_cropGeometry)
       {
         /* cropping seems to pose problem to LibreOffice because
            sometimes it does not use the real picture size to clip
            the picture (or I make some mistakes).
 
-           So for now, we only resize the picture to its final size */
-#if 0
-        double decalPos[]= {media->m_cropGeometry->m_position.m_x-media->m_geometry->m_position.m_x,
-                            media->m_cropGeometry->m_position.m_y-media->m_geometry->m_position.m_y
-                           };
-        if (decalPos[0]<0) decalPos[0]=0;
-        if (decalPos[0]<1) decalPos[1]=0;
-        const double decalSize[]= {media->m_cropGeometry->m_size.m_width-media->m_geometry->m_size.m_width,
-                                   media->m_cropGeometry->m_size.m_height-media->m_geometry->m_size.m_height
-                                  };
-        std::stringstream s;
-        s << "rect(" << pt2in(decalPos[1]) << "in, " << pt2in(decalPos[0]) << "in, "
-          << pt2in(-decalSize[1]-decalPos[1]) << "in, " << pt2in(-decalSize[0]-decalPos[0]) << "in)";
-        props.insert("fo:clip", s.str().c_str());
-#endif
-        width = media->m_cropGeometry->m_size.m_width;
-        height = media->m_cropGeometry->m_size.m_height;
-        dim = trafo * glm::dvec3(width, height, 0);
+           So for now, we only reset the origin and resize the picture to its final size */
+        pos = glm::dvec3(media->m_cropGeometry->m_position.m_x, media->m_cropGeometry->m_position.m_y, 1);
+        dim = glm::dvec3(media->m_cropGeometry->m_size.m_width, media->m_cropGeometry->m_size.m_height, 0);
+        if (m_accumulateTransform)
+        {
+          pos = m_levelStack.top().m_previousTrafo * pos;
+          dim = trafo * dim;
+        }
       }
 
       // check if the image is flipped, ...

@@ -11,6 +11,7 @@
 
 #include <boost/optional.hpp>
 
+#include "IWORKBinaryElement.h"
 #include "IWORKCollector.h"
 #include "IWORKDataElement.h"
 #include "IWORKDictionary.h"
@@ -18,6 +19,8 @@
 #include "IWORKGeometryElement.h"
 #include "IWORKParser.h"
 #include "IWORKRefContext.h"
+#include "IWORKSizeElement.h"
+#include "IWORKStyleContainer.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 
@@ -53,8 +56,12 @@ IWORKXMLContextPtr_t ImageMediaElement::element(const int name)
 {
   switch (name)
   {
+  case IWORKToken::NS_URI_SF | IWORKToken::alpha_mask_path : // README
+    break;
   case IWORKToken::NS_URI_SF | IWORKToken::filtered_image :
     return makeContext<IWORKFilteredImageElement>(getState(), m_content);
+  case IWORKToken::NS_URI_SF | IWORKToken::traced_path : // README
+    break;
   default:
     ETONYEK_DEBUG_MSG(("ImageMediaElement::element[IWORKMediaElement.cpp]: unknown element %d\n", name));
   }
@@ -110,6 +117,10 @@ void OtherDatasElement::endOfElement()
     const IWORKDataMap_t::const_iterator it = getState().getDictionary().m_data.find(get(m_dataRef));
     if (getState().getDictionary().m_data.end() != it)
       m_data = it->second;
+    else
+    {
+      ETONYEK_DEBUG_MSG(("OtherDatasElement::element[IWORKMediaElement.cpp]: can not find %s\n", get(m_dataRef).c_str()));
+    }
   }
 }
 
@@ -125,14 +136,19 @@ public:
 
 private:
   IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKDataPtr_t &m_data;
+  IWORKDataPtr_t m_otherData;
+  optional<ID_t> m_mainMovieRef;
 };
 
 SelfContainedMovieElement::SelfContainedMovieElement(IWORKXMLParserState &state, IWORKDataPtr_t &data)
   : IWORKXMLElementContextBase(state)
   , m_data(data)
+  , m_otherData()
+  , m_mainMovieRef()
 {
 }
 
@@ -140,8 +156,12 @@ IWORKXMLContextPtr_t SelfContainedMovieElement::element(const int name)
 {
   switch (name)
   {
+  case IWORKToken::NS_URI_SF | IWORKToken::main_movie :
+    return makeContext<IWORKDataElement>(getState(), m_data);
+  case IWORKToken::NS_URI_SF | IWORKToken::main_movie_ref :
+    return makeContext<IWORKRefContext>(getState(), m_mainMovieRef);
   case IWORKToken::NS_URI_SF | IWORKToken::other_datas :
-    return makeContext<OtherDatasElement>(getState(), m_data);
+    return makeContext<OtherDatasElement>(getState(), m_otherData);
   default:
     ETONYEK_DEBUG_MSG(("SelfContainedMovieElement::element[IWORKMediaElement.cpp]: unknown element %d\n", name));
   }
@@ -149,6 +169,25 @@ IWORKXMLContextPtr_t SelfContainedMovieElement::element(const int name)
   return IWORKXMLContextPtr_t();
 }
 
+void SelfContainedMovieElement::endOfElement()
+{
+  if (m_data)
+    return;
+  if (m_mainMovieRef)
+  {
+    const IWORKDataMap_t::const_iterator it = getState().getDictionary().m_data.find(get(m_mainMovieRef));
+    if (getState().getDictionary().m_data.end() != it)
+    {
+      m_data = it->second;
+      return;
+    }
+    else
+    {
+      ETONYEK_DEBUG_MSG(("SelfContainedMovieElement::element[IWORKMediaElement.cpp]: can not find %s\n", get(m_mainMovieRef).c_str()));
+    }
+  }
+  m_data=m_otherData;
+}
 }
 
 namespace
@@ -166,12 +205,18 @@ private:
 private:
   IWORKMediaContentPtr_t &m_content;
   IWORKDataPtr_t m_data;
+  IWORKMediaContentPtr_t m_audioOnlyImage;
+  IWORKMediaContentPtr_t m_posterImage;
+  boost::optional<ID_t> m_audioOnlyImageRef;
 };
 
 MovieMediaElement::MovieMediaElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
   : IWORKXMLElementContextBase(state)
   , m_content(content)
   , m_data()
+  , m_audioOnlyImage()
+  , m_posterImage()
+  , m_audioOnlyImageRef()
 {
 }
 
@@ -179,6 +224,12 @@ IWORKXMLContextPtr_t MovieMediaElement::element(const int name)
 {
   switch (name)
   {
+  case IWORKToken::NS_URI_SF | IWORKToken::audio_only_image :
+    return makeContext<IWORKBinaryElement>(getState(), m_audioOnlyImage);
+  case IWORKToken::NS_URI_SF | IWORKToken::audio_only_image_ref :
+    return makeContext<IWORKRefContext>(getState(), m_audioOnlyImageRef);
+  case IWORKToken::NS_URI_SF | IWORKToken::poster_image :
+    return makeContext<IWORKBinaryElement>(getState(), m_posterImage);
   case IWORKToken::NS_URI_SF | IWORKToken::self_contained_movie :
     return makeContext<SelfContainedMovieElement>(getState(), m_data);
   default:
@@ -190,8 +241,26 @@ IWORKXMLContextPtr_t MovieMediaElement::element(const int name)
 
 void MovieMediaElement::endOfElement()
 {
-  m_content.reset(new IWORKMediaContent());
-  m_content->m_data = m_data;
+  if (m_data)
+  {
+    m_content.reset(new IWORKMediaContent());
+    m_content->m_data = m_data;
+    return;
+  }
+  if (m_posterImage)
+    m_content = m_posterImage;
+  else if (m_audioOnlyImage)
+    m_content = m_audioOnlyImage;
+  else if (m_audioOnlyImageRef)
+  {
+    const IWORKMediaContentMap_t::const_iterator it = getState().getDictionary().m_binaries.find(get(m_audioOnlyImageRef));
+    if (getState().getDictionary().m_binaries.end() != it)
+      m_content = it->second;
+    else
+    {
+      ETONYEK_DEBUG_MSG(("MovieMediaElement::endOfElement[IWORKMediaElement.cpp]: can not find image %s\n", get(m_audioOnlyImageRef).c_str()));
+    }
+  }
 }
 
 }
@@ -239,10 +308,21 @@ IWORKXMLContextPtr_t ContentElement::element(const int name)
 
 }
 
+namespace
+{
+typedef IWORKStyleContainer<IWORKToken::NS_URI_SF | IWORKToken::graphic_style, IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref> GraphicStyleContext;
+}
+
 IWORKMediaElement::IWORKMediaElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_content()
+  , m_movieData()
+  , m_audioOnlyImage()
+  , m_posterImage()
+  , m_audioOnlyImageRef()
+  , m_style()
   , m_cropGeometry()
+  , m_placeholderSize()
 {
 }
 
@@ -256,21 +336,39 @@ IWORKXMLContextPtr_t IWORKMediaElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::geometry :
-    return makeContext<IWORKGeometryElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::audio_only_image :
+    return makeContext<IWORKBinaryElement>(getState(), m_audioOnlyImage);
+  case IWORKToken::NS_URI_SF | IWORKToken::audio_only_image_ref :
+    return makeContext<IWORKRefContext>(getState(), m_audioOnlyImageRef);
   case IWORKToken::NS_URI_SF | IWORKToken::content :
     return makeContext<ContentElement>(getState(), m_content);
   case IWORKToken::NS_URI_SF | IWORKToken::crop_geometry :
     return makeContext<IWORKGeometryElement>(getState(), m_cropGeometry);
-  default:
+  case IWORKToken::NS_URI_SF | IWORKToken::geometry :
+    return makeContext<IWORKGeometryElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::masking_shape_path_source :
   {
     static bool first=true;
     if (first)
     {
+      ETONYEK_DEBUG_MSG(("IWORKMediaElement::element: find some masking shape's paths\n"));
       first=false;
-      ETONYEK_DEBUG_MSG(("IWORKMediaElement::element: find some unknown elements\n"));
     }
+    break;
   }
+  case IWORKToken::NS_URI_SF | IWORKToken::placeholder_size : // USEME
+    return makeContext<IWORKSizeElement>(getState(),m_placeholderSize);
+  case IWORKToken::NS_URI_SF | IWORKToken::poster_image :
+    return makeContext<IWORKBinaryElement>(getState(), m_posterImage);
+  case IWORKToken::NS_URI_SF | IWORKToken::self_contained_movie :
+    return makeContext<SelfContainedMovieElement>(getState(), m_movieData);
+  case IWORKToken::NS_URI_SF | IWORKToken::style : // USEME
+    return makeContext<GraphicStyleContext>(getState(), m_style, getState().getDictionary().m_graphicStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::wrap : // readme
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKMediaElement::element: find some unknown elements\n"));
+    break;
   }
 
   return IWORKXMLContextPtr_t();
@@ -278,11 +376,32 @@ IWORKXMLContextPtr_t IWORKMediaElement::element(const int name)
 
 void IWORKMediaElement::endOfElement()
 {
-  if (isCollector())
+  if (!isCollector())
+    return;
+  if (!m_content)
   {
-    getCollector().collectMedia(m_content, m_cropGeometry);
-    getCollector().endLevel();
+    if (m_movieData)
+    {
+      m_content.reset(new IWORKMediaContent());
+      m_content->m_data = m_movieData;
+    }
+    else if (m_posterImage)
+      m_content = m_posterImage;
+    else if (m_audioOnlyImage)
+      m_content = m_audioOnlyImage;
+    else if (m_audioOnlyImageRef)
+    {
+      const IWORKMediaContentMap_t::const_iterator it = getState().getDictionary().m_binaries.find(get(m_audioOnlyImageRef));
+      if (getState().getDictionary().m_binaries.end() != it)
+        m_content = it->second;
+      else
+      {
+        ETONYEK_DEBUG_MSG(("IWORKMediaElement::endOfElement: can not find image %s\n", get(m_audioOnlyImageRef).c_str()));
+      }
+    }
   }
+  getCollector().collectMedia(m_content, m_cropGeometry);
+  getCollector().endLevel();
 }
 
 }
