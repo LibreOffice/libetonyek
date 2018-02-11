@@ -24,6 +24,7 @@
 #include "IWORKText.h"
 #include "IWORKTextStorageElement.h"
 #include "IWORKToken.h"
+#include "IWORKWrapElement.h"
 #include "IWORKXMLParserState.h"
 #include "IWORKXMLContextBase.h"
 
@@ -650,6 +651,7 @@ void TableInfoTableElement::endOfElement()
 IWORKTableInfoElement::IWORKTableInfoElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_style()
+  , m_wrap()
 {
 }
 
@@ -671,8 +673,8 @@ IWORKXMLContextPtr_t IWORKTableInfoElement::element(const int name)
     return makeContext<TableStyleContext>(getState(), m_style, getState().getDictionary().m_tableStyles);
   case IWORKToken::tableInfoTable | IWORKToken::NS_URI_SF :
     return makeContext<TableInfoTableElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::wrap : // TODO readme
-    return IWORKXMLContextPtr_t();
+  case IWORKToken::NS_URI_SF | IWORKToken::wrap : // USEME
+    return makeContext<IWORKWrapElement>(getState(), m_wrap);
   default:
     ETONYEK_DEBUG_MSG(("IWORKTableInfoElement::element: find some unknown element\n"));
   }

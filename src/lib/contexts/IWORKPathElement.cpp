@@ -19,6 +19,7 @@
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKPositionElement.h"
+#include "IWORKRefContext.h"
 #include "IWORKSizeElement.h"
 #include "IWORKToken.h"
 #include "IWORKTokenizer.h"
@@ -267,35 +268,6 @@ void ScalarPathElement::endOfElement()
 namespace
 {
 
-class BezierRefElement : public IWORKXMLEmptyContextBase
-{
-public:
-  explicit BezierRefElement(IWORKXMLParserState &state);
-
-private:
-  void endOfElement() override;
-};
-
-BezierRefElement::BezierRefElement(IWORKXMLParserState &state)
-  : IWORKXMLEmptyContextBase(state)
-{
-}
-
-void BezierRefElement::endOfElement()
-{
-  if (getRef() && isCollector())
-  {
-    const IWORKPathMap_t::const_iterator it = getState().getDictionary().m_beziers.find(get(getRef()));
-    if (getState().getDictionary().m_beziers.end() != it)
-      getCollector().collectBezier(it->second);
-  }
-}
-
-}
-
-namespace
-{
-
 class BezierPathElement : public IWORKXMLElementContextBase
 {
 public:
@@ -304,10 +276,15 @@ public:
 private:
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
+
+  IWORKPathPtr_t m_path;
+  boost::optional<ID_t> m_ref;
 };
 
 BezierPathElement::BezierPathElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
+  , m_path()
+  , m_ref()
 {
 }
 
@@ -316,9 +293,9 @@ IWORKXMLContextPtr_t BezierPathElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::bezier :
-    return makeContext<IWORKBezierElement>(getState());
+    return makeContext<IWORKBezierElement>(getState(), m_path);
   case IWORKToken::NS_URI_SF | IWORKToken::bezier_ref :
-    return makeContext<BezierRefElement>(getState());
+    return makeContext<IWORKRefContext>(getState(), m_ref);
   default:
     ETONYEK_DEBUG_MSG(("BezierPathElement::element[IWORKPathElement.cpp]: find unknown element\n"));
   }
@@ -328,8 +305,20 @@ IWORKXMLContextPtr_t BezierPathElement::element(const int name)
 
 void BezierPathElement::endOfElement()
 {
-  if (isCollector())
-    getCollector().collectBezierPath();
+  if (!isCollector())
+    return;
+  if (m_ref)
+  {
+    const IWORKPathMap_t::const_iterator it = getState().getDictionary().m_beziers.find(get(m_ref));
+    if (getState().getDictionary().m_beziers.end() != it)
+      m_path=it->second;
+    else
+    {
+      ETONYEK_DEBUG_MSG(("BezierPathElement::endOfElement[IWORKPathElement.cpp]: can not find bezier path %s\n", get(m_ref).c_str()));
+    }
+  }
+  getCollector().collectBezier(m_path);
+  getCollector().collectBezierPath();
 }
 
 }

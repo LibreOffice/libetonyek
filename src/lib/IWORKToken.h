@@ -186,6 +186,8 @@ enum
   error_warning_mapping,
   evenPageMaster,
   extent,
+  external_text_wrap,
+  externalTextWrap,
   f,
   filename,
   fill,

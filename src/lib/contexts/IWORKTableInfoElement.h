@@ -12,6 +12,7 @@
 
 #include <boost/optional.hpp>
 #include "IWORKStyle_fwd.h"
+#include "IWORKTypes.h"
 
 #include "IWORKXMLContextBase.h"
 
@@ -28,6 +29,7 @@ private:
   virtual void endOfElement();
 
   IWORKStylePtr_t m_style;
+  boost::optional<IWORKWrap> m_wrap;
 };
 }
 

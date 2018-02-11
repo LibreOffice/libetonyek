@@ -18,6 +18,7 @@
 #include "IWORKTable.h"
 #include "IWORKTabularModelElement.h"
 #include "IWORKToken.h"
+#include "IWORKWrapElement.h"
 #include "IWORKXMLParserState.h"
 #include "IWORKXMLContextBase.h"
 #include "IWORKStyle.h"
@@ -35,6 +36,7 @@ IWORKTabularInfoElement::IWORKTabularInfoElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_tableRef()
   , m_style()
+  , m_wrap()
 {
 }
 
@@ -59,8 +61,8 @@ IWORKXMLContextPtr_t IWORKTabularInfoElement::element(const int name)
     return makeContext<IWORKTabularModelElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_model_ref :
     return makeContext<IWORKRefContext>(getState(), m_tableRef);
-  case IWORKToken::NS_URI_SF | IWORKToken::wrap : // TODO readme
-    return IWORKXMLContextPtr_t();
+  case IWORKToken::NS_URI_SF | IWORKToken::wrap : // USEME
+    return makeContext<IWORKWrapElement>(getState(), m_wrap);
   default:
     ETONYEK_DEBUG_MSG(("IWORKTabularInfoElement::element: find some unknown element\n"));
   }

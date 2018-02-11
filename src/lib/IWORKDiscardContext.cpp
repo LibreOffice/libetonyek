@@ -37,6 +37,7 @@ struct IWORKDiscardContext::Data
     , m_mediaContent()
     , m_tabStops()
     , m_isShadow()
+    , m_path()
     , m_propertyMap()
     , m_listLabelGeometry()
     , m_listLabelTypeInfo()
@@ -47,6 +48,7 @@ struct IWORKDiscardContext::Data
   IWORKMediaContentPtr_t m_mediaContent;
   IWORKTabStops_t m_tabStops;
   bool m_isShadow;
+  IWORKPathPtr_t m_path;
   IWORKPropertyMap m_propertyMap;
   boost::optional<IWORKListLabelGeometry> m_listLabelGeometry;
   boost::optional<IWORKListLabelTypeInfo_t> m_listLabelTypeInfo;
@@ -79,7 +81,7 @@ IWORKXMLContextPtr_t IWORKDiscardContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::bezier :
-    return makeContext<IWORKBezierElement>(m_state);
+    return makeContext<IWORKBezierElement>(m_state, m_data->m_path);
   case IWORKToken::NS_URI_SF | IWORKToken::binary :
     return makeContext<IWORKBinaryElement>(m_state, m_data->m_mediaContent);
   case IWORKToken::NS_URI_SF | IWORKToken::cell_style :

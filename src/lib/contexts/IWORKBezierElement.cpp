@@ -18,9 +18,9 @@
 namespace libetonyek
 {
 
-IWORKBezierElement::IWORKBezierElement(IWORKXMLParserState &state)
+IWORKBezierElement::IWORKBezierElement(IWORKXMLParserState &state, IWORKPathPtr_t &path)
   : IWORKXMLEmptyContextBase(state)
-  , m_path()
+  , m_path(path)
 {
 }
 
@@ -35,7 +35,7 @@ void IWORKBezierElement::attribute(const int name, const char *const value)
     }
     catch (const IWORKPath::InvalidException &)
     {
-      ETONYEK_DEBUG_MSG(("'%s' is not a valid path\n", value));
+      ETONYEK_DEBUG_MSG(("IWORKBezierElement::attribute: '%s' is not a valid path\n", value));
     }
     break;
   default :
@@ -48,8 +48,6 @@ void IWORKBezierElement::endOfElement()
 {
   if (getId())
     getState().getDictionary().m_beziers[get(getId())] = m_path;
-  if (isCollector())
-    getCollector().collectBezier(m_path);
 }
 
 }

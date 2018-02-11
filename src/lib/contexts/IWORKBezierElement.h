@@ -19,14 +19,14 @@ namespace libetonyek
 class IWORKBezierElement : public IWORKXMLEmptyContextBase
 {
 public:
-  explicit IWORKBezierElement(IWORKXMLParserState &state);
+  IWORKBezierElement(IWORKXMLParserState &state, IWORKPathPtr_t &path);
 
 private:
   void attribute(int name, const char *value) override;
   void endOfElement() override;
 
 private:
-  IWORKPathPtr_t m_path;
+  IWORKPathPtr_t &m_path;
 };
 
 }

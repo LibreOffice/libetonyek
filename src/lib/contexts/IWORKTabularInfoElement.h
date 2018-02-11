@@ -12,6 +12,7 @@
 
 #include <boost/optional.hpp>
 #include "IWORKStyle_fwd.h"
+#include "IWORKTypes.h"
 
 #include "IWORKXMLContextBase.h"
 
@@ -29,6 +30,7 @@ private:
 
   boost::optional<ID_t> m_tableRef;
   IWORKStylePtr_t m_style;
+  boost::optional<IWORKWrap> m_wrap;
 };
 
 }

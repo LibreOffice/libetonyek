@@ -7,37 +7,35 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef IWORKSHAPECONTEXT_H_INCLUDED
-#define IWORKSHAPECONTEXT_H_INCLUDED
+#ifndef IWORKWRAPELEMENT_H_INCLUDED
+#define IWORKWRAPELEMENT_H_INCLUDED
 
 #include <boost/optional.hpp>
 
-#include "IWORKStyle_fwd.h"
 #include "IWORKTypes.h"
 #include "IWORKXMLContextBase.h"
 
 namespace libetonyek
 {
 
-class IWORKShapeContext : public IWORKXMLElementContextBase
+class IWORKWrapElement : public IWORKXMLElementContextBase
 {
 public:
-  explicit IWORKShapeContext(IWORKXMLParserState &state);
+  IWORKWrapElement(IWORKXMLParserState &state, boost::optional<IWORKWrap> &wrap);
 
 protected:
-  void startOfElement() override;
-  void attribute(int name, const char *value) override;
-  IWORKXMLContextPtr_t element(int name) override;
-  void endOfElement() override;
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
 
 private:
-  IWORKStylePtr_t m_style;
-  boost::optional<IWORKWrap> m_wrap;
-  bool m_locked;
+  IWORKWrapElement(const IWORKWrapElement &);
+  IWORKWrapElement &operator=(const IWORKWrapElement &);
+
+  boost::optional<IWORKWrap> &m_wrap;
 };
 
 }
 
-#endif // IWORKSHAPECONTEXT_H_INCLUDED
+#endif // IWORKWRAPELEMENT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

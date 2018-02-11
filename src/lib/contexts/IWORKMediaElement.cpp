@@ -22,6 +22,7 @@
 #include "IWORKSizeElement.h"
 #include "IWORKStyleContainer.h"
 #include "IWORKToken.h"
+#include "IWORKWrapElement.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
@@ -322,6 +323,7 @@ IWORKMediaElement::IWORKMediaElement(IWORKXMLParserState &state)
   , m_audioOnlyImageRef()
   , m_style()
   , m_cropGeometry()
+  , m_wrap()
   , m_placeholderSize()
 {
 }
@@ -364,8 +366,8 @@ IWORKXMLContextPtr_t IWORKMediaElement::element(const int name)
     return makeContext<SelfContainedMovieElement>(getState(), m_movieData);
   case IWORKToken::NS_URI_SF | IWORKToken::style : // USEME
     return makeContext<GraphicStyleContext>(getState(), m_style, getState().getDictionary().m_graphicStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::wrap : // readme
-    break;
+  case IWORKToken::NS_URI_SF | IWORKToken::wrap : // USEME
+    return makeContext<IWORKWrapElement>(getState(), m_wrap);
   default:
     ETONYEK_DEBUG_MSG(("IWORKMediaElement::element: find some unknown elements\n"));
     break;

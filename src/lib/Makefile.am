@@ -305,6 +305,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKUnfilteredElement.cpp \
 	contexts/IWORKUnfilteredElement.h \
 	contexts/IWORKValueContext.h \
+	contexts/IWORKWrapElement.cpp \
+	contexts/IWORKWrapElement.h \
 	contexts/PAG1AnnotationContext.cpp \
 	contexts/PAG1AnnotationContext.h \
 	contexts/PAG1AnnotationElement.cpp \

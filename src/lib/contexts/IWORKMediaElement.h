@@ -36,6 +36,7 @@ private:
   boost::optional<ID_t> m_audioOnlyImageRef;
   IWORKStylePtr_t m_style;
   IWORKGeometryPtr_t m_cropGeometry;
+  boost::optional<IWORKWrap> m_wrap;
   boost::optional<IWORKSize> m_placeholderSize;
 };
 

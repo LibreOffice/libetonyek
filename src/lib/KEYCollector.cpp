@@ -393,7 +393,7 @@ void KEYCollector::fillShapeProperties(librevenge::RVNGPropertyList &)
 
 void KEYCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox, const librevenge::RVNGPropertyList &style)
 {
-  if (!bool(text))
+  if (!bool(text) || text->empty())
     return;
 
   librevenge::RVNGPropertyList props(style);
@@ -414,18 +414,6 @@ void KEYCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &tra
     props.insert("svg:width", pt2in(vec[0]));
     props.insert("svg:height", pt2in(vec[1]));
   }
-
-  IWORKPath path;
-  path.appendMoveTo(0, 0);
-  path.appendLineTo(0, 1);
-  path.appendLineTo(1, 1);
-  path.appendLineTo(1, 0);
-  path.appendClose();
-  path *= trafo;
-
-  librevenge::RVNGPropertyListVector d;
-  path.write(d);
-  props.insert("svg:d", d);
 
   IWORKOutputElements &elements = m_outputManager.getCurrent();
   elements.addStartTextObject(props);

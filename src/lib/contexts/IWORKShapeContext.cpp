@@ -22,6 +22,7 @@
 #include "IWORKStyleContainer.h"
 #include "IWORKTextElement.h"
 #include "IWORKToken.h"
+#include "IWORKWrapElement.h"
 #include "IWORKXMLParserState.h"
 
 namespace libetonyek
@@ -35,6 +36,7 @@ typedef IWORKStyleContainer<IWORKToken::NS_URI_SF | IWORKToken::graphic_style, I
 IWORKShapeContext::IWORKShapeContext(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_style()
+  , m_wrap()
   , m_locked(false)
 {
 }
@@ -87,8 +89,8 @@ IWORKXMLContextPtr_t IWORKShapeContext::element(const int name)
     return makeContext<GraphicStyleContext>(getState(), m_style, getState().getDictionary().m_graphicStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::text :
     return makeContext<IWORKTextElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::wrap : // README
-    return IWORKXMLContextPtr_t();
+  case IWORKToken::NS_URI_SF | IWORKToken::wrap : // USEME
+    return makeContext<IWORKWrapElement>(getState(), m_wrap);
   default:
     ETONYEK_DEBUG_MSG(("IWORKShapeContext::element: find some unknown element\n"));
     break;
