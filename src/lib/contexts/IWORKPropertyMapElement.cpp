@@ -35,7 +35,7 @@
 #include "IWORKPtrPropertyContext.h"
 #include "IWORKRefContext.h"
 #include "IWORKStringElement.h"
-#include "IWORKStrokeElement.h"
+#include "IWORKStrokeContext.h"
 #include "IWORKStyleContainer.h"
 #include "IWORKStyleContext.h"
 #include "IWORKStyleRefContext.h"
@@ -834,13 +834,13 @@ typedef IWORKPropertyContext<property::HeadLineEnd, IWORKLineEndElement, IWORKTo
 typedef RefPropertyContext<property::LayoutMargins, PaddingElement, IWORKToken::NS_URI_SF | IWORKToken::padding, IWORKToken::NS_URI_SF | IWORKToken::padding_ref> LayoutMarginsElement;
 typedef RefPropertyContext<property::LineSpacing, LinespacingElement, IWORKToken::NS_URI_SF | IWORKToken::linespacing, IWORKToken::NS_URI_SF | IWORKToken::linespacing_ref> LineSpacingElement;
 typedef IWORKPropertyContext<property::ParagraphFill, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> ParagraphFillElement;
-typedef RefPropertyContext<property::ParagraphStroke, IWORKStrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke, IWORKToken::NS_URI_SF | IWORKToken::stroke_ref> ParagraphStrokeElement;
+typedef RedirectPropertyContext<property::ParagraphStroke, IWORKStrokeContext> ParagraphStrokeElement;
 typedef IWORKPropertyContext<property::TailLineEnd, IWORKLineEndElement, IWORKToken::NS_URI_SF | IWORKToken::line_end> TailLineEndElement;
 typedef PropertyDateTimeFormatElement<property::SFTCellStylePropertyDateTimeFormat> SFTCellStylePropertyDateTimeFormatElement;
 typedef RefPropertyContext<property::SFTCellStylePropertyDurationFormat, IWORKDurationFormatElement, IWORKToken::NS_URI_SF | IWORKToken::duration_format, IWORKToken::NS_URI_SF | IWORKToken::duration_format_ref> SFTCellStylePropertyDurationFormatElement;
 typedef RefPropertyContext<property::SFTCellStylePropertyNumberFormat, IWORKNumberFormatElement, IWORKToken::NS_URI_SF | IWORKToken::number_format, IWORKToken::NS_URI_SF | IWORKToken::number_format_ref> SFTCellStylePropertyNumberFormatElement;
-typedef RefPropertyContext<property::SFTStrokeProperty, IWORKStrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke, IWORKToken::NS_URI_SF | IWORKToken::stroke_ref> SFTStrokePropertyElement;
-typedef RefPropertyContext<property::Stroke, IWORKStrokeElement, IWORKToken::NS_URI_SF | IWORKToken::stroke, IWORKToken::NS_URI_SF | IWORKToken::stroke_ref> StrokePropertyElement;
+typedef RedirectPropertyContext<property::SFTStrokeProperty, IWORKStrokeContext> SFTStrokePropertyElement;
+typedef RedirectPropertyContext<property::Stroke, IWORKStrokeContext> StrokePropertyElement;
 typedef IWORKPropertyContext<property::TextBackground, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> TextBackgroundElement;
 
 typedef IWORKPtrPropertyContext<property::Geometry, IWORKGeometryElement, IWORKToken::NS_URI_SF | IWORKToken::geometry> GeometryElement;
@@ -1012,7 +1012,7 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphFill :
     return makeContext<ParagraphFillElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphStroke :
-    return makeContext<ParagraphStrokeElement>(getState(), *m_propMap, getState().getDictionary().m_strokes);
+    return makeContext<ParagraphStrokeElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::rightIndent :
     return makeContext<RightIndentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::tailLineEnd :
@@ -1102,7 +1102,7 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::SFTHeaderRowRepeatsProperty :
     return makeContext<SFTHeaderRowRepeatsPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTStrokeProperty :
-    return makeContext<SFTStrokePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_strokes);
+    return makeContext<SFTStrokePropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTTableBandedRowsProperty :
     return makeContext<SFTTableBandedRowsPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceAfter :
@@ -1112,7 +1112,7 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::strikethru :
     return makeContext<StrikethruElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::stroke :
-    return makeContext<StrokePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_strokes);
+    return makeContext<StrokePropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::superscript :
     return makeContext<SuperscriptElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::tabs :

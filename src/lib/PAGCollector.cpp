@@ -298,6 +298,8 @@ void PAGCollector::drawShape(const IWORKShapePtr_t &shape)
     shapeProps.insert("text:anchor-type", "as-char");
     shapeProps.insert("style:vertical-pos", "bottom");
     shapeProps.insert("style:vertical-rel", "text");
+    shapeProps.insert("style:run-through", "foreground");
+    shapeProps.insert("style:wrap","run-through");
   }
   else
     fillShapeProperties(shapeProps);

@@ -127,6 +127,7 @@ c,c
 cached-data,cached_data
 calc-engine,calc_engine
 calc-engine-entities,calc_engine_entities
+calligraphy-stroke,calligraphy_stroke
 callout2-path,callout2_path
 cap,cap
 capitalization,capitalization
@@ -154,6 +155,7 @@ chart-series-style-ref,chart_series_style_ref
 chart-style,chart_style
 chart-style-ref,chart_style_ref
 chart-type,chart_type
+chisel,chisel
 col,col
 col-span,col_span
 color,color
@@ -382,6 +384,7 @@ lower-roman,lower_roman
 m,m
 main-movie,main_movie
 main-movie-ref,main_movie_ref
+manipulated-stroke,manipulated_stroke
 manually-sized,manually_sized
 mark,mark
 masking-shape-path-source,masking_shape_path_source
@@ -438,6 +441,7 @@ paragraphFill,paragraphFill
 paragraphStroke,paragraphStroke
 paragraphstyle,paragraphstyle
 paragraphstyle-ref,paragraphstyle_ref
+parameters,parameters
 parent-ident,parent_ident
 parent-ref,parent_ref
 path,path

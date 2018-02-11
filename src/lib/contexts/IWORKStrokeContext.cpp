@@ -7,7 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "IWORKStrokeElement.h"
+#include "IWORKStrokeContext.h"
 
 #include "IWORKColorElement.h"
 #include "IWORKDictionary.h"
@@ -141,7 +141,7 @@ void PatternElement::attribute(const int name, const char *const value)
       m_pattern->m_type = IWORK_STROKE_TYPE_DASHED;
       break;
     default :
-      ETONYEK_DEBUG_MSG(("PatternElement::attribute[IWORKStrokeElement.cpp]: unknown pattern type %s\n", value));
+      ETONYEK_DEBUG_MSG(("PatternElement::attribute[IWORKStrokeContext.cpp]: unknown pattern type %s\n", value));
       break;
     }
     break;
@@ -150,7 +150,7 @@ void PatternElement::attribute(const int name, const char *const value)
   case IWORKToken::NS_URI_SFA | IWORKToken::ID:
     return IWORKXMLElementContextBase::attribute(name, value);
   default:
-    ETONYEK_DEBUG_MSG(("PatternElement::attribute[IWORKStrokeElement.cpp]: unknown attribute\n"));
+    ETONYEK_DEBUG_MSG(("PatternElement::attribute[IWORKStrokeContext.cpp]: unknown attribute\n"));
   }
 }
 
@@ -170,7 +170,71 @@ void PatternElement::endOfElement()
 }
 }
 
-IWORKStrokeElement::IWORKStrokeElement(IWORKXMLParserState &state, boost::optional<IWORKStroke> &value)
+namespace
+{
+class FrameElement : public IWORKXMLElementContextBase
+{
+public:
+  FrameElement(IWORKXMLParserState &state, boost::optional<IWORKStroke> &value);
+private:
+  virtual IWORKXMLContextPtr_t element(int name);
+
+  boost::optional<IWORKStroke> &m_value;
+};
+
+FrameElement::FrameElement(IWORKXMLParserState &state, boost::optional<IWORKStroke> &value)
+  : IWORKXMLElementContextBase(state)
+  , m_value(value)
+{
+  /* normally an element without child and with attributes
+     - sfa:sfclass always "frame" ?
+     - sf:name name of a picture which is used to draw the frame
+     - sf:asset_scale a scaling between 0 and 1
+
+     As we have no way to represent that, let's define a minimalist frame
+  */
+  IWORKStroke stroke;
+  stroke.m_color = IWORKColor(0.5, 0.5, 0.5, 1);
+  stroke.m_width = 2;
+  stroke.m_pattern.m_type=IWORK_STROKE_TYPE_SOLID;
+  m_value=stroke;
+}
+
+IWORKXMLContextPtr_t FrameElement::element(const int name)
+{
+  switch (name)
+  {
+  default:
+    ETONYEK_DEBUG_MSG(("FrameElement::element[IWORKStrokeContext.cpp]: find unknown element\n"));
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+}
+
+namespace
+{
+class StrokeElement : public IWORKXMLElementContextBase
+{
+public:
+  StrokeElement(IWORKXMLParserState &state, boost::optional<IWORKStroke> &value);
+
+private:
+  virtual void attribute(int name, const char *value);
+  virtual IWORKXMLContextPtr_t element(int name);
+  virtual void endOfElement();
+
+private:
+  boost::optional<IWORKStroke> &m_value;
+  boost::optional<double> m_width;
+  boost::optional<IWORKColor> m_color;
+  boost::optional<IWORKLineCap> m_cap;
+  boost::optional<IWORKLineJoin> m_join;
+  boost::optional<IWORKPattern> m_pattern;
+  boost::optional<ID_t> m_patternRef;
+};
+
+StrokeElement::StrokeElement(IWORKXMLParserState &state, boost::optional<IWORKStroke> &value)
   : IWORKXMLElementContextBase(state)
   , m_value(value)
   , m_width()
@@ -182,7 +246,7 @@ IWORKStrokeElement::IWORKStrokeElement(IWORKXMLParserState &state, boost::option
 {
 }
 
-void IWORKStrokeElement::attribute(const int name, const char *const value)
+void StrokeElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
@@ -196,7 +260,7 @@ void IWORKStrokeElement::attribute(const int name, const char *const value)
       m_cap = IWORK_LINE_CAP_ROUND;
       break;
     default:
-      ETONYEK_DEBUG_MSG(("IWORKStrokeElement::attribute[IWORKPropertyMapElement.cpp]: find unknown cap\n"));
+      ETONYEK_DEBUG_MSG(("StrokeElement::attribute[IWORKStrokeContext.cpp]: find unknown cap\n"));
     }
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::join :
@@ -209,7 +273,7 @@ void IWORKStrokeElement::attribute(const int name, const char *const value)
       m_join = IWORK_LINE_JOIN_ROUND;
       break;
     default:
-      ETONYEK_DEBUG_MSG(("IWORKStrokeElement::attribute[IWORKPropertyMapElement.cpp]: find unknown join\n"));
+      ETONYEK_DEBUG_MSG(("StrokeElement::attribute[IWORKStrokeContext.cpp]: find unknown join\n"));
     }
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::width :
@@ -219,29 +283,31 @@ void IWORKStrokeElement::attribute(const int name, const char *const value)
     IWORKXMLElementContextBase::attribute(name, value);
     break;
   default:
-    //ETONYEK_DEBUG_MSG(("IWORKStrokeElement::attribute[IWORKPropertyMapElement.cpp]: find unknown attribute\n"));
+    //ETONYEK_DEBUG_MSG(("StrokeElement::attribute[IWORKStrokeContext.cpp]: find unknown attribute\n"));
     break;
   }
 }
 
-IWORKXMLContextPtr_t IWORKStrokeElement::element(const int name)
+IWORKXMLContextPtr_t StrokeElement::element(const int name)
 {
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::color :
     return makeContext<IWORKColorElement>(getState(), m_color);
+  case IWORKToken::NS_URI_SF | IWORKToken::parameters : // in calligraphy-stroke defines angle, chisel, scale
+    break;
   case IWORKToken::NS_URI_SF | IWORKToken::pattern :
     return makeContext<PatternElement>(getState(), m_pattern);
   case IWORKToken::NS_URI_SF | IWORKToken::pattern_ref :
     return makeContext<IWORKRefContext>(getState(), m_patternRef);
   default:
-    ETONYEK_DEBUG_MSG(("IWORKStrokeElement::element[IWORKPropertyMapElement.cpp]: find unknown element\n"));
+    ETONYEK_DEBUG_MSG(("StrokeElement::element[IWORKStrokeContext.cpp]: find unknown element\n"));
   }
 
   return IWORKXMLContextPtr_t();
 }
 
-void IWORKStrokeElement::endOfElement()
+void StrokeElement::endOfElement()
 {
   if (m_patternRef)
   {
@@ -250,7 +316,7 @@ void IWORKStrokeElement::endOfElement()
       m_pattern=it->second;
     else if (!get(m_patternRef).empty())
     {
-      ETONYEK_DEBUG_MSG(("IWORKStrokeElement::endOfElement: unknown pattern %s\n", get(m_patternRef).c_str()));
+      ETONYEK_DEBUG_MSG(("StrokeElement::endOfElement: unknown pattern %s\n", get(m_patternRef).c_str()));
     }
   }
   if (m_width)
@@ -266,7 +332,52 @@ void IWORKStrokeElement::endOfElement()
       getState().getDictionary().m_strokes[get(getId())]=value;
   }
 }
+}
 
+IWORKStrokeContext::IWORKStrokeContext(IWORKXMLParserState &state, boost::optional<IWORKStroke> &value)
+  : IWORKXMLElementContextBase(state)
+  , m_value(value)
+  , m_ref()
+{
+}
+
+IWORKXMLContextPtr_t IWORKStrokeContext::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::frame :
+    return makeContext<FrameElement>(getState(), m_value);
+  case IWORKToken::NS_URI_SF | IWORKToken::calligraphy_stroke :
+  case IWORKToken::NS_URI_SF | IWORKToken::manipulated_stroke :
+  case IWORKToken::NS_URI_SF | IWORKToken::stroke :
+    return makeContext<StrokeElement>(getState(), m_value);
+  case IWORKToken::NS_URI_SF | IWORKToken::stroke_ref :
+    return makeContext<IWORKRefContext>(getState(), m_ref);
+  case IWORKToken::NS_URI_SF | IWORKToken::null :
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKStrokeContext::element: unknown element\n"));
+    break;
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void IWORKStrokeContext::endOfElement()
+{
+  if (m_ref)
+  {
+    const IWORKStrokeMap_t::const_iterator it = getState().getDictionary().m_strokes.find(get(m_ref));
+    if (it != getState().getDictionary().m_strokes.end())
+    {
+      m_value = it->second;
+    }
+    else
+    {
+      ETONYEK_DEBUG_MSG(("IWORKStrokeContext::endOfElement: can not find stroke %s\n", get(m_ref).c_str()));
+    }
+  }
+}
 
 }
 

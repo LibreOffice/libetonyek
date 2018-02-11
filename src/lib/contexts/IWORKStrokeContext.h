@@ -7,8 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef IWORKSTROKEELEMENT_H_INCLUDED
-#define IWORKSTROKEELEMENT_H_INCLUDED
+#ifndef IWORKSTROKECONTEXT_H_INCLUDED
+#define IWORKSTROKECONTEXT_H_INCLUDED
 
 #include <deque>
 #include <boost/optional.hpp>
@@ -19,28 +19,20 @@
 
 namespace libetonyek
 {
-class IWORKStrokeElement : public IWORKXMLElementContextBase
+class IWORKStrokeContext : public IWORKXMLElementContextBase
 {
 public:
-  IWORKStrokeElement(IWORKXMLParserState &state, boost::optional<IWORKStroke> &value);
-
-private:
-  virtual void attribute(int name, const char *value);
+  IWORKStrokeContext(IWORKXMLParserState &state, boost::optional<IWORKStroke> &value);
   virtual IWORKXMLContextPtr_t element(int name);
   virtual void endOfElement();
 
 private:
   boost::optional<IWORKStroke> &m_value;
-  boost::optional<double> m_width;
-  boost::optional<IWORKColor> m_color;
-  boost::optional<IWORKLineCap> m_cap;
-  boost::optional<IWORKLineJoin> m_join;
-  boost::optional<IWORKPattern> m_pattern;
-  boost::optional<ID_t> m_patternRef;
+  boost::optional<ID_t> m_ref;
 };
 
 }
 
-#endif // IWORKSTROKEELEMENT_H_INCLUDED
+#endif // IWORKSTROKECONTEXT_H_INCLUDED
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
