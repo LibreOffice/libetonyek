@@ -645,6 +645,7 @@ value-title,value_title
 vector-style,vector_style
 vector-style-ref,vector_style_ref
 version,version
+verticalAlignment,verticalAlignment
 vertical-gridline-styles,vertical_gridline_styles,
 vertical-offset,vertical_offset
 verticalFlip,verticalFlip

@@ -909,6 +909,7 @@ typedef IWORKNumericPropertyContext<property::SpaceBefore> SpaceBeforeElement;
 typedef IWORKNumericPropertyContext<property::Strikethru> StrikethruElement;
 typedef IWORKNumericPropertyContext<property::Tracking> TrackingElement;
 typedef IWORKNumericPropertyContext<property::Underline> UnderlineElement;
+typedef IWORKNumericPropertyContext<property::VerticalAlignment> VerticalAlignmentElement;
 typedef IWORKNumericPropertyContext<property::WidowControl> WidowControlElement;
 
 }
@@ -1129,6 +1130,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<TrackingElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::underline :
     return makeContext<UnderlineElement>(getState(), *m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::verticalAlignment :
+    return makeContext<VerticalAlignmentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::widowControl :
     return makeContext<WidowControlElement>(getState(), *m_propMap);
   }

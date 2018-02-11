@@ -478,6 +478,7 @@ enum
   unfiltered_ref,
   vector_style,
   vector_style_ref,
+  verticalAlignment,
   vertical_gridline_styles,
   widowControl,
   workspace_style,

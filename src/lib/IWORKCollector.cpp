@@ -1181,7 +1181,32 @@ void IWORKCollector::drawShape(const IWORKShapePtr_t &shape)
   if (shape->m_locked) // CHECKME: maybe also content
     styleProps.insert("style:protect", "position size");
   if (createOnlyTextbox)
+  {
+    IWORKStylePtr_t layoutStyle;
+    if (bool(shape->m_style) && shape->m_style->has<property::LayoutStyle>())
+      layoutStyle=shape->m_style->get<property::LayoutStyle>();
+    if (bool(layoutStyle) && layoutStyle->has<property::VerticalAlignment>())
+    {
+      const IWORKVerticalAlignment align = layoutStyle->get<property::VerticalAlignment>();
+      switch (align)
+      {
+      case IWORK_VERTICAL_ALIGNMENT_TOP:
+        styleProps.insert("draw:textarea-vertical-align", "top");
+        break;
+      case IWORK_VERTICAL_ALIGNMENT_MIDDLE:
+        styleProps.insert("draw:textarea-vertical-align", "middle");
+        break;
+      case IWORK_VERTICAL_ALIGNMENT_BOTTOM:
+        styleProps.insert("draw:textarea-vertical-align", "bottom");
+        break;
+      default:
+        ETONYEK_DEBUG_MSG(("IWORKCollector::drawShape: find unknown vertical alignment\n"));
+        break;
+      }
+    }
+
     return drawTextBox(shape->m_text, trafo, shape->m_geometry, styleProps);
+  }
 
   librevenge::RVNGPropertyList shapeProps;
   librevenge::RVNGPropertyListVector vec;

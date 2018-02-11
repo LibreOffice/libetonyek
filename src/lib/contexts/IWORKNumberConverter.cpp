@@ -203,6 +203,31 @@ optional<IWORKStrokeType> IWORKNumberConverter<IWORKStrokeType>::convert(const u
   return none;
 }
 
+optional<IWORKVerticalAlignment> IWORKNumberConverter<IWORKVerticalAlignment>::convert(const char *const value)
+{
+  const optional<int> alignment(try_int_cast(value));
+  if (alignment)
+    return convert(unsigned(get(alignment)));
+  return none;
+}
+
+optional<IWORKVerticalAlignment> IWORKNumberConverter<IWORKVerticalAlignment>::convert(const unsigned value)
+{
+  switch (value)
+  {
+  case 0 :
+    return IWORK_VERTICAL_ALIGNMENT_TOP;
+  case 1 :
+    return IWORK_VERTICAL_ALIGNMENT_MIDDLE;
+  case 2 :
+    return IWORK_VERTICAL_ALIGNMENT_BOTTOM;
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKNumberConverter<IWORKVerticalAlignment>::convert: unknown value %d\n", int(value)));
+    break;
+  }
+  return none;
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
