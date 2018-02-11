@@ -372,6 +372,9 @@ void KEYCollector::drawTable()
     tableProps.insert("svg:height", pt2in(vec[1]));
   }
 
+  if (bool(m_currentTable->getStyle()))
+    fillWrapProps(m_currentTable->getStyle(), tableProps);
+
   m_currentTable->draw(tableProps, m_outputManager.getCurrent(), true);
 }
 

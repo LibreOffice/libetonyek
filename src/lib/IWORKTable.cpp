@@ -620,6 +620,11 @@ void IWORKTable::setDefaultParagraphStyle(const CellType type, const IWORKStyleP
   m_defaultParaStyles[type] = style;
 }
 
+IWORKStylePtr_t IWORKTable::getStyle() const
+{
+  return m_style;
+}
+
 IWORKStylePtr_t IWORKTable::getDefaultCellStyle(unsigned column, unsigned row) const
 {
   return getDefaultStyle(column, row, m_defaultCellStyles);

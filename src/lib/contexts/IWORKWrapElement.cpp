@@ -59,6 +59,8 @@ void PathElement::attribute(const int name, const char *const value)
   case IWORKToken::NS_URI_SFA | IWORKToken::ID : // USEME
     IWORKXMLEmptyContextBase::attribute(name, value);
     break;
+  case IWORKToken::NS_URI_SFA | IWORKToken::version :
+    break;
   default:
     ETONYEK_DEBUG_MSG(("PathElement::attribute[IWORKWrapElement.cpp]: unexpected attribute\n"));
     break;
@@ -100,19 +102,10 @@ void IWORKExternalTextWrapElement::attribute(int name, const char *value)
       switch (getState().getTokenizer().getId(value))
       {
       case IWORKToken::aligned:
-        get(m_wrap).m_attachmentType = IWORK_WRAP_TYPE_ALIGNED;
-        break;
-      case IWORKToken::directional:
-        get(m_wrap).m_attachmentType = IWORK_WRAP_TYPE_DIRECTIONAL;
-        break;
-      case IWORKToken::largest:
-        get(m_wrap).m_attachmentType = IWORK_WRAP_TYPE_LARGEST;
-        break;
-      case IWORKToken::neither:
-        get(m_wrap).m_attachmentType = IWORK_WRAP_TYPE_NEITHER;
+        get(m_wrap).m_aligned = true;
         break;
       case IWORKToken::unaligned:
-        get(m_wrap).m_attachmentType = IWORK_WRAP_TYPE_UNALIGNED;
+        get(m_wrap).m_aligned = false;
         break;
       default:
         ETONYEK_DEBUG_MSG(("IWORKExternalTextWrapElement::attribute[IWORKWrapElement.cpp]: find unknown attachment type value=%s\n", value));
@@ -145,9 +138,6 @@ void IWORKExternalTextWrapElement::attribute(int name, const char *value)
     case IWORKToken::NS_URI_SF | IWORKToken::floating_wrap_type :
       switch (getState().getTokenizer().getId(value))
       {
-      case IWORKToken::aligned:
-        get(m_wrap).m_floatingType = IWORK_WRAP_TYPE_ALIGNED;
-        break;
       case IWORKToken::directional:
         get(m_wrap).m_floatingType = IWORK_WRAP_TYPE_DIRECTIONAL;
         break;
@@ -156,9 +146,6 @@ void IWORKExternalTextWrapElement::attribute(int name, const char *value)
         break;
       case IWORKToken::neither:
         get(m_wrap).m_floatingType = IWORK_WRAP_TYPE_NEITHER;
-        break;
-      case IWORKToken::unaligned:
-        get(m_wrap).m_floatingType = IWORK_WRAP_TYPE_UNALIGNED;
         break;
       default:
         ETONYEK_DEBUG_MSG(("IWORKExternalTextWrapElement::attribute[IWORKWrapElement.cpp]: find unknown floating type value=%s\n", value));

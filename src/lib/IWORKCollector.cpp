@@ -950,6 +950,43 @@ void IWORKCollector::fillGraphicProps(const IWORKStylePtr_t style, librevenge::R
   }
 }
 
+void IWORKCollector::fillWrapProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props)
+{
+  if (!bool(style) || !style->has<property::ExternalTextWrap>())
+    return;
+  const IWORKExternalTextWrap &wrap = style->get<property::ExternalTextWrap>();
+  switch (wrap.m_floatingType)
+  {
+  case IWORK_WRAP_TYPE_DIRECTIONAL :
+    switch (wrap.m_direction)
+    {
+    case IWORK_WRAP_DIRECTION_BOTH :
+      if (wrap.m_aligned)
+        props.insert("style:wrap", "parallel");
+      else
+        props.insert("style:wrap", "dynamic");
+      break;
+    case IWORK_WRAP_DIRECTION_LEFT :
+      props.insert("style:wrap", "left");
+      break;
+    case IWORK_WRAP_DIRECTION_RIGHT :
+      props.insert("style:wrap", "right");
+      break;
+    default:
+      ETONYEK_DEBUG_MSG(("IWORKCollector::fillWrapProps: unknown direction\n"));
+    }
+    break;
+  case IWORK_WRAP_TYPE_LARGEST :
+    props.insert("style:wrap", "biggest");
+    break;
+  case IWORK_WRAP_TYPE_NEITHER :
+    props.insert("style:wrap", "none");
+    break;
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKCollector::fillWrapProps: unknown wrap type\n"));
+  }
+}
+
 IWORKOutputManager &IWORKCollector::getOutputManager()
 {
   return m_outputManager;
@@ -1099,6 +1136,8 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
         dim[1]*=-1;
       }
 
+      if (bool(media->m_style))
+        fillWrapProps(media->m_style, props);
       props.insert("librevenge:mime-type", mimetype.c_str());
       props.insert("office:binary-data", librevenge::RVNGBinaryData(bytes, size));
       props.insert("svg:width", pt2in(dim[0]));
@@ -1125,7 +1164,10 @@ void IWORKCollector::drawShape(const IWORKShapePtr_t &shape)
   librevenge::RVNGPropertyList styleProps;
 
   if (bool(shape->m_style))
+  {
     fillGraphicProps(shape->m_style, styleProps, true, createOnlyTextbox && createFrameStylesForTextBox());
+    fillWrapProps(shape->m_style, styleProps);
+  }
   if (shape->m_locked) // CHECKME: maybe also content
     styleProps.insert("style:protect", "position size");
   if (createOnlyTextbox)

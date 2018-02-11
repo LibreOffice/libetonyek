@@ -245,6 +245,8 @@ void PAGCollector::drawTable()
       frameProps.insert("svg:width", pt2in(dim[0]), librevenge::RVNG_INCH);
       frameProps.insert("svg:height", pt2in(dim[1]), librevenge::RVNG_INCH);
     }
+    if (bool(m_currentTable->getStyle()))
+      fillWrapProps(m_currentTable->getStyle(), frameProps);
   }
 
   if (m_inAttachments)

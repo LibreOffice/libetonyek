@@ -163,7 +163,7 @@ struct IWORKExternalTextWrap
   bool m_floatingWrapEnabled;
   bool m_inlineWrapEnabled;
   IWORKWrapDirection m_direction;
-  IWORKWrapType m_attachmentType;
+  bool m_aligned;
   IWORKWrapType m_floatingType;
   double m_margin;
   double m_alphaThreshold;

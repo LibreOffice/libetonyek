@@ -294,10 +294,10 @@ libetonyek_internal_la_SOURCES = \
 	contexts/IWORKTabularInfoElement.h \
 	contexts/IWORKTabularModelElement.cpp \
 	contexts/IWORKTabularModelElement.h \
-	contexts/IWORKTextElement.cpp \
-	contexts/IWORKTextElement.h \
 	contexts/IWORKTextBodyElement.cpp \
 	contexts/IWORKTextBodyElement.h \
+	contexts/IWORKTextElement.cpp \
+	contexts/IWORKTextElement.h \
 	contexts/IWORKTextLabelElement.cpp \
 	contexts/IWORKTextLabelElement.h \
 	contexts/IWORKTextStorageElement.cpp \

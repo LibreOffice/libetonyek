@@ -88,6 +88,7 @@ public:
   void setDefaultLayoutStyle(CellType type, const IWORKStylePtr_t &style);
   void setDefaultParagraphStyle(CellType type, const IWORKStylePtr_t &style);
 
+  IWORKStylePtr_t getStyle() const;
   IWORKStylePtr_t getDefaultCellStyle(unsigned column, unsigned row) const;
   IWORKStylePtr_t getDefaultLayoutStyle(unsigned column, unsigned row) const;
   IWORKStylePtr_t getDefaultParagraphStyle(unsigned column, unsigned row) const;
