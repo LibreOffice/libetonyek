@@ -30,9 +30,10 @@ protected:
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
 
-private:
+protected:
   IWORKStylePtr_t m_style;
   boost::optional<IWORKWrap> m_wrap;
+  boost::optional<int> m_order;
   bool m_locked;
 };
 

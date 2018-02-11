@@ -338,11 +338,11 @@ void IWORKCollector::collectBezier(const IWORKPathPtr_t &path)
   }
 }
 
-void IWORKCollector::collectImage(const IWORKMediaContentPtr_t &image, const IWORKGeometryPtr_t &cropGeometry, bool locked)
+void IWORKCollector::collectImage(const IWORKMediaContentPtr_t &image, const IWORKGeometryPtr_t &cropGeometry, const boost::optional<int> &order, bool locked)
 {
   if (bool(m_recorder))
   {
-    m_recorder->collectImage(image, cropGeometry, locked);
+    m_recorder->collectImage(image, cropGeometry, order, locked);
     return;
   }
 
@@ -351,6 +351,7 @@ void IWORKCollector::collectImage(const IWORKMediaContentPtr_t &image, const IWO
   const IWORKMediaPtr_t media(new IWORKMedia());
   media->m_geometry = m_levelStack.top().m_geometry;
   media->m_cropGeometry = cropGeometry;
+  media->m_order = order;
   media->m_locked = locked;
   media->m_style = m_levelStack.top().m_graphicStyle;
   media->m_content = image;
@@ -378,11 +379,11 @@ void IWORKCollector::collectLine(const IWORKLinePtr_t &line)
   drawLine(line);
 }
 
-void IWORKCollector::collectShape(bool locked)
+void IWORKCollector::collectShape(const boost::optional<int> &order, bool locked)
 {
   if (bool(m_recorder))
   {
-    m_recorder->collectShape(locked);
+    m_recorder->collectShape(order, locked);
     return;
   }
 
@@ -406,6 +407,7 @@ void IWORKCollector::collectShape(bool locked)
     m_currentText.reset();
   }
 
+  shape->m_order = order;
   shape->m_locked = locked;
   shape->m_style = m_levelStack.top().m_graphicStyle;
   m_levelStack.top().m_graphicStyle.reset();
@@ -481,11 +483,11 @@ void IWORKCollector::collectCalloutPath(const IWORKSize &size, const double radi
     m_currentPath = path;
 }
 
-void IWORKCollector::collectMedia(const IWORKMediaContentPtr_t &content, const IWORKGeometryPtr_t &cropGeometry)
+void IWORKCollector::collectMedia(const IWORKMediaContentPtr_t &content, const IWORKGeometryPtr_t &cropGeometry, const boost::optional<int> &order)
 {
   if (bool(m_recorder))
   {
-    m_recorder->collectMedia(content, cropGeometry);
+    m_recorder->collectMedia(content, cropGeometry, order);
     return;
   }
 
@@ -495,6 +497,7 @@ void IWORKCollector::collectMedia(const IWORKMediaContentPtr_t &content, const I
   media->m_geometry = m_levelStack.top().m_geometry;
   media->m_cropGeometry = cropGeometry;
   media->m_style = m_levelStack.top().m_graphicStyle;
+  media->m_order = order;
   media->m_content = content;
 
   m_levelStack.top().m_geometry.reset();
@@ -950,8 +953,21 @@ void IWORKCollector::fillGraphicProps(const IWORKStylePtr_t style, librevenge::R
   }
 }
 
-void IWORKCollector::fillWrapProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props)
+void IWORKCollector::fillWrapProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props,
+                                   const boost::optional<int> &order)
 {
+  if (order)
+  {
+    if (get(order)>=0)
+      props.insert("draw:z-index", get(order)+1);
+    else   // background
+    {
+      props.insert("draw:z-index", -get(order));
+      props.insert("style:wrap", "run-through");
+      props.insert("style:run-through", "background");
+      return;
+    }
+  }
   if (!bool(style) || !style->has<property::ExternalTextWrap>())
     return;
   const IWORKExternalTextWrap &wrap = style->get<property::ExternalTextWrap>();
@@ -1137,7 +1153,7 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
       }
 
       if (bool(media->m_style))
-        fillWrapProps(media->m_style, props);
+        fillWrapProps(media->m_style, props, media->m_order);
       props.insert("librevenge:mime-type", mimetype.c_str());
       props.insert("office:binary-data", librevenge::RVNGBinaryData(bytes, size));
       props.insert("svg:width", pt2in(dim[0]));
@@ -1166,7 +1182,7 @@ void IWORKCollector::drawShape(const IWORKShapePtr_t &shape)
   if (bool(shape->m_style))
   {
     fillGraphicProps(shape->m_style, styleProps, true, createOnlyTextbox && createFrameStylesForTextBox());
-    fillWrapProps(shape->m_style, styleProps);
+    fillWrapProps(shape->m_style, styleProps, shape->m_order);
   }
   if (shape->m_locked) // CHECKME: maybe also content
     styleProps.insert("style:protect", "position size");

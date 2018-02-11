@@ -35,6 +35,7 @@ public:
   void setBandedRows(bool banded);
   void setRepeated(bool columns, bool rows);
 
+  void setOrder(int order);
   void setStyle(const IWORKStylePtr_t &style);
   void setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowSizes_t &rowSizes);
   void setBorders(const IWORKGridLineMap_t &verticalLines, const IWORKGridLineMap_t &horizontalLines);

@@ -68,16 +68,18 @@ struct CollectPath
 
 struct CollectImage
 {
-  CollectImage(const IWORKMediaContentPtr_t &image, const IWORKGeometryPtr_t &cropGeometry, bool locked)
+  CollectImage(const IWORKMediaContentPtr_t &image, const IWORKGeometryPtr_t &cropGeometry, const boost::optional<int> &order, bool locked)
     : m_image(image)
     , m_cropGeometry(cropGeometry)
+    , m_order(order)
     , m_locked(locked)
   {
   }
 
   const IWORKMediaContentPtr_t m_image;
   const IWORKGeometryPtr_t m_cropGeometry;
-  bool m_locked;
+  const boost::optional<int> m_order;
+  const bool m_locked;
 };
 
 struct CollectLine
@@ -92,23 +94,27 @@ struct CollectLine
 
 struct CollectShape
 {
-  CollectShape(bool locked)
-    : m_locked(locked)
+  CollectShape(const boost::optional<int> &order, bool locked)
+    : m_order(order)
+    , m_locked(locked)
   {
   }
+  const boost::optional<int> m_order;
   bool m_locked;
 };
 
 struct CollectMedia
 {
-  CollectMedia(const IWORKMediaContentPtr_t &content, const IWORKGeometryPtr_t &cropGeometry)
+  CollectMedia(const IWORKMediaContentPtr_t &content, const IWORKGeometryPtr_t &cropGeometry, const boost::optional<int> &order)
     : m_content(content)
     , m_cropGeometry(cropGeometry)
+    , m_order(order)
   {
   }
 
   const IWORKMediaContentPtr_t m_content;
   const IWORKGeometryPtr_t m_cropGeometry;
+  const boost::optional<int> m_order;
 };
 
 struct CollectStylesheet
@@ -229,7 +235,7 @@ struct Sender : public boost::static_visitor<void>
 
   void operator()(const CollectImage &value) const
   {
-    m_collector.collectImage(value.m_image, value.m_cropGeometry, value.m_locked);
+    m_collector.collectImage(value.m_image, value.m_cropGeometry, value.m_order, value.m_locked);
   }
 
   void operator()(const CollectLine &value) const
@@ -239,12 +245,12 @@ struct Sender : public boost::static_visitor<void>
 
   void operator()(const CollectShape &value) const
   {
-    m_collector.collectShape(value.m_locked);
+    m_collector.collectShape(value.m_order, value.m_locked);
   }
 
   void operator()(const CollectMedia &value) const
   {
-    m_collector.collectMedia(value.m_content, value.m_cropGeometry);
+    m_collector.collectMedia(value.m_content, value.m_cropGeometry, value.m_order);
   }
 
   void operator()(const CollectStylesheet &value) const
@@ -380,9 +386,9 @@ void IWORKRecorder::collectPath(const IWORKPathPtr_t &path)
   m_impl->m_elements.push_back(CollectPath(path));
 }
 
-void IWORKRecorder::collectImage(const IWORKMediaContentPtr_t &image, const IWORKGeometryPtr_t &cropGeometry, bool locked)
+void IWORKRecorder::collectImage(const IWORKMediaContentPtr_t &image, const IWORKGeometryPtr_t &cropGeometry, const boost::optional<int> &order, bool locked)
 {
-  m_impl->m_elements.push_back(CollectImage(image, cropGeometry, locked));
+  m_impl->m_elements.push_back(CollectImage(image, cropGeometry, order, locked));
 }
 
 void IWORKRecorder::collectLine(const IWORKLinePtr_t &line)
@@ -390,14 +396,14 @@ void IWORKRecorder::collectLine(const IWORKLinePtr_t &line)
   m_impl->m_elements.push_back(CollectLine(line));
 }
 
-void IWORKRecorder::collectShape(bool locked)
+void IWORKRecorder::collectShape(const boost::optional<int> &order, bool locked)
 {
-  m_impl->m_elements.push_back(CollectShape(locked));
+  m_impl->m_elements.push_back(CollectShape(order,locked));
 }
 
-void IWORKRecorder::collectMedia(const IWORKMediaContentPtr_t &content, const IWORKGeometryPtr_t &cropGeometry)
+void IWORKRecorder::collectMedia(const IWORKMediaContentPtr_t &content, const IWORKGeometryPtr_t &cropGeometry, const boost::optional<int> &order)
 {
-  m_impl->m_elements.push_back(CollectMedia(content, cropGeometry));
+  m_impl->m_elements.push_back(CollectMedia(content, cropGeometry, order));
 }
 
 void IWORKRecorder::collectStylesheet(const IWORKStylesheetPtr_t &stylesheet)

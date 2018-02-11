@@ -13,6 +13,8 @@
 
 #include <boost/optional.hpp>
 
+#include "libetonyek_xml.h"
+
 #include "IWORKDictionary.h"
 #include "IWORKGeometryElement.h"
 #include "IWORKPathElement.h"
@@ -23,6 +25,7 @@
 #include "PAGCollector.h"
 #include "PAG1ParserState.h"
 #include "PAG1TextStorageElement.h"
+#include "PAG1Token.h"
 
 namespace libetonyek
 {
@@ -62,6 +65,18 @@ IWORKXMLContextPtr_t TextElement::element(const int name)
 PAG1ShapeContext::PAG1ShapeContext(PAG1ParserState &state)
   : PAG1XMLContextBase<IWORKShapeContext>(state)
 {
+}
+
+void PAG1ShapeContext::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case PAG1Token::order | PAG1Token::NS_URI_SL :
+    m_order=try_int_cast(value);
+    break;
+  default:
+    PAG1XMLContextBase<IWORKShapeContext>::attribute(name, value);
+  }
 }
 
 IWORKXMLContextPtr_t PAG1ShapeContext::element(const int name)

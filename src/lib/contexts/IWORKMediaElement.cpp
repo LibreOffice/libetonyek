@@ -11,6 +11,8 @@
 
 #include <boost/optional.hpp>
 
+#include "libetonyek_xml.h"
+
 #include "IWORKBinaryElement.h"
 #include "IWORKCollector.h"
 #include "IWORKDataElement.h"
@@ -24,6 +26,8 @@
 #include "IWORKToken.h"
 #include "IWORKWrapElement.h"
 #include "IWORKXMLParserState.h"
+
+#include "PAG1Token.h"
 
 namespace libetonyek
 {
@@ -323,9 +327,22 @@ IWORKMediaElement::IWORKMediaElement(IWORKXMLParserState &state)
   , m_audioOnlyImageRef()
   , m_style()
   , m_cropGeometry()
+  , m_order()
   , m_wrap()
   , m_placeholderSize()
 {
+}
+
+void IWORKMediaElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case PAG1Token::order | PAG1Token::NS_URI_SL :
+    m_order=try_int_cast(value);
+    break;
+  default:
+    IWORKXMLElementContextBase::attribute(name, value);
+  }
 }
 
 void IWORKMediaElement::startOfElement()
@@ -402,7 +419,7 @@ void IWORKMediaElement::endOfElement()
       }
     }
   }
-  getCollector().collectMedia(m_content, m_cropGeometry);
+  getCollector().collectMedia(m_content, m_cropGeometry, m_order);
   getCollector().endLevel();
 }
 

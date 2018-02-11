@@ -72,6 +72,16 @@ struct SetRepeated
   const bool m_rows;
 };
 
+struct SetOrder
+{
+  SetOrder(const int order)
+    : m_order(order)
+  {
+  }
+
+  const int m_order;
+};
+
 struct SetStyle
 {
   SetStyle(const IWORKStylePtr_t &style)
@@ -189,6 +199,7 @@ typedef boost::variant
 , SetHeaders
 , SetBandedRows
 , SetRepeated
+, SetOrder
 , SetStyle
 , SetSizes
 , SetBorders
@@ -235,6 +246,11 @@ struct Sender : public boost::static_visitor<void>
   void operator()(const SetStyle &value) const
   {
     m_table.setStyle(value.m_style);
+  }
+
+  void operator()(const SetOrder &value) const
+  {
+    m_table.setOrder(value.m_order);
   }
 
   void operator()(const SetSizes &value) const
@@ -306,24 +322,29 @@ void IWORKTableRecorder::replay(IWORKTable &table) const
     boost::apply_visitor(sender, *it);
 }
 
-void IWORKTableRecorder::setSize(const unsigned columns, const unsigned rows)
+void IWORKTableRecorder::setSize(unsigned columns, unsigned rows)
 {
   m_impl->m_elements.push_back(SetSize(columns, rows));
 }
 
-void IWORKTableRecorder::setHeaders(const unsigned headerColumns, const unsigned headerRows, const unsigned footerRows)
+void IWORKTableRecorder::setHeaders(unsigned headerColumns, unsigned headerRows, const unsigned footerRows)
 {
   m_impl->m_elements.push_back(SetHeaders(headerColumns, headerRows, footerRows));
 }
 
-void IWORKTableRecorder::setBandedRows(const bool banded)
+void IWORKTableRecorder::setBandedRows(bool banded)
 {
   m_impl->m_elements.push_back(SetBandedRows(banded));
 }
 
-void IWORKTableRecorder::setRepeated(const bool columns, const bool rows)
+void IWORKTableRecorder::setRepeated(bool columns, bool rows)
 {
   m_impl->m_elements.push_back(SetRepeated(columns, rows));
+}
+
+void IWORKTableRecorder::setOrder(int order)
+{
+  m_impl->m_elements.push_back(SetOrder(order));
 }
 
 void IWORKTableRecorder::setStyle(const IWORKStylePtr_t &style)

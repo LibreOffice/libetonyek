@@ -24,12 +24,14 @@ public:
   explicit IWORKTabularInfoElement(IWORKXMLParserState &state);
 
 private:
+  void attribute(int name, const char *value) override;
   void startOfElement() override;
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
 
   boost::optional<ID_t> m_tableRef;
   IWORKStylePtr_t m_style;
+  boost::optional<int> m_order;
   boost::optional<IWORKWrap> m_wrap;
 };
 

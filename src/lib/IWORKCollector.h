@@ -68,7 +68,7 @@ public:
 
   void collectBezier(const IWORKPathPtr_t &path);
   void collectLine(const IWORKLinePtr_t &line);
-  void collectShape(bool locked);
+  void collectShape(const boost::optional<int> &order=boost::none, bool locked=false);
 
   void collectBezierPath();
   void collectPolygonPath(const IWORKSize &size, unsigned edges);
@@ -79,8 +79,8 @@ public:
   void collectCalloutPath(const IWORKSize &size, double radius, double tailSize, double tailX, double tailY, bool quoteBubble);
 
   void collectImage(const IWORKMediaContentPtr_t &image, const IWORKGeometryPtr_t &cropGeometry=IWORKGeometryPtr_t(),
-                    bool locked=false);
-  void collectMedia(const IWORKMediaContentPtr_t &content, const IWORKGeometryPtr_t &cropGeometry=IWORKGeometryPtr_t());
+                    const boost::optional<int> &order=boost::none, bool locked=false);
+  void collectMedia(const IWORKMediaContentPtr_t &content, const IWORKGeometryPtr_t &cropGeometry=IWORKGeometryPtr_t(), const boost::optional<int> &order=boost::none);
 
   void collectStylesheet(const IWORKStylesheetPtr_t &stylesheet);
 
@@ -132,7 +132,8 @@ public:
 protected:
   void fillMetadata(librevenge::RVNGPropertyList &props);
 
-  static void fillWrapProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props);
+  static void fillWrapProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props,
+                            const boost::optional<int> &order);
   static void fillGraphicProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props,
                                bool isSurface=true, bool isFrame=false);
   static void writeFill(const IWORKFill &fill, librevenge::RVNGPropertyList &props);

@@ -117,6 +117,7 @@ struct IWORKLine
 {
   IWORKGeometryPtr_t m_geometry;
   IWORKStylePtr_t m_style;
+  boost::optional<int> m_order;
   boost::optional<double> m_x1;
   boost::optional<double> m_y1;
   boost::optional<double> m_x2;
@@ -149,6 +150,7 @@ struct IWORKMedia
   IWORKGeometryPtr_t m_geometry;
   IWORKGeometryPtr_t m_cropGeometry;
   IWORKStylePtr_t m_style;
+  boost::optional<int> m_order;
   bool m_locked;
   boost::optional<bool> m_placeholder;
   boost::optional<IWORKSize> m_placeholderSize;

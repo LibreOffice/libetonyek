@@ -10,6 +10,8 @@
 #include "IWORKTabularInfoElement.h"
 
 #include "libetonyek_xml.h"
+
+#include "libetonyek_xml.h"
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKGeometryElement.h"
@@ -23,6 +25,7 @@
 #include "IWORKXMLContextBase.h"
 #include "IWORKStyle.h"
 
+#include "PAG1Token.h"
 
 namespace libetonyek
 {
@@ -36,8 +39,21 @@ IWORKTabularInfoElement::IWORKTabularInfoElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_tableRef()
   , m_style()
+  , m_order()
   , m_wrap()
 {
+}
+
+void IWORKTabularInfoElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case PAG1Token::order | PAG1Token::NS_URI_SL :
+    m_order=try_int_cast(value);
+    break;
+  default:
+    IWORKXMLElementContextBase::attribute(name, value);
+  }
 }
 
 void IWORKTabularInfoElement::startOfElement()
@@ -85,8 +101,14 @@ void IWORKTabularInfoElement::endOfElement()
       ETONYEK_DEBUG_MSG(("IWORKTabularInfoElement::endOfElement: can not find the table %s\n", get(m_tableRef).c_str()));
     }
   }
-  if (m_style && getState().m_currentTable)
-    getState().m_currentTable->setStyle(m_style);
+  if (getState().m_currentTable)
+  {
+    if (m_order)
+      getState().m_currentTable->setOrder(get(m_order));
+    if (m_style)
+      getState().m_currentTable->setStyle(m_style);
+  }
+
   getCollector().collectTable(getState().m_currentTable);
   getState().m_currentTable.reset();
   getCollector().endLevel();

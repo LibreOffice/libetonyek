@@ -146,7 +146,7 @@ void IWORKImageElement::endOfElement()
   if (isCollector())
   {
     if (m_style) getCollector().setGraphicStyle(m_style);
-    getCollector().collectImage(m_content, m_cropGeometry, m_locked ? get(m_locked) : false);
+    getCollector().collectImage(m_content, m_cropGeometry, boost::none, m_locked ? get(m_locked) : false);
     getCollector().endLevel();
   }
 }

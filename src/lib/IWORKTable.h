@@ -68,6 +68,7 @@ public:
   void setBandedRows(bool banded = true);
   void setRepeated(bool columns, bool rows);
 
+  void setOrder(int order);
   void setStyle(const IWORKStylePtr_t &style);
   void setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowSizes_t &rowSizes);
   void setBorders(const IWORKGridLineMap_t &verticalLines, const IWORKGridLineMap_t &horizontalLines);
@@ -88,6 +89,7 @@ public:
   void setDefaultLayoutStyle(CellType type, const IWORKStylePtr_t &style);
   void setDefaultParagraphStyle(CellType type, const IWORKStylePtr_t &style);
 
+  boost::optional<int> getOrder() const;
   IWORKStylePtr_t getStyle() const;
   IWORKStylePtr_t getDefaultCellStyle(unsigned column, unsigned row) const;
   IWORKStylePtr_t getDefaultLayoutStyle(unsigned column, unsigned row) const;
@@ -102,6 +104,7 @@ private:
 
   Table_t m_table;
   IWORKStylePtr_t m_style;
+  boost::optional<int> m_order;
   IWORKColumnSizes_t m_columnSizes;
   IWORKRowSizes_t m_rowSizes;
   IWORKGridLineMap_t m_verticalLines;

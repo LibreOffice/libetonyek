@@ -24,6 +24,7 @@ public:
   explicit IWORKMediaElement(IWORKXMLParserState &state);
 
 private:
+  void attribute(int name, const char *value) override;
   void startOfElement() override;
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
@@ -36,6 +37,7 @@ private:
   boost::optional<ID_t> m_audioOnlyImageRef;
   IWORKStylePtr_t m_style;
   IWORKGeometryPtr_t m_cropGeometry;
+  boost::optional<int> m_order;
   boost::optional<IWORKWrap> m_wrap;
   boost::optional<IWORKSize> m_placeholderSize;
 };

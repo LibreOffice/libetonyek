@@ -321,6 +321,7 @@ IWORKTable::IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLa
   , m_langManager(langManager)
   , m_table()
   , m_style()
+  , m_order()
   , m_columnSizes()
   , m_rowSizes()
   , m_verticalLines()
@@ -393,6 +394,17 @@ void IWORKTable::setRepeated(const bool columns, const bool rows)
 
   m_headerColumnsRepeated = columns;
   m_headerRowsRepeated = rows;
+}
+
+void IWORKTable::setOrder(int order)
+{
+  if (bool(m_recorder))
+  {
+    m_recorder->setOrder(order);
+    return;
+  }
+
+  m_order = order;
 }
 
 void IWORKTable::setStyle(const IWORKStylePtr_t &style)
@@ -618,6 +630,11 @@ void IWORKTable::setDefaultParagraphStyle(const CellType type, const IWORKStyleP
 
   assert(type < ETONYEK_NUM_ELEMENTS(m_defaultParaStyles));
   m_defaultParaStyles[type] = style;
+}
+
+boost::optional<int> IWORKTable::getOrder() const
+{
+  return m_order;
 }
 
 IWORKStylePtr_t IWORKTable::getStyle() const

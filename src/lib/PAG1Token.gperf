@@ -40,6 +40,7 @@ kSFWPFootnoteKindProperty,kSFWPFootnoteKindProperty
 layout,layout
 note,note
 number,number
+order,order
 page,page
 page-group,page_group
 page-height,page_height

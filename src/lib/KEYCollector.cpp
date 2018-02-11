@@ -373,7 +373,7 @@ void KEYCollector::drawTable()
   }
 
   if (bool(m_currentTable->getStyle()))
-    fillWrapProps(m_currentTable->getStyle(), tableProps);
+    fillWrapProps(m_currentTable->getStyle(), tableProps, m_currentTable->getOrder());
 
   m_currentTable->draw(tableProps, m_outputManager.getCurrent(), true);
 }

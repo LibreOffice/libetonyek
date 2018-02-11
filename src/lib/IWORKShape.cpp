@@ -29,6 +29,7 @@ namespace libetonyek
 IWORKShape::IWORKShape()
   : m_geometry()
   , m_style()
+  , m_order()
   , m_path()
   , m_text()
   , m_locked(false)

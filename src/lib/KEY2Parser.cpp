@@ -395,7 +395,7 @@ IWORKXMLContextPtr_t ConnectionLineElement::element(const int name)
 void ConnectionLineElement::endOfElement()
 {
   if (isCollector())
-    getCollector().collectShape(false);
+    getCollector().collectShape();
 }
 
 }

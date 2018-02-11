@@ -108,7 +108,7 @@ void IWORKShapeContext::endOfElement()
       getCollector().setGraphicStyle(m_style);
     getCollector().collectText(getState().m_currentText);
     getState().m_currentText.reset();
-    getCollector().collectShape(m_locked);
+    getCollector().collectShape(m_order, m_locked);
     getCollector().endLevel();
   }
 }

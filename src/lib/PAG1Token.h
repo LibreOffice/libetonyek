@@ -40,6 +40,7 @@ enum
   kSFWPFootnoteKindProperty,
   layout,
   number,
+  order,
   page_group,
   print_info,
   prototype,
