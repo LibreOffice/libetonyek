@@ -19,7 +19,13 @@ namespace libetonyek
 
 class IWORKXMLParserState;
 
-class IWORKDiscardContext : public IWORKXMLContext, protected std::enable_shared_from_this<IWORKDiscardContext>
+/* Warning in g++ because std::enable_shared_from_this<IWORKDiscardContext> has no virtual
+   destructor.
+
+   If we replace public by protected, error with clang++ in KEY2Parser.cpp:1595 when doing
+   makeContext<DiscardContext>(m_state)
+ */
+class IWORKDiscardContext : public IWORKXMLContext, public std::enable_shared_from_this<IWORKDiscardContext>
 {
   struct Data;
 
