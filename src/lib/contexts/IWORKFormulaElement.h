@@ -24,9 +24,9 @@ public:
   explicit IWORKFoElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
   const boost::optional<ID_t> &getId() const;
 
 private:
@@ -42,9 +42,9 @@ public:
   explicit IWORKFormulaElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
   const boost::optional<ID_t> &getId() const;
 
 private:
@@ -60,9 +60,9 @@ public:
   explicit IWORKTableCellFormulaElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
   const boost::optional<ID_t> &getId() const;
 
 private:
@@ -78,9 +78,9 @@ public:
   explicit IWORKOfElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
   boost::optional<ID_t> m_ref;
   boost::optional<unsigned> m_hc;

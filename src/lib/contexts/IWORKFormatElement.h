@@ -25,8 +25,8 @@ public:
   IWORKDateTimeFormatElement(IWORKXMLParserState &state, boost::optional<IWORKDateTimeFormat> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   boost::optional<IWORKDateTimeFormat> &m_value;
@@ -38,8 +38,8 @@ public:
   IWORKDurationFormatElement(IWORKXMLParserState &state, boost::optional<IWORKDurationFormat> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   boost::optional<IWORKDurationFormat> &m_value;
@@ -51,8 +51,8 @@ public:
   IWORKNumberFormatElement(IWORKXMLParserState &state, boost::optional<IWORKNumberFormat> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 
 private:
   boost::optional<IWORKNumberFormat> &m_value;

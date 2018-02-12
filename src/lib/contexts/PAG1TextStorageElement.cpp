@@ -242,9 +242,9 @@ public:
   AttachmentRef(PAG1ParserState &state);
 
 private:
-  virtual void attribute(const int name, const char *const value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(const int name, const char *const value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
   boost::optional<ID_t> m_ref;
   boost::optional<std::string> m_kind;

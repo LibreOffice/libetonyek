@@ -28,10 +28,10 @@ public:
   PAG1AnnotationContext(PAG1ParserState &state, const CollectFunction_t &collect);
 
 private:
-  virtual void startOfElement();
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   const CollectFunction_t m_collect;

@@ -24,9 +24,9 @@ public:
   explicit IWORKTableInfoElement(IWORKXMLParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
   IWORKStylePtr_t m_style;
   boost::optional<IWORKWrap> m_wrap;

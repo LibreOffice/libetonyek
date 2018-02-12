@@ -30,7 +30,7 @@ public:
   explicit CalcEngineEntities(IWORKXMLParserState &state);
 
 protected:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 CalcEngineEntities::CalcEngineEntities(IWORKXMLParserState &state)

@@ -25,7 +25,7 @@ class KEYCollector : public IWORKCollector
 {
 public:
   explicit KEYCollector(IWORKDocumentInterface *document);
-  virtual ~KEYCollector();
+  ~KEYCollector() override;
 
   // collector functions
 

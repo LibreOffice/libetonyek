@@ -27,8 +27,8 @@ public:
   explicit PathElement(IWORKXMLParserState &state, boost::optional<std::string> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
 
   boost::optional<std::string> &m_value;
   boost::optional<ID_t> m_id;

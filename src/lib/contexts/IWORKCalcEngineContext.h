@@ -21,7 +21,7 @@ public:
   explicit IWORKCalcEngineContext(IWORKXMLParserState &state);
 
 protected:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 }

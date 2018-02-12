@@ -67,19 +67,19 @@ public:
   {
   }
 
-  virtual void attribute(int name, const char *value)
+  void attribute(int name, const char *value) override
   {
     m_context->attribute(name,value);
   }
-  virtual void startOfElement()
+  void startOfElement() override
   {
     m_context->startOfElement();
   }
-  virtual IWORKXMLContextPtr_t element(int name)
+  IWORKXMLContextPtr_t element(int name) override
   {
     return m_context->element(name);
   }
-  virtual void endOfElement()
+  void endOfElement() override
   {
     m_context->endOfElement();
     if (m_value) m_propMap.put<Property>(get(m_value));
@@ -552,14 +552,14 @@ public:
   {
   }
 private:
-  virtual IWORKXMLContextPtr_t element(int name)
+  IWORKXMLContextPtr_t element(int name) override
   {
     if (name==(IWORKToken::NS_URI_SF | IWORKToken::string))
       return makeContext<IWORKStringElement>(Parent::getState(), m_string);
     else
       return Parent::element(name);
   }
-  virtual void endOfElement()
+  void endOfElement() override
   {
     if (m_string)
     {

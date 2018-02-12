@@ -27,8 +27,8 @@ public:
   KEY1StylesContext(KEY1ParserState &state, IWORKStylePtr_t &style, IWORKStylePtr_t parentStyle);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKStylePtr_t &m_style;

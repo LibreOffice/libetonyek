@@ -79,7 +79,7 @@ public:
   explicit AnnotationsElement(PAG1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 AnnotationsElement::AnnotationsElement(PAG1ParserState &state)
@@ -129,7 +129,7 @@ public:
   GroupElement(PAG1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 GroupElement::GroupElement(PAG1ParserState &state)
@@ -497,8 +497,8 @@ public:
   explicit PageMarginsElement(PAG1ParserState &state, IWORKPrintInfo &printInfo);
 
 private:
-  virtual void attribute(int name, const char *value);
-  IWORKXMLContextPtr_t element(const int name);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(const int name) override;
 
 private:
   IWORKPrintInfo &m_printInfo;
@@ -562,9 +562,9 @@ public:
   explicit SLPrintInfoElement(PAG1ParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKPrintInfo m_printInfo;

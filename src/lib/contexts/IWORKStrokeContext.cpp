@@ -177,7 +177,7 @@ class FrameElement : public IWORKXMLElementContextBase
 public:
   FrameElement(IWORKXMLParserState &state, boost::optional<IWORKStroke> &value);
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
   boost::optional<IWORKStroke> &m_value;
 };
@@ -220,9 +220,9 @@ public:
   StrokeElement(IWORKXMLParserState &state, boost::optional<IWORKStroke> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   boost::optional<IWORKStroke> &m_value;

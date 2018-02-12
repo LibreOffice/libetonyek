@@ -40,11 +40,11 @@ public:
   KEY1DivElement(KEY1ParserState &state, IWORKStylePtr_t spanStyle, IWORKStylePtr_t parentStyle, bool &delayedLineBreak);
 
 protected:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void CDATA(const char *value);
-  virtual void text(const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void CDATA(const char *value) override;
+  void text(const char *value) override;
+  void endOfElement() override;
 
   void ensureOpened();
 

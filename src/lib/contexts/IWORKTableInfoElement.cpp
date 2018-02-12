@@ -46,8 +46,8 @@ public:
   explicit TableCellContentElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 TableCellContentElement::TableCellContentElement(IWORKXMLParserState &state)
@@ -99,9 +99,9 @@ public:
   explicit TableCellValueElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
   boost::optional<double> m_value;
 };
@@ -149,9 +149,9 @@ class TableCellElement : public IWORKXMLEmptyContextBase
 public:
   explicit TableCellElement(IWORKXMLParserState &state, boost::optional<IWORKTableCell> &value);
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
   void emitCell();
 
   boost::optional<IWORKTableCell> &m_value;
@@ -349,8 +349,8 @@ class TableModelCellsElement : public IWORKXMLEmptyContextBase
 public:
   explicit TableModelCellsElement(IWORKXMLParserState &state, std::deque<IWORKTableCell> &colCell, std::deque<IWORKTableCell> &rowCell);
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
   std::unordered_map<ID_t, std::deque<IWORKTableCell> > m_dict;
   std::deque<IWORKTableCell> &m_columnsCell;
@@ -392,9 +392,9 @@ class TableVectorElement : public IWORKXMLEmptyContextBase
 public:
   explicit TableVectorElement(IWORKXMLParserState &state, boost::optional<IWORKTableVector> &value);
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
   boost::optional<IWORKTableVector> &m_value;
   boost::optional<ID_t> m_styleRef;
@@ -467,8 +467,8 @@ class TableModelVectorsElement : public IWORKXMLEmptyContextBase
 public:
   explicit TableModelVectorsElement(IWORKXMLParserState &state, std::deque<IWORKTableVector> &colVector, std::deque<IWORKTableVector> &rowVector);
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
   std::unordered_map<ID_t, std::deque<IWORKTableVector> > m_dict;
   std::deque<IWORKTableVector> &m_columnsVector;
@@ -555,10 +555,10 @@ public:
   explicit TableInfoTableElement(IWORKXMLParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   boost::optional<ID_t> m_id;

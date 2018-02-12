@@ -31,10 +31,10 @@ public:
   explicit KEY1ContentElement(KEY1ParserState &state);
 
 protected:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void CDATA(const char *value);
-  virtual void text(const char *value);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void CDATA(const char *value) override;
+  void text(const char *value) override;
 
 private:
   KEY1DivStyle m_divStyle;

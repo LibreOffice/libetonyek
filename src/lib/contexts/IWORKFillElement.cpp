@@ -40,9 +40,9 @@ public:
   GradientStopElement(IWORKXMLParserState &state, std::deque<IWORKGradientStop> &stops);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   std::deque<IWORKGradientStop> &m_stops;
@@ -123,9 +123,9 @@ public:
   AngleGradientElement(IWORKXMLParserState &state, boost::optional<IWORKGradient> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   boost::optional<IWORKGradient> &m_value;
@@ -214,9 +214,9 @@ public:
   TransformGradientElement(IWORKXMLParserState &state, boost::optional<IWORKGradient> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   boost::optional<IWORKGradient> &m_value;
@@ -311,9 +311,9 @@ public:
   TexturedFillElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKMediaContentPtr_t &m_content;

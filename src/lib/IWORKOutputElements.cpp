@@ -78,8 +78,8 @@ class CloseGroupElement : public IWORKOutputElement
 {
 public:
   CloseGroupElement() {}
-  ~CloseGroupElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~CloseGroupElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 };
 
 class CloseHeaderElement : public IWORKOutputElement
@@ -254,8 +254,8 @@ class InsertFieldElement : public IWORKOutputElement
 public:
   InsertFieldElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~InsertFieldElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~InsertFieldElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };
@@ -372,8 +372,8 @@ class OpenGroupElement : public IWORKOutputElement
 public:
   OpenGroupElement(const librevenge::RVNGPropertyList &propList) :
     m_propList(propList) {}
-  ~OpenGroupElement() {}
-  void write(IWORKDocumentInterface *iface) const;
+  ~OpenGroupElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
 private:
   librevenge::RVNGPropertyList m_propList;
 };

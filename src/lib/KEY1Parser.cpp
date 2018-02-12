@@ -48,8 +48,8 @@ public:
   explicit MetadataElement(KEY1ParserState &state);
 
 protected:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   boost::optional<std::string> m_author;
@@ -107,8 +107,8 @@ public:
   explicit CDATAElement(KEY1ParserState &state, boost::optional<std::string> &description);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void CDATA(const char *value);
+  IWORKXMLContextPtr_t element(int name) override;
+  void CDATA(const char *value) override;
 
 private:
   boost::optional<std::string> &m_description;
@@ -144,8 +144,8 @@ public:
   explicit TransitionStyleElement(KEY1ParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   KEYTransition m_transitionStyle;
@@ -223,8 +223,8 @@ public:
   explicit BulletCharacterStyleElement(KEY1ParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   BulletStyle m_bulletStyle;
@@ -284,9 +284,9 @@ public:
   explicit BulletElement(KEY1ParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
   void ensureOpened();
 
@@ -386,9 +386,9 @@ public:
   explicit BulletsElement(KEY1ParserState &state, bool prototype);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   bool m_prototype;
@@ -437,10 +437,10 @@ public:
   BasicShapeElement(KEY1ParserState &state);
 
 protected:
-  virtual void attribute(int name, const char *value);
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
   IWORKStylePtr_t getStyle() const
   {
@@ -533,9 +533,9 @@ public:
   explicit ImageElement(KEY1ParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void startOfElement();
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void startOfElement() override;
+  void endOfElement() override;
 private:
   boost::optional<std::string> m_displayName;
   boost::optional<std::string> m_imageName;
@@ -641,9 +641,9 @@ public:
   explicit LineElement(KEY1ParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void startOfElement();
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void startOfElement() override;
+  void endOfElement() override;
 private:
   boost::optional<IWORKPosition> m_head;
   boost::optional<IWORKPosition> m_tail;
@@ -713,9 +713,9 @@ public:
   explicit ShapeElement(KEY1ParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void startOfElement();
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void startOfElement() override;
+  void endOfElement() override;
 private:
   IWORKPathPtr_t m_path;
   boost::optional<glm::dmat3> m_transformation;
@@ -786,9 +786,9 @@ public:
   TextAttributesElement(KEY1ParserState &state, IWORKStylePtr_t &spanStyle, IWORKStylePtr_t &divStyle);
 
 protected:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   KEY1DivStyle m_divStyle;
@@ -850,8 +850,8 @@ public:
   KEYPlaceholderPtr_t getPlaceholder();
 
 protected:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   boost::optional<IWORKPosition> m_location;
@@ -964,8 +964,8 @@ public:
   explicit BodyElement(KEY1ParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
 private:
   std::deque<double> m_indents;
 };
@@ -1017,7 +1017,7 @@ public:
   explicit PageNumberElement(KEY1ParserState &state);
 
 private:
-  virtual void endOfElement();
+  void endOfElement() override;
 private:
 };
 
@@ -1040,7 +1040,7 @@ public:
   explicit TitleElement(KEY1ParserState &state);
 
 private:
-  virtual void endOfElement();
+  void endOfElement() override;
 private:
 };
 
@@ -1064,10 +1064,10 @@ public:
   explicit TextboxElement(KEY1ParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 private:
   boost::optional<IWORKSize> m_size;
   boost::optional<glm::dmat3> m_transformation;
@@ -1162,10 +1162,10 @@ public:
   PluginDataElement(KEY1ParserState &state, boost::optional<IWORKSize> &size, bool prototype);
 
 protected:
-  virtual void attribute(int name, const char *value);
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   bool m_prototype;
@@ -1236,9 +1236,9 @@ public:
   explicit PluginElement(KEY1ParserState &state);
 
 protected:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   boost::optional<std::string> m_key;
@@ -1318,8 +1318,8 @@ public:
   explicit GroupElement(KEY1ParserState &state);
 
 protected:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   boost::optional<glm::dmat3> m_transformation;
@@ -1379,9 +1379,9 @@ public:
   explicit DrawablesElement(KEY1ParserState &state, bool prototype);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   bool m_prototype;
@@ -1448,9 +1448,9 @@ public:
   explicit PluginsElement(KEY1ParserState &state, bool prototype);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   bool m_prototype;
@@ -1496,10 +1496,10 @@ public:
   explicit SlideElement(KEY1ParserState &state, bool isMasterSlide);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   bool m_isMasterSlide;
@@ -1674,9 +1674,9 @@ public:
   explicit SlideListElement(KEY1ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 SlideListElement::SlideListElement(KEY1ParserState &state)
@@ -1721,9 +1721,9 @@ public:
   explicit MasterSlidesElement(KEY1ParserState &state);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 };
 
 MasterSlidesElement::MasterSlidesElement(KEY1ParserState &state)
@@ -1766,8 +1766,8 @@ public:
   explicit ThemeElement(KEY1ParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   boost::optional<std::string> m_description;
@@ -1825,10 +1825,10 @@ public:
   explicit PresentationElement(KEY1ParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
 };
@@ -1899,7 +1899,7 @@ public:
   explicit XMLDocument(KEY1ParserState &state);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 XMLDocument::XMLDocument(KEY1ParserState &state)
@@ -1933,7 +1933,7 @@ public:
   ~DiscardContext();
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 
 };
 

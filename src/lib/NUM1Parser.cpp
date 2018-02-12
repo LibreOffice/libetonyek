@@ -244,7 +244,7 @@ public:
   StylesContext(NUM1ParserState &state, bool anonymous);
 
 private:
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 StylesContext::StylesContext(NUM1ParserState &state, const bool anonymous)
@@ -275,7 +275,7 @@ class StylesheetElement : public NUM1XMLContextBase<IWORKStylesheetBase>
 {
 public:
   explicit StylesheetElement(NUM1ParserState &state);
-  virtual IWORKXMLContextPtr_t element(int name);
+  IWORKXMLContextPtr_t element(int name) override;
 };
 
 StylesheetElement::StylesheetElement(NUM1ParserState &state)

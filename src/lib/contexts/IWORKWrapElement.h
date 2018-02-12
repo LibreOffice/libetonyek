@@ -24,9 +24,9 @@ public:
   IWORKExternalTextWrapElement(IWORKXMLParserState &state, boost::optional<IWORKExternalTextWrap> &wrap);
 
 protected:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKExternalTextWrapElement(const IWORKExternalTextWrapElement &);
@@ -41,8 +41,8 @@ public:
   IWORKWrapElement(IWORKXMLParserState &state, boost::optional<IWORKWrap> &wrap);
 
 protected:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
 
 private:
   IWORKWrapElement(const IWORKWrapElement &);

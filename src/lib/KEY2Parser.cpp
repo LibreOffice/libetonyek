@@ -410,10 +410,10 @@ public:
   explicit HeadlineElement(KEY2ParserState &state);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
   void ensureOpened();
 
@@ -574,9 +574,9 @@ public:
                           IWORKTextPtr_t &titleText);
 
 private:
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   IWORKTextPtr_t &m_bodyText;

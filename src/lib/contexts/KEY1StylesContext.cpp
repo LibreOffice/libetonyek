@@ -32,9 +32,9 @@ public:
   MarkerStyleElement(KEY1ParserState &state, boost::optional<IWORKMarker> &m_marker);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   boost::optional<IWORKMarker> &m_marker;
@@ -90,9 +90,9 @@ public:
   PatternStyleElement(KEY1ParserState &state, boost::optional<IWORKPattern> &m_pattern);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   boost::optional<IWORKPattern> &m_pattern;
@@ -168,9 +168,9 @@ public:
   ShadowStyleElement(KEY1ParserState &state, boost::optional<IWORKShadow> &m_shadow);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   boost::optional<IWORKShadow> &m_shadow;

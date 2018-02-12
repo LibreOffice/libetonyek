@@ -24,8 +24,8 @@ public:
   explicit IWORKLineEndElement(IWORKXMLParserState &state, boost::optional<IWORKMarker> &value);
 
 private:
-  virtual void attribute(int name, const char *value);
-  virtual IWORKXMLContextPtr_t element(int name);
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
 
   boost::optional<IWORKMarker> &m_value;
   boost::optional<ID_t> m_id;

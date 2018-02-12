@@ -32,10 +32,10 @@ public:
   explicit KEY1TableElement(KEY1ParserState &state, boost::optional<IWORKSize> &size);
 
 protected:
-  virtual void attribute(int name, const char *value);
-  virtual void startOfElement();
-  virtual IWORKXMLContextPtr_t element(int name);
-  virtual void endOfElement();
+  void attribute(int name, const char *value) override;
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
 
 private:
   boost::optional<std::string> m_key;
