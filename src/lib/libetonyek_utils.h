@@ -28,7 +28,7 @@
 
 #define ETONYEK_NUM_ELEMENTS(array) (sizeof(array) / sizeof((array)[0]))
 
-#if defined(HAVE_GCC_ATTRIBUTE_FORMAT)
+#if defined(HAVE_FUNC_ATTRIBUTE_FORMAT)
 #  define ETONYEK_ATTRIBUTE_PRINTF(fmt, arg) __attribute__((__format__(__printf__, fmt, arg)))
 #else
 #  define ETONYEK_ATTRIBUTE_PRINTF(fmt, arg)
