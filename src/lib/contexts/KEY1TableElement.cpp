@@ -11,7 +11,6 @@
 
 #include <boost/fusion/include/std_pair.hpp>
 #include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix.hpp>
 
 #include "KEY1TableElement.h"
 
@@ -52,8 +51,6 @@ DECLARE_STRING_CONVERTER(IWORKSize);
 
 namespace ascii = boost::spirit::ascii;
 namespace qi =  boost::spirit::qi;
-using  boost::phoenix::ref;
-using boost::phoenix::construct;
 
 boost::optional<IWORKPosition> StringConverter<IWORKPosition>::convert(const char *value)
 {

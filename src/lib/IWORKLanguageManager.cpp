@@ -27,12 +27,12 @@ namespace libetonyek
 
 using librevenge::RVNGPropertyList;
 
-using std::shared_ptr;
 using std::string;
 using std::unordered_map;
-using std::unordered_set;
 
 #ifdef WITH_LIBLANGTAG
+using std::shared_ptr;
+using std::unordered_set;
 namespace
 {
 

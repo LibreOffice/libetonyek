@@ -49,11 +49,9 @@
 namespace libetonyek
 {
 
-using boost::none;
 using boost::optional;
 
 using std::deque;
-using std::make_shared;
 using std::string;
 
 namespace
