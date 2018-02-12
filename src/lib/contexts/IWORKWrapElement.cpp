@@ -13,6 +13,7 @@
 
 #include "libetonyek_xml.h"
 #include "IWORKBezierElement.h"
+#include "IWORKDictionary.h"
 #include "IWORKGeometryElement.h"
 #include "IWORKPath.h"
 #include "IWORKToken.h"
@@ -95,7 +96,7 @@ void IWORKExternalTextWrapElement::attribute(int name, const char *value)
   {
     switch (name)
     {
-    case IWORKToken::NS_URI_SFA | IWORKToken::ID : // USEME
+    case IWORKToken::NS_URI_SFA | IWORKToken::ID :
       IWORKXMLElementContextBase::attribute(name, value);
       break;
     case IWORKToken::NS_URI_SF | IWORKToken::attachment_wrap_type :
@@ -193,6 +194,12 @@ IWORKXMLContextPtr_t IWORKExternalTextWrapElement::element(const int name)
   ETONYEK_DEBUG_MSG(("IWORKExternalTextWrapElement::element[IWORKWrapElement.cpp]: find unknown element %d\n", name));
 
   return IWORKXMLContextPtr_t();
+}
+
+void IWORKExternalTextWrapElement::endOfElement()
+{
+  if (getId())
+    getState().getDictionary().m_externalTextWraps[get(getId())]=get(m_wrap);
 }
 
 IWORKWrapElement::IWORKWrapElement(IWORKXMLParserState &state, boost::optional<IWORKWrap> &wrap)

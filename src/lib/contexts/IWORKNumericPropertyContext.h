@@ -16,17 +16,17 @@
 namespace libetonyek
 {
 
-template<class Property>
-class IWORKNumericPropertyContext : public IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, IWORKToken::NS_URI_SF | IWORKToken::number>
+template<class Property, int TokenId2=0>
+class IWORKNumericPropertyContext : public IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, IWORKToken::NS_URI_SF | IWORKToken::number, TokenId2>
 {
-  typedef IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, IWORKToken::NS_URI_SF | IWORKToken::number> Parent_t;
+  typedef IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, IWORKToken::NS_URI_SF | IWORKToken::number, TokenId2> Parent_t;
 
 public:
   IWORKNumericPropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
-template<class Property>
-IWORKNumericPropertyContext<Property>::IWORKNumericPropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+template<class Property, int TokenId2>
+IWORKNumericPropertyContext<Property, TokenId2>::IWORKNumericPropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : Parent_t(state, propMap)
 {
 }

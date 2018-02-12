@@ -19,6 +19,7 @@
 #include "IWORKPropertyMapElement.h"
 #include "IWORKStyle.h"
 #include "IWORKToken.h"
+#include "IWORKValueContext.h"
 #include "KEYProperties.h"
 #include "KEYTypes.h"
 #include "KEY2Dictionary.h"
@@ -30,56 +31,21 @@ namespace libetonyek
 
 namespace
 {
-template<typename Type, class NestedParser, unsigned Id, unsigned Id2>
-class ValueContext : public IWORKXMLElementContextBase
-{
-public:
-  ValueContext(IWORKXMLParserState &state, boost::optional<Type> &value)
-    : IWORKXMLElementContextBase(state)
-    , m_value(value)
-  {
-  }
-
-protected:
-  virtual IWORKXMLContextPtr_t element(const int name)
-  {
-    if (name == Id || (Id2 && name==Id2))
-      return makeContext<NestedParser>(getState(), m_value);
-    ETONYEK_DEBUG_MSG(("ValueContext::element[KEY2StyleContext.cpp]: found unexpected element %d\n", name));
-    return IWORKXMLContextPtr_t();
-  }
-
-private:
-  ValueContext(const ValueContext &);
-  ValueContext &operator=(const ValueContext &);
-
-  boost::optional<Type> &m_value;
-};
-
 template<class Property>
-class NumericPropertyContext : public IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, KEY2Token::NS_URI_KEY | KEY2Token::number>
+class NumericPropertyContext : public IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, IWORKToken::NS_URI_SF | IWORKToken::number, KEY2Token::NS_URI_KEY | KEY2Token::number>
 {
-  typedef IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, KEY2Token::NS_URI_KEY | KEY2Token::number> Parent_t;
+  typedef IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, IWORKToken::NS_URI_SF | IWORKToken::number, KEY2Token::NS_URI_KEY | KEY2Token::number> Parent_t;
 
 public:
   NumericPropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
-template<class Property>
-NumericPropertyContext<Property>::NumericPropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
-  : Parent_t(state, propMap)
-{
-}
-
-typedef ValueContext<bool, IWORKNumberElement<bool>, IWORKToken::NS_URI_SF | IWORKToken::number, KEY2Token::NS_URI_KEY | KEY2Token::number> BoolProperty;
-typedef ValueContext<double, IWORKNumberElement<double>, IWORKToken::NS_URI_SF | IWORKToken::number, KEY2Token::NS_URI_KEY | KEY2Token::number> DoubleProperty;
-typedef ValueContext<int, IWORKNumberElement<int>, IWORKToken::NS_URI_SF | IWORKToken::number, KEY2Token::NS_URI_KEY | KEY2Token::number> IntProperty;
-typedef IWORKNumericPropertyContext<property::AnimationAutoPlay> AnimationAutoPlayPropertyElement;
-typedef IWORKNumericPropertyContext<property::AnimationDelay> AnimationDelayPropertyElement;
-typedef IWORKNumericPropertyContext<property::AnimationDuration> AnimationDurationPropertyElement;
-typedef NumericPropertyContext<property::AnimationAutoPlay> KeyAnimationAutoPlayPropertyElement;
-typedef NumericPropertyContext<property::AnimationDelay> KeyAnimationDelayPropertyElement;
-typedef NumericPropertyContext<property::AnimationDuration> KeyAnimationDurationPropertyElement;
+typedef IWORKValueContext<bool, IWORKNumberElement<bool>, IWORKToken::NS_URI_SF | IWORKToken::number, KEY2Token::NS_URI_KEY | KEY2Token::number> BoolProperty;
+typedef IWORKValueContext<double, IWORKNumberElement<double>, IWORKToken::NS_URI_SF | IWORKToken::number, KEY2Token::NS_URI_KEY | KEY2Token::number> DoubleProperty;
+typedef IWORKValueContext<int, IWORKNumberElement<int>, IWORKToken::NS_URI_SF | IWORKToken::number, KEY2Token::NS_URI_KEY | KEY2Token::number> IntProperty;
+typedef IWORKNumericPropertyContext<property::AnimationAutoPlay, KEY2Token::NS_URI_KEY | KEY2Token::number> AnimationAutoPlayPropertyElement;
+typedef IWORKNumericPropertyContext<property::AnimationDelay, KEY2Token::NS_URI_KEY | KEY2Token::number> AnimationDelayPropertyElement;
+typedef IWORKNumericPropertyContext<property::AnimationDuration, KEY2Token::NS_URI_KEY | KEY2Token::number> AnimationDurationPropertyElement;
 }
 
 namespace
@@ -244,17 +210,14 @@ IWORKXMLContextPtr_t PropertyMapElement::element(const int name)
 {
   switch (name)
   {
-  case KEY2Token::NS_URI_KEY | KEY2Token::animationAutoPlay :
-    return makeContext<KeyAnimationAutoPlayPropertyElement>(getState(), m_propMap);
-  case KEY2Token::NS_URI_KEY | KEY2Token::animationDelay :
-    return makeContext<KeyAnimationDelayPropertyElement>(getState(), m_propMap);
-  case KEY2Token::NS_URI_KEY | KEY2Token::animationDuration :
-    return makeContext<KeyAnimationDurationPropertyElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::animationAutoPlay :
+  case KEY2Token::NS_URI_KEY | KEY2Token::animationAutoPlay :
     return makeContext<AnimationAutoPlayPropertyElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::animationDelay :
+  case KEY2Token::NS_URI_KEY | KEY2Token::animationDelay :
     return makeContext<AnimationDelayPropertyElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::animationDuration :
+  case KEY2Token::NS_URI_KEY | KEY2Token::animationDuration :
     return makeContext<AnimationDurationPropertyElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::transition :
     return makeContext<TransitionElement>(getState(), m_transition);

@@ -65,6 +65,7 @@ struct IWORKDictionary
   IWORKDataMap_t m_data;
   IWORKDateTimeFormatMap_t m_dateTimeFormats;
   IWORKDurationFormatMap_t m_durationFormats;
+  IWORKExternalTextWrapMap_t m_externalTextWraps;
   IWORKFillMap_t m_fills;
   IWORKFilterDescriptorMap_t m_filterDescriptors;
   IWORKMediaContentMap_t m_filteredImages;

@@ -173,6 +173,7 @@ struct IWORKExternalTextWrap
   double m_alphaThreshold;
   IWORKExternalTextWrap();
 };
+typedef std::unordered_map<ID_t, IWORKExternalTextWrap> IWORKExternalTextWrapMap_t;
 
 struct IWORKWrap
 {

@@ -14,11 +14,12 @@
 
 #include "IWORKPropertyContextBase.h"
 #include "IWORKPropertyInfo.h"
+#include "IWORKToken.h"
 
 namespace libetonyek
 {
 
-template<typename Property, typename Context, int TokenId>
+template<typename Property, typename Context, int TokenId, int TokenId2=0>
 class IWORKPropertyContext : public IWORKPropertyContextBase
 {
 public:
@@ -32,24 +33,28 @@ private:
   boost::optional<typename IWORKPropertyInfo<Property>::ValueType> m_value;
 };
 
-template<typename Property, typename Context, int TokenId>
-IWORKPropertyContext<Property, Context, TokenId>::IWORKPropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
+template<typename Property, typename Context, int TokenId, int TokenId2>
+IWORKPropertyContext<Property, Context, TokenId, TokenId2>::IWORKPropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
   : IWORKPropertyContextBase(state, propMap)
   , m_value()
 {
 }
 
-template<typename Property, typename Context, int TokenId>
-IWORKXMLContextPtr_t IWORKPropertyContext<Property, Context, TokenId>::element(const int name)
+template<typename Property, typename Context, int TokenId, int TokenId2>
+IWORKXMLContextPtr_t IWORKPropertyContext<Property, Context, TokenId, TokenId2>::element(const int name)
 {
   m_default = false;
-  if (TokenId == name)
+  if (TokenId == name || (TokenId2 && TokenId2 == name))
     return makeContext<Context>(getState(), m_value);
+  else if (name != (IWORKToken::NS_URI_SF | IWORKToken::null))
+  {
+    ETONYEK_DEBUG_MSG(("IWORKPropertyContext<...>::element: found unexpected element %d\n", name));
+  }
   return IWORKXMLContextPtr_t();
 }
 
-template<typename Property, typename Context, int TokenId>
-void IWORKPropertyContext<Property, Context, TokenId>::endOfElement()
+template<typename Property, typename Context, int TokenId, int TokenId2>
+void IWORKPropertyContext<Property, Context, TokenId, TokenId2>::endOfElement()
 {
   if (bool(m_value))
     m_propMap.put<Property>(get(m_value));

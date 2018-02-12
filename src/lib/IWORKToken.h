@@ -191,6 +191,7 @@ enum
   evenPageMaster,
   extent,
   external_text_wrap,
+  external_text_wrap_ref,
   externalTextWrap,
   f,
   filename,

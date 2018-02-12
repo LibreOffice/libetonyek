@@ -223,6 +223,7 @@ evenPageMaster,evenPageMaster
 extent,extent
 externalTextWrap,externalTextWrap
 external-text-wrap,external_text_wrap
+external-text-wrap-ref,external_text_wrap_ref
 f,f
 false,false_
 filename,filename

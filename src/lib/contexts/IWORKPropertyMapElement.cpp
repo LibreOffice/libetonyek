@@ -817,7 +817,7 @@ namespace
 {
 
 typedef RefPropertyContext<property::Columns, ColumnsElement, IWORKToken::NS_URI_SF | IWORKToken::columns, IWORKToken::NS_URI_SF | IWORKToken::columns_ref> ColumnsPropertyElement;
-typedef IWORKPropertyContext<property::ExternalTextWrap, IWORKExternalTextWrapElement, IWORKToken::NS_URI_SF | IWORKToken::external_text_wrap> ExternalTextWrapElement;
+typedef RefPropertyContext<property::ExternalTextWrap, IWORKExternalTextWrapElement, IWORKToken::NS_URI_SF | IWORKToken::external_text_wrap, IWORKToken::NS_URI_SF | IWORKToken::external_text_wrap_ref> ExternalTextWrapElement;
 typedef RedirectPropertyContext<property::Fill, IWORKFillElement> FillPropertyElement;
 typedef IWORKPropertyContext<property::FontColor, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> FontColorElement;
 typedef IWORKPropertyContext<property::FontName, IWORKStringElement, IWORKToken::NS_URI_SF | IWORKToken::string> FontNameElement;
@@ -936,7 +936,7 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::columns :
     return makeContext<ColumnsPropertyElement>(getState(), *m_propMap, getState().getDictionary().m_columnSets);
   case IWORKToken::NS_URI_SF | IWORKToken::externalTextWrap:
-    return makeContext<ExternalTextWrapElement>(getState(), *m_propMap);
+    return makeContext<ExternalTextWrapElement>(getState(), *m_propMap, getState().getDictionary().m_externalTextWraps);
   case IWORKToken::NS_URI_SF | IWORKToken::fill :
     return makeContext<FillPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::filters :
