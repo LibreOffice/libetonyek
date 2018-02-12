@@ -135,8 +135,8 @@ void PatternStyleElement::attribute(const int name, const char *const value)
       }
       break;
     }
-    break;
     }
+    break;
   case KEY1Token::id :
     setId(value);
     break;

@@ -19,13 +19,12 @@ namespace libetonyek
 
 class IWORKXMLParserState;
 
-class IWORKDiscardContext : public IWORKXMLContext, public std::enable_shared_from_this<IWORKDiscardContext>
+class IWORKDiscardContext : public IWORKXMLContext, protected std::enable_shared_from_this<IWORKDiscardContext>
 {
   struct Data;
 
 public:
   explicit IWORKDiscardContext(IWORKXMLParserState &state);
-
 protected:
   void startOfElement() override;
   void attribute(int name, const char *value) override;
