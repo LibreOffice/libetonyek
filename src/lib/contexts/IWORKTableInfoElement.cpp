@@ -506,39 +506,39 @@ void TableModelVectorsElement::endOfElement()
   double pos=0;
   bool posSet=false;
   unsigned line=0;
-  for (size_t i=0; i<m_columnsVector.size(); ++i)
+  for (auto &col : m_columnsVector)
   {
-    if (!m_columnsVector[i].m_along)
+    if (!col.m_along)
       continue;
     if (!posSet)
     {
-      pos=get(m_columnsVector[i].m_along);
+      pos=get(col.m_along);
       posSet=true;
       tableData->m_positionToHorizontalLineMap[pos]=line;
     }
-    else if (get(m_columnsVector[i].m_along)>pos)
+    else if (get(col.m_along)>pos)
     {
-      tableData->m_columnSizes.push_back(get(m_columnsVector[i].m_along)-pos);
-      pos=get(m_columnsVector[i].m_along);
+      tableData->m_columnSizes.push_back(get(col.m_along)-pos);
+      pos=get(col.m_along);
       tableData->m_positionToHorizontalLineMap[pos]=++line;
     }
   }
   posSet=false;
   line=0;
-  for (size_t i=0; i<m_rowsVector.size(); ++i)
+  for (auto &row : m_rowsVector)
   {
-    if (!m_rowsVector[i].m_along)
+    if (!row.m_along)
       continue;
     if (!posSet)
     {
-      pos=get(m_rowsVector[i].m_along);
+      pos=get(row.m_along);
       posSet=true;
       tableData->m_positionToVerticalLineMap[pos]=line;
     }
-    else if (get(m_rowsVector[i].m_along)>pos)
+    else if (get(row.m_along)>pos)
     {
-      tableData->m_rowSizes.push_back(get(m_rowsVector[i].m_along)-pos);
-      pos=get(m_rowsVector[i].m_along);
+      tableData->m_rowSizes.push_back(get(row.m_along)-pos);
+      pos=get(row.m_along);
       tableData->m_positionToVerticalLineMap[pos]=++line;
     }
   }

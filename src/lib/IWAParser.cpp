@@ -1316,8 +1316,8 @@ void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
   if (bool(parent) && parent->has<ListLevelStyles>())
   {
     const IWORKListLevels_t &parentStyle = parent->get<ListLevelStyles>();
-    for (IWORKListLevels_t::const_iterator it = parentStyle.begin(); it != parentStyle.end(); ++it)
-      levelProps[it->first].setParent(&it->second->getPropertyMap());
+    for (const auto &it : parentStyle)
+      levelProps[it.first].setParent(&it.second->getPropertyMap());
   }
 
   IWORKListLevels_t listStyle;

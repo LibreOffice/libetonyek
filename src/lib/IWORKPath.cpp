@@ -690,17 +690,17 @@ bool IWORKPath::isRectangle() const
     return false;
   double x[5], y[5];
   int pt=0;
-  for (Curve_t::const_iterator it = curve.begin(); it != curve.end(); ++it)
+  for (const auto &it : curve)
   {
-    if (pt==0 && boost::get<MoveTo>(&*it))
+    if (pt==0 && boost::get<MoveTo>(&it))
     {
-      x[0]=x[4]=boost::get<MoveTo>(&*it)->m_x;
-      y[0]=y[4]=boost::get<MoveTo>(&*it)->m_y;
+      x[0]=x[4]=boost::get<MoveTo>(&it)->m_x;
+      y[0]=y[4]=boost::get<MoveTo>(&it)->m_y;
     }
-    else if (pt && boost::get<LineTo>(&*it))
+    else if (pt && boost::get<LineTo>(&it))
     {
-      x[pt]=boost::get<LineTo>(&*it)->m_x;
-      y[pt]=boost::get<LineTo>(&*it)->m_y;
+      x[pt]=boost::get<LineTo>(&it)->m_x;
+      y[pt]=boost::get<LineTo>(&it)->m_y;
     }
     else
       return false;
@@ -721,10 +721,9 @@ bool IWORKPath::isRectangle() const
 void IWORKPath::closePath(bool closeOnlyIsSamePoint)
 {
   bool lastClosed=false;
-  for (Path_t::iterator it = m_impl->m_path.begin(); it != m_impl->m_path.end(); ++it)
+  for (auto &curve : m_impl->m_path)
   {
     lastClosed=false;
-    Curve_t &curve=*it;
     if (curve.size()<=1) continue;
     const CurveElement_t front=curve.front();
     const CurveElement_t back=curve.back();
@@ -775,13 +774,13 @@ const std::string IWORKPath::str() const
   bool first=true;
   for (Path_t::const_iterator it = m_impl->m_path.begin(); it != m_impl->m_path.end(); ++it)
   {
-    for (Curve_t::const_iterator cIt = it->begin(); cIt != it->end(); ++cIt)
+    for (const auto &cIt : *it)
     {
       if (!first)
         sink << ' ';
       else
         first=false;
-      apply_visitor(SVGPrinter(sink), *cIt);
+      apply_visitor(SVGPrinter(sink), cIt);
     }
   }
 
@@ -792,8 +791,8 @@ void IWORKPath::write(librevenge::RVNGPropertyListVector &vec, double deltaX, do
 {
   for (Path_t::const_iterator it = m_impl->m_path.begin(); it != m_impl->m_path.end(); ++it)
   {
-    for (Curve_t::const_iterator cIt = it->begin(); cIt != it->end(); ++cIt)
-      apply_visitor(Writer(vec, deltaX, deltaY), *cIt);
+    for (const auto &cIt : *it)
+      apply_visitor(Writer(vec, deltaX, deltaY), cIt);
   }
 }
 

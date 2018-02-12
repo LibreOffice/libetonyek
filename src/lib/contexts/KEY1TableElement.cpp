@@ -454,27 +454,27 @@ void KEY1TableElement::endOfElement()
     unsigned line=0;
     double lastPos=0;
     bool first=true;
-    for (std::set<double>::const_iterator lIt=xPosSet.begin() ; lIt!=xPosSet.end(); ++lIt)
+    for (auto lIt : xPosSet)
     {
-      xPosToLineMap[*lIt]=line++;
+      xPosToLineMap[lIt]=line++;
       if (!first)
-        columnSizes.push_back(*lIt-lastPos);
+        columnSizes.push_back(lIt-lastPos);
       else
         first=false;
-      lastPos=*lIt;
+      lastPos=lIt;
     }
     // y are inverted
     line=(unsigned) yPosSet.size();
     lastPos=0;
     first=true;
-    for (std::set<double>::const_iterator lIt=yPosSet.begin() ; lIt!=yPosSet.end(); ++lIt)
+    for (auto lIt : yPosSet)
     {
-      yPosToLineMap[*lIt]=--line;
+      yPosToLineMap[lIt]=--line;
       if (!first)
-        rowSizes.push_front(*lIt-lastPos);
+        rowSizes.push_front(lIt-lastPos);
       else
         first=false;
-      lastPos=*lIt;
+      lastPos=lIt;
     }
     table->setSizes(columnSizes, rowSizes);
 
