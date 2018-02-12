@@ -23,7 +23,7 @@ IWORKTextStorageElement::IWORKTextStorageElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_stylesheetId()
   , m_hasStylesheet(false)
-  , m_stylesheet(0)
+  , m_stylesheet(nullptr)
 {
 }
 

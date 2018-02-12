@@ -25,7 +25,7 @@ public:
     : IWORKXMLElementContextBase(state)
     , m_value()
     , m_optional(value)
-    , m_direct(0)
+    , m_direct(nullptr)
     , m_isSet(nullptr)
   {
   }

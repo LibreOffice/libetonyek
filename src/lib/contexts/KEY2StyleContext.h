@@ -24,7 +24,7 @@ namespace libetonyek
 class KEY2StyleContext : public KEY2XMLElementContextBase
 {
 public:
-  KEY2StyleContext(KEY2ParserState &state, IWORKStyleMap_t *styleMap, const char *defaultParent=0, bool nested = false);
+  KEY2StyleContext(KEY2ParserState &state, IWORKStyleMap_t *styleMap, const char *defaultParent=nullptr, bool nested = false);
 
 private:
   virtual void attribute(int name, const char *value);

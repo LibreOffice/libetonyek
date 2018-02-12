@@ -54,7 +54,7 @@ IWORKStyleContainer<TokenId, RefTokenId, TokenId2, RefTokenId2>::IWORKStyleConta
   , m_styleMap(styleMap)
   , m_context()
   , m_ref()
-  , m_styleMap2(0)
+  , m_styleMap2(nullptr)
   , m_ref2()
 {
 }

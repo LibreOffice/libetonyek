@@ -38,7 +38,7 @@ IWORKStylePtr_t IWORKStylesheet::find(const std::string &name) const
     if (currentStylesheet->m_styles.end() != it)
       return it->second;
     if (currentStylesheet == currentStylesheet->parent.get())
-      currentStylesheet = 0;
+      currentStylesheet = nullptr;
     else
       currentStylesheet = currentStylesheet->parent.get();
     if (!currentStylesheet)
