@@ -44,6 +44,16 @@ KEYSlide::KEYSlide()
   , m_masterSlide()
 {
 }
+
+KEYTransition::KEYTransition()
+  : m_type(KEY_TRANSITION_STYLE_TYPE_NONE)
+  , m_name()
+  , m_automatic()
+  , m_delay()
+  , m_direction()
+  , m_duration()
+{
+}
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

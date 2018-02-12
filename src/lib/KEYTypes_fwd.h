@@ -32,6 +32,9 @@ struct KEYSlide;
 
 typedef std::shared_ptr<KEYSlide> KEYSlidePtr_t;
 typedef std::unordered_map<ID_t, KEYSlidePtr_t> KEYSlideMap_t;
+
+struct KEYTransition;
+typedef std::unordered_map<ID_t, KEYTransition> KEYTransitionMap_t;
 }
 
 #endif //  KEYTYPES_FWD_H_INCLUDED

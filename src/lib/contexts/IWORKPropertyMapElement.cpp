@@ -134,17 +134,6 @@ IWORKXMLContextPtr_t RefPropertyContext<Property, Context, TokenId, RefTokenId>:
   default:
     break;
   }
-  if (name==(IWORKToken::NS_URI_SF | IWORKToken::frame))
-  {
-    // REMOVEME in graphicStyle sf:stroke can contain some frame element instead of stroke
-    static bool first=true;
-    if (first)
-    {
-      first=false;
-      ETONYEK_DEBUG_MSG(("RefPropertyContext<...>::element: Oops, find some frame elements\n"));
-    }
-    return IWORKXMLContextPtr_t();
-  }
   ETONYEK_DEBUG_MSG(("RefPropertyContext<...>::element: unknown element %d\n", name));
   return IWORKXMLContextPtr_t();
 }
@@ -1137,6 +1126,12 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<VerticalAlignmentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::widowControl :
     return makeContext<WidowControlElement>(getState(), *m_propMap);
+  default:
+    if (name)
+    {
+      //TODO: print a message even if name is unknown...
+      ETONYEK_DEBUG_MSG(("IWORKPropertyMapElement::element: find some unknown element %d\n", int(name)));
+    }
   }
 
   return IWORKXMLContextPtr_t();

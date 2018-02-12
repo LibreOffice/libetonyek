@@ -49,6 +49,7 @@ protected:
   {
     if (name == Id)
       return makeContext<NestedParser>(getState(), m_value);
+    ETONYEK_DEBUG_MSG(("IWORKXMLContextPtr_t::element: found unexpected element %d\n", name));
     return IWORKXMLContextPtr_t();
   }
 

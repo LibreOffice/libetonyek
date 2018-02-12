@@ -150,6 +150,9 @@ libetonyek_internal_la_SOURCES = \
 	KEY6Parser.h \
 	KEYCollector.cpp \
 	KEYCollector.h \
+	KEYEnum.h \
+	KEYProperties.cpp \
+	KEYProperties.h \
 	KEYTypes.cpp \
 	KEYTypes.h \
 	KEYTypes_fwd.h \
@@ -324,6 +327,8 @@ libetonyek_internal_la_SOURCES = \
 	contexts/KEY1StylesContext.h \
 	contexts/KEY1TableElement.cpp \
 	contexts/KEY1TableElement.h \
+	contexts/KEY2StyleContext.cpp \
+	contexts/KEY2StyleContext.h \
 	contexts/PAG1AnnotationContext.cpp \
 	contexts/PAG1AnnotationContext.h \
 	contexts/PAG1AnnotationElement.cpp \

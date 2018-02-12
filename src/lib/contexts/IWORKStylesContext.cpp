@@ -48,8 +48,6 @@ IWORKXMLContextPtr_t IWORKStylesContext::element(const int name)
     return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_layoutStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
     return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_paragraphStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::slide_style :
-    return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_slideStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::table_style :
     return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_tableStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::table_cell_style :
@@ -79,8 +77,6 @@ IWORKXMLContextPtr_t IWORKStylesContext::element(const int name)
     return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_listStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref :
     return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_paragraphStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::slide_style_ref :
-    return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_slideStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::table_style_ref :
     return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_tableStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::table_cell_style_ref :

@@ -13,6 +13,7 @@
 #include "KEYTypes_fwd.h"
 
 #include <deque>
+#include <string>
 
 #include <boost/optional.hpp>
 
@@ -22,6 +23,7 @@
 #include "IWORKStyle_fwd.h"
 #include "IWORKText_fwd.h"
 #include "IWORKTypes.h"
+#include "KEYEnum.h"
 
 namespace libetonyek
 {
@@ -57,6 +59,19 @@ struct KEYSlide
   std::shared_ptr<KEYSlide> m_masterSlide;
 
   KEYSlide();
+};
+
+struct KEYTransition
+{
+  KEYTransition();
+
+  KEYTransitionStyleType m_type;
+  boost::optional<std::string> m_name;
+
+  boost::optional<bool> m_automatic;
+  boost::optional<double> m_delay;
+  boost::optional<int> m_direction;
+  boost::optional<double> m_duration;
 };
 
 }

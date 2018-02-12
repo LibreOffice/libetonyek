@@ -21,6 +21,7 @@
 #include "IWORKText.h"
 #include "IWORKTokenizer.h"
 #include "KEYCollector.h"
+#include "KEYEnum.h"
 #include "KEY1ContentElement.h"
 #include "KEY1Dictionary.h"
 #include "KEY1DivElement.h"
@@ -136,26 +137,6 @@ IWORKXMLContextPtr_t CDATAElement::element(const int /*name*/)
 
 namespace
 {
-enum TransitionStyleType
-{
-  TRANSITION_STYLE_TYPE_INHERITED,
-  TRANSITION_STYLE_TYPE_NONE
-};
-
-struct TransitionStyle
-{
-  TransitionStyle()
-    : m_type(TRANSITION_STYLE_TYPE_NONE)
-    , m_duration()
-  {
-  }
-  TransitionStyleType m_type;
-  boost::optional<int> m_duration;
-};
-}
-
-namespace
-{
 
 class TransitionStyleElement : public KEY1XMLElementContextBase
 {
@@ -167,7 +148,7 @@ private:
   virtual IWORKXMLContextPtr_t element(int name);
 
 private:
-  TransitionStyle m_transitionStyle;
+  KEYTransition m_transitionStyle;
 };
 
 TransitionStyleElement::TransitionStyleElement(KEY1ParserState &state)
@@ -181,20 +162,29 @@ void TransitionStyleElement::attribute(const int name, const char *const value)
   switch (name)
   {
   case KEY1Token::duration :
-    m_transitionStyle.m_duration=try_int_cast(value);
+    m_transitionStyle.m_duration=try_double_cast(value);
     break;
   case KEY1Token::type :
     switch (getState().getTokenizer().getId(value))
     {
     case KEY1Token::none :
-      m_transitionStyle.m_type=TRANSITION_STYLE_TYPE_NONE;
+      m_transitionStyle.m_type=KEY_TRANSITION_STYLE_TYPE_NONE;
       break;
     case KEY1Token::inherited :
-      m_transitionStyle.m_type=TRANSITION_STYLE_TYPE_INHERITED;
+      m_transitionStyle.m_type=KEY_TRANSITION_STYLE_TYPE_INHERITED;
       break;
     default :
-      ETONYEK_DEBUG_MSG(("TransitionStyleElement::attribute[KEY1Parser.cpp]: unexpected type %s\n", value));
+    {
+      m_transitionStyle.m_type=KEY_TRANSITION_STYLE_TYPE_NAMED;
+      m_transitionStyle.m_name=value;
+      static bool first=true;
+      if (first)
+      {
+        first=false;
+        ETONYEK_DEBUG_MSG(("TransitionStyleElement::attribute[KEY1Parser.cpp]: find some unexpected type=%s\n", value));
+      }
       break;
+    }
     }
     break;
   default :

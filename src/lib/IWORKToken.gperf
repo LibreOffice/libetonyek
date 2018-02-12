@@ -91,6 +91,10 @@ a,a
 align,align
 aligned,aligned
 alignment,alignment
+animationAuto,animationAuto
+animationAutoPlay,animationAutoPlay
+animationDelay,animationDelay
+animationDuration,animationDuration
 alpha-mask-path,alpha_mask_path
 alpha-threshold,alpha_threshold
 attachment-wrap-type,attachment_wrap_type
@@ -521,7 +525,6 @@ size,size
 sizesLocked,sizesLocked
 sl,sl
 slide-style,slide_style
-slide-style-ref,slide_style_ref
 slider-orientation,slider_orientation
 slider-position,slider_position
 so,so
@@ -629,6 +632,8 @@ top,top
 traced-path,traced_path
 tracking,tracking
 transform-gradient,transform_gradient
+transition,transition
+transition-attributes,transition_attributes
 true,true_
 tscale,tscale
 type,type

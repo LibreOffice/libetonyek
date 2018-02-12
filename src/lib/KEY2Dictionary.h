@@ -42,6 +42,7 @@ struct KEY2Dictionary : public IWORKDictionary
   KEYLayerMap_t m_layers;
   KEYSlideMap_t m_masterSlides;
   std::deque<KEYSlidePtr_t> m_slides;
+  KEYTransitionMap_t m_transitions;
 
   KEY2Dictionary();
 };

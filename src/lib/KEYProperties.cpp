@@ -7,24 +7,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "KEY2Dictionary.h"
+#include "KEYProperties.h"
 
 namespace libetonyek
 {
 
-KEY2Dictionary::KEY2Dictionary()
-  : IWORKDictionary()
-  , m_placeholderStyles()
-  , m_bodyPlaceholders()
-  , m_objectPlaceholders()
-  , m_slidenumberPlaceholders()
-  , m_titlePlaceholders()
-  , m_layers()
-  , m_masterSlides()
-  , m_slides()
-  , m_transitions()
-{
-}
+IWORK_IMPLEMENT_PROPERTY(AnimationAutoPlay);
+IWORK_IMPLEMENT_PROPERTY(AnimationDelay);
+IWORK_IMPLEMENT_PROPERTY(AnimationDuration);
+IWORK_IMPLEMENT_PROPERTY(Transition);
 
 }
 
