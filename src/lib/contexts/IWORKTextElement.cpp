@@ -10,7 +10,9 @@
 #include "IWORKTextElement.h"
 
 #include "IWORKCollector.h"
+#include "IWORKDictionary.h"
 #include "IWORKTextStorageElement.h"
+#include "IWORKText.h"
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 
@@ -19,6 +21,8 @@ namespace libetonyek
 
 IWORKTextElement::IWORKTextElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
+  , m_layoutStyleRef()
+  , m_stylesheet()
 {
 }
 
@@ -30,9 +34,7 @@ void IWORKTextElement::attribute(const int name, const char *value)
     IWORKXMLElementContextBase::attribute(name, value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
-    // TODO: handle
-    if (isCollector())
-      getCollector().collectStyle(IWORKStylePtr_t());
+    m_layoutStyleRef = value;
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::tscale : // find one time with value 90
     break;
@@ -46,7 +48,7 @@ IWORKXMLContextPtr_t IWORKTextElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::text_storage :
-    return makeContext<IWORKTextStorageElement>(getState());
+    return makeContext<IWORKTextStorageElement>(getState(), m_stylesheet);
   default:
     ETONYEK_DEBUG_MSG(("IWORKTextElement::element: find some unknown element\n"));
   }
@@ -54,6 +56,20 @@ IWORKXMLContextPtr_t IWORKTextElement::element(const int name)
   return IWORKXMLContextPtr_t();
 }
 
+void IWORKTextElement::endOfElement()
+{
+  if (!isCollector() || !bool(m_layoutStyleRef))
+    return;
+  IWORKStylePtr_t style= getState().getStyleByName(get(m_layoutStyleRef).c_str(), getState().getDictionary().m_layoutStyles,false);
+  if (!style && m_stylesheet)
+    style = m_stylesheet->find(get(m_layoutStyleRef));
+  if (!style)
+  {
+    ETONYEK_DEBUG_MSG(("IWORKTextElement::endOfElement: can not find style %s\n", get(m_layoutStyleRef).c_str()));
+  }
+  if (bool(getState().m_currentText))
+    getState().m_currentText->setLayoutStyle(style);
+}
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

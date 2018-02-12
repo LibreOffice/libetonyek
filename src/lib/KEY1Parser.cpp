@@ -465,6 +465,7 @@ private:
 
 BasicShapeElement::BasicShapeElement(KEY1ParserState &state)
   : KEY1XMLElementContextBase(state)
+  , m_style()
   , m_strokeColor()
   , m_strokeWidth()
   , m_opacity()
@@ -981,6 +982,7 @@ private:
 
 BodyElement::BodyElement(KEY1ParserState &state)
   : PlaceholderElement(state)
+  , m_indents()
 {
 }
 
@@ -1086,6 +1088,7 @@ TextboxElement::TextboxElement(KEY1ParserState &state)
   : BasicShapeElement(state)
   , m_size()
   , m_transformation()
+  , m_growHorizontally()
 {
 }
 
@@ -1186,7 +1189,11 @@ PluginDataElement::PluginDataElement(KEY1ParserState &state, boost::optional<IWO
 {
 }
 
+#ifndef DEBUG
+void PluginDataElement::attribute(const int name, const char *const)
+#else
 void PluginDataElement::attribute(const int name, const char *const value)
+#endif
 {
   switch (name)
   {
@@ -1520,6 +1527,7 @@ private:
 SlideElement::SlideElement(KEY1ParserState &state, bool isMasterSlide)
   : KEY1XMLElementContextBase(state)
   , m_isMasterSlide(isMasterSlide)
+  , m_styleRef()
   , m_masterRef()
   , m_name()
   , m_background()
@@ -1937,13 +1945,10 @@ public:
 private:
   virtual IWORKXMLContextPtr_t element(int name);
 
-private:
-  KEY1ParserState &m_state;
 };
 
 DiscardContext::DiscardContext(KEY1ParserState &state)
   : KEY1XMLContextBase<IWORKDiscardContext>(state)
-  , m_state(state)
 {
 }
 

@@ -10,7 +10,11 @@
 #ifndef IWORKTEXTELEMENT_H_INCLUDED
 #define IWORKTEXTELEMENT_H_INCLUDED
 
+#include <boost/optional.hpp>
+
 #include "IWORKXMLContextBase.h"
+
+#include "IWORKStylesheet.h"
 
 namespace libetonyek
 {
@@ -25,6 +29,10 @@ public:
 protected:
   void attribute(int name, const char *value) override;
   IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
+
+  boost::optional<ID_t> m_layoutStyleRef;
+  IWORKStylesheetPtr_t m_stylesheet;
 };
 
 }

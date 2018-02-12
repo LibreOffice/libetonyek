@@ -835,6 +835,7 @@ typedef IWORKPropertyContext<property::FontName, IWORKStringElement, IWORKToken:
 typedef IWORKPropertyContext<property::HeadLineEnd, IWORKLineEndElement, IWORKToken::NS_URI_SF | IWORKToken::line_end> HeadLineEndElement;
 typedef RefPropertyContext<property::LayoutMargins, PaddingElement, IWORKToken::NS_URI_SF | IWORKToken::padding, IWORKToken::NS_URI_SF | IWORKToken::padding_ref> LayoutMarginsElement;
 typedef RefPropertyContext<property::LineSpacing, LinespacingElement, IWORKToken::NS_URI_SF | IWORKToken::linespacing, IWORKToken::NS_URI_SF | IWORKToken::linespacing_ref> LineSpacingElement;
+typedef RefPropertyContext<property::Padding, PaddingElement, IWORKToken::NS_URI_SF | IWORKToken::padding, IWORKToken::NS_URI_SF | IWORKToken::padding_ref> PaddingContext;
 typedef IWORKPropertyContext<property::ParagraphFill, IWORKColorElement, IWORKToken::NS_URI_SF | IWORKToken::color> ParagraphFillElement;
 typedef RedirectPropertyContext<property::ParagraphStroke, IWORKStrokeContext> ParagraphStrokeElement;
 typedef IWORKPropertyContext<property::TailLineEnd, IWORKLineEndElement, IWORKToken::NS_URI_SF | IWORKToken::line_end> TailLineEndElement;
@@ -1010,6 +1011,8 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
     return makeContext<OpacityElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::outline :
     return makeContext<OutlineElement>(getState(), *m_propMap);
+  case IWORKToken::NS_URI_SF | IWORKToken::padding :
+    return makeContext<PaddingContext>(getState(), *m_propMap, getState().getDictionary().m_paddings);
   case IWORKToken::NS_URI_SF | IWORKToken::pageBreakBefore :
     return makeContext<PageBreakBeforeElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphBorderType :

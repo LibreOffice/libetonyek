@@ -12,6 +12,7 @@
 
 #include <boost/optional.hpp>
 
+#include "IWORKStylesheet.h"
 #include "IWORKTypes_fwd.h"
 #include "IWORKXMLContextBase.h"
 
@@ -24,6 +25,7 @@ class IWORKTextStorageElement : public IWORKXMLElementContextBase
 {
 public:
   explicit IWORKTextStorageElement(IWORKXMLParserState &state);
+  IWORKTextStorageElement(IWORKXMLParserState &state, IWORKStylesheetPtr_t &mainMap);
 
 protected:
   IWORKXMLContextPtr_t element(int name) override;
@@ -34,6 +36,12 @@ protected:
 private:
   boost::optional<ID_t> m_stylesheetId;
   bool m_hasStylesheet;
+protected:
+  IWORKStylesheetPtr_t *m_stylesheet;
+
+private:
+  IWORKTextStorageElement(IWORKTextStorageElement const &);
+  IWORKTextStorageElement &operator=(IWORKTextStorageElement const &);
 };
 
 }

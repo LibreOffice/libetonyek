@@ -23,6 +23,15 @@ IWORKTextStorageElement::IWORKTextStorageElement(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_stylesheetId()
   , m_hasStylesheet(false)
+  , m_stylesheet(0)
+{
+}
+
+IWORKTextStorageElement::IWORKTextStorageElement(IWORKXMLParserState &state, IWORKStylesheetPtr_t &mainMap)
+  : IWORKXMLElementContextBase(state)
+  , m_stylesheetId()
+  , m_hasStylesheet(false)
+  , m_stylesheet(&mainMap)
 {
 }
 
@@ -60,11 +69,12 @@ void IWORKTextStorageElement::sendStylesheet()
 
   if (m_stylesheetId) // a stylesheet has been found
   {
-    const IWORKStylesheetMap_t::const_iterator it = getState().getDictionary().m_stylesheets.find(get(m_stylesheetId));
+    const IWORKStylesheetMap_t::iterator it = getState().getDictionary().m_stylesheets.find(get(m_stylesheetId));
     if (it != getState().getDictionary().m_stylesheets.end())
     {
       getCollector().pushStylesheet(it->second);
       getState().m_stylesheet=it->second;
+      if (m_stylesheet) *m_stylesheet=it->second;
       m_hasStylesheet = true;
     }
     else

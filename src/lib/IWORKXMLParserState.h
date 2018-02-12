@@ -41,8 +41,7 @@ public:
   IWORKDictionary &getDictionary();
   IWORKCollector &getCollector() const;
   const IWORKTokenizer &getTokenizer() const;
-  IWORKStylePtr_t getStyleByName(const char *const name, const IWORKStyleMap_t &mainMap) const;
-
+  IWORKStylePtr_t getStyleByName(const char *const name, const IWORKStyleMap_t &mainMap, bool mustExist=true) const;
 
 public:
   IWORKTableDataPtr_t m_tableData;

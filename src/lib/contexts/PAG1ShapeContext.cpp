@@ -52,7 +52,7 @@ IWORKXMLContextPtr_t TextElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::text_storage :
-    return makeContext<PAG1TextStorageElement>(getState(), PAG_TEXTSTORAGE_KIND_TEXTBOX);
+    return makeContext<PAG1TextStorageElement>(getState(), PAG1XMLContextBase<IWORKTextElement>::m_stylesheet, PAG_TEXTSTORAGE_KIND_TEXTBOX);
   default:
     break;
   }

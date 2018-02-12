@@ -127,12 +127,22 @@ struct TableSegment
 
 struct KEY1TableElement::TableData
 {
+  TableData();
+
   std::deque<Element> m_elements;
   std::deque<TableSegment> m_horizontalSegments;
   std::deque<TableSegment> m_verticalSegments;
 
   std::unordered_map<unsigned, IWORKPosition> m_idToPositionMap;
 };
+
+KEY1TableElement::TableData::TableData()
+  : m_elements()
+  , m_horizontalSegments()
+  , m_verticalSegments()
+  , m_idToPositionMap()
+{
+}
 
 namespace
 {

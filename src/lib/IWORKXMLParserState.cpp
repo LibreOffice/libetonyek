@@ -55,7 +55,7 @@ const IWORKTokenizer &IWORKXMLParserState::getTokenizer() const
   return m_parser.getTokenizer();
 }
 
-IWORKStylePtr_t IWORKXMLParserState::getStyleByName(const char *const name, const IWORKStyleMap_t &mainMap) const
+IWORKStylePtr_t IWORKXMLParserState::getStyleByName(const char *const name, const IWORKStyleMap_t &mainMap, bool mustExist) const
 {
   if (!name)
   {
@@ -67,7 +67,10 @@ IWORKStylePtr_t IWORKXMLParserState::getStyleByName(const char *const name, cons
     return it->second;
   if (m_stylesheet && m_stylesheet->m_styles.find(name)!=m_stylesheet->m_styles.end())
     return m_stylesheet->m_styles.find(name)->second;
-  ETONYEK_DEBUG_MSG(("IWORKXMLParserState::getStyleByName: unknown style %s\n", name));
+  if (mustExist)
+  {
+    ETONYEK_DEBUG_MSG(("IWORKXMLParserState::getStyleByName: unknown style %s\n", name));
+  }
   return IWORKStylePtr_t();
 }
 

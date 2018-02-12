@@ -832,6 +832,22 @@ PAG1TextStorageElement::PAG1TextStorageElement(PAG1ParserState &state, PAGTextSt
   }
 }
 
+PAG1TextStorageElement::PAG1TextStorageElement(PAG1ParserState &state, IWORKStylesheetPtr_t &sheetmap, PAGTextStorageKind kind)
+  : PAG1XMLContextBase<IWORKTextStorageElement>(state)
+  , m_kind(kind)
+  , m_textOpened(false)
+{
+  PAG1XMLContextBase<IWORKTextStorageElement>::m_stylesheet=&sheetmap;
+  if (m_kind==PAG_TEXTSTORAGE_KIND_TEXTBOX)
+  {
+    m_textOpened=true;
+    if (!bool(getState().m_currentText))
+    {
+      ETONYEK_DEBUG_MSG(("PAG1TextStorageElement::PAG1TextStorageElement: called in textbox without current tetx\n"));
+    }
+  }
+}
+
 IWORKXMLContextPtr_t PAG1TextStorageElement::element(const int name)
 {
   sendStylesheet();

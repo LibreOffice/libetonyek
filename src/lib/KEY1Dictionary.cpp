@@ -115,6 +115,12 @@ void KEY1Dictionary::storeTitlePlaceholder(KEYPlaceholderPtr_t placeHolder)
   getCurrentStylesContext().m_titlePlaceholder=placeHolder;
 }
 
+KEY1Dictionary::StyleContext::StyleContext()
+  : m_style()
+  , m_styles()
+{
+}
+
 void KEY1Dictionary::StyleContext::storeStyle(IWORKStylePtr_t style, bool definition)
 {
   if (!style) return;

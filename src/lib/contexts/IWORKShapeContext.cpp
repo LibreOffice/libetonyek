@@ -37,6 +37,7 @@ IWORKShapeContext::IWORKShapeContext(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
   , m_style()
   , m_wrap()
+  , m_order()
   , m_locked(false)
 {
 }

@@ -48,6 +48,8 @@ public:
   void setLayoutStyle(const IWORKStylePtr_t &style);
   /// Flush the current layout.
   void flushLayout();
+  /// returns the current layout style
+  IWORKStylePtr_t getLayoutStyle();
 
   /// Set list style used for the next paragraph, if it is in a list.
   void setListStyle(const IWORKStylePtr_t &style);

@@ -947,6 +947,42 @@ void IWORKCollector::fillGraphicProps(const IWORKStylePtr_t style, librevenge::R
   }
 }
 
+void IWORKCollector::fillLayoutProps(const IWORKStylePtr_t layoutStyle, librevenge::RVNGPropertyList &props)
+{
+  if (!layoutStyle) return;
+  if (layoutStyle->has<property::VerticalAlignment>())
+  {
+    const IWORKVerticalAlignment align = layoutStyle->get<property::VerticalAlignment>();
+    switch (align)
+    {
+    case IWORK_VERTICAL_ALIGNMENT_TOP:
+      props.insert("draw:textarea-vertical-align", "top");
+      break;
+    case IWORK_VERTICAL_ALIGNMENT_MIDDLE:
+      props.insert("draw:textarea-vertical-align", "middle");
+      break;
+    case IWORK_VERTICAL_ALIGNMENT_BOTTOM:
+      props.insert("draw:textarea-vertical-align", "bottom");
+      break;
+    default:
+      ETONYEK_DEBUG_MSG(("IWORKCollector::fillLayoutProps: find unknown vertical alignment\n"));
+      break;
+    }
+  }
+  if (layoutStyle->has<property::Padding>())
+  {
+    const IWORKPadding padding = layoutStyle->get<property::Padding>();
+    if (padding.m_bottom)
+      props.insert("fo:padding-bottom", get(padding.m_bottom)>0 ? get(padding.m_bottom) : 0, librevenge::RVNG_POINT);
+    if (padding.m_left)
+      props.insert("fo:padding-left", get(padding.m_left)>0 ? get(padding.m_left) : 0, librevenge::RVNG_POINT);
+    if (padding.m_right)
+      props.insert("fo:padding-right", get(padding.m_right)>0 ? get(padding.m_right) : 0, librevenge::RVNG_POINT);
+    if (padding.m_top)
+      props.insert("fo:padding-top", get(padding.m_top)>0 ? get(padding.m_top)>0 : 0, librevenge::RVNG_POINT);
+  }
+}
+
 void IWORKCollector::fillWrapProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props,
                                    const boost::optional<int> &order)
 {
@@ -1182,29 +1218,10 @@ void IWORKCollector::drawShape(const IWORKShapePtr_t &shape)
     styleProps.insert("style:protect", "position size");
   if (createOnlyTextbox)
   {
-    IWORKStylePtr_t layoutStyle;
-    if (bool(shape->m_style) && shape->m_style->has<property::LayoutStyle>())
+    IWORKStylePtr_t layoutStyle=shape->m_text->getLayoutStyle();
+    if (!layoutStyle && bool(shape->m_style) && shape->m_style->has<property::LayoutStyle>())
       layoutStyle=shape->m_style->get<property::LayoutStyle>();
-    if (bool(layoutStyle) && layoutStyle->has<property::VerticalAlignment>())
-    {
-      const IWORKVerticalAlignment align = layoutStyle->get<property::VerticalAlignment>();
-      switch (align)
-      {
-      case IWORK_VERTICAL_ALIGNMENT_TOP:
-        styleProps.insert("draw:textarea-vertical-align", "top");
-        break;
-      case IWORK_VERTICAL_ALIGNMENT_MIDDLE:
-        styleProps.insert("draw:textarea-vertical-align", "middle");
-        break;
-      case IWORK_VERTICAL_ALIGNMENT_BOTTOM:
-        styleProps.insert("draw:textarea-vertical-align", "bottom");
-        break;
-      default:
-        ETONYEK_DEBUG_MSG(("IWORKCollector::drawShape: find unknown vertical alignment\n"));
-        break;
-      }
-    }
-
+    fillLayoutProps(layoutStyle, styleProps);
     return drawTextBox(shape->m_text, trafo, shape->m_geometry, styleProps);
   }
 
@@ -1218,7 +1235,14 @@ void IWORKCollector::drawShape(const IWORKShapePtr_t &shape)
   elements.addDrawPath(shapeProps);
 
   if (hasText)
-    drawTextBox(shape->m_text, trafo, shape->m_geometry, librevenge::RVNGPropertyList());
+  {
+    librevenge::RVNGPropertyList props;
+    IWORKStylePtr_t layoutStyle=shape->m_text->getLayoutStyle();
+    if (!layoutStyle && bool(shape->m_style) && shape->m_style->has<property::LayoutStyle>())
+      layoutStyle=shape->m_style->get<property::LayoutStyle>();
+    fillLayoutProps(layoutStyle, props);
+    drawTextBox(shape->m_text, trafo, shape->m_geometry, props);
+  }
 }
 
 void IWORKCollector::writeFill(const IWORKFill &fill, librevenge::RVNGPropertyList &props)

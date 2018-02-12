@@ -60,6 +60,8 @@ struct KEY1Dictionary : public IWORKDictionary
 protected:
   struct StyleContext
   {
+    StyleContext();
+
     IWORKStylePtr_t m_style;
 
     std::deque<IWORKStylePtr_t> m_styles;

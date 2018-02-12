@@ -23,6 +23,7 @@ class PAG1TextStorageElement : public PAG1XMLContextBase<IWORKTextStorageElement
 {
 public:
   explicit PAG1TextStorageElement(PAG1ParserState &state, const PAGTextStorageKind kind=PAG_TEXTSTORAGE_KIND_BASIC);
+  PAG1TextStorageElement(PAG1ParserState &state, IWORKStylesheetPtr_t &mainMap, const PAGTextStorageKind kind=PAG_TEXTSTORAGE_KIND_BASIC);
 
 private:
   IWORKXMLContextPtr_t element(int name) override;

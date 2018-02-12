@@ -547,6 +547,11 @@ void IWORKText::pushBaseParagraphStyle(const IWORKStylePtr_t &style)
   m_paraStyleStack.push(style);
 }
 
+IWORKStylePtr_t IWORKText::getLayoutStyle()
+{
+  return m_layoutStyle;
+}
+
 void IWORKText::setLayoutStyle(const IWORKStylePtr_t &style)
 {
   if (bool(m_recorder))
