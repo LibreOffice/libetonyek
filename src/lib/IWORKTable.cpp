@@ -115,7 +115,7 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStyleStack 
           ETONYEK_DEBUG_MSG(("writeCellFormat: can not read seconds\n"));
           break;
         }
-        const std::time_t t = std::time_t(ETONYEK_EPOCH_BEGIN + get(seconds));
+        const auto t = std::time_t(ETONYEK_EPOCH_BEGIN + get(seconds));
         struct tm *const time = gmtime(&t);
 
         props.insert("librevenge:day", time->tm_mday);
@@ -274,7 +274,7 @@ librevenge::RVNGString convertCellValueInText(const IWORKStyleStack &style, cons
       ETONYEK_DEBUG_MSG(("convertCellValueInText: can not read seconds\n"));
       break;
     }
-    const std::time_t t = std::time_t(ETONYEK_EPOCH_BEGIN + get(seconds));
+    const auto t = std::time_t(ETONYEK_EPOCH_BEGIN + get(seconds));
     struct tm *const time = gmtime(&t);
     librevenge::RVNGString res;
     if (time->tm_hour)

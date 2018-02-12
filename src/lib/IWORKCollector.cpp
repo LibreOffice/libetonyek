@@ -1133,7 +1133,7 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
     if (!mimetype.empty())
     {
       input->seek(0, librevenge::RVNG_SEEK_END);
-      const unsigned long size = (unsigned long) input->tell();
+      const auto size = (unsigned long) input->tell();
       input->seek(0, librevenge::RVNG_SEEK_SET);
 
       unsigned long readBytes = 0;

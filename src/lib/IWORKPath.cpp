@@ -806,7 +806,7 @@ bool approxEqual(const IWORKPath &left, const IWORKPath &right, const double eps
        ++lit, ++rit)
   {
     if (lit->size()!=rit->size()) return false;
-    for (Curve_t::const_iterator cLit = lit->begin(), cRit = rit->begin(); cLit != lit->end(); ++cLit, ++cRit)
+    for (auto cLit = lit->begin(), cRit = rit->begin(); cLit != lit->end(); ++cLit, ++cRit)
     {
       if (!apply_visitor(Comparator(eps), *cLit, *cRit))
         return false;

@@ -77,7 +77,7 @@ bool uncompressBlock(const RVNGInputStreamPtr_t &input, const unsigned long leng
   Data data(uncompressed);
 
   const long blockEnd = input->tell() + long(length);
-  const unsigned long uncompressedLength = (unsigned long) readUVar(input);
+  const auto uncompressedLength = (unsigned long) readUVar(input);
   const size_t maxSize = size_t((std::min)(2 * length, uncompressedLength)); // don't want unbounded allocation
   size_t newSize = data.m_data.size() + maxSize;
   data.m_data.reserve(newSize);

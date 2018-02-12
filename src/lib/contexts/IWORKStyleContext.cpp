@@ -85,7 +85,7 @@ IWORKXMLContextPtr_t IWORKStyleContext::element(const int name)
 
 void IWORKStyleContext::endOfElement()
 {
-  bool hasParentIdent=bool(m_parentIdent);
+  auto hasParentIdent=bool(m_parentIdent);
   if (!hasParentIdent && !m_defaultParent.empty() && (!m_ident || (m_defaultParent != get(m_ident))))
     m_parentIdent = m_defaultParent;
   m_style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));

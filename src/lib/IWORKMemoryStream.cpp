@@ -22,13 +22,13 @@ IWORKMemoryStream::IWORKMemoryStream(const RVNGInputStreamPtr_t &input)
   , m_length(0)
   , m_pos(0)
 {
-  const unsigned long begin = (unsigned long) input->tell();
+  const auto begin = (unsigned long) input->tell();
   if (input->seek(0, librevenge::RVNG_SEEK_END))
   {
     while (!input->isEnd())
       readU8(input);
   }
-  const unsigned long end = (unsigned long) input->tell();
+  const auto end = (unsigned long) input->tell();
   input->seek((long) begin, librevenge::RVNG_SEEK_SET);
 
   read(input, static_cast<unsigned>(end - begin));

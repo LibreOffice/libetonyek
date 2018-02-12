@@ -45,9 +45,9 @@ RVNGInputStreamPtr_t getInflatedStream(const RVNGInputStreamPtr_t &input)
   if (uncompressed)
     offset = 0;
 
-  unsigned long begin = (unsigned long) input->tell();
+  auto begin = (unsigned long) input->tell();
   input->seek(0, librevenge::RVNG_SEEK_END);
-  unsigned long end = (unsigned long) input->tell();
+  auto end = (unsigned long) input->tell();
   unsigned long compressedSize = end - begin + offset;
   input->seek(long(begin - offset), librevenge::RVNG_SEEK_SET);
 

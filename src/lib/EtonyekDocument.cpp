@@ -154,7 +154,7 @@ bool probeBinary(DetectionInfo &info)
 
   EtonyekDocument::Type detected = EtonyekDocument::TYPE_UNKNOWN;
 
-  const uint64_t pos = uint64_t(info.m_input->tell());
+  const auto pos = uint64_t(info.m_input->tell());
   const IWAMessage header(info.m_input, (unsigned long) headerLen);
 
   if (header.uint32(1) && header.message(2) && header.message(2).uint32(1) && (header.uint32(1).get() == 1))

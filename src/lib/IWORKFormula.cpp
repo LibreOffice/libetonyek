@@ -479,7 +479,7 @@ private:
         if (get(val.m_column).m_absolute)
           m_out << '$';
 
-        unsigned column = unsigned(int(get(val.m_column).m_coord)+offsetColumn);
+        auto column = unsigned(int(get(val.m_column).m_coord)+offsetColumn);
         vector<char> columnNumerals;
         columnNumerals.reserve(4);
         while (column != 0)

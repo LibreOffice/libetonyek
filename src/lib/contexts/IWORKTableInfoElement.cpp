@@ -256,7 +256,7 @@ void TableCellElement::emitCell()
     // column
     unsigned column=tableData->m_positionToHorizontalLineMap.find(get(cell.m_minXBorder.m_along))->second;
     unsigned columnSpan=0;
-    unsigned numColumns=(unsigned) tableData->m_columnSizes.size();
+    auto numColumns=(unsigned) tableData->m_columnSizes.size();
     if (cell.m_maxXBorder.m_along && tableData->m_positionToHorizontalLineMap.find(get(cell.m_maxXBorder.m_along))
         != tableData->m_positionToHorizontalLineMap.end())
       columnSpan=unsigned(tableData->m_positionToHorizontalLineMap.find(get(cell.m_maxXBorder.m_along))->second-column);
@@ -268,7 +268,7 @@ void TableCellElement::emitCell()
     // row
     unsigned row=tableData->m_positionToVerticalLineMap.find(get(cell.m_minYBorder.m_along))->second;
     unsigned rowSpan=0;
-    unsigned numRows=(unsigned) tableData->m_rowSizes.size();
+    auto numRows=(unsigned) tableData->m_rowSizes.size();
     if (cell.m_maxYBorder.m_along && tableData->m_positionToVerticalLineMap.find(get(cell.m_maxYBorder.m_along))
         != tableData->m_positionToVerticalLineMap.end())
       rowSpan=unsigned(tableData->m_positionToVerticalLineMap.find(get(cell.m_maxYBorder.m_along))->second-row);
