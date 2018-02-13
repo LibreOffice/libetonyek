@@ -9,6 +9,8 @@
 
 #include "IWORKTableInfoElement.h"
 
+#include <memory>
+
 #include "libetonyek_xml.h"
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
@@ -607,7 +609,7 @@ void TableInfoTableElement::attribute(const int name, const char *value)
 
 void TableInfoTableElement::startOfElement()
 {
-  getState().m_tableData.reset(new IWORKTableData());
+  getState().m_tableData = std::make_shared<IWORKTableData>();
 }
 
 IWORKXMLContextPtr_t TableInfoTableElement::element(const int name)

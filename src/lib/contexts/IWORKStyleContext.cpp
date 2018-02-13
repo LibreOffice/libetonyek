@@ -9,6 +9,8 @@
 
 #include "IWORKStyleContext.h"
 
+#include <memory>
+
 #include "libetonyek_xml.h"
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
@@ -88,7 +90,7 @@ void IWORKStyleContext::endOfElement()
   auto hasParentIdent=bool(m_parentIdent);
   if (!hasParentIdent && !m_defaultParent.empty() && (!m_ident || (m_defaultParent != get(m_ident))))
     m_parentIdent = m_defaultParent;
-  m_style.reset(new IWORKStyle(m_props, m_ident, m_parentIdent));
+  m_style = std::make_shared<IWORKStyle>(m_props, m_ident, m_parentIdent);
   if (getId() && bool(m_styleMap))
     (*m_styleMap)[get(getId())] = m_style;
   if (getState().m_stylesheet)

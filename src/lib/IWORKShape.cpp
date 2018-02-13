@@ -14,6 +14,7 @@
 #include <deque>
 
 #include <glm/glm.hpp>
+#include <memory>
 
 #include "IWORKDocumentInterface.h"
 #include "IWORKPath.h"
@@ -132,7 +133,7 @@ IWORKPathPtr_t makePolyLine(const deque<Point> inputPoints, bool close = true)
   if (points.size() < 2)
     return path;
 
-  path.reset(new IWORKPath());
+  path = std::make_shared<IWORKPath>();
 
   deque<Point>::const_iterator it = points.begin();
   path->appendMoveTo(it->x, it->y);

@@ -10,6 +10,7 @@
 #include "IWORKMediaElement.h"
 
 #include <boost/optional.hpp>
+#include <memory>
 
 #include "libetonyek_xml.h"
 
@@ -248,7 +249,7 @@ void MovieMediaElement::endOfElement()
 {
   if (m_data)
   {
-    m_content.reset(new IWORKMediaContent());
+    m_content = std::make_shared<IWORKMediaContent>();
     m_content->m_data = m_data;
     return;
   }
@@ -401,7 +402,7 @@ void IWORKMediaElement::endOfElement()
   {
     if (m_movieData)
     {
-      m_content.reset(new IWORKMediaContent());
+      m_content = std::make_shared<IWORKMediaContent>();
       m_content->m_data = m_movieData;
     }
     else if (m_posterImage)

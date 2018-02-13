@@ -14,6 +14,7 @@
 #include "IWORKLanguageManager.h"
 
 #include <cstdlib>
+#include <memory>
 #include <stdexcept>
 
 #ifdef WITH_LIBLANGTAG
@@ -211,7 +212,7 @@ const std::string IWORKLanguageManager::getLanguage(const std::string &tag) cons
 const IWORKLanguageManager::LangDB &IWORKLanguageManager::getLangDB() const
 {
   if (!m_langDB)
-    m_langDB.reset(new LangDB());
+    m_langDB = std::make_shared<LangDB>();
   return *m_langDB;
 }
 

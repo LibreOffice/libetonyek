@@ -10,6 +10,7 @@
 #include <boost/spirit/include/qi.hpp>
 
 #include <glm/glm.hpp>
+#include <memory>
 
 #include "KEY1Parser.h"
 
@@ -506,7 +507,7 @@ void BasicShapeElement::endOfElement()
   if (getState().m_isPrototype&& (!m_strokeColor && !m_strokeWidth && !m_opacity))
     return;
   if (!m_style)
-    m_style.reset(new IWORKStyle(IWORKPropertyMap(), boost::none, IWORKStylePtr_t()));
+    m_style = std::make_shared<IWORKStyle>(IWORKPropertyMap(), boost::none, IWORKStylePtr_t());
   if (m_opacity)
     m_style->getPropertyMap().put<property::Opacity>(get(m_opacity));
   if (m_strokeColor || m_strokeWidth)
@@ -600,15 +601,15 @@ void ImageElement::endOfElement()
 
   if (m_imageName)
   {
-    content.reset(new IWORKMediaContent());
-    content->m_data.reset(new IWORKData);
+    content = std::make_shared<IWORKMediaContent>();
+    content->m_data = std::make_shared<IWORKData>();
     content->m_data->m_stream.reset(getState().getParser().getPackage()->getSubStreamByName(get(m_imageName).c_str()));
     content->m_size=m_naturalSize;
   }
   IWORKGeometryPtr_t geometry;
   if (m_transformation && m_naturalSize)
   {
-    geometry.reset(new IWORKGeometry);
+    geometry = std::make_shared<IWORKGeometry>();
     glm::dvec3 pos=get(m_transformation)*glm::dvec3(0,0,1);
     geometry->m_position=IWORKPosition(pos[0],pos[1]);
     glm::dvec3 dim=get(m_transformation)*glm::dvec3(get(m_naturalSize).m_width,get(m_naturalSize).m_height,0);
@@ -735,7 +736,7 @@ void ShapeElement::attribute(const int name, const char *const value)
   case KEY1Token::path :
     try
     {
-      m_path.reset(new IWORKPath(value));
+      m_path = std::make_shared<IWORKPath>(value);
     }
     catch (const IWORKPath::InvalidException &)
     {
@@ -1556,7 +1557,7 @@ void SlideElement::startOfElement()
   {
     getCollector().startPage();
     getCollector().startLayer();
-    m_recorder.reset(new IWORKRecorder());
+    m_recorder = std::make_shared<IWORKRecorder>();
     getCollector().setRecorder(m_recorder);
   }
 }

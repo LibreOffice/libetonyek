@@ -377,7 +377,7 @@ bool IWAParser::readFill(const IWAMessage &msg, IWORKFill &fill)
     const optional<unsigned> &fileRef = readRef(get(msg.message(3)), 6);
     if (fileRef)
     {
-      bitmap.m_data.reset(new IWORKData());
+      bitmap.m_data = std::make_shared<IWORKData>();
       bitmap.m_data->m_stream = queryFile(get(fileRef));
     }
     fill = bitmap;
@@ -942,7 +942,7 @@ void IWAParser::parseCharacterStyle(const unsigned id, IWORKStylePtr_t &style)
   if (get(msg).message(11))
     parseCharacterProperties(get(get(msg).message(11)), props);
 
-  style.reset(new IWORKStyle(props, name, parent));
+  style = std::make_shared<IWORKStyle>(props, name, parent);
 }
 
 void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
@@ -1020,7 +1020,7 @@ void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
     }
   }
 
-  style.reset(new IWORKStyle(props, name, parent));
+  style = std::make_shared<IWORKStyle>(props, name, parent);
 }
 
 void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
@@ -1087,7 +1087,7 @@ void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
     // TODO: layout props
   }
 
-  style.reset(new IWORKStyle(props, name, parent));
+  style = std::make_shared<IWORKStyle>(props, name, parent);
 }
 
 void IWAParser::parseCellStyle(const unsigned id, IWORKStylePtr_t &style)
@@ -1154,7 +1154,7 @@ void IWAParser::parseCellStyle(const unsigned id, IWORKStylePtr_t &style)
     }
   }
 
-  style.reset(new IWORKStyle(props, name, parent));
+  style = std::make_shared<IWORKStyle>(props, name, parent);
 }
 
 void IWAParser::parseTableStyle(const unsigned id, IWORKStylePtr_t &style)
@@ -1198,7 +1198,7 @@ void IWAParser::parseTableStyle(const unsigned id, IWORKStylePtr_t &style)
       props.put<FontName>(get(properties.string(41)));
   }
 
-  style.reset(new IWORKStyle(props, name, parent));
+  style = std::make_shared<IWORKStyle>(props, name, parent);
 }
 
 void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
@@ -1322,11 +1322,11 @@ void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
 
   IWORKListLevels_t listStyle;
   for (map<unsigned, IWORKPropertyMap>::const_iterator it = levelProps.begin(); it != levelProps.end(); ++it)
-    listStyle[it->first].reset(new IWORKStyle(it->second, none, none));
+    listStyle[it->first] = std::make_shared<IWORKStyle>(it->second, none, none);
 
   IWORKPropertyMap props;
   props.put<ListLevelStyles>(listStyle);
-  style.reset(new IWORKStyle(props, name, none));
+  style = std::make_shared<IWORKStyle>(props, name, none);
 }
 
 void IWAParser::parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props)
@@ -1438,7 +1438,7 @@ void IWAParser::parseTabularModel(const unsigned id)
   if (!rows || !columns)
     return;
 
-  m_currentTable.reset(new TableInfo(m_collector.createTable(m_tableNameMap, m_langManager), get(columns), get(rows)));
+  m_currentTable = std::make_shared<TableInfo>(m_collector.createTable(m_tableNameMap, m_langManager), get(columns), get(rows));
   m_currentTable->m_table->setSize(get(columns), get(rows));
 
   IWORKStylePtr_t tableStyle;

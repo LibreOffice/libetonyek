@@ -903,7 +903,7 @@ void IWORKCollector::fillGraphicProps(const IWORKStylePtr_t style, librevenge::R
       if (lineEnd.m_path)
       {
         IWORKPathPtr_t path;
-        path.reset(new IWORKPath(get(lineEnd.m_path)));
+        path = std::make_shared<IWORKPath>(get(lineEnd.m_path));
         /*if (lineEnd.m_filled) path->closePath(false); */
         (*path)*=glm::dmat3(-1,0,0,0,-1,0,0,0,1);
         std::string finalStr=path->str();

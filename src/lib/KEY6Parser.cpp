@@ -318,7 +318,7 @@ void KEY6Parser::parseSlideStyle(const unsigned id, IWORKStylePtr_t &style)
     }
   }
 
-  style.reset(new IWORKStyle(props, name, parent));
+  style = std::make_shared<IWORKStyle>(props, name, parent);
 }
 
 }

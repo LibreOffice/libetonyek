@@ -8,7 +8,7 @@
  */
 
 #include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix.hpp>
+#include <memory>
 
 #include "KEY1SpanElement.h"
 
@@ -111,7 +111,7 @@ bool KEY1SpanStyle::readAttribute(const int name, const char *const value)
 IWORKStylePtr_t KEY1SpanStyle::getStyle()
 {
   if (!m_style)
-    m_style.reset(new IWORKStyle(m_propMap, boost::none, m_parentStyle));
+    m_style = std::make_shared<IWORKStyle>(m_propMap, boost::none, m_parentStyle);
   return m_style;
 }
 

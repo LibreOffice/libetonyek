@@ -9,6 +9,8 @@
 
 #include "IWORKBinaryElement.h"
 
+#include <memory>
+
 #include "IWORKDataElement.h"
 #include "IWORKDictionary.h"
 #include "IWORKSizeElement.h"
@@ -46,7 +48,7 @@ void IWORKBinaryElement::endOfElement()
 
   if (bool(m_data))
   {
-    binary.reset(new IWORKMediaContent());
+    binary = std::make_shared<IWORKMediaContent>();
     binary->m_data = m_data;
     binary->m_size = m_size;
   }

@@ -10,6 +10,7 @@
 #include "IWORKWrapElement.h"
 
 #include <boost/lexical_cast.hpp>
+#include <memory>
 
 #include "libetonyek_xml.h"
 #include "IWORKBezierElement.h"
@@ -50,7 +51,7 @@ void PathElement::attribute(const int name, const char *const value)
   case IWORKToken::NS_URI_SFA | IWORKToken::path :
     try
     {
-      m_path.reset(new IWORKPath(value));
+      m_path = std::make_shared<IWORKPath>(value);
     }
     catch (const IWORKPath::InvalidException &)
     {

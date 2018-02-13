@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <memory>
 #include <set>
 
 #include <glm/glm.hpp>
@@ -307,7 +308,7 @@ void KEYCollector::startPage()
   startLevel();
 
   assert(m_inSlides && !m_currentSlide);
-  m_currentSlide.reset(new KEYSlide);
+  m_currentSlide = std::make_shared<KEYSlide>();
   m_pageOpened = true;
 }
 

@@ -9,6 +9,8 @@
 
 #include "IWORKDataElement.h"
 
+#include <memory>
+
 #include "IWORKDictionary.h"
 #include "IWORKParser.h"
 #include "IWORKToken.h"
@@ -72,7 +74,7 @@ void IWORKDataElement::endOfElement()
 {
   if (bool(m_stream))
   {
-    m_data.reset(new IWORKData());
+    m_data = std::make_shared<IWORKData>();
     m_data->m_stream = m_stream;
     m_data->m_displayName = m_displayName;
     if (m_mimeType)

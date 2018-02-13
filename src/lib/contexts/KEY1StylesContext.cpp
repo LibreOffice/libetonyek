@@ -8,6 +8,7 @@
  */
 
 #include <boost/spirit/include/qi.hpp>
+#include <memory>
 
 #include "KEY1StylesContext.h"
 
@@ -280,7 +281,7 @@ void KEY1StylesContext::endOfElement()
   }
   if (m_shadow)
     m_propMap.put<property::Shadow>(get(m_shadow));
-  m_style.reset(new IWORKStyle(m_propMap, boost::none, m_parentStyle));
+  m_style = std::make_shared<IWORKStyle>(m_propMap, boost::none, m_parentStyle);
 }
 
 }

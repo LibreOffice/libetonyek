@@ -287,7 +287,7 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
   {
     try
     {
-      info.m_input.reset(new IWORKZlibStream(input));
+      info.m_input = std::make_shared<IWORKZlibStream>(input);
     }
     catch (...)
     {

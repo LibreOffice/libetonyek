@@ -11,6 +11,7 @@
 
 #include <cassert>
 #include <ctime>
+#include <memory>
 #include <sstream>
 
 #include <boost/lexical_cast.hpp>
@@ -1855,7 +1856,7 @@ void IWORKTabularModelElement::endOfAttributes()
 
 void IWORKTabularModelElement::startOfElement()
 {
-  getState().m_tableData.reset(new IWORKTableData());
+  getState().m_tableData = std::make_shared<IWORKTableData>();
   if (m_isDefinition)
   {
     assert(!getState().m_currentTable);

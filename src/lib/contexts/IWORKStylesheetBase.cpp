@@ -9,6 +9,8 @@
 
 #include "IWORKStylesheetBase.h"
 
+#include <memory>
+
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKStylesContext.h"
@@ -28,7 +30,7 @@ void IWORKStylesheetBase::startOfElement()
 {
   assert(!getState().m_stylesheet);
 
-  getState().m_stylesheet.reset(new IWORKStylesheet());
+  getState().m_stylesheet = std::make_shared<IWORKStylesheet>();
 }
 
 IWORKXMLContextPtr_t IWORKStylesheetBase::element(const int name)

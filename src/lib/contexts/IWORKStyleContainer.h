@@ -10,6 +10,7 @@
 #ifndef IWORKSTYLECONTAINER_H_INCLUDED
 #define IWORKSTYLECONTAINER_H_INCLUDED
 
+#include <memory>
 #include <string>
 
 #include <boost/optional.hpp>
@@ -77,7 +78,7 @@ IWORKXMLContextPtr_t IWORKStyleContainer<TokenId, RefTokenId, TokenId2, RefToken
   switch (name)
   {
   case TokenId :
-    m_context.reset(new IWORKStyleContext(getState(), &m_styleMap));
+    m_context = std::make_shared<IWORKStyleContext>(getState(), &m_styleMap);
     return m_context;
   case RefTokenId :
     return makeContext<IWORKRefContext>(getState(), m_ref);
@@ -87,7 +88,7 @@ IWORKXMLContextPtr_t IWORKStyleContainer<TokenId, RefTokenId, TokenId2, RefToken
     if (!name) break;
     if (name==TokenId2)
     {
-      m_context.reset(new IWORKStyleContext(getState(), m_styleMap2));
+      m_context = std::make_shared<IWORKStyleContext>(getState(), m_styleMap2);
       return m_context;
     }
     if (name==RefTokenId2)

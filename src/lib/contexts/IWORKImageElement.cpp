@@ -9,6 +9,8 @@
 
 #include "IWORKImageElement.h"
 
+#include <memory>
+
 #include "libetonyek_xml.h"
 #include "IWORKBinaryElement.h"
 #include "IWORKCollector.h"
@@ -137,7 +139,7 @@ void IWORKImageElement::endOfElement()
     m_content=m_filteredImage;
   else if (!m_content && m_data)
   {
-    m_content.reset(new IWORKMediaContent());
+    m_content = std::make_shared<IWORKMediaContent>();
     m_content->m_size = m_size;
     m_content->m_data = m_data;
   }

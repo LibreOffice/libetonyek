@@ -9,6 +9,8 @@
 
 #include "IWORKTabularInfoElement.h"
 
+#include <memory>
+
 #include "libetonyek_xml.h"
 
 #include "libetonyek_xml.h"
@@ -58,7 +60,7 @@ void IWORKTabularInfoElement::attribute(const int name, const char *const value)
 
 void IWORKTabularInfoElement::startOfElement()
 {
-  getState().m_tableData.reset(new IWORKTableData());
+  getState().m_tableData = std::make_shared<IWORKTableData>();
   assert(!getState().m_currentTable);
   getState().m_currentTable = getCollector().createTable(getState().m_tableNameMap, getState().m_langManager);
   if (isCollector())

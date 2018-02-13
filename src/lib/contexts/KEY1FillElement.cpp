@@ -8,6 +8,7 @@
  */
 
 #include <deque>
+#include <memory>
 
 #include "KEY1FillElement.h"
 
@@ -119,7 +120,7 @@ void KEY1FillElement::endOfElement()
       break;
     }
     IWORKMediaContent image;
-    image.m_data.reset(new IWORKData);
+    image.m_data = std::make_shared<IWORKData>();
     image.m_data->m_stream.reset(getState().getParser().getPackage()->getSubStreamByName(get(m_imageName).c_str()));
     if (m_imageType) image.m_type=get(m_imageType);
     image.m_fillColor=m_color;

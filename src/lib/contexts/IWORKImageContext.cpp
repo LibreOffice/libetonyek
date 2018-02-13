@@ -9,6 +9,8 @@
 
 #include "IWORKImageContext.h"
 
+#include <memory>
+
 #include "IWORKDataElement.h"
 #include "IWORKSizeElement.h"
 #include "IWORKToken.h"
@@ -43,7 +45,7 @@ IWORKXMLContextPtr_t IWORKImageContext::element(const int name)
 
 void IWORKImageContext::endOfElement()
 {
-  m_content.reset(new IWORKMediaContent());
+  m_content = std::make_shared<IWORKMediaContent>();
   m_content->m_size = m_size;
   m_content->m_data = m_data;
 }
