@@ -85,7 +85,7 @@ IWORKXMLContextPtr_t PatternContainerElement::element(const int name)
       m_value.push_back(get(m_element));
       m_element.reset();
     }
-    return makeContext<ElementElement>(getState(), m_element);
+    return std::make_shared<ElementElement>(getState(), m_element);
   }
 
   return IWORKXMLContextPtr_t();
@@ -157,7 +157,7 @@ void PatternElement::attribute(const int name, const char *const value)
 IWORKXMLContextPtr_t PatternElement::element(const int name)
 {
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::pattern))
-    return makeContext<PatternContainerElement>(getState(), m_pattern->m_values);
+    return std::make_shared<PatternContainerElement>(getState(), m_pattern->m_values);
   return IWORKXMLContextPtr_t();
 }
 
@@ -293,13 +293,13 @@ IWORKXMLContextPtr_t StrokeElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::color :
-    return makeContext<IWORKColorElement>(getState(), m_color);
+    return std::make_shared<IWORKColorElement>(getState(), m_color);
   case IWORKToken::NS_URI_SF | IWORKToken::parameters : // in calligraphy-stroke defines angle, chisel, scale
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::pattern :
-    return makeContext<PatternElement>(getState(), m_pattern);
+    return std::make_shared<PatternElement>(getState(), m_pattern);
   case IWORKToken::NS_URI_SF | IWORKToken::pattern_ref :
-    return makeContext<IWORKRefContext>(getState(), m_patternRef);
+    return std::make_shared<IWORKRefContext>(getState(), m_patternRef);
   default:
     ETONYEK_DEBUG_MSG(("StrokeElement::element[IWORKStrokeContext.cpp]: find unknown element\n"));
   }
@@ -346,13 +346,13 @@ IWORKXMLContextPtr_t IWORKStrokeContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::frame :
-    return makeContext<FrameElement>(getState(), m_value);
+    return std::make_shared<FrameElement>(getState(), m_value);
   case IWORKToken::NS_URI_SF | IWORKToken::calligraphy_stroke :
   case IWORKToken::NS_URI_SF | IWORKToken::manipulated_stroke :
   case IWORKToken::NS_URI_SF | IWORKToken::stroke :
-    return makeContext<StrokeElement>(getState(), m_value);
+    return std::make_shared<StrokeElement>(getState(), m_value);
   case IWORKToken::NS_URI_SF | IWORKToken::stroke_ref :
-    return makeContext<IWORKRefContext>(getState(), m_ref);
+    return std::make_shared<IWORKRefContext>(getState(), m_ref);
   case IWORKToken::NS_URI_SF | IWORKToken::null :
     break;
   default:

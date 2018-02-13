@@ -84,11 +84,11 @@ IWORKXMLContextPtr_t CfElement::element(int name)
   switch (name)
   {
   case IWORKToken::date_format | IWORKToken::NS_URI_SF : // USEME
-    return makeContext<IWORKDateTimeFormatElement>(getState(), m_dateTimeFormat);
+    return std::make_shared<IWORKDateTimeFormatElement>(getState(), m_dateTimeFormat);
   case IWORKToken::duration_format | IWORKToken::NS_URI_SF : // USEME
-    return makeContext<IWORKDurationFormatElement>(getState(), m_durationFormat);
+    return std::make_shared<IWORKDurationFormatElement>(getState(), m_durationFormat);
   case IWORKToken::number_format | IWORKToken::NS_URI_SF : // USEME
-    return makeContext<IWORKNumberFormatElement>(getState(), m_numberFormat);
+    return std::make_shared<IWORKNumberFormatElement>(getState(), m_numberFormat);
   default:
     ETONYEK_DEBUG_MSG(("CfElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
   }
@@ -154,9 +154,9 @@ IWORKXMLContextPtr_t CellContextBase::element(int name)
   switch (name)
   {
   case IWORKToken::cf | IWORKToken::NS_URI_SF :
-    return makeContext<CfElement>(getState());
+    return std::make_shared<CfElement>(getState());
   case IWORKToken::cf_ref | IWORKToken::NS_URI_SF:
-    return makeContext<IWORKRefContext>(getState(), m_ref);
+    return std::make_shared<IWORKRefContext>(getState(), m_ref);
   default:
     ETONYEK_DEBUG_MSG(("CellContextBase::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
   }
@@ -321,7 +321,7 @@ IWORKXMLContextPtr_t ColumnsElement::element(const int name)
   switch (name)
   {
   case IWORKToken::grid_column | IWORKToken::NS_URI_SF :
-    return makeContext<GridColumnElement>(getState());
+    return std::make_shared<GridColumnElement>(getState());
   default:
     ETONYEK_DEBUG_MSG(("ColumnsElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
   }
@@ -469,7 +469,7 @@ IWORKXMLContextPtr_t CtElement::element(const int name)
     {
       ETONYEK_DEBUG_MSG(("found a text cell with both simple and formatted content\n"));
     }
-    return makeContext<IWORKTextStorageElement>(getState());
+    return std::make_shared<IWORKTextStorageElement>(getState());
   default :
     ETONYEK_DEBUG_MSG(("CtElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
     break;
@@ -546,7 +546,7 @@ IWORKXMLContextPtr_t TElement::element(const int name)
   case IWORKToken::ct | IWORKToken::NS_URI_SF :
     if (m_isResult && !getState().m_currentText)
       getState().m_currentText = getCollector().createText(getState().m_langManager, false);
-    return makeContext<CtElement>(getState());
+    return std::make_shared<CtElement>(getState());
   default:
     break;
   }
@@ -608,16 +608,16 @@ IWORKXMLContextPtr_t RElement::element(int name)
   switch (name)
   {
   case IWORKToken::rb | IWORKToken::NS_URI_SF :
-    return makeContext<RbElement>(getState());
+    return std::make_shared<RbElement>(getState());
     break;
   case IWORKToken::rd | IWORKToken::NS_URI_SF :
-    return makeContext<DElement>(getState(), true);
+    return std::make_shared<DElement>(getState(), true);
     break;
   case IWORKToken::rn | IWORKToken::NS_URI_SF :
-    return makeContext<NElement>(getState(), true);
+    return std::make_shared<NElement>(getState(), true);
     break;
   case IWORKToken::rt | IWORKToken::NS_URI_SF :
-    return makeContext<TElement>(getState(), true);
+    return std::make_shared<TElement>(getState(), true);
     break;
   default:
     break;
@@ -651,11 +651,11 @@ IWORKXMLContextPtr_t FElement::element(int name)
   switch (name)
   {
   case IWORKToken::fo | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKFoElement>(getState());
+    return std::make_shared<IWORKFoElement>(getState());
   case IWORKToken::of | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKOfElement>(getState());
+    return std::make_shared<IWORKOfElement>(getState());
   case IWORKToken::r | IWORKToken::NS_URI_SF :
-    return makeContext<RElement>(getState());
+    return std::make_shared<RElement>(getState());
   default:
     break;
   }
@@ -727,7 +727,7 @@ IWORKXMLContextPtr_t GroupingElement::element(int name)
     return IWORKXMLContextPtr_t();
   }
   case IWORKToken::fo | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKFoElement>(getState());
+    return std::make_shared<IWORKFoElement>(getState());
   default:
     break;
   }
@@ -791,7 +791,7 @@ PmTElement::PmTElement(IWORKXMLParserState &state, IWORKContentMap_t &contentMap
 IWORKXMLContextPtr_t PmTElement::element(const int name)
 {
   if (name == (IWORKToken::ct | IWORKToken::NS_URI_SF))
-    return makeContext<PmCtElement>(getState(), m_contentMap, getId());
+    return std::make_shared<PmCtElement>(getState(), m_contentMap, getId());
 
   return IWORKXMLContextPtr_t();
 }
@@ -822,7 +822,7 @@ MenuChoicesElement::MenuChoicesElement(IWORKXMLParserState &state, IWORKContentM
 IWORKXMLContextPtr_t MenuChoicesElement::element(int name)
 {
   if (name == (IWORKToken::t | IWORKToken::NS_URI_SF))
-    return makeContext<PmTElement>(getState(), m_contentMap);
+    return std::make_shared<PmTElement>(getState(), m_contentMap);
 
   return IWORKXMLContextPtr_t();
 }
@@ -858,10 +858,10 @@ IWORKXMLContextPtr_t PmElement::element(int name)
   switch (name)
   {
   case IWORKToken::menu_choices | IWORKToken::NS_URI_SF :
-    return makeContext<MenuChoicesElement>(getState(), m_contentMap);
+    return std::make_shared<MenuChoicesElement>(getState(), m_contentMap);
     break;
   case IWORKToken::proxied_cell_ref | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKRefContext>(getState(), m_ref);
+    return std::make_shared<IWORKRefContext>(getState(), m_ref);
     break;
   default:
     ETONYEK_DEBUG_MSG(("PmElement::element[IWORKTabularModelElement.cpp]: found unexpected element\n"));
@@ -1105,9 +1105,9 @@ IWORKXMLContextPtr_t GenericCellElement::element(int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref :
-    return makeContext<IWORKRefContext>(getState(), m_styleRef);
+    return std::make_shared<IWORKRefContext>(getState(), m_styleRef);
   case IWORKToken::NS_URI_SF | IWORKToken::content_size :
-    return makeContext<ContentSizeElement>(getState());
+    return std::make_shared<ContentSizeElement>(getState());
   default:
     break;
   }
@@ -1342,7 +1342,7 @@ IWORKXMLContextPtr_t TextCellElement::element(const int name)
   switch (name)
   {
   case IWORKToken::cell_text | IWORKToken::NS_URI_SF :
-    return makeContext<CtElement>(getState());
+    return std::make_shared<CtElement>(getState());
   default:
     break;
   }
@@ -1376,13 +1376,13 @@ IWORKXMLContextPtr_t ResultCellElement::element(int name)
   switch (name)
   {
   case IWORKToken::result_bool_cell | IWORKToken::NS_URI_SF :
-    return makeContext<BoolCellElement>(getState(), true);
+    return std::make_shared<BoolCellElement>(getState(), true);
   case IWORKToken::result_date_cell | IWORKToken::NS_URI_SF :
-    return makeContext<DateCellElement>(getState(), true);
+    return std::make_shared<DateCellElement>(getState(), true);
   case IWORKToken::result_number_cell | IWORKToken::NS_URI_SF :
-    return makeContext<NumberCellElement>(getState(), true);
+    return std::make_shared<NumberCellElement>(getState(), true);
   case IWORKToken::result_text_cell | IWORKToken::NS_URI_SF :
-    return makeContext<TextCellElement>(getState(), true);
+    return std::make_shared<TextCellElement>(getState(), true);
   default:
     break;
   }
@@ -1413,9 +1413,9 @@ IWORKXMLContextPtr_t FormulaCellElement::element(int name)
   switch (name)
   {
   case IWORKToken::formula | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKFormulaElement>(getState());
+    return std::make_shared<IWORKFormulaElement>(getState());
   case IWORKToken::result_cell | IWORKToken::NS_URI_SF :
-    return makeContext<ResultCellElement>(getState());
+    return std::make_shared<ResultCellElement>(getState());
   default:
     break;
   }
@@ -1459,41 +1459,41 @@ IWORKXMLContextPtr_t DatasourceElement::element(const int name)
   switch (name)
   {
   case IWORKToken::cb | IWORKToken::NS_URI_SF :
-    return makeContext<CbElement>(getState());
+    return std::make_shared<CbElement>(getState());
   case IWORKToken::d | IWORKToken::NS_URI_SF :
-    return makeContext<DElement>(getState());
+    return std::make_shared<DElement>(getState());
   case IWORKToken::du | IWORKToken::NS_URI_SF :
-    return makeContext<DuElement>(getState());
+    return std::make_shared<DuElement>(getState());
   case IWORKToken::f | IWORKToken::NS_URI_SF :
-    return makeContext<FElement>(getState());
+    return std::make_shared<FElement>(getState());
   case IWORKToken::g | IWORKToken::NS_URI_SF :
-    return makeContext<GElement>(getState());
+    return std::make_shared<GElement>(getState());
   case IWORKToken::grouping | IWORKToken::NS_URI_SF :
-    return makeContext<GroupingElement>(getState());
+    return std::make_shared<GroupingElement>(getState());
   case IWORKToken::n | IWORKToken::NS_URI_SF :
-    return makeContext<NElement>(getState());
+    return std::make_shared<NElement>(getState());
   case IWORKToken::pm | IWORKToken::NS_URI_SF :
-    return makeContext<PmElement>(getState());
+    return std::make_shared<PmElement>(getState());
   case IWORKToken::s | IWORKToken::NS_URI_SF :
-    return makeContext<SElement>(getState());
+    return std::make_shared<SElement>(getState());
   case IWORKToken::sl | IWORKToken::NS_URI_SF :
-    return makeContext<SlElement>(getState());
+    return std::make_shared<SlElement>(getState());
   case IWORKToken::st | IWORKToken::NS_URI_SF :
-    return makeContext<StElement>(getState());
+    return std::make_shared<StElement>(getState());
   case IWORKToken::t | IWORKToken::NS_URI_SF :
-    return makeContext<TElement>(getState());
+    return std::make_shared<TElement>(getState());
   case IWORKToken::date_cell | IWORKToken::NS_URI_SF :
-    return makeContext<DateCellElement>(getState());
+    return std::make_shared<DateCellElement>(getState());
   case IWORKToken::generic_cell | IWORKToken::NS_URI_SF :
-    return makeContext<GenericCellElement>(getState());
+    return std::make_shared<GenericCellElement>(getState());
   case IWORKToken::formula_cell | IWORKToken::NS_URI_SF :
-    return makeContext<FormulaCellElement>(getState());
+    return std::make_shared<FormulaCellElement>(getState());
   case IWORKToken::number_cell | IWORKToken::NS_URI_SF :
-    return makeContext<NumberCellElement>(getState());
+    return std::make_shared<NumberCellElement>(getState());
   case IWORKToken::span_cell | IWORKToken::NS_URI_SF :
-    return makeContext<SpanCellElement>(getState());
+    return std::make_shared<SpanCellElement>(getState());
   case IWORKToken::text_cell | IWORKToken::NS_URI_SF :
-    return makeContext<TextCellElement>(getState());
+    return std::make_shared<TextCellElement>(getState());
   default:
     break;
   }
@@ -1606,7 +1606,7 @@ IWORKXMLContextPtr_t StyleRunElement::element(const int name)
   switch (name)
   {
   case IWORKToken::vector_style_ref | IWORKToken::NS_URI_SF :
-    return makeContext<VectorStyleRefElement>(getState(), m_line);
+    return std::make_shared<VectorStyleRefElement>(getState(), m_line);
   default:
     ETONYEK_DEBUG_MSG(("StyleRunElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
   }
@@ -1668,7 +1668,7 @@ IWORKXMLContextPtr_t GridlineElement::element(const int name)
   switch (name)
   {
   case IWORKToken::style_run | IWORKToken::NS_URI_SF :
-    return makeContext<StyleRunElement>(getState(), m_gridLines, m_maxLines);
+    return std::make_shared<StyleRunElement>(getState(), m_gridLines, m_maxLines);
   default:
     ETONYEK_DEBUG_MSG(("GridlineElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
   }
@@ -1740,7 +1740,7 @@ IWORKXMLContextPtr_t RowsElement::element(const int name)
   switch (name)
   {
   case IWORKToken::grid_row | IWORKToken::NS_URI_SF :
-    return makeContext<GridRowElement>(getState());
+    return std::make_shared<GridRowElement>(getState());
   default:
     ETONYEK_DEBUG_MSG(("RowsElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
   }
@@ -1789,15 +1789,15 @@ IWORKXMLContextPtr_t GridElement::element(const int name)
   switch (name)
   {
   case IWORKToken::columns | IWORKToken::NS_URI_SF :
-    return makeContext<ColumnsElement>(getState());
+    return std::make_shared<ColumnsElement>(getState());
   case IWORKToken::datasource | IWORKToken::NS_URI_SF :
-    return makeContext<DatasourceElement>(getState());
+    return std::make_shared<DatasourceElement>(getState());
   case IWORKToken::rows | IWORKToken::NS_URI_SF :
-    return makeContext<RowsElement>(getState());
+    return std::make_shared<RowsElement>(getState());
   case IWORKToken::vertical_gridline_styles | IWORKToken::NS_URI_SF :
-    return makeContext<GridlineElement>(getState(), getState().m_tableData->m_verticalLines, getState().m_tableData->m_numRows);
+    return std::make_shared<GridlineElement>(getState(), getState().m_tableData->m_verticalLines, getState().m_tableData->m_numRows);
   case IWORKToken::horizontal_gridline_styles | IWORKToken::NS_URI_SF :
-    return makeContext<GridlineElement>(getState(), getState().m_tableData->m_horizontalLines, getState().m_tableData->m_numColumns);
+    return std::make_shared<GridlineElement>(getState(), getState().m_tableData->m_horizontalLines, getState().m_tableData->m_numColumns);
   default:
     ETONYEK_DEBUG_MSG(("GridElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
   }
@@ -1869,9 +1869,9 @@ IWORKXMLContextPtr_t IWORKTabularModelElement::element(const int name)
   switch (name)
   {
   case IWORKToken::grid | IWORKToken::NS_URI_SF :
-    return makeContext<GridElement>(getState());
+    return std::make_shared<GridElement>(getState());
   case IWORKToken::tabular_style_ref | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKRefContext>(getState(), m_styleRef);
+    return std::make_shared<IWORKRefContext>(getState(), m_styleRef);
 
   case IWORKToken::cell_comment_mapping | IWORKToken::NS_URI_SF :
   case IWORKToken::error_warning_mapping | IWORKToken::NS_URI_SF :

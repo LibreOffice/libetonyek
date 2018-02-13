@@ -108,13 +108,13 @@ IWORKXMLContextPtr_t TransitionAttributesElement::element(const int name)
   switch (name)
   {
   case KEY2Token::NS_URI_KEY | KEY2Token::animationAuto :
-    return makeContext<BoolProperty>(getState(), get(m_transition).m_automatic);
+    return std::make_shared<BoolProperty>(getState(), get(m_transition).m_automatic);
   case KEY2Token::NS_URI_KEY | KEY2Token::animationDelay :
-    return makeContext<DoubleProperty>(getState(), get(m_transition).m_delay);
+    return std::make_shared<DoubleProperty>(getState(), get(m_transition).m_delay);
   case KEY2Token::NS_URI_KEY | KEY2Token::animationDuration :
-    return makeContext<DoubleProperty>(getState(), get(m_transition).m_duration);
+    return std::make_shared<DoubleProperty>(getState(), get(m_transition).m_duration);
   case KEY2Token::NS_URI_KEY | KEY2Token::direction :
-    return makeContext<IntProperty>(getState(), get(m_transition).m_direction);
+    return std::make_shared<IntProperty>(getState(), get(m_transition).m_direction);
   case KEY2Token::NS_URI_KEY | KEY2Token::BGBuildDurationProperty :
     break;
   default:
@@ -170,7 +170,7 @@ IWORKXMLContextPtr_t TransitionElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::transition_attributes :
-    return makeContext<TransitionAttributesElement>(getState(), m_transition);
+    return std::make_shared<TransitionAttributesElement>(getState(), m_transition);
   default:
     ETONYEK_DEBUG_MSG(("TransitionElement::element[KEY2StyleContext.cpp]: found unexpected element %d\n", name));
     break;
@@ -212,15 +212,15 @@ IWORKXMLContextPtr_t PropertyMapElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::animationAutoPlay :
   case KEY2Token::NS_URI_KEY | KEY2Token::animationAutoPlay :
-    return makeContext<AnimationAutoPlayPropertyElement>(getState(), m_propMap);
+    return std::make_shared<AnimationAutoPlayPropertyElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::animationDelay :
   case KEY2Token::NS_URI_KEY | KEY2Token::animationDelay :
-    return makeContext<AnimationDelayPropertyElement>(getState(), m_propMap);
+    return std::make_shared<AnimationDelayPropertyElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::animationDuration :
   case KEY2Token::NS_URI_KEY | KEY2Token::animationDuration :
-    return makeContext<AnimationDurationPropertyElement>(getState(), m_propMap);
+    return std::make_shared<AnimationDurationPropertyElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::transition :
-    return makeContext<TransitionElement>(getState(), m_transition);
+    return std::make_shared<TransitionElement>(getState(), m_transition);
   default:
     break;
   }
@@ -267,7 +267,7 @@ IWORKXMLContextPtr_t KEY2StyleContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::property_map :
-    return makeContext<PropertyMapElement>(getState(), m_props);
+    return std::make_shared<PropertyMapElement>(getState(), m_props);
   default:
     ETONYEK_DEBUG_MSG(("KEY2StyleContext::element: found unexpected element %d\n", name));
   }

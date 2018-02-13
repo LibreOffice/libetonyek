@@ -133,7 +133,7 @@ IWORKXMLContextPtr_t AttachmentElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::drawable_shape :
   {
     m_block = false;
-    context = makeContext<IWORKShapeContext>(getState());
+    context = std::make_shared<IWORKShapeContext>(getState());
     break;
   }
   case IWORKToken::NS_URI_SF | IWORKToken::group :
@@ -145,20 +145,20 @@ IWORKXMLContextPtr_t AttachmentElement::element(const int name)
       first=false;
     }
     //m_block = true;
-    //context = makeContext<IWORKGroupElement>(getState());
+    //context = std::make_shared<IWORKGroupElement>(getState());
     break;
   }
   case IWORKToken::NS_URI_SF | IWORKToken::media :
     m_block = false;
-    context = makeContext<IWORKMediaElement>(getState());
+    context = std::make_shared<IWORKMediaElement>(getState());
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::original_size :
-    return makeContext<IWORKSizeElement>(getState(), m_originalSize);
+    return std::make_shared<IWORKSizeElement>(getState(), m_originalSize);
   case IWORKToken::NS_URI_SF | IWORKToken::position :
-    return makeContext<IWORKPositionElement>(getState(), m_position);
+    return std::make_shared<IWORKPositionElement>(getState(), m_position);
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
     m_block = true;
-    context = makeContext<IWORKTabularInfoElement>(getState());
+    context = std::make_shared<IWORKTabularInfoElement>(getState());
     break;
   default:
     ETONYEK_DEBUG_MSG(("AttachmentElement::element[PAG1TextStorageElement]: find some unknown element\n"));
@@ -222,7 +222,7 @@ void AttachmentsElement::startOfElement()
 IWORKXMLContextPtr_t AttachmentsElement::element(const int name)
 {
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::attachment))
-    return makeContext<AttachmentElement>(getState());
+    return std::make_shared<AttachmentElement>(getState());
   return IWORKXMLContextPtr_t();
 }
 
@@ -423,11 +423,11 @@ IWORKXMLContextPtr_t FootnoteHelper::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::footnote :
-    return makeContext<FootnoteElement>(m_state);
+    return std::make_shared<FootnoteElement>(m_state);
   case IWORKToken::NS_URI_SF | IWORKToken::footnotebr :
-    return makeContext<FootnotebrElement>(m_state);
+    return std::make_shared<FootnotebrElement>(m_state);
   case IWORKToken::NS_URI_SF | IWORKToken::footnote_mark :
-    return makeContext<FootnoteMarkElement>(m_state);
+    return std::make_shared<FootnoteMarkElement>(m_state);
   default:
     break;
   }
@@ -475,7 +475,7 @@ IWORKXMLContextPtr_t SpanElement::element(const int name)
   if (bool(context))
     return context;
   if (name==(IWORKToken::NS_URI_SF | IWORKToken::attachment_ref))
-    return makeContext<AttachmentRef>(getState());
+    return std::make_shared<AttachmentRef>(getState());
   return IWORKSpanElement::element(name);
 }
 
@@ -511,7 +511,7 @@ LinkElement::LinkElement(PAG1ParserState &state)
 IWORKXMLContextPtr_t LinkElement::element(const int name)
 {
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::span))
-    return makeContext<SpanElement>(m_state);
+    return std::make_shared<SpanElement>(m_state);
   const IWORKXMLContextPtr_t context = m_footnoteHelper.element(name);
   if (bool(context))
     return context;
@@ -555,15 +555,15 @@ IWORKXMLContextPtr_t PElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::attachment_ref :
-    return makeContext<AttachmentRef>(getState());
+    return std::make_shared<AttachmentRef>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::link :
-    return makeContext<LinkElement>(getState());
+    return std::make_shared<LinkElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::span :
-    return makeContext<SpanElement>(getState());
+    return std::make_shared<SpanElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::annotation_field :
-    return makeContext<PAG1AnnotationElement>(getState(),*this);
+    return std::make_shared<PAG1AnnotationElement>(getState(),*this);
   case IWORKToken::NS_URI_SF | IWORKToken::annotation_field_ref :
-    return makeContext<PAG1AnnotationElement>(getState(),*this,true);
+    return std::make_shared<PAG1AnnotationElement>(getState(),*this,true);
   default:
     break;
   }
@@ -639,7 +639,7 @@ IWORKXMLContextPtr_t LayoutElement::element(const int name)
     open();
 
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::p))
-    return makeContext<PElement>(getState());
+    return std::make_shared<PElement>(getState());
 
   return IWORKLayoutElement::element(name);
 }
@@ -712,7 +712,7 @@ IWORKXMLContextPtr_t SectionElement::element(const int name)
     open();
 
   if ((IWORKToken::NS_URI_SF | IWORKToken::layout) == name)
-    return makeContext<LayoutElement>(getState());
+    return std::make_shared<LayoutElement>(getState());
 
   return IWORKXMLContextPtr_t();
 }
@@ -803,11 +803,11 @@ IWORKXMLContextPtr_t TextBodyElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::container_hint :
-    return makeContext<ContainerHintElement>(getState(), m_containerFrame);
+    return std::make_shared<ContainerHintElement>(getState(), m_containerFrame);
   case IWORKToken::NS_URI_SF | IWORKToken::p : // for footnotes
-    return makeContext<PElement>(getState());
+    return std::make_shared<PElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::section :
-    return makeContext<SectionElement>(getState());
+    return std::make_shared<SectionElement>(getState());
   default:
     break;
   }
@@ -855,9 +855,9 @@ IWORKXMLContextPtr_t PAG1TextStorageElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::attachments :
-    return makeContext<AttachmentsElement>(getState());
+    return std::make_shared<AttachmentsElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::footnotes :
-    return makeContext<PAG1FootnotesElement>(getState());
+    return std::make_shared<PAG1FootnotesElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::text_body :
     if (!m_textOpened)
     {
@@ -865,7 +865,7 @@ IWORKXMLContextPtr_t PAG1TextStorageElement::element(const int name)
       getState().m_currentText = getCollector().createText(getState().m_langManager, m_kind==PAG_TEXTSTORAGE_KIND_TEXTBOX);
       m_textOpened = true;
     }
-    return makeContext<TextBodyElement>(getState());
+    return std::make_shared<TextBodyElement>(getState());
   default:
     break;
   }

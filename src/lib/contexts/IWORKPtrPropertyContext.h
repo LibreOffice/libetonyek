@@ -42,7 +42,7 @@ IWORKXMLContextPtr_t IWORKPtrPropertyContext<Property, Context, TokenId>::elemen
 {
   m_default = false;
   if (TokenId == name)
-    return makeContext<Context>(getState(), m_value);
+    return std::make_shared<Context>(getState(), m_value);
   return IWORKXMLContextPtr_t();
 }
 

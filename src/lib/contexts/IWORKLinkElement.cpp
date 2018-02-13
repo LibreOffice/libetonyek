@@ -38,7 +38,7 @@ IWORKXMLContextPtr_t IWORKLinkElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::span :
-    return makeContext<IWORKSpanElement>(getState());
+    return std::make_shared<IWORKSpanElement>(getState());
   default:
     ETONYEK_DEBUG_MSG(("IWORKLinkElement::element: find unknown element\n"));
     break;

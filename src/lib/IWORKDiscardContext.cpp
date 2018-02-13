@@ -81,42 +81,42 @@ IWORKXMLContextPtr_t IWORKDiscardContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::bezier :
-    return makeContext<IWORKBezierElement>(m_state, m_data->m_path);
+    return std::make_shared<IWORKBezierElement>(m_state, m_data->m_path);
   case IWORKToken::NS_URI_SF | IWORKToken::binary :
-    return makeContext<IWORKBinaryElement>(m_state, m_data->m_mediaContent);
+    return std::make_shared<IWORKBinaryElement>(m_state, m_data->m_mediaContent);
   case IWORKToken::NS_URI_SF | IWORKToken::cell_style :
-    return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_cellStyles);
+    return std::make_shared<IWORKStyleContext>(m_state, &m_state.getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::characterstyle :
-    return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_characterStyles);
+    return std::make_shared<IWORKStyleContext>(m_state, &m_state.getDictionary().m_characterStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::core_image_filter_descriptor :
-    return makeContext<IWORKCoreImageFilterDescriptorElement>(m_state, m_data->m_isShadow);
+    return std::make_shared<IWORKCoreImageFilterDescriptorElement>(m_state, m_data->m_isShadow);
   case IWORKToken::NS_URI_SF | IWORKToken::data :
     m_data->m_data.reset();
-    return makeContext<IWORKDataElement>(m_state, m_data->m_data);
+    return std::make_shared<IWORKDataElement>(m_state, m_data->m_data);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
-    return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_layoutStyles);
+    return std::make_shared<IWORKStyleContext>(m_state, &m_state.getDictionary().m_layoutStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
-    return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_listStyles);
+    return std::make_shared<IWORKStyleContext>(m_state, &m_state.getDictionary().m_listStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::listLabelIndents :
-    return makeContext<IWORKListLabelIndentsProperty>(m_state, m_data->m_propertyMap);
+    return std::make_shared<IWORKListLabelIndentsProperty>(m_state, m_data->m_propertyMap);
   case IWORKToken::NS_URI_SF | IWORKToken::list_label_geometry :
-    return makeContext<IWORKListLabelGeometryElement>(m_state, m_data->m_listLabelGeometry);
+    return std::make_shared<IWORKListLabelGeometryElement>(m_state, m_data->m_listLabelGeometry);
   case IWORKToken::NS_URI_SF | IWORKToken::list_label_typeinfo :
-    return makeContext<IWORKListLabelTypeinfoElement>(m_state, m_data->m_listLabelTypeInfo);
+    return std::make_shared<IWORKListLabelTypeinfoElement>(m_state, m_data->m_listLabelTypeInfo);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
-    return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_paragraphStyles);
+    return std::make_shared<IWORKStyleContext>(m_state, &m_state.getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::slide_style :
-    return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_slideStyles);
+    return std::make_shared<IWORKStyleContext>(m_state, &m_state.getDictionary().m_slideStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::tabs :
     m_data->m_tabStops.clear();
-    return makeContext<IWORKTabsElement>(m_state, m_data->m_tabStops);
+    return std::make_shared<IWORKTabsElement>(m_state, m_data->m_tabStops);
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_style :
-    return makeContext<IWORKStyleContext>(m_state, &m_state.getDictionary().m_tabularStyles);
+    return std::make_shared<IWORKStyleContext>(m_state, &m_state.getDictionary().m_tabularStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::text_label :
-    return makeContext<IWORKTextLabelElement>(m_state, m_data->m_listLabelTypeInfo);
+    return std::make_shared<IWORKTextLabelElement>(m_state, m_data->m_listLabelTypeInfo);
   case IWORKToken::NS_URI_SF | IWORKToken::unfiltered :
     m_data->m_mediaContent.reset();
-    return makeContext<IWORKUnfilteredElement>(m_state, m_data->m_mediaContent);
+    return std::make_shared<IWORKUnfilteredElement>(m_state, m_data->m_mediaContent);
   default:
     break;
   }

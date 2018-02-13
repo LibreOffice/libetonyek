@@ -12,6 +12,7 @@
 
 #include <cassert>
 #include <deque>
+#include <memory>
 
 #include <boost/optional.hpp>
 
@@ -33,7 +34,7 @@ public:
   template<class Context, class State>
   IWORKXMLContextPtr_t makeContext(State &state)
   {
-    return libetonyek::makeContext<Context>(state, m_value);
+    return std::make_shared<Context>(state, m_value);
   }
 
   bool pending() const

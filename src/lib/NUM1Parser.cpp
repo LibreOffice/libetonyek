@@ -83,27 +83,27 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   switch (name)
   {
   // case IWORKToken::NS_URI_SF | IWORKToken::body_placeholder_ref :
-  //   return makeContext<PlaceholderRefContext>(getState(), false);
+  //   return std::make_shared<PlaceholderRefContext>(getState(), false);
   // case IWORKToken::NS_URI_SF | IWORKToken::connection_line :
-  //   return makeContext<ConnectionLineElement>(getState());
+  //   return std::make_shared<ConnectionLineElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::group :
-    return makeContext<IWORKGroupElement>(getState());
+    return std::make_shared<IWORKGroupElement>(getState());
   // case IWORKToken::NS_URI_SF | IWORKToken::image :
-  //   return makeContext<ImageElement>(getState());
+  //   return std::make_shared<ImageElement>(getState());
   // case IWORKToken::NS_URI_SF | IWORKToken::line :
-  //   return makeContext<LineElement>(getState());
+  //   return std::make_shared<LineElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::media :
-    return makeContext<IWORKMediaElement>(getState());
+    return std::make_shared<IWORKMediaElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::shape :
-    return makeContext<IWORKShapeContext>(getState());
+    return std::make_shared<IWORKShapeContext>(getState());
   // case IWORKToken::NS_URI_SF | IWORKToken::sticky_note :
-  //   return makeContext<StickyNoteElement>(getState());
+  //   return std::make_shared<StickyNoteElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
-    return makeContext<IWORKTabularInfoElement>(getState());
+    return std::make_shared<IWORKTabularInfoElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::chart_info :
-    return makeContext<IWORKChartInfoElement>(getState());
+    return std::make_shared<IWORKChartInfoElement>(getState());
   // case IWORKToken::NS_URI_SF | IWORKToken::title_placeholder_ref :
-  //   return makeContext<PlaceholderRefContext>(getState(), true);
+  //   return std::make_shared<PlaceholderRefContext>(getState(), true);
   default:
     break;
   }
@@ -147,7 +147,7 @@ IWORKXMLContextPtr_t LayerElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::drawables :
-    return makeContext<DrawablesElement>(getState());
+    return std::make_shared<DrawablesElement>(getState());
   default:
     break;
   }
@@ -183,7 +183,7 @@ IWORKXMLContextPtr_t LayersElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::layer :
-    return makeContext<LayerElement>(getState());
+    return std::make_shared<LayerElement>(getState());
   default:
     break;
   }
@@ -221,7 +221,7 @@ IWORKXMLContextPtr_t PageInfoElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::layers :
-    return makeContext<LayersElement>(getState());
+    return std::make_shared<LayersElement>(getState());
   default:
     break;
   }
@@ -258,7 +258,7 @@ IWORKXMLContextPtr_t StylesContext::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::workspace_style :
   case NUM1Token::NS_URI_LS | NUM1Token::workspace_style :
-    return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_workspaceStyles);
+    return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_workspaceStyles);
   default:
     break;
   }
@@ -288,9 +288,9 @@ IWORKXMLContextPtr_t StylesheetElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::styles :
-    return makeContext<StylesContext>(getState(), false);
+    return std::make_shared<StylesContext>(getState(), false);
   case IWORKToken::NS_URI_SF | IWORKToken::anon_styles :
-    return makeContext<StylesContext>(getState(), true);
+    return std::make_shared<StylesContext>(getState(), true);
   default:
     break;
   }
@@ -326,7 +326,7 @@ IWORKXMLContextPtr_t WorkSpaceElement::element(const int name)
   switch (name)
   {
   case NUM1Token::NS_URI_LS | NUM1Token::page_info:
-    return makeContext<PageInfoElement>(getState());
+    return std::make_shared<PageInfoElement>(getState());
   default:
     break;
   }
@@ -362,7 +362,7 @@ IWORKXMLContextPtr_t WorkSpaceArrayElement::element(const int name)
   switch (name)
   {
   case NUM1Token::NS_URI_LS | NUM1Token::workspace:
-    return makeContext<WorkSpaceElement>(getState());
+    return std::make_shared<WorkSpaceElement>(getState());
   default:
     break;
   }
@@ -421,11 +421,11 @@ IWORKXMLContextPtr_t DocumentElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::metadata :
-    return makeContext<IWORKMetadataElement>(getState());
+    return std::make_shared<IWORKMetadataElement>(getState());
   case NUM1Token::NS_URI_LS | NUM1Token::stylesheet :
-    return makeContext<StylesheetElement>(getState());
+    return std::make_shared<StylesheetElement>(getState());
   case NUM1Token::NS_URI_LS | NUM1Token::workspace_array :
-    return makeContext<WorkSpaceArrayElement>(getState());
+    return std::make_shared<WorkSpaceArrayElement>(getState());
   default:
     break;
   }
@@ -463,7 +463,7 @@ IWORKXMLContextPtr_t XMLDocument::element(const int name)
   switch (name)
   {
   case NUM1Token::NS_URI_LS | NUM1Token::document :
-    return makeContext<DocumentElement>(m_state);
+    return std::make_shared<DocumentElement>(m_state);
   default:
     break;
   }
@@ -495,9 +495,9 @@ IWORKXMLContextPtr_t DiscardContext::element(const int name)
   switch (name)
   {
   case NUM1Token::NS_URI_LS | NUM1Token::stylesheet :
-    return makeContext<StylesheetElement>(getState());
+    return std::make_shared<StylesheetElement>(getState());
   case NUM1Token::NS_URI_LS | NUM1Token::workspace_style :
-    return makeContext<IWORKStyleContext>(getState(), &getState().getDictionary().m_workspaceStyles);
+    return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_workspaceStyles);
   default:
     break;
   }
@@ -519,12 +519,12 @@ NUM1Parser::~NUM1Parser()
 
 IWORKXMLContextPtr_t NUM1Parser::createDocumentContext()
 {
-  return makeContext<XMLDocument>(m_state);
+  return std::make_shared<XMLDocument>(m_state);
 }
 
 IWORKXMLContextPtr_t NUM1Parser::createDiscardContext()
 {
-  return makeContext<DiscardContext>(m_state);
+  return std::make_shared<DiscardContext>(m_state);
 }
 
 const IWORKTokenizer &NUM1Parser::getTokenizer() const

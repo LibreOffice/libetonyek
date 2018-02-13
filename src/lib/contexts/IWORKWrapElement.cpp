@@ -74,7 +74,7 @@ IWORKXMLContextPtr_t PathElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::bezier :
-    return makeContext<IWORKBezierElement>(getState(), m_path);
+    return std::make_shared<IWORKBezierElement>(getState(), m_path);
   default:
     ETONYEK_DEBUG_MSG(("PathElement::element[IWORKWrapElement.cpp]: find unknown element\n"));
     break;
@@ -220,9 +220,9 @@ IWORKXMLContextPtr_t IWORKWrapElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::path :
-    return makeContext<PathElement>(getState(), get(m_wrap).m_path);
+    return std::make_shared<PathElement>(getState(), get(m_wrap).m_path);
   case IWORKToken::NS_URI_SF | IWORKToken::geometry :
-    return makeContext<IWORKGeometryElement>(getState(), get(m_wrap).m_geometry);
+    return std::make_shared<IWORKGeometryElement>(getState(), get(m_wrap).m_geometry);
   default:
     ETONYEK_DEBUG_MSG(("IWORKWrapElement::element: find unknown element\n"));
     break;

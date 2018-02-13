@@ -45,7 +45,7 @@ IWORKXMLContextPtr_t IWORKPropertyContext<Property, Context, TokenId, TokenId2>:
 {
   m_default = false;
   if (TokenId == name || (TokenId2 && TokenId2 == name))
-    return makeContext<Context>(getState(), m_value);
+    return std::make_shared<Context>(getState(), m_value);
   else if (name != (IWORKToken::NS_URI_SF | IWORKToken::null))
   {
     ETONYEK_DEBUG_MSG(("IWORKPropertyContext<...>::element: found unexpected element %d\n", name));

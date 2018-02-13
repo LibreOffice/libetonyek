@@ -83,15 +83,15 @@ IWORKXMLContextPtr_t IWORKShapeContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::geometry :
-    return makeContext<IWORKGeometryElement>(getState());
+    return std::make_shared<IWORKGeometryElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::path :
-    return makeContext<IWORKPathElement>(getState());
+    return std::make_shared<IWORKPathElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::style :
-    return makeContext<GraphicStyleContext>(getState(), m_style, getState().getDictionary().m_graphicStyles);
+    return std::make_shared<GraphicStyleContext>(getState(), m_style, getState().getDictionary().m_graphicStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::text :
-    return makeContext<IWORKTextElement>(getState());
+    return std::make_shared<IWORKTextElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::wrap : // USEME
-    return makeContext<IWORKWrapElement>(getState(), m_wrap);
+    return std::make_shared<IWORKWrapElement>(getState(), m_wrap);
   default:
     ETONYEK_DEBUG_MSG(("IWORKShapeContext::element: find some unknown element\n"));
     break;

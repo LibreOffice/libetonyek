@@ -52,7 +52,7 @@ IWORKXMLContextPtr_t TextElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::text_storage :
-    return makeContext<PAG1TextStorageElement>(getState(), PAG1XMLContextBase<IWORKTextElement>::m_stylesheet, PAG_TEXTSTORAGE_KIND_TEXTBOX);
+    return std::make_shared<PAG1TextStorageElement>(getState(), PAG1XMLContextBase<IWORKTextElement>::m_stylesheet, PAG_TEXTSTORAGE_KIND_TEXTBOX);
   default:
     break;
   }
@@ -84,7 +84,7 @@ IWORKXMLContextPtr_t PAG1ShapeContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::text :
-    return makeContext<TextElement>(getState());
+    return std::make_shared<TextElement>(getState());
   default:
     break;
   }

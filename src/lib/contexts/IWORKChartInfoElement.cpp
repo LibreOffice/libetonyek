@@ -65,7 +65,7 @@ CachedDataElement::CachedDataElement(IWORKXMLParserState &state)
 IWORKXMLContextPtr_t CachedDataElement::element(const int name)
 {
   if (name == (IWORKToken::mutable_array | IWORKToken::NS_URI_SF))
-    return makeContext<MutableArrayElement>(getState());
+    return std::make_shared<MutableArrayElement>(getState());
 
   return IWORKXMLContextPtr_t();
 }
@@ -126,17 +126,17 @@ IWORKXMLContextPtr_t FormulaChartModelElement::element(const int name)
   switch (name)
   {
   case IWORKToken::chart_column_names | IWORKToken::NS_URI_SF :
-    return makeContext<ChartRowColumnNamesElement>(getState(), m_chart.m_columnNames);
+    return std::make_shared<ChartRowColumnNamesElement>(getState(), m_chart.m_columnNames);
   case IWORKToken::chart_row_names | IWORKToken::NS_URI_SF :
-    return makeContext<ChartRowColumnNamesElement>(getState(), m_chart.m_rowNames);
+    return std::make_shared<ChartRowColumnNamesElement>(getState(), m_chart.m_rowNames);
   case IWORKToken::chart_name | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKStringElement>(getState(), m_chart.m_chartName);
+    return std::make_shared<IWORKStringElement>(getState(), m_chart.m_chartName);
   case IWORKToken::value_title | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKStringElement>(getState(), m_chart.m_valueTitle);
+    return std::make_shared<IWORKStringElement>(getState(), m_chart.m_valueTitle);
   case IWORKToken::category_title | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKStringElement>(getState(), m_chart.m_categoryTitle);
+    return std::make_shared<IWORKStringElement>(getState(), m_chart.m_categoryTitle);
   case IWORKToken::cached_data | IWORKToken::NS_URI_SF :
-    return makeContext<CachedDataElement>(getState());
+    return std::make_shared<CachedDataElement>(getState());
   default:
     break;
   }
@@ -173,7 +173,7 @@ IWORKXMLContextPtr_t ChartModelObjectElement::element(const int name)
   switch (name)
   {
   case IWORKToken::formula_chart_model | IWORKToken::NS_URI_SF :
-    return makeContext<FormulaChartModelElement>(getState(), m_chart);
+    return std::make_shared<FormulaChartModelElement>(getState(), m_chart);
   default:
     break;
   }
@@ -209,9 +209,9 @@ IWORKXMLContextPtr_t IWORKChartInfoElement::element(const int name)
   switch (name)
   {
   case IWORKToken::geometry | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKGeometryElement>(getState());
+    return std::make_shared<IWORKGeometryElement>(getState());
   case IWORKToken::chart_model_object | IWORKToken::NS_URI_SF :
-    return makeContext<ChartModelObjectElement>(getState(), m_chart);
+    return std::make_shared<ChartModelObjectElement>(getState(), m_chart);
   default:
     break;
   }

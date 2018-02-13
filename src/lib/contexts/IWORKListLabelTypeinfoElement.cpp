@@ -63,13 +63,13 @@ IWORKXMLContextPtr_t IWORKListLabelTypeinfoElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::binary :
-    return makeContext<IWORKBinaryElement>(getState(), m_image);
+    return std::make_shared<IWORKBinaryElement>(getState(), m_image);
   case IWORKToken::NS_URI_SF | IWORKToken::binary_ref :
-    return makeContext<IWORKRefContext>(getState(), m_imageRef);
+    return std::make_shared<IWORKRefContext>(getState(), m_imageRef);
   case IWORKToken::NS_URI_SF | IWORKToken::text_label :
-    return makeContext<IWORKTextLabelElement>(getState(), m_text);
+    return std::make_shared<IWORKTextLabelElement>(getState(), m_text);
   case IWORKToken::NS_URI_SF | IWORKToken::text_label_ref :
-    return makeContext<IWORKRefContext>(getState(), m_textRef);
+    return std::make_shared<IWORKRefContext>(getState(), m_textRef);
   default:
     break;
   }

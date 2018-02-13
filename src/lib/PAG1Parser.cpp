@@ -90,8 +90,8 @@ AnnotationsElement::AnnotationsElement(PAG1ParserState &state)
 IWORKXMLContextPtr_t AnnotationsElement::element(const int name)
 {
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::annotation))
-    return makeContext<PAG1AnnotationContext>(getState(),
-                                              std::bind(&PAGCollector::collectAnnotation, std::ref(getCollector()), _1));
+    return std::make_shared<PAG1AnnotationContext>(getState(),
+                                                   std::bind(&PAGCollector::collectAnnotation, std::ref(getCollector()), _1));
   return IWORKXMLContextPtr_t();
 }
 
@@ -114,8 +114,8 @@ FootersElement::FootersElement(PAG1ParserState &state)
 IWORKXMLContextPtr_t FootersElement::element(const int name)
 {
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::footer))
-    return makeContext<IWORKHeaderFooterContext>(getState(),
-                                                 std::bind(&IWORKCollector::collectFooter, std::ref(getCollector()), _1));
+    return std::make_shared<IWORKHeaderFooterContext>(getState(),
+                                                      std::bind(&IWORKCollector::collectFooter, std::ref(getCollector()), _1));
   return IWORKXMLContextPtr_t();
 }
 
@@ -143,10 +143,10 @@ IWORKXMLContextPtr_t GroupElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::drawable_shape :
     PAG1XMLContextBase<IWORKGroupElement>::ensureClosed();
-    return makeContext<PAG1ShapeContext>(getState());
+    return std::make_shared<PAG1ShapeContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::group :
     PAG1XMLContextBase<IWORKGroupElement>::ensureClosed();
-    return makeContext<GroupElement>(getState());
+    return std::make_shared<GroupElement>(getState());
   default:
     break;
   }
@@ -176,8 +176,8 @@ HeadersElement::HeadersElement(PAG1ParserState &state)
 IWORKXMLContextPtr_t HeadersElement::element(const int name)
 {
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::header))
-    return makeContext<IWORKHeaderFooterContext>(getState(),
-                                                 std::bind(&IWORKCollector::collectHeader, std::ref(getCollector()), _1));
+    return std::make_shared<IWORKHeaderFooterContext>(getState(),
+                                                      std::bind(&IWORKCollector::collectHeader, std::ref(getCollector()), _1));
   return IWORKXMLContextPtr_t();
 }
 
@@ -207,9 +207,9 @@ IWORKXMLContextPtr_t StylesContext::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::sectionstyle :
     // TODO: setting of the default parent would also be a good candidate for leaveElement(),
     // if we ever add this, as it seems to be limited to a few style types.
-    return makeContext<PAG1StyleContext>(getState(), &getState().getDictionary().m_sectionStyles, "section-style-default");
+    return std::make_shared<PAG1StyleContext>(getState(), &getState().getDictionary().m_sectionStyles, "section-style-default");
   case IWORKToken::NS_URI_SF | IWORKToken::sectionstyle_ref :
-    return makeContext<IWORKStyleRefContext>(getState(), getState().getDictionary().m_sectionStyles);
+    return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_sectionStyles);
   default:
     break;
   }
@@ -241,9 +241,9 @@ IWORKXMLContextPtr_t StylesheetElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::anon_styles :
-    return makeContext<StylesContext>(getState(), true);
+    return std::make_shared<StylesContext>(getState(), true);
   case IWORKToken::NS_URI_SF | IWORKToken::styles :
-    return makeContext<StylesContext>(getState(), false);
+    return std::make_shared<StylesContext>(getState(), false);
   default:
     break;
   }
@@ -273,7 +273,7 @@ PrototypeElement::PrototypeElement(PAG1ParserState &state)
 IWORKXMLContextPtr_t PrototypeElement::element(const int name)
 {
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::stylesheet))
-    return makeContext<StylesheetElement>(getState());
+    return std::make_shared<StylesheetElement>(getState());
   return IWORKXMLContextPtr_t();
 }
 
@@ -299,7 +299,7 @@ SectionPrototypesElement::SectionPrototypesElement(PAG1ParserState &state)
 IWORKXMLContextPtr_t SectionPrototypesElement::element(const int name)
 {
   if (name == (PAG1Token::NS_URI_SL | PAG1Token::prototype))
-    return makeContext<PrototypeElement>(getState());
+    return std::make_shared<PrototypeElement>(getState());
   return IWORKXMLContextPtr_t();
 }
 
@@ -358,7 +358,7 @@ SLCreationDatePropertyElement::SLCreationDatePropertyElement(PAG1ParserState &st
 IWORKXMLContextPtr_t SLCreationDatePropertyElement::element(const int name)
 {
   if (name == (PAG1Token::NS_URI_SL | PAG1Token::SLCreationDateProperty))
-    return makeContext<DateElement>(getState(), m_value);
+    return std::make_shared<DateElement>(getState(), m_value);
   return IWORKXMLContextPtr_t();
 }
 
@@ -391,7 +391,7 @@ template<class T, class C, int I>
 IWORKXMLContextPtr_t DocumentPropertyContext<T, C, I>::element(const int name)
 {
   if (name == I)
-    return makeContext<C>(getState(), m_value);
+    return std::make_shared<C>(getState(), m_value);
   return IWORKXMLContextPtr_t();
 }
 
@@ -457,11 +457,11 @@ IWORKXMLContextPtr_t PublicationInfoElement::element(const int name)
   switch (name)
   {
   case PAG1Token::NS_URI_SL | PAG1Token::kSFWPFootnoteGapProperty :
-    return makeContext<KSFWPFootnoteGapPropertyElement>(getState(), m_pubInfo.m_footnoteGap);
+    return std::make_shared<KSFWPFootnoteGapPropertyElement>(getState(), m_pubInfo.m_footnoteGap);
   case PAG1Token::NS_URI_SL | PAG1Token::kSFWPFootnoteKindProperty :
-    return makeContext<KSFWPFootnoteKindPropertyElement>(getState(), m_footnoteKind);
+    return std::make_shared<KSFWPFootnoteKindPropertyElement>(getState(), m_footnoteKind);
   case PAG1Token::NS_URI_SL | PAG1Token::SLCreationDateProperty :
-    return makeContext<SLCreationDatePropertyElement>(getState(), m_pubInfo.m_creationDate);
+    return std::make_shared<SLCreationDatePropertyElement>(getState(), m_pubInfo.m_creationDate);
   default:
   {
     static bool first=true;
@@ -604,7 +604,7 @@ IWORKXMLContextPtr_t SLPrintInfoElement::element(const int name)
   case PAG1Token::NS_URI_SL | PAG1Token::print_info:
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::page_margins:
-    return makeContext<PageMarginsElement>(getState(), m_printInfo);
+    return std::make_shared<PageMarginsElement>(getState(), m_printInfo);
   default:
     ETONYEK_DEBUG_MSG(("SLPrintInfoElement::element[PAG1Parser.cpp]: find unknown element\n"));
     break;
@@ -674,15 +674,15 @@ IWORKXMLContextPtr_t PageGroupElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::drawable_shape :
-    return makeContext<PAG1ShapeContext>(getState());
+    return std::make_shared<PAG1ShapeContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::group :
-    return makeContext<GroupElement>(getState());
+    return std::make_shared<GroupElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::image :
-    return makeContext<IWORKImageElement>(getState());
+    return std::make_shared<IWORKImageElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::media :
-    return makeContext<IWORKMediaElement>(getState());
+    return std::make_shared<IWORKMediaElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
-    return makeContext<IWORKTabularInfoElement>(getState());
+    return std::make_shared<IWORKTabularInfoElement>(getState());
   default:
     break;
   }
@@ -736,7 +736,7 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   switch (name)
   {
   case PAG1Token::NS_URI_SL | PAG1Token::page_group :
-    return makeContext<PageGroupElement>(getState());
+    return std::make_shared<PageGroupElement>(getState());
   default:
     break;
   }
@@ -798,27 +798,27 @@ IWORKXMLContextPtr_t DocumentElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::annotations :
-    return makeContext<AnnotationsElement>(getState());
+    return std::make_shared<AnnotationsElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::calc_engine :
-    return makeContext<IWORKCalcEngineContext>(getState());
+    return std::make_shared<IWORKCalcEngineContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::headers :
-    return makeContext<HeadersElement>(getState());
+    return std::make_shared<HeadersElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::footers :
-    return makeContext<FootersElement>(getState());
+    return std::make_shared<FootersElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::metadata :
-    return makeContext<IWORKMetadataElement>(getState());
+    return std::make_shared<IWORKMetadataElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::text_storage :
-    return makeContext<PAG1TextStorageElement>(getState());
+    return std::make_shared<PAG1TextStorageElement>(getState());
   case PAG1Token::NS_URI_SL | PAG1Token::drawables :
-    return makeContext<DrawablesElement>(getState());
+    return std::make_shared<DrawablesElement>(getState());
   case PAG1Token::NS_URI_SL | PAG1Token::publication_info :
-    return makeContext<PublicationInfoElement>(getState());
+    return std::make_shared<PublicationInfoElement>(getState());
   case PAG1Token::NS_URI_SL | PAG1Token::section_prototypes :
-    return makeContext<SectionPrototypesElement>(getState());
+    return std::make_shared<SectionPrototypesElement>(getState());
   case PAG1Token::NS_URI_SL | PAG1Token::slprint_info :
-    return makeContext<SLPrintInfoElement>(getState());
+    return std::make_shared<SLPrintInfoElement>(getState());
   case PAG1Token::NS_URI_SL | PAG1Token::stylesheet :
-    return makeContext<StylesheetElement>(getState());
+    return std::make_shared<StylesheetElement>(getState());
   default:
     break;
   }
@@ -856,7 +856,7 @@ IWORKXMLContextPtr_t XMLDocument::element(const int name)
   switch (name)
   {
   case PAG1Token::NS_URI_SL | PAG1Token::document :
-    return makeContext<DocumentElement>(m_state);
+    return std::make_shared<DocumentElement>(m_state);
   default:
     break;
   }
@@ -887,10 +887,10 @@ IWORKXMLContextPtr_t DiscardContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::sectionstyle :
-    return makeContext<PAG1StyleContext>(getState(), &getState().getDictionary().m_sectionStyles, "section-style-default");
+    return std::make_shared<PAG1StyleContext>(getState(), &getState().getDictionary().m_sectionStyles, "section-style-default");
   case IWORKToken::NS_URI_SF | IWORKToken::stylesheet :
   case PAG1Token::NS_URI_SL | PAG1Token::stylesheet :
-    return makeContext<StylesheetElement>(getState());
+    return std::make_shared<StylesheetElement>(getState());
   default:
     break;
   }
@@ -912,12 +912,12 @@ PAG1Parser::~PAG1Parser()
 
 IWORKXMLContextPtr_t PAG1Parser::createDocumentContext()
 {
-  return makeContext<XMLDocument>(m_state);
+  return std::make_shared<XMLDocument>(m_state);
 }
 
 IWORKXMLContextPtr_t PAG1Parser::createDiscardContext()
 {
-  return makeContext<DiscardContext>(m_state);
+  return std::make_shared<DiscardContext>(m_state);
 }
 
 const IWORKTokenizer &PAG1Parser::getTokenizer() const

@@ -92,11 +92,11 @@ IWORKXMLContextPtr_t IWORKGeometryElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::naturalSize :
-    return makeContext<IWORKSizeElement>(getState(), m_naturalSize);
+    return std::make_shared<IWORKSizeElement>(getState(), m_naturalSize);
   case IWORKToken::NS_URI_SF | IWORKToken::position :
-    return makeContext<IWORKPositionElement>(getState(), m_pos);
+    return std::make_shared<IWORKPositionElement>(getState(), m_pos);
   case IWORKToken::NS_URI_SF | IWORKToken::size :
-    return makeContext<IWORKSizeElement>(getState(), m_size);
+    return std::make_shared<IWORKSizeElement>(getState(), m_size);
   default:
     ETONYEK_DEBUG_MSG(("IWORKGeometryElement::element: find unknown element\n"));
     break;

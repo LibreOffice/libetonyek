@@ -77,7 +77,7 @@ IWORKXMLContextPtr_t IWORKStyleContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::property_map :
-    return makeContext<IWORKPropertyMapElement>(getState(), m_props);
+    return std::make_shared<IWORKPropertyMapElement>(getState(), m_props);
   default :
     ETONYEK_DEBUG_MSG(("IWORKStyleContext::element: find some unknown element\n"));
   }

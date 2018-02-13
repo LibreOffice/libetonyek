@@ -42,12 +42,12 @@ IWORKXMLContextPtr_t IWORKListLabelGeometriesProperty::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::array:
   case IWORKToken::NS_URI_SF | IWORKToken::mutable_array :
-    return makeContext<MutableArrayElement>(getState(), getState().getDictionary().m_listLabelGeometriesArrays,
-                                            getState().getDictionary().m_listLabelGeometries,
-                                            m_elements);
+    return std::make_shared<MutableArrayElement>(getState(), getState().getDictionary().m_listLabelGeometriesArrays,
+                                                 getState().getDictionary().m_listLabelGeometries,
+                                                 m_elements);
   case IWORKToken::NS_URI_SF | IWORKToken::array_ref:
   case IWORKToken::NS_URI_SF | IWORKToken::mutable_array_ref :
-    return makeContext<IWORKRefContext>(getState(), m_ref);
+    return std::make_shared<IWORKRefContext>(getState(), m_ref);
   default:
     break;
   }

@@ -44,13 +44,13 @@ IWORKXMLContextPtr_t IWORKLineElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::geometry :
-    return makeContext<IWORKGeometryElement>(getState());
+    return std::make_shared<IWORKGeometryElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::head :
-    return makeContext<IWORKPositionElement>(getState(), m_head);
+    return std::make_shared<IWORKPositionElement>(getState(), m_head);
   case IWORKToken::NS_URI_SF | IWORKToken::style :
-    return makeContext<GraphicStyleContext>(getState(), m_style, getState().getDictionary().m_graphicStyles);
+    return std::make_shared<GraphicStyleContext>(getState(), m_style, getState().getDictionary().m_graphicStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::tail :
-    return makeContext<IWORKPositionElement>(getState(), m_tail);
+    return std::make_shared<IWORKPositionElement>(getState(), m_tail);
   default:
     break;
   }

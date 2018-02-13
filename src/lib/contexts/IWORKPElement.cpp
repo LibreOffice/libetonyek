@@ -63,24 +63,24 @@ IWORKXMLContextPtr_t IWORKPElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::crbr :
   case IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
   case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
-    return makeContext<IWORKBrContext>(getState());
+    return std::make_shared<IWORKBrContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::pgbr :
     m_delayedPageBreak=true;
     return IWORKXMLContextPtr_t();
   case IWORKToken::NS_URI_SF | IWORKToken::span :
-    return makeContext<IWORKSpanElement>(getState());
+    return std::make_shared<IWORKSpanElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tab :
-    return makeContext<IWORKTabElement>(getState());
+    return std::make_shared<IWORKTabElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::link :
-    return makeContext<IWORKLinkElement>(getState());
+    return std::make_shared<IWORKLinkElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::date_time :
-    return makeContext<IWORKFieldElement>(getState(),IWORK_FIELD_DATETIME);
+    return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_DATETIME);
   case IWORKToken::NS_URI_SF | IWORKToken::filename :
-    return makeContext<IWORKFieldElement>(getState(),IWORK_FIELD_FILENAME);
+    return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_FILENAME);
   case IWORKToken::NS_URI_SF | IWORKToken::page_count :
-    return makeContext<IWORKFieldElement>(getState(),IWORK_FIELD_PAGECOUNT);
+    return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_PAGECOUNT);
   case IWORKToken::NS_URI_SF | IWORKToken::page_number :
-    return makeContext<IWORKFieldElement>(getState(),IWORK_FIELD_PAGENUMBER);
+    return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_PAGENUMBER);
   default:
     break;
   }

@@ -32,9 +32,9 @@ IWORKXMLContextPtr_t IWORKImageContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::data :
-    return makeContext<IWORKDataElement>(getState(), m_data);
+    return std::make_shared<IWORKDataElement>(getState(), m_data);
   case IWORKToken::NS_URI_SF | IWORKToken::size :
-    return makeContext<IWORKSizeElement>(getState(), m_size);
+    return std::make_shared<IWORKSizeElement>(getState(), m_size);
   default:
     ETONYEK_DEBUG_MSG(("IWORKImageContext::element: find unknown element\n"));
     break;

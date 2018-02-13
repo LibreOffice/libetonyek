@@ -46,7 +46,7 @@ void PAG1AnnotationContext::attribute(const int name, const char *const value)
 IWORKXMLContextPtr_t PAG1AnnotationContext::element(const int name)
 {
   if (name == (IWORKToken::NS_URI_SF | IWORKToken::text))
-    return makeContext<IWORKTextElement>(getState());
+    return std::make_shared<IWORKTextElement>(getState());
   return IWORKXMLContextPtr_t();
 }
 

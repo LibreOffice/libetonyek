@@ -51,7 +51,7 @@ IWORKXMLContextPtr_t IWORKSpanElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
   case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
     ensureOpened();
-    return makeContext<IWORKBrContext>(getState());
+    return std::make_shared<IWORKBrContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::contbr :
     m_delayedBreak=IWORK_BREAK_COLUMN;
     return IWORKXMLContextPtr_t();
@@ -60,19 +60,19 @@ IWORKXMLContextPtr_t IWORKSpanElement::element(const int name)
     return IWORKXMLContextPtr_t();
   case IWORKToken::NS_URI_SF | IWORKToken::tab :
     ensureOpened();
-    return makeContext<IWORKTabElement>(getState());
+    return std::make_shared<IWORKTabElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::date_time :
     ensureOpened();
-    return makeContext<IWORKFieldElement>(getState(),IWORK_FIELD_DATETIME);
+    return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_DATETIME);
   case IWORKToken::NS_URI_SF | IWORKToken::filename :
     ensureOpened();
-    return makeContext<IWORKFieldElement>(getState(),IWORK_FIELD_FILENAME);
+    return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_FILENAME);
   case IWORKToken::NS_URI_SF | IWORKToken::page_count :
     ensureOpened();
-    return makeContext<IWORKFieldElement>(getState(),IWORK_FIELD_PAGECOUNT);
+    return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_PAGECOUNT);
   case IWORKToken::NS_URI_SF | IWORKToken::page_number :
     ensureOpened();
-    return makeContext<IWORKFieldElement>(getState(),IWORK_FIELD_PAGENUMBER);
+    return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_PAGENUMBER);
   case IWORKToken::NS_URI_SF | IWORKToken::insertion_point :
     return IWORKXMLContextPtr_t();
   default:

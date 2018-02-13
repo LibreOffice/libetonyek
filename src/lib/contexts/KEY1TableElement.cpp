@@ -275,11 +275,11 @@ IWORKXMLContextPtr_t ElementElement::element(const int name)
       assert(!getState().m_currentText);
       getState().m_currentText = getCollector().createText(getState().m_langManager, false);
     }
-    return makeContext<KEY1ContentElement>(getState());
+    return std::make_shared<KEY1ContentElement>(getState());
   case KEY1Token::dict | KEY1Token::NS_URI_KEY :
     break;
   case KEY1Token::node | KEY1Token::NS_URI_KEY :
-    return makeContext<NodeElement>(getState(), m_table);
+    return std::make_shared<NodeElement>(getState(), m_table);
   default:
     ETONYEK_DEBUG_MSG(("ElementElement::element[KEY1TableElement.cpp]: unknown element\n"));
   }
@@ -421,9 +421,9 @@ IWORKXMLContextPtr_t KEY1TableElement::element(const int name)
   case KEY1Token::dict | KEY1Token::NS_URI_KEY :
     break;
   case KEY1Token::element | KEY1Token::NS_URI_KEY :
-    return makeContext<ElementElement>(getState(), *m_tableData);
+    return std::make_shared<ElementElement>(getState(), *m_tableData);
   case KEY1Token::segment | KEY1Token::NS_URI_KEY :
-    return makeContext<SegmentElement>(getState(), *m_tableData);
+    return std::make_shared<SegmentElement>(getState(), *m_tableData);
   default:
     ETONYEK_DEBUG_MSG(("KEY1TableElement::element: unknown element\n"));
   }

@@ -29,7 +29,7 @@ public:
   template<class Context, class State>
   IWORKXMLContextPtr_t makeContext(State &state) const
   {
-    return libetonyek::makeContext<Context>(state, m_collection);
+    return std::make_shared<Context>(state, m_collection);
   }
 
   bool pending() const

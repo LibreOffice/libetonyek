@@ -58,7 +58,7 @@ protected:
     if (name == Id)
       return m_collector.template makeContext<NestedParser>(getState());
     else if ((RefId != 0) && (name == RefId))
-      return makeContext<IWORKRefContext>(getState(), m_ref);
+      return std::make_shared<IWORKRefContext>(getState(), m_ref);
     else if (name!=(IWORKToken::NS_URI_SF | IWORKToken::null))
     {
       ETONYEK_DEBUG_MSG(("IWORKContainerContext::handleRef: find unknown element %d\n", int(name)));

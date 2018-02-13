@@ -81,7 +81,7 @@ IWORKXMLContextPtr_t IWORKStyleContainer<TokenId, RefTokenId, TokenId2, RefToken
     m_context = std::make_shared<IWORKStyleContext>(getState(), &m_styleMap);
     return m_context;
   case RefTokenId :
-    return makeContext<IWORKRefContext>(getState(), m_ref);
+    return std::make_shared<IWORKRefContext>(getState(), m_ref);
   case IWORKToken::NS_URI_SF | IWORKToken::null:
     return IWORKXMLContextPtr_t();
   default:
@@ -92,7 +92,7 @@ IWORKXMLContextPtr_t IWORKStyleContainer<TokenId, RefTokenId, TokenId2, RefToken
       return m_context;
     }
     if (name==RefTokenId2)
-      return makeContext<IWORKRefContext>(getState(), m_ref2);
+      return std::make_shared<IWORKRefContext>(getState(), m_ref2);
     break;
   }
   ETONYEK_DEBUG_MSG(("IWORKStyleContainer<...>::element: unknown element %d\n", name));

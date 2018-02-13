@@ -88,17 +88,17 @@ IWORKXMLContextPtr_t IWORKImageElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::binary :
-    return makeContext<IWORKBinaryElement>(getState(), m_content);
+    return std::make_shared<IWORKBinaryElement>(getState(), m_content);
   case IWORKToken::NS_URI_SF | IWORKToken::binary_ref :
-    return makeContext<IWORKRefContext>(getState(), m_binaryRef);
+    return std::make_shared<IWORKRefContext>(getState(), m_binaryRef);
   case IWORKToken::NS_URI_SF | IWORKToken::crop_geometry :
-    return makeContext<IWORKGeometryElement>(getState(), m_cropGeometry);
+    return std::make_shared<IWORKGeometryElement>(getState(), m_cropGeometry);
   case IWORKToken::NS_URI_SF | IWORKToken::data :
-    return makeContext<IWORKDataElement>(getState(), m_data);
+    return std::make_shared<IWORKDataElement>(getState(), m_data);
   case IWORKToken::NS_URI_SF | IWORKToken::filtered_image :
-    return makeContext<IWORKFilteredImageElement>(getState(), m_filteredImage);
+    return std::make_shared<IWORKFilteredImageElement>(getState(), m_filteredImage);
   case IWORKToken::NS_URI_SF | IWORKToken::geometry :
-    return makeContext<IWORKGeometryElement>(getState());
+    return std::make_shared<IWORKGeometryElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::masking_shape_path_source :
   {
     static bool first=true;
@@ -110,11 +110,11 @@ IWORKXMLContextPtr_t IWORKImageElement::element(const int name)
     break;
   }
   case IWORKToken::NS_URI_SF | IWORKToken::placeholder_size : // USEME
-    return makeContext<IWORKSizeElement>(getState(),m_placeholderSize);
+    return std::make_shared<IWORKSizeElement>(getState(),m_placeholderSize);
   case IWORKToken::NS_URI_SF | IWORKToken::size :
-    return makeContext<IWORKSizeElement>(getState(),m_size);
+    return std::make_shared<IWORKSizeElement>(getState(),m_size);
   case IWORKToken::NS_URI_SF | IWORKToken::style : // USEME
-    return makeContext<GraphicStyleContext>(getState(), m_style, getState().getDictionary().m_graphicStyles);
+    return std::make_shared<GraphicStyleContext>(getState(), m_style, getState().getDictionary().m_graphicStyles);
   default:
     ETONYEK_DEBUG_MSG(("IWORKImageElement::element: find some unknown element\n"));
     break;

@@ -48,7 +48,7 @@ protected:
   IWORKXMLContextPtr_t element(const int name) override
   {
     if (name == Id || (Id2 && name == Id2))
-      return makeContext<NestedParser>(getState(), m_value);
+      return std::make_shared<NestedParser>(getState(), m_value);
     ETONYEK_DEBUG_MSG(("IWORKXMLContextPtr_t::element: found unexpected element %d\n", name));
     return IWORKXMLContextPtr_t();
   }

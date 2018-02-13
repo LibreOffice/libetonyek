@@ -42,7 +42,7 @@ IWORKXMLContextPtr_t IWORKLayoutElement::element(const int name)
     open();
 
   if ((IWORKToken::NS_URI_SF | IWORKToken::p) == name)
-    return makeContext<IWORKPElement>(getState());
+    return std::make_shared<IWORKPElement>(getState());
 
   return IWORKXMLContextPtr_t();
 }

@@ -124,9 +124,9 @@ IWORKXMLContextPtr_t RefPropertyContext<Property, Context, TokenId, RefTokenId>:
   switch (name)
   {
   case TokenId :
-    return makeContext<Context>(getState(), m_data);
+    return std::make_shared<Context>(getState(), m_data);
   case RefTokenId :
-    return makeContext<IWORKRefContext>(getState(), m_ref);
+    return std::make_shared<IWORKRefContext>(getState(), m_ref);
   case IWORKToken::NS_URI_SF | IWORKToken::null:
     return IWORKXMLContextPtr_t();
   default:
@@ -229,9 +229,9 @@ IWORKXMLContextPtr_t TabsProperty::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::tabs :
-    return makeContext<IWORKTabsElement>(getState(), m_tabs);
+    return std::make_shared<IWORKTabsElement>(getState(), m_tabs);
   case IWORKToken::NS_URI_SF | IWORKToken::tabs_ref :
-    return makeContext<IWORKRefContext>(getState(), m_ref);
+    return std::make_shared<IWORKRefContext>(getState(), m_ref);
   default:
     ETONYEK_DEBUG_MSG(("TabsProperty::element[IWORKPropertyMapElement.cpp]: find unknown element\n"));
   }
@@ -405,7 +405,7 @@ IWORKXMLContextPtr_t ColumnsElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::column :
     get(m_value).m_columns.push_back(IWORKColumns::Column());
-    return makeContext<ColumnElement>(getState(), get(m_value).m_columns.back());
+    return std::make_shared<ColumnElement>(getState(), get(m_value).m_columns.back());
   default:
     ETONYEK_DEBUG_MSG(("ColumnsElement::element[IWORKPropertyMapElement.cpp]: find unknown element\n"));
   }
@@ -503,7 +503,7 @@ IWORKXMLContextPtr_t LanguageElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::string:
-    return makeContext<IWORKStringElement>(getState(), m_lang);
+    return std::make_shared<IWORKStringElement>(getState(), m_lang);
   case IWORKToken::NS_URI_SF | IWORKToken::null:
     break;
   default:
@@ -555,7 +555,7 @@ private:
   IWORKXMLContextPtr_t element(int name) override
   {
     if (name==(IWORKToken::NS_URI_SF | IWORKToken::string))
-      return makeContext<IWORKStringElement>(Parent::getState(), m_string);
+      return std::make_shared<IWORKStringElement>(Parent::getState(), m_string);
     else
       return Parent::element(name);
   }
@@ -618,17 +618,17 @@ IWORKXMLContextPtr_t OverridesElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::inputAngle :
-    return makeContext<NumberProperty>(getState(), m_value.m_angle);
+    return std::make_shared<NumberProperty>(getState(), m_value.m_angle);
   case IWORKToken::NS_URI_SF | IWORKToken::inputColor :
-    return makeContext<ColorProperty>(getState(), m_value.m_color);
+    return std::make_shared<ColorProperty>(getState(), m_value.m_color);
   case IWORKToken::NS_URI_SF | IWORKToken::inputDistance :
-    return makeContext<NumberProperty>(getState(), m_value.m_offset);
+    return std::make_shared<NumberProperty>(getState(), m_value.m_offset);
   case IWORKToken::NS_URI_SF | IWORKToken::inputGlossiness :
-    return makeContext<NumberProperty>(getState(), m_value.m_glossiness);
+    return std::make_shared<NumberProperty>(getState(), m_value.m_glossiness);
   case IWORKToken::NS_URI_SF | IWORKToken::inputOpacity :
-    return makeContext<NumberProperty>(getState(), m_value.m_opacity);
+    return std::make_shared<NumberProperty>(getState(), m_value.m_opacity);
   case IWORKToken::NS_URI_SF | IWORKToken::inputRadius :
-    return makeContext<NumberProperty>(getState(), m_value.m_radius);
+    return std::make_shared<NumberProperty>(getState(), m_value.m_radius);
   default:
     ETONYEK_DEBUG_MSG(("OverridesElement::element[IWORKPropertyMapElement.cpp]: find unknown element\n"));
   }
@@ -693,13 +693,13 @@ IWORKXMLContextPtr_t CoreImageFilterInfoElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::core_image_filter_descriptor :
-    return makeContext<IWORKCoreImageFilterDescriptorElement>(getState(), m_isShadow);
+    return std::make_shared<IWORKCoreImageFilterDescriptorElement>(getState(), m_isShadow);
   case IWORKToken::NS_URI_SF | IWORKToken::core_image_filter_descriptor_ref :
-    return makeContext<IWORKRefContext>(getState(), m_descriptorRef);
+    return std::make_shared<IWORKRefContext>(getState(), m_descriptorRef);
   case IWORKToken::NS_URI_SF | IWORKToken::overrides :
-    return makeContext<OverridesElement>(getState(), m_value);
+    return std::make_shared<OverridesElement>(getState(), m_value);
   case IWORKToken::NS_URI_SF | IWORKToken::overrides_ref :
-    return makeContext<IWORKRefContext>(getState(), m_overridesRef);
+    return std::make_shared<IWORKRefContext>(getState(), m_overridesRef);
   default:
     ETONYEK_DEBUG_MSG(("CoreImageFilterInfoElement::element[IWORKPropertyMapElement.cpp]: find unknown element\n"));
   }
@@ -776,12 +776,12 @@ IWORKXMLContextPtr_t FiltersElement::element(const int name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::mutable_array:
   case IWORKToken::NS_URI_SF | IWORKToken::array:
-    return makeContext<MutableArrayElement>(getState(), getState().getDictionary().m_filters, getState().getDictionary().m_coreImageFilterInfos, m_elements);
+    return std::make_shared<MutableArrayElement>(getState(), getState().getDictionary().m_filters, getState().getDictionary().m_coreImageFilterInfos, m_elements);
   case IWORKToken::NS_URI_SF | IWORKToken::mutable_array_ref:
   case IWORKToken::NS_URI_SF | IWORKToken::array_ref:
-    return makeContext<IWORKRefContext>(getState(), m_ref);
+    return std::make_shared<IWORKRefContext>(getState(), m_ref);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutStyle: // useme
-    return makeContext<FiltersLayoutStyle>(getState(), m_layout, getState().getDictionary().m_layoutStyles);
+    return std::make_shared<FiltersLayoutStyle>(getState(), m_layout, getState().getDictionary().m_layoutStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::null:
     break;
   default:
@@ -924,43 +924,43 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::alignment :
-    return makeContext<AlignmentElement>(getState(), *m_propMap);
+    return std::make_shared<AlignmentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::baselineShift :
-    return makeContext<BaselineShiftElement>(getState(), *m_propMap);
+    return std::make_shared<BaselineShiftElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::bold :
-    return makeContext<BoldElement>(getState(), *m_propMap);
+    return std::make_shared<BoldElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::capitalization :
-    return makeContext<CapitalizationElement>(getState(), *m_propMap);
+    return std::make_shared<CapitalizationElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::columns :
-    return makeContext<ColumnsPropertyElement>(getState(), *m_propMap, getState().getDictionary().m_columnSets);
+    return std::make_shared<ColumnsPropertyElement>(getState(), *m_propMap, getState().getDictionary().m_columnSets);
   case IWORKToken::NS_URI_SF | IWORKToken::externalTextWrap:
-    return makeContext<ExternalTextWrapElement>(getState(), *m_propMap, getState().getDictionary().m_externalTextWraps);
+    return std::make_shared<ExternalTextWrapElement>(getState(), *m_propMap, getState().getDictionary().m_externalTextWraps);
   case IWORKToken::NS_URI_SF | IWORKToken::fill :
-    return makeContext<FillPropertyElement>(getState(), *m_propMap);
+    return std::make_shared<FillPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::filters :
-    return makeContext<FiltersElement>(getState(), *m_propMap);
+    return std::make_shared<FiltersElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::firstLineIndent :
-    return makeContext<FirstLineIndentElement>(getState(), *m_propMap);
+    return std::make_shared<FirstLineIndentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::followingLayoutStyle :
-    return makeContext<FollowingLayoutStyleElement>(getState(), *m_propMap, getState().getDictionary().m_layoutStyles);
+    return std::make_shared<FollowingLayoutStyleElement>(getState(), *m_propMap, getState().getDictionary().m_layoutStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::followingParagraphStyle :
-    return makeContext<FollowingParagraphStyleElement>(getState(), *m_propMap, getState().getDictionary().m_paragraphStyles);
+    return std::make_shared<FollowingParagraphStyleElement>(getState(), *m_propMap, getState().getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::fontColor :
-    return makeContext<FontColorElement>(getState(), *m_propMap);
+    return std::make_shared<FontColorElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::fontName :
-    return makeContext<FontNameElement>(getState(), *m_propMap);
+    return std::make_shared<FontNameElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::fontSize :
-    return makeContext<FontSizeElement>(getState(), *m_propMap);
+    return std::make_shared<FontSizeElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::geometry :
-    return makeContext<GeometryElement>(getState(), *m_propMap);
+    return std::make_shared<GeometryElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::headLineEnd :
-    return makeContext<HeadLineEndElement>(getState(), *m_propMap);
+    return std::make_shared<HeadLineEndElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::italic :
-    return makeContext<ItalicElement>(getState(), *m_propMap);
+    return std::make_shared<ItalicElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::keepLinesTogether :
-    return makeContext<KeepLinesTogetherElement>(getState(), *m_propMap);
+    return std::make_shared<KeepLinesTogetherElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::keepWithNext :
-    return makeContext<KeepWithNextElement>(getState(), *m_propMap);
+    return std::make_shared<KeepWithNextElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::labelCharacterStyle1 :
   case IWORKToken::NS_URI_SF | IWORKToken::labelCharacterStyle2 :
   case IWORKToken::NS_URI_SF | IWORKToken::labelCharacterStyle3 :
@@ -971,47 +971,47 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::labelCharacterStyle8 :
   case IWORKToken::NS_URI_SF | IWORKToken::labelCharacterStyle9 :
     // CHANGE: this must be used to retrieve some Wingdings bullet character
-    return makeContext<LabelCharacterStyleElement>(getState(), *m_propMap, getState().getDictionary().m_characterStyles);
+    return std::make_shared<LabelCharacterStyleElement>(getState(), *m_propMap, getState().getDictionary().m_characterStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::language :
-    return makeContext<LanguageElement>(getState(), *m_propMap);
+    return std::make_shared<LanguageElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutMargins :
-    return makeContext<LayoutMarginsElement>(getState(), *m_propMap, getState().getDictionary().m_paddings);
+    return std::make_shared<LayoutMarginsElement>(getState(), *m_propMap, getState().getDictionary().m_paddings);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutParagraphStyle :
-    return makeContext<LayoutParagraphStyleElement>(getState(), *m_propMap, getState().getDictionary().m_paragraphStyles);
+    return std::make_shared<LayoutParagraphStyleElement>(getState(), *m_propMap, getState().getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutStyle :
-    return makeContext<LayoutStyleElement>(getState(), *m_propMap, getState().getDictionary().m_layoutStyles);
+    return std::make_shared<LayoutStyleElement>(getState(), *m_propMap, getState().getDictionary().m_layoutStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::leftIndent :
-    return makeContext<LeftIndentElement>(getState(), *m_propMap);
+    return std::make_shared<LeftIndentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::lineSpacing :
-    return makeContext<LineSpacingElement>(getState(), *m_propMap, getState().getDictionary().m_lineSpacings);
+    return std::make_shared<LineSpacingElement>(getState(), *m_propMap, getState().getDictionary().m_lineSpacings);
   case IWORKToken::NS_URI_SF | IWORKToken::listLabelGeometries :
-    return makeContext<IWORKListLabelGeometriesProperty>(getState(), *m_propMap);
+    return std::make_shared<IWORKListLabelGeometriesProperty>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::listLabelIndents :
-    return makeContext<IWORKListLabelIndentsProperty>(getState(), *m_propMap);
+    return std::make_shared<IWORKListLabelIndentsProperty>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::listLabelTypes :
-    return makeContext<IWORKListLabelTypesProperty>(getState(), *m_propMap);
+    return std::make_shared<IWORKListLabelTypesProperty>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::listStyle :
-    return makeContext<ListStyleElement>(getState(), *m_propMap, getState().getDictionary().m_listStyles);
+    return std::make_shared<ListStyleElement>(getState(), *m_propMap, getState().getDictionary().m_listStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::listTextIndents :
-    return makeContext<IWORKListTextIndentsProperty>(getState(), *m_propMap);
+    return std::make_shared<IWORKListTextIndentsProperty>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::opacity :
-    return makeContext<OpacityElement>(getState(), *m_propMap);
+    return std::make_shared<OpacityElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::outline :
-    return makeContext<OutlineElement>(getState(), *m_propMap);
+    return std::make_shared<OutlineElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::padding :
-    return makeContext<PaddingContext>(getState(), *m_propMap, getState().getDictionary().m_paddings);
+    return std::make_shared<PaddingContext>(getState(), *m_propMap, getState().getDictionary().m_paddings);
   case IWORKToken::NS_URI_SF | IWORKToken::pageBreakBefore :
-    return makeContext<PageBreakBeforeElement>(getState(), *m_propMap);
+    return std::make_shared<PageBreakBeforeElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphBorderType :
-    return makeContext<ParagraphBorderTypeElement>(getState(), *m_propMap);
+    return std::make_shared<ParagraphBorderTypeElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphFill :
-    return makeContext<ParagraphFillElement>(getState(), *m_propMap);
+    return std::make_shared<ParagraphFillElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::paragraphStroke :
-    return makeContext<ParagraphStrokeElement>(getState(), *m_propMap);
+    return std::make_shared<ParagraphStrokeElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::rightIndent :
-    return makeContext<RightIndentElement>(getState(), *m_propMap);
+    return std::make_shared<RightIndentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::tailLineEnd :
-    return makeContext<TailLineEndElement>(getState(), *m_propMap);
+    return std::make_shared<TailLineEndElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::Series_0 :
   case IWORKToken::NS_URI_SF | IWORKToken::Series_1 :
   case IWORKToken::NS_URI_SF | IWORKToken::Series_2 :
@@ -1021,109 +1021,109 @@ IWORKXMLContextPtr_t IWORKPropertyMapElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::Series_6 :
   case IWORKToken::NS_URI_SF | IWORKToken::Series_7 :
     // CHANGEME
-    return makeContext<SFSeriesElement>(getState(), *m_propMap, getState().getDictionary().m_chartSeriesStyles);
+    return std::make_shared<SFSeriesElement>(getState(), *m_propMap, getState().getDictionary().m_chartSeriesStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFC2DAreaFillProperty :
-    return makeContext<SFC2DAreaFillPropertyElement>(getState(), *m_propMap);
+    return std::make_shared<SFC2DAreaFillPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFC2DColumnFillProperty :
-    return makeContext<SFC2DColumnFillPropertyElement>(getState(), *m_propMap);
+    return std::make_shared<SFC2DColumnFillPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFC2DMixedColumnFillProperty :
-    return makeContext<SFC2DMixedColumnFillPropertyElement>(getState(), *m_propMap);
+    return std::make_shared<SFC2DMixedColumnFillPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFC2DPieFillProperty :
-    return makeContext<SFC2DPieFillPropertyElement>(getState(), *m_propMap);
+    return std::make_shared<SFC2DPieFillPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFC3DAreaFillProperty :
-    return makeContext<SFC3DAreaFillPropertyElement>(getState(), *m_propMap);
+    return std::make_shared<SFC3DAreaFillPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFC3DColumnFillProperty :
-    return makeContext<SFC3DColumnFillPropertyElement>(getState(), *m_propMap);
+    return std::make_shared<SFC3DColumnFillPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFC3DPieFillProperty :
-    return makeContext<SFC2DPieFillPropertyElement>(getState(), *m_propMap);
+    return std::make_shared<SFC2DPieFillPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTableCellStylePropertyFill :
-    return makeContext<SFTableCellStylePropertyFillElement>(getState(), *m_propMap);
+    return std::make_shared<SFTableCellStylePropertyFillElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyCellStyle :
-    return makeContext<SFTableStylePropertyCellStyleElement>(getState(), *m_propMap, getState().getDictionary().m_tableCellStyles);
+    return std::make_shared<SFTableStylePropertyCellStyleElement>(getState(), *m_propMap, getState().getDictionary().m_tableCellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyHeaderColumnCellStyle :
-    return makeContext<SFTableStylePropertyHeaderColumnCellStyleElement>(getState(), *m_propMap, getState().getDictionary().m_tableCellStyles);
+    return std::make_shared<SFTableStylePropertyHeaderColumnCellStyleElement>(getState(), *m_propMap, getState().getDictionary().m_tableCellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTableStylePropertyHeaderRowCellStyle :
-    return makeContext<SFTableStylePropertyHeaderRowCellStyleElement>(getState(), *m_propMap, getState().getDictionary().m_tableCellStyles);
+    return std::make_shared<SFTableStylePropertyHeaderRowCellStyleElement>(getState(), *m_propMap, getState().getDictionary().m_tableCellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyNumberFormat :
-    return makeContext<SFTCellStylePropertyNumberFormatElement>(getState(), *m_propMap, getState().getDictionary().m_numberFormats);
+    return std::make_shared<SFTCellStylePropertyNumberFormatElement>(getState(), *m_propMap, getState().getDictionary().m_numberFormats);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyDateTimeFormat :
-    return makeContext<SFTCellStylePropertyDateTimeFormatElement>(getState(), *m_propMap, getState().getDictionary().m_dateTimeFormats);
+    return std::make_shared<SFTCellStylePropertyDateTimeFormatElement>(getState(), *m_propMap, getState().getDictionary().m_dateTimeFormats);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyDurationFormat :
-    return makeContext<SFTCellStylePropertyDurationFormatElement>(getState(), *m_propMap, getState().getDictionary().m_durationFormats);
+    return std::make_shared<SFTCellStylePropertyDurationFormatElement>(getState(), *m_propMap, getState().getDictionary().m_durationFormats);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyLayoutStyle :
-    return makeContext<SFTCellStylePropertyLayoutStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_layoutStyles);
+    return std::make_shared<SFTCellStylePropertyLayoutStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_layoutStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTCellStylePropertyParagraphStyle :
-    return makeContext<SFTCellStylePropertyParagraphStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_paragraphStyles);
+    return std::make_shared<SFTCellStylePropertyParagraphStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultBodyCellStyleProperty :
-    return makeContext<SFTDefaultBodyCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
+    return std::make_shared<SFTDefaultBodyCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultBodyVectorStyleProperty :
-    return makeContext<SFTDefaultBodyVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
+    return std::make_shared<SFTDefaultBodyVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultBorderVectorStyleProperty :
-    return makeContext<SFTDefaultBorderVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
+    return std::make_shared<SFTDefaultBorderVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultFooterBodyVectorStyleProperty :
-    return makeContext<SFTDefaultFooterBodyVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
+    return std::make_shared<SFTDefaultFooterBodyVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultFooterRowCellStyleProperty :
-    return makeContext<SFTDefaultFooterRowCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
+    return std::make_shared<SFTDefaultFooterRowCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultFooterSeparatorVectorStyleProperty :
-    return makeContext<SFTDefaultFooterSeparatorVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
+    return std::make_shared<SFTDefaultFooterSeparatorVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingLevel0VectorStyleProperty:
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingLevel1VectorStyleProperty:
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingLevel2VectorStyleProperty:
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingLevel3VectorStyleProperty:
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingLevel4VectorStyleProperty:
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingLevel5VectorStyleProperty:
-    return makeContext<SFTDefaultGroupingLevelVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
+    return std::make_shared<SFTDefaultGroupingLevelVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingRowCell0StyleProperty :
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingRowCell1StyleProperty :
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingRowCell2StyleProperty :
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingRowCell3StyleProperty :
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingRowCell4StyleProperty :
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultGroupingRowCell5StyleProperty :
-    return makeContext<SFTDefaultGroupingRowCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
+    return std::make_shared<SFTDefaultGroupingRowCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultHeaderBodyVectorStyleProperty :
-    return makeContext<SFTDefaultHeaderBodyVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
+    return std::make_shared<SFTDefaultHeaderBodyVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultHeaderColumnCellStyleProperty :
-    return makeContext<SFTDefaultHeaderColumnCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
+    return std::make_shared<SFTDefaultHeaderColumnCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultHeaderRowCellStyleProperty :
-    return makeContext<SFTDefaultHeaderRowCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
+    return std::make_shared<SFTDefaultHeaderRowCellStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_cellStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTDefaultHeaderSeparatorVectorStyleProperty :
-    return makeContext<SFTDefaultHeaderSeparatorVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
+    return std::make_shared<SFTDefaultHeaderSeparatorVectorStylePropertyElement>(getState(), *m_propMap, getState().getDictionary().m_vectorStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTTableNameStylePropertyLayoutStyle :
-    return makeContext<SFTTableNameStylePropertyLayoutStyleElement>(getState(), *m_propMap, getState().getDictionary().m_layoutStyles);
+    return std::make_shared<SFTTableNameStylePropertyLayoutStyleElement>(getState(), *m_propMap, getState().getDictionary().m_layoutStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTTableNameStylePropertyParagraphStyle :
-    return makeContext<SFTTableNameStylePropertyParagraphStyleElement>(getState(), *m_propMap, getState().getDictionary().m_paragraphStyles);
+    return std::make_shared<SFTTableNameStylePropertyParagraphStyleElement>(getState(), *m_propMap, getState().getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTHeaderColumnRepeatsProperty :
-    return makeContext<SFTHeaderColumnRepeatsPropertyElement>(getState(), *m_propMap);
+    return std::make_shared<SFTHeaderColumnRepeatsPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTHeaderRowRepeatsProperty :
-    return makeContext<SFTHeaderRowRepeatsPropertyElement>(getState(), *m_propMap);
+    return std::make_shared<SFTHeaderRowRepeatsPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTStrokeProperty :
-    return makeContext<SFTStrokePropertyElement>(getState(), *m_propMap);
+    return std::make_shared<SFTStrokePropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::SFTTableBandedRowsProperty :
-    return makeContext<SFTTableBandedRowsPropertyElement>(getState(), *m_propMap);
+    return std::make_shared<SFTTableBandedRowsPropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceAfter :
-    return makeContext<SpaceAfterElement>(getState(), *m_propMap);
+    return std::make_shared<SpaceAfterElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::spaceBefore :
-    return makeContext<SpaceBeforeElement>(getState(), *m_propMap);
+    return std::make_shared<SpaceBeforeElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::strikethru :
-    return makeContext<StrikethruElement>(getState(), *m_propMap);
+    return std::make_shared<StrikethruElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::stroke :
-    return makeContext<StrokePropertyElement>(getState(), *m_propMap);
+    return std::make_shared<StrokePropertyElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::superscript :
-    return makeContext<SuperscriptElement>(getState(), *m_propMap);
+    return std::make_shared<SuperscriptElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::tabs :
-    return makeContext<TabsProperty>(getState(), *m_propMap);
+    return std::make_shared<TabsProperty>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::textBackground :
-    return makeContext<TextBackgroundElement>(getState(), *m_propMap);
+    return std::make_shared<TextBackgroundElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::tocStyle :
-    return makeContext<TocStyleElement>(getState(), *m_propMap, getState().getDictionary().m_tocStyles, getState().getDictionary().m_paragraphStyles);
+    return std::make_shared<TocStyleElement>(getState(), *m_propMap, getState().getDictionary().m_tocStyles, getState().getDictionary().m_paragraphStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::tracking :
-    return makeContext<TrackingElement>(getState(), *m_propMap);
+    return std::make_shared<TrackingElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::underline :
-    return makeContext<UnderlineElement>(getState(), *m_propMap);
+    return std::make_shared<UnderlineElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::verticalAlignment :
-    return makeContext<VerticalAlignmentElement>(getState(), *m_propMap);
+    return std::make_shared<VerticalAlignmentElement>(getState(), *m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::widowControl :
-    return makeContext<WidowControlElement>(getState(), *m_propMap);
+    return std::make_shared<WidowControlElement>(getState(), *m_propMap);
   default:
     if (name)
     {

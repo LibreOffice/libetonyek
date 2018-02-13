@@ -105,9 +105,9 @@ IWORKXMLContextPtr_t IWORKLineEndElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::path :
-    return makeContext<PathElement>(getState(), m_value->m_path);
+    return std::make_shared<PathElement>(getState(), m_value->m_path);
   case IWORKToken::NS_URI_SF | IWORKToken::end_point :
-    return makeContext<IWORKPositionElement>(getState(), m_value->m_endPoint);
+    return std::make_shared<IWORKPositionElement>(getState(), m_value->m_endPoint);
   default:
     break;
   }

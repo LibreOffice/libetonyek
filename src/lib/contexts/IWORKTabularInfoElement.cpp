@@ -72,15 +72,15 @@ IWORKXMLContextPtr_t IWORKTabularInfoElement::element(const int name)
   switch (name)
   {
   case IWORKToken::geometry | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKGeometryElement>(getState());
+    return std::make_shared<IWORKGeometryElement>(getState());
   case IWORKToken::style | IWORKToken::NS_URI_SF :
-    return makeContext<TabularStyleContext>(getState(), m_style, getState().getDictionary().m_tabularStyles);
+    return std::make_shared<TabularStyleContext>(getState(), m_style, getState().getDictionary().m_tabularStyles);
   case IWORKToken::tabular_model | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKTabularModelElement>(getState());
+    return std::make_shared<IWORKTabularModelElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_model_ref :
-    return makeContext<IWORKRefContext>(getState(), m_tableRef);
+    return std::make_shared<IWORKRefContext>(getState(), m_tableRef);
   case IWORKToken::NS_URI_SF | IWORKToken::wrap : // USEME
-    return makeContext<IWORKWrapElement>(getState(), m_wrap);
+    return std::make_shared<IWORKWrapElement>(getState(), m_wrap);
   default:
     ETONYEK_DEBUG_MSG(("IWORKTabularInfoElement::element: find some unknown element\n"));
   }

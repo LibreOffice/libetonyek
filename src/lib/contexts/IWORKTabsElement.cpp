@@ -93,7 +93,7 @@ IWORKXMLContextPtr_t IWORKTabsElement::element(const int name)
   }
 
   if ((IWORKToken::NS_URI_SF | IWORKToken::tabstop) == name)
-    return makeContext<TabstopElement>(getState(), m_current);
+    return std::make_shared<TabstopElement>(getState(), m_current);
 
   return IWORKXMLContextPtr_t();
 }

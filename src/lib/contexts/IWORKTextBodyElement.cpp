@@ -39,7 +39,7 @@ IWORKXMLContextPtr_t IWORKTextBodyElement::element(const int name)
     else
     {
       m_layout = true;
-      return makeContext<IWORKLayoutElement>(getState());
+      return std::make_shared<IWORKLayoutElement>(getState());
     }
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::p :
@@ -49,12 +49,12 @@ IWORKXMLContextPtr_t IWORKTextBodyElement::element(const int name)
     }
     else if (m_para)
     {
-      return makeContext<IWORKPElement>(getState());
+      return std::make_shared<IWORKPElement>(getState());
     }
     else
     {
       m_para = true;
-      return makeContext<IWORKPElement>(getState());
+      return std::make_shared<IWORKPElement>(getState());
     }
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::insertion_point :

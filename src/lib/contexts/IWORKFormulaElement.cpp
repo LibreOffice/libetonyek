@@ -184,7 +184,7 @@ IWORKXMLContextPtr_t IWORKFoElement::element(int name)
   switch (name)
   {
   case IWORKToken::fm | IWORKToken::NS_URI_SF :
-    return makeContext<FmElement>(getState());
+    return std::make_shared<FmElement>(getState());
     break;
   default:
     break;
@@ -233,10 +233,10 @@ IWORKXMLContextPtr_t IWORKOfElement::element(int name)
   switch (name)
   {
   case IWORKToken::fm | IWORKToken::NS_URI_SF :
-    return makeContext<FmElement>(getState());
+    return std::make_shared<FmElement>(getState());
     break;
   case IWORKToken::mf_ref | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKRefContext>(getState(), m_ref);
+    return std::make_shared<IWORKRefContext>(getState(), m_ref);
   default:
     break;
   }
@@ -294,9 +294,9 @@ IWORKXMLContextPtr_t IWORKFormulaElement::element(int name)
   switch (name)
   {
   case IWORKToken::formula_string | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKStringElement>(getState(), m_formula);
+    return std::make_shared<IWORKStringElement>(getState(), m_formula);
   case IWORKToken::host_cell_ID | IWORKToken::NS_URI_SF :
-    return makeContext<HostCellIdElement>(getState());
+    return std::make_shared<HostCellIdElement>(getState());
   case IWORKToken::host_table_ID | IWORKToken::NS_URI_SF :
     break;
   default:
@@ -350,11 +350,11 @@ IWORKXMLContextPtr_t IWORKTableCellFormulaElement::element(int name)
   switch (name)
   {
   case IWORKToken::formula_string | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKStringElement>(getState(), m_formula);
+    return std::make_shared<IWORKStringElement>(getState(), m_formula);
   case IWORKToken::cell_address | IWORKToken::NS_URI_SF :
-    return makeContext<CellAddressElement>(getState());
+    return std::make_shared<CellAddressElement>(getState());
   case IWORKToken::host_table_ID | IWORKToken::NS_URI_SF :
-    return makeContext<IWORKStringElement>(getState(), m_tableId);
+    return std::make_shared<IWORKStringElement>(getState(), m_tableId);
   default:
     ETONYEK_DEBUG_MSG(("IWORKTableCellFormulaElement::element: find unknown element %d\n", name));
   }

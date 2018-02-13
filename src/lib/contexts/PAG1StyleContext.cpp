@@ -129,11 +129,11 @@ IWORKXMLContextPtr_t PropertyMapElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::evenPageMaster :
-    return makeContext<EvenPageMasterElement>(getState(), m_propMap);
+    return std::make_shared<EvenPageMasterElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::firstPageMaster :
-    return makeContext<FirstPageMasterElement>(getState(), m_propMap);
+    return std::make_shared<FirstPageMasterElement>(getState(), m_propMap);
   case IWORKToken::NS_URI_SF | IWORKToken::oddPageMaster :
-    return makeContext<OddPageMasterElement>(getState(), m_propMap);
+    return std::make_shared<OddPageMasterElement>(getState(), m_propMap);
   default:
     break;
   }
@@ -175,7 +175,7 @@ IWORKXMLContextPtr_t PAG1StyleContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::property_map :
-    return makeContext<PropertyMapElement>(getState(), m_props);
+    return std::make_shared<PropertyMapElement>(getState(), m_props);
   default:
     ETONYEK_DEBUG_MSG(("PAG1StyleContext::element: found unexpected element %d\n", name));
   }
