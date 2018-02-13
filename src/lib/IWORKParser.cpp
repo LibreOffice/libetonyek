@@ -64,13 +64,24 @@ bool IWORKParser::parse()
   int ret = xmlTextReaderRead(reader);
   contextStack.push(createDocumentContext());
 
+  bool keynoteDocTypeChecked=false;
+  char const *defaultNS=nullptr;
   while ((1 == ret))
   {
     switch (xmlTextReaderNodeType(reader))
     {
     case XML_READER_TYPE_ELEMENT:
     {
-      const int id = tokenizer.getQualifiedId(char_cast(xmlTextReaderConstLocalName(reader)), char_cast(xmlTextReaderConstNamespaceUri(reader)));
+      if (!keynoteDocTypeChecked)
+      {
+        // check for keynote 1 file with doctype node and not a namespace in first node
+        keynoteDocTypeChecked=true;
+        if (xmlTextReaderNodeType(reader)==XML_READER_TYPE_ELEMENT &&
+            xmlTextReaderConstNamespaceUri(reader)==nullptr)
+          defaultNS="http://developer.apple.com/schemas/APXL";
+      }
+      const int id = tokenizer.getQualifiedId(char_cast(xmlTextReaderConstLocalName(reader)),
+                                              defaultNS ? defaultNS : char_cast(xmlTextReaderConstNamespaceUri(reader)));
 
       IWORKXMLContextPtr_t newContext = contextStack.top()->element(id);
 
