@@ -119,9 +119,15 @@ bool probeXML(DetectionInfo &info)
   xmlTextReaderSetErrorHandler(reader.get(), handleError, nullptr);
 
   int ret = 0;
+  bool checkAPXL=false;
   do
   {
     ret = xmlTextReaderRead(reader.get());
+    if (ret==1 && XML_READER_TYPE_DOCUMENT_TYPE==xmlTextReaderNodeType(reader.get()))
+    {
+      auto name = xmlTextReaderConstName(reader.get());
+      if (name) checkAPXL=std::string((char const *)name)=="APXL";
+    }
   }
   while ((1 == ret) && (XML_READER_TYPE_ELEMENT != xmlTextReaderNodeType(reader.get())));
 
@@ -141,7 +147,7 @@ bool probeXML(DetectionInfo &info)
     return true;
   // Keynote 1 files define the document type with <!DOCTYPE APXL>
   if (probeXMLFormat(FORMAT_XML1, EtonyekDocument::TYPE_KEYNOTE, KEY1Token::NS_URI_KEY | KEY1Token::presentation,
-                     KEY1Token::getTokenizer(), name, ns ? ns : "http://developer.apple.com/schemas/APXL", info))
+                     KEY1Token::getTokenizer(), name, (ns||!checkAPXL) ? ns : "http://developer.apple.com/schemas/APXL", info))
     return true;
   return false;
 }
