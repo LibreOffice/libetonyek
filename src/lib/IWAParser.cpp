@@ -428,8 +428,11 @@ void IWAParser::readShadow(const IWAMessage &msg, IWORKShadow &shadow)
     shadow.m_angle = get(msg.float_(2));
   if (msg.float_(3))
     shadow.m_offset = get(msg.float_(3));
+  // 4. blur
   if (msg.float_(5))
     shadow.m_opacity = get(msg.float_(5));
+  // 6: bool true
+  // 7: enum 0
 }
 
 void IWAParser::readPadding(const IWAMessage &msg, IWORKPadding &padding)
@@ -1356,6 +1359,12 @@ void IWAParser::parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap
     props.put<BaselineShift>(get(msg.float_(14)));
   if (msg.float_(19)) // CHECKME
     props.put<Outline>(get(msg.float_(19))>0);
+  if (msg.message(21))
+  {
+    IWORKShadow shadow;
+    readShadow(get(msg.message(21)),shadow);
+    props.put<Shadow>(shadow);
+  }
   if (msg.float_(27))
     props.put<Tracking>(get(msg.float_(27)));
 }
