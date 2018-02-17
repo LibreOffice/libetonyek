@@ -15,6 +15,7 @@
 
 #include <librevenge/librevenge.h>
 
+#include "IWORKEnum.h"
 #include "IWORKStyle_fwd.h"
 
 namespace libetonyek
@@ -30,6 +31,8 @@ public:
 
   void setParagraphs(const std::map<unsigned, IWORKStylePtr_t> &paras);
   void setSpans(const std::map<unsigned, IWORKStylePtr_t> &spans);
+
+  void setFields(const std::map<unsigned, IWORKFieldType> &fields);
   void setLanguages(const std::map<unsigned, std::string> &langs);
   void setLinks(const std::map<unsigned, std::string> &links);
   void setListLevels(const std::map<unsigned, unsigned> &levels);
@@ -43,6 +46,7 @@ private:
 
   std::map<unsigned, IWORKStylePtr_t> m_paras;
   std::map<unsigned, IWORKStylePtr_t> m_spans;
+  std::map<unsigned, IWORKFieldType> m_fields;
   std::map<unsigned, std::string> m_langs;
   std::map<unsigned, std::string> m_links;
   std::map<unsigned, IWORKStylePtr_t> m_lists;

@@ -43,6 +43,8 @@ IWAText::IWAText(const std::string text, IWORKLanguageManager &langManager)
   , m_langManager(langManager)
   , m_paras()
   , m_spans()
+
+  , m_fields()
   , m_langs()
   , m_links()
   , m_lists()
@@ -58,6 +60,11 @@ void IWAText::setParagraphs(const std::map<unsigned, IWORKStylePtr_t> &paras)
 void IWAText::setSpans(const std::map<unsigned, IWORKStylePtr_t> &spans)
 {
   m_spans = spans;
+}
+
+void IWAText::setFields(const std::map<unsigned, IWORKFieldType> &fields)
+{
+  m_fields = fields;
 }
 
 void IWAText::setLanguages(const std::map<unsigned, std::string> &langs)
@@ -84,6 +91,7 @@ void IWAText::parse(IWORKText &collector)
 {
   map<unsigned, IWORKStylePtr_t>::const_iterator paraIt = m_paras.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator spanIt = m_spans.begin();
+  auto fieldIt = m_fields.begin();
   map<unsigned, string>::const_iterator langIt = m_langs.begin();
   map<unsigned, string>::const_iterator linkIt = m_links.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator listIt = m_lists.begin();
@@ -139,6 +147,13 @@ void IWAText::parse(IWORKText &collector)
         collector.setLanguage(langStyle);
     }
 
+    if (fieldIt != m_fields.end() && fieldIt->first == pos)
+    {
+      flushText(curText, collector);
+      collector.insertField(fieldIt->second);
+      ++fieldIt;
+      continue;
+    }
     // handle start/end of a link
     if ((linkIt != m_links.end()) && (linkIt->first == pos))
     {

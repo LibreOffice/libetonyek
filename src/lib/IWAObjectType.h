@@ -19,6 +19,7 @@ namespace IWAObjectType
 enum
 {
   Text = 2001,
+  // 2003: line or shape
   DrawableShape = 2011,
   StickyNote = 2014,
   CharacterStyle = 2021,
@@ -26,6 +27,8 @@ enum
   ListStyle = 2023,
   GraphicStyle = 2025,
   Link = 2032,
+  DateTimeField = 2034,
+  PageField = 2043,
   Image = 3005,
   Group = 3008,
   Comment = 3056,

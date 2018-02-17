@@ -552,9 +552,54 @@ bool IWAParser::parseText(const unsigned id)
       }
       textParser.setSpans(spans);
     }
-
+    if (get(msg).message(9))
+    {
+      map<unsigned, IWORKFieldType> fields;
+      for (const auto &it : get(msg).message(9).message(1))
+      {
+        if (!it.uint32(1))
+        {
+          ETONYEK_DEBUG_MSG(("IWAParser::parseText[9]: can not find the position\n"));
+          continue;
+        }
+        const optional<unsigned> &ref = readRef(it, 2);
+        if (!ref) continue;
+        const ObjectMessage attachment(*this, get(ref));
+        if (!attachment) continue;
+        switch (attachment.getType())
+        {
+        case IWAObjectType::PageField:
+        {
+          if (!get(attachment).message(1)) break;
+          const auto &field=get(get(attachment).message(1));
+          if (field.uint32(2))
+          {
+            switch (get(field.uint32(2)))
+            {
+            case 0:
+              fields.insert(fields.end(), make_pair(get(it.uint32(1)), IWORKFieldType::IWORK_FIELD_PAGENUMBER));
+              break;
+            case 1:
+              fields.insert(fields.end(), make_pair(get(it.uint32(1)), IWORKFieldType::IWORK_FIELD_PAGECOUNT));
+              break;
+            default:
+              ETONYEK_DEBUG_MSG(("IWAParser::parseText[9]: unknown field enum=%d\n", int(get(field.uint32(2)))));
+            }
+            continue;
+          }
+          break;
+        }
+        // also 2003
+        default:
+          break;
+        }
+        ETONYEK_DEBUG_MSG(("IWAParser::parseText[9]: can not read the field at position=%d\n", int(get(it.uint32(1)))));
+      }
+      textParser.setFields(fields);
+    }
     if (get(msg).message(11))
     {
+      // link:2032 or time field:2034
       map<unsigned, string> links;
       for (const auto &it : get(msg).message(11).message(1))
       {
