@@ -29,7 +29,29 @@ bool PAG5Parser::parseDocument()
   if (msg)
   {
     m_collector.startDocument();
-    const optional<unsigned> textRef(readRef(get(msg), 4));
+    auto const &message=get(msg);
+    IWORKPrintInfo printInfo;
+    if (message.float_(30))
+      printInfo.m_width=get(message.float_(30));
+    if (message.float_(31))
+      printInfo.m_height=get(message.float_(31));
+    if (message.float_(32))
+      printInfo.m_marginLeft=get(message.float_(32));
+    if (message.float_(33))
+      printInfo.m_marginRight=get(message.float_(33));
+    if (message.float_(34))
+      printInfo.m_marginTop=get(message.float_(34));
+    if (message.float_(35))
+      printInfo.m_marginBottom=get(message.float_(35));
+    if (message.float_(36))
+      printInfo.m_headerHeight=get(message.float_(36));
+    if (message.float_(37))
+      printInfo.m_footerHeight=get(message.float_(37));
+    if (message.uint32(42))
+      printInfo.m_footerHeight=get(message.uint32(42));
+    m_collector.setPageDimensions(printInfo);
+
+    const optional<unsigned> textRef(readRef(message, 4));
     if (textRef)
     {
       m_currentText = m_collector.createText(m_langManager);

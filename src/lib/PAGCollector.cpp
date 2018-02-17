@@ -400,6 +400,21 @@ void PAGCollector::flushPageSpan(const bool writeEmpty)
       props.insert("fo:page-width", get(page.m_width), librevenge::RVNG_POINT);
     if (page.m_height)
       props.insert("fo:page-height", get(page.m_height), librevenge::RVNG_POINT);
+    if (page.m_orientation)
+    {
+      switch (get(page.m_orientation))
+      {
+      case 0:
+        props.insert("style:print-orientation", "portrait");
+        break;
+      case 1:
+        props.insert("style:print-orientation", "landscape");
+        break;
+      default:
+        ETONYEK_DEBUG_MSG(("PAGCollector::flushPageSpan: unexpected orientation\n"));
+        break;
+      }
+    }
     if (page.m_marginBottom)
       props.insert("fo:margin-bottom", get(page.m_marginBottom), librevenge::RVNG_POINT);
     if (page.m_marginLeft)

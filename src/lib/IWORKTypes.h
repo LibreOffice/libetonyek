@@ -385,6 +385,7 @@ struct IWORKPrintInfo
 
   boost::optional<double> m_height;
   boost::optional<double> m_width;
+  boost::optional<int> m_orientation;
   boost::optional<double> m_marginBottom;
   boost::optional<double> m_marginLeft;
   boost::optional<double> m_marginRight;
