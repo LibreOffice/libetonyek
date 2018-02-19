@@ -11,6 +11,7 @@
 #define IWATEXT_H_INCLUDED
 
 #include <map>
+#include <set>
 #include <string>
 
 #include <librevenge/librevenge.h>
@@ -34,6 +35,7 @@ public:
   void setSpans(const std::map<unsigned, IWORKStylePtr_t> &spans);
 
   void setFields(const std::map<unsigned, IWORKFieldType> &fields);
+  void setIgnoreCharacters(const std::set<unsigned> &ignoreCharacters);
   void setLanguages(const std::map<unsigned, std::string> &langs);
   void setLinks(const std::map<unsigned, std::string> &links);
   void setListLevels(const std::map<unsigned, unsigned> &levels);
@@ -49,6 +51,7 @@ private:
   std::map<unsigned, IWORKStylePtr_t> m_paras;
   std::map<unsigned, IWORKStylePtr_t> m_spans;
   std::map<unsigned, IWORKFieldType> m_fields;
+  std::set<unsigned> m_ignoreCharacters;
   std::map<unsigned, std::string> m_langs;
   std::map<unsigned, std::string> m_links;
   std::map<unsigned, IWORKStylePtr_t> m_lists;

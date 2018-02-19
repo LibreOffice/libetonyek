@@ -45,6 +45,7 @@ IWAText::IWAText(const std::string text, IWORKLanguageManager &langManager)
   , m_spans()
 
   , m_fields()
+  , m_ignoreCharacters()
   , m_langs()
   , m_links()
   , m_lists()
@@ -66,6 +67,11 @@ void IWAText::setSpans(const std::map<unsigned, IWORKStylePtr_t> &spans)
 void IWAText::setFields(const std::map<unsigned, IWORKFieldType> &fields)
 {
   m_fields = fields;
+}
+
+void IWAText::setIgnoreCharacters(const std::set<unsigned> &ignoreCharacters)
+{
+  m_ignoreCharacters = ignoreCharacters;
 }
 
 void IWAText::setLanguages(const std::map<unsigned, std::string> &langs)
@@ -98,6 +104,7 @@ void IWAText::parse(IWORKText &collector)
   map<unsigned, IWORKStylePtr_t>::const_iterator paraIt = m_paras.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator spanIt = m_spans.begin();
   auto fieldIt = m_fields.begin();
+  auto ignoreCharacterIt = m_ignoreCharacters.begin();
   map<unsigned, string>::const_iterator langIt = m_langs.begin();
   map<unsigned, string>::const_iterator linkIt = m_links.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator listIt = m_lists.begin();
@@ -174,6 +181,13 @@ void IWAText::parse(IWORKText &collector)
       ++noteIt;
       continue;
     }
+    // internal character: begin of a note, ...
+    if ((ignoreCharacterIt != m_ignoreCharacters.end()) && (*ignoreCharacterIt == pos))
+    {
+      flushText(curText, collector);
+      ++ignoreCharacterIt;
+      continue;
+    }
     // handle start/end of a link
     if ((linkIt != m_links.end()) && (linkIt->first == pos))
     {
@@ -219,34 +233,20 @@ void IWAText::parse(IWORKText &collector)
     {
     case char(5):
     {
-      wasSpace = false;
       flushText(curText, collector);
       collector.flushParagraph();
       collector.insertPageBreak();
       break;
     }
-    case char(14):
-    {
-      static bool first=true;
-      if (first)
-      {
-        ETONYEK_DEBUG_MSG(("IWAText::parse:: find some footnotes, unimplemented\n"));
-        first=false;
-      }
-      break;
-    }
     case '\t' :
-      wasSpace = false;
       flushText(curText, collector);
       collector.insertTab();
       break;
     case '\r' :
-      wasSpace = false;
       flushText(curText, collector);
       collector.insertLineBreak();
       break;
     case '\n' :
-      wasSpace = false;
       flushText(curText, collector);
       collector.flushParagraph();
       break;
@@ -257,10 +257,7 @@ void IWAText::parse(IWORKText &collector)
         collector.insertSpace();
       }
       else
-      {
-        wasSpace = true;
         curText.push_back(' ');
-      }
       break;
     default:
       if (unsigned(u8Char[0])<=0x1f)
@@ -268,10 +265,10 @@ void IWAText::parse(IWORKText &collector)
         ETONYEK_DEBUG_MSG(("IWAText::parse: find bad character %d\n", (int) unsigned(u8Char[0])));
         break;
       }
-      wasSpace = false;
       curText.append(u8Char);
       break;
     }
+    wasSpace=u8Char[0]==' ';
   }
 
   flushText(curText, collector);

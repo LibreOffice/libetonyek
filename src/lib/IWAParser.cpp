@@ -559,6 +559,7 @@ bool IWAParser::parseText(const unsigned id)
     if (get(msg).message(9))
     {
       map<unsigned, IWORKFieldType> fields;
+      std::set<unsigned> ignoreCharacters;
       for (const auto &it : get(msg).message(9).message(1))
       {
         if (!it.uint32(1))
@@ -572,6 +573,9 @@ bool IWAParser::parseText(const unsigned id)
         if (!attachment) continue;
         switch (attachment.getType())
         {
+        case IWAObjectType::NoteStart:
+          ignoreCharacters.insert(get(it.uint32(1)));
+          continue;
         case IWAObjectType::PageField:
         {
           if (!get(attachment).message(1)) break;
@@ -601,6 +605,7 @@ bool IWAParser::parseText(const unsigned id)
         ETONYEK_DEBUG_MSG(("IWAParser::parseText[9]: can not read the object at position=%d\n", int(get(it.uint32(1)))));
       }
       textParser.setFields(fields);
+      textParser.setIgnoreCharacters(ignoreCharacters);
     }
     if (get(msg).message(11))
     {
