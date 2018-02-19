@@ -183,6 +183,10 @@ IWAParser::ObjectMessage::ObjectMessage(IWAParser &parser, const unsigned id, co
       }
     }
   }
+  else
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::ObjectMessage::ObjectMessage: object %u is actually visited\n", id));
+  }
 }
 
 IWAParser::ObjectMessage::~ObjectMessage()
@@ -591,9 +595,10 @@ bool IWAParser::parseText(const unsigned id)
         }
         // also 2003
         default:
-          break;
+          ETONYEK_DEBUG_MSG(("IWAParser::parseText[9]: find unknown object %d at position=%d\n", int(attachment.getType()), int(get(it.uint32(1)))));
+          continue;
         }
-        ETONYEK_DEBUG_MSG(("IWAParser::parseText[9]: can not read the field at position=%d\n", int(get(it.uint32(1)))));
+        ETONYEK_DEBUG_MSG(("IWAParser::parseText[9]: can not read the object at position=%d\n", int(get(it.uint32(1)))));
       }
       textParser.setFields(fields);
     }
@@ -613,6 +618,34 @@ bool IWAParser::parseText(const unsigned id)
         }
       }
       textParser.setLinks(links);
+    }
+    if (get(msg).message(16))
+    {
+      map<unsigned, IWORKOutputElements> notes;
+      for (const auto &it : get(msg).message(16).message(1))
+      {
+        if (!it.uint32(1)) continue;
+        const optional<unsigned> &noteRef = readRef(it, 2);
+        if (!noteRef) continue;
+        const ObjectMessage noteMsg(*this, get(noteRef), IWAObjectType::Note);
+        if (!noteMsg) continue;
+        auto textRef=readRef(get(noteMsg), 2);
+        if (textRef)
+        {
+          auto currentText=m_currentText;
+          m_currentText = m_collector.createText(m_langManager);
+          parseText(get(textRef));
+          IWORKOutputElements elements;
+          m_currentText->draw(elements);
+          notes.insert(notes.end(), make_pair(get(it.uint32(1)), elements));
+          m_currentText=currentText;
+        }
+        else
+        {
+          ETONYEK_DEBUG_MSG(("IWAParser::parseText[16]: can not find a note\n"));
+        }
+      }
+      textParser.setNotes(notes);
     }
 
     if (get(msg).message(19))

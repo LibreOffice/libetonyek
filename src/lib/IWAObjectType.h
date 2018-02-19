@@ -20,6 +20,7 @@ enum
 {
   Text = 2001,
   // 2003: line or shape
+  Note = 2008,
   DrawableShape = 2011,
   StickyNote = 2014,
   CharacterStyle = 2021,

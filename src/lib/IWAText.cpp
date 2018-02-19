@@ -49,6 +49,7 @@ IWAText::IWAText(const std::string text, IWORKLanguageManager &langManager)
   , m_links()
   , m_lists()
   , m_listLevels()
+  , m_notes()
 {
 }
 
@@ -87,6 +88,11 @@ void IWAText::setLists(const std::map<unsigned, IWORKStylePtr_t> &lists)
   m_lists = lists;
 }
 
+void IWAText::setNotes(const std::map<unsigned, IWORKOutputElements> &notes)
+{
+  m_notes = notes;
+}
+
 void IWAText::parse(IWORKText &collector)
 {
   map<unsigned, IWORKStylePtr_t>::const_iterator paraIt = m_paras.begin();
@@ -96,6 +102,7 @@ void IWAText::parse(IWORKText &collector)
   map<unsigned, string>::const_iterator linkIt = m_links.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator listIt = m_lists.begin();
   map<unsigned, unsigned>::const_iterator listLevelIt = m_listLevels.begin();
+  auto noteIt = m_notes.begin();
   bool wasSpace = false;
   IWORKStylePtr_t currentListStyle;
   bool isLink = false;
@@ -146,12 +153,25 @@ void IWAText::parse(IWORKText &collector)
       if (langChanged)
         collector.setLanguage(langStyle);
     }
-
+    // handle field
     if (fieldIt != m_fields.end() && fieldIt->first == pos)
     {
       flushText(curText, collector);
       collector.insertField(fieldIt->second);
       ++fieldIt;
+      continue;
+    }
+    // handle note
+    if (noteIt != m_notes.end() && noteIt->first == pos)
+    {
+      flushText(curText, collector);
+      IWORKOutputElements elements;
+      librevenge::RVNGPropertyList props;
+      elements.addOpenFootnote(props);
+      elements.append(noteIt->second);
+      elements.addCloseFootnote();
+      collector.insertInlineContent(elements);
+      ++noteIt;
       continue;
     }
     // handle start/end of a link
@@ -242,7 +262,6 @@ void IWAText::parse(IWORKText &collector)
         curText.push_back(' ');
       }
       break;
-    // find also 14
     default:
       if (unsigned(u8Char[0])<=0x1f)
       {
