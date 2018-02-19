@@ -142,9 +142,9 @@ void IWORKText::fillCharPropList(const IWORKStyleStack &style, const IWORKLangua
     props.insert("fo:color", makeColor(style.get<FontColor>()));
   if (style.has<TextBackground>())
     props.insert("fo:background-color", makeColor(style.get<TextBackground>()));
-  if (style.has<Shadow>())
+  if (style.has<TextShadow>())
   {
-    auto const &shadow = style.get<Shadow>();
+    auto const &shadow = style.get<TextShadow>();
     std::stringstream s;
     const double angle = deg2rad(shadow.m_angle);
     s << makeColor(shadow.m_color).cstr() << " " << int(60*shadow.m_offset * std::cos(angle)) << "* " << int(60*shadow.m_offset * std::sin(angle)) << "*";

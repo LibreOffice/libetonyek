@@ -1446,7 +1446,7 @@ void IWAParser::parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap
   {
     IWORKShadow shadow;
     readShadow(get(msg.message(21)),shadow);
-    props.put<Shadow>(shadow);
+    props.put<TextShadow>(shadow);
   }
   if (msg.float_(27))
     props.put<Tracking>(get(msg.float_(27)));
