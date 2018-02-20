@@ -652,7 +652,6 @@ bool IWAParser::parseText(const unsigned id)
       }
       textParser.setNotes(notes);
     }
-
     if (get(msg).message(19))
     {
       map<unsigned, string> langs;
@@ -662,6 +661,37 @@ bool IWAParser::parseText(const unsigned id)
           langs.insert(langs.end(), make_pair(get(it.uint32(1)), get_optional_value_or(it.string(2), "")));
       }
       textParser.setLanguages(langs);
+    }
+    if (get(msg).message(23))
+    {
+      map<unsigned, IWORKOutputElements> comments;
+      for (const auto &it : get(msg).message(23).message(1))
+      {
+        // no position
+        if (!it.uint32(1)) continue;
+        if (!it.message(2)) continue; // no text ref means end of comment, ...
+        auto const &commentRef = readRef(it, 2);
+        if (!commentRef) continue;
+        const ObjectMessage commentMsg(*this, get(commentRef), IWAObjectType::CommentField);
+        if (!commentMsg) continue;
+        auto textRef=readRef(get(commentMsg), 1);
+        // field 2: some small integer
+        if (textRef)
+        {
+          auto currentText=m_currentText;
+          m_currentText = m_collector.createText(m_langManager);
+          parseComment(get(textRef));
+          IWORKOutputElements elements;
+          m_currentText->draw(elements);
+          comments.insert(comments.end(), make_pair(get(it.uint32(1)), elements));
+          m_currentText=currentText;
+        }
+        else
+        {
+          ETONYEK_DEBUG_MSG(("IWAParser::parseText[23]: can not find a comment\n"));
+        }
+      }
+      textParser.setComments(comments);
     }
 
     textParser.parse(*m_currentText);

@@ -23,6 +23,7 @@ enum
   NoteStart = 2004, // find at the beginning of a note
   Note = 2008,
   DrawableShape = 2011,
+  CommentField = 2013,
   StickyNote = 2014,
   CharacterStyle = 2021,
   ParagraphStyle = 2022,

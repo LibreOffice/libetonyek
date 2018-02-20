@@ -44,6 +44,7 @@ IWAText::IWAText(const std::string text, IWORKLanguageManager &langManager)
   , m_paras()
   , m_spans()
 
+  , m_comments()
   , m_fields()
   , m_ignoreCharacters()
   , m_langs()
@@ -62,6 +63,11 @@ void IWAText::setParagraphs(const std::map<unsigned, IWORKStylePtr_t> &paras)
 void IWAText::setSpans(const std::map<unsigned, IWORKStylePtr_t> &spans)
 {
   m_spans = spans;
+}
+
+void IWAText::setComments(const std::map<unsigned, IWORKOutputElements> &comments)
+{
+  m_comments = comments;
 }
 
 void IWAText::setFields(const std::map<unsigned, IWORKFieldType> &fields)
@@ -103,6 +109,7 @@ void IWAText::parse(IWORKText &collector)
 {
   map<unsigned, IWORKStylePtr_t>::const_iterator paraIt = m_paras.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator spanIt = m_spans.begin();
+  auto commentIt = m_comments.begin();
   auto fieldIt = m_fields.begin();
   auto ignoreCharacterIt = m_ignoreCharacters.begin();
   map<unsigned, string>::const_iterator langIt = m_langs.begin();
@@ -180,6 +187,17 @@ void IWAText::parse(IWORKText &collector)
       collector.insertInlineContent(elements);
       ++noteIt;
       continue;
+    }
+    if (commentIt != m_comments.end() && commentIt->first == pos)
+    {
+      flushText(curText, collector);
+      IWORKOutputElements elements;
+      librevenge::RVNGPropertyList props;
+      elements.addOpenComment(props);
+      elements.append(commentIt->second);
+      elements.addCloseComment();
+      collector.insertInlineContent(elements);
+      ++commentIt;
     }
     // internal character: begin of a note, ...
     if ((ignoreCharacterIt != m_ignoreCharacters.end()) && (*ignoreCharacterIt == pos))
