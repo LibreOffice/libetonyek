@@ -15,6 +15,7 @@
 #include "IWORKDocumentInterface.h"
 #include "IWORKOutputElements.h"
 #include "IWORKPath.h"
+#include "IWORKProperties.h"
 #include "IWORKTable.h"
 #include "IWORKText.h"
 #include "PAGProperties.h"
@@ -32,14 +33,14 @@ namespace
 
 typedef void (IWORKDocumentInterface::*OpenFunction)(const RVNGPropertyList &);
 typedef void (IWORKDocumentInterface::*CloseFunction)();
-typedef const std::string &(*PickFunction)(const PAGPageMaster &);
+typedef const std::string &(*PickFunction)(const IWORKPageMaster &);
 
-const std::string &pickHeader(const PAGPageMaster &pageMaster)
+const std::string &pickHeader(const IWORKPageMaster &pageMaster)
 {
   return pageMaster.m_header;
 }
 
-const std::string &pickFooter(const PAGPageMaster &pageMaster)
+const std::string &pickFooter(const IWORKPageMaster &pageMaster)
 {
   return pageMaster.m_footer;
 }

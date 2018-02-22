@@ -26,6 +26,7 @@
 #include "IWAMessage.h"
 #include "IWAObjectIndex.h"
 #include "IWORKLanguageManager.h"
+#include "IWORKOutputElements.h"
 #include "IWORKStyle_fwd.h"
 #include "IWORKTypes.h"
 
@@ -98,6 +99,8 @@ protected:
 
   const IWORKStylePtr_t queryCharacterStyle(unsigned id) const;
   const IWORKStylePtr_t queryParagraphStyle(unsigned id) const;
+  const IWORKStylePtr_t querySectionStyle(unsigned id) const;
+
   const IWORKStylePtr_t queryGraphicStyle(unsigned id) const;
   const IWORKStylePtr_t queryCellStyle(unsigned id) const;
   const IWORKStylePtr_t queryTableStyle(unsigned id) const;
@@ -111,6 +114,13 @@ protected:
 
 private:
   typedef std::map<unsigned, boost::variant<std::string, unsigned> > DataList_t;
+
+  struct PageMaster
+  {
+    PageMaster();
+    IWORKStylePtr_t m_style;
+    bool m_headerFootersSameAsPrevious;
+  };
 
   struct TableHeader
   {
@@ -151,10 +161,15 @@ private:
 
   void parseCharacterStyle(unsigned id, IWORKStylePtr_t &style);
   void parseParagraphStyle(unsigned id, IWORKStylePtr_t &style);
+  void parseSectionStyle(unsigned id, IWORKStylePtr_t &style);
+
   void parseGraphicStyle(unsigned id, IWORKStylePtr_t &style);
   void parseCellStyle(unsigned id, IWORKStylePtr_t &style);
   void parseTableStyle(unsigned id, IWORKStylePtr_t &style);
   void parseListStyle(unsigned id, IWORKStylePtr_t &style);
+
+  void parseHeaderAndFooter(unsigned id, IWORKPageMaster &hf);
+  void parsePageMaster(unsigned id, PageMaster &pageMaster);
 
   void parseTabularModel(unsigned id);
   void parseDataList(unsigned id, DataList_t &dataList);
@@ -167,6 +182,7 @@ private:
   bool parseGroup(const IWAMessage &msg);
   bool parseShapePlacement(const IWAMessage &msg);
   void parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props);
+  void parseColumnsProperties(const IWAMessage &msg, IWORKPropertyMap &props);
   bool parseImage(const IWAMessage &msg);
   bool parseTabularInfo(const IWAMessage &msg);
 
@@ -179,6 +195,8 @@ private:
 
   mutable StyleMap_t m_charStyles;
   mutable StyleMap_t m_paraStyles;
+  mutable StyleMap_t m_sectionStyles;
+
   mutable StyleMap_t m_graphicStyles;
   mutable StyleMap_t m_cellStyles;
   mutable StyleMap_t m_tableStyles;

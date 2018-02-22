@@ -41,6 +41,7 @@ void flushText(string &text, IWORKText &collector)
 IWAText::IWAText(const std::string text, IWORKLanguageManager &langManager)
   : m_text(text.c_str())
   , m_langManager(langManager)
+  , m_sections()
   , m_paras()
   , m_spans()
 
@@ -53,6 +54,11 @@ IWAText::IWAText(const std::string text, IWORKLanguageManager &langManager)
   , m_listLevels()
   , m_notes()
 {
+}
+
+void IWAText::setSections(const std::map<unsigned, IWORKStylePtr_t> &sections)
+{
+  m_sections = sections;
 }
 
 void IWAText::setParagraphs(const std::map<unsigned, IWORKStylePtr_t> &paras)
@@ -107,6 +113,7 @@ void IWAText::setNotes(const std::map<unsigned, IWORKOutputElements> &notes)
 
 void IWAText::parse(IWORKText &collector)
 {
+  auto sectionIt = m_sections.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator paraIt = m_paras.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator spanIt = m_spans.begin();
   auto commentIt = m_comments.begin();
@@ -127,6 +134,14 @@ void IWAText::parse(IWORKText &collector)
   iter.rewind();
   for (; iter.next(); ++pos)
   {
+    // first handle section change
+    if ((sectionIt != m_sections.end()) && (sectionIt->first == pos))
+    {
+      collector.flushLayout();
+      collector.setLayoutStyle(sectionIt->second);
+      ++sectionIt;
+    }
+
     // handle span style change
     IWORKStylePtr_t spanStyle;
     IWORKStylePtr_t langStyle;
@@ -288,11 +303,11 @@ void IWAText::parse(IWORKText &collector)
     }
     wasSpace=u8Char[0]==' ';
   }
-
   flushText(curText, collector);
   collector.flushParagraph();
   collector.setListLevel(0);
   collector.flushList();
+  collector.flushLayout();
 }
 
 }

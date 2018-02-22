@@ -12,10 +12,6 @@
 namespace libetonyek
 {
 
-IWORK_IMPLEMENT_PROPERTY(EvenPageMaster);
-IWORK_IMPLEMENT_PROPERTY(FirstPageMaster);
-IWORK_IMPLEMENT_PROPERTY(OddPageMaster);
-
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

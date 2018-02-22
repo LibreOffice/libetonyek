@@ -14,6 +14,7 @@
 #include <boost/optional.hpp>
 
 #include "libetonyek_xml.h"
+#include "IWORKProperties.h"
 #include "IWORKPropertyContext.h"
 #include "IWORKPropertyMapElement.h"
 #include "IWORKStyle.h"
@@ -37,19 +38,19 @@ namespace
 class PagemasterElement : public IWORKXMLEmptyContextBase
 {
 public:
-  PagemasterElement(IWORKXMLParserState &state, optional<PAGPageMaster> &value);
+  PagemasterElement(IWORKXMLParserState &state, optional<IWORKPageMaster> &value);
 
 private:
   void attribute(int name, const char *value) override;
   void endOfElement() override;
 
 private:
-  optional<PAGPageMaster> &m_value;
+  optional<IWORKPageMaster> &m_value;
   optional<string> m_header;
   optional<string> m_footer;
 };
 
-PagemasterElement::PagemasterElement(IWORKXMLParserState &state, optional<PAGPageMaster> &value)
+PagemasterElement::PagemasterElement(IWORKXMLParserState &state, optional<IWORKPageMaster> &value)
   : IWORKXMLEmptyContextBase(state)
   , m_value(value)
   , m_header()
@@ -81,7 +82,7 @@ void PagemasterElement::endOfElement()
 {
   if (m_header || m_footer)
   {
-    PAGPageMaster pageMaster;
+    IWORKPageMaster pageMaster;
     if (m_header)
       pageMaster.m_header = get(m_header);
     if (m_footer)

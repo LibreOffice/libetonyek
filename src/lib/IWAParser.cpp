@@ -116,6 +116,12 @@ deque<double> makeSizes(const mdds::flat_segment_tree<unsigned, float> &sizes)
 
 }
 
+IWAParser::PageMaster::PageMaster()
+  : m_style()
+  , m_headerFootersSameAsPrevious(true)
+{
+}
+
 IWAParser::TableHeader::TableHeader(const unsigned count)
   : m_sizes(0, count, 0)
   , m_hidden(0, count, false)
@@ -144,6 +150,7 @@ IWAParser::IWAParser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStrea
   , m_visited()
   , m_charStyles()
   , m_paraStyles()
+  , m_sectionStyles()
   , m_graphicStyles()
   , m_cellStyles()
   , m_tableStyles()
@@ -624,6 +631,20 @@ bool IWAParser::parseText(const unsigned id)
       }
       textParser.setLinks(links);
     }
+    if (get(msg).message(12))
+    {
+      map<unsigned, IWORKStylePtr_t> sections;
+      for (const auto &it : get(msg).message(12).message(1))
+      {
+        if (!it.uint32(1)) continue;
+        const optional<unsigned> &sectionRef = readRef(it, 2);
+        if (!sectionRef) continue;
+        const IWORKStylePtr_t &sectionStyle = querySectionStyle(get(sectionRef));
+        if (sectionStyle)
+          sections.insert(sections.end(), make_pair(get(it.uint32(1)), sectionStyle));
+      }
+      textParser.setSections(sections);
+    }
     if (get(msg).message(16))
     {
       map<unsigned, IWORKOutputElements> notes;
@@ -651,6 +672,20 @@ bool IWAParser::parseText(const unsigned id)
         }
       }
       textParser.setNotes(notes);
+    }
+    if (get(msg).message(17))
+    {
+      map<unsigned, IWORKStylePtr_t> pageMasters;
+      for (const auto &it : get(msg).message(17).message(1))
+      {
+        if (!it.uint32(1)) continue;
+        const optional<unsigned> &pageMasterRef = readRef(it, 2);
+        if (!pageMasterRef) continue;
+        PageMaster pageMaster;
+        parsePageMaster(get(pageMasterRef), pageMaster);
+        pageMasters.insert(pageMasters.end(), make_pair(get(it.uint32(1)), pageMaster.m_style));
+      }
+      // USEME: textParser.setPageMasters(pageMasters);
     }
     if (get(msg).message(19))
     {
@@ -721,6 +756,11 @@ const IWORKStylePtr_t IWAParser::queryCharacterStyle(const unsigned id) const
 const IWORKStylePtr_t IWAParser::queryParagraphStyle(const unsigned id) const
 {
   return queryStyle(id, m_paraStyles, bind(&IWAParser::parseParagraphStyle, const_cast<IWAParser *>(this), _1, _2));
+}
+
+const IWORKStylePtr_t IWAParser::querySectionStyle(const unsigned id) const
+{
+  return queryStyle(id, m_sectionStyles, bind(&IWAParser::parseSectionStyle, const_cast<IWAParser *>(this), _1, _2));
 }
 
 const IWORKStylePtr_t IWAParser::queryGraphicStyle(const unsigned id) const
@@ -1139,6 +1179,30 @@ void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
   style = std::make_shared<IWORKStyle>(props, name, parent);
 }
 
+void IWAParser::parseSectionStyle(const unsigned id, IWORKStylePtr_t &style)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::SectionStyle);
+  if (!msg)
+    return;
+
+  optional<string> name;
+  IWORKStylePtr_t parent;
+  const IWAMessageField &styleInfo = get(msg).message(1);
+  if (styleInfo)
+  {
+    name = styleInfo.string(2).optional();
+    const optional<unsigned> &parentRef = readRef(get(styleInfo), 3);
+    if (parentRef)
+      parent = querySectionStyle(get(parentRef));
+  }
+  // 10: int 2 or 9
+  //
+  IWORKPropertyMap props;
+  if (get(msg).message(11))
+    parseColumnsProperties(get(get(msg).message(11)), props);
+  style = std::make_shared<IWORKStyle>(props, name, parent);
+}
+
 void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
 {
   const ObjectMessage msg(*this, id, IWAObjectType::GraphicStyle);
@@ -1480,6 +1544,121 @@ void IWAParser::parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap
   }
   if (msg.float_(27))
     props.put<Tracking>(get(msg.float_(27)));
+}
+
+void IWAParser::parseColumnsProperties(const IWAMessage &msg, IWORKPropertyMap &props)
+{
+  using namespace property;
+  // 1,2,3,5 bool
+  // 4 float 0
+  if (msg.message(7))
+  {
+    auto columnsMsg=get(msg.message(7));
+    IWORKColumns columns;
+    columns.m_columns.clear();
+    if (columnsMsg.message(1))   // same columns size
+    {
+      auto columnDef=get(columnsMsg.message(1));
+      columns.m_equal=true;
+      auto n=get_optional_value_or(columnDef.uint32(1).optional(),0);
+      auto s=get_optional_value_or(columnDef.float_(2).optional(),0.f);
+      if (n>=1 && n<20)
+      {
+        IWORKColumns::Column column;
+        column.m_width=(1.-(n-1)*double(s))/double(n);
+        column.m_spacing=s;
+        columns.m_columns.resize(size_t(n), column);
+      }
+    }
+    else if (columnsMsg.message(2))
+    {
+      auto columnsDef=get(columnsMsg.message(2));
+      columns.m_equal=false;
+      IWORKColumns::Column column;
+      column.m_width=get_optional_value_or(columnsDef.float_(1).optional(),0.f);
+      columns.m_columns.push_back(column);
+      for (const auto &it : columnsDef.message(2))
+      {
+        column.m_spacing=get_optional_value_or(it.float_(1).optional(),0.f);
+        column.m_width=get_optional_value_or(it.float_(2).optional(),0.f);
+        columns.m_columns.push_back(column);
+      }
+    }
+    if (!columns.m_columns.empty())
+      props.put<property::Columns>(columns);
+  }
+}
+
+void IWAParser::parsePageMaster(unsigned id, PageMaster &pageMaster)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::PageMaster);
+  if (!msg)
+    return;
+  if (get(msg).bool_(17))
+    pageMaster.m_headerFootersSameAsPrevious=get(get(msg).bool_(17));
+  bool hideHeaderOnFirstPage=false;
+  if (get(msg).bool_(28))
+    hideHeaderOnFirstPage=get(get(msg).bool_(28));
+  // 18-22: some bool ?
+  IWORKPropertyMap props;
+  for (unsigned i=0; i<3; ++i)
+  {
+    auto hfRef=readRef(get(msg),23+i);
+    if (!hfRef) continue;
+    IWORKPageMaster pMaster;
+    parseHeaderAndFooter(get(hfRef), pMaster);
+    if (pMaster.m_header.empty() && pMaster.m_footer.empty())
+      continue;
+    // only the last pagemaster seem used...
+    if (i!=2) continue;
+    props.put<property::OddPageMaster>(pMaster);
+    props.put<property::EvenPageMaster>(pMaster);
+    if (!hideHeaderOnFirstPage)
+      props.put<property::FirstPageMaster>(pMaster);
+  }
+  pageMaster.m_style = std::make_shared<IWORKStyle>(props, none, none);
+  auto dataRef=readRef(get(msg),29);
+  if (dataRef)
+  {
+    // useme: type 10016, field 1 a bool, [field 2] a ref to type 3047
+  }
+}
+
+void IWAParser::parseHeaderAndFooter(unsigned id, IWORKPageMaster &hf)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::HeadersAndFooters);
+  if (!msg)
+    return;
+  for (size_t wh=0; wh<2; ++wh)
+  {
+    bool empty=true;
+    std::stringstream name;
+    name << (wh==0 ? "PMHeader" : "PMFooter") << id;
+    for (auto it = get(msg).message(wh+1).begin(); it != get(msg).message(wh+1).end(); ++it)
+    {
+      auto ref=it->uint32(1).optional();
+      if (!ref) continue;
+      auto currentText=m_currentText;
+      m_currentText = m_collector.createText(m_langManager, true);
+      parseText(get(ref));
+      if (!m_currentText->empty())
+      {
+        m_collector.collectText(m_currentText);
+        if (wh==0)
+          m_collector.collectHeader(name.str());
+        else
+          m_collector.collectFooter(name.str());
+        empty=false;
+      }
+      m_currentText=currentText;
+    }
+    if (empty) continue;
+    if (wh==0)
+      hf.m_header=name.str();
+    else
+      hf.m_footer=name.str();
+  }
+
 }
 
 bool IWAParser::parseImage(const IWAMessage &msg)

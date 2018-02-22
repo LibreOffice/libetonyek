@@ -31,6 +31,7 @@ class IWAText
 public:
   IWAText(const std::string text, IWORKLanguageManager &langManager);
 
+  void setSections(const std::map<unsigned, IWORKStylePtr_t> &sections);
   void setParagraphs(const std::map<unsigned, IWORKStylePtr_t> &paras);
   void setSpans(const std::map<unsigned, IWORKStylePtr_t> &spans);
 
@@ -49,6 +50,7 @@ private:
   const librevenge::RVNGString m_text;
   IWORKLanguageManager &m_langManager;
 
+  std::map<unsigned, IWORKStylePtr_t> m_sections;
   std::map<unsigned, IWORKStylePtr_t> m_paras;
   std::map<unsigned, IWORKStylePtr_t> m_spans;
 

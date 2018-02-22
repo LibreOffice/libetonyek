@@ -259,6 +259,12 @@ IWORKColumns::IWORKColumns()
 {
 }
 
+IWORKPageMaster::IWORKPageMaster()
+  : m_header()
+  , m_footer()
+{
+}
+
 IWORKNumberFormat::IWORKNumberFormat()
   : m_type(IWORK_CELL_NUMBER_TYPE_DOUBLE)
   , m_string()

@@ -19,12 +19,6 @@ PAGPublicationInfo::PAGPublicationInfo()
 {
 }
 
-PAGPageMaster::PAGPageMaster()
-  : m_header()
-  , m_footer()
-{
-}
-
 PAGFootnoteState::PAGFootnoteState()
   : m_firstTextAfterMark(false)
   , m_pending(false)

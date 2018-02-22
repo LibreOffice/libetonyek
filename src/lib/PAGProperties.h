@@ -16,10 +16,6 @@
 namespace libetonyek
 {
 
-IWORK_DECLARE_PROPERTY(EvenPageMaster, PAGPageMaster);
-IWORK_DECLARE_PROPERTY(FirstPageMaster, PAGPageMaster);
-IWORK_DECLARE_PROPERTY(OddPageMaster, PAGPageMaster);
-
 }
 
 #endif // PAGPROPERTIES_H_INCLUDED

@@ -34,14 +34,6 @@ struct PAGPublicationInfo
   PAGFootnoteKind m_footnoteKind;
 };
 
-struct PAGPageMaster
-{
-  PAGPageMaster();
-
-  std::string m_header;
-  std::string m_footer;
-};
-
 struct PAGFootnoteState
 {
   PAGFootnoteState();

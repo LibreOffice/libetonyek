@@ -18,6 +18,7 @@ namespace IWAObjectType
 
 enum
 {
+  // 401: root, ie. list of different styles id
   Text = 2001,
   // 2003: line or shape
   NoteStart = 2004, // find at the beginning of a note
@@ -28,12 +29,14 @@ enum
   CharacterStyle = 2021,
   ParagraphStyle = 2022,
   ListStyle = 2023,
+  SectionStyle = 2024,
   GraphicStyle = 2025,
   Link = 2032,
   DateTimeField = 2034,
   PageField = 2043,
   Image = 3005,
   Group = 3008,
+  // 3047: related to columns ?
   Comment = 3056,
   TabularInfo = 6000,
   TabularModel = 6001,
@@ -41,7 +44,11 @@ enum
   TableStyle = 6003,
   CellStyle = 6004,
   DataList = 6005,
-  Headers = 6006
+  Headers = 6006,
+
+  PageMaster = 10011,
+  PageMasterData = 10016,
+  HeadersAndFooters = 10143
 };
 
 }

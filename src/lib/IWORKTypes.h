@@ -336,6 +336,14 @@ struct IWORKColumns
 };
 typedef std::unordered_map<ID_t, IWORKColumns> IWORKColumnsMap_t;
 
+struct IWORKPageMaster
+{
+  IWORKPageMaster();
+
+  std::string m_header;
+  std::string m_footer;
+};
+
 struct IWORKNumberFormat
 {
   IWORKNumberFormat();
