@@ -484,7 +484,7 @@ bool IWAParser::dispatchShape(const unsigned id)
   return false;
 }
 
-bool IWAParser::parseText(const unsigned id)
+bool IWAParser::parseText(const unsigned id, const std::function<void(unsigned, IWORKStylePtr_t)> &openPageFunction)
 {
   assert(bool(m_currentText));
 
@@ -631,7 +631,7 @@ bool IWAParser::parseText(const unsigned id)
       }
       textParser.setLinks(links);
     }
-    if (get(msg).message(12))
+    if (openPageFunction && get(msg).message(12))
     {
       map<unsigned, IWORKStylePtr_t> sections;
       for (const auto &it : get(msg).message(12).message(1))
@@ -673,7 +673,7 @@ bool IWAParser::parseText(const unsigned id)
       }
       textParser.setNotes(notes);
     }
-    if (get(msg).message(17))
+    if (openPageFunction && get(msg).message(17))
     {
       map<unsigned, IWORKStylePtr_t> pageMasters;
       for (const auto &it : get(msg).message(17).message(1))
@@ -685,7 +685,7 @@ bool IWAParser::parseText(const unsigned id)
         parsePageMaster(get(pageMasterRef), pageMaster);
         pageMasters.insert(pageMasters.end(), make_pair(get(it.uint32(1)), pageMaster.m_style));
       }
-      // USEME: textParser.setPageMasters(pageMasters);
+      textParser.setPageMasters(pageMasters);
     }
     if (get(msg).message(19))
     {
@@ -728,8 +728,7 @@ bool IWAParser::parseText(const unsigned id)
       }
       textParser.setComments(comments);
     }
-
-    textParser.parse(*m_currentText);
+    textParser.parse(*m_currentText, openPageFunction);
   }
 
   return true;

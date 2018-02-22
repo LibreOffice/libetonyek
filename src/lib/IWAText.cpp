@@ -41,6 +41,7 @@ void flushText(string &text, IWORKText &collector)
 IWAText::IWAText(const std::string text, IWORKLanguageManager &langManager)
   : m_text(text.c_str())
   , m_langManager(langManager)
+  , m_pageMasters()
   , m_sections()
   , m_paras()
   , m_spans()
@@ -54,6 +55,11 @@ IWAText::IWAText(const std::string text, IWORKLanguageManager &langManager)
   , m_listLevels()
   , m_notes()
 {
+}
+
+void IWAText::setPageMasters(const std::map<unsigned, IWORKStylePtr_t> &pageMasters)
+{
+  m_pageMasters = pageMasters;
 }
 
 void IWAText::setSections(const std::map<unsigned, IWORKStylePtr_t> &sections)
@@ -111,8 +117,9 @@ void IWAText::setNotes(const std::map<unsigned, IWORKOutputElements> &notes)
   m_notes = notes;
 }
 
-void IWAText::parse(IWORKText &collector)
+void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWORKStylePtr_t)> &openPageSpan)
 {
+  auto pageMasterIt = m_pageMasters.begin();
   auto sectionIt = m_sections.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator paraIt = m_paras.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator spanIt = m_spans.begin();
@@ -134,6 +141,12 @@ void IWAText::parse(IWORKText &collector)
   iter.rewind();
   for (; iter.next(); ++pos)
   {
+    // first the page master change
+    if ((pageMasterIt != m_pageMasters.end()) && (pageMasterIt->first == pos))
+    {
+      if (openPageSpan) openPageSpan(unsigned(pos), pageMasterIt->second);
+      ++pageMasterIt;
+    }
     // first handle section change
     if ((sectionIt != m_sections.end()) && (sectionIt->first == pos))
     {
@@ -264,6 +277,8 @@ void IWAText::parse(IWORKText &collector)
     const char *const u8Char = iter();
     switch (u8Char[0])
     {
+    case char(4): // new section(ok)
+      break;
     case char(5):
     {
       flushText(curText, collector);
@@ -271,6 +286,12 @@ void IWAText::parse(IWORKText &collector)
       collector.insertPageBreak();
       break;
     }
+    case char(12): // column break
+      if (m_sections.empty()) break;
+      flushText(curText, collector);
+      collector.flushParagraph();
+      collector.insertColumnBreak();
+      break;
     case '\t' :
       flushText(curText, collector);
       collector.insertTab();

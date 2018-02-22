@@ -167,6 +167,11 @@ void PAGCollector::openSection(const std::string &style)
   }
 }
 
+void PAGCollector::openSection(const IWORKStylePtr_t &style)
+{
+  m_currentSectionStyle=style;
+}
+
 void PAGCollector::closeSection()
 {
   flushPageSpan();

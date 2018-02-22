@@ -92,7 +92,7 @@ protected:
   static void readPadding(const IWAMessage &msg, IWORKPadding &padding);
 
   bool dispatchShape(unsigned id);
-  bool parseText(unsigned id);
+  bool parseText(unsigned id, const std::function<void(unsigned, IWORKStylePtr_t)> &openPageSpan=nullptr);
   void parseComment(unsigned id);
 
   bool parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry);

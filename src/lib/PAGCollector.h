@@ -45,6 +45,7 @@ public:
   void setPageDimensions(const IWORKPrintInfo &dimensions);
 
   void openSection(const std::string &style); // probably better to look for the style in the calling function
+  void openSection(const IWORKStylePtr_t &style);
   void closeSection();
 
   void sendAnnotation(const std::string &name);

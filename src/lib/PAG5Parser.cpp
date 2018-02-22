@@ -55,7 +55,11 @@ bool PAG5Parser::parseDocument()
     if (textRef)
     {
       m_currentText = m_collector.createText(m_langManager);
-      parseText(get(textRef));
+      parseText(get(textRef), [this](unsigned pos, IWORKStylePtr_t style)
+      {
+        if (pos) m_collector.closeSection();
+        m_collector.openSection(style);
+      });
       m_collector.collectText(m_currentText);
       m_currentText.reset();
       m_collector.collectTextBody();
