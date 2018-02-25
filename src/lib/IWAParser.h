@@ -178,6 +178,8 @@ private:
 
   void parseLink(unsigned id, std::string &url);
 
+  bool parseAttachment(unsigned id);
+
   bool parseDrawableShape(const IWAMessage &msg);
   bool parseGroup(const IWAMessage &msg);
   bool parseShapePlacement(const IWAMessage &msg);

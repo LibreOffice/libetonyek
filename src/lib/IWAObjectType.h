@@ -20,7 +20,7 @@ enum
 {
   // 401: root, ie. list of different styles id
   Text = 2001,
-  // 2003: line or shape
+  ShapeField = 2003,
   NoteStart = 2004, // find at the beginning of a note
   Note = 2008,
   DrawableShape = 2011,

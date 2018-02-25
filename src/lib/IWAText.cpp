@@ -46,14 +46,12 @@ IWAText::IWAText(const std::string text, IWORKLanguageManager &langManager)
   , m_paras()
   , m_spans()
 
-  , m_comments()
-  , m_fields()
-  , m_ignoreCharacters()
   , m_langs()
   , m_links()
   , m_lists()
   , m_listLevels()
-  , m_notes()
+
+  , m_attachments()
 {
 }
 
@@ -77,21 +75,6 @@ void IWAText::setSpans(const std::map<unsigned, IWORKStylePtr_t> &spans)
   m_spans = spans;
 }
 
-void IWAText::setComments(const std::map<unsigned, IWORKOutputElements> &comments)
-{
-  m_comments = comments;
-}
-
-void IWAText::setFields(const std::map<unsigned, IWORKFieldType> &fields)
-{
-  m_fields = fields;
-}
-
-void IWAText::setIgnoreCharacters(const std::set<unsigned> &ignoreCharacters)
-{
-  m_ignoreCharacters = ignoreCharacters;
-}
-
 void IWAText::setLanguages(const std::map<unsigned, std::string> &langs)
 {
   m_langs = langs;
@@ -112,9 +95,9 @@ void IWAText::setLists(const std::map<unsigned, IWORKStylePtr_t> &lists)
   m_lists = lists;
 }
 
-void IWAText::setNotes(const std::map<unsigned, IWORKOutputElements> &notes)
+void IWAText::setAttachments(const std::multimap<unsigned, std::function<void(unsigned, bool &)> > &attachments)
 {
-  m_notes = notes;
+  m_attachments = attachments;
 }
 
 void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWORKStylePtr_t)> &openPageSpan)
@@ -123,14 +106,11 @@ void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWO
   auto sectionIt = m_sections.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator paraIt = m_paras.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator spanIt = m_spans.begin();
-  auto commentIt = m_comments.begin();
-  auto fieldIt = m_fields.begin();
-  auto ignoreCharacterIt = m_ignoreCharacters.begin();
   map<unsigned, string>::const_iterator langIt = m_langs.begin();
   map<unsigned, string>::const_iterator linkIt = m_links.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator listIt = m_lists.begin();
   map<unsigned, unsigned>::const_iterator listLevelIt = m_listLevels.begin();
-  auto noteIt = m_notes.begin();
+  auto attachmentIt = m_attachments.begin();
   bool wasSpace = false;
   IWORKStylePtr_t currentListStyle;
   bool isLink = false;
@@ -195,45 +175,6 @@ void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWO
       if (langChanged)
         collector.setLanguage(langStyle);
     }
-    // handle field
-    if (fieldIt != m_fields.end() && fieldIt->first == pos)
-    {
-      flushText(curText, collector);
-      collector.insertField(fieldIt->second);
-      ++fieldIt;
-      continue;
-    }
-    // handle note
-    if (noteIt != m_notes.end() && noteIt->first == pos)
-    {
-      flushText(curText, collector);
-      IWORKOutputElements elements;
-      librevenge::RVNGPropertyList props;
-      elements.addOpenFootnote(props);
-      elements.append(noteIt->second);
-      elements.addCloseFootnote();
-      collector.insertInlineContent(elements);
-      ++noteIt;
-      continue;
-    }
-    if (commentIt != m_comments.end() && commentIt->first == pos)
-    {
-      flushText(curText, collector);
-      IWORKOutputElements elements;
-      librevenge::RVNGPropertyList props;
-      elements.addOpenComment(props);
-      elements.append(commentIt->second);
-      elements.addCloseComment();
-      collector.insertInlineContent(elements);
-      ++commentIt;
-    }
-    // internal character: begin of a note, ...
-    if ((ignoreCharacterIt != m_ignoreCharacters.end()) && (*ignoreCharacterIt == pos))
-    {
-      flushText(curText, collector);
-      ++ignoreCharacterIt;
-      continue;
-    }
     // handle start/end of a link
     if ((linkIt != m_links.end()) && (linkIt->first == pos))
     {
@@ -273,11 +214,21 @@ void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWO
       ++listLevelIt;
     }
 
+    bool ignoreCharacter=false;
+    while (attachmentIt != m_attachments.end() && attachmentIt->first == pos)
+    {
+      flushText(curText, collector);
+      attachmentIt->second(unsigned(pos), ignoreCharacter);
+      ++attachmentIt;
+    }
+    if (ignoreCharacter)
+      continue;
     // handle text
     const char *const u8Char = iter();
     switch (u8Char[0])
     {
     case char(4): // new section(ok)
+    case char(14): // footnote: normally already ignored
       break;
     case char(5):
     {

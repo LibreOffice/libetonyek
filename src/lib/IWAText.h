@@ -37,14 +37,12 @@ public:
   void setParagraphs(const std::map<unsigned, IWORKStylePtr_t> &paras);
   void setSpans(const std::map<unsigned, IWORKStylePtr_t> &spans);
 
-  void setComments(const std::map<unsigned, IWORKOutputElements> &comments);
-  void setFields(const std::map<unsigned, IWORKFieldType> &fields);
-  void setIgnoreCharacters(const std::set<unsigned> &ignoreCharacters);
   void setLanguages(const std::map<unsigned, std::string> &langs);
   void setLinks(const std::map<unsigned, std::string> &links);
   void setListLevels(const std::map<unsigned, unsigned> &levels);
   void setLists(const std::map<unsigned, IWORKStylePtr_t> &lists);
-  void setNotes(const std::map<unsigned, IWORKOutputElements> &notes);
+
+  void setAttachments(const std::multimap<unsigned, std::function<void(unsigned, bool &)> > &attachments);
 
   void parse(IWORKText &collector, const std::function<void(unsigned, IWORKStylePtr_t)> &openPageSpan=nullptr);
 
@@ -57,14 +55,12 @@ private:
   std::map<unsigned, IWORKStylePtr_t> m_paras;
   std::map<unsigned, IWORKStylePtr_t> m_spans;
 
-  std::map<unsigned, IWORKOutputElements> m_comments;
-  std::map<unsigned, IWORKFieldType> m_fields;
-  std::set<unsigned> m_ignoreCharacters;
   std::map<unsigned, std::string> m_langs;
   std::map<unsigned, std::string> m_links;
   std::map<unsigned, IWORKStylePtr_t> m_lists;
   std::map<unsigned, unsigned> m_listLevels;
-  std::map<unsigned, IWORKOutputElements> m_notes;
+
+  std::multimap<unsigned, std::function<void(unsigned, bool &)> > m_attachments;
 };
 
 }

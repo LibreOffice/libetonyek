@@ -29,6 +29,8 @@
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 
+#include "PAGCollector.h"
+
 namespace libetonyek
 {
 
@@ -492,6 +494,7 @@ bool IWAParser::parseText(const unsigned id, const std::function<void(unsigned, 
   if (!msg)
     return false;
 
+  std::multimap<unsigned, std::function<void(unsigned, bool &)> > attachments;
   const IWAStringField &text = get(msg).string(3);
   if (text)
   {
@@ -566,7 +569,6 @@ bool IWAParser::parseText(const unsigned id, const std::function<void(unsigned, 
     if (get(msg).message(9))
     {
       map<unsigned, IWORKFieldType> fields;
-      std::set<unsigned> ignoreCharacters;
       for (const auto &it : get(msg).message(9).message(1))
       {
         if (!it.uint32(1))
@@ -580,8 +582,11 @@ bool IWAParser::parseText(const unsigned id, const std::function<void(unsigned, 
         if (!attachment) continue;
         switch (attachment.getType())
         {
-        case IWAObjectType::NoteStart:
-          ignoreCharacters.insert(get(it.uint32(1)));
+        case IWAObjectType::NoteStart: // the first character of a note seems special, so ...
+          attachments.insert(make_pair(get(it.uint32(1)), [](unsigned, bool &ignore)
+          {
+            ignore=true;
+          }));
           continue;
         case IWAObjectType::PageField:
         {
@@ -592,10 +597,20 @@ bool IWAParser::parseText(const unsigned id, const std::function<void(unsigned, 
             switch (get(field.uint32(2)))
             {
             case 0:
-              fields.insert(fields.end(), make_pair(get(it.uint32(1)), IWORKFieldType::IWORK_FIELD_PAGENUMBER));
+              attachments.insert(make_pair(get(it.uint32(1)),
+                                           [this](unsigned, bool &ignore)
+              {
+                ignore=true;
+                m_currentText->insertField(IWORKFieldType::IWORK_FIELD_PAGENUMBER);
+              }));
               break;
             case 1:
-              fields.insert(fields.end(), make_pair(get(it.uint32(1)), IWORKFieldType::IWORK_FIELD_PAGECOUNT));
+              attachments.insert(make_pair(get(it.uint32(1)),
+                                           [this](unsigned, bool &ignore)
+              {
+                ignore=true;
+                m_currentText->insertField(IWORKFieldType::IWORK_FIELD_PAGECOUNT);
+              }));
               break;
             default:
               ETONYEK_DEBUG_MSG(("IWAParser::parseText[9]: unknown field enum=%d\n", int(get(field.uint32(2)))));
@@ -604,15 +619,25 @@ bool IWAParser::parseText(const unsigned id, const std::function<void(unsigned, 
           }
           break;
         }
-        // also 2003
+        case IWAObjectType::ShapeField:
+          if (!openPageFunction)
+          {
+            ETONYEK_DEBUG_MSG(("IWAParser::parseText[9]: find unexpected shape's attachment at pos=%d\n", int(get(it.uint32(1)))));
+          }
+          else
+            attachments.insert(make_pair(get(it.uint32(1)),
+                                         [this,ref](unsigned, bool &ignore)
+          {
+            ignore=true;
+            parseAttachment(get(ref));
+          }));
+          continue;
         default:
           ETONYEK_DEBUG_MSG(("IWAParser::parseText[9]: find unknown object %d at position=%d\n", int(attachment.getType()), int(get(it.uint32(1)))));
           continue;
         }
         ETONYEK_DEBUG_MSG(("IWAParser::parseText[9]: can not read the object at position=%d\n", int(get(it.uint32(1)))));
       }
-      textParser.setFields(fields);
-      textParser.setIgnoreCharacters(ignoreCharacters);
     }
     if (get(msg).message(11))
     {
@@ -647,7 +672,6 @@ bool IWAParser::parseText(const unsigned id, const std::function<void(unsigned, 
     }
     if (get(msg).message(16))
     {
-      map<unsigned, IWORKOutputElements> notes;
       for (const auto &it : get(msg).message(16).message(1))
       {
         if (!it.uint32(1)) continue;
@@ -658,20 +682,26 @@ bool IWAParser::parseText(const unsigned id, const std::function<void(unsigned, 
         auto textRef=readRef(get(noteMsg), 2);
         if (textRef)
         {
-          auto currentText=m_currentText;
-          m_currentText = m_collector.createText(m_langManager);
-          parseText(get(textRef));
-          IWORKOutputElements elements;
-          m_currentText->draw(elements);
-          notes.insert(notes.end(), make_pair(get(it.uint32(1)), elements));
-          m_currentText=currentText;
+          attachments.insert(make_pair(get(it.uint32(1)),
+                                       [this,textRef](unsigned, bool &ignore)
+          {
+            ignore=true;
+            auto currentText=m_currentText;
+            m_currentText = m_collector.createText(m_langManager);
+            parseText(get(textRef));
+            IWORKOutputElements elements;
+            elements.addOpenFootnote(librevenge::RVNGPropertyList());
+            m_currentText->draw(elements);
+            elements.addCloseFootnote();
+            m_currentText=currentText;
+            m_currentText->insertInlineContent(elements);
+          }));
         }
         else
         {
           ETONYEK_DEBUG_MSG(("IWAParser::parseText[16]: can not find a note\n"));
         }
       }
-      textParser.setNotes(notes);
     }
     if (openPageFunction && get(msg).message(17))
     {
@@ -699,7 +729,6 @@ bool IWAParser::parseText(const unsigned id, const std::function<void(unsigned, 
     }
     if (get(msg).message(23))
     {
-      map<unsigned, IWORKOutputElements> comments;
       for (const auto &it : get(msg).message(23).message(1))
       {
         // no position
@@ -713,21 +742,27 @@ bool IWAParser::parseText(const unsigned id, const std::function<void(unsigned, 
         // field 2: some small integer
         if (textRef)
         {
-          auto currentText=m_currentText;
-          m_currentText = m_collector.createText(m_langManager);
-          parseComment(get(textRef));
-          IWORKOutputElements elements;
-          m_currentText->draw(elements);
-          comments.insert(comments.end(), make_pair(get(it.uint32(1)), elements));
-          m_currentText=currentText;
+          attachments.insert(make_pair(get(it.uint32(1)),
+                                       [this,textRef](unsigned, bool &)
+          {
+            auto currentText=m_currentText;
+            m_currentText = m_collector.createText(m_langManager);
+            parseComment(get(textRef));
+            IWORKOutputElements elements;
+            elements.addOpenComment(librevenge::RVNGPropertyList());
+            m_currentText->draw(elements);
+            elements.addCloseComment();
+            m_currentText=currentText;
+            m_currentText->insertInlineContent(elements);
+          }));
         }
         else
         {
           ETONYEK_DEBUG_MSG(("IWAParser::parseText[23]: can not find a comment\n"));
         }
       }
-      textParser.setComments(comments);
     }
+    textParser.setAttachments(attachments);
     textParser.parse(*m_currentText, openPageFunction);
   }
 
@@ -780,6 +815,64 @@ const IWORKStylePtr_t IWAParser::queryTableStyle(const unsigned id) const
 const IWORKStylePtr_t IWAParser::queryListStyle(const unsigned id) const
 {
   return queryStyle(id, m_tableStyles, bind(&IWAParser::parseListStyle, const_cast<IWAParser *>(this), _1, _2));
+}
+
+bool IWAParser::parseAttachment(const unsigned id)
+{
+  auto collector=dynamic_cast<PAGCollector *>(&m_collector);
+  if (!collector)
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::parseAttachment: can not find the page collector\n"));
+    return false;
+  }
+  const ObjectMessage msg(*this, id, IWAObjectType::ShapeField);
+  if (!msg)
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::parseAttachment: can not find the attachment\n"));
+    return false;
+  }
+  auto objectRef=readRef(get(msg),1);
+  if (!objectRef)
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::parseAttachment: can not find the attached object\n"));
+    return false;
+  }
+
+  IWORKPosition position;
+  // 2: false
+  auto x=get(msg).float_(3);
+  // 4: false
+  auto y=get(msg).float_(5);
+  if (x && !std::isnan(get(x))) position.m_x=get(x);
+  else
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::parseAttachment: can not find the x's position\n"));
+  }
+  if (y && !std::isnan(get(y))) position.m_y=get(y);
+  else
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::parseAttachment: can not find the y's position\n"));
+  }
+  auto currentText=m_currentText;
+  m_currentText.reset();
+  collector->startLevel();
+  collector->startAttachments();
+  collector->startAttachment();
+
+  collector->collectAttachmentPosition(position);
+  collector->getOutputManager().push();
+  bool ok=dispatchShape(get(objectRef));
+  auto cId=collector->getOutputManager().save();
+  auto content = collector->getOutputManager().get(cId);
+  collector->getOutputManager().pop();
+  collector->endAttachment();
+  collector->endAttachments();
+  collector->endLevel();
+
+  if (ok)
+    currentText->insertInlineContent(content);
+  m_currentText=currentText;
+  return ok;
 }
 
 bool IWAParser::parseDrawableShape(const IWAMessage &msg)
