@@ -853,15 +853,47 @@ bool IWAParser::parseAttachment(const unsigned id)
   {
     ETONYEK_DEBUG_MSG(("IWAParser::parseAttachment: can not find the y's position\n"));
   }
+
+  const ObjectMessage object(*this, get(objectRef));
+  if (!object)
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::parseAttachment: can not find the attached object[II]\n"));
+    return false;
+  }
   auto currentText=m_currentText;
   m_currentText.reset();
   collector->startLevel();
   collector->startAttachments();
   collector->startAttachment();
-
   collector->collectAttachmentPosition(position);
   collector->getOutputManager().push();
-  bool ok=dispatchShape(get(objectRef));
+
+  bool ok=false, sendInBlock=false;
+  switch (object.getType())
+  {
+  case IWAObjectType::DrawableShape :
+    ok=parseDrawableShape(get(object));
+    break;
+  case IWAObjectType::Group :
+    ok=parseGroup(get(object));
+    break;
+  case IWAObjectType::Image :
+    ok=parseImage(get(object));
+    break;
+  case IWAObjectType::TabularInfo :
+    sendInBlock=true;
+    ok=parseTabularInfo(get(object));
+    break;
+  default:
+  {
+    static bool first=true;
+    if (first)
+    {
+      first=false;
+      ETONYEK_DEBUG_MSG(("IWAParser::parseAttachment: unknown object type\n"));
+    }
+  }
+  }
   auto cId=collector->getOutputManager().save();
   auto content = collector->getOutputManager().get(cId);
   collector->getOutputManager().pop();
@@ -870,7 +902,12 @@ bool IWAParser::parseAttachment(const unsigned id)
   collector->endLevel();
 
   if (ok)
-    currentText->insertInlineContent(content);
+  {
+    if (sendInBlock)
+      currentText->insertBlockContent(content);
+    else
+      currentText->insertInlineContent(content);
+  }
   m_currentText=currentText;
   return ok;
 }
