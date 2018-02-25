@@ -279,11 +279,8 @@ void PAGCollector::drawShape(const IWORKShapePtr_t &shape)
     ETONYEK_DEBUG_MSG(("PAGCollector::drawShape: can not find the shape\n"));
     return;
   }
-  IWORKOutputElements &elements = m_outputManager.getCurrent();
 
-  const IWORKPath &path = *shape->m_path;
   librevenge::RVNGPropertyList styleProps;
-
   if (bool(shape->m_style))
     fillGraphicProps(shape->m_style, styleProps, true, false);
   if (shape->m_locked) // CHECKME: maybe also content
@@ -291,15 +288,17 @@ void PAGCollector::drawShape(const IWORKShapePtr_t &shape)
 
   librevenge::RVNGPropertyList shapeProps;
   librevenge::RVNGPropertyListVector vec;
+  auto const trafo = m_levelStack.top().m_trafo;
+  auto const path = *shape->m_path * trafo;
   path.write(vec);
   shapeProps.insert("svg:d", vec);
-
   shapeProps.insert("text:anchor-type", "as-char");
   shapeProps.insert("style:vertical-pos", "bottom");
   shapeProps.insert("style:vertical-rel", "text");
   shapeProps.insert("style:run-through", "foreground");
   shapeProps.insert("style:wrap","run-through");
 
+  auto &elements = m_outputManager.getCurrent();
   elements.addSetStyle(styleProps);
   elements.addDrawPath(shapeProps);
 
