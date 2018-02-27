@@ -207,13 +207,13 @@ void writeCellStyle(librevenge::RVNGPropertyList &props, const IWORKStyleStack &
   {
     const IWORKPadding &padding = style.get<Padding>();
     if (padding.m_left)
-      props.insert("fo:padding-left", get(padding.m_left));
+      props.insert("fo:padding-left", get(padding.m_left), librevenge::RVNG_POINT);
     if (padding.m_right)
-      props.insert("fo:padding-right", get(padding.m_right));
+      props.insert("fo:padding-right", get(padding.m_right), librevenge::RVNG_POINT);
     if (padding.m_top)
-      props.insert("fo:padding-top", get(padding.m_top));
+      props.insert("fo:padding-top", get(padding.m_top), librevenge::RVNG_POINT);
     if (padding.m_bottom)
-      props.insert("fo:padding-bottom", get(padding.m_bottom));
+      props.insert("fo:padding-bottom", get(padding.m_bottom), librevenge::RVNG_POINT);
   }
 }
 

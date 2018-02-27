@@ -2107,8 +2107,9 @@ void IWAParser::parseTile(const unsigned id)
           readU32(input);
         if (flags & 0x20) // number
         {
-          // TODO: parse value
-          readU64(input);
+          std::stringstream s;
+          s << readDouble(input);
+          text=s.str();
         }
         if (flags & 0x40) // date
         {
