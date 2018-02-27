@@ -82,17 +82,17 @@ void putEnum(IWORKPropertyMap &props, const unsigned value)
     props.put<P>(get(converted));
 }
 
-void parseColumnOffsets(const RVNGInputStreamPtr_t &input, const unsigned length, deque<optional<unsigned> > &offsets)
+void parseColumnOffsets(const RVNGInputStreamPtr_t &input, const unsigned length, map<unsigned,unsigned> &offsets)
 {
   try
   {
+    unsigned col=0;
     while (!input->isEnd())
     {
       const unsigned offset = readU16(input);
-      if (offset - 4 >= length)
-        offsets.push_back(none);
-      else
-        offsets.push_back(offset);
+      if (offset<length && offset+4 < length)
+        offsets[col]=offset;
+      ++col;
     }
   }
   catch (...)
@@ -882,6 +882,7 @@ bool IWAParser::parseAttachment(const unsigned id)
     break;
   case IWAObjectType::TabularInfo :
     sendInBlock=true;
+    collector->collectAttachmentPosition(IWORKPosition());
     ok=parseTabularInfo(get(object));
     break;
   default:
@@ -1996,6 +1997,17 @@ void IWAParser::parseDataList(const unsigned id, DataList_t &dataList)
       if (it.uint32(4))
         dataList[index] = get(it.uint32(4));
       break;
+    case 8 :   // paragraph ref
+    {
+      auto textRef=readRef(it,9);
+      if (textRef)
+        dataList[index]=get(textRef);
+      else
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::parseDataList: can not find the ref\n"));
+      }
+      break;
+    }
     case 9 :
       if (it.uint32(9))
         dataList[index] = get(it.uint32(9));
@@ -2036,9 +2048,9 @@ void IWAParser::parseTile(const unsigned id)
   }
 
   // process rows
-  for (Rows_t::const_iterator it = rows.begin(); it != rows.end(); ++it)
+  for (auto it : rows)
   {
-    const RVNGInputStreamPtr_t &input = get(it->second->bytes(3));
+    const RVNGInputStreamPtr_t &input = get(it.second->bytes(3));
     auto length = unsigned(getLength(input));
     if (length >= 0xffff)
     {
@@ -2046,16 +2058,13 @@ void IWAParser::parseTile(const unsigned id)
       length = 0xffff;
     }
 
-    deque<optional<unsigned> > offsets;
-    parseColumnOffsets(get(it->second->bytes(4)), length, offsets);
+    map<unsigned,unsigned> offsets;
+    parseColumnOffsets(get(it.second->bytes(4)), length, offsets);
 
-    for (deque<optional<unsigned> >::const_iterator offIt = offsets.begin(); offIt != offsets.end(); ++offIt)
+    for (auto offIt : offsets)
     {
-      if (!*offIt)
-        continue;
-
-      const unsigned column = unsigned(offIt - offsets.begin());
-      const unsigned row = it->first;
+      const unsigned column = offIt.first;
+      const unsigned row = it.first;
 
       IWORKCellType cellType = IWORK_CELL_TYPE_TEXT;
       IWORKStylePtr_t cellStyle;
@@ -2067,7 +2076,7 @@ void IWAParser::parseTile(const unsigned id)
       // so we catch possible over-reading exceptions and continue.
       try
       {
-        input->seek((long) get(*offIt) + 4, librevenge::RVNG_SEEK_SET);
+        input->seek((long) offIt.second + 4, librevenge::RVNG_SEEK_SET);
         const unsigned flags = readU16(input);
         input->seek(6, librevenge::RVNG_SEEK_CUR);
         if (flags & 0x2) // cell style
@@ -2128,10 +2137,11 @@ void IWAParser::parseTile(const unsigned id)
         }
         else if (textRef)
         {
+          // 2001 or 6218
           parseText(get(textRef));
         }
 
-        m_currentTable->m_table->insertCell(column, it->first, text, m_currentText, none, 1, 1, IWORKFormulaPtr_t(), none, cellStyle, cellType);
+        m_currentTable->m_table->insertCell(column, row, text, m_currentText, none, 1, 1, IWORKFormulaPtr_t(), none, cellStyle, cellType);
         m_currentText.reset();
       }
       catch (...)
