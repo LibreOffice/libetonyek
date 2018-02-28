@@ -478,7 +478,7 @@ bool IWAParser::dispatchShape(const unsigned id)
     if (first)
     {
       first=false;
-      ETONYEK_DEBUG_MSG(("IWAParser::dispatchShape: find some unknown shapes\n"));
+      ETONYEK_DEBUG_MSG(("IWAParser::dispatchShape: find some unknown shapes, type=%d\n", int(msg.getType())));
     }
   }
   }
@@ -1176,18 +1176,37 @@ bool IWAParser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &g
     {
       switch (get(get(g).uint32(3)))
       {
+      case 0:
+      {
+        // the position is the position of the center of the shape
+        // (often auto grow textboxes)
+        if (pos && size && get(size).m_width>0 && get(size).m_height>0)
+        {
+          geometry->m_position.m_x -= get(size).m_width/2.;
+          geometry->m_position.m_y -= get(size).m_height/2.;
+          break;
+        }
+        static bool first=true;
+        if (first)
+        {
+          ETONYEK_DEBUG_MSG(("IWAParser::parseShapePlacement: Ooops, find some centered shape\n"));
+          first=false;
+        }
+        break;
+      }
+      // find also 1
       case 3 : // normal
         break;
       case 7 : // horizontal flip
         geometry->m_horizontalFlip = true;
         break;
       default :
-        ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unknown transformation %u\n", get(get(g).uint32(3))));
+        ETONYEK_DEBUG_MSG(("IWAParser::parseShapePlacement: unknown transformation %u\n", get(get(g).uint32(3))));
         break;
       }
     }
     if (get(g).float_(4))
-      geometry->m_angle = deg2rad(get(get(g).float_(4)));
+      geometry->m_angle = -deg2rad(get(get(g).float_(4)));
   }
   geometry->m_aspectRatioLocked = msg.bool_(7).optional();
 
@@ -2063,6 +2082,11 @@ void IWAParser::parseTile(const unsigned id)
 
     for (auto offIt : offsets)
     {
+      if (offIt.second+10>length)
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::parseTile: unexpected offset position\n"));
+        continue;
+      }
       const unsigned column = offIt.first;
       const unsigned row = it.first;
 
@@ -2089,6 +2113,9 @@ void IWAParser::parseTile(const unsigned id)
               cellStyle = queryCellStyle(*ref);
           }
         }
+        if (flags & 0x80) // unknown
+          readU32(input);
+        // flags & 0xc00, read 2 int
         if (flags & 0x4) // format
           readU32(input);
         if (flags & 0x8) // formula
