@@ -390,6 +390,7 @@ bool IWAParser::readFill(const IWAMessage &msg, IWORKFill &fill)
     const optional<unsigned> &fileRef = readRef(get(msg.message(3)), 6);
     if (fileRef)
     {
+      // find also 16 with no file...
       bitmap.m_data = std::make_shared<IWORKData>();
       bitmap.m_data->m_stream = queryFile(get(fileRef));
     }
@@ -1136,13 +1137,19 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
   }
 
   const optional<unsigned> &textRef = readRef(msg, 2);
+  bool hasText=false;
   if (textRef)
   {
-    m_currentText = m_collector.createText(m_langManager);
+    m_currentText = m_collector.createText(m_langManager, true);
     parseText(get(textRef));
+    if (!m_currentText->empty())
+    {
+      hasText=true;
+      m_collector.collectText(m_currentText);
+    }
   }
 
-  if (shape || textRef)
+  if (shape || hasText)
     m_collector.collectShape();
   m_currentText.reset();
 
@@ -1189,7 +1196,7 @@ bool IWAParser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &g
     {
       switch (get(get(g).uint32(3)))
       {
-      case 0:
+      case 0: // centered x, centered y
       {
         // the position is the position of the center of the shape
         // (often auto grow textboxes)
@@ -1207,7 +1214,22 @@ bool IWAParser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &g
         }
         break;
       }
-      // find also 1
+      case 1: // fixed x, centered y
+      {
+        if (pos && size && get(size).m_height>0)
+        {
+          geometry->m_position.m_y -= get(size).m_height/2.;
+          break;
+        }
+        static bool first=true;
+        if (first)
+        {
+          ETONYEK_DEBUG_MSG(("IWAParser::parseShapePlacement: Ooops, find some y centered shape\n"));
+          first=false;
+        }
+        break;
+      }
+      // case 2: centered x, fixed y?
       case 3 : // normal
         break;
       case 7 : // horizontal flip
