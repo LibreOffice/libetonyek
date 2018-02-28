@@ -45,7 +45,8 @@ enum
   CellStyle = 6004,
   DataList = 6005,
   Headers = 6006,
-  // 6218 ?
+
+  TextRef = 6218,
 
   PageMaster = 10011,
   PageMasterData = 10016,

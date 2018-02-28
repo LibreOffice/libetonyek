@@ -489,11 +489,24 @@ bool IWAParser::dispatchShape(const unsigned id)
 bool IWAParser::parseText(const unsigned id, const std::function<void(unsigned, IWORKStylePtr_t)> &openPageFunction)
 {
   assert(bool(m_currentText));
-
-  const ObjectMessage msg(*this, id, IWAObjectType::Text);
+  const ObjectMessage msg(*this, id);
   if (!msg)
     return false;
-
+  if (msg.getType()==IWAObjectType::TextRef)
+  {
+    auto textRef=readRef(get(msg),1);
+    if (!textRef)
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseText: can not find the text reference\n"));
+      return false;
+    }
+    return parseText(get(textRef),openPageFunction);
+  }
+  if (msg.getType()!=IWAObjectType::Text)
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::parseText: unexpected object type, type=%d\n", int(msg.getType())));
+    return false;
+  }
   std::multimap<unsigned, std::function<void(unsigned, bool &)> > attachments;
   const IWAStringField &text = get(msg).string(3);
   if (text)
@@ -2132,16 +2145,19 @@ void IWAParser::parseTile(const unsigned id)
         }
         if (flags & 0x1000) // comment
           readU32(input);
-        if (flags & 0x20) // number
+        if (flags & 0x20) // number or duration(in second)
         {
           std::stringstream s;
           s << readDouble(input);
           text=s.str();
+          cellType = IWORK_CELL_TYPE_NUMBER;
         }
         if (flags & 0x40) // date
         {
-          // TODO: parse value
-          readU64(input);
+          std::stringstream s;
+          s << readDouble(input);
+          text=s.str();
+          cellType = IWORK_CELL_TYPE_DATE_TIME;
         }
         if (flags & 0x200) // formatted text
         {
@@ -2165,7 +2181,6 @@ void IWAParser::parseTile(const unsigned id)
         }
         else if (textRef)
         {
-          // 2001 or 6218
           parseText(get(textRef));
         }
 

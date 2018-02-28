@@ -118,6 +118,11 @@ void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStyleStack 
         const auto t = std::time_t(ETONYEK_EPOCH_BEGIN + get(seconds));
         struct tm *const time = gmtime(&t);
 
+        if (!time)
+        {
+          ETONYEK_DEBUG_MSG(("writeCellFormat: can not convert seconds in time\n"));
+          break;
+        }
         props.insert("librevenge:day", time->tm_mday);
         props.insert("librevenge:month", time->tm_mon + 1);
         props.insert("librevenge:year", time->tm_year + 1900);
@@ -573,7 +578,7 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
         else
           elements.addOpenTableCell(cellProps);
 
-        if (!cell.m_content.empty())
+        if (!cell.m_content.empty() && cell.m_type!=IWORK_CELL_TYPE_DATE_TIME && cell.m_type!=IWORK_CELL_TYPE_DURATION)
           elements.append(cell.m_content);
         else if (drawAsSimpleTable)
         {
