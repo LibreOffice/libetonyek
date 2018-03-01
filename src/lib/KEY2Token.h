@@ -46,6 +46,7 @@ enum
   animationType,
   authors,
   body_placeholder,
+  body_placeholder_ref,
   build,
   build_chunk,
   build_chunks,
@@ -83,6 +84,7 @@ enum
   theme_list,
   title,
   title_placeholder,
+  title_placeholder_ref,
 
   // attributes
   depth,

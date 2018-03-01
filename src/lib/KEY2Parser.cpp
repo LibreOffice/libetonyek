@@ -654,6 +654,7 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::body_placeholder_ref :
+  case KEY2Token::NS_URI_KEY | KEY2Token::body_placeholder_ref :
     return std::make_shared<PlaceholderRefContext>(getState(), PLACEHOLDER_BODY);
   case IWORKToken::NS_URI_SF | IWORKToken::connection_line :
     return std::make_shared<ConnectionLineElement>(getState());
@@ -674,6 +675,7 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
     return std::make_shared<IWORKTabularInfoElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::title_placeholder_ref :
+  case KEY2Token::NS_URI_KEY | KEY2Token::title_placeholder_ref :
     return std::make_shared<PlaceholderRefContext>(getState(), PLACEHOLDER_TITLE);
   case KEY2Token::NS_URI_KEY | KEY2Token::sticky_note :
     return std::make_shared<StickyNoteElement>(getState());

@@ -1187,10 +1187,7 @@ bool IWAParser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &g
       geometry->m_position = get(pos);
     const optional<IWORKSize> &size = readSize(get(g), 2);
     if (size)
-    {
-      geometry->m_naturalSize = get(size);
-      geometry->m_size = get(size);
-    }
+      geometry->m_naturalSize = geometry->m_size = get(size);
 
     if (get(g).uint32(3))
     {

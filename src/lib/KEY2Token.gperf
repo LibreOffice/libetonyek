@@ -41,6 +41,7 @@ animationTimingReferent,animationTimingReferent
 animationType,animationType
 authors,authors
 body-placeholder,body_placeholder
+body-placeholder-ref,body_placeholder_ref
 build,build
 build-chunk,build_chunk
 build-chunks,build_chunks
@@ -84,6 +85,7 @@ theme,theme
 theme-list,theme_list
 title,title
 title-placeholder,title_placeholder
+title-placeholder-ref,title_placeholder_ref
 type,type
 version,version
 %%
