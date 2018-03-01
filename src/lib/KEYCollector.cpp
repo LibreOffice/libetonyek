@@ -415,8 +415,10 @@ void KEYCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &tra
     double h = boundingBox->m_naturalSize.m_height;
     vec = trafo * glm::dvec3(w, h, 0);
 
-    props.insert("svg:width", pt2in(vec[0]));
-    props.insert("svg:height", pt2in(vec[1]));
+    if (vec[0]>0)
+      props.insert("svg:width", pt2in(vec[0]));
+    if (vec[1]>0)
+      props.insert("svg:height", pt2in(vec[1]));
   }
 
   IWORKOutputElements &elements = m_outputManager.getCurrent();
