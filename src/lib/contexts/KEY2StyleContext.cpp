@@ -105,12 +105,16 @@ void TransitionAttributesElement::attribute(int name, const char *value)
 
 IWORKXMLContextPtr_t TransitionAttributesElement::element(const int name)
 {
+  // find <animationAuto/animationDelay/animationDuration... in Keynote 5 files
   switch (name)
   {
   case KEY2Token::NS_URI_KEY | KEY2Token::animationAuto :
+  case KEY2Token::animationAuto :
     return std::make_shared<BoolProperty>(getState(), get(m_transition).m_automatic);
+  case KEY2Token::animationDelay :
   case KEY2Token::NS_URI_KEY | KEY2Token::animationDelay :
     return std::make_shared<DoubleProperty>(getState(), get(m_transition).m_delay);
+  case KEY2Token::animationDuration :
   case KEY2Token::NS_URI_KEY | KEY2Token::animationDuration :
     return std::make_shared<DoubleProperty>(getState(), get(m_transition).m_duration);
   case KEY2Token::NS_URI_KEY | KEY2Token::direction :

@@ -239,8 +239,10 @@ bool KEY6Parser::dispatchShape(const unsigned id)
     if (msg.getType() == IWAObjectType::StickyNote)
       return parseStickyNote(get(msg));
   }
-
-  return IWAParser::dispatchShape(id);
+  m_collector.startLevel();
+  bool ok=IWAParser::dispatchShape(id);
+  m_collector.endLevel();
+  return ok;
 }
 
 bool KEY6Parser::parseStickyNote(const IWAMessage &msg)

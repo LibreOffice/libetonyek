@@ -462,7 +462,6 @@ bool IWAParser::dispatchShape(const unsigned id)
   const ObjectMessage msg(*this, id);
   if (!msg)
     return false;
-
   switch (msg.getType())
   {
   case IWAObjectType::DrawableShape :
