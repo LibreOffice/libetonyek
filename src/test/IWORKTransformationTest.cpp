@@ -106,18 +106,14 @@ void IWORKTransformationTest::testConstructionFromGeometry()
     IWORKGeometry g;
     g.m_naturalSize = IWORKSize(100, 100);
     g.m_position = IWORKPosition(0, 0);
-
-    const glm::dmat3 tr = makeTransformation(g);
-    CPPUNIT_ASSERT_EQUAL(tr, glm::dmat3(1, 0, 0, 0, 1, 0, 0, 0, 1));
+    CPPUNIT_ASSERT_EQUAL(glm::dmat3(1, 0, 0, 0, 1, 0, 0, 0, 1), makeTransformation(g));
   }
 
   {
     IWORKGeometry g;
     g.m_naturalSize = IWORKSize(100, 100);
     g.m_position = IWORKPosition(200, 150);
-
-    const glm::dmat3 tr = makeTransformation(g);
-    CPPUNIT_ASSERT_EQUAL(tr, translate(200, 150));
+    CPPUNIT_ASSERT_EQUAL(translate(200, 150), makeTransformation(g));
   }
 
   {
@@ -125,9 +121,7 @@ void IWORKTransformationTest::testConstructionFromGeometry()
     g.m_naturalSize = IWORKSize(100, 100);
     g.m_position = IWORKPosition(0, 0);
     g.m_angle = etonyek_half_pi;
-
-    const glm::dmat3 tr = makeTransformation(g);
-    CPPUNIT_ASSERT_EQUAL(tr, wrap(100, 100, rotate(etonyek_half_pi)));
+    CPPUNIT_ASSERT_EQUAL(wrap(100, 100, rotate(etonyek_half_pi)), makeTransformation(g));
   }
 
   {
@@ -135,9 +129,7 @@ void IWORKTransformationTest::testConstructionFromGeometry()
     g.m_naturalSize = IWORKSize(100, 100);
     g.m_position = IWORKPosition(0, 0);
     g.m_horizontalFlip = true;
-
-    const glm::dmat3 tr = makeTransformation(g);
-    CPPUNIT_ASSERT_EQUAL(tr, wrap(100, 100, flip(true, false)));
+    CPPUNIT_ASSERT_EQUAL(wrap(100, 100, flip(true, false)), makeTransformation(g));
   }
 
   {
@@ -145,9 +137,7 @@ void IWORKTransformationTest::testConstructionFromGeometry()
     g.m_naturalSize = IWORKSize(100, 100);
     g.m_position = IWORKPosition(0, 0);
     g.m_verticalFlip = true;
-
-    const glm::dmat3 tr = makeTransformation(g);
-    CPPUNIT_ASSERT_EQUAL(tr, wrap(100, 100, flip(false, true)));
+    CPPUNIT_ASSERT_EQUAL(wrap(100, 100, flip(false, true)), makeTransformation(g));
   }
 
   {
@@ -155,9 +145,7 @@ void IWORKTransformationTest::testConstructionFromGeometry()
     g.m_naturalSize = IWORKSize(100, 100);
     g.m_position = IWORKPosition(200, 150);
     g.m_angle = etonyek_half_pi;
-
-    const glm::dmat3 tr = makeTransformation(g);
-    CPPUNIT_ASSERT_EQUAL(tr, wrap(100, 100, translate(200, 150) * rotate(etonyek_half_pi)));
+    CPPUNIT_ASSERT_EQUAL(wrap(100, 100, translate(200, 150) * rotate(etonyek_half_pi)), makeTransformation(g));
   }
 
   {
