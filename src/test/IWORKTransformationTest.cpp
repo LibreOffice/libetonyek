@@ -23,6 +23,7 @@ namespace test
 
 using libetonyek::approxEqual;
 using libetonyek::etonyek_half_pi;
+using libetonyek::etonyek_pi;
 
 namespace
 {
@@ -64,35 +65,33 @@ void IWORKTransformationTest::testConstruction()
 {
   using namespace libetonyek::transformations;
 
-#if 0
   // centering
-  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 0, 0, 1, 100, 50), center(200, 100));
-  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 0, 0, 1, -100, -50), origin(200, 100));
+  CPPUNIT_ASSERT_EQUAL(glm::dmat3(1, 0, 0, 0, 1, 0, 100, 50, 1), center(200, 100));
+  CPPUNIT_ASSERT_EQUAL(glm::dmat3(1, 0, 0, 0, 1, 0, -100, -50, 1), origin(200, 100));
 
   // flipping
-  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(-1, 0, 0, 1, 0, 0), flip(true, false));
-  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 0, 0, -1, 0, 0), flip(false, true));
-  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(-1, 0, 0, -1, 0, 0), flip(true, true));
+  CPPUNIT_ASSERT_EQUAL(glm::dmat3(-1, 0, 0, 0, 1, 0, 0, 0, 1), flip(true, false));
+  CPPUNIT_ASSERT_EQUAL(glm::dmat3(1, 0, 0, 0, -1, 0, 0, 0, 1), flip(false, true));
+  CPPUNIT_ASSERT_EQUAL(glm::dmat3(-1, 0, 0, 0, -1, 0, 0, 0, 1), flip(true, true));
 
   // rotating
-  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(0, 1, -1, 0, 0, 0), rotate(etonyek_half_pi));
+  // CPPUNIT_ASSERT_EQUAL(glm::dmat3(0, 1, 0, -1, 0, 0, 0, 0, 1), rotate(etonyek_half_pi));
 
   // scaling
-  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(2, 0, 0, 1, 0, 0), scale(2, 1));
-  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 0, 0, 2, 0, 0), scale(1, 2));
-  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(3, 0, 0, 2, 0, 0), scale(3, 2));
+  CPPUNIT_ASSERT_EQUAL(glm::dmat3(2, 0, 0, 0, 1, 0, 0, 0, 1), scale(2, 1));
+  CPPUNIT_ASSERT_EQUAL(glm::dmat3(1, 0, 0, 0, 2, 0, 0, 0, 1), scale(1, 2));
+  CPPUNIT_ASSERT_EQUAL(glm::dmat3(3, 0, 0, 0, 2, 0, 0, 0, 1), scale(3, 2));
 
   // shearing
   // FIXME: find the problem and enable
-  // CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 2, 0, 1, 0, 0), shear(etonyek_pi / 4, 0));
-  // CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 0, 2, 1, 0, 0), shear(0, etonyek_pi / 4));
-  // CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 2, 2, 1, 0, 0), shear(etonyek_pi / 4, etonyek_pi / 4));
+  // CPPUNIT_ASSERT_EQUAL(glm::dmat3(1, 2, 0, 0, 1, 0, 0, 0, 1), shear(etonyek_pi / 4, 0));
+  // CPPUNIT_ASSERT_EQUAL(glm::dmat3(1, 0, 0, 2, 1, 0, 0, 0, 1), shear(0, etonyek_pi / 4));
+  // CPPUNIT_ASSERT_EQUAL(glm::dmat3(1, 2, 0, 2, 1, 0, 0, 0, 1), shear(etonyek_pi / 4, etonyek_pi / 4));
 
   // translating
-  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 0, 0, 1, 100, 0), translate(100, 0));
-  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 0, 0, 1, 0, 100), translate(0, 100));
-  CPPUNIT_ASSERT_EQUAL(IWORKTransformation(1, 0, 0, 1, 300, 100), translate(300, 100));
-#endif
+  CPPUNIT_ASSERT_EQUAL(glm::dmat3(1, 0, 0, 0, 1, 0, 100, 0, 1), translate(100, 0));
+  CPPUNIT_ASSERT_EQUAL(glm::dmat3(1, 0, 0, 0, 1, 0, 0, 100, 1), translate(0, 100));
+  CPPUNIT_ASSERT_EQUAL(glm::dmat3(1, 0, 0, 0, 1, 0, 300, 100, 1), translate(300, 100));
 }
 
 void IWORKTransformationTest::testConstructionFromGeometry()
