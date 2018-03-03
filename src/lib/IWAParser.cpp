@@ -462,8 +462,6 @@ bool IWAParser::dispatchShape(const unsigned id)
   const ObjectMessage msg(*this, id);
   if (!msg)
     return false;
-  if (id==14261)
-    std::cout << "Ici\n";
   switch (msg.getType())
   {
   case IWAObjectType::DrawableShape :
@@ -928,6 +926,39 @@ bool IWAParser::parseAttachment(const unsigned id)
   return ok;
 }
 
+bool IWAParser::parseArrowProperties(const IWAMessage &arrow, IWORKPropertyMap &props, bool headArrow)
+{
+  IWORKMarker marker;
+  bool hasPath=false;
+  if (arrow.message(1))
+  {
+    const auto &arrowProp=get(arrow.message(1));
+    IWORKPathPtr_t path;
+    if (parsePath(arrowProp, path) && path && !path->str().empty())
+    {
+      marker.m_path=path->str();
+      hasPath=true;
+    }
+  }
+  marker.m_endPoint=readPosition(arrow,3);
+  // 2: a bool, 4: a bool, 5: name
+  if (headArrow)
+  {
+    if (hasPath)
+      props.put<property::HeadLineEnd>(marker);
+    else
+      props.clear<property::HeadLineEnd>();
+  }
+  else
+  {
+    if (hasPath)
+      props.put<property::TailLineEnd>(marker);
+    else
+      props.clear<property::TailLineEnd>();
+  }
+  return true;
+}
+
 bool IWAParser::parsePath(const IWAMessage &msg, IWORKPathPtr_t &path)
 {
   const deque<IWAMessage> &elements = msg.message(1).repeated();
@@ -1004,7 +1035,7 @@ bool IWAParser::parsePath(const IWAMessage &msg, IWORKPathPtr_t &path)
       closed = true;
       break;
     default :
-      ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unknown bezier path element type %u\n", get(type)));
+      ETONYEK_DEBUG_MSG(("IWAParser::parsePath: unknown bezier path element type %u\n", get(type)));
       return false;
     }
   }
@@ -1022,9 +1053,23 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
     if (placement)
       parseShapePlacement(get(placement));
 
+    IWORKStylePtr_t style;
     const optional<unsigned> styleRef = readRef(get(shape), 2);
     if (styleRef)
-      m_collector.setGraphicStyle(queryGraphicStyle(get(styleRef)));
+      style=queryGraphicStyle(get(styleRef));
+    // look for arrow Keynote 6
+    if (get(shape).message(4) || get(shape).message(5))
+    {
+      if (!style)
+        style=std::make_shared<IWORKStyle>(IWORKPropertyMap(),boost::none, boost::none);
+      for (size_t st=0; st<2; ++st)
+      {
+        if (!get(shape).message(st+4)) continue;
+        parseArrowProperties(get(get(shape).message(st+4)),style->getPropertyMap(),st==0);
+      }
+    }
+    if (style)
+      m_collector.setGraphicStyle(style);
 
     const optional<IWAMessage> &path = get(shape).message(3).optional();
     if (path)
@@ -1456,25 +1501,8 @@ void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
       }
       for (size_t st=0; st<2; ++st)
       {
-        if (get(styleProps).message(st+6))
-        {
-          const auto &arrow=get(styleProps).message(st+6);
-          if (arrow.message(1))
-          {
-            const auto &arrowProp=get(arrow.message(1));
-            IWORKPathPtr_t path;
-            IWORKMarker marker;
-            if (parsePath(arrowProp, path) && path)
-            {
-              marker.m_path=path->str();
-              if (st==0)
-                props.put<HeadLineEnd>(marker);
-              else
-                props.put<TailLineEnd>(marker);
-            }
-            // 2: a bool, 3:[1:3.0,2:0.5], 4: a bool, 5: name
-          }
-        }
+        if (!get(styleProps).message(st+6)) continue;
+        parseArrowProperties(get(get(styleProps).message(st+6)),props, st==0);
       }
     }
   }

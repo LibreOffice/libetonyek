@@ -183,11 +183,13 @@ private:
   bool parseDrawableShape(const IWAMessage &msg);
   bool parseGroup(const IWAMessage &msg);
   bool parseShapePlacement(const IWAMessage &msg);
-  void parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props);
-  void parseColumnsProperties(const IWAMessage &msg, IWORKPropertyMap &props);
   bool parseImage(const IWAMessage &msg);
   bool parseTabularInfo(const IWAMessage &msg);
   bool parsePath(const IWAMessage &msg, IWORKPathPtr_t &path);
+
+  bool parseArrowProperties(const IWAMessage &msg, IWORKPropertyMap &props, bool headArrow);
+  void parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props);
+  void parseColumnsProperties(const IWAMessage &msg, IWORKPropertyMap &props);
 
 private:
   IWORKCollector &m_collector;
