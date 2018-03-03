@@ -711,10 +711,20 @@ bool IWORKPath::isRectangle() const
   if (x[id]<x[id+1] || x[id]>x[id+1] || // check axis
       y[id+1]<y[id+2] || y[id+1]>y[id+2] ||
       x[id+2]<x[id+3] || x[id+2]>x[id+3] ||
-      y[id+3]<y[(id+4)%4] || y[id+3]>y[(id+4)%4] ||
-      (x[id]<=x[id+2] && x[id]>=x[id+2]) || // and not empty diagonal
-      (x[id+1]<=x[id+3] && x[id+1]>=x[id+3]))
+      y[id+3]<y[(id+4)%4] || y[id+3]>y[(id+4)%4])
     return false;
+  if ((x[id]<=x[id+2] && x[id]>=x[id+2]) ||
+      (x[id+1]<=x[id+3] && x[id+1]>=x[id+3]))   // empty diagonal
+  {
+    // check if all points are the same
+    for (int i=0; i<4; ++i)
+    {
+      if (x[i]<x[i+1] || x[i]>x[i+1] || y[i]<y[i+1] || y[i]>y[i+1])
+        return false;
+    }
+    // a point
+    return true;
+  }
   return true;
 }
 

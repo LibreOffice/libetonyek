@@ -462,6 +462,8 @@ bool IWAParser::dispatchShape(const unsigned id)
   const ObjectMessage msg(*this, id);
   if (!msg)
     return false;
+  if (id==14261)
+    std::cout << "Ici\n";
   switch (msg.getType())
   {
   case IWAObjectType::DrawableShape :
@@ -926,6 +928,89 @@ bool IWAParser::parseAttachment(const unsigned id)
   return ok;
 }
 
+bool IWAParser::parsePath(const IWAMessage &msg, IWORKPathPtr_t &path)
+{
+  const deque<IWAMessage> &elements = msg.message(1).repeated();
+  bool closed = false;
+  bool closingMove = false;
+  path.reset(new IWORKPath());
+  for (auto it : elements)
+  {
+    const auto &type = it.uint32(1).optional();
+    if (!type)
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parsePath: can not read the type\n"));
+      continue;
+    }
+    if (closed && closingMove)
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parsePath: unexpected element %c after the closing move\n", get(type)));
+      break;
+    }
+    switch (get(type))
+    {
+    case 1 :
+      if (closed)
+      {
+        closingMove = true;
+        break;
+      }
+      ETONYEK_FALLTHROUGH;
+    case 2 :
+    {
+      const optional<IWORKPosition> &coords = readPosition(it, 2);
+      if (!coords)
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::parsePath: missing coordinates for %c element\n", get(type) == 1 ? 'M' : 'L'));
+        return false;
+      }
+      if (get(type) == 1)
+        path->appendMoveTo(get(coords).m_x, get(coords).m_y);
+      else
+        path->appendLineTo(get(coords).m_x, get(coords).m_y);
+      break;
+    }
+    case 4 :
+    {
+      if (it.message(2))
+      {
+        const std::deque<IWAMessage> &positions = it.message(2).repeated();
+        if (positions.size() >= 3)
+        {
+          if (positions.size() > 3)
+          {
+            ETONYEK_DEBUG_MSG(("IWAParser::parsePath: a curve has got %u control coords\n", unsigned(positions.size())));
+          }
+          const optional<float> &x = positions[0].float_(1).optional();
+          const optional<float> &y = positions[0].float_(2).optional();
+          const optional<float> &x1 = positions[1].float_(1).optional();
+          const optional<float> &y1 = positions[1].float_(2).optional();
+          const optional<float> &x2 = positions[2].float_(1).optional();
+          const optional<float> &y2 = positions[2].float_(2).optional();
+          path->appendCCurveTo(get_optional_value_or(x, 0), get_optional_value_or(y, 0),
+                               get_optional_value_or(x1, 0), get_optional_value_or(y1, 0),
+                               get_optional_value_or(x2, 0), get_optional_value_or(y2, 0));
+        }
+        else
+        {
+          ETONYEK_DEBUG_MSG(("IWAParser::parsePath: %u is not enough coords for a curve\n", unsigned(positions.size())));
+          return false;
+        }
+      }
+      break;
+    }
+    case 5 :
+      path->appendClose();
+      closed = true;
+      break;
+    default :
+      ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unknown bezier path element type %u\n", get(type)));
+      return false;
+    }
+  }
+  return true;
+}
+
 bool IWAParser::parseDrawableShape(const IWAMessage &msg)
 {
   m_collector.startLevel();
@@ -994,86 +1079,16 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
         const optional<IWAMessage> &bezier = get(path).message(5).get().message(3).optional();
         if (bezier)
         {
-          const IWORKPathPtr_t bezierPath(new IWORKPath());
-          const deque<IWAMessage> &elements = get(bezier).message(1).repeated();
-          bool closed = false;
-          bool closingMove = false;
-          for (auto it = elements.begin(); it != elements.end() && !closed; ++it)
+          IWORKPathPtr_t bezierPath;
+          if (parsePath(get(bezier),bezierPath))
           {
-            const optional<unsigned> &type = it->uint32(1).optional();
-            if (type)
-            {
-              if (closed && closingMove)
-              {
-                ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unexpected element %c after the closing move\n", get(type)));
-                break;
-              }
-              switch (get(type))
-              {
-              case 1 :
-                if (closed)
-                {
-                  closingMove = true;
-                  break;
-                }
-                ETONYEK_FALLTHROUGH;
-              case 2 :
-              {
-                const optional<IWORKPosition> &coords = readPosition(*it, 2);
-                if (!coords)
-                {
-                  ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: missing coordinates for %c element\n", get(type) == 1 ? 'M' : 'L'));
-                  break;
-                }
-                if (get(type) == 1)
-                  bezierPath->appendMoveTo(get(coords).m_x, get(coords).m_y);
-                else
-                  bezierPath->appendLineTo(get(coords).m_x, get(coords).m_y);
-                break;
-              }
-              case 4 :
-              {
-                if (it->message(2))
-                {
-                  const std::deque<IWAMessage> &positions = it->message(2).repeated();
-                  if (positions.size() >= 3)
-                  {
-                    if (positions.size() > 3)
-                    {
-                      ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: a curve has got %u control coords\n", unsigned(positions.size())));
-                    }
-                    const optional<float> &x = positions[0].float_(1).optional();
-                    const optional<float> &y = positions[0].float_(2).optional();
-                    const optional<float> &x1 = positions[1].float_(1).optional();
-                    const optional<float> &y1 = positions[1].float_(2).optional();
-                    const optional<float> &x2 = positions[2].float_(1).optional();
-                    const optional<float> &y2 = positions[2].float_(2).optional();
-                    bezierPath->appendCCurveTo(get_optional_value_or(x, 0), get_optional_value_or(y, 0),
-                                               get_optional_value_or(x1, 0), get_optional_value_or(y1, 0),
-                                               get_optional_value_or(x2, 0), get_optional_value_or(y2, 0));
-                  }
-                  else
-                  {
-                    ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: %u is not enough coords for a curve\n", unsigned(positions.size())));
-                  }
-                }
-                break;
-              }
-              case 5 :
-                bezierPath->appendClose();
-                closed = true;
-                break;
-              default :
-                ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unknown bezier path element type %u\n", get(type)));
-              }
-            }
+            // the path is in unit area, scale it to the real size
+            const optional<IWORKSize> &size = readSize(get(get(path).message(5)), 2);
+            if (size)
+              *bezierPath *= transformations::scale(get(size).m_width / 100, get(size).m_height / 100);
+            m_collector.collectBezier(bezierPath);
+            m_collector.collectBezierPath();
           }
-          // the path is in unit area, scale it to the real size
-          const optional<IWORKSize> &size = readSize(get(get(path).message(5)), 2);
-          if (size)
-            *bezierPath *= transformations::scale(get(size).m_width / 100, get(size).m_height / 100);
-          m_collector.collectBezier(bezierPath);
-          m_collector.collectBezierPath();
         }
       }
       else if (get(path).message(6)) // callout2 path
@@ -1438,6 +1453,28 @@ void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
         if (styleProps.message(4).float_(5))
           shadow.m_opacity = get(styleProps.message(4).float_(5));
         props.put<Shadow>(shadow);
+      }
+      for (size_t st=0; st<2; ++st)
+      {
+        if (get(styleProps).message(st+6))
+        {
+          const auto &arrow=get(styleProps).message(st+6);
+          if (arrow.message(1))
+          {
+            const auto &arrowProp=get(arrow.message(1));
+            IWORKPathPtr_t path;
+            IWORKMarker marker;
+            if (parsePath(arrowProp, path) && path)
+            {
+              marker.m_path=path->str();
+              if (st==0)
+                props.put<HeadLineEnd>(marker);
+              else
+                props.put<TailLineEnd>(marker);
+            }
+            // 2: a bool, 3:[1:3.0,2:0.5], 4: a bool, 5: name
+          }
+        }
       }
     }
   }
