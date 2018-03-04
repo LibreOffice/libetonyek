@@ -57,16 +57,6 @@ bool samePoint(const optional<IWORKPosition> &point1, const optional<IWORKPositi
   return true;
 }
 
-const IWORKPosition &selectPoint(const optional<IWORKPosition> &point1, const optional<IWORKPosition> &point2, const optional<IWORKPosition> &point3)
-{
-  assert(point1 || point2 || point3);
-  if (point1)
-    return get(point1);
-  else if (point2)
-    return get(point2);
-  return get(point3);
-}
-
 template<typename T>
 optional<T> convert(const unsigned value)
 {
@@ -1119,9 +1109,9 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
           }
         }
       }
-      else if (get(path).message(5)) // bezier path
+      else if (get(path).message(5))
       {
-        const optional<IWAMessage> &bezier = get(path).message(5).get().message(3).optional();
+        auto const &bezier = get(path).message(5).get().message(3).optional();
         if (bezier)
         {
           IWORKPathPtr_t bezierPath;
@@ -1162,34 +1152,49 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
         {
           const IWORKPathPtr_t editablePath(new IWORKPath());
           const IWAMessageField &points = pathPoints.message(1);
-          for (IWAMessageField::const_iterator it = points.begin(); it != points.end(); ++it)
+          std::vector<IWORKPosition> positions;
+          // cubic bezier patch, [prev pt dir], pt, [next pt dir]
+          for (auto it : points)
           {
-            const optional<IWORKPosition> &point1 = readPosition(*it, 1);
-            const optional<IWORKPosition> &point2 = readPosition(*it, 2);
-            const optional<IWORKPosition> &point3 = readPosition(*it, 3);
-            if (!point1 && !point2 && !point3)
+            const optional<IWORKPosition> &point1 = readPosition(it, 1);
+            const optional<IWORKPosition> &point2 = readPosition(it, 2);
+            const optional<IWORKPosition> &point3 = readPosition(it, 3);
+            // [4 type: {1: line, 3:curve}
+            if (!point2)
             {
-              ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: no control points for point %u\n", unsigned(std::distance(points.begin(), it))));
+              ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: no control points for point2\n"));
               continue;
             }
-            if (samePoint(point1, point2) && samePoint(point2, point3))
-            {
-              // insert a straight line
-              const IWORKPosition &point = selectPoint(point1, point2, point3);
-              if (it == points.begin())
-                editablePath->appendMoveTo(point.m_x, point.m_y);
-              else
-                editablePath->appendLineTo(point.m_x, point.m_y);
-            }
-            else
-            {
-              // TODO: insert a curve
-            }
+            positions.push_back(get_optional_value_or(point1, get(point2)));
+            positions.push_back(get(point2));
+            positions.push_back(get_optional_value_or(point3, get(point2)));
           }
-          if (pathPoints.bool_(2) && get(pathPoints.bool_(2)))
-            editablePath->appendClose();
-          m_collector.collectBezier(editablePath);
-          m_collector.collectBezierPath();
+          size_t nbPt=positions.size()/3;
+          if (nbPt<=1)
+          {
+            ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: find only %d points\n", int(nbPt)));
+          }
+          else
+          {
+            editablePath->appendMoveTo(positions[1].m_x, positions[1].m_y);
+            bool isClosed= get_optional_value_or(pathPoints.bool_(2),false);
+            for (size_t i=0; i<nbPt; ++i)
+            {
+              if (i+1==nbPt && !isClosed) break;
+              auto const &prevPoint=positions[3*i+1];
+              auto const &pt1=positions[3*i+2];
+              auto const &pt2=positions[3*((i+1)%nbPt)];
+              auto const &pt3=positions[3*((i+1)%nbPt)+1];
+              if (samePoint(prevPoint,pt1) && samePoint(pt2,pt3))
+                editablePath->appendLineTo(pt3.m_x, pt3.m_y);
+              else
+                editablePath->appendCCurveTo(pt1.m_x,pt1.m_y, pt2.m_x,pt2.m_y, pt3.m_x,pt3.m_y);
+            }
+            if (isClosed)
+              editablePath->appendClose();
+            m_collector.collectBezier(editablePath);
+            m_collector.collectBezierPath();
+          }
         }
       }
     }
