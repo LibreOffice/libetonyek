@@ -7,18 +7,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <iomanip>
 #include <sstream>
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/io.hpp>
-
 #include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 
 #include "libetonyek_utils.h"
+
+namespace
+{
+
+void writeVec(std::ostream &os, double x, double y, double z, int w)
+{
+  os << '['
+     << std::setw(w) << x << ',' << std::setw(w) << y << ',' << std::setw(w) << z
+     << ']'
+     ;
+}
+
+}
 
 CPPUNIT_NS_BEGIN
 
@@ -33,7 +44,8 @@ struct assertion_traits<glm::dvec3>
   static std::string toString(const glm::dvec3 &x)
   {
     std::ostringstream s;
-    s << x;
+    s << std::setfill(' ') << std::right << std::fixed << std::showpoint << std::setprecision(3);
+    writeVec(s, x.x, x.y, x.z, 8);
     return s.str();
   }
 };
@@ -49,7 +61,14 @@ struct assertion_traits<glm::dmat3>
   static std::string toString(const glm::dmat3 &x)
   {
     std::ostringstream s;
-    s << x;
+    s << std::setfill(' ') << std::right << std::fixed << std::showpoint << std::setprecision(3);
+    s << "\n[";
+    writeVec(s, x[0][0], x[1][0], x[2][0], 8);
+    s << "\n ";
+    writeVec(s, x[0][1], x[1][1], x[2][1], 8);
+    s << "\n ";
+    writeVec(s, x[0][2], x[1][2], x[2][2], 8);
+    s << ']';
     return s.str();
   }
 };
