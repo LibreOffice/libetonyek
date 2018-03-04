@@ -10,6 +10,7 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/io.hpp>
 
 #include "IWORKTransformation.h"
@@ -108,7 +109,7 @@ void IWORKTransformationTest::testConstructionFromGeometry()
     g.m_position = IWORKPosition(0, 0);
 
     const glm::dmat3 tr = makeTransformation(g);
-    CPPUNIT_ASSERT_EQUAL(tr, glm::dmat3());
+    CPPUNIT_ASSERT_EQUAL(tr, glm::dmat3(1, 0, 0, 0, 1, 0, 0, 0, 1));
   }
 
   {
