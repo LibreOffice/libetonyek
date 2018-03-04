@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <sstream>
+
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -18,10 +20,45 @@
 
 #include "libetonyek_utils.h"
 
+CPPUNIT_NS_BEGIN
+
+template<>
+struct assertion_traits<glm::dvec3>
+{
+  static bool equal(const glm::dvec3 &x, const glm::dvec3 &y)
+  {
+    return libetonyek::approxEqual(x, y);
+  }
+
+  static std::string toString(const glm::dvec3 &x)
+  {
+    std::ostringstream s;
+    s << x;
+    return s.str();
+  }
+};
+
+template<>
+struct assertion_traits<glm::dmat3>
+{
+  static bool equal(const glm::dmat3 &x, const glm::dmat3 &y)
+  {
+    return libetonyek::approxEqual(x, y);
+  }
+
+  static std::string toString(const glm::dmat3 &x)
+  {
+    std::ostringstream s;
+    s << x;
+    return s.str();
+  }
+};
+
+CPPUNIT_NS_END
+
 namespace test
 {
 
-using libetonyek::approxEqual;
 using libetonyek::etonyek_half_pi;
 using libetonyek::etonyek_pi;
 
@@ -75,7 +112,7 @@ void IWORKTransformationTest::testConstruction()
   CPPUNIT_ASSERT_EQUAL(glm::dmat3(-1, 0, 0, 0, -1, 0, 0, 0, 1), flip(true, true));
 
   // rotating
-  // CPPUNIT_ASSERT_EQUAL(glm::dmat3(0, 1, 0, -1, 0, 0, 0, 0, 1), rotate(etonyek_half_pi));
+  CPPUNIT_ASSERT_EQUAL(glm::dmat3(0, 1, 0, -1, 0, 0, 0, 0, 1), rotate(etonyek_half_pi));
 
   // scaling
   CPPUNIT_ASSERT_EQUAL(glm::dmat3(2, 0, 0, 0, 1, 0, 0, 0, 1), scale(2, 1));
