@@ -61,7 +61,7 @@ void IWORKGeometryElement::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::angle :
-    m_angle = deg2rad(lexical_cast<double>(value));
+    m_angle = -deg2rad(lexical_cast<double>(value));
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::aspectRatioLocked :
     m_aspectRatioLocked = bool_cast(value);

@@ -56,6 +56,7 @@ struct IWORKGeometry
   IWORKSize m_naturalSize;
   IWORKSize m_size;
   IWORKPosition m_position;
+  //! final angle in radians
   boost::optional<double> m_angle;
   boost::optional<double> m_shearXAngle;
   boost::optional<double> m_shearYAngle;

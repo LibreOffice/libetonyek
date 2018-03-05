@@ -1057,7 +1057,7 @@ void IWORKCollector::drawLine(const IWORKLinePtr_t &line)
     double finalDir[2];
     if (geometry.m_angle)
     {
-      const double angle = -get(geometry.m_angle);
+      const double angle = get(geometry.m_angle);
       double c = std::cos(angle);
       double s = std::sin(angle);
       finalDir[0]=dir[0]*c-dir[1]*s;
