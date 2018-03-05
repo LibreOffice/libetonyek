@@ -370,6 +370,7 @@ public:
 
 private:
   IWORKXMLContextPtr_t element(int name) override;
+  void startOfElement() override;
   void endOfElement() override;
 };
 
@@ -393,10 +394,19 @@ IWORKXMLContextPtr_t ConnectionLineElement::element(const int name)
   return IWORKXMLContextPtr_t();
 }
 
+void ConnectionLineElement::startOfElement()
+{
+  if (isCollector())
+    getCollector().startLevel();
+}
+
 void ConnectionLineElement::endOfElement()
 {
   if (isCollector())
+  {
     getCollector().collectShape();
+    getCollector().endLevel();
+  }
 }
 
 }
