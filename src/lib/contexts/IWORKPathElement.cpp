@@ -73,9 +73,13 @@ IWORKXMLContextPtr_t ConnectionPathElement::element(const int name)
 
 void ConnectionPathElement::endOfElement()
 {
-  if (m_size && isCollector())
+  if (m_point && m_size && isCollector())
   {
-    getCollector().collectConnectionPath(get(m_size), m_point);
+    IWORKConnectionPath path;
+    path.m_positions[0]=IWORKPosition(0,get(m_size).m_height);
+    path.m_positions[1]=get(m_point);
+    path.m_positions[2]=IWORKPosition(get(m_size).m_width,0);
+    getCollector().collectConnectionPath(path);
   }
 }
 

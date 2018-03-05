@@ -454,8 +454,9 @@ bool IWAParser::dispatchShape(const unsigned id)
     return false;
   switch (msg.getType())
   {
+  case IWAObjectType::ConnectionLine :
   case IWAObjectType::DrawableShape :
-    return parseDrawableShape(get(msg));
+    return parseDrawableShape(get(msg), msg.getType()==IWAObjectType::ConnectionLine);
   case IWAObjectType::Group :
     return parseGroup(get(msg));
   case IWAObjectType::Image :
@@ -874,8 +875,9 @@ bool IWAParser::parseAttachment(const unsigned id)
   bool ok=false, sendInBlock=false;
   switch (object.getType())
   {
+  case IWAObjectType::ConnectionLine :
   case IWAObjectType::DrawableShape :
-    ok=parseDrawableShape(get(object));
+    ok=parseDrawableShape(get(object), object.getType()==IWAObjectType::ConnectionLine);
     break;
   case IWAObjectType::Group :
     ok=parseGroup(get(object));
@@ -1032,7 +1034,7 @@ bool IWAParser::parsePath(const IWAMessage &msg, IWORKPathPtr_t &path)
   return true;
 }
 
-bool IWAParser::parseDrawableShape(const IWAMessage &msg)
+bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)
 {
   m_collector.startLevel();
 
@@ -1141,9 +1143,48 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
                                          get_optional_value_or(tailAtCenter, false));
         }
       }
-      else if (get(path).message(7)) // connection path
+      else if (get(path).message(7))
       {
-        ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: connection path is not supported yet\n"));
+        auto rootMsg=get(get(path).message(7)).message(1).optional();
+        if (rootMsg)
+        {
+          IWORKConnectionPath cPath;
+          cPath.m_size=readSize(get(rootMsg), 2);
+          cPath.m_isSpline=!get_optional_value_or(get(get(path).message(7)).bool_(2),false);
+          auto const &bezier = rootMsg.get().message(3).optional();
+          if (bezier)
+          {
+            const deque<IWAMessage> &elements = get(bezier).message(1).repeated();
+            int pos=0;
+            for (auto it : elements)
+            {
+              // normally first point (type 1) followed by 2 points (type 2)
+              // const auto &type = it.uint32(1).optional();
+              if (pos>=3)
+              {
+                ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape[connection]: oops find unexpected number of points\n"));
+                break;
+              }
+              cPath.m_positions[pos++]=readPosition(it, 2);
+            }
+            if (pos==3)
+            {
+              m_collector.collectConnectionPath(cPath);
+            }
+            else
+            {
+              ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape[connection]: oops find unexpected number of points\n"));
+            }
+          }
+          else
+          {
+            ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape[connection]: can not find the points zone\n"));
+          }
+        }
+        else
+        {
+          ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape[connection]: can not find the root bezier zone\n"));
+        }
       }
       else if (get(path).message(8)) // editable path
       {
@@ -1199,17 +1240,19 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg)
       }
     }
   }
-
-  const optional<unsigned> &textRef = readRef(msg, 2);
   bool hasText=false;
-  if (textRef)
+  if (!isConnectionLine)
   {
-    m_currentText = m_collector.createText(m_langManager, true);
-    parseText(get(textRef));
-    if (!m_currentText->empty())
+    const optional<unsigned> &textRef = readRef(msg, 2);
+    if (textRef)
     {
-      hasText=true;
-      m_collector.collectText(m_currentText);
+      m_currentText = m_collector.createText(m_langManager, true);
+      parseText(get(textRef));
+      if (!m_currentText->empty())
+      {
+        hasText=true;
+        m_collector.collectText(m_currentText);
+      }
     }
   }
 

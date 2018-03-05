@@ -22,6 +22,7 @@ class IWORKPath;
 typedef std::shared_ptr<IWORKPath> IWORKPathPtr_t;
 typedef std::unordered_map<ID_t, IWORKPathPtr_t> IWORKPathMap_t;
 
+class IWORKConnectionPath;
 }
 
 #endif //  IWORKPATH_FWD_H_INCLUDED

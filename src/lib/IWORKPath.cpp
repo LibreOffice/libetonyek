@@ -19,6 +19,7 @@
 #include <boost/variant.hpp>
 
 #include "libetonyek_utils.h"
+#include "IWORKTransformation.h"
 #include "IWORKTypes.h"
 
 namespace phoenix = boost::phoenix;
@@ -840,6 +841,43 @@ IWORKPath operator*(const IWORKPath &path, const glm::dmat3 &tr)
   IWORKPath newPath(path);
   newPath *= tr;
   return newPath;
+}
+
+IWORKConnectionPath::IWORKConnectionPath()
+  : m_size()
+  , m_isSpline(true)
+{
+}
+
+IWORKPathPtr_t IWORKConnectionPath::getPath() const
+{
+  for (auto const &pos : m_positions)
+  {
+    if (pos) continue;
+    ETONYEK_DEBUG_MSG(("IWORKConnectionPath::getPath: can not find some positions\n"));
+    return IWORKPathPtr_t();
+  }
+  IWORKPathPtr_t path(new IWORKPath());
+  path->appendMoveTo(get(m_positions[0]).m_x, get(m_positions[0]).m_y);
+  if (m_isSpline)   // bezier curve which goes through each points
+  {
+    IWORKPosition dir(0.2*(get(m_positions[2]).m_x-get(m_positions[0]).m_x),
+                      0.2*(get(m_positions[2]).m_y-get(m_positions[0]).m_y));
+    path->appendQCurveTo(get(m_positions[1]).m_x-dir.m_x, get(m_positions[1]).m_y-dir.m_y,
+                         get(m_positions[1]).m_x, get(m_positions[1]).m_y);
+    path->appendQCurveTo(get(m_positions[1]).m_x+dir.m_x, get(m_positions[1]).m_y+dir.m_y,
+                         get(m_positions[2]).m_x, get(m_positions[2]).m_y);
+  }
+  else
+  {
+    path->appendLineTo(get(m_positions[0]).m_x, get(m_positions[1]).m_y);
+    path->appendLineTo(get(m_positions[2]).m_x, get(m_positions[1]).m_y);
+    path->appendLineTo(get(m_positions[2]).m_x, get(m_positions[2]).m_y);
+  }
+  if (m_size)
+    *path *= transformations::scale(get(m_size).m_width / 100, get(m_size).m_height / 100);
+  // TODO: implement me
+  return path;
 }
 
 }

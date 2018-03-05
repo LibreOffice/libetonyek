@@ -20,6 +20,8 @@
 
 #include "libetonyek_utils.h"
 
+#include "IWORKTypes.h"
+
 namespace libetonyek
 {
 
@@ -80,6 +82,17 @@ bool operator!=(const IWORKPath &left, const IWORKPath &right);
   * @returns the transformed path
   */
 IWORKPath operator*(const IWORKPath &path, const glm::dmat3 &tr);
+
+class IWORKConnectionPath
+{
+public:
+  IWORKConnectionPath();
+  IWORKPathPtr_t getPath() const;
+
+  boost::optional<IWORKPosition> m_positions[3];
+  boost::optional<IWORKSize> m_size;
+  bool m_isSpline;
+};
 
 }
 

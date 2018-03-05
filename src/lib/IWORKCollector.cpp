@@ -460,10 +460,9 @@ void IWORKCollector::collectStarPath(const IWORKSize &size, const unsigned point
     m_currentPath = path;
 }
 
-void IWORKCollector::collectConnectionPath(const IWORKSize &size, const boost::optional<IWORKPosition> &middle)
+void IWORKCollector::collectConnectionPath(const IWORKConnectionPath &cPath)
 {
-  const IWORKPathPtr_t path;
-  makeConnectionPath(size, middle ? get(middle).m_x : 0, middle ? get(middle).m_y : 0);
+  const IWORKPathPtr_t path=cPath.getPath();
   if (bool(m_recorder))
     m_recorder->collectPath(path);
   else

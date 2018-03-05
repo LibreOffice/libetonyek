@@ -180,7 +180,7 @@ private:
 
   bool parseAttachment(unsigned id);
 
-  bool parseDrawableShape(const IWAMessage &msg);
+  bool parseDrawableShape(const IWAMessage &msg, bool isConnectionLine=false);
   bool parseGroup(const IWAMessage &msg);
   bool parseShapePlacement(const IWAMessage &msg);
   bool parseImage(const IWAMessage &msg);

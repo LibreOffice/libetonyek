@@ -285,15 +285,6 @@ IWORKPathPtr_t makeStarPath(const IWORKSize &size, const unsigned points, const 
   return path;
 }
 
-IWORKPathPtr_t makeConnectionPath(const IWORKSize &size, const double middleX, const double middleY)
-{
-  // TODO: implement me
-  (void) size;
-  (void) middleX;
-  (void) middleY;
-  return IWORKPathPtr_t();
-}
-
 IWORKPathPtr_t makeCalloutPath(const IWORKSize &size, const double radius, const double tailSize, const double tailX, const double tailY)
 {
   double wRadius=2*radius<size.m_width ? radius : size.m_width/2;

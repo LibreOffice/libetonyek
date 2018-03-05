@@ -45,7 +45,6 @@ IWORKPathPtr_t makeRoundedRectanglePath(const IWORKSize &size, double radius);
 IWORKPathPtr_t makeArrowPath(const IWORKSize &size, double headWidth, double stemThickness);
 IWORKPathPtr_t makeDoubleArrowPath(const IWORKSize &size, double headWidth, double stemThickness);
 IWORKPathPtr_t makeStarPath(const IWORKSize &size, unsigned points, double innerRadius);
-IWORKPathPtr_t makeConnectionPath(const IWORKSize &size, double middleX, double middleY);
 
 IWORKPathPtr_t makeCalloutPath(const IWORKSize &size, double radius, double tailSize, double tailX, double tailY);
 IWORKPathPtr_t makeQuoteBubblePath(const IWORKSize &size, double radius, double tailSize, double tailX, double tailY);
