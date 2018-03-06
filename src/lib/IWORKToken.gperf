@@ -173,6 +173,7 @@ comment,comment
 connection-line,connection_line
 connection-path,connection_path
 connection-style,connection_style
+connection-style-ref,connection_style_ref
 container-hint,container_hint
 contbr,contbr
 content,content

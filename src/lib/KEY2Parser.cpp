@@ -362,6 +362,7 @@ void PlaceholderRefContext::endOfElement()
 
 namespace
 {
+typedef IWORKStyleContainer<IWORKToken::NS_URI_SF | IWORKToken::connection_style, IWORKToken::NS_URI_SF | IWORKToken::connection_style_ref> ConnectionStyleContext;
 
 class ConnectionLineElement : public KEY2XMLElementContextBase
 {
@@ -372,10 +373,14 @@ private:
   IWORKXMLContextPtr_t element(int name) override;
   void startOfElement() override;
   void endOfElement() override;
+
+protected:
+  IWORKStylePtr_t m_style;
 };
 
 ConnectionLineElement::ConnectionLineElement(KEY2ParserState &state)
   : KEY2XMLElementContextBase(state)
+  , m_style()
 {
 }
 
@@ -387,6 +392,8 @@ IWORKXMLContextPtr_t ConnectionLineElement::element(const int name)
     return std::make_shared<IWORKGeometryElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::path :
     return std::make_shared<IWORKPathElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::style :
+    return std::make_shared<ConnectionStyleContext>(getState(), m_style, getState().getDictionary().m_graphicStyles);
   default:
     break;
   }
@@ -404,6 +411,8 @@ void ConnectionLineElement::endOfElement()
 {
   if (isCollector())
   {
+    if (m_style)
+      getCollector().setGraphicStyle(m_style);
     getCollector().collectShape();
     getCollector().endLevel();
   }

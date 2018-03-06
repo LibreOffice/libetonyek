@@ -43,7 +43,7 @@ struct IWORKDictionary
   IWORKStyleMap_t m_characterStyles;
   IWORKStyleMap_t m_chartStyles;
   IWORKStyleMap_t m_chartSeriesStyles;
-  IWORKStyleMap_t m_graphicStyles;
+  IWORKStyleMap_t m_graphicStyles; // graphic-style or connection-style
   IWORKStyleMap_t m_headlineStyles;
   IWORKStyleMap_t m_layoutStyles;
   IWORKStyleMap_t m_listStyles;

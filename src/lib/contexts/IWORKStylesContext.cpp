@@ -29,7 +29,7 @@ IWORKXMLContextPtr_t IWORKStylesContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::connection_style :
-    return std::make_shared<IWORKStyleContext>(getState());
+    return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_graphicStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::headline_style :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_headlineStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
@@ -69,6 +69,8 @@ IWORKXMLContextPtr_t IWORKStylesContext::element(const int name)
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_chartStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::chart_series_style_ref :
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_chartSeriesStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::connection_style_ref :
+    return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_graphicStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref :
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_graphicStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :

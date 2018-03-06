@@ -157,6 +157,7 @@ enum
   connection_line,
   connection_path,
   connection_style,
+  connection_style_ref,
   container_hint,
   contbr,
   content,
