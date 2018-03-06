@@ -91,12 +91,14 @@ private:
 
 private:
   IWORKDataPtr_t &m_data;
+  optional<IWORKColor> m_fillColor; // USEME
   optional<ID_t> m_dataRef;
 };
 
 OtherDatasElement::OtherDatasElement(IWORKXMLParserState &state, IWORKDataPtr_t &data)
   : IWORKXMLElementContextBase(state)
   , m_data(data)
+  , m_fillColor()
   , m_dataRef()
 {
 }
@@ -106,7 +108,7 @@ IWORKXMLContextPtr_t OtherDatasElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::data :
-    return std::make_shared<IWORKDataElement>(getState(), m_data);
+    return std::make_shared<IWORKDataElement>(getState(), m_data, m_fillColor);
   case IWORKToken::NS_URI_SF | IWORKToken::data_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_dataRef);
   default:
@@ -146,6 +148,7 @@ private:
 
 private:
   IWORKDataPtr_t &m_data;
+  optional<IWORKColor> m_fillColor; // USEME
   IWORKDataPtr_t m_otherData;
   optional<ID_t> m_mainMovieRef;
 };
@@ -153,6 +156,7 @@ private:
 SelfContainedMovieElement::SelfContainedMovieElement(IWORKXMLParserState &state, IWORKDataPtr_t &data)
   : IWORKXMLElementContextBase(state)
   , m_data(data)
+  , m_fillColor()
   , m_otherData()
   , m_mainMovieRef()
 {
@@ -163,7 +167,7 @@ IWORKXMLContextPtr_t SelfContainedMovieElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::main_movie :
-    return std::make_shared<IWORKDataElement>(getState(), m_data);
+    return std::make_shared<IWORKDataElement>(getState(), m_data, m_fillColor);
   case IWORKToken::NS_URI_SF | IWORKToken::main_movie_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_mainMovieRef);
   case IWORKToken::NS_URI_SF | IWORKToken::other_datas :

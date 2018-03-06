@@ -50,6 +50,7 @@ struct IWORKDiscardContext::Data
   bool m_isShadow;
   IWORKPathPtr_t m_path;
   IWORKPropertyMap m_propertyMap;
+  boost::optional<IWORKColor> m_fillColor;
   boost::optional<IWORKListLabelGeometry> m_listLabelGeometry;
   boost::optional<IWORKListLabelTypeInfo_t> m_listLabelTypeInfo;
 };
@@ -92,7 +93,7 @@ IWORKXMLContextPtr_t IWORKDiscardContext::element(const int name)
     return std::make_shared<IWORKCoreImageFilterDescriptorElement>(m_state, m_data->m_isShadow);
   case IWORKToken::NS_URI_SF | IWORKToken::data :
     m_data->m_data.reset();
-    return std::make_shared<IWORKDataElement>(m_state, m_data->m_data);
+    return std::make_shared<IWORKDataElement>(m_state, m_data->m_data, m_data->m_fillColor);
   case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
     return std::make_shared<IWORKStyleContext>(m_state, &m_state.getDictionary().m_layoutStyles);
   case IWORKToken::NS_URI_SF | IWORKToken::liststyle :

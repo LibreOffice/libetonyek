@@ -22,8 +22,9 @@ namespace libetonyek
 IWORKImageContext::IWORKImageContext(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
   : IWORKXMLElementContextBase(state)
   , m_content(content)
-  , m_data()
   , m_size()
+  , m_data()
+  , m_fillColor()
 {
 }
 
@@ -32,7 +33,7 @@ IWORKXMLContextPtr_t IWORKImageContext::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::data :
-    return std::make_shared<IWORKDataElement>(getState(), m_data);
+    return std::make_shared<IWORKDataElement>(getState(), m_data, m_fillColor);
   case IWORKToken::NS_URI_SF | IWORKToken::size :
     return std::make_shared<IWORKSizeElement>(getState(), m_size);
   default:
@@ -48,6 +49,7 @@ void IWORKImageContext::endOfElement()
   m_content = std::make_shared<IWORKMediaContent>();
   m_content->m_size = m_size;
   m_content->m_data = m_data;
+  m_content->m_fillColor = m_fillColor;
 }
 
 }

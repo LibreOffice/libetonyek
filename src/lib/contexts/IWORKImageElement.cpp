@@ -38,8 +38,9 @@ IWORKImageElement::IWORKImageElement(IWORKXMLParserState &state, IWORKMediaConte
   , m_content(content)
   , m_localContent()
   , m_filteredImage()
-  , m_data()
   , m_size()
+  , m_data()
+  , m_fillColor()
   , m_binaryRef()
   , m_style()
   , m_cropGeometry()
@@ -53,8 +54,9 @@ IWORKImageElement::IWORKImageElement(IWORKXMLParserState &state)
   , m_content(m_localContent)
   , m_localContent()
   , m_filteredImage()
-  , m_data()
   , m_size()
+  , m_data()
+  , m_fillColor()
   , m_binaryRef()
   , m_style()
   , m_cropGeometry()
@@ -94,7 +96,7 @@ IWORKXMLContextPtr_t IWORKImageElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::crop_geometry :
     return std::make_shared<IWORKGeometryElement>(getState(), m_cropGeometry);
   case IWORKToken::NS_URI_SF | IWORKToken::data :
-    return std::make_shared<IWORKDataElement>(getState(), m_data);
+    return std::make_shared<IWORKDataElement>(getState(), m_data, m_fillColor);
   case IWORKToken::NS_URI_SF | IWORKToken::filtered_image :
     return std::make_shared<IWORKFilteredImageElement>(getState(), m_filteredImage);
   case IWORKToken::NS_URI_SF | IWORKToken::geometry :
@@ -137,11 +139,12 @@ void IWORKImageElement::endOfElement()
   }
   if (!m_content && m_filteredImage)
     m_content=m_filteredImage;
-  else if (!m_content && m_data)
+  else if (!m_content && (bool(m_data) || bool(m_fillColor)))
   {
     m_content = std::make_shared<IWORKMediaContent>();
     m_content->m_size = m_size;
     m_content->m_data = m_data;
+    m_content->m_fillColor = m_fillColor;
   }
   if (getId() && m_content)
     getState().getDictionary().m_images[get(getId())]=m_content;

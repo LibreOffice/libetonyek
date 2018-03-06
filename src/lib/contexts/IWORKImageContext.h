@@ -31,8 +31,9 @@ private:
 
 private:
   IWORKMediaContentPtr_t &m_content;
-  IWORKDataPtr_t m_data;
   boost::optional<IWORKSize> m_size;
+  IWORKDataPtr_t m_data;
+  boost::optional<IWORKColor> m_fillColor;
 };
 
 }

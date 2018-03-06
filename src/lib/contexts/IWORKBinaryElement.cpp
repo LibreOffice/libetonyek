@@ -25,6 +25,7 @@ IWORKBinaryElement::IWORKBinaryElement(IWORKXMLParserState &state, IWORKMediaCon
   , m_value(value)
   , m_size()
   , m_data()
+  , m_fillColor()
 {
 }
 
@@ -33,7 +34,7 @@ IWORKXMLContextPtr_t IWORKBinaryElement::element(const int name)
   switch (name)
   {
   case IWORKToken::NS_URI_SF | IWORKToken::data :
-    return std::make_shared<IWORKDataElement>(getState(), m_data);
+    return std::make_shared<IWORKDataElement>(getState(), m_data, m_fillColor);
   case IWORKToken::NS_URI_SF | IWORKToken::size :
     return std::make_shared<IWORKSizeElement>(getState(), m_size);
   default:
@@ -46,10 +47,11 @@ void IWORKBinaryElement::endOfElement()
 {
   IWORKMediaContentPtr_t binary;
 
-  if (bool(m_data))
+  if (bool(m_data) || bool(m_fillColor))
   {
     binary = std::make_shared<IWORKMediaContent>();
     binary->m_data = m_data;
+    binary->m_fillColor = m_fillColor;
     binary->m_size = m_size;
   }
 

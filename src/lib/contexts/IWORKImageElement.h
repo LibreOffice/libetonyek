@@ -35,8 +35,9 @@ private:
   IWORKMediaContentPtr_t &m_content;
   IWORKMediaContentPtr_t m_localContent;
   IWORKMediaContentPtr_t m_filteredImage;
-  IWORKDataPtr_t m_data;
   boost::optional<IWORKSize> m_size;
+  IWORKDataPtr_t m_data;
+  boost::optional<IWORKColor> m_fillColor;
   boost::optional<ID_t> m_binaryRef;
   IWORKStylePtr_t m_style;
   IWORKGeometryPtr_t m_cropGeometry;

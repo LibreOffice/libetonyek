@@ -24,7 +24,7 @@ namespace libetonyek
 class IWORKDataElement : public IWORKXMLEmptyContextBase
 {
 public:
-  IWORKDataElement(IWORKXMLParserState &state, IWORKDataPtr_t &data);
+  IWORKDataElement(IWORKXMLParserState &state, IWORKDataPtr_t &data, boost::optional<IWORKColor> &fillColor);
 
 private:
   void attribute(int name, const char *value) override;
@@ -32,6 +32,7 @@ private:
 
 private:
   IWORKDataPtr_t &m_data;
+  boost::optional<IWORKColor> &m_fillColor;
   boost::optional<std::string> m_displayName;
   RVNGInputStreamPtr_t m_stream;
   boost::optional<std::string> m_mimeType;
