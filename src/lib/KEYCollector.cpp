@@ -383,11 +383,14 @@ void KEYCollector::drawMedia(
   const double x, const double y,
   const librevenge::RVNGPropertyList &data)
 {
-  librevenge::RVNGPropertyList props(data);
+  librevenge::RVNGPropertyList style(data);
+  if (style["office:binary-data"])
+    style.remove("office:binary-data");
+  getOutputManager().getCurrent().addSetStyle(style);
 
+  librevenge::RVNGPropertyList props(data);
   props.insert("svg:x", pt2in(x));
   props.insert("svg:y", pt2in(y));
-
   getOutputManager().getCurrent().addDrawGraphicObject(props);
 }
 

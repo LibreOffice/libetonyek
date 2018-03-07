@@ -37,6 +37,7 @@ enum
   Image = 3005,
   Group = 3008,
   ConnectionLine = 3009,
+  MediaStyle = 3016,
   // 3047: related to columns ?
   Comment = 3056,
   TabularInfo = 6000,

@@ -102,6 +102,7 @@ protected:
   const IWORKStylePtr_t querySectionStyle(unsigned id) const;
 
   const IWORKStylePtr_t queryGraphicStyle(unsigned id) const;
+  const IWORKStylePtr_t queryMediaStyle(unsigned id) const;
   const IWORKStylePtr_t queryCellStyle(unsigned id) const;
   const IWORKStylePtr_t queryTableStyle(unsigned id) const;
   const IWORKStylePtr_t queryListStyle(unsigned id) const;
@@ -164,6 +165,7 @@ private:
   void parseSectionStyle(unsigned id, IWORKStylePtr_t &style);
 
   void parseGraphicStyle(unsigned id, IWORKStylePtr_t &style);
+  void parseMediaStyle(unsigned id, IWORKStylePtr_t &style);
   void parseCellStyle(unsigned id, IWORKStylePtr_t &style);
   void parseTableStyle(unsigned id, IWORKStylePtr_t &style);
   void parseListStyle(unsigned id, IWORKStylePtr_t &style);
@@ -203,6 +205,7 @@ private:
   mutable StyleMap_t m_sectionStyles;
 
   mutable StyleMap_t m_graphicStyles;
+  mutable StyleMap_t m_mediaStyles;
   mutable StyleMap_t m_cellStyles;
   mutable StyleMap_t m_tableStyles;
   mutable StyleMap_t m_listStyles;

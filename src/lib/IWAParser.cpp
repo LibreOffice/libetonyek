@@ -806,6 +806,11 @@ const IWORKStylePtr_t IWAParser::queryGraphicStyle(const unsigned id) const
   return queryStyle(id, m_graphicStyles, bind(&IWAParser::parseGraphicStyle, const_cast<IWAParser *>(this), _1, _2));
 }
 
+const IWORKStylePtr_t IWAParser::queryMediaStyle(const unsigned id) const
+{
+  return queryStyle(id, m_mediaStyles, bind(&IWAParser::parseMediaStyle, const_cast<IWAParser *>(this), _1, _2));
+}
+
 const IWORKStylePtr_t IWAParser::queryCellStyle(const unsigned id) const
 {
   return queryStyle(id, m_cellStyles, bind(&IWAParser::parseCellStyle, const_cast<IWAParser *>(this), _1, _2));
@@ -1496,7 +1501,6 @@ void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
   const ObjectMessage msg(*this, id, IWAObjectType::GraphicStyle);
   if (!msg)
     return;
-
   optional<string> name;
   IWORKStylePtr_t parent;
   IWORKPropertyMap props;
@@ -1560,6 +1564,54 @@ void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
     // TODO: layout props
   }
 
+  style = std::make_shared<IWORKStyle>(props, name, parent);
+}
+
+void IWAParser::parseMediaStyle(const unsigned id, IWORKStylePtr_t &style)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::MediaStyle);
+  if (!msg)
+    return;
+  optional<string> name;
+  IWORKStylePtr_t parent;
+  IWORKPropertyMap props;
+
+  using namespace property;
+  const IWAMessageField &styleInfo = get(msg).message(1);
+  if (styleInfo)
+  {
+    name = styleInfo.string(2).optional();
+    const optional<unsigned> &parentRef = readRef(get(styleInfo), 3);
+    if (parentRef)
+      parent = queryMediaStyle(get(parentRef));
+  }
+  const IWAMessageField &styleProps = get(msg).message(11);
+  if (styleProps)
+  {
+    if (styleProps.message(1))
+    {
+      IWORKStroke stroke;
+      readStroke(get(styleProps.message(1)), stroke);
+      props.put<Stroke>(stroke);
+    }
+    if (styleProps.float_(2))
+      props.put<Opacity>(get(styleProps.float_(2)));
+    if (styleProps.message(3))
+    {
+      IWORKShadow shadow;
+      const optional<IWORKColor> &color = readColor(get(styleProps.message(3)), 1);
+      if (color)
+        shadow.m_color = get(color);
+      if (styleProps.message(3).float_(2))
+        shadow.m_angle = get(styleProps.message(3).float_(2));
+      if (styleProps.message(3).float_(3))
+        shadow.m_offset = get(styleProps.message(3).float_(3));
+      if (styleProps.message(3).float_(5))
+        shadow.m_opacity = get(styleProps.message(3).float_(5));
+      props.put<Shadow>(shadow);
+    }
+    // 4: reflection
+  }
   style = std::make_shared<IWORKStyle>(props, name, parent);
 }
 
@@ -1957,7 +2009,6 @@ void IWAParser::parseHeaderAndFooter(unsigned id, IWORKPageMaster &hf)
 bool IWAParser::parseImage(const IWAMessage &msg)
 {
   optional<unsigned> imageRef;
-
   const optional<unsigned> &filteredRef = readRef(msg, 15);
   if (filteredRef)
   {
@@ -1976,6 +2027,9 @@ bool IWAParser::parseImage(const IWAMessage &msg)
   m_collector.startLevel();
   if (msg.message(1))
     parseShapePlacement(get(msg.message(1)));
+  const optional<unsigned> styleRef = readRef(msg, 3);
+  if (styleRef)
+    m_collector.setGraphicStyle(queryMediaStyle(get(styleRef)));
 
   const IWORKMediaContentPtr_t content = make_shared<IWORKMediaContent>();
   if (imageRef)

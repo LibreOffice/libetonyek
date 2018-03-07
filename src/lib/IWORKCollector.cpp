@@ -1181,7 +1181,10 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
       }
 
       if (bool(media->m_style))
+      {
+        fillGraphicProps(media->m_style, props, false, false);
         fillWrapProps(media->m_style, props, media->m_order);
+      }
       props.insert("librevenge:mime-type", mimetype.c_str());
       props.insert("office:binary-data", librevenge::RVNGBinaryData(bytes, size));
       props.insert("svg:width", pt2in(dim[0]));
