@@ -645,7 +645,7 @@ bool IWAParser::parseText(const unsigned id, const std::function<void(unsigned, 
     }
     if (get(msg).message(11))
     {
-      // link:2032 or time field:2034
+      // ???:2031 or link:2032 or time field:2034
       map<unsigned, string> links;
       for (const auto &it : get(msg).message(11).message(1))
       {
@@ -1437,7 +1437,7 @@ void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
     if (paraProps.message(13))
     {
       if (paraProps.message(13).float_(2))
-        props.put<LineSpacing>(IWORKLineSpacing(get(paraProps.message(13).float_(2)), false));
+        props.put<LineSpacing>(IWORKLineSpacing(get(paraProps.message(13).float_(2)), true));
     }
     if (paraProps.bool_(14))
       props.put<PageBreakBefore>(get(paraProps.bool_(14)));

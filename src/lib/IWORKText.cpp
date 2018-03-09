@@ -197,16 +197,16 @@ void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props
     props.insert("fo:background-color", makeColor(styleStack.get<ParagraphFill>()));
 
   if (styleStack.has<LeftIndent>())
-    props.insert("fo:padding-left", pt2in(styleStack.get<LeftIndent>()));
+    props.insert("fo:margin-left", pt2in(styleStack.get<LeftIndent>()));
   if (styleStack.has<RightIndent>())
-    props.insert("fo:padding-right", pt2in(styleStack.get<RightIndent>()));
+    props.insert("fo:margin-right", pt2in(styleStack.get<RightIndent>()));
   if (styleStack.has<FirstLineIndent>())
     props.insert("fo:text-indent", pt2in(styleStack.get<FirstLineIndent>()));
 
   if (styleStack.has<SpaceBefore>())
-    props.insert("fo:padding-top", pt2in(styleStack.get<SpaceBefore>()));
+    props.insert("fo:margin-top", pt2in(styleStack.get<SpaceBefore>()));
   if (styleStack.has<SpaceAfter>())
-    props.insert("fo:padding-bottom", pt2in(styleStack.get<SpaceAfter>()));
+    props.insert("fo:margin-bottom", pt2in(styleStack.get<SpaceAfter>()));
 
   if (styleStack.has<KeepLinesTogether>() && styleStack.get<KeepLinesTogether>())
     props.insert("fo:keep-together", "always");
