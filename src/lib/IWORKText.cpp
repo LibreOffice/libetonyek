@@ -977,8 +977,12 @@ void IWORKText::openPara()
 
   librevenge::RVNGPropertyList paraProps;
   fillParaPropList(paraProps);
-  if (m_inListLevel > 0)
+  if (m_inListLevel > 0) {
+    if (m_inListElement)
+      m_elements.addCloseListElement();
+    m_inListElement=true;
     m_elements.addOpenListElement(paraProps);
+  }
   else
     m_elements.addOpenParagraph(paraProps);
   m_inPara = true;
@@ -992,8 +996,10 @@ void IWORKText::closePara()
     closeSpan();
 
   // TODO: This is a temporary hack. The use of list element vs. paragraph needs rework.
-  if (m_inListLevel > 0)
+  if (m_inListLevel > 0) {
     m_elements.addCloseListElement();
+    m_inListElement=false;
+  }
   else
     m_elements.addCloseParagraph();
   m_inPara = false;
