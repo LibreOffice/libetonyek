@@ -18,7 +18,7 @@ namespace IWAObjectType
 
 enum
 {
-  // 401: root, ie. list of different styles id
+  // 401: StyleRoot, ie. list of different styles id
   Text = 2001,
   ShapeField = 2003,
   NoteStart = 2004, // find at the beginning of a note
@@ -31,6 +31,7 @@ enum
   ListStyle = 2023,
   SectionStyle = 2024,
   GraphicStyle = 2025,
+  // 2031: placeholder field
   Link = 2032,
   DateTimeField = 2034,
   PageField = 2043,

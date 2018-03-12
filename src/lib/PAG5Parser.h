@@ -25,6 +25,8 @@ public:
 private:
   bool parseDocument() override;
 
+  bool dispatchShape(unsigned id);
+  bool parseGroupRef(unsigned id);
 private:
   PAGCollector &m_collector;
 };

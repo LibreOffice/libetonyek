@@ -9,6 +9,11 @@
 
 #include "PAG5Parser.h"
 
+#include <algorithm>
+#include <deque>
+#include <functional>
+#include <memory>
+
 #include "PAG5ObjectType.h"
 #include "PAGCollector.h"
 
@@ -16,11 +21,54 @@ namespace libetonyek
 {
 
 using boost::optional;
+using namespace std::placeholders;
 
 PAG5Parser::PAG5Parser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package, PAGCollector &collector)
   : IWAParser(fragments, package, collector)
   , m_collector(collector)
 {
+}
+
+bool PAG5Parser::dispatchShape(const unsigned id)
+{
+  m_collector.startLevel();
+  bool ok=IWAParser::dispatchShape(id);
+  m_collector.endLevel();
+  return ok;
+}
+
+bool PAG5Parser::parseGroupRef(unsigned id)
+{
+  const ObjectMessage msg(*this, id, PAG5ObjectType::PageGroup);
+  if (!msg)
+  {
+    ETONYEK_DEBUG_MSG(("PAG5Parser::parseGroupRef: can not find %d object\n", int(id)));
+    return false;
+  }
+  for (const auto &pIt : get(msg).message(1))
+  {
+    if (!pIt.uint32(1))
+    {
+      ETONYEK_DEBUG_MSG(("PAG5Parser::parseGroupRef: can not find a page\n"));
+      continue;
+    }
+    m_collector.openPageGroup(int(get(pIt.uint32(1)))+1);
+    std::deque<unsigned> shapeRefs;
+    const std::deque<IWAMessage> &objs = pIt.message(4).repeated();
+    for (const auto &obj : objs)
+    {
+      auto ref=readRef(obj, 1);
+      if (ref)
+        shapeRefs.push_back(get(ref));
+      else
+      {
+        ETONYEK_DEBUG_MSG(("PAG5Parser::parseGroupRef: can not find an object\n"));
+      }
+    }
+    std::for_each(shapeRefs.begin(), shapeRefs.end(), std::bind(&PAG5Parser::dispatchShape, this, _1));
+    m_collector.closePageGroup();
+  }
+  return true;
 }
 
 bool PAG5Parser::parseDocument()
@@ -51,14 +99,23 @@ bool PAG5Parser::parseDocument()
       printInfo.m_footerHeight=get(message.uint32(42));
     m_collector.setPageDimensions(printInfo);
 
+    const optional<unsigned> groupRef(readRef(message, 3));
+    if (groupRef)
+      parseGroupRef(get(groupRef));
     const optional<unsigned> textRef(readRef(message, 4));
     if (textRef)
     {
       m_currentText = m_collector.createText(m_langManager);
-      parseText(get(textRef), [this](unsigned pos, IWORKStylePtr_t style)
+      bool opened=false;
+      parseText(get(textRef), [this,&opened](unsigned pos, IWORKStylePtr_t style)
       {
-        if (pos) m_collector.closeSection();
+        if (pos && opened)
+        {
+          m_collector.collectText(m_currentText);
+          m_collector.closeSection();
+        }
         m_collector.openSection(style);
+        opened=true;
       });
       m_collector.collectText(m_currentText);
       m_currentText.reset();

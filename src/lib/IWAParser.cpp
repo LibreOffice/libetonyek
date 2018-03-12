@@ -645,7 +645,7 @@ bool IWAParser::parseText(const unsigned id, const std::function<void(unsigned, 
     }
     if (get(msg).message(11))
     {
-      // ???:2031 or link:2032 or time field:2034
+      // placeholder:2031 or link:2032 or time field:2034
       map<unsigned, string> links;
       for (const auto &it : get(msg).message(11).message(1))
       {
@@ -2008,22 +2008,6 @@ void IWAParser::parseHeaderAndFooter(unsigned id, IWORKPageMaster &hf)
 
 bool IWAParser::parseImage(const IWAMessage &msg)
 {
-  optional<unsigned> imageRef;
-  const optional<unsigned> &filteredRef = readRef(msg, 15);
-  if (filteredRef)
-  {
-    imageRef = filteredRef;
-  }
-  else
-  {
-    // FIXME: this is speculative
-    const optional<unsigned> &fileRef1 = readRef(msg, 13);
-    if (fileRef1)
-      imageRef = fileRef1;
-    else
-      imageRef = readRef(msg, 11);
-  }
-
   m_collector.startLevel();
   if (msg.message(1))
     parseShapePlacement(get(msg.message(1)));
@@ -2032,11 +2016,18 @@ bool IWAParser::parseImage(const IWAMessage &msg)
     m_collector.setGraphicStyle(queryMediaStyle(get(styleRef)));
 
   const IWORKMediaContentPtr_t content = make_shared<IWORKMediaContent>();
-  if (imageRef)
+  // 15: filtered, 11: basic image?, 12: small image, 13: ?
+  unsigned const ids[]= {15, 13, 11, 12};
+  for (auto id : ids)
   {
+    auto const &ref=readRef(msg, id);
+    if (!ref) continue;
+    auto stream = queryFile(get(ref));
+    if (!stream) continue;
     const IWORKDataPtr_t data = make_shared<IWORKData>();
-    data->m_stream = queryFile(get(imageRef));
+    data->m_stream = stream;
     content->m_data = data;
+    break;
   }
   content->m_size = readSize(msg, 9);
   if (!content->m_size)

@@ -18,7 +18,8 @@ namespace PAG5ObjectType
 
 enum
 {
-  Document = 10000
+  Document = 10000,
+  PageGroup = 10010,
 };
 
 }

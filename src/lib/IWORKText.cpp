@@ -480,7 +480,9 @@ void IWORKText::draw(IWORKOutputElements &elements)
   if (m_inPara)
     closePara();
   flushList();
+
   elements.append(m_elements);
+  m_elements.clear();
 }
 
 IWORKText::IWORKText(const IWORKLanguageManager &langManager, const bool discardEmptyContent, bool allowListInsertion)
@@ -977,7 +979,8 @@ void IWORKText::openPara()
 
   librevenge::RVNGPropertyList paraProps;
   fillParaPropList(paraProps);
-  if (m_inListLevel > 0) {
+  if (m_inListLevel > 0)
+  {
     if (m_inListElement)
       m_elements.addCloseListElement();
     m_inListElement=true;
@@ -996,7 +999,8 @@ void IWORKText::closePara()
     closeSpan();
 
   // TODO: This is a temporary hack. The use of list element vs. paragraph needs rework.
-  if (m_inListLevel > 0) {
+  if (m_inListLevel > 0)
+  {
     m_elements.addCloseListElement();
     m_inListElement=false;
   }
