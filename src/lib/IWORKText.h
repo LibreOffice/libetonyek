@@ -132,6 +132,7 @@ private:
   IWORKStylePtr_t m_paraStyle;
   IWORKBreakType m_breakDelayed;
   bool m_inPara;
+  bool m_inListElement;
   bool m_ignoreEmptyPara;
 
   bool m_inLink;

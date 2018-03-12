@@ -503,6 +503,7 @@ IWORKText::IWORKText(const IWORKLanguageManager &langManager, const bool discard
   , m_paraStyle()
   , m_breakDelayed(IWORK_BREAK_NONE)
   , m_inPara(false)
+  , m_inListElement(false)
     // FIXME: This will work fine when encountering real empty text block, i.e., with a single
     // empty paragraph. But it will cause a loss of a leading empty paragraph otherwise. It is
     // good enough for now, though.
@@ -925,12 +926,13 @@ void IWORKText::handleListLevelChange(const unsigned level)
     if (m_listStyle)
       styleStack.push(m_listStyle);
 
-    RVNGPropertyList charProps, paraProps;
+    if (m_inListLevel==0 && m_inPara) closePara();
+    RVNGPropertyList paraProps;
     fillParaPropList(paraProps, false);
-    paraProps.insert("fo:line-height", 0, librevenge::RVNG_POINT);
-    charProps.insert("fo:font-size", 1, librevenge::RVNG_POINT);
     for (; newLevel > m_inListLevel;)
     {
+      if (m_inListLevel)
+        m_elements.addOpenListElement(paraProps);
       ++m_inListLevel;
       RVNGPropertyList listProps;
       m_isOrderedStack.push(fillListPropList(m_inListLevel, styleStack, listProps));
@@ -938,21 +940,20 @@ void IWORKText::handleListLevelChange(const unsigned level)
         m_elements.addOpenOrderedListLevel(listProps);
       else
         m_elements.addOpenUnorderedListLevel(listProps);
-      if (m_inListLevel != newLevel)
-      {
-        // open a list element with minimum height
-        m_elements.addOpenListElement(paraProps);
-        m_elements.addOpenSpan(charProps);
-        m_elements.addCloseSpan();
-      }
     }
   }
   if (newLevel < m_inListLevel)
   {
     if (m_inPara)
       closePara();
+    else if (m_inListElement)
+      m_elements.addCloseListElement();
+    bool first=true;
     for (; newLevel < m_inListLevel; --m_inListLevel)
     {
+      if (!first)
+        m_elements.addCloseListElement();
+      first=false;
       assert(!m_isOrderedStack.empty());
       if (m_isOrderedStack.top())
         m_elements.addCloseOrderedListLevel();
@@ -960,6 +961,7 @@ void IWORKText::handleListLevelChange(const unsigned level)
         m_elements.addCloseUnorderedListLevel();
       m_isOrderedStack.pop();
     }
+    m_inListElement=newLevel!=0;
   }
   m_previousListStyle=m_listStyle;
 }
