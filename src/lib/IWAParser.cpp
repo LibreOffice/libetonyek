@@ -1436,18 +1436,24 @@ void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
       props.put<LeftIndent>(get(paraProps.float_(11)));
     if (paraProps.message(13))
     {
-      // CHECKME find:
-      // type:1=1 value:2 in pt
-      // type:1=_, value:2 in %,
-      // value:3=_|80%
       auto const &lineSpace=paraProps.message(13).float_(2);
-      if (lineSpace) {
+      if (lineSpace)
+      {
         auto const &type=paraProps.message(13).uint32(1).optional();
-        if (!type)
+        if (!type) // in line
           props.put<LineSpacing>(IWORKLineSpacing(get(lineSpace), true));
-        else if (get(type)==1)
+        else if (get(type)==1)   // at least in point
+        {
+          IWORKLineSpacing spacing(get(lineSpace), false);
+          spacing.m_atLeast=true;
+          props.put<LineSpacing>(spacing);
+        }
+        else if (get(type)==2) // in point
           props.put<LineSpacing>(IWORKLineSpacing(get(lineSpace), false));
-        else { // unknown, use heuristic
+        else if (get(type)==4) // between in point, transform in percent (and assume 12pt)
+          props.put<LineSpacing>(IWORKLineSpacing(1.+get(lineSpace)/12., true));
+        else   // unknown, use heuristic
+        {
           props.put<LineSpacing>(IWORKLineSpacing(get(lineSpace), get(lineSpace)<3));
           ETONYEK_DEBUG_MSG(("IWAParser::parseParagraphStyle: unknown type %u\n", get(type)));
         }

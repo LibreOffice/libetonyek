@@ -187,7 +187,14 @@ void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props
   if (styleStack.has<LineSpacing>())
   {
     const IWORKLineSpacing &spacing = styleStack.get<LineSpacing>();
-    if (spacing.m_relative)
+    if (spacing.m_atLeast)
+    {
+      if (spacing.m_relative) // transform in point (and assume 12pt)
+        props.insert("fo:style:line-height-at-least", spacing.m_amount*12, librevenge::RVNG_POINT);
+      else
+        props.insert("fo:style:line-height-at-least", pt2in(spacing.m_amount));
+    }
+    else if (spacing.m_relative)
       props.insert("fo:line-height", spacing.m_amount, librevenge::RVNG_PERCENT);
     else
       props.insert("fo:line-height", pt2in(spacing.m_amount));

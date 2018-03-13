@@ -190,6 +190,7 @@ struct IWORKLineSpacing
 
   double m_amount;
   bool m_relative;
+  bool m_atLeast;
 };
 typedef std::unordered_map<ID_t, IWORKLineSpacing> IWORKLineSpacingMap_t;
 
