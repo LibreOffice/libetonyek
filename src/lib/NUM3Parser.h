@@ -25,6 +25,8 @@ public:
 private:
   bool parseDocument() override;
 
+  bool parseSheet(unsigned id);
+
 private:
   NUMCollector &m_collector;
 };

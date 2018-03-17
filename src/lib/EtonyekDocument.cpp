@@ -172,10 +172,35 @@ bool probeBinary(DetectionInfo &info)
       {
         const auto dataLen = get(header.message(2).uint32(3));
         const IWAMessage data(info.m_input, long(pos + headerLen), long(pos + headerLen + dataLen));
-        if (data.message(2))
+        // keynote: presentation ref in 2
+        // number: sheet ref in 1
+        if (!data.message(1))
           detected = EtonyekDocument::TYPE_KEYNOTE;
-        else
+        else if (!data.message(2))
           detected = EtonyekDocument::TYPE_NUMBERS;
+        else
+        {
+          unsigned potentialRef[2];
+          for (unsigned test=1; test<=2; ++test)
+          {
+            auto ref=data.message(test).uint32(1).optional();
+            if (ref)
+            {
+              potentialRef[test-1]=get(ref);
+              continue;
+            }
+            detected = test==1 ? EtonyekDocument::TYPE_KEYNOTE : EtonyekDocument::TYPE_NUMBERS;
+            break;
+          }
+          // undecise, try to find the first ref
+          IWAObjectIndex objIndex(info.m_fragments, info.m_package);
+          objIndex.parse();
+          unsigned type;
+          boost::optional<IWAMessage> msg;
+          objIndex.queryObject(potentialRef[0], type, msg);
+          detected = msg && type==2 ?
+                     EtonyekDocument::TYPE_NUMBERS : EtonyekDocument::TYPE_KEYNOTE;
+        }
       }
       break;
     case 10000 :

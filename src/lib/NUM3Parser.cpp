@@ -7,8 +7,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <functional>
+
 #include "NUM3Parser.h"
 
+#include "IWORKTable.h"
 #include "NUM3ObjectType.h"
 #include "NUMCollector.h"
 
@@ -21,18 +24,30 @@ NUM3Parser::NUM3Parser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStr
 {
 }
 
+bool NUM3Parser::parseSheet(unsigned id)
+{
+  const ObjectMessage msg(*this, id, NUM3ObjectType::Sheet);
+  if (!msg) return false;
+  auto tableRef=readRef(get(msg),2);
+  if (tableRef) dispatchShape(get(tableRef));
+
+  return true;
+}
+
 bool NUM3Parser::parseDocument()
 {
   const ObjectMessage msg(*this, 1, NUM3ObjectType::Document);
-  if (msg)
-  {
-    m_collector.startDocument();
-    m_collector.endDocument();
-    return true;
-  }
-  return false;
-}
+  if (!msg) return false;
 
+  m_collector.startDocument();
+  // const optional<IWAMessage> size = get(msg).message(12).optional();
+  // if (size) define the page size
+  const std::deque<unsigned> &sheetListRefs = readRefs(get(msg), 1);
+  std::for_each(sheetListRefs.begin(), sheetListRefs.end(), std::bind(&NUM3Parser::parseSheet, this, std::placeholders::_1));
+
+  m_collector.endDocument();
+  return true;
+}
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
