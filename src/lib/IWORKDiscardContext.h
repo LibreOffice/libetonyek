@@ -25,8 +25,15 @@ class IWORKXMLParserState;
    If we replace public by protected, error with clang++ in KEY2Parser.cpp:1595 when doing
    std::make_shared<DiscardContext>(m_state)
  */
+#if defined __GNUC__ && !defined __clang__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
+#endif
 class IWORKDiscardContext : public IWORKXMLContext, public std::enable_shared_from_this<IWORKDiscardContext>
 {
+#if defined __GNUC__ && !defined __clang__
+#pragma GCC diagnostic pop
+#endif
   struct Data;
 
 public:
