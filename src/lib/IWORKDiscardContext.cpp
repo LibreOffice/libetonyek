@@ -39,6 +39,7 @@ struct IWORKDiscardContext::Data
     , m_isShadow()
     , m_path()
     , m_propertyMap()
+    , m_fillColor()
     , m_listLabelGeometry()
     , m_listLabelTypeInfo()
   {
