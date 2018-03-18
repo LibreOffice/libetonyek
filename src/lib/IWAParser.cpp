@@ -144,6 +144,7 @@ IWAParser::IWAParser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStrea
   , m_paraStyles()
   , m_sectionStyles()
   , m_graphicStyles()
+  , m_mediaStyles()
   , m_cellStyles()
   , m_tableStyles()
   , m_listStyles()
