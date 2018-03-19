@@ -514,7 +514,12 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
   for (IWORKColumnSizes_t::const_iterator it = m_columnSizes.begin(); m_columnSizes.end() != it; ++it)
   {
     librevenge::RVNGPropertyList column;
-    column.insert("style:column-width", pt2in(*it));
+    if (!it->m_size)
+      ;
+    else if (it->m_exactSize)
+      column.insert("style:column-width", pt2in(get(it->m_size)));
+    else
+      column.insert("style:min-column-width", pt2in(get(it->m_size)));
     columnSizes.append(column);
   }
 
@@ -527,7 +532,11 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
     const Row_t &row = m_table[r];
 
     librevenge::RVNGPropertyList rowProps;
-    rowProps.insert("style:row-height", pt2in(m_rowSizes[r]));
+    auto const &rSize=m_rowSizes[r];
+    if (rSize.m_size && rSize.m_exactSize)
+      rowProps.insert("style:row-height", pt2in(get(rSize.m_size)));
+    else if (rSize.m_size)
+      rowProps.insert("style:min-row-height", pt2in(get(rSize.m_size)));
     if (r < m_headerRows)
       rowProps.insert("librevenge:is-header-row", true);
 

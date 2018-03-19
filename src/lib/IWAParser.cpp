@@ -92,16 +92,18 @@ void parseColumnOffsets(const RVNGInputStreamPtr_t &input, const unsigned length
   // TODO: check that the valid offsets are sorted in ascending order
 }
 
-deque<double> makeSizes(const mdds::flat_segment_tree<unsigned, float> &sizes)
+deque<IWORKColumnRowSize> makeSizes(const mdds::flat_segment_tree<unsigned, float> &sizes)
 {
-  deque<double> out(sizes.max_key(), sizes.default_value());
+  IWORKColumnRowSize defVal;
+  if (sizes.default_value()>0) defVal=IWORKColumnRowSize(sizes.default_value(),false);
+  deque<IWORKColumnRowSize> out(sizes.max_key(), IWORKColumnRowSize());
   for (mdds::flat_segment_tree<unsigned, float>::const_iterator it = sizes.begin(); it != sizes.end();)
   {
-    const deque<double>::iterator start(out.begin() + deque<double>::iterator::difference_type(it->first));
+    const deque<IWORKColumnRowSize>::iterator start(out.begin() + deque<double>::iterator::difference_type(it->first));
     const double size = it->second;
     ++it;
-    const deque<double>::iterator end(it == sizes.end() ? out.end() : out.begin() +  deque<double>::iterator::difference_type(it->first));
-    std::fill(start, end, size);
+    const deque<IWORKColumnRowSize>::iterator end(it == sizes.end() ? out.end() : out.begin() +  deque<double>::iterator::difference_type(it->first));
+    std::fill(start, end, size>0 ? IWORKColumnRowSize(size) : defVal);
   }
   return out;
 }
@@ -114,8 +116,8 @@ IWAParser::PageMaster::PageMaster()
 {
 }
 
-IWAParser::TableHeader::TableHeader(const unsigned count)
-  : m_sizes(0, count, 0)
+IWAParser::TableHeader::TableHeader(const unsigned count, float defValue)
+  : m_sizes(0, count, defValue)
   , m_hidden(0, count, false)
 {
 }
@@ -126,7 +128,7 @@ IWAParser::TableInfo::TableInfo(const shared_ptr<IWORKTable> &table, const unsig
   , m_rows(rows)
   , m_style()
   , m_columnHeader(columns)
-  , m_rowHeader(rows)
+  , m_rowHeader(rows,20)
   , m_simpleTextList()
   , m_cellStyleList()
   , m_formattedTextList()
@@ -2224,9 +2226,14 @@ void IWAParser::parseDataList(const unsigned id, DataList_t &dataList)
         dataList[index] = get(it.string(3));
       break;
     case 4 :
-      if (it.uint32(4))
+    {
+      auto styleRef=readRef(it,4);
+      if (styleRef)
+        dataList[index]=get(styleRef);
+      else if (it.uint32(4))
         dataList[index] = get(it.uint32(4));
       break;
+    }
     case 8 :   // paragraph ref
     {
       auto textRef=readRef(it,9);
@@ -2331,6 +2338,8 @@ void IWAParser::parseTile(const unsigned id)
           readU32(input);
         if (flags & 0x8) // formula
           readU32(input);
+        if (flags & 0x1000) // comment
+          readU32(input);
         if (flags & 0x10) // simple text
         {
           const unsigned textId = readU32(input);
@@ -2340,9 +2349,11 @@ void IWAParser::parseTile(const unsigned id)
             if (const string *const s = boost::get<string>(&listIt->second))
               text = *s;
           }
+          else
+          {
+            ETONYEK_DEBUG_MSG(("IWAParser::parseTile: can not find text %d\n", int(textId)));
+          }
         }
-        if (flags & 0x1000) // comment
-          readU32(input);
         if (flags & 0x20) // number or duration(in second)
         {
           std::stringstream s;

@@ -268,7 +268,7 @@ void GridColumnElement::attribute(const int name, const char *const value)
   case IWORKToken::preferred_width | IWORKToken::NS_URI_SF :
     break;
   case IWORKToken::width | IWORKToken::NS_URI_SF :
-    getState().m_tableData->m_columnSizes.push_back(lexical_cast<double>(value));
+    getState().m_tableData->m_columnSizes.push_back(IWORKColumnRowSize(lexical_cast<double>(value)));
     break;
   default :
     ETONYEK_DEBUG_MSG(("GridColumnElement::attribute[IWORKTabularModelElement.cpp]: find some unknown attribute\n"));
@@ -1700,7 +1700,7 @@ void GridRowElement::attribute(const int name, const char *const value)
   switch (name)
   {
   case IWORKToken::height | IWORKToken::NS_URI_SF :
-    getState().m_tableData->m_rowSizes.push_back(lexical_cast<double>(value));
+    getState().m_tableData->m_rowSizes.push_back(IWORKColumnRowSize(lexical_cast<double>(value)));
     break;
   case IWORKToken::fitting_height | IWORKToken::NS_URI_SF :
   case IWORKToken::manually_sized | IWORKToken::NS_URI_SF :

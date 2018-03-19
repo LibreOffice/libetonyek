@@ -520,7 +520,7 @@ void TableModelVectorsElement::endOfElement()
     }
     else if (get(col.m_along)>pos)
     {
-      tableData->m_columnSizes.push_back(get(col.m_along)-pos);
+      tableData->m_columnSizes.push_back(IWORKColumnRowSize(get(col.m_along)-pos));
       pos=get(col.m_along);
       tableData->m_positionToHorizontalLineMap[pos]=++line;
     }
@@ -539,7 +539,7 @@ void TableModelVectorsElement::endOfElement()
     }
     else if (get(row.m_along)>pos)
     {
-      tableData->m_rowSizes.push_back(get(row.m_along)-pos);
+      tableData->m_rowSizes.push_back(IWORKColumnRowSize(get(row.m_along)-pos));
       pos=get(row.m_along);
       tableData->m_positionToVerticalLineMap[pos]=++line;
     }

@@ -160,6 +160,18 @@ IWORKLineSpacing::IWORKLineSpacing(const double amount, const bool relative)
 {
 }
 
+IWORKColumnRowSize::IWORKColumnRowSize()
+  : m_size(boost::none)
+  , m_exactSize(true)
+{
+}
+
+IWORKColumnRowSize::IWORKColumnRowSize(double size, bool exactSize)
+  : m_size(size)
+  , m_exactSize(exactSize)
+{
+}
+
 IWORKTableVector::IWORKTableVector()
   : m_axis()
   , m_along()

@@ -19,9 +19,11 @@ namespace libetonyek
 
 typedef std::string ID_t;
 
-typedef std::deque<double> IWORKColumnSizes_t;
+struct IWORKColumnRowSize;
 
-typedef std::deque<double> IWORKRowSizes_t;
+typedef std::deque<IWORKColumnRowSize> IWORKColumnSizes_t;
+
+typedef std::deque<IWORKColumnRowSize> IWORKRowSizes_t;
 
 typedef unsigned IWORKOutputID_t;
 

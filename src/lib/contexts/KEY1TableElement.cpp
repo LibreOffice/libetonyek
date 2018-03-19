@@ -449,7 +449,7 @@ void KEY1TableElement::endOfElement()
       xPosSet.insert(pIt->second.m_x);
       yPosSet.insert(pIt->second.m_y);
     }
-    std::deque<double> columnSizes, rowSizes;
+    std::deque<IWORKColumnRowSize> columnSizes, rowSizes;
     std::unordered_map<double, unsigned> xPosToLineMap, yPosToLineMap;
     unsigned line=0;
     double lastPos=0;
@@ -458,7 +458,7 @@ void KEY1TableElement::endOfElement()
     {
       xPosToLineMap[lIt]=line++;
       if (!first)
-        columnSizes.push_back(lIt-lastPos);
+        columnSizes.push_back(IWORKColumnRowSize(lIt-lastPos));
       else
         first=false;
       lastPos=lIt;
@@ -471,7 +471,7 @@ void KEY1TableElement::endOfElement()
     {
       yPosToLineMap[lIt]=--line;
       if (!first)
-        rowSizes.push_front(lIt-lastPos);
+        rowSizes.push_front(IWORKColumnRowSize(lIt-lastPos));
       else
         first=false;
       lastPos=lIt;

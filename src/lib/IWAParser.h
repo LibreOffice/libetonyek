@@ -125,7 +125,7 @@ private:
 
   struct TableHeader
   {
-    TableHeader(unsigned count);
+    TableHeader(unsigned count, float defValue=0);
 
     mdds::flat_segment_tree<unsigned, float> m_sizes;
     mdds::flat_segment_tree<unsigned, bool> m_hidden;

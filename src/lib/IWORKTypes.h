@@ -203,6 +203,14 @@ struct IWORKDateTimeData
   float m_second;
 };
 
+struct IWORKColumnRowSize
+{
+  IWORKColumnRowSize();
+  explicit IWORKColumnRowSize(double size, bool exactSize=true);
+  boost::optional<double> m_size;
+  bool m_exactSize;
+};
+
 struct IWORKTableVector
 {
   IWORKTableVector();
