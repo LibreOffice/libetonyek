@@ -78,7 +78,6 @@ void KEY1FillElement::attribute(const int name, const char *const value)
       break;
     }
     break;
-    break;
   case KEY1Token::byte_size : // the image size
     break;
   default :

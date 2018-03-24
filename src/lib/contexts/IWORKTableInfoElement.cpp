@@ -315,7 +315,7 @@ void TableCellElement::emitCell()
       IWORKGridLine_t &cLine=tableData->m_horizontalLines.find(row)->second;
       cLine.insert_back(column, column+columnSpan, cell.m_minYBorder.m_style);
     }
-    if (columnSpan && columnSpan && cell.m_maxYBorder.m_style)
+    if (rowSpan && columnSpan && cell.m_maxYBorder.m_style)
     {
       if (tableData->m_horizontalLines.find(row+rowSpan)==tableData->m_horizontalLines.end())
         tableData->m_horizontalLines.insert(IWORKGridLineMap_t::value_type(row+rowSpan,IWORKGridLine_t(0, numColumns+1, IWORKStylePtr_t())));
