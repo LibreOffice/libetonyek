@@ -192,6 +192,8 @@ bool probeBinary(DetectionInfo &info)
             detected = test==1 ? EtonyekDocument::TYPE_KEYNOTE : EtonyekDocument::TYPE_NUMBERS;
             break;
           }
+          if (detected != EtonyekDocument::TYPE_UNKNOWN)
+            break;
           // undecise, try to find the first ref
           IWAObjectIndex objIndex(info.m_fragments, info.m_package);
           objIndex.parse();
