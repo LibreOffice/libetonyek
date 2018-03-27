@@ -184,13 +184,12 @@ bool probeBinary(DetectionInfo &info)
           for (unsigned test=1; test<=2; ++test)
           {
             auto ref=data.message(test).uint32(1).optional();
-            if (ref)
+            if (!ref)
             {
-              potentialRef[test-1]=get(ref);
-              continue;
+              detected = test==1 ? EtonyekDocument::TYPE_KEYNOTE : EtonyekDocument::TYPE_NUMBERS;
+              break;
             }
-            detected = test==1 ? EtonyekDocument::TYPE_KEYNOTE : EtonyekDocument::TYPE_NUMBERS;
-            break;
+            potentialRef[test-1]=get(ref);
           }
           if (detected != EtonyekDocument::TYPE_UNKNOWN)
             break;
