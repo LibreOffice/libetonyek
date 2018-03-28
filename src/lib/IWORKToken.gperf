@@ -223,6 +223,7 @@ externalTextWrap,externalTextWrap
 external-text-wrap,external_text_wrap
 external-text-wrap-ref,external_text_wrap_ref
 f,f
+facing-pages,facing_pages
 false,false_
 filename,filename
 fill,fill
@@ -286,6 +287,8 @@ fs,fs
 g,g
 generic-cell,generic_cell
 geometry,geometry
+ghost-text,ghost_text
+ghost-text-ref,ghost_text_ref
 gradient-stop,gradient_stop
 gradient-stop-ref,gradient_stop_ref
 graphic-style,graphic_style
@@ -394,6 +397,7 @@ listTextIndents,listTextIndents
 liststyle,liststyle
 liststyle-ref,liststyle_ref
 lnbr,lnbr
+localize,localize
 locked,locked
 lower-alpha,lower_alpha
 lower-roman,lower_roman

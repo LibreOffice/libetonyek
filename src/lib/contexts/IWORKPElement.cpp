@@ -21,6 +21,86 @@
 #include "IWORKToken.h"
 #include "IWORKXMLParserState.h"
 #include "libetonyek_xml.h"
+namespace libetonyek
+{
+
+namespace
+{
+// cell format ?
+class GhostTextElement : public IWORKXMLEmptyContextBase
+{
+public:
+  explicit GhostTextElement(IWORKXMLParserState &state);
+
+private:
+  void attribute(int name, const char *value) override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void text(const char *text) override;
+};
+
+GhostTextElement::GhostTextElement(IWORKXMLParserState &state)
+  : IWORKXMLEmptyContextBase(state)
+{
+}
+
+void GhostTextElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::localize | IWORKToken::NS_URI_SF : // a bool
+    break;
+  case IWORKToken::ID | IWORKToken::NS_URI_SFA :
+  case IWORKToken::IDREF | IWORKToken::NS_URI_SFA :
+    /* storeme? */
+    IWORKXMLEmptyContextBase::attribute(name, value);
+    break;
+  default :
+    ETONYEK_DEBUG_MSG(("GhostTextElement::attribute[IWORKPElement.cpp]: find some unknown attribute\n"));
+    IWORKXMLEmptyContextBase::attribute(name, value);
+  }
+}
+
+IWORKXMLContextPtr_t GhostTextElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::br : // ok to ignore?
+    return IWORKXMLContextPtr_t();
+  case IWORKToken::NS_URI_SF | IWORKToken::crbr :
+  case IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
+  case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
+    return std::make_shared<IWORKBrContext>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::pgbr :
+    return IWORKXMLContextPtr_t();
+  case IWORKToken::NS_URI_SF | IWORKToken::span :
+    return std::make_shared<IWORKSpanElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::tab :
+    return std::make_shared<IWORKTabElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::link :
+    return std::make_shared<IWORKLinkElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::date_time :
+    return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_DATETIME);
+  case IWORKToken::NS_URI_SF | IWORKToken::filename :
+    return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_FILENAME);
+  case IWORKToken::NS_URI_SF | IWORKToken::page_count :
+    return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_PAGECOUNT);
+  case IWORKToken::NS_URI_SF | IWORKToken::page_number :
+    return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_PAGENUMBER);
+  default:
+    ETONYEK_DEBUG_MSG(("GhostTextElement::element[IWORKPElement.cpp]: find unknown element\n"));
+    break;
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void GhostTextElement::text(const char *const value)
+{
+  if (bool(getState().m_currentText))
+    getState().m_currentText->insertText(value);
+}
+}
+}
 
 namespace libetonyek
 {
@@ -60,6 +140,8 @@ IWORKXMLContextPtr_t IWORKPElement::element(const int name)
 
   switch (name)
   {
+  case IWORKToken::NS_URI_SF | IWORKToken::br : // ok to ignore?
+    return IWORKXMLContextPtr_t();
   case IWORKToken::NS_URI_SF | IWORKToken::crbr :
   case IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
   case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
@@ -77,11 +159,18 @@ IWORKXMLContextPtr_t IWORKPElement::element(const int name)
     return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_DATETIME);
   case IWORKToken::NS_URI_SF | IWORKToken::filename :
     return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_FILENAME);
+  case IWORKToken::NS_URI_SF | IWORKToken::ghost_text :
+  case IWORKToken::NS_URI_SF | IWORKToken::ghost_text_ref :
+    /* checkme: sf:ghost-text and sf:ghost-text-ref seems similar, but maybe
+       sf:ghost-text-ref can also be called without the text data...
+     */
+    return std::make_shared<GhostTextElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::page_count :
     return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_PAGECOUNT);
   case IWORKToken::NS_URI_SF | IWORKToken::page_number :
     return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_PAGENUMBER);
   default:
+    ETONYEK_DEBUG_MSG(("IWORKPElement::element: find unknown element\n"));
     break;
   }
 

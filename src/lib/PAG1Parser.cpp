@@ -535,6 +535,8 @@ void PageMarginsElement::attribute(const int name, const char *const value)
   case IWORKToken::NS_URI_SF | IWORKToken::header:
     m_printInfo.m_headerHeight=try_double_cast(value);
     break;
+  case IWORKToken::NS_URI_SF | IWORKToken::facing_pages: // a bool
+    break;
   default:
     ETONYEK_DEBUG_MSG(("PageMarginsElement::attribute[PAG1Parser.cpp]: find unknown attribute\n"));
     break;

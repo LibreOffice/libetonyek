@@ -30,7 +30,7 @@ void IWORKLayoutElement::attribute(const int name, const char *const value)
 {
   if ((IWORKToken::NS_URI_SF | IWORKToken::style) == name)
     m_style=getState().getStyleByName(value, getState().getDictionary().m_layoutStyles);
-  else
+  else // also sfa:ID
   {
     ETONYEK_DEBUG_MSG(("IWORKLayoutElement::attribute: unknown attribute\n"));
   }
