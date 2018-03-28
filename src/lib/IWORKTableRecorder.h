@@ -39,6 +39,8 @@ public:
   void setStyle(const IWORKStylePtr_t &style);
   void setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowSizes_t &rowSizes);
   void setBorders(const IWORKGridLineMap_t &verticalLines, const IWORKGridLineMap_t &horizontalLines);
+  void setBorders(const IWORKGridLineMap_t &verticalLeftLines, const IWORKGridLineMap_t &verticalRightLines,
+                  const IWORKGridLineMap_t &horizontalTopLines, const IWORKGridLineMap_t &horizontalBottomLines);
   void insertCell(unsigned column, unsigned row, const boost::optional<std::string> &value, const std::shared_ptr<IWORKText> &content, const boost::optional<IWORKDateTimeData> &dateTime, unsigned columnSpan, unsigned rowSpan, const IWORKFormulaPtr_t &formula, const boost::optional<unsigned> &formulaHC, const IWORKStylePtr_t &style, IWORKCellType type);
   void insertCoveredCell(unsigned column, unsigned row);
 

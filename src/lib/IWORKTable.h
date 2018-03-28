@@ -72,6 +72,8 @@ public:
   void setStyle(const IWORKStylePtr_t &style);
   void setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowSizes_t &rowSizes);
   void setBorders(const IWORKGridLineMap_t &verticalLines, const IWORKGridLineMap_t &horizontalLines);
+  void setBorders(const IWORKGridLineMap_t &verticalLeftLines, const IWORKGridLineMap_t &verticalRightLines,
+                  const IWORKGridLineMap_t &horizontalTopLines, const IWORKGridLineMap_t &horizontalBottomLines);
   void insertCell(unsigned column, unsigned row,
                   const boost::optional<std::string> &value = boost::none,
                   const std::shared_ptr<IWORKText> &text = std::shared_ptr<IWORKText>(),
@@ -108,7 +110,9 @@ private:
   IWORKColumnSizes_t m_columnSizes;
   IWORKRowSizes_t m_rowSizes;
   IWORKGridLineMap_t m_verticalLines;
+  IWORKGridLineMap_t m_verticalRightLines; // if empty, m_verticalLines stores right/left line
   IWORKGridLineMap_t m_horizontalLines;
+  IWORKGridLineMap_t m_horizontalBottomLines; // if empty, m_horizontalLines stores right/left line
 
   unsigned m_rows;
   unsigned m_columns;

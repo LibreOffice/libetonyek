@@ -108,12 +108,24 @@ struct SetBorders
 {
   SetBorders(const IWORKGridLineMap_t &verticalLines, const IWORKGridLineMap_t &horizontalLines)
     : m_verticalLines(verticalLines)
+    , m_verticalRightLines()
     , m_horizontalLines(horizontalLines)
+    , m_horizontalBottomLines()
+  {
+  }
+  SetBorders(const IWORKGridLineMap_t &verticalLeftLines, const IWORKGridLineMap_t &verticalRightLines,
+             const IWORKGridLineMap_t &horizontalTopLines, const IWORKGridLineMap_t &horizontalBottomLines)
+    : m_verticalLines(verticalLeftLines)
+    , m_verticalRightLines(verticalRightLines)
+    , m_horizontalLines(horizontalTopLines)
+    , m_horizontalBottomLines(horizontalBottomLines)
   {
   }
 
   const IWORKGridLineMap_t m_verticalLines;
+  const IWORKGridLineMap_t m_verticalRightLines;
   const IWORKGridLineMap_t m_horizontalLines;
+  const IWORKGridLineMap_t m_horizontalBottomLines;
 };
 
 struct InsertCell
@@ -260,7 +272,8 @@ struct Sender : public boost::static_visitor<void>
 
   void operator()(const SetBorders &value) const
   {
-    m_table.setBorders(value.m_verticalLines, value.m_horizontalLines);
+    m_table.setBorders(value.m_verticalLines,value.m_verticalRightLines,
+                       value.m_horizontalLines, value.m_horizontalBottomLines);
   }
 
   void operator()(const InsertCell &value) const
@@ -360,6 +373,13 @@ void IWORKTableRecorder::setSizes(const IWORKColumnSizes_t &columnSizes, const I
 void IWORKTableRecorder::setBorders(const IWORKGridLineMap_t &verticalLines, const IWORKGridLineMap_t &horizontalLines)
 {
   m_impl->m_elements.push_back(SetBorders(verticalLines, horizontalLines));
+}
+
+void IWORKTableRecorder::setBorders(const IWORKGridLineMap_t &verticalLeftLines, const IWORKGridLineMap_t &verticalRightLines,
+                                    const IWORKGridLineMap_t &horizontalTopLines, const IWORKGridLineMap_t &horizontalBottomLines)
+{
+  m_impl->m_elements.push_back(SetBorders(verticalLeftLines, verticalRightLines,
+                                          horizontalTopLines, horizontalBottomLines));
 }
 
 void IWORKTableRecorder::insertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const std::shared_ptr<IWORKText> &content, const boost::optional<IWORKDateTimeData> &dateTime, const unsigned columnSpan, const unsigned rowSpan, const IWORKFormulaPtr_t &formula, const boost::optional<unsigned> &formulaHC, const IWORKStylePtr_t &style, const IWORKCellType type)

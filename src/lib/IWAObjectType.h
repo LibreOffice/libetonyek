@@ -51,6 +51,9 @@ enum
 
   TextRef = 6218,
 
+  GridLines = 6305,
+  GridLine = 6306,
+
   PageMaster = 10011,
   PageMasterData = 10016,
   HeadersAndFooters = 10143

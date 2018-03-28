@@ -176,7 +176,9 @@ private:
   void parseTabularModel(unsigned id);
   void parseDataList(unsigned id, DataList_t &dataList);
   void parseTile(unsigned id);
-  void parseHeaders(unsigned id, TableHeader &header);
+  void parseTableHeaders(unsigned id, TableHeader &header);
+  void parseTableGridLines(unsigned id, IWORKGridLineMap_t (&gridLines)[4]);
+  void parseTableGridLine(unsigned id, IWORKGridLineMap_t &gridLines);
 
   void parseLink(unsigned id, std::string &url);
 

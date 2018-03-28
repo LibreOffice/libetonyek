@@ -2131,11 +2131,11 @@ void IWAParser::parseTabularModel(const unsigned id)
     {
       const optional<unsigned> &rowHeadersRef = readRef(get(grid.message(1)), 2);
       if (rowHeadersRef)
-        parseHeaders(get(rowHeadersRef), m_currentTable->m_rowHeader);
+        parseTableHeaders(get(rowHeadersRef), m_currentTable->m_rowHeader);
     }
     const optional<unsigned> &columnHeadersRef = readRef(grid, 2);
     if (columnHeadersRef)
-      parseHeaders(get(columnHeadersRef), m_currentTable->m_columnHeader);
+      parseTableHeaders(get(columnHeadersRef), m_currentTable->m_columnHeader);
 
     const optional<unsigned> &simpleTextListRef = readRef(grid, 4);
     if (simpleTextListRef)
@@ -2195,6 +2195,14 @@ void IWAParser::parseTabularModel(const unsigned id)
   styleRef = readRef(get(msg), 27);
   if (styleRef)
     m_currentTable->m_table->setDefaultParagraphStyle(IWORKTable::CELL_TYPE_ROW_FOOTER, queryParagraphStyle(get(styleRef)));
+
+  styleRef = readRef(get(msg), 49);
+  if (styleRef)
+  {
+    IWORKGridLineMap_t gridLines[4];
+    parseTableGridLines(get(styleRef), gridLines);
+    m_currentTable->m_table->setBorders(gridLines[0],gridLines[1],gridLines[2],gridLines[3]);
+  }
 
   // handle table
   if (tileRef)
@@ -2440,7 +2448,7 @@ void IWAParser::parseTile(const unsigned id)
   }
 }
 
-void IWAParser::parseHeaders(const unsigned id, TableHeader &header)
+void IWAParser::parseTableHeaders(const unsigned id, TableHeader &header)
 {
   const ObjectMessage msg(*this, id, IWAObjectType::Headers);
   if (!msg)
@@ -2453,7 +2461,7 @@ void IWAParser::parseHeaders(const unsigned id, TableHeader &header)
       const unsigned index = get(it.uint32(1));
       if (index >= header.m_sizes.max_key())
       {
-        ETONYEK_DEBUG_MSG(("IWAParser::parseHeaders: invalid row/column index %u\n", index));
+        ETONYEK_DEBUG_MSG(("IWAParser::parseTableHeaders: invalid row/column index %u\n", index));
         continue;
       }
       if (it.float_(2))
@@ -2461,6 +2469,64 @@ void IWAParser::parseHeaders(const unsigned id, TableHeader &header)
       if (it.bool_(3))
         header.m_hidden.insert_back(index, index + 1, get(it.bool_(3)));
     }
+  }
+}
+
+void IWAParser::parseTableGridLines(unsigned id, IWORKGridLineMap_t (&gridLines)[4])
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::GridLines);
+  if (!msg)
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::parseTableGridLInes: can not find grid lines for index %u\n", id));
+    return;
+  }
+  for (unsigned wh=0; wh<4; ++wh)
+  {
+    if (get(msg).message(wh+4).empty()) continue;
+    auto const &lineRefs = readRefs(get(msg), wh+4);
+    auto &gridLine=gridLines[wh];
+    std::for_each(lineRefs.begin(), lineRefs.end(),
+                  [this,&gridLine](unsigned id)
+    {
+      parseTableGridLine(id, gridLine);
+    }
+                 );
+  }
+}
+
+void IWAParser::parseTableGridLine(unsigned id, IWORKGridLineMap_t &gridLine)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::GridLine);
+  if (!msg)
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::parseTableGridLine: can not find grid line for index %u\n", id));
+    return;
+  }
+  if (!get(msg).uint32(1))
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::parseTableGridLine: can not find the main position index %u\n", id));
+    return;
+  }
+  auto pos1=get(get(msg).uint32(1));
+  const deque<IWAMessage> &lines = get(msg).message(2).repeated();
+  if (gridLine.find(pos1)==gridLine.end())
+    gridLine.insert(IWORKGridLineMap_t::value_type(pos1,IWORKGridLine_t(0,4096,nullptr)));
+  auto &flatSegments=gridLine.find(pos1)->second;
+  for (auto it : lines)
+  {
+    if (!it.uint32(1) || !it.uint32(2))
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseTableGridLine: can not find the second position index %u\n", id));
+      continue;
+    }
+    IWORKPropertyMap props;
+    if (it.message(3))
+    {
+      IWORKStroke stroke;
+      readStroke(get(it.message(3)), stroke);
+      props.put<property::SFTStrokeProperty>(stroke);
+    }
+    flatSegments.insert_back(get(it.uint32(1)),get(it.uint32(1))+get(it.uint32(2)), std::make_shared<IWORKStyle>(props,none,none));
   }
 }
 

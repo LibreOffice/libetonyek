@@ -330,7 +330,9 @@ IWORKTable::IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLa
   , m_columnSizes()
   , m_rowSizes()
   , m_verticalLines()
+  , m_verticalRightLines()
   , m_horizontalLines()
+  , m_horizontalBottomLines()
   , m_rows(0)
   , m_columns(0)
   , m_headerRows(0)
@@ -450,6 +452,21 @@ void IWORKTable::setBorders(const IWORKGridLineMap_t &verticalLines, const IWORK
   m_horizontalLines = horizontalLines;
 }
 
+void IWORKTable::setBorders(const IWORKGridLineMap_t &verticalLeftLines, const IWORKGridLineMap_t &verticalRightLines,
+                            const IWORKGridLineMap_t &horizontalTopLines, const IWORKGridLineMap_t &horizontalBottomLines)
+{
+  if (bool(m_recorder))
+  {
+    m_recorder->setBorders(verticalLeftLines, verticalRightLines, horizontalTopLines, horizontalBottomLines);
+    return;
+  }
+
+  m_verticalLines = verticalLeftLines;
+  m_verticalRightLines = verticalRightLines;
+  m_horizontalLines = horizontalTopLines;
+  m_horizontalBottomLines = horizontalBottomLines;
+}
+
 void IWORKTable::insertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const std::shared_ptr<IWORKText> &text, const boost::optional<IWORKDateTimeData> &dateTime, const unsigned columnSpan, const unsigned rowSpan, const IWORKFormulaPtr_t &formula, const boost::optional<unsigned> &formulaHC, const IWORKStylePtr_t &style, const IWORKCellType type)
 {
   if (bool(m_recorder))
@@ -549,15 +566,26 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
       cellProps.insert("librevenge:row", numeric_cast<int>(r));
 
       using namespace property;
-
+      unsigned const rMax= unsigned(r+ std::max(unsigned(1),cell.m_rowSpan));
+      unsigned const cMax= unsigned(c+ std::max(unsigned(1),cell.m_columnSpan));
       if (m_horizontalLines.find(unsigned(r))!=m_horizontalLines.end())
         writeBorder(cellProps, "fo:border-top", m_horizontalLines.find(unsigned(r))->second, unsigned(c));
-      if (m_horizontalLines.find(unsigned(r)+1)!=m_horizontalLines.end())
-        writeBorder(cellProps, "fo:border-bottom", m_horizontalLines.find(unsigned(r)+1)->second, unsigned(c));
+      if (!m_horizontalBottomLines.empty())
+      {
+        if (m_horizontalBottomLines.find(rMax-1)!=m_horizontalBottomLines.end())
+          writeBorder(cellProps, "fo:border-bottom", m_horizontalBottomLines.find(rMax-1)->second, unsigned(c));
+      }
+      else if (m_horizontalLines.find(rMax)!=m_horizontalLines.end())
+        writeBorder(cellProps, "fo:border-bottom", m_horizontalLines.find(rMax)->second, unsigned(c));
       if (m_verticalLines.find(unsigned(c))!=m_verticalLines.end())
         writeBorder(cellProps, "fo:border-left", m_verticalLines.find(unsigned(c))->second, unsigned(r));
-      if (m_verticalLines.find(unsigned(c)+1)!=m_verticalLines.end())
-        writeBorder(cellProps, "fo:border-right", m_verticalLines.find(unsigned(c)+1)->second, unsigned(r));
+      if (!m_verticalRightLines.empty())
+      {
+        if (m_verticalRightLines.find(cMax-1)!=m_verticalRightLines.end())
+          writeBorder(cellProps, "fo:border-right", m_verticalRightLines.find(cMax-1)->second, unsigned(r));
+      }
+      else if (m_verticalLines.find(cMax)!=m_verticalLines.end())
+        writeBorder(cellProps, "fo:border-right", m_verticalLines.find(cMax)->second, unsigned(r));
 
       if (cell.m_covered)
       {

@@ -739,6 +739,7 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   {
   case PAG1Token::NS_URI_SL | PAG1Token::page_group :
     return std::make_shared<PageGroupElement>(getState());
+  // see also sl:master-groups which contains sl:section-drawables
   default:
     break;
   }
