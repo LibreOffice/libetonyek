@@ -172,13 +172,13 @@ void writeCellStyle(librevenge::RVNGPropertyList &props, const IWORKStyleStack &
   switch (vertAlign)
   {
   case IWORK_VERTICAL_ALIGNMENT_TOP :
-    props.insert("fo:vertical-align", "top");
+    props.insert("style:vertical-align", "top");
     break;
   case IWORK_VERTICAL_ALIGNMENT_MIDDLE :
-    props.insert("fo:vertical-align", "middle");
+    props.insert("style:vertical-align", "middle");
     break;
   case IWORK_VERTICAL_ALIGNMENT_BOTTOM :
-    props.insert("fo:vertical-align", "bottom");
+    props.insert("style:vertical-align", "bottom");
     break;
   default:
     ETONYEK_DEBUG_MSG(("writeCellStyle: unexpected alignement\n"));

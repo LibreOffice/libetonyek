@@ -1671,6 +1671,22 @@ void IWAParser::parseCellStyle(const unsigned id, IWORKStylePtr_t &style)
       else
         props.clear<Fill>();
     }
+    if (properties.uint32(8))
+    {
+      auto align=get(properties.uint32(8));
+      if (align<=2)
+      {
+        const IWORKVerticalAlignment(aligns[])=
+        {
+          IWORK_VERTICAL_ALIGNMENT_TOP, IWORK_VERTICAL_ALIGNMENT_MIDDLE, IWORK_VERTICAL_ALIGNMENT_BOTTOM
+        };
+        props.put<VerticalAlignment>(aligns[align]);
+      }
+      else
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::parseCellStyle: unknown align=%u\n", align));
+      }
+    }
     if (properties.message(9))
     {
       IWORKPadding padding;
