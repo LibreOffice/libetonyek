@@ -96,7 +96,7 @@ bool PAG5Parser::parseDocument()
     if (message.float_(37))
       printInfo.m_footerHeight=get(message.float_(37));
     if (message.uint32(42))
-      printInfo.m_footerHeight=get(message.uint32(42));
+      printInfo.m_orientation=get(message.uint32(42));
     m_collector.setPageDimensions(printInfo);
 
     const optional<unsigned> groupRef(readRef(message, 3));
