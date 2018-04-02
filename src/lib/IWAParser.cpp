@@ -1927,6 +1927,9 @@ void IWAParser::parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap
     readShadow(get(msg.message(21)),shadow);
     props.put<TextShadow>(shadow);
   }
+  const auto bgColor = readColor(msg, 26);
+  if (bgColor)
+    props.put<TextBackground>(get(bgColor));
   if (msg.float_(27))
     props.put<Tracking>(get(msg.float_(27)));
 }
