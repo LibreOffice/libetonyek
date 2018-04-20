@@ -2505,9 +2505,9 @@ void IWAParser::parseTableGridLines(unsigned id, IWORKGridLineMap_t (&gridLines)
     auto const &lineRefs = readRefs(get(msg), wh+4);
     auto &gridLine=gridLines[wh];
     std::for_each(lineRefs.begin(), lineRefs.end(),
-                  [this,&gridLine](unsigned id)
+                  [this,&gridLine](unsigned lineId)
     {
-      parseTableGridLine(id, gridLine);
+      parseTableGridLine(lineId, gridLine);
     }
                  );
   }
