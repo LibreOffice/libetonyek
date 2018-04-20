@@ -20,7 +20,14 @@
 #include <boost/optional.hpp>
 #include <boost/variant.hpp>
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
 #include <mdds/flat_segment_tree.hpp>
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 #include "libetonyek_utils.h"
 #include "IWAMessage.h"
