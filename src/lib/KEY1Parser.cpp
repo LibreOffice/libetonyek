@@ -1282,7 +1282,6 @@ IWORKXMLContextPtr_t PluginElement::element(const int name)
   default :
     return BasicShapeElement::element(name);
   }
-  return IWORKXMLContextPtr_t();
 }
 
 void PluginElement::endOfElement()
