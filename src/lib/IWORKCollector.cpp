@@ -78,7 +78,7 @@ string detectMimetype(const RVNGInputStreamPtr_t &stream)
   if (0 == memcmp(sig, SIGNATURE_JPEG, ETONYEK_NUM_ELEMENTS(SIGNATURE_JPEG)))
     return string("image/jpeg");
 
-  static bool first=first;
+  static bool first=true;
   if (first)
   {
     ETONYEK_DEBUG_MSG(("detectMimetype[IWORKCollector.cpp]: can not detect some stream types\n"));
