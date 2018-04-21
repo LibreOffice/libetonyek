@@ -170,7 +170,7 @@ void PointPathElement::endOfElement()
       if (m_point)
         getCollector().collectStarPath(size, numeric_cast<unsigned>(get(m_point).m_x), get(m_point).m_y);
       else
-        getCollector().collectStarPath(size, 0, 0);
+        getCollector().collectStarPath(size, 5, 0.5);
     }
     else
     {
