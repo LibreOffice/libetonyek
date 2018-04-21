@@ -1,3 +1,51 @@
+libetonyek 0.1.8
+
+- All formats:
+  + Parse fields.
+  + Improve parsing of lists.
+  + Fix output of orphans and widows paragraph properties.
+  + Correctly handle rectangles with rounded corners.
+  + Improve output of callouts.
+  + Parse line ends (arrows).
+  + Parse curves with multiple components.
+  + Improve parsing of fills.
+  + Improve parsing of tables.
+  + Handle cropped images.
+  + Parse grouped shapes.
+  + Parse audio/video preview images.
+  + Parse text wrap.
+- Keynote 2-5:
+  + Parse old-style images (Keynote 2-3?).
+  + Parse slide styles.
+  + Output master slides.
+  + Parse connection lines.
+- Keynote 6:
+  + Improve detection of Keynote 6 documents. (tdf#113737)
+  + Output master slides.
+  + Parse connection lines.
+- Numbers 1-2:
+  + Properly parse TRUE and FALSE functions.
+- Pages 1-4:
+  + Parse annotations.
+  + Improve parsing of images (position etc.).
+  + Handle tables in a group.
+  + Parse page dimensions from print settings.
+- Pages 5:
+  + Parse page dimensions.
+  + Parse footnotes/endnotes.
+  + Parse comments.
+  + Parse headers/footers.
+  + Parse tables.
+  + Parse textboxes.
+  + Fix line spacing and paragraph margins.
+  + Parse more text properties.
+- Miscellaneous:
+  + Add support for Keynote 1 documents.
+  + Add support for Numbers 3 documents.
+  + Fix several issues found by oss-fuzz.
+  + Fix build with glm 0.9.9.
+  + Other fixes and improvements.
+
 libetonyek 0.1.7
 
 - Fix a few issues found by Coverity.
