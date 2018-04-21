@@ -690,7 +690,7 @@ bool IWORKPath::isRectangle() const
   if (curve.size()!=4 && (curve.size()!=5 || !boost::get<ClosePolygon>(&curve.back())))
     return false;
   double x[5] = {0};
-  double y[5];
+  double y[5] = {0};
   int pt=0;
   for (const auto &it : curve)
   {
