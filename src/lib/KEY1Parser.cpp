@@ -1366,7 +1366,6 @@ IWORKXMLContextPtr_t GroupElement::element(const int name)
   default :
     return BasicShapeElement::element(name);
   }
-  return IWORKXMLContextPtr_t();
 }
 
 }
