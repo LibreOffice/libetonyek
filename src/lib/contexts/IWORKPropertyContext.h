@@ -44,7 +44,7 @@ template<typename Property, typename Context, int TokenId, int TokenId2>
 IWORKXMLContextPtr_t IWORKPropertyContext<Property, Context, TokenId, TokenId2>::element(const int name)
 {
   m_default = false;
-  if (TokenId == name || (TokenId2 && TokenId2 == name))
+  if (TokenId == name || (TokenId2 != 0 && TokenId2 == name))
     return std::make_shared<Context>(getState(), m_value);
   else if (name != (IWORKToken::NS_URI_SF | IWORKToken::null))
   {
