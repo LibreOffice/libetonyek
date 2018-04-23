@@ -771,7 +771,7 @@ void IWORKCollector::fillMetadata(librevenge::RVNGPropertyList &props)
   if (!m_metadata.m_title.empty())
     props.insert("dc:subject", m_metadata.m_title.c_str());
   if (!m_metadata.m_author.empty())
-    props.insert("meta:intial-creator", m_metadata.m_author.c_str());
+    props.insert("meta:initial-creator", m_metadata.m_author.c_str());
   if (!m_metadata.m_keywords.empty())
     props.insert("meta:keyword", m_metadata.m_keywords.c_str());
   if (!m_metadata.m_comment.empty())
