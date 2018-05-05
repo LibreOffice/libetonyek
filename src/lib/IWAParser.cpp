@@ -1676,7 +1676,7 @@ void IWAParser::parseCellStyle(const unsigned id, IWORKStylePtr_t &style)
       auto align=get(properties.uint32(8));
       if (align<=2)
       {
-        const IWORKVerticalAlignment(aligns[])=
+        const IWORKVerticalAlignment aligns[] =
         {
           IWORK_VERTICAL_ALIGNMENT_TOP, IWORK_VERTICAL_ALIGNMENT_MIDDLE, IWORK_VERTICAL_ALIGNMENT_BOTTOM
         };
