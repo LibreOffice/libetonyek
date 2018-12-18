@@ -594,6 +594,11 @@ void IWORKPath::clear()
   m_impl->m_closed = false;
 }
 
+bool IWORKPath::empty() const
+{
+  return m_impl->m_path.empty();
+}
+
 void IWORKPath::appendMoveTo(const double x, const double y)
 {
   if (!m_impl->m_path.empty() && m_impl->m_path.back().size()<=1)

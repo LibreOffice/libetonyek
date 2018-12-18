@@ -42,6 +42,7 @@ public:
   void swap(IWORKPath &other);
 
   void clear();
+  bool empty() const;
 
   void appendMoveTo(double x, double y);
   void appendLineTo(double x, double y);

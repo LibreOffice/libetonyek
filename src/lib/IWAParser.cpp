@@ -998,7 +998,14 @@ bool IWAParser::parsePath(const IWAMessage &msg, IWORKPathPtr_t &path)
       if (get(type) == 1)
         path->appendMoveTo(get(coords).m_x, get(coords).m_y);
       else
+      {
+        if (path->empty())
+        {
+          ETONYEK_DEBUG_MSG(("IWAParser::parsePath: missing prior MoveTo subsequent LineTo\n", get(type) == 1 ? 'M' : 'L'));
+          return false;
+        }
         path->appendLineTo(get(coords).m_x, get(coords).m_y);
+      }
       break;
     }
     case 4 :
