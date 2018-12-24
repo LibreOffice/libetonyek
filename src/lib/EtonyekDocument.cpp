@@ -241,6 +241,33 @@ catch (...)
   return RVNGInputStreamPtr_t();
 }
 
+bool detectBinary(RVNGInputStreamPtr_t input, DetectionInfo &info)
+{
+  assert(input->isStructured());
+
+  const bool isPackage(input->existsSubStream("Metadata/DocumentIdentifier"));
+
+  if (input->existsSubStream("Index.zip"))
+  {
+    RVNGInputStreamPtr_t zipInput = getSubStream(input, "Index.zip");
+    if (bool(zipInput))
+      input = zipInput;
+  }
+
+  const bool hasDocument = input->existsSubStream("Index/Document.iwa");
+
+  if (hasDocument)
+  {
+    if (!isPackage)
+      info.m_package.reset();
+    info.m_format = FORMAT_BINARY;
+    info.m_fragments = input;
+    info.m_input = getUncompressedSubStream(input, "Index/Document.iwa", true);
+  }
+
+  return hasDocument;
+}
+
 bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
 {
   if (input->isStructured())
@@ -248,24 +275,8 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
     info.m_package = input;
 
     if ((info.m_format == FORMAT_BINARY) || (info.m_format == FORMAT_UNKNOWN))
-    {
-      RVNGInputStreamPtr_t binaryInput(input);
-      const bool isPackage(binaryInput->existsSubStream("Metadata/DocumentIdentifier"));
-      if (binaryInput->existsSubStream("Index.zip"))
-      {
-        RVNGInputStreamPtr_t zipInput = getSubStream(binaryInput, "Index.zip");
-        if (bool(zipInput))
-          binaryInput = zipInput;
-      }
-      info.m_fragments = binaryInput;
-      if (binaryInput->existsSubStream("Index/Document.iwa"))
-      {
-        if (!isPackage)
-          info.m_package.reset();
-        info.m_format = FORMAT_BINARY;
-        info.m_input = getUncompressedSubStream(binaryInput, "Index/Document.iwa", true);
-      }
-    }
+      detectBinary(input, info);
+
     if ((info.m_format == FORMAT_XML2) || (info.m_format == FORMAT_UNKNOWN))
     {
       if ((info.m_type == EtonyekDocument::TYPE_KEYNOTE) || (info.m_type == EtonyekDocument::TYPE_UNKNOWN))
