@@ -8,9 +8,11 @@ libtest_driver_a_SOURCES = \
 	test.cpp
 
 test_CPPFLAGS = \
+	-DETONYEK_TEST_DIR=\"$(top_srcdir)/src/test/data\" \
 	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/lib \
 	$(REVENGE_CFLAGS) \
+	$(REVENGE_STREAM_CFLAGS) \
 	$(CPPUNIT_CFLAGS) \
 	$(XML_CFLAGS) \
 	$(GLM_CFLAGS) \
@@ -23,6 +25,7 @@ test_LDADD = \
 	libtest_driver.a \
 	$(top_builddir)/src/lib/libetonyek_internal.la \
 	$(REVENGE_LIBS) \
+	$(REVENGE_STREAM_LIBS) \
 	$(CPPUNIT_LIBS) \
 	$(LANGTAG_LIBS) \
 	$(XML_LIBS)
@@ -39,6 +42,7 @@ test_SOURCES = \
 	IWORKShapeTest.cpp \
 	IWORKStyleTest.cpp \
 	IWORKStyleStackTest.cpp \
+	IWORKSubDirStreamTest.cpp \
 	IWORKTokenizerBaseTest.cpp \
 	IWORKTransformationTest.cpp \
 	LibetonyekUtilsTest.cpp \
