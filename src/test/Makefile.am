@@ -1,4 +1,4 @@
-tests = test detection
+tests = core detection streams
 
 check_PROGRAMS = $(tests)
 check_LIBRARIES = libtest_driver.a
@@ -7,7 +7,50 @@ libtest_driver_a_CPPFLAGS = $(CPPUNIT_CFLAGS) $(DEBUG_CXXFLAGS)
 libtest_driver_a_SOURCES = \
 	test.cpp
 
-test_CPPFLAGS = \
+core_CPPFLAGS = \
+	-DETONYEK_TEST_DIR=\"$(top_srcdir)/src/test/data\" \
+	-I$(top_srcdir)/inc \
+	-I$(top_srcdir)/src/lib \
+	$(REVENGE_CFLAGS) \
+	$(CPPUNIT_CFLAGS) \
+	$(XML_CFLAGS) \
+	$(GLM_CFLAGS) \
+	$(MDDS_CFLAGS) \
+	$(LANGTAG_LIBS) \
+	$(DEBUG_CXXFLAGS)
+
+core_LDFLAGS = -L$(top_builddir)/src/lib
+core_LDADD = \
+	libtest_driver.a \
+	$(top_builddir)/src/lib/libetonyek_internal.la \
+	$(REVENGE_LIBS) \
+	$(CPPUNIT_LIBS) \
+	$(LANGTAG_LIBS) \
+	$(XML_LIBS)
+
+core_SOURCES = \
+	IWAFieldTest.cpp \
+	IWAMessageTest.cpp \
+	IWAReaderTest.cpp \
+	IWORKChainedTokenizerTest.cpp \
+	IWORKFormulaTest.cpp \
+	IWORKPathTest.cpp \
+	IWORKPropertyMapTest.cpp \
+	IWORKShapeTest.cpp \
+	IWORKStyleTest.cpp \
+	IWORKStyleStackTest.cpp \
+	IWORKTokenizerBaseTest.cpp \
+	IWORKTransformationTest.cpp \
+	LibetonyekUtilsTest.cpp \
+	TestProperties.cpp \
+	TestProperties.h
+
+if WITH_LIBLANGTAG
+core_SOURCES += \
+	IWORKLanguageManagerTest.cpp
+endif
+
+streams_CPPFLAGS = \
 	-DETONYEK_TEST_DIR=\"$(top_srcdir)/src/test/data\" \
 	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/lib \
@@ -20,8 +63,8 @@ test_CPPFLAGS = \
 	$(LANGTAG_LIBS) \
 	$(DEBUG_CXXFLAGS)
 
-test_LDFLAGS = -L$(top_builddir)/src/lib
-test_LDADD = \
+streams_LDFLAGS = -L$(top_builddir)/src/lib
+streams_LDADD = \
 	libtest_driver.a \
 	$(top_builddir)/src/lib/libetonyek_internal.la \
 	$(REVENGE_LIBS) \
@@ -30,29 +73,9 @@ test_LDADD = \
 	$(LANGTAG_LIBS) \
 	$(XML_LIBS)
 
-test_SOURCES = \
-	IWAFieldTest.cpp \
-	IWAMessageTest.cpp \
-	IWAReaderTest.cpp \
+streams_SOURCES = \
 	IWASnappyStreamTest.cpp \
-	IWORKChainedTokenizerTest.cpp \
-	IWORKFormulaTest.cpp \
-	IWORKPathTest.cpp \
-	IWORKPropertyMapTest.cpp \
-	IWORKShapeTest.cpp \
-	IWORKStyleTest.cpp \
-	IWORKStyleStackTest.cpp \
-	IWORKSubDirStreamTest.cpp \
-	IWORKTokenizerBaseTest.cpp \
-	IWORKTransformationTest.cpp \
-	LibetonyekUtilsTest.cpp \
-	TestProperties.cpp \
-	TestProperties.h
-
-if WITH_LIBLANGTAG
-test_SOURCES += \
-	IWORKLanguageManagerTest.cpp
-endif
+	IWORKSubDirStreamTest.cpp
 
 detection_CPPFLAGS = \
 	-DETONYEK_DETECTION_TEST_DIR=\"$(top_srcdir)/src/test/data\" \

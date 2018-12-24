@@ -1,7 +1,8 @@
 Makefile
 Makefile.in
+core
 detection
-test
+streams
 .libs
 .deps
 *.a
