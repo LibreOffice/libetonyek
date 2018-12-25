@@ -50,7 +50,7 @@ core_SOURCES += \
 endif
 
 streams_CPPFLAGS = \
-	-DETONYEK_TEST_DIR=\"$(top_srcdir)/src/test/data\" \
+	-DETONYEK_STREAMS_TEST_DIR=\"$(top_srcdir)/src/test/data\" \
 	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/lib \
 	$(REVENGE_CFLAGS) \

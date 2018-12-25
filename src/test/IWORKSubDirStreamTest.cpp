@@ -19,8 +19,8 @@
 #include "IWORKSubDirStream.h"
 #include "libetonyek_utils.h"
 
-#if !defined ETONYEK_TEST_DIR
-#error ETONYEK_TEST_DIR not defined, cannot test
+#if !defined ETONYEK_STREAMS_TEST_DIR
+#error ETONYEK_STREAMS_TEST_DIR not defined, cannot test
 #endif
 
 namespace test
@@ -61,7 +61,7 @@ IWASubDirStreamTest::IWASubDirStreamTest()
 
 void IWASubDirStreamTest::setUp()
 {
-  m_stream.reset(new librevenge::RVNGFileStream(ETONYEK_TEST_DIR  "/unsupported.zip"));
+  m_stream.reset(new librevenge::RVNGFileStream(ETONYEK_STREAMS_TEST_DIR  "/unsupported.zip"));
 }
 
 void IWASubDirStreamTest::tearDown()
