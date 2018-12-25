@@ -8,7 +8,6 @@ libtest_driver_a_SOURCES = \
 	test.cpp
 
 core_CPPFLAGS = \
-	-DETONYEK_TEST_DIR=\"$(top_srcdir)/src/test/data\" \
 	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/lib \
 	$(REVENGE_CFLAGS) \
