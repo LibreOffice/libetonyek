@@ -81,7 +81,6 @@ detection_CPPFLAGS = \
 	-I$(top_srcdir)/inc \
 	$(REVENGE_STREAM_CFLAGS) \
 	$(CPPUNIT_CFLAGS) \
-	$(XML_CFLAGS) \
 	$(DEBUG_CXXFLAGS)
 
 detection_LDFLAGS = -L$(top_builddir)/src/lib
@@ -89,8 +88,7 @@ detection_LDADD = \
 	libtest_driver.a \
 	$(top_builddir)/src/lib/libetonyek-@ETONYEK_MAJOR_VERSION@.@ETONYEK_MINOR_VERSION@.la \
 	$(REVENGE_STREAM_LIBS) \
-	$(CPPUNIT_LIBS) \
-	$(XML_LIBS)
+	$(CPPUNIT_LIBS)
 
 detection_SOURCES = \
 	EtonyekDocumentTest.cpp
