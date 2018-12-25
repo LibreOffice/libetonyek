@@ -92,6 +92,7 @@ AM_CONDITIONAL([WITH_LIBLANGTAG], [test "x$with_liblangtag" = "xyes"])
 saved_CPPFLAGS="${CPPFLAGS}"
 CPPFLAGS="${BOOST_CFLAGS} ${CPPFLAGS}"
 AC_CHECK_HEADERS(
+        boost/algorithm/string/predicate.hpp \
         boost/any.hpp \
         boost/container/deque.hpp \
         boost/cstdint.hpp \

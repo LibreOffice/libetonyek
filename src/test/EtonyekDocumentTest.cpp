@@ -141,6 +141,7 @@ void EtonyekDocumentTest::testDetectPages()
   assertSupportedPackage("pages5-package.pages", EXCELLENT, type);
   assertSupportedFile("pages5.zip", SUPPORTED_PART, type);
   assertSupportedFile("pages5-file.pages", EXCELLENT, type);
+  assertSupportedFile("pages5-extra-dir.pages", EXCELLENT, type);
 }
 
 void EtonyekDocumentTest::testUnsupported()

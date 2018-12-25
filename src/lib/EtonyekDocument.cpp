@@ -10,8 +10,10 @@
 #include <libetonyek/libetonyek.h>
 
 #include <cassert>
+#include <cstring>
 #include <memory>
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/optional.hpp>
 
 #include <libxml/xmlreader.h>
@@ -22,6 +24,7 @@
 #include "IWASnappyStream.h"
 #include "IWORKPresentationRedirector.h"
 #include "IWORKSpreadsheetRedirector.h"
+#include "IWORKSubDirStream.h"
 #include "IWORKTextRedirector.h"
 #include "IWORKTokenizer.h"
 #include "IWORKZlibStream.h"
@@ -268,6 +271,46 @@ bool detectBinary(RVNGInputStreamPtr_t input, DetectionInfo &info)
   return hasDocument;
 }
 
+RVNGInputStreamPtr_t queryTopDirStream(const RVNGInputStreamPtr_t &input)
+{
+  assert(input->isStructured());
+
+  string top;
+
+  // find the common top level dir of all substream names, if there is one
+  for (unsigned i = 0; i < input->subStreamCount(); ++i)
+  {
+    const char *const path = input->subStreamName(i);
+    if (path)
+    {
+      if (top.empty())
+      {
+        // initialize top dir
+        const char *const pos = std::strchr(path, '/');
+        if (pos)
+          top.assign(path, pos - path);
+        else
+          top = path;
+      }
+      else
+      {
+        // check that the current path starts with top dir
+        if (!boost::starts_with(path, top))
+          return RVNGInputStreamPtr_t();
+        const char end = path[top.size()];
+        if (end != '/' && end != '\0')
+          return RVNGInputStreamPtr_t();
+      }
+    }
+  }
+
+  RVNGInputStreamPtr_t stream;
+  if (!top.empty())
+    stream.reset(new IWORKSubDirStream(input, top));
+
+  return stream;
+}
+
 bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
 {
   if (input->isStructured())
@@ -275,7 +318,14 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
     info.m_package = input;
 
     if ((info.m_format == FORMAT_BINARY) || (info.m_format == FORMAT_UNKNOWN))
-      detectBinary(input, info);
+    {
+      if (!detectBinary(input, info))
+      {
+        RVNGInputStreamPtr_t dir = queryTopDirStream(input);
+        if (dir)
+          detectBinary(dir, info);
+      }
+    }
 
     if ((info.m_format == FORMAT_XML2) || (info.m_format == FORMAT_UNKNOWN))
     {
