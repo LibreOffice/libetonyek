@@ -119,12 +119,7 @@ AC_SUBST([BOOST_CFLAGS])
 # ================
 saved_CPPFLAGS="${CPPFLAGS}"
 CPPFLAGS="${GLM_CFLAGS} ${CPPFLAGS}"
-AC_CHECK_HEADERS(
-    [glm/glm.hpp],
-    [],
-    [AC_MSG_ERROR([Required glm headers not found.])],
-    []
-)
+AC_CHECK_HEADERS([glm/glm.hpp], [], [AC_MSG_ERROR([Required glm headers not found.])])
 CPPFLAGS="${saved_CPPFLAGS}"
 AC_SUBST([GLM_CFLAGS])
 
