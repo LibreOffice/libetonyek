@@ -116,6 +116,7 @@ EXTRA_DIST = \
 	data/pages4-package.pages \
 	data/pages4.xml \
 	data/pages4.xml.gz \
+	data/pages5-extra-dir.pages \
 	data/pages5-file.pages \
 	data/pages5-package.pages \
 	data/pages5.zip \
