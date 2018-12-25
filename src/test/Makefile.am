@@ -15,7 +15,7 @@ core_CPPFLAGS = \
 	$(XML_CFLAGS) \
 	$(GLM_CFLAGS) \
 	$(MDDS_CFLAGS) \
-	$(LANGTAG_LIBS) \
+	$(LANGTAG_CFLAGS) \
 	$(DEBUG_CXXFLAGS)
 
 core_LDFLAGS = -L$(top_builddir)/src/lib
@@ -59,7 +59,7 @@ streams_CPPFLAGS = \
 	$(XML_CFLAGS) \
 	$(GLM_CFLAGS) \
 	$(MDDS_CFLAGS) \
-	$(LANGTAG_LIBS) \
+	$(LANGTAG_CFLAGS) \
 	$(DEBUG_CXXFLAGS)
 
 streams_LDFLAGS = -L$(top_builddir)/src/lib
