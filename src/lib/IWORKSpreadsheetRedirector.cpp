@@ -70,9 +70,9 @@ void IWORKSpreadsheetRedirector::endMasterSlide()
   assert(0);
 }
 
-void IWORKSpreadsheetRedirector::setStyle(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKSpreadsheetRedirector::setStyle(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->defineGraphicStyle(propList);
 }
 
 void IWORKSpreadsheetRedirector::startLayer(const librevenge::RVNGPropertyList &/*propList*/)
