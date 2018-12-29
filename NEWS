@@ -1,5 +1,11 @@
 libetonyek 0.1.9
 
+- Fix spelling of property meta:initial-creator.
+- Support files created via iCloud Web Browser. (tdf#120707)
+- Remove unneeded check for additional glm headers, which was failing
+  with newest version(s) of glm.
+- Fix a couple of issues detected by oss-fuzz and forcepoint.
+
 libetonyek 0.1.8
 
 - All formats:
