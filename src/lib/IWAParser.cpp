@@ -1001,7 +1001,7 @@ bool IWAParser::parsePath(const IWAMessage &msg, IWORKPathPtr_t &path)
       {
         if (path->empty())
         {
-          ETONYEK_DEBUG_MSG(("IWAParser::parsePath: missing prior MoveTo subsequent LineTo\n", get(type) == 1 ? 'M' : 'L'));
+          ETONYEK_DEBUG_MSG(("IWAParser::parsePath: missing prior MoveTo subsequent LineTo\n"));
           return false;
         }
         path->appendLineTo(get(coords).m_x, get(coords).m_y);
