@@ -709,7 +709,9 @@ struct Collector : public boost::static_visitor<>
   {
     librevenge::RVNGPropertyList props;
     props.insert("librevenge:type", "librevenge-operator");
-    props.insert("librevenge:operator", val.get().m_op);
+    std::string op;
+    op+=val.get().m_op;
+    props.insert("librevenge:operator", op.c_str());
     m_propsVector.append(props);
     apply_visitor(Collector(m_propsVector, m_tableNameMap, m_offsetColumn, m_offsetRow), val.get().m_expr);
   }
