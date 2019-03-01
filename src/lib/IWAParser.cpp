@@ -12,8 +12,10 @@
 #include <algorithm>
 #include <cassert>
 #include <functional>
+#include <iomanip>
 #include <map>
 #include <memory>
+#include <sstream>
 #include <utility>
 
 #include <boost/optional.hpp>
@@ -21,6 +23,7 @@
 #include "IWAObjectType.h"
 #include "IWAText.h"
 #include "IWORKCollector.h"
+#include "IWORKFormula.h"
 #include "IWORKNumberConverter.h"
 #include "IWORKPath.h"
 #include "IWORKProperties.h"
@@ -49,7 +52,6 @@ using std::string;
 
 namespace
 {
-
 bool samePoint(const optional<IWORKPosition> &point1, const optional<IWORKPosition> &point2)
 {
   if (point1 && point2)
@@ -132,6 +134,7 @@ IWAParser::TableInfo::TableInfo(const shared_ptr<IWORKTable> &table, const unsig
   , m_simpleTextList()
   , m_cellStyleList()
   , m_formattedTextList()
+  , m_formulaList()
   , m_commentList()
 {
 }
@@ -2169,6 +2172,9 @@ void IWAParser::parseTabularModel(const unsigned id)
     const optional<unsigned> &cellStyleListRef = readRef(grid, 5);
     if (cellStyleListRef)
       parseDataList(get(cellStyleListRef), m_currentTable->m_cellStyleList);
+    const optional<unsigned> &formulaListRef = readRef(grid, 6);
+    if (formulaListRef)
+      parseDataList(get(formulaListRef), m_currentTable->m_formulaList);
     const optional<unsigned> &paraTextListRef = readRef(grid, 17);
     if (paraTextListRef)
       parseDataList(get(paraTextListRef), m_currentTable->m_formattedTextList);
@@ -2259,6 +2265,19 @@ void IWAParser::parseDataList(const unsigned id, DataList_t &dataList)
       if (it.string(3))
         dataList[index] = get(it.string(3));
       break;
+    case 3 :
+    case 5 : // invalid formula
+      if (it.message(5))
+      {
+        IWORKFormulaPtr_t formula;
+        if (parseFormula(get(it.message(5)), formula) && formula)
+          dataList[index]=formula;
+      }
+      else
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::parseDataList: can not find the formula\n"));
+      }
+      break;
     case 4 :
     {
       auto styleRef=readRef(it,4);
@@ -2344,7 +2363,9 @@ void IWAParser::parseTile(const unsigned id)
 
       IWORKCellType cellType = IWORK_CELL_TYPE_TEXT;
       IWORKStylePtr_t cellStyle;
+      IWORKFormulaPtr_t formula;
       optional<string> text;
+      optional<string> value;
       optional<unsigned> textRef;
 
       // 1. Read the cell record
@@ -2371,7 +2392,19 @@ void IWAParser::parseTile(const unsigned id)
         if (flags & 0x4) // format
           readU32(input);
         if (flags & 0x8) // formula
-          readU32(input);
+        {
+          const unsigned formulaId = readU32(input);
+          auto const formulaIt = m_currentTable->m_formulaList.find(formulaId);
+          if (formulaIt !=m_currentTable->m_formulaList.end())
+          {
+            if (auto ref = boost::get<IWORKFormulaPtr_t>(&formulaIt->second))
+              formula=*ref;
+          }
+          else
+          {
+            ETONYEK_DEBUG_MSG(("IWAParser::parseTile: can not find formula %d\n", int(formulaId)));
+          }
+        }
         if (flags & 0x1000) // comment
           readU32(input);
         if (flags & 0x10) // simple text
@@ -2394,6 +2427,10 @@ void IWAParser::parseTile(const unsigned id)
           s << readDouble(input);
           text=s.str();
           cellType = IWORK_CELL_TYPE_NUMBER;
+          // removeme when the number formatting is used
+          IWORKPropertyMap props;
+          props.put<property::SFTCellStylePropertyNumberFormat>(IWORKNumberFormat());
+          cellStyle.reset(new IWORKStyle(props, none, cellStyle));
         }
         if (flags & 0x40) // date
         {
@@ -2412,63 +2449,32 @@ void IWAParser::parseTile(const unsigned id)
               textRef = *ref;
           }
         }
-
-        assert(!m_currentText);
-        m_currentText = m_collector.createText(m_langManager);
-
-        if (bool(text))
-        {
-          m_currentText->insertText(get(text));
-          m_currentText->flushSpan();
-          m_currentText->flushParagraph();
-        }
-        else if (textRef)
-        {
-          parseText(get(textRef));
-        }
-
-        m_currentTable->m_table->insertCell(column, row, text, m_currentText, none, 1, 1, IWORKFormulaPtr_t(), none, cellStyle, cellType);
-        m_currentText.reset();
       }
       catch (...)
       {
         // ignore failure to read the last record
       }
 
-      // 2. Create cell content
-      m_currentText = m_collector.createText(m_langManager);
-
-      // 2a. Get default font from table style
-      if (m_currentTable->m_style)
+      bool needText=textRef || (bool(text) && !formula && cellType != IWORK_CELL_TYPE_NUMBER);
+      if (needText)
       {
-        IWORKPropertyMap defaultProps;
-        if (m_currentTable->m_style->has<property::FontName>())
+        assert(!m_currentText);
+        m_currentText = m_collector.createText(m_langManager);
+        if (textRef)
+          parseText(get(textRef));
+        else
         {
-          defaultProps.put<property::FontName>(m_currentTable->m_style->get<property::FontName>());
-          m_currentText->pushBaseParagraphStyle(make_shared<IWORKStyle>(defaultProps, none, none));
+          m_currentText = m_collector.createText(m_langManager);
+          // update the style
+          m_currentText->pushBaseLayoutStyle(m_currentTable->m_table->getDefaultLayoutStyle(column, row));
+          // do we need to set m_currentTable->m_style->has<property::FontName>() ?
+          m_currentText->pushBaseParagraphStyle(m_currentTable->m_table->getDefaultParagraphStyle(column, row));
+          m_currentText->insertText(get(text));
+          m_currentText->flushSpan();
+          m_currentText->flushParagraph();
         }
       }
-
-      // 2b. Set default para and layout style
-      m_currentText->pushBaseLayoutStyle(m_currentTable->m_table->getDefaultLayoutStyle(column, row));
-      m_currentText->pushBaseParagraphStyle(m_currentTable->m_table->getDefaultParagraphStyle(column, row));
-
-      // 2c. Insert text
-      if (bool(text))
-      {
-        // TODO: handle embedded spaces and tabs (I assume line breaks are not allowed)
-        m_currentText->insertText(get(text));
-        m_currentText->flushSpan();
-        m_currentText->flushParagraph();
-      }
-      else if (textRef)
-      {
-        parseText(get(textRef));
-      }
-
-      // 3. Insert the cell
-      m_currentTable->m_table->insertCell(column, row, text, m_currentText, none, 1, 1, IWORKFormulaPtr_t(), none, cellStyle, cellType);
-
+      m_currentTable->m_table->insertCell(column, row, text, m_currentText, none, 1, 1, formula, unsigned(row*256+column), cellStyle, cellType);
       m_currentText.reset();
     }
   }
@@ -2554,6 +2560,297 @@ void IWAParser::parseTableGridLine(unsigned id, IWORKGridLineMap_t &gridLine)
     }
     flatSegments.insert_back(get(it.uint32(1)),get(it.uint32(1))+get(it.uint32(2)), std::make_shared<IWORKStyle>(props,none,none));
   }
+}
+
+bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
+{
+  if (!msg.message(1))
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::parseFormula: can not find the token table\n"));
+    return false;
+  }
+  const deque<IWAMessage> &tokens = get(msg.message(1)).message(1).repeated();
+
+  typedef std::vector<IWORKFormula::Token> Formula;
+  std::vector<Formula> stack;
+  bool ok=true;
+  for (auto it : tokens)
+  {
+    auto type=it.uint32(1).optional();
+    if (!type)
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseFormula: can not find the token type\n"));
+      ok=false;
+      break;
+    }
+    switch (get(type))
+    {
+    case 16:
+      if (it.uint32(2) && it.uint32(3))
+      {
+        static std::map<unsigned,std::string> functionsMap=
+        {
+          {1, "Abs"}, {2, "Accrint"}, {3, "AccrintM"}, {4, "Acos"}, {5, "Acosh"},
+          {6, "IWORKFormula::Address"}, {7, "And"}, {8, "Areas"}, {9, "Asin"}, {10, "AsinH"},
+          {11, "Atan"}, {12, "Atan2"}, {13, "AtanH"}, {14, "AverageDev"}, {15, "Average"},
+          {16, "AverageA"}, {17, "Ceiling"}, {18, "Char"}, {19,"Choose"}, {20, "Clean"},
+          {21, "Code"}, {22, "Column"}, {23, "Columns"}, {24, "ComBin"}, {25, "Concatenate"},
+          {26, "Confidence"}, {27, "Correl"}, {28, "Cos"}, {29, "CosH"}, {30, "Count"},
+          {31, "CountA"}, {32, "CountBlank"}, {33, "CountIf"}, {34, "CoupDayBs"}, {35, "CoupDays"},
+          {36, "CoupDaySNC"}, {37, "CoupNum"}, {38, "CoVar"}, {39, "Date"}, {40, "DateDif"},
+          {41, "Day"}, {42, "DB"}, {43, "DDB"}, {44, "Degrees"}, {45, "Disc"},
+          {46, "Dollar"}, {47, "EDate"}, {48, "Even"}, {49, "Exact"}, {50, "Exp"},
+          {51, "Fact"}, {52, "False"}, {53, "Find"}, {54, "Fixed"}, {55, "Floor"},
+          {56, "Forecast"}, {57, "Frequency"}, {58, "GCD"}, {59, "HLookUp"}, {60, "Hour"},
+          {61, "HyperLink"}, {62, "If"}, {63, "Index"}, {64, "Indirect"}, {65, "Int"},
+          {66, "Intercept"}, {67, "IPMT"}, {68, "Irr"}, {69, "IsBlank"}, {70, "IsError"},
+          {71, "IsEven"}, {72, "IsOdd"}, {73, "IsPMT"}, {74, "Large"}, {75, "LCM"},
+          {76, "Left"}, {77, "Len"}, {78, "LN"}, {79, "Log"}, {80, "Log10"},
+          {81, "LookUp"}, {82, "Lower"}, {83, "Match"}, {84, "Max"}, {85, "MaxA"},
+          {86, "Median"}, {87, "Mid"}, {88, "Min"}, {89, "MinA"}, {90, "Minute"},
+          {91, "Mirr"}, {92, "Mod"}, {93, "Mode"}, {94, "Month"}, {95, "MRound"},
+          {96, "Not"}, {97, "Now"}, {98, "NPer"}, {99, "NPV"}, {100, "Odd"},
+          {101, "Offset"}, {102, "Or"}, {103, "Percentile"}, {104, "Pi"}, {105, "PMT"},
+          {106, "Poisson"}, {107, "Power"}, {108, "PPMT"}, {109, "Price"}, {110, "PriceDist"},
+          {111, "PriceMat"}, {112, "Prob"}, {113, "Product"}, {114, "Proper"}, {115, "PV"},
+          {116, "Quotient"}, {117, "Radians"}, {118, "Rand"}, {119, "RandBetween"}, {120, "Rank"},
+          {121, "Rate"}, {122, "Replace"}, {123, "Repeat"}, {124, "Right"}, {125, "Roman"},
+          {126, "Round"}, {127, "RoundDown"}, {128, "RoundUp"}, {129, "Row"}, {130, "Rows"},
+          {131, "Search"}, {132, "Second"}, {133, "Sign"}, {134, "Sin"}, {135, "SinH"},
+          {136, "SLN"}, {137, "Slope"}, {138, "Small"}, {139, "Sqrt"}, {140, "STDEV"},
+          {141, "STDEVA"}, {142, "STDEVP"}, {143, "STDEVPA"}, {144, "Substitute"}, {145, "SumIf"},
+          {146, "SumProduct"}, {147, "SumSqrt"}, {148, "Syd"}, {149, "T"}, {150, "Tan"},
+          {151, "TanH"}, {152, "Time"}, {153, "TimeValue"}, {154, "Today"}, {155, "Trim"},
+          {156, "True"}, {157, "Trunc"}, {158, "Upper"}, {159, "Value"}, {160, "Var"},
+          {161, "VarA"}, {162, "VarP"}, {163, "VarPA"}, {164, "VDB"}, {165, "VLookup"},
+          {166, "WeekDay"}, {167, "Year"}, {168, "Sum"},
+          {185, "Effect"},
+          {186, "Nominal"}, {187, "NormDist"}, {188, "NormsDist"}, {189, "NormInv"},  {190, "NormsInv"},
+          {191, "Yield"}, {192, "YieldDist"}, {193, "YieldMat"}, {194, "BondDuration"}, {195, "BondMDuration"},
+          {196, "Erf"}, {197, "ErfC"}, {198, "Standardize"}, {199, "IntRate"}, {200, "Received"},
+          {201, "CUMIPMT"}, {202, "CUMPRINC"}, {203, "EOMonth"}, {204, "WorkDay"}, {205, "MonthName"},
+          {206, "WeekNum"}, {207, "Dur2Hours"}, {208, "Dur2Minutes"}, {209, "Dur2Seconds"}, {210, "Dur2Days"},
+          {211, "Dur2Weeks"}, {212, "Duration"}, {213, "ExpOnDist"}, {214, "YearFrac"}, {215, "ZTest"},
+          {216, "SumX2MY2"}, {217, "SumX2PY2"}, {218, "SumXMY2"}, {219, "SqrtPi"}, {220, "Transpose"},
+          {221, "DevSQ"}, {222, "FV"}, {223, "Delta"}, {224, "FactDouble"}, {225, "GEStep"},
+          {226, "PercentRank"},{227, "GammaLN"},{228, "DateValue"},{229, "GammaDist"},{230, "GammaInv"},
+          {231, "SumIfs"}, {232, "AverageIfs"}, {233, "CountIfs"}, {234, "AverageIf"}, {235, "IfError"},
+          {236, "DayName"}, {237, "BesselJ"}, {238,"BesselY"}, {239,"LogNormDist"}, {240,"LogInv"},
+          {241, "TDist"}, {242, "BinomDist"}, {243, "NegBinomDist"}, {244, "FDist"}, {245, "Permut"},
+          {246, "ChiDist"}, {247, "ChiTest"}, {248, "TTest"}, {249, "Quartile"}, {250, "Multinomial"},
+          {251, "CritBinom"}, {252, "BaseToNum"}, {253, "NumToBase"}, {254, "TInv"}, {255, "Convert"},
+          {256, "ChiInv"}, {257, "FInv"}, {258, "BetaDist"}, {259, "BetaInv"}, {260, "NetWorkDays"},
+          {261, "Days360"}, {262, "HarMean"}, {263, "GeoMin"}, {264, "Dec2Hex"}, {265, "Dec2Bin"},
+          {266, "Dec2Oct"}, {267, "Bin2Hex"}, {268, "Bin2Dec"}, {269, "Bin2Oct"}, {270, "Oct2Bin"},
+          {271, "Oct2Dec"}, {272, "Oct2Hex"}, {273, "Hex2Bin"}, {274, "Hex2Dec"}, {275, "Hex2Oct"},
+          {276, "Linest"}, {277, "Dur2Milliseconds"}, {278, "StripDuration"}, {280, "Intercept.Ranges"},
+          {285, "Union.Ranges"},
+          {286, "SeriesSum"}, {287, "Polynomial"}, {288, "WeiBull"},
+          {297, "PlainText"}, {298, "Stock"}, {299, "StockH"}, {300, "Currency"},
+          {301, "CurrencyH"}, {302, "CurrencyConvert"}, {303, "CurrencyCode"}
+        };
+        Formula child;
+        std::ostringstream s;
+        if (functionsMap.find(get(it.uint32(2)))!=functionsMap.end())
+          s << functionsMap.find(get(it.uint32(2)))->second;
+        else
+          s << "Funct" << get(it.uint32(2));
+        child.push_back(IWORKFormula::Token(s.str(), IWORKFormula::Token::Function));
+
+        size_t numArgs=get(it.uint32(3));
+        size_t numData=stack.size();
+        if (numData<numArgs)
+        {
+          ETONYEK_DEBUG_MSG(("IWAParser::parseFormula: bad stack for function\n"));
+          ok=false;
+          break;
+        }
+        child.push_back(IWORKFormula::Token("(", IWORKFormula::Token::Operator));
+        for (size_t i=numData-numArgs; i<numData; ++i)
+        {
+          if (i!=numData-numArgs) child.push_back(IWORKFormula::Token(";", IWORKFormula::Token::Operator));
+          child.insert(child.end(), stack[i].begin(),stack[i].end());
+        }
+        child.push_back(IWORKFormula::Token(")", IWORKFormula::Token::Operator));
+        stack.resize(numData-numArgs);
+        stack.push_back(child);
+      }
+      else
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::parseFormula: can not read a function\n"));
+        ok=false;
+      }
+      break;
+    case 17:
+      if (it.double_(4))
+        stack.push_back({IWORKFormula::Token(get(it.double_(4)))});
+      else
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::parseFormula: can not read a double\n"));
+        ok=false;
+      }
+      break;
+    case 18:
+      if (it.bool_(5))
+      {
+        stack.push_back({IWORKFormula::Token(get(it.bool_(5)) ? "True" : "False", IWORKFormula::Token::Function),
+                         IWORKFormula::Token("(", IWORKFormula::Token::Operator), IWORKFormula::Token(")", IWORKFormula::Token::Operator)
+                        });
+      }
+      else
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::parseFormula: can not read a bool\n"));
+        ok=false;
+      }
+      break;
+    case 19:
+      if (it.string(6))
+        stack.push_back({IWORKFormula::Token(get(it.string(6)),IWORKFormula::Token::String)});
+      else
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::parseFormula: can not read a string\n"));
+        ok=false;
+      }
+      break;
+    case 22: // empty?
+      stack.push_back({});
+      break;
+    case 23:
+      if (it.bool_(10))
+        stack.push_back({});
+      else
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::parseFormula: can not read a optional argument\n"));
+        ok=false;
+      }
+      break;
+    case 25:
+      if (it.uint32(13))
+      {
+        size_t numArgs=get(it.uint32(13));
+        size_t numData=stack.size();
+        if (numData<numArgs)
+        {
+          ETONYEK_DEBUG_MSG(("IWAParser::parseFormula: bad stack for ()\n"));
+          ok=false;
+          break;
+        }
+        Formula child;
+        child.push_back(IWORKFormula::Token("(", IWORKFormula::Token::Operator));
+        for (size_t i=numData-numArgs; i<numData; ++i)
+        {
+          if (i!=numData-numArgs) child.push_back(IWORKFormula::Token(";", IWORKFormula::Token::Operator));
+          child.insert(child.end(), stack[i].begin(),stack[i].end());
+        }
+        child.push_back(IWORKFormula::Token(")", IWORKFormula::Token::Operator));
+        stack.resize(numData-numArgs);
+        stack.push_back(child);
+      }
+      else
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::parseFormula: can not read a ()\n"));
+        ok=false;
+      }
+      break;
+    case 32: // separator,
+    case 33:
+      break;
+    case 36:
+    {
+      IWORKFormula::Address address;
+      for (unsigned i=0; i<2; ++i)
+      {
+        auto pos=it.message(26+i);
+        if (!pos) continue;
+        if (!get(pos).sint32(1))
+        {
+          ETONYEK_DEBUG_MSG(("IWAParser::parseFormula: can not read a position\n"));
+          ok=false;
+          break;
+        }
+        IWORKFormula::Coord coord;
+        coord.m_absolute = get_optional_value_or(get(pos).bool_(2).optional(), false);
+        coord.m_coord=get(get(pos).sint32(1))+1;
+        if (i==0)
+          address.m_column=coord;
+        else
+          address.m_row=coord;
+      }
+      if (!ok)
+        break;
+      stack.push_back({IWORKFormula::Token(address)});
+      break;
+    }
+    case 34: // arg begin
+    case 35: // arg end
+      break;
+    default:
+      if ((get(type)>=1 && get(type)<=15) || get(type)==29)
+      {
+        char const *wh[] =
+        {
+          nullptr, "+", "-", "*", "/",
+          "^", "&", ">", ">=",
+          "<", "<=", "=", "<>",
+          "-", "+", "%"
+        };
+        if (get(type)!=29 && !wh[get(type)])
+        {
+          ETONYEK_DEBUG_MSG(("IWAParser::parseFormula: find unexpected type=%u\n", get(type)));
+          ok=false;
+          break;
+        }
+        size_t numArgs=(get(type)<13 || get(type)==29) ? 2 : 1;
+        size_t numData=stack.size();
+        if (numData<numArgs)
+        {
+          ETONYEK_DEBUG_MSG(("IWAParser::parseFormula: bad stack for type=%u\n", get(type)));
+          ok=false;
+          break;
+        }
+        Formula child;
+        if (numArgs==2)
+        {
+          child.insert(child.end(), stack[numData-2].begin(),stack[numData-2].end());
+          child.push_back(IWORKFormula::Token(get(type)==29 ? ":" : wh[get(type)], IWORKFormula::Token::Operator));
+          child.insert(child.end(), stack[numData-1].begin(),stack[numData-1].end());
+        }
+        else if (get(type)<15)
+        {
+          child.push_back(IWORKFormula::Token(wh[get(type)], IWORKFormula::Token::Operator));
+          child.insert(child.end(), stack[numData-1].begin(),stack[numData-1].end());
+        }
+        else
+        {
+          child.insert(child.end(), stack[numData-1].begin(),stack[numData-1].end());
+          child.push_back(IWORKFormula::Token(wh[get(type)], IWORKFormula::Token::Operator));
+        }
+        stack.resize(numData-numArgs);
+        stack.push_back(child);
+        break;
+      }
+      ETONYEK_DEBUG_MSG(("IWAParser::parseFormula: find unexpected type=%u\n", get(type)));
+      ok=false;
+      break;
+    }
+    if (!ok)
+      break;
+  }
+  if (stack.size()!=1) ok=false;
+  if (!ok)
+  {
+    std::ostringstream readData;
+    for (auto const &form : stack)
+      for (auto const &dt : form)
+        readData << dt << ",";
+    ETONYEK_DEBUG_MSG(("IWAParser::parseFormula: can not find parse a formula=%s\n", readData.str().c_str()));
+  }
+  else
+  {
+    formula.reset(new IWORKFormula(0));
+    formula->parse(stack[0]);
+  }
+  return ok;
 }
 
 void IWAParser::parseLink(const unsigned id, std::string &url)
