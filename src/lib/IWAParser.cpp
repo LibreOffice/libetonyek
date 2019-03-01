@@ -512,7 +512,9 @@ void IWAParser::readShadow(const IWAMessage &msg, IWORKShadow &shadow)
   if (msg.float_(5))
     shadow.m_opacity = get(msg.float_(5));
   // 6: bool true
-  // 7: enum 0
+  if (msg.bool_(6))
+    shadow.m_visible = get(msg.bool_(6));
+  // 7: type enum 0: drop,
 }
 
 void IWAParser::readPadding(const IWAMessage &msg, IWORKPadding &padding)
@@ -1361,10 +1363,10 @@ bool IWAParser::parseGroup(const IWAMessage &msg)
   if (!msg.message(2).empty())
   {
     m_collector.startGroup();
-    //m_collector.openGroup(); addme if possible
+    m_collector.openGroup();
     const deque<unsigned> &shapeRefs = readRefs(msg, 2);
     std::for_each(shapeRefs.begin(), shapeRefs.end(), bind(&IWAParser::dispatchShape, this, _1));
-    //m_collector.closeGroup();
+    m_collector.closeGroup();
     m_collector.endGroup();
   }
   m_collector.endLevel();
@@ -1645,15 +1647,7 @@ void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
       if (styleProps.message(4))
       {
         IWORKShadow shadow;
-        const optional<IWORKColor> &color = readColor(get(styleProps.message(4)), 1);
-        if (color)
-          shadow.m_color = get(color);
-        if (styleProps.message(4).float_(2))
-          shadow.m_angle = get(styleProps.message(4).float_(2));
-        if (styleProps.message(4).float_(3))
-          shadow.m_offset = get(styleProps.message(4).float_(3));
-        if (styleProps.message(4).float_(5))
-          shadow.m_opacity = get(styleProps.message(4).float_(5));
+        readShadow(get(styleProps.message(4)),shadow);
         props.put<Shadow>(shadow);
       }
       for (size_t st=0; st<2; ++st)
@@ -1704,15 +1698,7 @@ void IWAParser::parseMediaStyle(const unsigned id, IWORKStylePtr_t &style)
     if (styleProps.message(3))
     {
       IWORKShadow shadow;
-      const optional<IWORKColor> &color = readColor(get(styleProps.message(3)), 1);
-      if (color)
-        shadow.m_color = get(color);
-      if (styleProps.message(3).float_(2))
-        shadow.m_angle = get(styleProps.message(3).float_(2));
-      if (styleProps.message(3).float_(3))
-        shadow.m_offset = get(styleProps.message(3).float_(3));
-      if (styleProps.message(3).float_(5))
-        shadow.m_opacity = get(styleProps.message(3).float_(5));
+      readShadow(get(styleProps.message(3)),shadow);
       props.put<Shadow>(shadow);
     }
     // 4: reflection

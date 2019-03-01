@@ -562,7 +562,8 @@ void IWORKCollector::openGroup()
   }
 
   assert(m_groupLevel > 0);
-  m_outputManager.getCurrent().addOpenGroup(librevenge::RVNGPropertyList());
+  if (!m_inAttachments)
+    m_outputManager.getCurrent().addOpenGroup(librevenge::RVNGPropertyList());
 }
 
 void IWORKCollector::closeGroup()
@@ -573,7 +574,8 @@ void IWORKCollector::closeGroup()
     return;
   }
   assert(m_groupLevel > 0);
-  m_outputManager.getCurrent().addCloseGroup();
+  if (!m_inAttachments)
+    m_outputManager.getCurrent().addCloseGroup();
 }
 
 std::shared_ptr<IWORKTable> IWORKCollector::createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const
@@ -883,8 +885,7 @@ void IWORKCollector::fillGraphicProps(const IWORKStylePtr_t style, librevenge::R
   if (style->has<Shadow>())
   {
     const IWORKShadow &shadow = style->get<Shadow>();
-
-    props.insert("draw:shadow", "visible");
+    props.insert("draw:shadow", shadow.m_visible ? "visible" : "hidden");
     props.insert("draw:shadow-color", makeColor(shadow.m_color));
     props.insert("draw:shadow-opacity", shadow.m_opacity, RVNG_PERCENT);
     const double angle = deg2rad(shadow.m_angle);

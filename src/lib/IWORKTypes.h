@@ -313,6 +313,7 @@ struct IWORKShadow
 {
   IWORKShadow();
 
+  bool m_visible;
   IWORKColor m_color;
   double m_angle;
   double m_glossiness;
