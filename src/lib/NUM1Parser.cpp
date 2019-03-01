@@ -10,6 +10,7 @@
 #include "NUM1Parser.h"
 
 #include "libetonyek_xml.h"
+#include "IWORKCellCommentDrawableInfoElement.h"
 #include "IWORKChainedTokenizer.h"
 #include "IWORKChartInfoElement.h"
 #include "IWORKDiscardContext.h"
@@ -85,6 +86,8 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   {
   // case IWORKToken::NS_URI_SF | IWORKToken::body_placeholder_ref :
   //   return std::make_shared<PlaceholderRefContext>(getState(), false);
+  case IWORKToken::NS_URI_SF | IWORKToken::cell_comment_drawable_info:
+    return std::make_shared<IWORKCellCommentDrawableInfoElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::chart_info :
     return std::make_shared<IWORKChartInfoElement>(getState());
   // case IWORKToken::NS_URI_SF | IWORKToken::connection_line :
@@ -209,17 +212,12 @@ public:
   explicit PageInfoElement(NUM1ParserState &state);
 
 private:
-  void startOfElement() override;
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
 };
 
 PageInfoElement::PageInfoElement(NUM1ParserState &state)
   : NUM1XMLElementContextBase(state)
-{
-}
-
-void PageInfoElement::startOfElement()
 {
 }
 
@@ -314,17 +312,12 @@ public:
   explicit WorkSpaceElement(NUM1ParserState &state);
 
 private:
-  void startOfElement() override;
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
 };
 
 WorkSpaceElement::WorkSpaceElement(NUM1ParserState &state)
   : NUM1XMLElementContextBase(state)
-{
-}
-
-void WorkSpaceElement::startOfElement()
 {
 }
 

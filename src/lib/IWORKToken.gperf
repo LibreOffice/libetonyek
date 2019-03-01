@@ -126,6 +126,8 @@ bold,bold
 bottom,bottom
 both,both
 br,br
+bubble-cellid,bubble_cellid
+bubble-offset,bubble_offset
 bullet,bullet
 butt,butt
 c,c
@@ -139,7 +141,9 @@ capitalization,capitalization
 category-title,category_title
 cb,cb
 cell-address,cell_address
+cell-comment-drawable-info,cell_comment_drawable_info
 cell-comment-mapping,cell_comment_mapping
+cell-coordinates,cell_coordinates
 cell-date,cell_date
 cell-storage,cell_storage
 cell-style,cell_style
@@ -351,6 +355,7 @@ join,join
 k,k
 keepLinesTogether,keepLinesTogether
 keepWithNext,keepWithNext
+key,key
 keywords,keywords
 kind,kind
 labelCharacterStyle1,labelCharacterStyle1
@@ -453,6 +458,7 @@ page-count,page_count
 page-margins,page_margins
 page-number,page_number
 page-start,page_start
+pair,pair
 pgbr,pgbr
 padding,padding
 padding-ref,padding_ref
@@ -649,6 +655,7 @@ upper-roman,upper_roman
 v,v
 val,val
 value,value
+value-ref,value_ref
 value-title,value_title
 vector-style,vector_style
 vector-style-ref,vector_style_ref
