@@ -121,7 +121,7 @@ protected:
   std::shared_ptr<IWORKText> m_currentText;
 
 private:
-  typedef std::map<unsigned, boost::variant<std::string, unsigned> > DataList_t;
+  typedef std::map<unsigned, boost::variant<std::string, unsigned, IWORKFormulaPtr_t> > DataList_t;
 
   struct PageMaster
   {
@@ -155,6 +155,7 @@ private:
     DataList_t m_simpleTextList;
     DataList_t m_cellStyleList;
     DataList_t m_formattedTextList;
+    DataList_t m_formulaList;
     DataList_t m_commentList;
   };
 
@@ -186,7 +187,6 @@ private:
   void parseTableHeaders(unsigned id, TableHeader &header);
   void parseTableGridLines(unsigned id, IWORKGridLineMap_t (&gridLines)[4]);
   void parseTableGridLine(unsigned id, IWORKGridLineMap_t &gridLines);
-
   void parseLink(unsigned id, std::string &url);
 
   bool parseAttachment(unsigned id);
@@ -197,6 +197,7 @@ private:
   bool parseImage(const IWAMessage &msg);
   bool parseTabularInfo(const IWAMessage &msg);
   bool parsePath(const IWAMessage &msg, IWORKPathPtr_t &path);
+  bool parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula);
 
   bool parseArrowProperties(const IWAMessage &msg, IWORKPropertyMap &props, bool headArrow);
   void parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props);
