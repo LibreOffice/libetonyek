@@ -71,7 +71,6 @@ protected:
   IWORKXMLContextMinimal();
 
   void startOfElement() override;
-  virtual void endOfAttributes();
   void endOfElement() override;
 };
 

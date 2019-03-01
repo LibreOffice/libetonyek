@@ -342,7 +342,7 @@ private:
   librevenge::RVNGPropertyList m_propList;
   const IWORKFormula m_formula;
   const boost::optional<unsigned> m_formulaHC;
-  const IWORKTableNameMapPtr_t &m_tableNameMap;
+  const IWORKTableNameMapPtr_t m_tableNameMap;
 };
 
 class OpenFooterElement : public IWORKOutputElement

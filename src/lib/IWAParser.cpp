@@ -141,6 +141,7 @@ IWAParser::TableInfo::TableInfo(const shared_ptr<IWORKTable> &table, const unsig
   , m_cellStyleList()
   , m_formattedTextList()
   , m_formulaList()
+  , m_formatList()
   , m_commentList()
 {
 }
@@ -229,6 +230,11 @@ unsigned IWAParser::ObjectMessage::getType() const
 void IWAParser::queryObject(const unsigned id, unsigned &type, boost::optional<IWAMessage> &msg) const
 {
   m_index.queryObject(id, type, msg);
+}
+
+boost::optional<unsigned> IWAParser::getObjectType(const unsigned id) const
+{
+  return m_index.getObjectType(id);
 }
 
 const RVNGInputStreamPtr_t IWAParser::queryFile(const unsigned id) const

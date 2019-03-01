@@ -13,6 +13,7 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <vector>
 
 #include <boost/optional.hpp>
 
@@ -81,20 +82,22 @@ public:
       : m_type(Double)
       , m_string()
       , m_value(val)
+      , m_address()
     {
     }
     Token(std::string const &name, Type type)
       : m_type(type)
       , m_string(name)
       , m_value(0)
+      , m_address()
     {
     }
     explicit Token(IWORKFormula::Address const &address)
       : m_type(Cell)
       , m_string()
       , m_value()
+      , m_address(address)
     {
-      m_address=address;
     }
     friend std::ostream &operator<<(std::ostream &s, Token const &dt);
     Type m_type;

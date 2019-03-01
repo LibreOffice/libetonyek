@@ -11,6 +11,8 @@
 
 #include "NUM3Parser.h"
 
+#include "IWAMessage.h"
+#include "IWAObjectType.h"
 #include "IWORKTable.h"
 #include "NUM3ObjectType.h"
 #include "NUMCollector.h"
@@ -28,8 +30,20 @@ bool NUM3Parser::parseSheet(unsigned id)
 {
   const ObjectMessage msg(*this, id, NUM3ObjectType::Sheet);
   if (!msg) return false;
-  auto tableRef=readRef(get(msg),2);
-  if (tableRef) dispatchShape(get(tableRef));
+  // 1: is the page name
+  // 2: is the list of table/other drawing in this page
+  const std::deque<unsigned> &tableListRefs = readRefs(get(msg), 2);
+  for (auto cId : tableListRefs)
+  {
+    // non tabular shape can pause problem, so check the type of the shape...
+    auto type=getObjectType(cId);
+    if (!type || get(type)!=IWAObjectType::TabularInfo)
+    {
+      ETONYEK_DEBUG_MSG(("NUM3Parser::parseSheet: find an unexpected shape for id=%u\n", cId));
+      continue;
+    }
+    dispatchShape(cId);
+  }
 
   return true;
 }

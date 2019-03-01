@@ -289,23 +289,22 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
       | attr(false) >> columnName
       ;
 
-    columnName = (+alpha)[_val = bind(parseRowName, _1)];
+    columnName = (+alpha)[_val = bind(parseRowName, _1)] >> !lit("_");
 
-    // TODO: improve
-    table %= +(char_ - ":");
+    table %= lit("SFTGlobalID_") >> +char_("0-9a-fA-F");
 
     address %=
-      table >> "::" >> column >> row
+      table >> *lit(' ') >> "::" >> *lit(' ') >> column >> row
       | attr(none) >> column >> row
       ;
 
     addressSpecialColumn %=
-      table >> "::" >> column >> attr(none)
+      table >> *lit(' ') >> "::" >> *lit(' ') >> column >> attr(none)
       | attr(none) >> column >> attr(none)
       ;
 
     addressSpecialRow %=
-      table >> "::" >> attr(none) >> row
+      table >> *lit(' ') >> "::" >> *lit(' ') >> attr(none) >> row
       | attr(none) >> attr(none) >> row
       ;
 
@@ -594,11 +593,24 @@ struct Collector : public boost::static_visitor<>
 
     if (val.m_table)
     {
-      const IWORKTableNameMap_t::const_iterator it = m_tableNameMap->find(get(val.m_table));
-      if (m_tableNameMap->end() != it)
-        props.insert("librevenge:sheet-name", (it->second).c_str());
+      std::string tableName("SFTGlobalID_");
+      tableName+=get(val.m_table);
+      if (m_tableNameMap)
+      {
+        auto it = m_tableNameMap->find(tableName);
+        if (m_tableNameMap->end() != it)
+          props.insert("librevenge:sheet-name", (it->second).c_str());
+        else
+        {
+          ETONYEK_DEBUG_MSG(("IWORKFormula::operator()(IWORKFormula::Address): can not find the table name: %s\n", tableName.c_str()));
+          props.insert("librevenge:sheet-name", tableName.c_str());
+        }
+      }
       else
-        props.insert("librevenge:sheet-name", get(val.m_table).c_str());
+      {
+        ETONYEK_DEBUG_MSG(("IWORKFormula::operator()(IWORKFormula::Address): can not find the table name: %s[no correspondance tables]\n", tableName.c_str()));
+        props.insert("librevenge:sheet-name", tableName.c_str());
+      }
     }
 
     if (val.m_column)
