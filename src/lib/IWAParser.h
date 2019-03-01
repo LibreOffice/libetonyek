@@ -106,7 +106,7 @@ protected:
   void parseComment(unsigned id);
   void parseCustomFormat(unsigned id);
 
-  bool parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry);
+  virtual bool parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry);
 
   const IWORKStylePtr_t queryCharacterStyle(unsigned id) const;
   const IWORKStylePtr_t queryParagraphStyle(unsigned id) const;
