@@ -817,14 +817,13 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
         IWORKStyleStack style;
         style.push(getDefaultCellStyle(unsigned(c), unsigned(r)));
         style.push(cell.m_style);
-        bool hasData=false;
         if (!drawAsSimpleTable)
         {
           optional<std::string> valueType;
           auto formatName=writeFormat(elements, cell.m_style, cell.m_type, valueType);
           if (formatName) cellProps.insert("librevenge:numbering-name", get(formatName).c_str());
-          hasData=writeCellValue(cellProps, cell.m_style ? cell.m_style->getIdent() : none,
-                                 cell.m_type, valueType, cell.m_value, cell.m_dateTime);
+          writeCellValue(cellProps, cell.m_style ? cell.m_style->getIdent() : none,
+                         cell.m_type, valueType, cell.m_value, cell.m_dateTime);
         }
         writeCellStyle(cellProps, style);
 
@@ -835,34 +834,11 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
         IWORKText::fillCharPropList(pStyle, m_langManager, cellProps);
 
         if (!drawAsSimpleTable && cell.m_formula)
-        {
           elements.addOpenFormulaCell(cellProps, *cell.m_formula, cell.m_formulaHC, m_tableNameMap);
-          hasData=true;
-        }
         else
           elements.addOpenTableCell(cellProps);
 
-        if (!cell.m_content.empty() && cell.m_type!=IWORK_CELL_TYPE_DATE_TIME && cell.m_type!=IWORK_CELL_TYPE_DURATION)
-        {
-          elements.append(cell.m_content);
-          hasData=true;
-        }
-        else if (drawAsSimpleTable)
-        {
-          librevenge::RVNGString value=convertCellValueInText(style, cell.m_type, cell.m_value, cell.m_dateTime);
-          if (!value.empty())
-          {
-            librevenge::RVNGPropertyList const empty;
-            elements.addOpenParagraph(empty);
-            elements.addOpenSpan(empty);
-            elements.addInsertText(value);
-            elements.addCloseSpan();
-            elements.addCloseParagraph();
-            hasData=true;
-          }
-        }
-        // CHECKME: probably also ok if we have data
-        if (!hasData && !drawAsSimpleTable && style.has<property::Fill>())
+        if (!drawAsSimpleTable && style.has<property::Fill>())
         {
           // look for a picture in a cell
           try
@@ -913,6 +889,7 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
                 librevenge::RVNGString endCellName;
                 endCellName.sprintf("%s%d",column.c_str(), int(rMax));
                 frameProps.insert("table:end-cell-address", endCellName);
+                frameProps.insert("table:table-background", true);
                 elements.addOpenFrame(frameProps);
                 librevenge::RVNGPropertyList imageProps;
                 imageProps.insert("librevenge:mime-type", mimetype.c_str());
@@ -928,6 +905,22 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
           }
           catch (...)
           {
+          }
+        }
+
+        if (!cell.m_content.empty() && cell.m_type!=IWORK_CELL_TYPE_DATE_TIME && cell.m_type!=IWORK_CELL_TYPE_DURATION)
+          elements.append(cell.m_content);
+        else if (drawAsSimpleTable)
+        {
+          librevenge::RVNGString value=convertCellValueInText(style, cell.m_type, cell.m_value, cell.m_dateTime);
+          if (!value.empty())
+          {
+            librevenge::RVNGPropertyList const empty;
+            elements.addOpenParagraph(empty);
+            elements.addOpenSpan(empty);
+            elements.addInsertText(value);
+            elements.addCloseSpan();
+            elements.addCloseParagraph();
           }
         }
         auto nIt=m_commentMap.find(std::make_pair(c,r));
