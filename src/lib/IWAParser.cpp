@@ -530,24 +530,31 @@ bool IWAParser::dispatchShape(const unsigned id)
   const ObjectMessage msg(*this, id);
   if (!msg)
     return false;
-  switch (msg.getType())
+  return dispatchShapeWithMessage(get(msg), msg.getType());
+}
+
+bool IWAParser::dispatchShapeWithMessage(const IWAMessage &msg, unsigned type)
+{
+  switch (type)
   {
   case IWAObjectType::ConnectionLine :
   case IWAObjectType::DrawableShape :
-    return parseDrawableShape(get(msg), msg.getType()==IWAObjectType::ConnectionLine);
+    return parseDrawableShape(msg, type==IWAObjectType::ConnectionLine);
   case IWAObjectType::Group :
-    return parseGroup(get(msg));
+    return parseGroup(msg);
   case IWAObjectType::Image :
-    return parseImage(get(msg));
+    return parseImage(msg);
+  case IWAObjectType::StickyNote:
+    return parseStickyNote(msg);
   case IWAObjectType::TabularInfo :
-    return parseTabularInfo(get(msg));
+    return parseTabularInfo(msg);
   default:
   {
     static bool first=true;
     if (first)
     {
       first=false;
-      ETONYEK_DEBUG_MSG(("IWAParser::dispatchShape: find some unknown shapes, type=%d\n", int(msg.getType())));
+      ETONYEK_DEBUG_MSG(("IWAParser::dispatchShape: find some unknown shapes, type=%d\n", int(type)));
     }
   }
   }
@@ -1122,6 +1129,12 @@ bool IWAParser::parsePath(const IWAMessage &msg, IWORKPathPtr_t &path)
     }
   }
   return true;
+}
+
+bool IWAParser::parseStickyNote(const IWAMessage &/*msg*/)
+{
+  ETONYEK_DEBUG_MSG(("IWAParser::parseStickyNote: not implemented\n"));
+  return false;
 }
 
 bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)

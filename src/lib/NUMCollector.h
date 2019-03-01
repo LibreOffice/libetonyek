@@ -31,7 +31,7 @@ public:
   void startWorkSpace(boost::optional<std::string> const &name);
   void endWorkSpace(IWORKTableNameMapPtr_t tableNameMap);
 
-  void collectStickyNote();
+  void collectStickyNote() override;
 private:
   void drawTable() override;
   void drawMedia(double x, double y, const librevenge::RVNGPropertyList &data) override;

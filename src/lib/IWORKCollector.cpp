@@ -512,6 +512,11 @@ void IWORKCollector::collectText(const std::shared_ptr<IWORKText> &text)
   m_currentText = text;
 }
 
+void IWORKCollector::collectStickyNote()
+{
+  ETONYEK_DEBUG_MSG(("IWORKCollector::collectStickyNote: not implemented\n"));
+}
+
 void IWORKCollector::startDocument(const librevenge::RVNGPropertyList &props)
 {
   m_document->startDocument(props);
