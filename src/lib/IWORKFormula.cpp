@@ -211,7 +211,6 @@ unsigned parseRowName(const vector<char> &columnName)
 
   for (char it : columnName)
     columnNumber = 26 * columnNumber + unsigned(toupper(it) - 'A') + 1;
-
   return columnNumber;
 }
 
@@ -233,6 +232,7 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
     , pExpr()
     , address()
     , addressSpecialColumn()
+    , addressSpecialNoTableRow()
     , addressSpecialRow()
     , range()
     , columnName()
@@ -248,7 +248,6 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
     , postfixOp()
     , prefixLit()
     , postfixLit()
-    , rangeSpecial()
     , mappedName()
   {
     using ascii::char_;
@@ -303,18 +302,14 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
       | attr(none) >> column >> attr(none)
       ;
 
-    addressSpecialRow %=
-      table >> *lit(' ') >> "::" >> *lit(' ') >> attr(none) >> row
-      | attr(none) >> attr(none) >> row
-      ;
-
-    rangeSpecial %= addressSpecialColumn[_a = _1] >> attr(_a) >> !row;
+    addressSpecialRow %= table >> *lit(' ') >> "::" >> *lit(' ') >> attr(none) >> row;
+    addressSpecialNoTableRow %= attr(none) >> attr(none) >> row;
 
     range %=
       address >> ':' >> address
       | addressSpecialColumn >> ':' >> addressSpecialColumn
       | addressSpecialRow >> ':' >> addressSpecialRow
-      | rangeSpecial
+      | addressSpecialNoTableRow >> ":" >> addressSpecialNoTableRow
       ;
 
     prefixOp %= prefixLit >> term;
@@ -332,6 +327,8 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
       | trueOrFalseFunction
       | range
       | address
+      | addressSpecialColumn
+      | addressSpecialRow
       | number
       | prefixOp
       | pExpr
@@ -362,7 +359,6 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
     term.name("term");
     formula.name("formula");
     pExpr.name("pExpr");
-    rangeSpecial.name("rangeSpecial");
   }
 
   void createFunctionNameMap()
@@ -373,7 +369,7 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   qi::rule<Iterator, TrueOrFalseFunc()> trueOrFalseFunction;
   qi::rule<Iterator, Expression()> expression, formula, term;
   qi::rule<Iterator, PExpr()> pExpr;
-  qi::rule<Iterator, IWORKFormula::Address()> address, addressSpecialColumn, addressSpecialRow;
+  qi::rule<Iterator, IWORKFormula::Address()> address, addressSpecialColumn, addressSpecialNoTableRow, addressSpecialRow;
   qi::rule<Iterator, AddressRange()> range;
   qi::rule<Iterator, unsigned()> columnName;
   qi::rule<Iterator, IWORKFormula::Coord()> column, row;
@@ -383,7 +379,6 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   qi::rule<Iterator, InfixOp()> infixOp;
   qi::rule<Iterator, PostfixOp()> postfixOp;
   qi::rule<Iterator, char()> prefixLit, postfixLit;
-  qi::rule<Iterator, qi::locals<IWORKFormula::Address> > rangeSpecial;
 
   qi::symbols<char, string> mappedName;
 };
