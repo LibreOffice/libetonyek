@@ -1355,17 +1355,19 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)
 
 bool IWAParser::parseGroup(const IWAMessage &msg)
 {
+  m_collector.startLevel();
   if (msg.message(1))
     parseShapePlacement(get(msg.message(1)));
   if (!msg.message(2).empty())
   {
-    m_collector.startLevel();
     m_collector.startGroup();
+    //m_collector.openGroup(); addme if possible
     const deque<unsigned> &shapeRefs = readRefs(msg, 2);
     std::for_each(shapeRefs.begin(), shapeRefs.end(), bind(&IWAParser::dispatchShape, this, _1));
+    //m_collector.closeGroup();
     m_collector.endGroup();
-    m_collector.endLevel();
   }
+  m_collector.endLevel();
 
   return true;
 }
@@ -1383,7 +1385,6 @@ bool IWAParser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &g
     const optional<IWORKSize> &size = readSize(get(g), 2);
     if (size)
       geometry->m_naturalSize = geometry->m_size = get(size);
-
     if (get(g).uint32(3))
     {
       switch (get(get(g).uint32(3)))
