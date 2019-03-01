@@ -144,6 +144,8 @@ librevenge::RVNGString makeColor(const IWORKGradient &gradient);
 
 void writeBorder(const IWORKStroke &stroke, const char *name, librevenge::RVNGPropertyList &props);
 
+std::string detectMimetype(const RVNGInputStreamPtr_t &stream);
+
 class EndOfStreamException
 {
 };
