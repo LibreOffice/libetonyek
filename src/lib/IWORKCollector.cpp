@@ -183,8 +183,8 @@ private:
 IWORKCollector::Level::Level()
   : m_geometry()
   , m_graphicStyle()
-  , m_trafo()
-  , m_previousTrafo()
+  , m_trafo(1)
+  , m_previousTrafo(1)
 {
 }
 
@@ -601,7 +601,7 @@ void IWORKCollector::startLevel()
     return;
   }
 
-  glm::dmat3 currentTrafo, prevTrafo;
+  glm::dmat3 currentTrafo(1), prevTrafo(1);
   if (!m_levelStack.empty())
   {
     currentTrafo = m_levelStack.top().m_trafo;
