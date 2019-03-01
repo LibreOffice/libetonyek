@@ -364,13 +364,13 @@ struct IWORKPageMaster
 struct IWORKNumberFormat
 {
   IWORKNumberFormat();
-
+  std::string getRVNGValueType() const;
   IWORKCellNumberType m_type;
   std::string m_string;
   int m_decimalPlaces;
   std::string m_currencyCode;
   int m_negativeStyle;
-  bool m_thousandsSeperator;
+  bool m_thousandsSeparator;
   int m_fractionAccuracy;
   bool m_accountingStyle;
   int m_base;

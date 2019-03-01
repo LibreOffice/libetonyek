@@ -121,7 +121,12 @@ protected:
   std::shared_ptr<IWORKText> m_currentText;
 
 private:
-  typedef std::map<unsigned, boost::variant<std::string, unsigned, IWORKFormulaPtr_t> > DataList_t;
+  struct Format
+  {
+    Format();
+    boost::optional<IWORKCellType> m_type;
+    boost::variant<IWORKNumberFormat,IWORKDateTimeFormat,IWORKDurationFormat> m_format;
+  };
 
   struct PageMaster
   {
@@ -137,6 +142,8 @@ private:
     mdds::flat_segment_tree<unsigned, float> m_sizes;
     mdds::flat_segment_tree<unsigned, bool> m_hidden;
   };
+
+  typedef std::map<unsigned, boost::variant<std::string, unsigned, IWORKFormulaPtr_t, Format> > DataList_t;
 
   struct TableInfo
   {
@@ -156,6 +163,7 @@ private:
     DataList_t m_cellStyleList;
     DataList_t m_formattedTextList;
     DataList_t m_formulaList;
+    DataList_t m_formatList;
     DataList_t m_commentList;
   };
 
@@ -198,6 +206,7 @@ private:
   bool parseTabularInfo(const IWAMessage &msg);
   bool parsePath(const IWAMessage &msg, IWORKPathPtr_t &path);
   bool parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula);
+  bool parseFormat(const IWAMessage &msg, Format &format);
 
   bool parseArrowProperties(const IWAMessage &msg, IWORKPropertyMap &props, bool headArrow);
   void parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props);
