@@ -14,15 +14,20 @@
 #include "IWORKChainedTokenizer.h"
 #include "IWORKChartInfoElement.h"
 #include "IWORKDiscardContext.h"
+#include "IWORKGeometryElement.h"
 #include "IWORKGroupElement.h"
 #include "IWORKImageElement.h"
 #include "IWORKMediaElement.h"
 #include "IWORKMetadataElement.h"
+#include "IWORKPathElement.h"
+#include "IWORKRefContext.h"
 #include "IWORKShapeContext.h"
+#include "IWORKStyleContainer.h"
 #include "IWORKStyleContext.h"
 #include "IWORKStylesContext.h"
 #include "IWORKStylesheetBase.h"
 #include "IWORKTabularInfoElement.h"
+#include "IWORKTextElement.h"
 #include "IWORKToken.h"
 #include "NUMCollector.h"
 #include "NUM1Dictionary.h"
@@ -50,6 +55,73 @@ unsigned getVersion(const int token)
 
 }
 
+namespace
+{
+class StickyNoteElement : public NUM1XMLElementContextBase
+{
+public:
+  explicit StickyNoteElement(NUM1ParserState &state);
+
+private:
+  void startOfElement() override;
+  IWORKXMLContextPtr_t element(int name) override;
+  void endOfElement() override;
+
+  IWORKStylePtr_t m_graphicStyle;
+};
+
+StickyNoteElement::StickyNoteElement(NUM1ParserState &state)
+  : NUM1XMLElementContextBase(state)
+  , m_graphicStyle()
+{
+}
+
+void StickyNoteElement::startOfElement()
+{
+  if (isCollector())
+  {
+    assert(!getState().m_currentText);
+    getState().m_currentText = getCollector().createText(getState().m_langManager);
+    getCollector().startLevel();
+  }
+}
+
+typedef IWORKStyleContainer<IWORKToken::NS_URI_SF | IWORKToken::graphic_style, IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref> GraphicStyleContext;
+
+IWORKXMLContextPtr_t StickyNoteElement::element(const int name)
+{
+  switch (name)
+  {
+  case IWORKToken::NS_URI_SF | IWORKToken::geometry :
+    return std::make_shared<IWORKGeometryElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::path : // use me
+    return std::make_shared<IWORKPathElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::style : // use me
+    return std::make_shared<GraphicStyleContext>(getState(), m_graphicStyle, getState().getDictionary().m_graphicStyles);
+  case IWORKToken::NS_URI_SF | IWORKToken::text :
+    return std::make_shared<IWORKTextElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::wrap : // README
+    return IWORKXMLContextPtr_t();
+  default:
+    ETONYEK_DEBUG_MSG(("StickyNoteElement::element[NUM1Parser.cpp]: unknown element\n"));
+    break;
+  }
+
+  return IWORKXMLContextPtr_t();
+}
+
+void StickyNoteElement::endOfElement()
+{
+  if (isCollector())
+  {
+    getCollector().collectText(getState().m_currentText);
+    getState().m_currentText.reset();
+    getCollector().collectStickyNote();
+
+    getCollector().endLevel();
+  }
+}
+}
 namespace
 {
 
@@ -102,8 +174,8 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
     return std::make_shared<IWORKMediaElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::shape :
     return std::make_shared<IWORKShapeContext>(getState());
-  // case IWORKToken::NS_URI_SF | IWORKToken::sticky_note :
-  //   return std::make_shared<StickyNoteElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::sticky_note :
+    return std::make_shared<StickyNoteElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
     return std::make_shared<IWORKTabularInfoElement>(getState());
   // case IWORKToken::NS_URI_SF | IWORKToken::title_placeholder_ref :
