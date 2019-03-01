@@ -40,6 +40,118 @@ namespace libetonyek
 namespace
 {
 
+void parseDateTimeFormat(std::string const &format, librevenge::RVNGPropertyList &props, boost::optional<std::string> &rvngValueType)
+{
+  if (format.empty())
+  {
+    ETONYEK_DEBUG_MSG(("parseDateTimeFormat[IWORKTable.cpp]: called without format string\n"));
+    return;
+  }
+  std::string text("");
+  librevenge::RVNGPropertyListVector propVect;
+  size_t len=format.size();
+  bool hasDate=false, findSomeToken=false;
+  for (size_t c=0; c < len;)
+  {
+    size_t numCh=1;
+    char ch=format[c++];
+    while (numCh<4 && c < len && format[c]==ch)
+    {
+      ++numCh;
+      ++c;
+    }
+    librevenge::RVNGPropertyList list;
+    switch (ch)
+    {
+    case 'a':
+      list.insert("librevenge:value-type", "am-pm");
+      c-=(numCh-1);
+      break;
+    case 'd':
+      hasDate=true;
+      list.insert("librevenge:value-type", "day");
+      if (numCh>1) list.insert("number:style", "long");
+      if (numCh>2) c-=(numCh-2);
+      break;
+    case 'h':
+    case 'k':
+      list.insert("librevenge:value-type", "hours");
+      if (numCh>2) c-=(numCh-2);
+      break;
+    case 'm':
+      list.insert("librevenge:value-type", "minutes");
+      list.insert("number:style", "long");
+      if (numCh>2) c-=(numCh-2);
+      break;
+    case 's':
+      list.insert("librevenge:value-type", "seconds");
+      list.insert("number:style", "long");
+      if (numCh>2) c-=(numCh-2);
+      break;
+    case 'y':
+      hasDate=true;
+      list.insert("librevenge:value-type", "year");
+      if (numCh>2) list.insert("number:style", "long");
+      break;
+    case 'E':
+      hasDate=true;
+      list.insert("librevenge:value-type", "day-of-week");
+      if (numCh>3) list.insert("number:style", "long");
+      break;
+    case 'H':
+    case 'K':
+      list.insert("librevenge:value-type", "hours");
+      list.insert("number:style", "long");
+      if (numCh>2) c-=(numCh-2);
+      break;
+    case 'M':
+      hasDate=true;
+      list.insert("librevenge:value-type", "month");
+      if ((numCh%2)==0) list.insert("number:style", "long");
+      if (numCh>2) list.insert("number:textual", true);
+      break;
+    // G: Era designator?
+    default:
+      break;
+    }
+    if (!list.empty())
+    {
+      if (!text.empty())
+      {
+        librevenge::RVNGPropertyList tList;
+        tList.insert("librevenge:value-type", "text");
+        tList.insert("librevenge:text", text.c_str());
+        propVect.append(tList);
+      }
+      text.clear();
+      propVect.append(list);
+      findSomeToken=true;
+    }
+    else
+    {
+      for (size_t n=0; n<numCh; ++n)
+        text += ch;
+    }
+  }
+  if (!findSomeToken)
+  {
+    ETONYEK_DEBUG_MSG(("parseDateTimeFormat[IWORKTable.cpp]: can not find any token in %s\n", format.c_str()));
+    return;
+  }
+  if (!text.empty())
+  {
+    librevenge::RVNGPropertyList list;
+    list.insert("librevenge:value-type", "text");
+    list.insert("librevenge:text", text.c_str());
+    propVect.append(list);
+  }
+  rvngValueType = hasDate ? "date" : "time";
+  props.insert("librevenge:value-type", get(rvngValueType).c_str());
+  props.insert("number:automatic-order", "true");
+  if (propVect.count())
+    props.insert("librevenge:format", propVect);
+}
+
 void writeBorder(librevenge::RVNGPropertyList &props, const char *name, IWORKGridLine_t &line, unsigned index)
 {
   if (!line.is_tree_valid())
@@ -49,117 +161,6 @@ void writeBorder(librevenge::RVNGPropertyList &props, const char *name, IWORKGri
   line.search_tree(index, style);
   if (style && style->has<property::SFTStrokeProperty>())
     writeBorder(style->get<property::SFTStrokeProperty>(), name, props);
-}
-
-void writeCellFormat(librevenge::RVNGPropertyList &props, const IWORKStyleStack &style, const IWORKCellType type, const optional<string> &styleName, const boost::optional<std::string> &value, const boost::optional<IWORKDateTimeData> &dateTime)
-{
-  using namespace property;
-
-  switch (type)
-  {
-  case IWORK_CELL_TYPE_NUMBER :
-    if (style.has<SFTCellStylePropertyNumberFormat>())
-    {
-      const IWORKNumberFormat &format = style.get<SFTCellStylePropertyNumberFormat>();
-
-      // TODO: what's this anyway?
-      if (styleName)
-        props.insert("librevenge:name", get(styleName).c_str());
-
-      props.insert("librevenge:value", value ? get(value).c_str() : "0");
-
-      switch (format.m_type)
-      {
-      case IWORK_CELL_NUMBER_TYPE_CURRENCY :
-        props.insert("librevenge:value-type", "currency");
-        props.insert("number:currency-style", format.m_currencyCode.c_str());
-        break;
-      case IWORK_CELL_NUMBER_TYPE_PERCENTAGE :
-        props.insert("librevenge:value-type", "percentage");
-        props.insert("number:decimal-places", format.m_decimalPlaces);
-        break;
-      case IWORK_CELL_NUMBER_TYPE_SCIENTIFIC :
-        props.insert("librevenge:value-type", "scientific");
-        props.insert("number:decimal-places", format.m_decimalPlaces);
-        break;
-      case IWORK_CELL_NUMBER_TYPE_DOUBLE :
-        props.insert("librevenge:value-type", "double");
-        props.insert("number:decimal-places", format.m_decimalPlaces);
-        break;
-      default:
-        ETONYEK_DEBUG_MSG(("writeCellFormat: unexpected number format\n"));
-      }
-    }
-    break;
-  case IWORK_CELL_TYPE_DATE_TIME :
-    if (value || dateTime)
-    {
-      if (styleName)
-        props.insert("librevenge:name", get(styleName).c_str());
-      props.insert("librevenge:value-type", "date");
-
-      if (dateTime)
-      {
-        props.insert("librevenge:day", get(dateTime).m_day);
-        props.insert("librevenge:month", get(dateTime).m_month);
-        props.insert("librevenge:year", get(dateTime).m_year);
-        props.insert("librevenge:hours", get(dateTime).m_hour);
-        props.insert("librevenge:minutes", get(dateTime).m_minute);
-        props.insert("librevenge:seconds", get(dateTime).m_second);
-      }
-      else
-      {
-        boost::optional<double> seconds=try_double_cast(get(value).c_str());
-        if (!seconds)
-        {
-          ETONYEK_DEBUG_MSG(("writeCellFormat: can not read seconds\n"));
-          break;
-        }
-        const auto t = std::time_t(ETONYEK_EPOCH_BEGIN + get(seconds));
-        struct tm *const time = gmtime(&t);
-
-        if (!time)
-        {
-          ETONYEK_DEBUG_MSG(("writeCellFormat: can not convert seconds in time\n"));
-          break;
-        }
-        props.insert("librevenge:day", time->tm_mday);
-        props.insert("librevenge:month", time->tm_mon + 1);
-        props.insert("librevenge:year", time->tm_year + 1900);
-        props.insert("librevenge:hours", time->tm_hour);
-        props.insert("librevenge:minutes", time->tm_min);
-        props.insert("librevenge:seconds", time->tm_sec);
-      }
-    }
-    break;
-  case IWORK_CELL_TYPE_DURATION :
-    if (style.has<SFTCellStylePropertyDurationFormat>() && value)
-    {
-      // TODO: How to insert format and convert?
-      // const IWORKDurationFormat &format = style.get<SFTCellStylePropertyDurationFormat>();
-      // props.insert("librevenge:format",format.m_format.c_str());
-
-      const int seconds = int_cast(get(value).c_str());
-      props.insert("librevenge:value-type", "time");
-      props.insert("librevenge:hours", seconds / 3600);
-      props.insert("librevenge:minutes", (seconds % 3600) / 60);
-      props.insert("librevenge:seconds", (seconds % 3600) % 60);
-
-      if (styleName)
-        props.insert("librevenge:name", get(styleName).c_str());
-    }
-    break;
-  case IWORK_CELL_TYPE_BOOL :
-    props.insert("librevenge:value-type", "boolean");
-    props.insert("librevenge:value", value ? get(value).c_str() : "0"); // false is default
-    break;
-  case IWORK_CELL_TYPE_TEXT :
-  default:
-    //TODO: librevenge:name ?
-    if (value)
-      props.insert("librevenge:value-type", "string");
-    break;
-  }
 }
 
 void writeCellStyle(librevenge::RVNGPropertyList &props, const IWORKStyleStack &style)
@@ -181,7 +182,7 @@ void writeCellStyle(librevenge::RVNGPropertyList &props, const IWORKStyleStack &
     props.insert("style:vertical-align", "bottom");
     break;
   default:
-    ETONYEK_DEBUG_MSG(("writeCellStyle: unexpected alignement\n"));
+    ETONYEK_DEBUG_MSG(("writeCellStyle[IWORKTable.cpp]: unexpected alignement\n"));
   }
 
   if (style.has<TopBorder>())
@@ -222,85 +223,183 @@ void writeCellStyle(librevenge::RVNGPropertyList &props, const IWORKStyleStack &
   }
 }
 
-librevenge::RVNGString convertCellValueInText(const IWORKStyleStack &style, const IWORKCellType type, const boost::optional<std::string> &value, const boost::optional<IWORKDateTimeData> &dateTime)
+void writeCellValue(librevenge::RVNGPropertyList &props,
+                    const boost::optional<std::string> &styleName,
+                    const IWORKCellType type, const boost::optional<std::string> &valueType,
+                    const boost::optional<std::string> &value, const boost::optional<IWORKDateTimeData> &dateTime)
+try
 {
   using namespace property;
+
+  // TODO: what's this anyway?
+  if (styleName)
+    props.insert("librevenge:name", get(styleName).c_str());
   switch (type)
   {
   case IWORK_CELL_TYPE_NUMBER :
-  {
-    int numDecimals=2;
-    IWORKCellNumberType formatType=IWORK_CELL_NUMBER_TYPE_DOUBLE;
-    std::string currency("$");
-    if (style.has<SFTCellStylePropertyNumberFormat>())
+    if (valueType)
     {
-      const IWORKNumberFormat &format = style.get<SFTCellStylePropertyNumberFormat>();
-      numDecimals=format.m_decimalPlaces;
-      formatType=format.m_type;
-      currency=format.m_currencyCode.c_str();
+      props.insert("librevenge:value-type", get(valueType).c_str());
+      props.insert("librevenge:value", value ? get(value).c_str() : "0");
     }
-    const double val = value ? double_cast(get(value).c_str()) : 0;
-    std::stringstream s;
-    s << std::setprecision(-numDecimals);
-    switch (formatType)
+    else if (value)
     {
-    case IWORK_CELL_NUMBER_TYPE_CURRENCY :
-      s << std::fixed << val << currency;
-      break;
-    case IWORK_CELL_NUMBER_TYPE_PERCENTAGE :
-      s << std::fixed << 100*val << "%";
-      break;
-    case IWORK_CELL_NUMBER_TYPE_SCIENTIFIC :
-      s << std::scientific << val;
-      break;
-    case IWORK_CELL_NUMBER_TYPE_DOUBLE :
-      s << val;
-      break;
-    default:
-      ETONYEK_DEBUG_MSG(("convertCellValueInText: unexpected number format\n"));
+      props.insert("librevenge:value-type", "double");
+      props.insert("librevenge:value", get(value).c_str());
     }
-    return s.str().c_str();
-  }
+    break;
   case IWORK_CELL_TYPE_DATE_TIME :
-  {
-    if (dateTime)
+    if (value || dateTime)
     {
-      librevenge::RVNGString res;
-      if (get(dateTime).m_hour)
-        res.sprintf("%d/%d/%d %d:%d", get(dateTime).m_month, get(dateTime).m_day, get(dateTime).m_year, get(dateTime).m_hour, get(dateTime).m_minute);
+      props.insert("librevenge:value-type", valueType ? get(valueType).c_str() : "date");
+
+      if (dateTime)
+      {
+        props.insert("librevenge:day", get(dateTime).m_day);
+        props.insert("librevenge:month", get(dateTime).m_month);
+        props.insert("librevenge:year", get(dateTime).m_year);
+        props.insert("librevenge:hours", get(dateTime).m_hour);
+        props.insert("librevenge:minutes", get(dateTime).m_minute);
+        props.insert("librevenge:seconds", get(dateTime).m_second);
+      }
       else
-        res.sprintf("%d/%d/%d", get(dateTime).m_month, get(dateTime).m_day, get(dateTime).m_year);
-      return res;
+      {
+        boost::optional<double> seconds=try_double_cast(get(value).c_str());
+        if (!seconds)
+        {
+          ETONYEK_DEBUG_MSG(("writeCellValue[IWORKTable.cpp]: can not read seconds\n"));
+          break;
+        }
+        const auto t = std::time_t(ETONYEK_EPOCH_BEGIN + get(seconds));
+        struct tm *const time = gmtime(&t);
+
+        if (!time)
+        {
+          ETONYEK_DEBUG_MSG(("writeCellValue[IWORKTable.cpp]: can not convert seconds in time\n"));
+          break;
+        }
+        props.insert("librevenge:day", time->tm_mday);
+        props.insert("librevenge:month", time->tm_mon + 1);
+        props.insert("librevenge:year", time->tm_year + 1900);
+        props.insert("librevenge:hours", time->tm_hour);
+        props.insert("librevenge:minutes", time->tm_min);
+        props.insert("librevenge:seconds", time->tm_sec);
+      }
     }
-    if (!value) break;
-    boost::optional<double> seconds=try_double_cast(get(value).c_str());
-    if (!seconds)
-    {
-      ETONYEK_DEBUG_MSG(("convertCellValueInText: can not read seconds\n"));
-      break;
-    }
-    const auto t = std::time_t(ETONYEK_EPOCH_BEGIN + get(seconds));
-    struct tm *const time = gmtime(&t);
-    librevenge::RVNGString res;
-    if (time->tm_hour)
-      res.sprintf("%d/%d/%d %d:%d", time->tm_mon + 1, time->tm_mday, time->tm_year + 1900, time->tm_hour, time->tm_min);
-    else
-      res.sprintf("%d/%d/%d", time->tm_mon + 1, time->tm_mday, time->tm_year + 1900);
-    return res;
-  }
+    break;
   case IWORK_CELL_TYPE_DURATION :
-  {
-    if (!value) break;
-    const int seconds = int_cast(get(value).c_str());
-    librevenge::RVNGString res;
-    res.sprintf("%d:%d:%d", seconds / 3600, (seconds % 3600) / 60, (seconds % 3600) % 60);
-    return res;
-  }
+    if (value)
+    {
+      const int seconds = double_cast(get(value).c_str());
+      props.insert("librevenge:value-type", valueType ? get(valueType).c_str() : "time");
+      props.insert("librevenge:hours", int(seconds / 3600));
+      props.insert("librevenge:minutes", int((seconds % 3600) / 60));
+      props.insert("librevenge:seconds", int((seconds % 3600) % 60));
+    }
+    break;
   case IWORK_CELL_TYPE_BOOL :
-    return value && get(value)!="0" ? "true" : "false";
+    props.insert("librevenge:value-type", valueType ? get(valueType).c_str() : "boolean");
+    props.insert("librevenge:value", value ? get(value).c_str() : "0");  // false is default
+    break;
   case IWORK_CELL_TYPE_TEXT :
   default:
+    //TODO: librevenge:name ?
+    if (value)
+      props.insert("librevenge:value-type", "string");
     break;
+  }
+}
+catch (...)
+{
+  ETONYEK_DEBUG_MSG(("writeCellValue[IWORKTable.cpp]: catch exception\n"));
+}
+
+librevenge::RVNGString convertCellValueInText(const IWORKStyleStack &style, const IWORKCellType type, const boost::optional<std::string> &value, const boost::optional<IWORKDateTimeData> &dateTime)
+{
+  try
+  {
+    using namespace property;
+    switch (type)
+    {
+    case IWORK_CELL_TYPE_NUMBER :
+    {
+      int numDecimals=2;
+      IWORKCellNumberType formatType=IWORK_CELL_NUMBER_TYPE_DOUBLE;
+      std::string currency("$");
+      if (style.has<SFTCellStylePropertyNumberFormat>())
+      {
+        const IWORKNumberFormat &format = style.get<SFTCellStylePropertyNumberFormat>();
+        numDecimals=format.m_decimalPlaces;
+        formatType=format.m_type;
+        currency=format.m_currencyCode.c_str();
+      }
+      const double val = value ? double_cast(get(value).c_str()) : 0;
+      std::stringstream s;
+      s << std::setprecision(-numDecimals);
+      switch (formatType)
+      {
+      case IWORK_CELL_NUMBER_TYPE_CURRENCY :
+        s << std::fixed << val << currency;
+        break;
+      case IWORK_CELL_NUMBER_TYPE_PERCENTAGE :
+        s << std::fixed << 100*val << "%";
+        break;
+      case IWORK_CELL_NUMBER_TYPE_SCIENTIFIC :
+        s << std::scientific << val;
+        break;
+      case IWORK_CELL_NUMBER_TYPE_DOUBLE :
+        s << val;
+        break;
+      default:
+        ETONYEK_DEBUG_MSG(("convertCellValueInText: unexpected number format\n"));
+      }
+      return s.str().c_str();
+    }
+    case IWORK_CELL_TYPE_DATE_TIME :
+    {
+      if (dateTime)
+      {
+        librevenge::RVNGString res;
+        if (get(dateTime).m_hour)
+          res.sprintf("%d/%d/%d %d:%d", get(dateTime).m_month, get(dateTime).m_day, get(dateTime).m_year, get(dateTime).m_hour, get(dateTime).m_minute);
+        else
+          res.sprintf("%d/%d/%d", get(dateTime).m_month, get(dateTime).m_day, get(dateTime).m_year);
+        return res;
+      }
+      if (!value) break;
+      boost::optional<double> seconds=try_double_cast(get(value).c_str());
+      if (!seconds)
+      {
+        ETONYEK_DEBUG_MSG(("convertCellValueInText: can not read seconds\n"));
+        break;
+      }
+      const auto t = std::time_t(ETONYEK_EPOCH_BEGIN + get(seconds));
+      struct tm *const time = gmtime(&t);
+      librevenge::RVNGString res;
+      if (time->tm_hour)
+        res.sprintf("%d/%d/%d %d:%d", time->tm_mon + 1, time->tm_mday, time->tm_year + 1900, time->tm_hour, time->tm_min);
+      else
+        res.sprintf("%d/%d/%d", time->tm_mon + 1, time->tm_mday, time->tm_year + 1900);
+      return res;
+    }
+    case IWORK_CELL_TYPE_DURATION :
+    {
+      if (!value) break;
+      const int seconds = double_cast(get(value).c_str());
+      librevenge::RVNGString res;
+      res.sprintf("%d:%d:%d", int(seconds / 3600), int((seconds % 3600) / 60), int((seconds % 3600) % 60));
+      return res;
+    }
+    case IWORK_CELL_TYPE_BOOL :
+      return value && get(value)!="0" ? "true" : "false";
+    case IWORK_CELL_TYPE_TEXT :
+    default:
+      break;
+    }
+  }
+  catch (...)
+  {
+    ETONYEK_DEBUG_MSG(("convertCellValueInText: exception\n"));
   }
   return "";
 }
@@ -324,6 +423,7 @@ IWORKTable::Cell::Cell()
 IWORKTable::IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager)
   : m_tableNameMap(tableNameMap)
   , m_langManager(langManager)
+  , m_formatNameMap()
   , m_table()
   , m_style()
   , m_order()
@@ -522,6 +622,82 @@ void IWORKTable::insertCoveredCell(const unsigned column, const unsigned row)
   m_table[row][column] = cell;
 }
 
+boost::optional<std::string> IWORKTable::writeFormat(IWORKOutputElements &elements, const IWORKStylePtr_t &style, const IWORKCellType type, boost::optional<std::string> &rvngValueType)
+{
+  if (!style) return none;
+  librevenge::RVNGPropertyList props;
+  switch (type)
+  {
+  case IWORK_CELL_TYPE_NUMBER :
+    if (style->has<property::SFTCellStylePropertyNumberFormat>())
+    {
+      const IWORKNumberFormat &format = style->get<property::SFTCellStylePropertyNumberFormat>();
+      props.insert("librevenge:value-type", format.getRVNGValueType().c_str());
+      if (format.m_decimalPlaces>=0) props.insert("number:decimal-places", format.m_decimalPlaces);
+      if (format.m_thousandsSeparator) props.insert("number:grouping", true);
+      rvngValueType=format.m_type==IWORK_CELL_NUMBER_TYPE_FRACTION ? "double" : format.getRVNGValueType().c_str();
+      switch (format.m_type)
+      {
+      case IWORK_CELL_NUMBER_TYPE_CURRENCY :
+      {
+        librevenge::RVNGPropertyListVector pVect;
+        librevenge::RVNGPropertyList currency;
+        currency.insert("librevenge:value-type", "currency-symbol");
+        currency.insert("number:language","en");
+        currency.insert("number:country","US");
+        currency.insert("librevenge:currency",format.m_currencyCode.c_str());
+        if (format.m_decimalPlaces>=0) currency.insert("number:decimal-places", format.m_decimalPlaces);
+        pVect.append(currency);
+        props.insert("librevenge:format", pVect);
+        break;
+      }
+      case IWORK_CELL_NUMBER_TYPE_PERCENTAGE :
+      case IWORK_CELL_NUMBER_TYPE_SCIENTIFIC :
+      case IWORK_CELL_NUMBER_TYPE_DOUBLE :
+        break;
+      case IWORK_CELL_NUMBER_TYPE_FRACTION :
+        props.insert("number:min-integer-digits", 0);
+        props.insert("number:min-numerator-digits",1);
+        props.insert("number:min-denominator-digits", 1);
+        props.remove("number:decimal-places");
+        break;
+      default:
+        ETONYEK_DEBUG_MSG(("IWORKTable::writeFormat: unexpected number format\n"));
+        return none;
+      }
+    }
+    break;
+  case IWORK_CELL_TYPE_DATE_TIME : // todo
+    if (style->has<property::SFTCellStylePropertyDateTimeFormat>())
+    {
+      const IWORKDateTimeFormat &format = style->get<property::SFTCellStylePropertyDateTimeFormat>();
+      parseDateTimeFormat(format.m_format, props, rvngValueType);
+    }
+    break;
+  case IWORK_CELL_TYPE_DURATION : // todo
+  // TODO: How to insert format and convert?
+  // const IWORKDurationFormat &format = style->get<SFTCellStylePropertyDurationFormat>();
+  // props.insert("librevenge:format",format.m_format.c_str());
+
+  case IWORK_CELL_TYPE_BOOL :
+  case IWORK_CELL_TYPE_TEXT :
+  default:
+    break;
+  }
+  if (props.empty())
+    return none;
+  auto hash=props.getPropString();
+  auto it=m_formatNameMap.find(hash);
+  if (it!=m_formatNameMap.end())
+    return it->second;
+  std::stringstream name;
+  name << "Numbering" << m_formatNameMap.size();
+  m_formatNameMap[hash]=name.str();
+  props.insert("librevenge:name", name.str().c_str());
+  elements.addDefineSheetNumberingStyle(props);
+  return name.str();
+}
+
 void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements, bool drawAsSimpleTable)
 {
   assert(!m_recorder);
@@ -601,7 +777,14 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
         IWORKStyleStack style;
         style.push(getDefaultCellStyle(unsigned(c), unsigned(r)));
         style.push(cell.m_style);
-        writeCellFormat(cellProps, style, cell.m_type, cell.m_style ? cell.m_style->getIdent() : none, cell.m_value, cell.m_dateTime);
+        if (!drawAsSimpleTable)
+        {
+          optional<std::string> valueType;
+          auto formatName=writeFormat(elements, cell.m_style, cell.m_type, valueType);
+          if (formatName) cellProps.insert("librevenge:numbering-name", get(formatName).c_str());
+          writeCellValue(cellProps, cell.m_style ? cell.m_style->getIdent() : none,
+                         cell.m_type, valueType, cell.m_value, cell.m_dateTime);
+        }
         writeCellStyle(cellProps, style);
 
         IWORKStyleStack pStyle;

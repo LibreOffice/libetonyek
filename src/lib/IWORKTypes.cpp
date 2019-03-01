@@ -281,16 +281,35 @@ IWORKPageMaster::IWORKPageMaster()
 IWORKNumberFormat::IWORKNumberFormat()
   : m_type(IWORK_CELL_NUMBER_TYPE_DOUBLE)
   , m_string()
-  , m_decimalPlaces(0)
+  , m_decimalPlaces(-1)
   , m_currencyCode()
   , m_negativeStyle(0)
-  , m_thousandsSeperator(false)
+  , m_thousandsSeparator(false)
   , m_fractionAccuracy(0)
   , m_accountingStyle(false)
   , m_base(0)
   , m_basePlaces(0)
   , m_baseUseMinusSign(true)
 {
+}
+
+std::string IWORKNumberFormat::getRVNGValueType() const
+{
+  switch (m_type)
+  {
+  case IWORK_CELL_NUMBER_TYPE_CURRENCY:
+    return "currency";
+  case IWORK_CELL_NUMBER_TYPE_DOUBLE:
+    return "double";
+  case IWORK_CELL_NUMBER_TYPE_FRACTION:
+    return "fraction";
+  case IWORK_CELL_NUMBER_TYPE_PERCENTAGE:
+    return "percentage";
+  case IWORK_CELL_NUMBER_TYPE_SCIENTIFIC:
+    return "scientific";
+  default:
+    return "number";
+  }
 }
 
 IWORKDateTimeData::IWORKDateTimeData()

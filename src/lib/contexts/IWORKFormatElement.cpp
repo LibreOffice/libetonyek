@@ -118,7 +118,7 @@ void IWORKNumberFormatElement::attribute(const int name, const char *const value
     get(m_value).m_negativeStyle = int_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::format_show_thousands_separator :
-    get(m_value).m_thousandsSeperator = bool_cast(value);
+    get(m_value).m_thousandsSeparator = bool_cast(value);
     break;
   case IWORKToken::NS_URI_SF | IWORKToken::format_string :
     get(m_value).m_string = value;
