@@ -92,6 +92,7 @@ protected:
   static boost::optional<IWORKPosition> readPosition(const IWAMessage &msg, unsigned field);
   static boost::optional<IWORKSize> readSize(const IWAMessage &msg, unsigned field);
   static boost::optional<IWORKColor> readColor(const IWAMessage &msg, unsigned field);
+  static boost::optional<std::string> readUID(const IWAMessage &msg, unsigned field);
   static void readStroke(const IWAMessage &msg, IWORKStroke &stroke);
   bool readFill(const IWAMessage &msg, IWORKFill &fill);
   static void readGradient(const IWAMessage &msg, IWORKGradient &gradient);

@@ -160,7 +160,7 @@ IWAParser::IWAParser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStrea
   , m_cellStyles()
   , m_tableStyles()
   , m_listStyles()
-  , m_tableNameMap()
+  , m_tableNameMap(std::make_shared<IWORKTableNameMap_t>())
   , m_currentTable()
 {
 }
@@ -288,6 +288,41 @@ boost::optional<IWORKColor> IWAParser::readColor(const IWAMessage &msg, const un
     if (color.float_(3) && color.float_(4) && color.float_(5))
       return IWORKColor(get(color.float_(3)), get(color.float_(4)), get(color.float_(5)), get_optional_value_or(color.float_(6), 0));
   }
+  return boost::none;
+}
+
+boost::optional<std::string> IWAParser::readUID(const IWAMessage &msg, const unsigned field)
+{
+  const IWAMessageField &mId = msg.message(field);
+  if (!mId) return boost::none;
+  auto const &id = get(mId).message(1);
+  if (id && get(id).uint32(2) && get(id).uint32(3) && get(id).uint32(4) && get(id).uint32(5))
+  {
+    std::string res;
+    bool hasValues=false;
+    for (unsigned w=2; w<=5; ++w)
+    {
+      std::stringstream s;
+      auto val=get(get(id).uint32(w));
+      if (val) hasValues=true;
+      std::uppercase(s);
+      s << std::hex << std::setfill('0') << std::setw(8) << val;
+      if (s.str().size()!=8)
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::readUID: bad size\n"));
+        return boost::none;
+      }
+      for (size_t c=0; c<4; ++c)
+      {
+        if ((w==3 || w==4) && (c%2)==0) res+='-';
+        res+=s.str()[6-2*c];
+        res+=s.str()[7-2*c];
+      }
+    }
+    if (!hasValues) return none;
+    return res;
+  }
+  ETONYEK_DEBUG_MSG(("IWAParser::readUID: can not find the id zone\n"));
   return boost::none;
 }
 
@@ -2942,6 +2977,8 @@ bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
         else
           address.m_row=coord;
       }
+      address.m_table=readUID(it,28);
+      // readUID(it,38); filename ?
       if (!ok)
         break;
       stack.push_back({IWORKFormula::Token(address)});
