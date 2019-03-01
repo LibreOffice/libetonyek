@@ -778,6 +778,7 @@ void IWORKText::openLink(const std::string &url)
     m_oldSpanStyle = m_spanStyle;
     closeSpan(); // A link is always outside of a span
   }
+  if (m_inLink) closeLink();
 
   // TODO: handle link overflowing to next paragraph
   librevenge::RVNGPropertyList props;
@@ -795,6 +796,10 @@ void IWORKText::closeLink()
     return;
   }
 
+  if (!m_inLink) {
+      ETONYEK_DEBUG_MSG(("IWORKText::closeLink: unexpected called\n"));
+      return;
+  }
   if (m_inSpan)
     closeSpan();
   m_spanStyle = m_oldSpanStyle;
@@ -1004,6 +1009,8 @@ void IWORKText::closePara()
 
   if (m_inSpan)
     closeSpan();
+  if (m_inLink)
+    closeLink();
 
   // TODO: This is a temporary hack. The use of list element vs. paragraph needs rework.
   if (m_inListLevel > 0)
