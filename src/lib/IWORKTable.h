@@ -11,7 +11,9 @@
 #define IWORKTABLE_H_INCLUDED
 
 #include <deque>
+#include <map>
 #include <memory>
+#include <utility>
 
 #include <boost/optional.hpp>
 
@@ -75,6 +77,7 @@ public:
   void setBorders(const IWORKGridLineMap_t &verticalLines, const IWORKGridLineMap_t &horizontalLines);
   void setBorders(const IWORKGridLineMap_t &verticalLeftLines, const IWORKGridLineMap_t &verticalRightLines,
                   const IWORKGridLineMap_t &horizontalTopLines, const IWORKGridLineMap_t &horizontalBottomLines);
+  void setComment(unsigned column, unsigned row, IWORKOutputElements const &text);
   void insertCell(unsigned column, unsigned row,
                   const boost::optional<std::string> &value = boost::none,
                   const std::shared_ptr<IWORKText> &text = std::shared_ptr<IWORKText>(),
@@ -107,6 +110,7 @@ private:
   const IWORKTableNameMapPtr_t m_tableNameMap;
   const IWORKLanguageManager &m_langManager;
   std::map<librevenge::RVNGString,std::string> m_formatNameMap;
+  std::map<std::pair<unsigned, unsigned>, IWORKOutputElements> m_commentMap;
 
   Table_t m_table;
   IWORKStylePtr_t m_style;

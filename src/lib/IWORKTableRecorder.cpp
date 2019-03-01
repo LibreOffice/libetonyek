@@ -13,6 +13,7 @@
 
 #include <boost/variant.hpp>
 
+#include "IWORKOutputElements.h"
 #include "IWORKText.h"
 #include "IWORKTextRecorder.h"
 
@@ -23,6 +24,20 @@ using std::shared_ptr;
 
 namespace
 {
+
+struct SetComment
+{
+  SetComment(const unsigned column, const unsigned row, IWORKOutputElements const &text)
+    : m_column(column)
+    , m_row(row)
+    , m_text(text)
+  {
+  }
+
+  const unsigned m_column;
+  const unsigned m_row;
+  const IWORKOutputElements m_text;
+};
 
 struct SetSize
 {
@@ -207,7 +222,8 @@ struct SetDefaultParagraphStyle
 };
 
 typedef boost::variant
-< SetSize
+< SetComment
+, SetSize
 , SetHeaders
 , SetBandedRows
 , SetRepeated
@@ -233,6 +249,11 @@ struct Sender : public boost::static_visitor<void>
   explicit Sender(IWORKTable &table)
     : m_table(table)
   {
+  }
+
+  void operator()(const SetComment &value) const
+  {
+    m_table.setComment(value.m_column, value.m_row, value.m_text);
   }
 
   void operator()(const SetSize &value) const
@@ -333,6 +354,11 @@ void IWORKTableRecorder::replay(IWORKTable &table) const
   Sender sender(table);
   for (std::deque<Element_t>::const_iterator it = m_impl->m_elements.begin(); it != m_impl->m_elements.end(); ++it)
     boost::apply_visitor(sender, *it);
+}
+
+void IWORKTableRecorder::setComment(unsigned column, unsigned row, IWORKOutputElements const &text)
+{
+  m_impl->m_elements.push_back(SetComment(column, row, text));
 }
 
 void IWORKTableRecorder::setSize(unsigned columns, unsigned rows)
