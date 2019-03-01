@@ -112,6 +112,12 @@ deque<IWORKColumnRowSize> makeSizes(const mdds::flat_segment_tree<unsigned, floa
 
 }
 
+IWAParser::Format::Format()
+  : m_type()
+  , m_format()
+{
+}
+
 IWAParser::PageMaster::PageMaster()
   : m_style()
   , m_headerFootersSameAsPrevious(true)
@@ -135,6 +141,7 @@ IWAParser::TableInfo::TableInfo(const shared_ptr<IWORKTable> &table, const unsig
   , m_cellStyleList()
   , m_formattedTextList()
   , m_formulaList()
+  , m_formatList()
   , m_commentList()
 {
 }
@@ -2175,6 +2182,9 @@ void IWAParser::parseTabularModel(const unsigned id)
     const optional<unsigned> &formulaListRef = readRef(grid, 6);
     if (formulaListRef)
       parseDataList(get(formulaListRef), m_currentTable->m_formulaList);
+    const optional<unsigned> &formatListRef = readRef(grid, 11);
+    if (formatListRef)
+      parseDataList(get(formatListRef), m_currentTable->m_formatList);
     const optional<unsigned> &paraTextListRef = readRef(grid, 17);
     if (paraTextListRef)
       parseDataList(get(paraTextListRef), m_currentTable->m_formattedTextList);
@@ -2264,6 +2274,19 @@ void IWAParser::parseDataList(const unsigned id, DataList_t &dataList)
     case 1 :
       if (it.string(3))
         dataList[index] = get(it.string(3));
+      break;
+    case 2 :
+      // it.uint32(2): some type
+      if (it.message(6))
+      {
+        Format format;
+        if (parseFormat(get(it.message(6)), format))
+          dataList[index]=format;
+      }
+      else
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::parseDataList: can not find the format\n"));
+      }
       break;
     case 3 :
     case 5 : // invalid formula
@@ -2364,8 +2387,9 @@ void IWAParser::parseTile(const unsigned id)
       IWORKCellType cellType = IWORK_CELL_TYPE_TEXT;
       IWORKStylePtr_t cellStyle;
       IWORKFormulaPtr_t formula;
+      optional<Format> format;
       optional<string> text;
-      optional<string> value;
+      optional<IWORKDateTimeData> dateTime;
       optional<unsigned> textRef;
 
       // 1. Read the cell record
@@ -2373,6 +2397,30 @@ void IWAParser::parseTile(const unsigned id)
       // so we catch possible over-reading exceptions and continue.
       try
       {
+        // 0: 4?
+        input->seek((long) offIt.second+1, librevenge::RVNG_SEEK_SET);
+        auto type=readU8(input);
+        switch (type)
+        {
+        case 2:
+        case 7: // duration (changeme)
+          cellType=IWORK_CELL_TYPE_NUMBER;
+          break;
+        case 0: // empty (ok)
+        case 3: // text (ok)
+        case 9: // text zone
+          break;
+        case 5:
+          cellType=IWORK_CELL_TYPE_DATE_TIME;
+          break;
+        case 6:
+          cellType=IWORK_CELL_TYPE_BOOL;
+          break;
+        default:
+          ETONYEK_DEBUG_MSG(("IWAParser::parseTile: unknown type %d\n", int(type)));
+          break;
+        }
+        // 2,3: ?
         input->seek((long) offIt.second + 4, librevenge::RVNG_SEEK_SET);
         const unsigned flags = readU16(input);
         input->seek(6, librevenge::RVNG_SEEK_CUR);
@@ -2389,8 +2437,24 @@ void IWAParser::parseTile(const unsigned id)
         if (flags & 0x80) // unknown
           readU32(input);
         // flags & 0xc00, read 2 int
-        if (flags & 0x4) // format
-          readU32(input);
+        if (flags & 0x4)   // format
+        {
+          const unsigned formatId=readU32(input);
+          auto const formatIt=m_currentTable->m_formatList.find(formatId);
+          if (formatIt !=m_currentTable->m_formatList.end())
+          {
+            if (auto ref = boost::get<Format>(&formatIt->second))
+            {
+              format=*ref;
+              if (format->m_type && get(format->m_type)==IWORK_CELL_TYPE_NUMBER && cellType!=IWORK_CELL_TYPE_TEXT)
+                format->m_type=cellType;
+            }
+          }
+          else
+          {
+            ETONYEK_DEBUG_MSG(("IWAParser::parseTile: can not find format %d\n", int(formatId)));
+          }
+        }
         if (flags & 0x8) // formula
         {
           const unsigned formulaId = readU32(input);
@@ -2426,18 +2490,24 @@ void IWAParser::parseTile(const unsigned id)
           std::stringstream s;
           s << readDouble(input);
           text=s.str();
-          cellType = IWORK_CELL_TYPE_NUMBER;
-          // removeme when the number formatting is used
-          IWORKPropertyMap props;
-          props.put<property::SFTCellStylePropertyNumberFormat>(IWORKNumberFormat());
-          cellStyle.reset(new IWORKStyle(props, none, cellStyle));
+          if (!format)
+          {
+            format=Format();
+            get(format).m_type = cellType==IWORK_CELL_TYPE_TEXT ? IWORK_CELL_TYPE_NUMBER : cellType;
+            get(format).m_format=IWORKNumberFormat();
+          }
         }
         if (flags & 0x40) // date
         {
           std::stringstream s;
           s << readDouble(input);
           text=s.str();
-          cellType = IWORK_CELL_TYPE_DATE_TIME;
+          if (!format)
+          {
+            format=Format();
+            get(format).m_type=IWORK_CELL_TYPE_DATE_TIME;
+            get(format).m_format=IWORKDateTimeFormat();
+          }
         }
         if (flags & 0x200) // formatted text
         {
@@ -2455,7 +2525,20 @@ void IWAParser::parseTile(const unsigned id)
         // ignore failure to read the last record
       }
 
-      bool needText=textRef || (bool(text) && !formula && cellType != IWORK_CELL_TYPE_NUMBER);
+      if (format)
+      {
+        if (get(format).m_type) cellType=get(get(format).m_type);
+        IWORKPropertyMap props;
+        if (boost::get<IWORKNumberFormat>(&get(format).m_format))
+          props.put<property::SFTCellStylePropertyNumberFormat>(*boost::get<IWORKNumberFormat>(&get(format).m_format));
+        else if (boost::get<IWORKDateTimeFormat>(&get(format).m_format))
+          props.put<property::SFTCellStylePropertyDateTimeFormat>(*boost::get<IWORKDateTimeFormat>(&get(format).m_format));
+        else if (boost::get<IWORKDurationFormat>(&get(format).m_format))
+          props.put<property::SFTCellStylePropertyDurationFormat>(*boost::get<IWORKDurationFormat>(&get(format).m_format));
+        cellStyle.reset(new IWORKStyle(props, none, cellStyle));
+      }
+
+      bool needText=textRef || (bool(text) && !formula && cellType == IWORK_CELL_TYPE_TEXT);
       if (needText)
       {
         assert(!m_currentText);
@@ -2474,7 +2557,7 @@ void IWAParser::parseTile(const unsigned id)
           m_currentText->flushParagraph();
         }
       }
-      m_currentTable->m_table->insertCell(column, row, text, m_currentText, none, 1, 1, formula, unsigned(row*256+column), cellStyle, cellType);
+      m_currentTable->m_table->insertCell(column, row, text, m_currentText, dateTime, 1, 1, formula, unsigned(row*256+column), cellStyle, cellType);
       m_currentText.reset();
     }
   }
@@ -2560,6 +2643,89 @@ void IWAParser::parseTableGridLine(unsigned id, IWORKGridLineMap_t &gridLine)
     }
     flatSegments.insert_back(get(it.uint32(1)),get(it.uint32(1))+get(it.uint32(2)), std::make_shared<IWORKStyle>(props,none,none));
   }
+}
+
+bool IWAParser::parseFormat(const IWAMessage &msg, IWAParser::Format &format)
+{
+  if (!msg.uint32(1))
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::parseFormat: can not find the main type\n"));
+    return false;
+  }
+  auto type=get(msg.uint32(1));
+  format.m_type=IWORK_CELL_TYPE_NUMBER;
+  IWORKCellNumberType nType=IWORK_CELL_NUMBER_TYPE_DOUBLE;
+  switch (type)
+  {
+  case 1: // automatic
+    return true;
+  case 263: // checkbox
+  case 264: // stepper
+  case 265: // slider
+  case 266: // pop-up menu
+  case 267: // star rating
+    return false;
+  case 257: // currency
+    nType=IWORK_CELL_NUMBER_TYPE_CURRENCY;
+    break;
+  case 258: // percentage
+    nType=IWORK_CELL_NUMBER_TYPE_PERCENTAGE;
+    break;
+  case 259: // scientific
+    nType=IWORK_CELL_NUMBER_TYPE_SCIENTIFIC;
+    break;
+  case 262: // fraction
+    nType=IWORK_CELL_NUMBER_TYPE_FRACTION;
+    break;
+  case 256: // number
+  case 269: // numeral system
+  case 270: // custom system
+    break;
+  case 260:
+  case 271: // custom text
+    format.m_type=IWORK_CELL_TYPE_TEXT;
+    return true;
+  case 261:
+  case 272: // custom date and time: format in message(41)?
+    format.m_type=IWORK_CELL_TYPE_DATE_TIME;
+    if (msg.string(14))
+    {
+      IWORKDateTimeFormat dtFormat;
+      dtFormat.m_format=get(msg.string(14));
+      format.m_format=dtFormat;
+      return true;
+    }
+    else
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseFormat: can not find the format string\n"));
+      return false;
+    }
+    break;
+  case 268:
+  {
+    format.m_type=IWORK_CELL_TYPE_DURATION;
+    // read 7: style and then 15 and 16
+    IWORKDurationFormat dFormat;
+    dFormat.m_format="%H:%M:%S";
+    format.m_format=dFormat;
+    return true;
+  }
+  default:
+    ETONYEK_DEBUG_MSG(("IWAParser::parseFormat: find unknown type\n"));
+    return false;
+  }
+  IWORKNumberFormat nFormat;
+  nFormat.m_type=nType;
+  if (msg.uint32(2)) nFormat.m_decimalPlaces=get(msg.uint32(2));
+  else if (msg.uint32(9)) nFormat.m_decimalPlaces=get(msg.uint32(9));
+  if (nFormat.m_decimalPlaces>128) nFormat.m_decimalPlaces=-1; // 253 means automatic?
+  if (msg.string(3)) nFormat.m_currencyCode=get(msg.string(3));
+  if (msg.bool_(4)) nFormat.m_thousandsSeparator=get(msg.bool_(4));
+  if (msg.bool_(5)) nFormat.m_accountingStyle=get(msg.bool_(5));
+  if (msg.uint32(8)) nFormat.m_base=get(msg.uint32(8));
+  if (msg.uint32(11)) nFormat.m_fractionAccuracy=get(msg.uint32(11));
+  format.m_format=nFormat;
+  return true;
 }
 
 bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)

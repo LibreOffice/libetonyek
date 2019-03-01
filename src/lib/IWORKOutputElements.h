@@ -58,6 +58,7 @@ public:
   void addCloseTableCell();
   void addCloseTableRow();
   void addCloseUnorderedListLevel();
+  void addDefineSheetNumberingStyle(const librevenge::RVNGPropertyList &propList);
   void addDrawGraphicObject(const librevenge::RVNGPropertyList &propList);
   void addDrawPath(const librevenge::RVNGPropertyList &propList);
   void addDrawPolyline(const librevenge::RVNGPropertyList &propList);

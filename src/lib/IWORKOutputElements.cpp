@@ -170,6 +170,17 @@ public:
   void write(IWORKDocumentInterface *iface) const override;
 };
 
+class DefineSheetNumberingStyleElement : public IWORKOutputElement
+{
+public:
+  DefineSheetNumberingStyleElement(const librevenge::RVNGPropertyList &propList) :
+    m_propList(propList) {}
+  ~DefineSheetNumberingStyleElement() override {}
+  void write(IWORKDocumentInterface *iface) const override;
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
 class DrawGraphicObjectElement : public IWORKOutputElement
 {
 public:
@@ -645,6 +656,12 @@ void CloseUnorderedListLevelElement::write(IWORKDocumentInterface *iface) const
     iface->closeUnorderedListLevel();
 }
 
+void DefineSheetNumberingStyleElement::write(IWORKDocumentInterface *iface) const
+{
+  if (iface)
+    iface->defineSheetNumberingStyle(m_propList);
+}
+
 void DrawGraphicObjectElement::write(IWORKDocumentInterface *iface) const
 {
   if (iface)
@@ -973,6 +990,11 @@ void IWORKOutputElements::addCloseTableRow()
 void IWORKOutputElements::addCloseUnorderedListLevel()
 {
   m_elements.push_back(make_shared<CloseUnorderedListLevelElement>());
+}
+
+void IWORKOutputElements::addDefineSheetNumberingStyle(const librevenge::RVNGPropertyList &propList)
+{
+  m_elements.push_back(make_shared<DefineSheetNumberingStyleElement>(propList));
 }
 
 void IWORKOutputElements::addDrawGraphicObject(const librevenge::RVNGPropertyList &propList)

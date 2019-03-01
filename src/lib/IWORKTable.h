@@ -100,9 +100,12 @@ public:
 private:
   IWORKStylePtr_t getDefaultStyle(unsigned column, unsigned row, const IWORKStylePtr_t *group) const;
 
+  boost::optional<std::string> writeFormat(IWORKOutputElements &elements, const IWORKStylePtr_t &style, const IWORKCellType type, boost::optional<std::string> &rvngValueType);
+
 private:
   const IWORKTableNameMapPtr_t m_tableNameMap;
   const IWORKLanguageManager &m_langManager;
+  std::map<librevenge::RVNGString,std::string> m_formatNameMap;
 
   Table_t m_table;
   IWORKStylePtr_t m_style;
