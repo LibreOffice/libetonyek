@@ -32,31 +32,44 @@ using boost::variant;
 using std::string;
 using std::vector;
 
-struct Coord
+std::ostream &operator<<(std::ostream &s, IWORKFormula::Address const &ad)
 {
-  Coord()
-    : m_coord(0)
-    , m_absolute(false)
+  if (ad.m_table) s << "[" << get(ad.m_table) << "]";
+  if (ad.m_column)
   {
+    if (get(ad.m_column).m_absolute) s << "$";
+    s << "C" << get(ad.m_column).m_coord;
   }
-  unsigned m_coord;
-  bool m_absolute;
-};
+  if (ad.m_row)
+  {
+    if (get(ad.m_row).m_absolute) s << "$";
+    s << "R" << get(ad.m_row).m_coord;
+  }
+  return s;
+}
 
-struct Address
+std::ostream &operator<<(std::ostream &s, IWORKFormula::Token const &dt)
 {
-  Address()
-    : m_column()
-    , m_row()
-    , m_table()
+  switch (dt.m_type)
   {
+  case IWORKFormula::Token::Cell:
+    s << dt.m_address;
+    break;
+  case IWORKFormula::Token::Double:
+    s << dt.m_value;
+    break;
+  case IWORKFormula::Token::Operator:
+  case IWORKFormula::Token::Function:
+    s << dt.m_string;
+    break;
+  case IWORKFormula::Token::String:
+    s << "\"" << dt.m_string << "\"";
+    break;
   }
-  optional<Coord> m_column;
-  optional<Coord> m_row;
-  optional<string> m_table;
-};
+  return s;
+}
 
-typedef std::pair<Address, Address> AddressRange;
+typedef std::pair<IWORKFormula::Address, IWORKFormula::Address> AddressRange;
 
 struct TrueOrFalseFunc
 {
@@ -73,7 +86,7 @@ struct InfixOp;
 struct PostfixOp;
 struct PExpr;
 
-typedef variant<double, string, TrueOrFalseFunc, Address, AddressRange, recursive_wrapper<PrefixOp>, recursive_wrapper<InfixOp>, recursive_wrapper<PostfixOp>, recursive_wrapper<Function>, recursive_wrapper<PExpr> > Expression;
+typedef variant<double, string, TrueOrFalseFunc, IWORKFormula::Address, AddressRange, recursive_wrapper<PrefixOp>, recursive_wrapper<InfixOp>, recursive_wrapper<PostfixOp>, recursive_wrapper<Function>, recursive_wrapper<PExpr> > Expression;
 
 struct PrefixOp
 {
@@ -134,9 +147,9 @@ struct PExpr
 }
 
 BOOST_FUSION_ADAPT_STRUCT(
-  libetonyek::Coord,
+  libetonyek::IWORKFormula::Coord,
   (bool, m_absolute)
-  (unsigned, m_coord)
+  (int, m_coord)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
@@ -145,10 +158,10 @@ BOOST_FUSION_ADAPT_STRUCT(
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
-  libetonyek::Address,
+  libetonyek::IWORKFormula::Address,
   (optional<std::string>, m_table)
-  (optional<libetonyek::Coord>, m_column)
-  (optional<libetonyek::Coord>, m_row)
+  (optional<libetonyek::IWORKFormula::Coord>, m_column)
+  (optional<libetonyek::IWORKFormula::Coord>, m_row)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
@@ -361,17 +374,17 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   qi::rule<Iterator, TrueOrFalseFunc()> trueOrFalseFunction;
   qi::rule<Iterator, Expression()> expression, formula, term;
   qi::rule<Iterator, PExpr()> pExpr;
-  qi::rule<Iterator, Address()> address, addressSpecialColumn, addressSpecialRow;
+  qi::rule<Iterator, IWORKFormula::Address()> address, addressSpecialColumn, addressSpecialRow;
   qi::rule<Iterator, AddressRange()> range;
   qi::rule<Iterator, unsigned()> columnName;
-  qi::rule<Iterator, Coord()> column, row;
+  qi::rule<Iterator, IWORKFormula::Coord()> column, row;
   qi::rule<Iterator, double()> number;
   qi::rule<Iterator, string()> str, table, infixLit, trueOrFalseFunctionLit;
   qi::rule<Iterator, PrefixOp()> prefixOp;
   qi::rule<Iterator, InfixOp()> infixOp;
   qi::rule<Iterator, PostfixOp()> postfixOp;
   qi::rule<Iterator, char()> prefixLit, postfixLit;
-  qi::rule<Iterator, qi::locals<Address> > rangeSpecial;
+  qi::rule<Iterator, qi::locals<IWORKFormula::Address> > rangeSpecial;
 
   qi::symbols<char, string> mappedName;
 };
@@ -406,7 +419,7 @@ struct Printer : public boost::static_visitor<void>
     m_out << val;
   }
 
-  void operator()(const Address &val) const
+  void operator()(const IWORKFormula::Address &val) const
   {
     m_out << '[';
     formatAddress(val);
@@ -420,6 +433,24 @@ struct Printer : public boost::static_visitor<void>
     m_out << ':';
     formatAddress(val.second);
     m_out << ']';
+  }
+
+  void operator()(const IWORKFormula::Token &val) const
+  {
+    switch (val.m_type)
+    {
+    case IWORKFormula::Token::Cell:
+      operator()(val.m_address);
+      break;
+    case IWORKFormula::Token::Double:
+      m_out << val.m_value;
+      break;
+    case IWORKFormula::Token::Function:
+    case IWORKFormula::Token::Operator:
+    case IWORKFormula::Token::String:
+      m_out << val.m_string;
+      break;
+    }
   }
 
   void operator()(const TrueOrFalseFunc &val) const
@@ -466,7 +497,7 @@ struct Printer : public boost::static_visitor<void>
   }
 
 private:
-  void formatAddress(const Address &val) const
+  void formatAddress(const IWORKFormula::Address &val) const
   {
     if (val.m_table)
       m_out << get(val.m_table);
@@ -555,7 +586,7 @@ struct Collector : public boost::static_visitor<>
     m_propsVector.append(props2);
   }
 
-  void operator()(const Address &val) const
+  void operator()(const IWORKFormula::Address &val) const
   {
 
     librevenge::RVNGPropertyList props;
@@ -637,6 +668,36 @@ struct Collector : public boost::static_visitor<>
     m_propsVector.append(props);
   }
 
+  void operator()(const IWORKFormula::Token &val) const
+  {
+    librevenge::RVNGPropertyList props;
+    switch (val.m_type)
+    {
+    case IWORKFormula::Token::Cell:
+      operator()(val.m_address);
+      break;
+    case IWORKFormula::Token::Double:
+      props.insert("librevenge:type", "librevenge-number");
+      props.insert("librevenge:number", val.m_value, librevenge::RVNG_GENERIC);
+      m_propsVector.append(props);
+      break;
+    case IWORKFormula::Token::Function:
+      props.insert("librevenge:type", "librevenge-function");
+      props.insert("librevenge:function", val.m_string.c_str());
+      m_propsVector.append(props);
+      break;
+    case IWORKFormula::Token::Operator:
+      props.insert("librevenge:type", "librevenge-operator");
+      props.insert("librevenge:operator", val.m_string.c_str());
+      m_propsVector.append(props);
+      break;
+    case IWORKFormula::Token::String:
+      props.insert("librevenge:type", "librevenge-text");
+      props.insert("librevenge:text", val.m_string.c_str());
+      m_propsVector.append(props);
+      break;
+    }
+  }
   void operator()(const recursive_wrapper<PrefixOp> &val) const
   {
     librevenge::RVNGPropertyList props;
@@ -721,11 +782,13 @@ private:
 
 struct IWORKFormula::Impl
 {
-  Impl() :
-    m_formula()
+  Impl()
+    : m_formula()
+    , m_tokenList()
   {
   }
   Expression m_formula;
+  std::vector<Token> m_tokenList;
 };
 
 IWORKFormula::IWORKFormula(const boost::optional<unsigned> &hc)
@@ -748,6 +811,12 @@ bool IWORKFormula::parse(const std::string &formula)
   return true;
 }
 
+bool IWORKFormula::parse(const std::vector<IWORKFormula::Token> &formula)
+{
+  m_impl->m_tokenList=formula;
+  return true;
+}
+
 const std::string IWORKFormula::str(const boost::optional<unsigned> &hc) const
 {
   ostringstream out;
@@ -755,7 +824,13 @@ const std::string IWORKFormula::str(const boost::optional<unsigned> &hc) const
   int offsetCol=0, offsetRow=0;
   if (!computeOffset(hc, offsetCol, offsetRow))
     offsetCol=offsetRow=0;
-  apply_visitor(Printer(out, offsetCol, offsetRow), m_impl->m_formula);
+  if (m_impl->m_tokenList.empty())
+    apply_visitor(Printer(out, offsetCol, offsetRow), m_impl->m_formula);
+  else
+  {
+    Printer printer(out, offsetCol, offsetRow);
+    for (auto const &f : m_impl->m_tokenList) printer(f);
+  }
   return out.str();
 }
 
@@ -764,7 +839,13 @@ void IWORKFormula::write(const boost::optional<unsigned> &hc, librevenge::RVNGPr
   int offsetCol=0, offsetRow=0;
   if (!computeOffset(hc, offsetCol, offsetRow))
     offsetCol=offsetRow=0;
-  apply_visitor(Collector(formula, tableNameMap, offsetCol, offsetRow), m_impl->m_formula);
+  if (m_impl->m_tokenList.empty())
+    apply_visitor(Collector(formula, tableNameMap, offsetCol, offsetRow), m_impl->m_formula);
+  else
+  {
+    Collector collect(formula, tableNameMap, offsetCol, offsetRow);
+    for (auto const &f : m_impl->m_tokenList) collect(f);
+  }
 }
 
 bool IWORKFormula::computeOffset(const boost::optional<unsigned> &hc, int &offsetColumn, int &offsetRow) const
