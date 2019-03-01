@@ -331,13 +331,14 @@ void IWORKSpreadsheetRedirector::drawConnector(const librevenge::RVNGPropertyLis
   m_iface->drawConnector(propList);
 }
 
-void IWORKSpreadsheetRedirector::startTextObject(const librevenge::RVNGPropertyList &/*propList*/)
+void IWORKSpreadsheetRedirector::startTextObject(const librevenge::RVNGPropertyList &propList)
 {
-  assert(0);
+  m_iface->openTextBox(propList);
 }
+
 void IWORKSpreadsheetRedirector::endTextObject()
 {
-  assert(0);
+  m_iface->closeTextBox();
 }
 
 void IWORKSpreadsheetRedirector::startNotes(const librevenge::RVNGPropertyList &/*propList*/)

@@ -37,6 +37,8 @@ public:
   IWORKOutputElements();
 
   void append(const IWORKOutputElements &elements);
+  //! add shapes data in spreadsheet. Assume that the current elements are OpenSheet(...), ...
+  void addShapesInSpreadsheet(const IWORKOutputElements &elements);
   void write(IWORKDocumentInterface *iface) const;
   void clear();
   bool empty() const;
