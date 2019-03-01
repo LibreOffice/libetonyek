@@ -36,6 +36,7 @@ enum
   stylesheet,
   workspace,
   workspace_array,
+  workspace_name,
   workspace_style,
 
   // attributes

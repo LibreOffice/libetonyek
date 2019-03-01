@@ -32,7 +32,7 @@ bool NUM3Parser::parseSheet(unsigned id)
   if (!msg) return false;
   // 1: is the page name
   // 2: is the list of table/other drawing in this page
-  m_collector.startLayer();
+  m_collector.startWorkSpace(boost::none);
   const std::deque<unsigned> &tableListRefs = readRefs(get(msg), 2);
   for (auto cId : tableListRefs)
   {
@@ -45,7 +45,7 @@ bool NUM3Parser::parseSheet(unsigned id)
     }
     dispatchShape(cId);
   }
-  m_collector.endLayer();
+  m_collector.endWorkSpace(m_tableNameMap);
 
   return true;
 }

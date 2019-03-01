@@ -132,20 +132,12 @@ public:
   explicit LayerElement(NUM1ParserState &state);
 
 private:
-  void startOfElement() override;
   IWORKXMLContextPtr_t element(int name) override;
-  void endOfElement() override;
 };
 
 LayerElement::LayerElement(NUM1ParserState &state)
   : NUM1XMLElementContextBase(state)
 {
-}
-
-void LayerElement::startOfElement()
-{
-  if (isCollector())
-    getCollector().startLayer();
 }
 
 IWORKXMLContextPtr_t LayerElement::element(const int name)
@@ -159,14 +151,6 @@ IWORKXMLContextPtr_t LayerElement::element(const int name)
   }
 
   return IWORKXMLContextPtr_t();
-}
-
-void LayerElement::endOfElement()
-{
-  if (!isCollector())
-    return;
-  // const KEYLayerPtr_t layer(getCollector().collectLayer());
-  getCollector().endLayer();
 }
 
 }
@@ -312,17 +296,41 @@ public:
   explicit WorkSpaceElement(NUM1ParserState &state);
 
 private:
+  void attribute(const int name, const char *value) override;
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
+
+  boost::optional<std::string> m_spaceName;
+  bool m_opened;
 };
 
 WorkSpaceElement::WorkSpaceElement(NUM1ParserState &state)
   : NUM1XMLElementContextBase(state)
+  , m_spaceName()
+  , m_opened(false)
 {
+}
+
+void WorkSpaceElement::attribute(const int name, const char *value)
+{
+  switch (name)
+  {
+  case NUM1Token::NS_URI_LS | NUM1Token::workspace_name:
+    m_spaceName = value;
+    break;
+  default:
+    NUM1XMLElementContextBase::attribute(name, value);
+    break;
+  }
 }
 
 IWORKXMLContextPtr_t WorkSpaceElement::element(const int name)
 {
+  if (isCollector() && !m_opened)
+  {
+    m_opened=true;
+    getCollector().startWorkSpace(m_spaceName);
+  }
   switch (name)
   {
   case NUM1Token::NS_URI_LS | NUM1Token::page_info:
@@ -336,6 +344,8 @@ IWORKXMLContextPtr_t WorkSpaceElement::element(const int name)
 
 void WorkSpaceElement::endOfElement()
 {
+  if (isCollector() && m_opened)
+    getCollector().endWorkSpace(getState().m_tableNameMap);
 }
 
 }

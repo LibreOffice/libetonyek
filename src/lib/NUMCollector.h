@@ -28,8 +28,8 @@ public:
   void startDocument();
   void endDocument();
 
-  void startLayer();
-  void endLayer();
+  void startWorkSpace(boost::optional<std::string> const &name);
+  void endWorkSpace(IWORKTableNameMapPtr_t tableNameMap);
 
 private:
   void drawTable() override;
@@ -41,7 +41,9 @@ private:
   }
   void drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox, const librevenge::RVNGPropertyList &style) override;
 
-  bool m_layerOpened;
+  bool m_workSpaceOpened;
+  boost::optional<std::string> m_workSpaceName;
+  bool m_workSpaceCreateGraphic;
   std::vector<IWORKOutputElements> m_tableElementLists;
 };
 

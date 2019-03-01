@@ -123,6 +123,7 @@ protected:
 
 protected:
   IWORKLanguageManager m_langManager;
+  IWORKTableNameMapPtr_t m_tableNameMap;
   std::shared_ptr<IWORKText> m_currentText;
 
 private:
@@ -234,7 +235,6 @@ private:
   mutable StyleMap_t m_tableStyles;
   mutable StyleMap_t m_listStyles;
 
-  IWORKTableNameMapPtr_t m_tableNameMap;
   std::shared_ptr<TableInfo> m_currentTable;
   std::map<uint64_t,Format> m_uidFormatMap;
 };

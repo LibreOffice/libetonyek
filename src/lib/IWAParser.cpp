@@ -148,6 +148,7 @@ IWAParser::TableInfo::TableInfo(const shared_ptr<IWORKTable> &table, const unsig
 
 IWAParser::IWAParser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package, IWORKCollector &collector)
   : m_langManager()
+  , m_tableNameMap(std::make_shared<IWORKTableNameMap_t>())
   , m_currentText()
   , m_collector(collector)
   , m_index(fragments, package)
@@ -160,7 +161,6 @@ IWAParser::IWAParser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStrea
   , m_cellStyles()
   , m_tableStyles()
   , m_listStyles()
-  , m_tableNameMap(std::make_shared<IWORKTableNameMap_t>())
   , m_currentTable()
   , m_uidFormatMap()
 {
