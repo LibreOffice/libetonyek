@@ -40,6 +40,12 @@ bool NUM3Parser::parseDocument()
   if (!msg) return false;
 
   m_collector.startDocument();
+  auto info=get(msg).message(8);
+  if (info)
+  {
+    auto customRef=readRef(get(info),12);
+    if (customRef) parseCustomFormat(get(customRef));
+  }
   // const optional<IWAMessage> size = get(msg).message(12).optional();
   // if (size) define the page size
   const std::deque<unsigned> &sheetListRefs = readRefs(get(msg), 1);

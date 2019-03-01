@@ -263,7 +263,7 @@ void IWORKSpreadsheetRedirector::closeTableCell()
 }
 void IWORKSpreadsheetRedirector::insertCoveredTableCell(const librevenge::RVNGPropertyList &/*propList*/)
 {
-  assert(0);
+  // safe to ignore
 }
 void IWORKSpreadsheetRedirector::closeTable()
 {

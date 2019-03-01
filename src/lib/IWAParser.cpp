@@ -161,6 +161,7 @@ IWAParser::IWAParser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStrea
   , m_listStyles()
   , m_tableNameMap(std::make_shared<IWORKTableNameMap_t>())
   , m_currentTable()
+  , m_uidFormatMap()
 {
 }
 
@@ -290,7 +291,29 @@ boost::optional<IWORKColor> IWAParser::readColor(const IWAMessage &msg, const un
   return boost::none;
 }
 
-boost::optional<std::string> IWAParser::readUID(const IWAMessage &msg, const unsigned field)
+boost::optional<uint64_t> IWAParser::readUID(const IWAMessage &msg, unsigned field)
+{
+  const IWAMessageField &id = msg.message(field);
+  if (!id) return boost::none;
+  if (id && get(id).uint32(1) && get(id).uint32(2))
+    return (uint64_t(get(get(id).uint32(1)))<<32) | get(get(id).uint32(2));
+  ETONYEK_DEBUG_MSG(("IWAParser::readUID: can not find the id zone\n"));
+  return boost::none;
+}
+
+std::deque<uint64_t> IWAParser::readUIDs(const IWAMessage &msg, unsigned field)
+{
+  const std::deque<IWAMessage> &objs = msg.message(field).repeated();
+  std::deque<uint64_t> res;
+  for (const auto &obj : objs)
+  {
+    if (obj.uint32(1) && obj.uint32(2))
+      res.push_back((uint64_t(get(obj.uint32(1)))<<32) | get(obj.uint32(2)));
+  }
+  return res;
+}
+
+boost::optional<std::string> IWAParser::readUUID(const IWAMessage &msg, const unsigned field)
 {
   const IWAMessageField &mId = msg.message(field);
   if (!mId) return boost::none;
@@ -308,7 +331,7 @@ boost::optional<std::string> IWAParser::readUID(const IWAMessage &msg, const uns
       s << std::hex << std::setfill('0') << std::setw(8) << val;
       if (s.str().size()!=8)
       {
-        ETONYEK_DEBUG_MSG(("IWAParser::readUID: bad size\n"));
+        ETONYEK_DEBUG_MSG(("IWAParser::readUUID: bad size\n"));
         return boost::none;
       }
       for (size_t c=0; c<4; ++c)
@@ -321,7 +344,7 @@ boost::optional<std::string> IWAParser::readUID(const IWAMessage &msg, const uns
     if (!hasValues) return none;
     return res;
   }
-  ETONYEK_DEBUG_MSG(("IWAParser::readUID: can not find the id zone\n"));
+  ETONYEK_DEBUG_MSG(("IWAParser::readUUID: can not find the id zone\n"));
   return boost::none;
 }
 
@@ -2231,7 +2254,29 @@ void IWAParser::parseTabularModel(const unsigned id)
     if (grid.message(3) && grid.message(3).message(1))
       tileRef = readRef(get(grid.message(3).message(1)), 2);
   }
-
+  if (get(msg).string(8))
+  {
+    auto finalName=get(get(msg).string(8));
+    // also update the table name map?
+    if (m_tableNameMap->find(finalName)!=m_tableNameMap->end())
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseTabularModel: a table with name %s already exists\n", finalName.c_str()));
+      // let create an unique name
+      int nId=0;
+      while (true)
+      {
+        std::stringstream s;
+        s << finalName << "_" << ++nId;
+        if (m_tableNameMap->find(s.str())!=m_tableNameMap->end()) continue;
+        finalName=s.str();
+        break;
+      }
+    }
+    (*m_tableNameMap)[finalName]=finalName;
+    if (get(msg).string(1))
+      (*m_tableNameMap)[std::string("SFTGlobalID_")+get(get(msg).string(1))] = finalName;
+    m_currentTable->m_table->setName(finalName);
+  }
   m_currentTable->m_table->setHeaders(
     get_optional_value_or(get(msg).uint32(10).optional(), 0),
     get_optional_value_or(get(msg).uint32(9).optional(), 0),
@@ -2686,6 +2731,19 @@ bool IWAParser::parseFormat(const IWAMessage &msg, IWAParser::Format &format)
     ETONYEK_DEBUG_MSG(("IWAParser::parseFormat: can not find the main type\n"));
     return false;
   }
+  auto uid=readUID(msg,41);
+  if (uid)
+  {
+    auto it= m_uidFormatMap.find(get(uid));
+    if (it==m_uidFormatMap.end())
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseFormat: can not find the format %llx\n", get(uid)));
+      return false;
+    }
+    format=it->second;
+    return true;
+  }
+
   auto type=get(msg.uint32(1));
   format.m_type=IWORK_CELL_TYPE_NUMBER;
   IWORKCellNumberType nType=IWORK_CELL_NUMBER_TYPE_DOUBLE;
@@ -2713,14 +2771,20 @@ bool IWAParser::parseFormat(const IWAMessage &msg, IWAParser::Format &format)
     break;
   case 256: // number
   case 269: // numeral system
-  case 270: // custom system
+    break;
+  case 270: // custom number
+    // TODO
     break;
   case 260:
+    format.m_type=IWORK_CELL_TYPE_TEXT;
+    return true;
   case 271: // custom text
+    // normally, we use msg.string(18) as text for a not empty cell
+    // ie. store it when we see it in a custom format cell
+    //     then use it to define the cell content
     format.m_type=IWORK_CELL_TYPE_TEXT;
     return true;
   case 261:
-  case 272: // custom date and time: format in message(41)?
     format.m_type=IWORK_CELL_TYPE_DATE_TIME;
     if (msg.string(14))
     {
@@ -2735,6 +2799,17 @@ bool IWAParser::parseFormat(const IWAMessage &msg, IWAParser::Format &format)
       return false;
     }
     break;
+  case 272:
+    format.m_type=IWORK_CELL_TYPE_DATE_TIME;
+    if (msg.string(18))
+    {
+      IWORKDateTimeFormat dtFormat;
+      dtFormat.m_format=get(msg.string(18));
+      format.m_format=dtFormat;
+      return true;
+    }
+    ETONYEK_DEBUG_MSG(("IWAParser::parseFormat: can not find the date/time format\n"));
+    return false;
   case 268:
   {
     format.m_type=IWORK_CELL_TYPE_DURATION;
@@ -2760,6 +2835,33 @@ bool IWAParser::parseFormat(const IWAMessage &msg, IWAParser::Format &format)
   if (msg.uint32(11)) nFormat.m_fractionAccuracy=get(msg.uint32(11));
   format.m_format=nFormat;
   return true;
+}
+
+void IWAParser::parseCustomFormat(unsigned id)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::CustomDateTimeFormat);
+  if (!msg) return;
+  auto const &uidLists = readUIDs(get(msg),1);
+  auto const &formatList = get(msg).message(2).repeated();
+  if (uidLists.size()!=formatList.size())
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::parseFormat: find unexpected data size\n"));
+    return;
+  }
+  std::map<uint64_t, std::string> idToFormatMap;
+  for (size_t i=0; i<uidLists.size(); ++i)
+  {
+    auto const &formatMsg=formatList[i];
+    // 1: name, 2: type
+    auto const &formatDef=formatMsg.message(3);
+    Format format;
+    if (!formatDef || !parseFormat(get(formatDef), format))
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseFormat: can not find string zone\n"));
+      continue;
+    }
+    m_uidFormatMap[uidLists[i]]=format;
+  }
 }
 
 bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
@@ -2976,8 +3078,8 @@ bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
         else
           address.m_row=coord;
       }
-      address.m_table=readUID(it,28);
-      // readUID(it,38); filename ?
+      address.m_table=readUUID(it,28);
+      // readUUID(it,38); filename ?
       if (!ok)
         break;
       stack.push_back({IWORKFormula::Token(address)});
