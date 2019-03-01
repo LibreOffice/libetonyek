@@ -42,6 +42,7 @@ public:
   void closePageGroup();
 
   // helper functions
+  void startDocument();
   void setPageDimensions(const IWORKPrintInfo &dimensions);
 
   void openSection(const std::string &style); // probably better to look for the style in the calling function
