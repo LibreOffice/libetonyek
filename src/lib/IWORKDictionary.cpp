@@ -14,6 +14,7 @@ namespace libetonyek
 
 IWORKDictionary::IWORKDictionary()
   : m_cellStyles()
+  , m_cellCommentStyles()
   , m_characterStyles()
   , m_chartStyles()
   , m_chartSeriesStyles()

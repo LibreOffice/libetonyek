@@ -40,6 +40,7 @@ struct IWORKDictionary
   IWORKDictionary();
 
   IWORKStyleMap_t m_cellStyles;
+  IWORKStyleMap_t m_cellCommentStyles;
   IWORKStyleMap_t m_characterStyles;
   IWORKStyleMap_t m_chartStyles;
   IWORKStyleMap_t m_chartSeriesStyles;
