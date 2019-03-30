@@ -19,7 +19,9 @@ namespace libetonyek
 
 NUMCollector::NUMCollector(IWORKDocumentInterface *const document)
   : IWORKCollector(document)
-  , m_layerOpened(false)
+  , m_workSpaceOpened(false)
+  , m_workSpaceName()
+  , m_workSpaceCreateGraphic(false)
   , m_tableElementLists()
 {
 }
@@ -46,24 +48,25 @@ void NUMCollector::endDocument()
   IWORKCollector::endDocument();
 }
 
-void NUMCollector::startLayer()
+void NUMCollector::startWorkSpace(boost::optional<std::string> const &name)
 {
-  if (m_layerOpened)
+  if (m_workSpaceOpened)
   {
-    ETONYEK_DEBUG_MSG(("NUMCollector::startLayer: oops a layer is already open\n"));
-    endLayer();
+    ETONYEK_DEBUG_MSG(("NUMCollector::startWorkSpace: oops a workSpace is already open\n"));
+    endWorkSpace(nullptr);
   }
   getOutputManager().push();
-  m_layerOpened = true;
-
+  m_workSpaceOpened = true;
+  m_workSpaceName = name;
+  m_workSpaceCreateGraphic = false;
   startLevel();
 }
 
-void NUMCollector::endLayer()
+void NUMCollector::endWorkSpace(IWORKTableNameMapPtr_t tableNameMap)
 {
-  if (!m_layerOpened)
+  if (!m_workSpaceOpened)
   {
-    ETONYEK_DEBUG_MSG(("NUMCollector::endLayer: no open layer\n"));
+    ETONYEK_DEBUG_MSG(("NUMCollector::endWorkSpace: no open workSpace\n"));
     return;
   }
 
@@ -71,22 +74,12 @@ void NUMCollector::endLayer()
   auto shapeElements=getOutputManager().getCurrent();
   getOutputManager().pop();
 
-  if (!shapeElements.empty() && m_tableElementLists.empty())
-  {
-    // we must create a empty spreadsheet
-    // CHANGEME: retrieve the table name list and language manager correctly
-    IWORKLanguageManager langManager;
-    IWORKTable table(nullptr, langManager);
-    IWORKOutputElements tableElements;
-    librevenge::RVNGPropertyList props;
-    table.draw(props, tableElements, false);
-    tableElements.addShapesInSpreadsheet(shapeElements);
-    getOutputManager().getCurrent().append(tableElements);
-  }
+  if (m_tableElementLists.size()>=2)
+    m_workSpaceCreateGraphic=true;
   for (auto const &tableElt : m_tableElementLists)
   {
     if (tableElt.empty()) continue;
-    if (!shapeElements.empty())
+    if (!shapeElements.empty() && !m_workSpaceCreateGraphic)
     {
       auto finalTableElt(tableElt);
       finalTableElt.addShapesInSpreadsheet(shapeElements);
@@ -96,13 +89,54 @@ void NUMCollector::endLayer()
     else
       getOutputManager().getCurrent().append(tableElt);
   }
+  if (!shapeElements.empty())
+  {
+    // ok, we must create a empty spreadsheet
+    IWORKLanguageManager langManager;
+    IWORKTable table(tableNameMap, langManager);
+    if (m_workSpaceName && tableNameMap)
+    {
+      auto tableName=*m_workSpaceName;
+      if (m_tableElementLists.size()>=2) tableName += "_Graphics";
+      if (tableNameMap->find(tableName)!=tableNameMap->end())
+      {
+        ETONYEK_DEBUG_MSG(("NUMCollector::endWorkSpace: a table with name %s already exists\n", tableName.c_str()));
+        // let create an unique name
+        int id=0;
+        while (true)
+        {
+          std::stringstream s;
+          s << tableName << "_" << ++id;
+          if (tableNameMap->find(s.str())!=tableNameMap->end()) continue;
+          tableName=s.str();
+          break;
+        }
+      }
+      (*tableNameMap)[tableName]=tableName;
+      table.setName(tableName);
+    }
+    IWORKOutputElements tableElements;
+    librevenge::RVNGPropertyList props;
+    table.draw(props, tableElements, false);
+    tableElements.addShapesInSpreadsheet(shapeElements);
+    getOutputManager().getCurrent().append(tableElements);
+  }
   m_tableElementLists.clear();
-  m_layerOpened = false;
+  m_workSpaceOpened = false;
+  m_workSpaceName = boost::none;
+  m_workSpaceCreateGraphic = false;
 }
 
 void NUMCollector::drawTable()
 {
   assert(bool(m_currentTable));
+  if (!m_workSpaceCreateGraphic && !m_levelStack.empty())
+  {
+    // check if the table can be the main sheet
+    glm::dvec3 vec = m_levelStack.top().m_trafo * glm::dvec3(0, 0, 1);
+    m_workSpaceCreateGraphic = vec[0]>0 || vec[1]>0;
+  }
+
   m_tableElementLists.push_back(IWORKOutputElements());
   librevenge::RVNGPropertyList props;
   m_currentTable->draw(props, m_tableElementLists.back(), false);
