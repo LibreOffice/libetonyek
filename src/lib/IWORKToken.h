@@ -337,6 +337,7 @@ enum
   number_cell,
   number_format,
   number_format_ref,
+  o,
   oddPageMaster,
   of,
   original_size,
