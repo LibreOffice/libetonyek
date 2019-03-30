@@ -63,6 +63,7 @@ public:
   void setRecorder(const std::shared_ptr<IWORKTableRecorder> &recorder);
   const std::shared_ptr<IWORKTableRecorder> &getRecorder() const;
 
+  void setName(std::string const &name);
   void setSize(unsigned columns, unsigned rows);
   void setHeaders(unsigned headerColumns, unsigned headerRows, unsigned footerRows);
   void setBandedRows(bool banded = true);
@@ -109,6 +110,7 @@ private:
 
   Table_t m_table;
   IWORKStylePtr_t m_style;
+  boost::optional<std::string> m_name;
   boost::optional<int> m_order;
   IWORKColumnSizes_t m_columnSizes;
   IWORKRowSizes_t m_rowSizes;

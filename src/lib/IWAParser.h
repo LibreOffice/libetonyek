@@ -92,7 +92,9 @@ protected:
   static boost::optional<IWORKPosition> readPosition(const IWAMessage &msg, unsigned field);
   static boost::optional<IWORKSize> readSize(const IWAMessage &msg, unsigned field);
   static boost::optional<IWORKColor> readColor(const IWAMessage &msg, unsigned field);
-  static boost::optional<std::string> readUID(const IWAMessage &msg, unsigned field);
+  static boost::optional<std::string> readUUID(const IWAMessage &msg, unsigned field);
+  static boost::optional<uint64_t> readUID(const IWAMessage &msg, unsigned field);
+  static std::deque<uint64_t> readUIDs(const IWAMessage &msg, unsigned field);
   static void readStroke(const IWAMessage &msg, IWORKStroke &stroke);
   bool readFill(const IWAMessage &msg, IWORKFill &fill);
   static void readGradient(const IWAMessage &msg, IWORKGradient &gradient);
@@ -102,6 +104,7 @@ protected:
   bool dispatchShape(unsigned id);
   bool parseText(unsigned id, const std::function<void(unsigned, IWORKStylePtr_t)> &openPageSpan=nullptr);
   void parseComment(unsigned id);
+  void parseCustomFormat(unsigned id);
 
   bool parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry);
 
@@ -232,6 +235,7 @@ private:
 
   IWORKTableNameMapPtr_t m_tableNameMap;
   std::shared_ptr<TableInfo> m_currentTable;
+  std::map<uint64_t,Format> m_uidFormatMap;
 };
 
 }

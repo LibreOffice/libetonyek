@@ -29,7 +29,6 @@ public:
 
 private:
   void attribute(int name, const char *value) override;
-  void endOfAttributes() override;
   void startOfElement() override;
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;

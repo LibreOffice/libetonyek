@@ -18,6 +18,7 @@ namespace IWAObjectType
 
 enum
 {
+  CustomDateTimeFormat = 222,
   // 401: StyleRoot, ie. list of different styles id
   Text = 2001,
   ShapeField = 2003,
