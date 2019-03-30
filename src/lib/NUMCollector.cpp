@@ -22,7 +22,14 @@ NUMCollector::NUMCollector(IWORKDocumentInterface *const document)
 
 void NUMCollector::startDocument()
 {
-  IWORKCollector::startDocument();
+  librevenge::RVNGPropertyList calcSettings;
+  calcSettings.insert("librevenge:type","table:calculation-settings");
+  calcSettings.insert("table:use-wildcards",true);
+  librevenge::RVNGPropertyListVector pVect;
+  pVect.append(calcSettings);
+  librevenge::RVNGPropertyList props;
+  props.insert("librevenge:childs", pVect);
+  IWORKCollector::startDocument(props);
 }
 
 void NUMCollector::endDocument()

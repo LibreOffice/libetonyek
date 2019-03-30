@@ -142,6 +142,11 @@ void PAGCollector::collectAttachmentPosition(const IWORKPosition &position)
   m_attachmentPosition = position;
 }
 
+void PAGCollector::startDocument()
+{
+  IWORKCollector::startDocument(librevenge::RVNGPropertyList());
+}
+
 void PAGCollector::setPageDimensions(const IWORKPrintInfo &dimensions)
 {
   m_pageDimensions=dimensions;

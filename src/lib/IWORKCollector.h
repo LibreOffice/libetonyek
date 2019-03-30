@@ -92,7 +92,7 @@ public:
   void collectTable(const std::shared_ptr<IWORKTable> &table);
   void collectText(const std::shared_ptr<IWORKText> &text);
 
-  void startDocument();
+  void startDocument(const librevenge::RVNGPropertyList &props);
   void endDocument();
 
   void startAttachment();
