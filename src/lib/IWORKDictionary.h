@@ -16,6 +16,7 @@
 #include "IWORKPath.h"
 #include "IWORKStyle.h"
 #include "IWORKStylesheet.h"
+#include "IWORKText_fwd.h"
 #include "IWORKTypes.h"
 
 namespace libetonyek
@@ -84,6 +85,7 @@ struct IWORKDictionary
   IWORKShadowMap_t m_shadows;
   IWORKStrokeMap_t m_strokes;
   IWORKTableCellMap_t m_tableCells;
+  IWORKTableCommentMap_t m_tableComments;
   IWORKTableVectorMap_t m_tableVectors;
   IWORKTabStopsMap_t m_tabs;
   IWORKTableMap_t m_tabulars;

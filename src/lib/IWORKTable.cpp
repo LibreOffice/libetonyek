@@ -437,6 +437,7 @@ IWORKTable::IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLa
   : m_tableNameMap(tableNameMap)
   , m_langManager(langManager)
   , m_formatNameMap()
+  , m_commentMap()
   , m_table()
   , m_style()
   , m_name()
@@ -569,6 +570,16 @@ void IWORKTable::setBorders(const IWORKGridLineMap_t &verticalLines, const IWORK
 
   m_verticalLines = verticalLines;
   m_horizontalLines = horizontalLines;
+}
+
+void IWORKTable::setComment(unsigned column, unsigned row, IWORKOutputElements const &text)
+{
+  if (bool(m_recorder))
+  {
+    m_recorder->setComment(column,row,text);
+    return;
+  }
+  m_commentMap[std::make_pair(column,row)]=text;
 }
 
 void IWORKTable::setBorders(const IWORKGridLineMap_t &verticalLeftLines, const IWORKGridLineMap_t &verticalRightLines,
@@ -833,6 +844,13 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
             elements.addCloseSpan();
             elements.addCloseParagraph();
           }
+        }
+        auto nIt=m_commentMap.find(std::make_pair(c,r));
+        if (nIt!=m_commentMap.end())
+        {
+          elements.addOpenComment(librevenge::RVNGPropertyList());
+          elements.append(nIt->second);
+          elements.addCloseComment();
         }
         elements.addCloseTableCell();
       }
