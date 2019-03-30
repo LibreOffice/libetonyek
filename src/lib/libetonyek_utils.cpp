@@ -353,6 +353,7 @@ std::string detectMimetype(const RVNGInputStreamPtr_t &stream)
   if (0 == std::memcmp(sig, SIGNATURE_JPEG, ETONYEK_NUM_ELEMENTS(SIGNATURE_JPEG)))
     return std::string("image/jpeg");
 
+  // FIXME: add code to detect apple pict file, ie. MathType can generate some
   static bool first=true;
   if (first)
   {
