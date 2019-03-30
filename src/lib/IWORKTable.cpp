@@ -355,7 +355,8 @@ librevenge::RVNGString convertCellValueInText(const IWORKStyleStack &style, cons
       }
       const double val = value ? double_cast(get(value).c_str()) : 0;
       std::stringstream s;
-      s << std::setprecision(-numDecimals);
+      if (numDecimals>=0 && numDecimals<100)  // 65535 means default
+        s << std::setprecision(-numDecimals);
       switch (formatType)
       {
       case IWORK_CELL_NUMBER_TYPE_CURRENCY :
@@ -670,7 +671,7 @@ boost::optional<std::string> IWORKTable::writeFormat(IWORKOutputElements &elemen
     {
       const IWORKNumberFormat &format = style->get<property::SFTCellStylePropertyNumberFormat>();
       props.insert("librevenge:value-type", format.getRVNGValueType().c_str());
-      if (format.m_decimalPlaces>=0) props.insert("number:decimal-places", format.m_decimalPlaces);
+      if (format.m_decimalPlaces>=0 && format.m_decimalPlaces<100) props.insert("number:decimal-places", format.m_decimalPlaces);
       if (format.m_thousandsSeparator) props.insert("number:grouping", true);
       rvngValueType=format.m_type==IWORK_CELL_NUMBER_TYPE_FRACTION ? "double" : format.getRVNGValueType().c_str();
       switch (format.m_type)
