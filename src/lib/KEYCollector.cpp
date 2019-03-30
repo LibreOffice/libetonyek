@@ -227,7 +227,7 @@ void KEYCollector::setSlideStyle(const IWORKStylePtr_t &style)
 
 void KEYCollector::startDocument()
 {
-  IWORKCollector::startDocument();
+  IWORKCollector::startDocument(librevenge::RVNGPropertyList());
 }
 
 void KEYCollector::sendSlides(const std::deque<KEYSlidePtr_t> &slides)

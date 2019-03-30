@@ -558,9 +558,9 @@ void IWORKCollector::collectText(const std::shared_ptr<IWORKText> &text)
   m_currentText = text;
 }
 
-void IWORKCollector::startDocument()
+void IWORKCollector::startDocument(const librevenge::RVNGPropertyList &props)
 {
-  m_document->startDocument(librevenge::RVNGPropertyList());
+  m_document->startDocument(props);
 }
 
 void IWORKCollector::endDocument()
