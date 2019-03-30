@@ -14,6 +14,7 @@
 #include "IWORKChartInfoElement.h"
 #include "IWORKDiscardContext.h"
 #include "IWORKGroupElement.h"
+#include "IWORKImageElement.h"
 #include "IWORKMediaElement.h"
 #include "IWORKMetadataElement.h"
 #include "IWORKShapeContext.h"
@@ -90,8 +91,8 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   //   return std::make_shared<ConnectionLineElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::group :
     return std::make_shared<IWORKGroupElement>(getState());
-  // case IWORKToken::NS_URI_SF | IWORKToken::image :
-  //   return std::make_shared<ImageElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::image :
+    return std::make_shared<IWORKImageElement>(getState());
   // case IWORKToken::NS_URI_SF | IWORKToken::line :
   //   return std::make_shared<LineElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::media :

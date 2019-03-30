@@ -10,6 +10,7 @@
 #include "NUMCollector.h"
 
 #include "IWORKDocumentInterface.h"
+#include "IWORKLanguageManager.h"
 #include "IWORKTable.h"
 #include "IWORKText.h"
 
@@ -70,6 +71,18 @@ void NUMCollector::endLayer()
   auto shapeElements=getOutputManager().getCurrent();
   getOutputManager().pop();
 
+  if (!shapeElements.empty() && m_tableElementLists.empty())
+  {
+    // we must create a empty spreadsheet
+    // CHANGEME: retrieve the table name list and language manager correctly
+    IWORKLanguageManager langManager;
+    IWORKTable table(nullptr, langManager);
+    IWORKOutputElements tableElements;
+    librevenge::RVNGPropertyList props;
+    table.draw(props, tableElements, false);
+    tableElements.addShapesInSpreadsheet(shapeElements);
+    getOutputManager().getCurrent().append(tableElements);
+  }
   for (auto const &tableElt : m_tableElementLists)
   {
     if (tableElt.empty()) continue;
@@ -99,16 +112,30 @@ void NUMCollector::drawMedia(
   const double x, const double y,
   const librevenge::RVNGPropertyList &data)
 {
-  // TODO: implement me
-  (void) x;
-  (void) y;
-  (void) data;
+  if (!data["office:binary-data"] || !data["librevenge:mime-type"])
+  {
+    ETONYEK_DEBUG_MSG(("NUMCollector::drawMedia: oops can not find the picture\n"));
+    return;
+  }
+  librevenge::RVNGPropertyList frameProps(data);
+  fillShapeProperties(frameProps);
+  frameProps.insert("svg:x", pt2in(x));
+  frameProps.insert("svg:y", pt2in(y));
+  frameProps.remove("librevenge:mime-type");
+  frameProps.remove("office:binary-data");
+
+  librevenge::RVNGPropertyList binaryObjectProps;
+  binaryObjectProps.insert("librevenge:mime-type", data["librevenge:mime-type"]->clone());
+  binaryObjectProps.insert("office:binary-data", data["office:binary-data"]->clone());
+
+  getOutputManager().getCurrent().addOpenFrame(frameProps);
+  getOutputManager().getCurrent().addInsertBinaryObject(binaryObjectProps);
+  getOutputManager().getCurrent().addCloseFrame();
 }
 
-void NUMCollector::fillShapeProperties(librevenge::RVNGPropertyList &props)
+void NUMCollector::fillShapeProperties(librevenge::RVNGPropertyList &/*props*/)
 {
   // TODO: implement me
-  (void) props;
 }
 
 void NUMCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox, const librevenge::RVNGPropertyList &style)

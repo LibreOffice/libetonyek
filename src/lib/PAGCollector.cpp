@@ -318,6 +318,7 @@ void PAGCollector::drawMedia(const double x, const double y, const librevenge::R
   if (!data["office:binary-data"] || !data["librevenge:mime-type"])
   {
     ETONYEK_DEBUG_MSG(("PAGCollector::drawMedia: oops can not find the picture\n"));
+    return;
   }
   RVNGPropertyList frameProps(data);
   if (m_inAttachments)
