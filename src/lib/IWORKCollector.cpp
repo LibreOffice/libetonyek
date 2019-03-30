@@ -37,56 +37,10 @@ using librevenge::RVNG_POINT;
 using namespace std::placeholders;
 
 using std::make_shared;
-using std::memcmp;
 using std::shared_ptr;
-using std::string;
 
 namespace
 {
-
-const unsigned char SIGNATURE_PDF[] = { '%', 'P', 'D', 'F' };
-const unsigned char SIGNATURE_PNG[] = { 0x89, 'P', 'N', 'G', 0x0d, 0x0a, 0x1a, 0x0a };
-const unsigned char SIGNATURE_JPEG[] = { 0xff, 0xd8 };
-const unsigned char SIGNATURE_QUICKTIME[] = { 'm', 'o', 'o', 'v' };
-const unsigned char SIGNATURE_TIFF_1[] = { 0x49, 0x49, 0x2a, 0x00 };
-const unsigned char SIGNATURE_TIFF_2[] = { 0x4d, 0x4d, 0x00, 0x2a };
-
-string detectMimetype(const RVNGInputStreamPtr_t &stream)
-{
-  stream->seek(0, librevenge::RVNG_SEEK_SET);
-
-  unsigned long numBytesRead = 0;
-  const unsigned char *const sig = stream->read(8, numBytesRead);
-
-  if (8 != numBytesRead)
-    // looks like the binary is broken anyway: just bail out
-    return string();
-
-  if (0 == memcmp(sig, SIGNATURE_PNG, ETONYEK_NUM_ELEMENTS(SIGNATURE_PNG)))
-    return string("image/png");
-
-  if (0 == memcmp(sig, SIGNATURE_PDF, ETONYEK_NUM_ELEMENTS(SIGNATURE_PDF)))
-    return string("application/pdf");
-
-  if ((0 == memcmp(sig, SIGNATURE_TIFF_1, ETONYEK_NUM_ELEMENTS(SIGNATURE_TIFF_1)))
-      || (0 == memcmp(sig, SIGNATURE_TIFF_2, ETONYEK_NUM_ELEMENTS(SIGNATURE_TIFF_2))))
-    return string("image/tiff");
-
-  if (0 == memcmp(sig + 4, SIGNATURE_QUICKTIME, ETONYEK_NUM_ELEMENTS(SIGNATURE_QUICKTIME)))
-    return string("video/quicktime");
-
-  if (0 == memcmp(sig, SIGNATURE_JPEG, ETONYEK_NUM_ELEMENTS(SIGNATURE_JPEG)))
-    return string("image/jpeg");
-
-  static bool first=true;
-  if (first)
-  {
-    ETONYEK_DEBUG_MSG(("detectMimetype[IWORKCollector.cpp]: can not detect some stream types\n"));
-    first=false;
-  }
-  return string();
-}
-
 librevenge::RVNGPropertyList makePoint(const double x, const double y)
 {
   librevenge::RVNGPropertyList props;
@@ -1125,7 +1079,7 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
     const glm::dmat3 trafo = m_levelStack.top().m_trafo;
     const RVNGInputStreamPtr_t input = media->m_content->m_data->m_stream;
 
-    string mimetype(media->m_content->m_data->m_mimeType);
+    std::string mimetype(media->m_content->m_data->m_mimeType);
     if (mimetype.empty())
       mimetype = detectMimetype(input);
     if (!mimetype.empty())

@@ -236,7 +236,7 @@ void writeCellStyle(librevenge::RVNGPropertyList &props, const IWORKStyleStack &
   }
 }
 
-void writeCellValue(librevenge::RVNGPropertyList &props,
+bool writeCellValue(librevenge::RVNGPropertyList &props,
                     const boost::optional<std::string> &styleName,
                     const IWORKCellType type, const boost::optional<std::string> &valueType,
                     const boost::optional<std::string> &value, const boost::optional<IWORKDateTimeData> &dateTime)
@@ -254,11 +254,13 @@ try
     {
       props.insert("librevenge:value-type", get(valueType).c_str());
       props.insert("librevenge:value", value ? get(value).c_str() : "0");
+      return true;
     }
     else if (value)
     {
       props.insert("librevenge:value-type", "double");
       props.insert("librevenge:value", get(value).c_str());
+      return true;
     }
     break;
   case IWORK_CELL_TYPE_DATE_TIME :
@@ -274,6 +276,7 @@ try
         props.insert("librevenge:hours", get(dateTime).m_hour);
         props.insert("librevenge:minutes", get(dateTime).m_minute);
         props.insert("librevenge:seconds", get(dateTime).m_second);
+        return true;
       }
       else
       {
@@ -297,6 +300,7 @@ try
         props.insert("librevenge:hours", time->tm_hour);
         props.insert("librevenge:minutes", time->tm_min);
         props.insert("librevenge:seconds", time->tm_sec);
+        return true;
       }
     }
     break;
@@ -308,12 +312,13 @@ try
       props.insert("librevenge:hours", int(seconds / 3600));
       props.insert("librevenge:minutes", int((seconds % 3600) / 60));
       props.insert("librevenge:seconds", int((seconds % 3600) % 60));
+      return true;
     }
     break;
   case IWORK_CELL_TYPE_BOOL :
     props.insert("librevenge:value-type", valueType ? get(valueType).c_str() : "boolean");
     props.insert("librevenge:value", value ? get(value).c_str() : "0");  // false is default
-    break;
+    return true;
   case IWORK_CELL_TYPE_TEXT :
   default:
     //TODO: librevenge:name ?
@@ -321,10 +326,12 @@ try
       props.insert("librevenge:value-type", "string");
     break;
   }
+  return false;
 }
 catch (...)
 {
   ETONYEK_DEBUG_MSG(("writeCellValue[IWORKTable.cpp]: catch exception\n"));
+  return false;
 }
 
 librevenge::RVNGString convertCellValueInText(const IWORKStyleStack &style, const IWORKCellType type, const boost::optional<std::string> &value, const boost::optional<IWORKDateTimeData> &dateTime)
@@ -809,13 +816,14 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
         IWORKStyleStack style;
         style.push(getDefaultCellStyle(unsigned(c), unsigned(r)));
         style.push(cell.m_style);
+        bool hasData=false;
         if (!drawAsSimpleTable)
         {
           optional<std::string> valueType;
           auto formatName=writeFormat(elements, cell.m_style, cell.m_type, valueType);
           if (formatName) cellProps.insert("librevenge:numbering-name", get(formatName).c_str());
-          writeCellValue(cellProps, cell.m_style ? cell.m_style->getIdent() : none,
-                         cell.m_type, valueType, cell.m_value, cell.m_dateTime);
+          hasData=writeCellValue(cellProps, cell.m_style ? cell.m_style->getIdent() : none,
+                                 cell.m_type, valueType, cell.m_value, cell.m_dateTime);
         }
         writeCellStyle(cellProps, style);
 
@@ -826,12 +834,18 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
         IWORKText::fillCharPropList(pStyle, m_langManager, cellProps);
 
         if (!drawAsSimpleTable && cell.m_formula)
+        {
           elements.addOpenFormulaCell(cellProps, *cell.m_formula, cell.m_formulaHC, m_tableNameMap);
+          hasData=true;
+        }
         else
           elements.addOpenTableCell(cellProps);
 
         if (!cell.m_content.empty() && cell.m_type!=IWORK_CELL_TYPE_DATE_TIME && cell.m_type!=IWORK_CELL_TYPE_DURATION)
+        {
           elements.append(cell.m_content);
+          hasData=true;
+        }
         else if (drawAsSimpleTable)
         {
           librevenge::RVNGString value=convertCellValueInText(style, cell.m_type, cell.m_value, cell.m_dateTime);
@@ -843,6 +857,76 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
             elements.addInsertText(value);
             elements.addCloseSpan();
             elements.addCloseParagraph();
+            hasData=true;
+          }
+        }
+        // CHECKME: probably also ok if we have data
+        if (!hasData && !drawAsSimpleTable && style.has<property::Fill>())
+        {
+          // look for a picture in a cell
+          try
+          {
+            auto const &media=boost::get<IWORKMediaContent>(style.get<property::Fill>());
+            if (media.m_data && media.m_data->m_stream)
+            {
+              auto input=media.m_data->m_stream;
+              string mimetype(media.m_data->m_mimeType);
+              if (mimetype.empty())
+                mimetype = detectMimetype(input);
+              if (!mimetype.empty())
+              {
+                input->seek(0, librevenge::RVNG_SEEK_END);
+                const auto size = (unsigned long) input->tell();
+                input->seek(0, librevenge::RVNG_SEEK_SET);
+
+                unsigned long readBytes = 0;
+                const unsigned char *const bytes = input->read(size, readBytes);
+                if (readBytes != size)
+                  throw GenericException();
+
+                librevenge::RVNGPropertyList frameProps;
+                for (int wh=0; wh<2; ++wh)
+                {
+                  unsigned dim=0;
+                  bool ok=true;
+                  auto const &sizes=wh==0 ? m_columnSizes : m_rowSizes;
+                  for (size_t rr=(wh==0 ? c : r); ok && rr<std::min(size_t(wh==0 ? cMax : rMax),sizes.size()); ++rr)
+                  {
+                    if (sizes[rr].m_size)
+                      dim+=*sizes[rr].m_size;
+                    else
+                      ok=false;
+                  }
+                  if (ok)
+                    frameProps.insert(wh==0 ? "svg:width" : "svg:height", pt2in(dim));
+                }
+                unsigned col=cMax;
+                std::string column(1, char(col%26+'A'));
+                col /= 26;
+                while (col>0)
+                {
+                  --col;
+                  column.insert(0, std::string(1,char(col%26+'A')));
+                  col /= 26;
+                }
+                librevenge::RVNGString endCellName;
+                endCellName.sprintf("%s%d",column.c_str(), int(rMax));
+                frameProps.insert("table:end-cell-address", endCellName);
+                elements.addOpenFrame(frameProps);
+                librevenge::RVNGPropertyList imageProps;
+                imageProps.insert("librevenge:mime-type", mimetype.c_str());
+                imageProps.insert("office:binary-data", librevenge::RVNGBinaryData(bytes, size));
+                elements.addInsertBinaryObject(imageProps);
+                elements.addCloseFrame();
+              }
+              else
+              {
+                ETONYEK_DEBUG_MSG(("IWORKTable::draw: can not find mimetype for some image\n"));
+              }
+            }
+          }
+          catch (...)
+          {
           }
         }
         auto nIt=m_commentMap.find(std::make_pair(c,r));
