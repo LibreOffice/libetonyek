@@ -1848,12 +1848,6 @@ void IWORKTabularModelElement::attribute(const int name, const char *value)
   }
 }
 
-void IWORKTabularModelElement::endOfAttributes()
-{
-  if (m_tableId && m_tableName)
-    (*(getState().m_tableNameMap))[get(m_tableId)] = get(m_tableName);
-}
-
 void IWORKTabularModelElement::startOfElement()
 {
   getState().m_tableData = std::make_shared<IWORKTableData>();
@@ -1890,6 +1884,30 @@ IWORKXMLContextPtr_t IWORKTabularModelElement::element(const int name)
 
 void IWORKTabularModelElement::endOfElement()
 {
+  if (m_tableName && !get(m_tableName).empty())
+  {
+    auto &tableMap=*getState().m_tableNameMap;
+    auto finalName=get(m_tableName);
+    if (tableMap.find(finalName)!=tableMap.end())
+    {
+      ETONYEK_DEBUG_MSG(("IWORKTabularModelElement::endElement: a table with name %s already exists\n", finalName.c_str()));
+      // let create an unique name
+      int id=0;
+      while (true)
+      {
+        std::stringstream s;
+        s << finalName << "_" << ++id;
+        if (tableMap.find(s.str())!=tableMap.end()) continue;
+        finalName=s.str();
+        break;
+      }
+    }
+    tableMap[finalName]=finalName;
+    if (m_tableId)
+      tableMap[get(m_tableId)] = finalName;
+    if (bool(getState().m_currentTable))
+      getState().m_currentTable->setName(finalName);
+  }
   if (bool(getState().m_currentTable))
   {
     IWORKStylePtr_t style;

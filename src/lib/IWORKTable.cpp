@@ -50,11 +50,24 @@ void parseDateTimeFormat(std::string const &format, librevenge::RVNGPropertyList
   std::string text("");
   librevenge::RVNGPropertyListVector propVect;
   size_t len=format.size();
-  bool hasDate=false, findSomeToken=false;
+  bool hasDate=false, findSomeToken=false, inText=false;
   for (size_t c=0; c < len;)
   {
     size_t numCh=1;
     char ch=format[c++];
+    if (inText)
+    {
+      if (ch=='\'')
+        inText=false;
+      else
+        text+=ch;
+      continue;
+    }
+    if (ch=='\'')
+    {
+      inText=true;
+      continue;
+    }
     while (numCh<4 && c < len && format[c]==ch)
     {
       ++numCh;
@@ -133,9 +146,9 @@ void parseDateTimeFormat(std::string const &format, librevenge::RVNGPropertyList
         text += ch;
     }
   }
-  if (!findSomeToken)
+  if (!findSomeToken || inText)
   {
-    ETONYEK_DEBUG_MSG(("parseDateTimeFormat[IWORKTable.cpp]: can not find any token in %s\n", format.c_str()));
+    ETONYEK_DEBUG_MSG(("parseDateTimeFormat[IWORKTable.cpp]: something went bad when parsing %s\n", format.c_str()));
     return;
   }
   if (!text.empty())
@@ -455,6 +468,11 @@ const std::shared_ptr<IWORKTableRecorder> &IWORKTable::getRecorder() const
   return m_recorder;
 }
 
+void IWORKTable::setName(std::string const &name)
+{
+  m_name=name;
+}
+
 void IWORKTable::setSize(const unsigned columns, const unsigned rows)
 {
   if (bool(m_recorder))
@@ -717,7 +735,7 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
   }
 
   librevenge::RVNGPropertyList allTableProps(tableProps);
-  allTableProps.insert("librevenge:table-columns", columnSizes);
+  allTableProps.insert(drawAsSimpleTable ? "librevenge:table-columns" : "librevenge:columns", columnSizes);
 
   elements.addOpenTable(allTableProps);
   for (std::size_t r = 0; m_table.size() != r; ++r)
