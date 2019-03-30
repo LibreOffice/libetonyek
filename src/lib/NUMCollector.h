@@ -28,6 +28,9 @@ public:
   void startDocument();
   void endDocument();
 
+  void startLayer();
+  void endLayer();
+
 private:
   void drawTable() override;
   void drawMedia(double x, double y, const librevenge::RVNGPropertyList &data) override;
@@ -37,6 +40,9 @@ private:
     return true;
   }
   void drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox, const librevenge::RVNGPropertyList &style) override;
+
+  bool m_layerOpened;
+  std::vector<IWORKOutputElements> m_tableElementLists;
 };
 
 } // namespace libetonyek
