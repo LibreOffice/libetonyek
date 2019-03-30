@@ -677,9 +677,9 @@ void IWORKPath::operator*=(const glm::dmat3 &tr)
 void IWORKPath::computeBoundingBox(double &minX, double &minY, double &maxX, double &maxY, double factor) const
 {
   ComputeBoundingBox bdCompute;
-  for (auto &it : m_impl->m_path)
+  for (auto const &it : m_impl->m_path)
   {
-    for (auto &cIt : it)
+    for (auto const &cIt : it)
       apply_visitor(bdCompute, cIt);
   }
   minX=factor*bdCompute.m_boundX[0];
