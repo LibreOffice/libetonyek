@@ -30,9 +30,10 @@ bool NUM3Parser::parseSheet(unsigned id)
 {
   const ObjectMessage msg(*this, id, NUM3ObjectType::Sheet);
   if (!msg) return false;
-  // 1: is the page name
+  // 1: is the worksheet name
   // 2: is the list of table/other drawing in this page
-  m_collector.startWorkSpace(boost::none);
+  boost::optional<std::string> name = get(msg).string(1).optional();
+  m_collector.startWorkSpace(name);
   const std::deque<unsigned> &tableListRefs = readRefs(get(msg), 2);
   for (auto cId : tableListRefs)
     dispatchShape(cId);
