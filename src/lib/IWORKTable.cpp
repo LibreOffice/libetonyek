@@ -439,6 +439,7 @@ IWORKTable::IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLa
   , m_formatNameMap()
   , m_table()
   , m_style()
+  , m_name()
   , m_order()
   , m_columnSizes()
   , m_rowSizes()
@@ -720,8 +721,11 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
 {
   assert(!m_recorder);
 
-  librevenge::RVNGPropertyListVector columnSizes;
+  librevenge::RVNGPropertyList allTableProps(tableProps);
+  if (m_name)
+    allTableProps.insert("librevenge:sheet-name", get(m_name).c_str());
 
+  librevenge::RVNGPropertyListVector columnSizes;
   for (IWORKColumnSizes_t::const_iterator it = m_columnSizes.begin(); m_columnSizes.end() != it; ++it)
   {
     librevenge::RVNGPropertyList column;
@@ -734,7 +738,6 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
     columnSizes.append(column);
   }
 
-  librevenge::RVNGPropertyList allTableProps(tableProps);
   allTableProps.insert(drawAsSimpleTable ? "librevenge:table-columns" : "librevenge:columns", columnSizes);
 
   elements.addOpenTable(allTableProps);

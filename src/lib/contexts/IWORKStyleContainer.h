@@ -87,6 +87,7 @@ IWORKXMLContextPtr_t IWORKStyleContainer<TokenId, RefTokenId, TokenId2, RefToken
   case IWORKToken::INVALID_TOKEN: // TokenId2 and RefTokenId2 are optional, so avoid unintentional match
     break;
   default:
+    if (!name) break;
     if (name==TokenId2)
     {
       m_context = std::make_shared<IWORKStyleContext>(getState(), m_styleMap2);

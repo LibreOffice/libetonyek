@@ -199,10 +199,8 @@ bool probeBinary(DetectionInfo &info)
           // undecise, try to find the first ref
           IWAObjectIndex objIndex(info.m_fragments, info.m_package);
           objIndex.parse();
-          unsigned type;
-          boost::optional<IWAMessage> msg;
-          objIndex.queryObject(potentialRef[0], type, msg);
-          detected = msg && type==2 ?
+          auto type = objIndex.getObjectType(potentialRef[0]);
+          detected = type && get(type)==2 ?
                      EtonyekDocument::TYPE_NUMBERS : EtonyekDocument::TYPE_KEYNOTE;
         }
       }

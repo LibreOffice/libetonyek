@@ -118,6 +118,17 @@ void IWAObjectIndex::queryObject(const unsigned id, unsigned &type, boost::optio
   }
 }
 
+boost::optional<unsigned> IWAObjectIndex::getObjectType(const unsigned id) const
+{
+  // improve me
+  boost::optional<IWAMessage> msg;
+  unsigned type;
+  queryObject(id, type, msg);
+  if (!msg)
+    return boost::none;
+  return type;
+}
+
 const RVNGInputStreamPtr_t IWAObjectIndex::queryFile(const unsigned id) const
 {
   const auto it = m_fileMap.find(id);

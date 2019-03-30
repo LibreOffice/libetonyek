@@ -42,7 +42,8 @@ public:
 
   void parse();
 
-  void queryObject(unsigned id, unsigned &type, boost::optional<IWAMessage> &msg) const;
+  void queryObject(const unsigned id, unsigned &type, boost::optional<IWAMessage> &msg) const;
+  boost::optional<unsigned> getObjectType(const unsigned id) const;
   const RVNGInputStreamPtr_t queryFile(unsigned id) const;
 
 private:

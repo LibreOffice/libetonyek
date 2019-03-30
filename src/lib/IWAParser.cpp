@@ -232,6 +232,11 @@ void IWAParser::queryObject(const unsigned id, unsigned &type, boost::optional<I
   m_index.queryObject(id, type, msg);
 }
 
+boost::optional<unsigned> IWAParser::getObjectType(const unsigned id) const
+{
+  return m_index.getObjectType(id);
+}
+
 const RVNGInputStreamPtr_t IWAParser::queryFile(const unsigned id) const
 {
   return m_index.queryFile(id);

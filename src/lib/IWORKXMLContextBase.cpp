@@ -23,10 +23,6 @@ void IWORKXMLContextMinimal::startOfElement()
 {
 }
 
-void IWORKXMLContextMinimal::endOfAttributes()
-{
-}
-
 void IWORKXMLContextMinimal::endOfElement()
 {
 }
