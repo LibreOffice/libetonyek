@@ -35,16 +35,7 @@ bool NUM3Parser::parseSheet(unsigned id)
   m_collector.startWorkSpace(boost::none);
   const std::deque<unsigned> &tableListRefs = readRefs(get(msg), 2);
   for (auto cId : tableListRefs)
-  {
-    // non tabular shape can pause problem, so check the type of the shape...
-    auto type=getObjectType(cId);
-    if (!type || get(type)!=IWAObjectType::TabularInfo)
-    {
-      ETONYEK_DEBUG_MSG(("NUM3Parser::parseSheet: find an unexpected shape for id=%u\n", cId));
-      continue;
-    }
     dispatchShape(cId);
-  }
   m_collector.endWorkSpace(m_tableNameMap);
 
   return true;

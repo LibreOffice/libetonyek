@@ -841,6 +841,8 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
         if (!drawAsSimpleTable && style.has<property::Fill>())
         {
           // look for a picture in a cell
+          // FIXME: we must do the same for basic table, but the code
+          //   must be different in odp(no frame) and in odt(frame ok)
           try
           {
             auto const &media=boost::get<IWORKMediaContent>(style.get<property::Fill>());
