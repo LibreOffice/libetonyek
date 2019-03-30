@@ -119,6 +119,7 @@ protected:
   const IWORKStylePtr_t queryListStyle(unsigned id) const;
 
   const IWORKStylePtr_t queryStyle(unsigned id, StyleMap_t &styleMap, StyleParseFun_t parse) const;
+  boost::optional<unsigned> getObjectType(unsigned id) const;
 
 protected:
   IWORKLanguageManager m_langManager;
