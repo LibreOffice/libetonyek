@@ -243,7 +243,8 @@ IWORKGradient::IWORKGradient()
 }
 
 IWORKShadow::IWORKShadow()
-  : m_color()
+  : m_visible(true)
+  , m_color()
   , m_angle(0)
   , m_glossiness(0)
   , m_offset(0)
