@@ -84,6 +84,8 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   {
   // case IWORKToken::NS_URI_SF | IWORKToken::body_placeholder_ref :
   //   return std::make_shared<PlaceholderRefContext>(getState(), false);
+  case IWORKToken::NS_URI_SF | IWORKToken::chart_info :
+    return std::make_shared<IWORKChartInfoElement>(getState());
   // case IWORKToken::NS_URI_SF | IWORKToken::connection_line :
   //   return std::make_shared<ConnectionLineElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::group :
@@ -100,8 +102,6 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
   //   return std::make_shared<StickyNoteElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
     return std::make_shared<IWORKTabularInfoElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::chart_info :
-    return std::make_shared<IWORKChartInfoElement>(getState());
   // case IWORKToken::NS_URI_SF | IWORKToken::title_placeholder_ref :
   //   return std::make_shared<PlaceholderRefContext>(getState(), true);
   default:
@@ -140,6 +140,8 @@ LayerElement::LayerElement(NUM1ParserState &state)
 
 void LayerElement::startOfElement()
 {
+  if (isCollector())
+    getCollector().startLayer();
 }
 
 IWORKXMLContextPtr_t LayerElement::element(const int name)
@@ -157,6 +159,10 @@ IWORKXMLContextPtr_t LayerElement::element(const int name)
 
 void LayerElement::endOfElement()
 {
+  if (!isCollector())
+    return;
+  // const KEYLayerPtr_t layer(getCollector().collectLayer());
+  getCollector().endLayer();
 }
 
 }

@@ -890,6 +890,17 @@ void IWORKOutputElements::append(const IWORKOutputElements &elements)
   m_elements.insert(m_elements.end(), elements.m_elements.begin(), elements.m_elements.end());
 }
 
+void IWORKOutputElements::addShapesInSpreadsheet(const IWORKOutputElements &elements)
+{
+  if (m_elements.empty())
+  {
+    ETONYEK_DEBUG_MSG(("IWORKOutputElements::addShapesInSpreadsheet: the elements is empty\n"));
+    return;
+  }
+  // TODO: check that the first element is really OpenSheet
+  m_elements.insert(m_elements.begin()+1, elements.m_elements.begin(), elements.m_elements.end());
+}
+
 void IWORKOutputElements::write(IWORKDocumentInterface *iface) const
 {
   ElementList_t::const_iterator iter;

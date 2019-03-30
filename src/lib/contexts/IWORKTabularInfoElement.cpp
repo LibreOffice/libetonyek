@@ -13,7 +13,6 @@
 
 #include "libetonyek_xml.h"
 
-#include "libetonyek_xml.h"
 #include "IWORKCollector.h"
 #include "IWORKDictionary.h"
 #include "IWORKGeometryElement.h"

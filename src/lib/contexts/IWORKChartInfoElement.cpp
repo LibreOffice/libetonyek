@@ -9,10 +9,12 @@
 
 #include "IWORKChartInfoElement.h"
 
+#include "IWORKCollector.h"
 #include "IWORKGeometryElement.h"
 #include "IWORKNumberElement.h"
 #include "IWORKStringElement.h"
 #include "IWORKToken.h"
+#include "IWORKXMLParserState.h"
 
 #include "libetonyek_xml.h"
 
@@ -191,6 +193,9 @@ IWORKChartInfoElement::IWORKChartInfoElement(IWORKXMLParserState &state)
 
 void IWORKChartInfoElement::startOfElement()
 {
+  if (!isCollector())
+    return;
+  getCollector().startLevel();
 }
 
 void IWORKChartInfoElement::attribute(const int name, const char *value)
@@ -221,6 +226,9 @@ IWORKXMLContextPtr_t IWORKChartInfoElement::element(const int name)
 
 void IWORKChartInfoElement::endOfElement()
 {
+  if (!isCollector())
+    return;
+  getCollector().endLevel();
 }
 
 }
