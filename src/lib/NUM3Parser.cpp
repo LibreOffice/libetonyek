@@ -42,6 +42,28 @@ bool NUM3Parser::parseSheet(unsigned id)
   return true;
 }
 
+bool NUM3Parser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry)
+{
+  geometry = std::make_shared<IWORKGeometry>();
+
+  const boost::optional<IWAMessage> &g = msg.message(1).optional();
+  if (g)
+  {
+    const boost::optional<IWORKPosition> &pos = readPosition(get(g), 1);
+    if (pos)
+      geometry->m_position = get(pos);
+    const boost::optional<IWORKSize> &size = readSize(get(g), 2);
+    if (size)
+      geometry->m_naturalSize = geometry->m_size = get(size);
+    // CHECKME what means get(g).uint32(3) : 0,3 seems normal ?
+    if (get(g).float_(4))
+      geometry->m_angle = -deg2rad(get(get(g).float_(4)));
+  }
+  geometry->m_aspectRatioLocked = msg.bool_(7).optional();
+
+  return true;
+}
+
 bool NUM3Parser::parseDocument()
 {
   const ObjectMessage msg(*this, 1, NUM3ObjectType::Document);
