@@ -2058,13 +2058,6 @@ void IWORKTabularModelElement::endOfElement()
     if (bool(getState().m_currentTable))
       getState().m_currentTable->setName(finalName);
   }
-  if (!m_coordinateCommentRefMap.empty())
-  {
-    for (auto const &it : m_coordinateCommentRefMap)
-    {
-      ETONYEK_DEBUG_MSG(("IWORKTabularModelElement::endElement: comment with name %s not retrieved\n", it.second.c_str()));
-    }
-  }
   if (bool(getState().m_currentTable))
   {
     IWORKStylePtr_t style;
@@ -2074,6 +2067,23 @@ void IWORKTabularModelElement::endOfElement()
     getState().m_currentTable->setHeaders(
       get_optional_value_or(m_headerColumns, 0), get_optional_value_or(m_headerRows, 0),
       get_optional_value_or(m_footerRows, 0));
+    if (!m_coordinateCommentRefMap.empty())
+    {
+      auto &dico=getState().getDictionary().m_tableComments;
+      for (auto const &it : m_coordinateCommentRefMap)
+      {
+        auto dIt=dico.find(it.second);
+        if (dIt==dico.end() || !dIt->second)
+        {
+          ETONYEK_DEBUG_MSG(("IWORKTabularModelElement::endElement: can not find comment with name %s\n", it.second.c_str()));
+          continue;
+        }
+        IWORKOutputElements noteElements;
+        // FIXME: we must set the correct sheetref before calling this
+        dIt->second->draw(noteElements);
+        getState().m_currentTable->setComment(it.first.first, it.first.second, noteElements);
+      }
+    }
   }
   if (!m_isDefinition)
     return;

@@ -11,13 +11,16 @@
 #define IWORKTEXT_FWD_H_INCLUDED
 
 #include <memory>
+#include <unordered_map>
 
+#include "IWORKTypes_fwd.h"
 namespace libetonyek
 {
 
 class IWORKText;
 
 typedef std::shared_ptr<IWORKText> IWORKTextPtr_t;
+typedef std::unordered_map<ID_t, IWORKTextPtr_t> IWORKTableCommentMap_t;
 
 }
 
