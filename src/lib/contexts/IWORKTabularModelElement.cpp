@@ -653,6 +653,41 @@ void NElement::attribute(const int name, const char *const value)
 namespace
 {
 
+class OElement : public CellContextBase
+{
+public:
+  explicit OElement(IWORKXMLParserState &state, bool isResult=false);
+
+private:
+  void attribute(int name, const char *value) override;
+  void endOfElement() override;
+};
+
+OElement::OElement(IWORKXMLParserState &state, bool isResult)
+  : CellContextBase(state, isResult)
+{
+}
+
+void OElement::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::ho | IWORKToken::NS_URI_SF : // horizontal overlap?
+    break;
+  default :
+    CellContextBase::attribute(name, value);
+  }
+}
+
+void OElement::endOfElement()
+{
+  emitCell(true);
+}
+}
+
+namespace
+{
+
 class TElement : public CellContextBase
 {
 public:
@@ -1620,6 +1655,8 @@ IWORKXMLContextPtr_t DatasourceElement::element(const int name)
     return std::make_shared<GroupingElement>(getState());
   case IWORKToken::n | IWORKToken::NS_URI_SF :
     return std::make_shared<NElement>(getState());
+  case IWORKToken::o | IWORKToken::NS_URI_SF :
+    return std::make_shared<OElement>(getState());
   case IWORKToken::pm | IWORKToken::NS_URI_SF :
     return std::make_shared<PmElement>(getState());
   case IWORKToken::s | IWORKToken::NS_URI_SF :
