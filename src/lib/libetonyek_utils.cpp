@@ -315,6 +315,53 @@ void writeBorder(const IWORKStroke &stroke, const char *const name, librevenge::
   props.insert(name, border);
 }
 
+namespace
+{
+
+const unsigned char SIGNATURE_PDF[] = { '%', 'P', 'D', 'F' };
+const unsigned char SIGNATURE_PNG[] = { 0x89, 'P', 'N', 'G', 0x0d, 0x0a, 0x1a, 0x0a };
+const unsigned char SIGNATURE_JPEG[] = { 0xff, 0xd8 };
+const unsigned char SIGNATURE_QUICKTIME[] = { 'm', 'o', 'o', 'v' };
+const unsigned char SIGNATURE_TIFF_1[] = { 0x49, 0x49, 0x2a, 0x00 };
+const unsigned char SIGNATURE_TIFF_2[] = { 0x4d, 0x4d, 0x00, 0x2a };
+}
+
+std::string detectMimetype(const RVNGInputStreamPtr_t &stream)
+{
+  stream->seek(0, librevenge::RVNG_SEEK_SET);
+
+  unsigned long numBytesRead = 0;
+  const unsigned char *const sig = stream->read(8, numBytesRead);
+
+  if (8 != numBytesRead)
+    // looks like the binary is broken anyway: just bail out
+    return std::string();
+
+  if (0 == std::memcmp(sig, SIGNATURE_PNG, ETONYEK_NUM_ELEMENTS(SIGNATURE_PNG)))
+    return std::string("image/png");
+
+  if (0 == std::memcmp(sig, SIGNATURE_PDF, ETONYEK_NUM_ELEMENTS(SIGNATURE_PDF)))
+    return std::string("application/pdf");
+
+  if ((0 == std::memcmp(sig, SIGNATURE_TIFF_1, ETONYEK_NUM_ELEMENTS(SIGNATURE_TIFF_1)))
+      || (0 == std::memcmp(sig, SIGNATURE_TIFF_2, ETONYEK_NUM_ELEMENTS(SIGNATURE_TIFF_2))))
+    return std::string("image/tiff");
+
+  if (0 == std::memcmp(sig + 4, SIGNATURE_QUICKTIME, ETONYEK_NUM_ELEMENTS(SIGNATURE_QUICKTIME)))
+    return std::string("video/quicktime");
+
+  if (0 == std::memcmp(sig, SIGNATURE_JPEG, ETONYEK_NUM_ELEMENTS(SIGNATURE_JPEG)))
+    return std::string("image/jpeg");
+
+  static bool first=true;
+  if (first)
+  {
+    ETONYEK_DEBUG_MSG(("detectMimetype[libetonyek_util.cpp]: can not detect some stream types\n"));
+    first=false;
+  }
+  return std::string();
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
