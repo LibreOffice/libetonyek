@@ -177,19 +177,11 @@ void CellContextBase::emitCell(const bool covered)
   if (tableData->m_cellMove)
   {
     const unsigned ct = get(tableData->m_cellMove);
-    // CHECKME: something is not right here, ie ct=259 means row+=1, column+=3...
-    if (0x80 > ct)
+    tableData->m_column += ct;
+    if (tableData->m_column>=256)
     {
-      tableData->m_column += ct;
-    }
-    else
-    {
-      ++tableData->m_row;
-      if (tableData->m_column < (0x100-ct))
-      {
-        ETONYEK_DEBUG_MSG(("CellContextBase::emitCell[IWORKTabularModelElement.cpp]: something is probably bad\n"));
-      }
-      tableData->m_column -= (0x100 - ct);
+      tableData->m_row+=(tableData->m_column/256);
+      tableData->m_column%=256;
     }
   }
   else
@@ -805,6 +797,7 @@ void TElementInMenu::endOfElement()
   const IWORKTableDataPtr_t tableData = getState().m_tableData;
   if (getId())
   {
+    // save data
     auto &data=m_contentMap[*getId()];
     data.m_content=tableData->m_content;
     data.m_dateTime=tableData->m_dateTime;
@@ -881,6 +874,7 @@ void PmElement::endOfElement()
     auto const it = m_contentMap.find(get(m_ref));
     if (m_contentMap.end() != it)
     {
+      // restore data
       const IWORKTableDataPtr_t tableData = getState().m_tableData;
       auto const &data=it->second;
       tableData->m_content=data.m_content;
@@ -888,6 +882,10 @@ void PmElement::endOfElement()
       tableData->m_formula=data.m_formula;
       tableData->m_type=data.m_type;
       getState().m_currentText=data.m_text;
+    }
+    else
+    {
+      ETONYEK_DEBUG_MSG(("PmElement::endOfElement[IWORKTabularModelElement.cpp]: can not found %s references\n", m_ref->c_str()));
     }
   }
   CellContextBase::endOfElement();
