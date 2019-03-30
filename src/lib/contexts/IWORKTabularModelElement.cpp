@@ -177,6 +177,7 @@ void CellContextBase::emitCell(const bool covered)
   if (tableData->m_cellMove)
   {
     const unsigned ct = get(tableData->m_cellMove);
+    // CHECKME: something is not right here, ie ct=259 means row+=1, column+=3...
     if (0x80 > ct)
     {
       tableData->m_column += ct;
@@ -184,6 +185,10 @@ void CellContextBase::emitCell(const bool covered)
     else
     {
       ++tableData->m_row;
+      if (tableData->m_column < (0x100-ct))
+      {
+        ETONYEK_DEBUG_MSG(("CellContextBase::emitCell[IWORKTabularModelElement.cpp]: something is probably bad\n"));
+      }
       tableData->m_column -= (0x100 - ct);
     }
   }
@@ -739,99 +744,19 @@ IWORKXMLContextPtr_t GroupingElement::element(int name)
 namespace
 {
 
-class PmCtElement : public IWORKXMLEmptyContextBase
+struct CellData
 {
-public:
-  explicit PmCtElement(IWORKXMLParserState &state, IWORKContentMap_t &contentMap, const boost::optional<std::string> &id);
-
-private:
-  void attribute(int name, const char *value) override;
-
-private:
-  IWORKContentMap_t &m_contentMap;
-  const boost::optional<std::string> &m_id;
+  boost::optional<std::string> m_content;
+  boost::optional<IWORKDateTimeData> m_dateTime;
+  IWORKFormulaPtr_t m_formula;
+  IWORKStylePtr_t m_style;
+  IWORKCellType m_type;
+  IWORKTextPtr_t m_text;
 };
-
-PmCtElement::PmCtElement(IWORKXMLParserState &state, IWORKContentMap_t &contentMap, const boost::optional<std::string> &id)
-  : IWORKXMLEmptyContextBase(state)
-  , m_contentMap(contentMap)
-  , m_id(id)
-{
-}
-
-void PmCtElement::attribute(const int name, const char *const value)
-{
-  if (name == (IWORKToken::s | IWORKToken::NS_URI_SFA) && m_id)
-    m_contentMap[get(m_id)] = value;
-}
-
 }
 
 namespace
 {
-
-class PmTElement : public IWORKXMLEmptyContextBase
-{
-public:
-  explicit PmTElement(IWORKXMLParserState &state, IWORKContentMap_t &contentMap);
-
-private:
-  IWORKXMLContextPtr_t element(int name) override;
-
-private:
-  IWORKContentMap_t &m_contentMap;
-};
-
-PmTElement::PmTElement(IWORKXMLParserState &state, IWORKContentMap_t &contentMap)
-  : IWORKXMLEmptyContextBase(state)
-  , m_contentMap(contentMap)
-{
-}
-
-IWORKXMLContextPtr_t PmTElement::element(const int name)
-{
-  if (name == (IWORKToken::ct | IWORKToken::NS_URI_SF))
-    return std::make_shared<PmCtElement>(getState(), m_contentMap, getId());
-
-  return IWORKXMLContextPtr_t();
-}
-
-}
-
-namespace
-{
-
-class MenuChoicesElement : public IWORKXMLElementContextBase
-{
-public:
-  explicit MenuChoicesElement(IWORKXMLParserState &state, IWORKContentMap_t &contentMap);
-
-private:
-  IWORKXMLContextPtr_t element(int name) override;
-
-private:
-  IWORKContentMap_t &m_contentMap;
-};
-
-MenuChoicesElement::MenuChoicesElement(IWORKXMLParserState &state, IWORKContentMap_t &contentMap)
-  : IWORKXMLElementContextBase(state)
-  , m_contentMap(contentMap)
-{
-}
-
-IWORKXMLContextPtr_t MenuChoicesElement::element(int name)
-{
-  if (name == (IWORKToken::t | IWORKToken::NS_URI_SF))
-    return std::make_shared<PmTElement>(getState(), m_contentMap);
-
-  return IWORKXMLContextPtr_t();
-}
-
-}
-
-namespace
-{
-
 class PmElement : public CellContextBase
 {
 public:
@@ -842,7 +767,7 @@ private:
   void endOfElement() override;
 
 private:
-  IWORKContentMap_t m_contentMap;
+  std::map<ID_t,CellData> m_contentMap;
   boost::optional<ID_t> m_ref;
 };
 
@@ -853,6 +778,84 @@ PmElement::PmElement(IWORKXMLParserState &state)
 {
 }
 
+}
+
+namespace
+{
+class TElementInMenu : public TElement
+{
+public:
+  explicit TElementInMenu(IWORKXMLParserState &state, std::map<ID_t,CellData> &contentMap);
+
+private:
+  void endOfElement() override;
+
+private:
+  std::map<ID_t,CellData> &m_contentMap;
+};
+
+TElementInMenu::TElementInMenu(IWORKXMLParserState &state, std::map<ID_t,CellData> &contentMap)
+  : TElement(state)
+  , m_contentMap(contentMap)
+{
+}
+
+void TElementInMenu::endOfElement()
+{
+  const IWORKTableDataPtr_t tableData = getState().m_tableData;
+  if (getId())
+  {
+    auto &data=m_contentMap[*getId()];
+    data.m_content=tableData->m_content;
+    data.m_dateTime=tableData->m_dateTime;
+    data.m_formula=tableData->m_formula;
+    data.m_type=tableData->m_type;
+    data.m_text=getState().m_currentText;
+  }
+
+  // reset content attributes
+  getState().m_currentText.reset();
+  tableData->m_content.reset();
+  tableData->m_dateTime.reset();
+  tableData->m_formula.reset();
+  tableData->m_style.reset();
+  tableData->m_type = IWORK_CELL_TYPE_TEXT;
+}
+}
+
+namespace
+{
+
+class MenuChoicesElement : public IWORKXMLElementContextBase
+{
+public:
+  explicit MenuChoicesElement(IWORKXMLParserState &state, std::map<ID_t,CellData> &contentMap);
+
+private:
+  IWORKXMLContextPtr_t element(int name) override;
+
+private:
+  std::map<ID_t,CellData> &m_contentMap;
+};
+
+MenuChoicesElement::MenuChoicesElement(IWORKXMLParserState &state, std::map<ID_t,CellData> &contentMap)
+  : IWORKXMLElementContextBase(state)
+  , m_contentMap(contentMap)
+{
+}
+
+IWORKXMLContextPtr_t MenuChoicesElement::element(int name)
+{
+  if (name == (IWORKToken::t | IWORKToken::NS_URI_SF))
+    return std::make_shared<TElementInMenu>(getState(), m_contentMap);
+
+  return IWORKXMLContextPtr_t();
+}
+
+}
+
+namespace
+{
 IWORKXMLContextPtr_t PmElement::element(int name)
 {
   switch (name)
@@ -875,15 +878,20 @@ void PmElement::endOfElement()
 {
   if (m_ref)
   {
-    const IWORKContentMap_t::const_iterator it = m_contentMap.find(get(m_ref));
+    auto const it = m_contentMap.find(get(m_ref));
     if (m_contentMap.end() != it)
     {
-      getState().m_tableData->m_content = it->second;
-      getState().m_tableData->m_type = IWORK_CELL_TYPE_TEXT;
+      const IWORKTableDataPtr_t tableData = getState().m_tableData;
+      auto const &data=it->second;
+      tableData->m_content=data.m_content;
+      tableData->m_dateTime=data.m_dateTime;
+      tableData->m_formula=data.m_formula;
+      tableData->m_type=data.m_type;
+      getState().m_currentText=data.m_text;
     }
   }
+  CellContextBase::endOfElement();
 }
-
 }
 
 namespace
