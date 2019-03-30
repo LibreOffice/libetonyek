@@ -45,7 +45,7 @@ IWORKXMLContextPtr_t IWORKGroupElement::element(const int name)
   case IWORKToken::NS_URI_SF | IWORKToken::geometry :
     return std::make_shared<IWORKGeometryElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::group :
-    ensureClosed();
+    ensureClosed(); // checkme: creating a group in a group must be often possible
     return std::make_shared<IWORKGroupElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::image :
     ensureOpened();
@@ -58,7 +58,7 @@ IWORKXMLContextPtr_t IWORKGroupElement::element(const int name)
     return std::make_shared<IWORKMediaElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::drawable_shape :
   case IWORKToken::NS_URI_SF | IWORKToken::shape :
-    ensureClosed();
+    ensureOpened();
     return std::make_shared<IWORKShapeContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::table_info :
     ensureClosed();
