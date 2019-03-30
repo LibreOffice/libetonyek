@@ -41,6 +41,148 @@ using std::shared_ptr;
 using std::string;
 namespace
 {
+
+class CellCoordinates: public IWORKXMLEmptyContextBase
+{
+public:
+  CellCoordinates(IWORKXMLParserState &state, boost::optional<std::pair<unsigned,unsigned> > &coordinates)
+    : IWORKXMLEmptyContextBase(state)
+    , m_column()
+    , m_row()
+    , m_coordinates(coordinates)
+  {
+  }
+protected:
+  void attribute(int name, const char *value) final;
+  void endOfElement() final;
+
+  boost::optional<unsigned> m_column, m_row;
+  boost::optional<std::pair<unsigned, unsigned> > &m_coordinates;
+};
+
+void CellCoordinates::attribute(const int name, const char *const value)
+{
+  switch (name)
+  {
+  case IWORKToken::column | IWORKToken::NS_URI_SF :
+    m_column=lexical_cast<unsigned>(value);
+    break;
+  case IWORKToken::row | IWORKToken::NS_URI_SF :
+    m_row=lexical_cast<unsigned>(value);
+    break;
+  default : // none
+    IWORKXMLEmptyContextBase::attribute(name, value);
+  }
+}
+
+void CellCoordinates::endOfElement()
+{
+  if (m_column && m_row)
+    m_coordinates=std::make_pair(*m_column,*m_row);
+  else
+  {
+    ETONYEK_DEBUG_MSG(("CellCoordinates[IWORKTabularModelElement.cpp]::endOfElement: uncomplet data\n"));
+  }
+}
+class CellCommentMappingKey: public IWORKXMLEmptyContextBase
+{
+public:
+  CellCommentMappingKey(IWORKXMLParserState &state, boost::optional<std::pair<unsigned,unsigned> > &coordinates)
+    : IWORKXMLEmptyContextBase(state)
+    , m_coordinates(coordinates)
+  {
+  }
+protected:
+  // attribute: sfa:ID sfa:class
+  IWORKXMLContextPtr_t element(int name) final;
+
+  boost::optional<std::pair<unsigned, unsigned> > &m_coordinates;
+};
+
+IWORKXMLContextPtr_t CellCommentMappingKey::element(int name)
+{
+  switch (name)
+  {
+  case IWORKToken::cell_coordinates | IWORKToken::NS_URI_SF :
+    return std::make_shared<CellCoordinates>(getState(), m_coordinates);
+  default:
+    return IWORKXMLEmptyContextBase::element(name);
+  }
+}
+
+class CellCommentMappingPair: public IWORKXMLEmptyContextBase
+{
+public:
+  CellCommentMappingPair(IWORKXMLParserState &state, std::map<std::pair<unsigned,unsigned>,ID_t> &coordinateCommentRefMap)
+    : IWORKXMLEmptyContextBase(state)
+    , m_coordinates()
+    , m_ref()
+    , m_coordinateCommentRefMap(coordinateCommentRefMap)
+  {
+  }
+protected:
+  // attribute: none
+  IWORKXMLContextPtr_t element(int name) final;
+  void endOfElement() final;
+
+  boost::optional<std::pair<unsigned, unsigned> > m_coordinates;
+  boost::optional<ID_t> m_ref;
+  std::map<std::pair<unsigned,unsigned>,ID_t> &m_coordinateCommentRefMap;
+};
+
+IWORKXMLContextPtr_t CellCommentMappingPair::element(int name)
+{
+  switch (name)
+  {
+  case IWORKToken::value_ref | IWORKToken::NS_URI_SFA : // attributes: sfa:IDREF and sfa:class
+    return std::make_shared<IWORKRefContext>(getState(), m_ref);
+  case IWORKToken::key | IWORKToken::NS_URI_SFA :
+    return std::make_shared<CellCommentMappingKey>(getState(), m_coordinates);
+  default:
+    return IWORKXMLEmptyContextBase::element(name);
+  }
+}
+
+void CellCommentMappingPair::endOfElement()
+{
+  if (m_coordinates && m_ref)
+    m_coordinateCommentRefMap[*m_coordinates]=*m_ref;
+  else
+  {
+    ETONYEK_DEBUG_MSG(("CellCommentMappingPair[IWORKTabularModelElement.cpp]::endOfElement: uncomplete data\n"));
+  }
+}
+
+class CellCommentMapping: public IWORKXMLEmptyContextBase
+{
+public:
+  CellCommentMapping(IWORKXMLParserState &state, std::map<std::pair<unsigned,unsigned>,ID_t> &coordinateCommentRefMap)
+    : IWORKXMLEmptyContextBase(state)
+    , m_coordinateCommentRefMap(coordinateCommentRefMap)
+  {
+  }
+protected:
+  // attribute: only ID ?
+  IWORKXMLContextPtr_t element(int name) final;
+
+  std::map<std::pair<unsigned,unsigned>,ID_t> &m_coordinateCommentRefMap;
+};
+
+IWORKXMLContextPtr_t CellCommentMapping::element(int name)
+{
+  switch (name)
+  {
+  case IWORKToken::pair | IWORKToken::NS_URI_SFA :
+    return std::make_shared<CellCommentMappingPair>(getState(), m_coordinateCommentRefMap);
+  default:
+    return IWORKXMLEmptyContextBase::element(name);
+  }
+}
+
+}
+
+namespace
+{
 // cell format ?
 class CfElement : public IWORKXMLEmptyContextBase
 {
@@ -1823,6 +1965,7 @@ IWORKTabularModelElement::IWORKTabularModelElement(IWORKXMLParserState &state, b
   , m_headerColumns()
   , m_headerRows()
   , m_footerRows()
+  , m_coordinateCommentRefMap()
 {
 }
 
@@ -1874,6 +2017,7 @@ IWORKXMLContextPtr_t IWORKTabularModelElement::element(const int name)
     return std::make_shared<IWORKRefContext>(getState(), m_styleRef);
 
   case IWORKToken::cell_comment_mapping | IWORKToken::NS_URI_SF :
+    return std::make_shared<CellCommentMapping>(getState(), m_coordinateCommentRefMap);
   case IWORKToken::error_warning_mapping | IWORKToken::NS_URI_SF :
   case IWORKToken::filterset | IWORKToken::NS_URI_SF :
   case IWORKToken::grouping_order | IWORKToken::NS_URI_SF :
@@ -1913,6 +2057,13 @@ void IWORKTabularModelElement::endOfElement()
       tableMap[get(m_tableId)] = finalName;
     if (bool(getState().m_currentTable))
       getState().m_currentTable->setName(finalName);
+  }
+  if (!m_coordinateCommentRefMap.empty())
+  {
+    for (auto const &it : m_coordinateCommentRefMap)
+    {
+      ETONYEK_DEBUG_MSG(("IWORKTabularModelElement::endElement: comment with name %s not retrieved\n", it.second.c_str()));
+    }
   }
   if (bool(getState().m_currentTable))
   {

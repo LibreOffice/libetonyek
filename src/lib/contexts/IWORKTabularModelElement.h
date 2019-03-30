@@ -10,7 +10,9 @@
 #ifndef IWORKTABULARMODELELEMENT_H_INCLUDED
 #define IWORKTABULARMODELELEMENT_H_INCLUDED
 
+#include <map>
 #include <string>
+#include <utility>
 
 #include <boost/optional.hpp>
 
@@ -45,6 +47,7 @@ private:
   boost::optional<unsigned> m_headerColumns;
   boost::optional<unsigned> m_headerRows;
   boost::optional<unsigned> m_footerRows;
+  std::map<std::pair<unsigned,unsigned>,ID_t> m_coordinateCommentRefMap;
 };
 
 }
