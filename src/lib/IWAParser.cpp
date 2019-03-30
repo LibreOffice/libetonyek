@@ -1209,10 +1209,15 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)
           IWORKPathPtr_t bezierPath;
           if (parsePath(get(bezier),bezierPath))
           {
-            // the path is in unit area, scale it to the real size
             const optional<IWORKSize> &size = readSize(get(get(path).message(5)), 2);
             if (size)
-              *bezierPath *= transformations::scale(get(size).m_width / 100, get(size).m_height / 100);
+            {
+              double x[2]= {0,0}, y[2]= {0,0};
+              if (bezierPath)
+                bezierPath->computeBoundingBox(x[0], y[0], x[1], y[1]);
+              // if we can not use the bounding box, assume tha the path is in unit area
+              *bezierPath *= transformations::scale(get(size).m_width / (x[1]>x[0] ? x[1]-x[0] : 100), get(size).m_height / (y[1]>y[0] ? y[1]-y[0] : 100));
+            }
             m_collector.collectBezier(bezierPath);
             m_collector.collectBezierPath();
           }
