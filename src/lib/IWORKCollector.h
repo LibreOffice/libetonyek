@@ -91,6 +91,7 @@ public:
 
   void collectTable(const std::shared_ptr<IWORKTable> &table);
   void collectText(const std::shared_ptr<IWORKText> &text);
+  virtual void collectStickyNote();
 
   void startDocument(const librevenge::RVNGPropertyList &props);
   void endDocument();

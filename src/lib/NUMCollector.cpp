@@ -135,7 +135,7 @@ void NUMCollector::drawTable()
   {
     // check if the table can be the main sheet
     glm::dvec3 vec = m_levelStack.top().m_trafo * glm::dvec3(0, 0, 1);
-    m_workSpaceCreateGraphic = vec[0]>0 || vec[1]>0;
+    m_workSpaceCreateGraphic = vec[0]>5 || vec[1]>5;
   }
 
   m_tableElementLists.push_back(IWORKOutputElements());

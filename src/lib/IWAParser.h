@@ -102,6 +102,7 @@ protected:
   static void readPadding(const IWAMessage &msg, IWORKPadding &padding);
 
   bool dispatchShape(unsigned id);
+  bool dispatchShapeWithMessage(const IWAMessage &msg, unsigned type);
   bool parseText(unsigned id, const std::function<void(unsigned, IWORKStylePtr_t)> &openPageSpan=nullptr);
   void parseComment(unsigned id);
   void parseAuthorInComment(unsigned id);
@@ -205,7 +206,6 @@ private:
   void parseLink(unsigned id, std::string &url);
 
   bool parseAttachment(unsigned id);
-
   bool parseDrawableShape(const IWAMessage &msg, bool isConnectionLine=false);
   bool parseGroup(const IWAMessage &msg);
   bool parseShapePlacement(const IWAMessage &msg);
@@ -214,6 +214,7 @@ private:
   bool parsePath(const IWAMessage &msg, IWORKPathPtr_t &path);
   bool parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula);
   bool parseFormat(const IWAMessage &msg, Format &format);
+  virtual bool parseStickyNote(const IWAMessage &msg);
 
   bool parseArrowProperties(const IWAMessage &msg, IWORKPropertyMap &props, bool headArrow);
   void parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props);

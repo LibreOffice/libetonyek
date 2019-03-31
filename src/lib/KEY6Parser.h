@@ -27,15 +27,13 @@ public:
 private:
   bool parseDocument() override;
 
-  bool dispatchShape(unsigned id);
-
   bool parsePresentation(unsigned id);
   bool parseSlideList(unsigned id);
   KEYSlidePtr_t parseSlide(unsigned id, bool master);
   bool parsePlaceholder(unsigned id);
   void parseNotes(unsigned id);
 
-  bool parseStickyNote(const IWAMessage &msg);
+  bool parseStickyNote(const IWAMessage &msg) override;
 
   const IWORKStylePtr_t querySlideStyle(unsigned id) const;
 

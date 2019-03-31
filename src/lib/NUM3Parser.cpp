@@ -64,6 +64,23 @@ bool NUM3Parser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &
   return true;
 }
 
+bool NUM3Parser::parseStickyNote(const IWAMessage &msg)
+{
+  assert(!m_currentText);
+
+  m_collector.startLevel();
+  // 1: a text box, 2: a comment ref
+
+  // FIXME: actually, this creates a textbox but the background and
+  //        padding are bad and we do not retrieve the author, ...
+  auto const &shape=msg.message(1);
+  if (shape)
+    dispatchShapeWithMessage(get(shape),IWAObjectType::DrawableShape);
+  m_collector.endLevel();
+
+  return true;
+}
+
 bool NUM3Parser::parseDocument()
 {
   const ObjectMessage msg(*this, 1, NUM3ObjectType::Document);
