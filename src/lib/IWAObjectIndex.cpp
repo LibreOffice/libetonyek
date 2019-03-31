@@ -177,12 +177,20 @@ try
     const uint64_t headerLen = readUVar(stream);
     const long start = stream->tell();
     const IWAMessage header(stream, headerLen);
-    if (!header.message(2) || !header.message(2).uint64(3))
-      break;
-    const uint64_t dataLen = header.message(2).uint64(3).get();
+    uint64_t dataLen = 0;
+    optional<unsigned> type;
+    bool ok=true;
+    for (auto const &info : header.message(2)) { // go through all data information
+      if (!info.uint64(3)) {
+        ok=false;
+        break;
+      }
+      dataLen += info.uint64(3).get();
+      if (!type) type=info.uint32(1).optional(); // normally, all data must define the same type
+    }
+    if (!ok) break;
     if (header.uint32(1))
     {
-      const optional<unsigned> type = header.message(2).uint32(1).optional();
       const ObjectRecord rec(stream, get_optional_value_or(type, 0), start, (unsigned long)(headerLen), (unsigned long)(dataLen));
       m_fragmentObjectMap[header.uint32(1).get()] = make_pair(id, rec);
     }
