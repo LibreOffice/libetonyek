@@ -11,6 +11,7 @@
 
 #include "IWORKDocumentInterface.h"
 #include "IWORKLanguageManager.h"
+#include "IWORKProperties.h"
 #include "IWORKTable.h"
 #include "IWORKText.h"
 
@@ -170,6 +171,21 @@ void NUMCollector::drawMedia(
 void NUMCollector::fillShapeProperties(librevenge::RVNGPropertyList &/*props*/)
 {
   // TODO: implement me
+}
+
+void NUMCollector::collectStickyNote()
+{
+  assert(!m_levelStack.empty());
+
+  auto style=m_levelStack.top().m_graphicStyle;
+  if (!style || !style->has<property::Fill>())
+  {
+    // force shape background to be yellow if it is unknown
+    IWORKPropertyMap props;
+    props.put<property::Fill>(IWORKColor(1,1,0,1));
+    m_levelStack.top().m_graphicStyle=std::make_shared<IWORKStyle>(props, boost::none, style);
+  }
+  collectShape();
 }
 
 void NUMCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox, const librevenge::RVNGPropertyList &style)
