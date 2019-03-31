@@ -307,7 +307,7 @@ try
   case IWORK_CELL_TYPE_DURATION :
     if (value)
     {
-      const int seconds = double_cast(get(value).c_str());
+      const int seconds = int(double_cast(get(value).c_str()));
       props.insert("librevenge:value-type", valueType ? get(valueType).c_str() : "time");
       props.insert("librevenge:hours", int(seconds / 3600));
       props.insert("librevenge:minutes", int((seconds % 3600) / 60));
@@ -371,6 +371,7 @@ librevenge::RVNGString convertCellValueInText(const IWORKStyleStack &style, cons
       case IWORK_CELL_NUMBER_TYPE_DOUBLE :
         s << val;
         break;
+      case IWORK_CELL_NUMBER_TYPE_FRACTION :
       default:
         ETONYEK_DEBUG_MSG(("convertCellValueInText: unexpected number format\n"));
       }
@@ -406,7 +407,7 @@ librevenge::RVNGString convertCellValueInText(const IWORKStyleStack &style, cons
     case IWORK_CELL_TYPE_DURATION :
     {
       if (!value) break;
-      const int seconds = double_cast(get(value).c_str());
+      const int seconds = int(double_cast(get(value).c_str()));
       librevenge::RVNGString res;
       res.sprintf("%d:%d:%d", int(seconds / 3600), int((seconds % 3600) / 60), int((seconds % 3600) % 60));
       return res;

@@ -2236,7 +2236,7 @@ void IWAParser::parseAuthorInComment(unsigned id)
     spans[0]=std::make_shared<IWORKStyle>(props, boost::none, nullptr);
     // reset color to default, if not, comment will be blue colored
     props.put<property::FontColor>(IWORKColor(0,0,0,1));
-    spans[len]=std::make_shared<IWORKStyle>(props, boost::none, nullptr);
+    spans[unsigned(len)]=std::make_shared<IWORKStyle>(props, boost::none, nullptr);
     text.setSpans(spans);
     text.parse(*m_currentText);
   }
@@ -2956,14 +2956,14 @@ bool IWAParser::parseFormat(const IWAMessage &msg, IWAParser::Format &format)
   }
   IWORKNumberFormat nFormat;
   nFormat.m_type=nType;
-  if (msg.uint32(2)) nFormat.m_decimalPlaces=get(msg.uint32(2));
-  else if (msg.uint32(9)) nFormat.m_decimalPlaces=get(msg.uint32(9));
+  if (msg.uint32(2)) nFormat.m_decimalPlaces=int(get(msg.uint32(2)));
+  else if (msg.uint32(9)) nFormat.m_decimalPlaces=int(get(msg.uint32(9)));
   if (nFormat.m_decimalPlaces>128) nFormat.m_decimalPlaces=-1; // 253 means automatic?
   if (msg.string(3)) nFormat.m_currencyCode=get(msg.string(3));
   if (msg.bool_(4)) nFormat.m_thousandsSeparator=get(msg.bool_(4));
   if (msg.bool_(5)) nFormat.m_accountingStyle=get(msg.bool_(5));
-  if (msg.uint32(8)) nFormat.m_base=get(msg.uint32(8));
-  if (msg.uint32(11)) nFormat.m_fractionAccuracy=get(msg.uint32(11));
+  if (msg.uint32(8)) nFormat.m_base=int(get(msg.uint32(8)));
+  if (msg.uint32(11)) nFormat.m_fractionAccuracy=int(get(msg.uint32(11)));
   format.m_format=nFormat;
   return true;
 }
