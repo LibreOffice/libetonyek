@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <iostream>
 #include <memory>
 
 #include "IWAMessage.h"
@@ -105,7 +106,6 @@ KEYSlidePtr_t KEY6Parser::parseSlide(const unsigned id, const bool master)
   const ObjectMessage msg(*this, id, KEY6ObjectType::Slide);
   if (!msg)
     return KEYSlidePtr_t();
-
   const optional<unsigned> &masterRef = readRef(get(msg), 17);
   KEYSlidePtr_t masterSlide;
   if (!master && masterRef)
@@ -194,7 +194,9 @@ bool KEY6Parser::parsePlaceholder(const unsigned id)
           IWORKPropertyMap props;
           if (bool(geometry))
             props.put<property::Geometry>(geometry);
-          const IWORKStylePtr_t style = make_shared<IWORKStyle>(props, none, none);
+          IWORKStylePtr_t layoutStyle;
+          const optional<unsigned> &layoutStyleRef = readRef(get(shape), 2);
+          const IWORKStylePtr_t style = make_shared<IWORKStyle>(props, none, layoutStyleRef ? queryGraphicStyle(get(layoutStyleRef)) : nullptr);
           const KEYPlaceholderPtr_t &placeholder = m_collector.collectTextPlaceholder(style, type == 2);
           m_collector.insertTextPlaceholder(placeholder);
           m_collector.endLevel();

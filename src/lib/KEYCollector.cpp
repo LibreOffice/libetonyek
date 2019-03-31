@@ -172,8 +172,11 @@ void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
       trafo = makeTransformation(*placeholder->m_geometry);
     trafo *= m_levelStack.top().m_trafo;
 
-    if (bool(placeholder) && bool(placeholder->m_style) && bool(placeholder->m_text))
-      drawTextBox(placeholder->m_text, trafo, placeholder->m_geometry, librevenge::RVNGPropertyList());
+    if (bool(placeholder) && bool(placeholder->m_style) && bool(placeholder->m_text)) {
+      librevenge::RVNGPropertyList props;
+      fillLayoutProps(placeholder->m_style, props);
+      drawTextBox(placeholder->m_text, trafo, placeholder->m_geometry, props);
+    }
   }
   else
   {

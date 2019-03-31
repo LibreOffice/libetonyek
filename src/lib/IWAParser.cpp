@@ -1678,7 +1678,31 @@ void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
 
   if (get(msg).message(11))
   {
-    // TODO: layout props
+    const IWAMessageField &layout = get(msg).message(11);
+    auto vAlign=layout.uint32(2);
+    if (vAlign) {
+      if (get(vAlign)>=0 && get(vAlign)<=2) {
+        IWORKVerticalAlignment const aligns[]=
+          {IWORK_VERTICAL_ALIGNMENT_TOP, IWORK_VERTICAL_ALIGNMENT_MIDDLE,IWORK_VERTICAL_ALIGNMENT_BOTTOM};
+        props.put<VerticalAlignment>(aligns[get(vAlign)]);
+      }
+      else {
+        ETONYEK_DEBUG_MSG(("IWAParser::parseGraphicStyle: unknown vAlign %u\n", get(vAlign)));
+      }
+    }
+    if (get(layout).message(6)) {
+      IWORKPadding padding;
+      readPadding(get(get(layout).message(6)), padding);
+      props.put<LayoutMargins>(padding);
+    }
+    const optional<unsigned> &paraRef = readRef(get(layout), 10);
+    if (paraRef) {
+      const IWORKStylePtr_t &paraStyle = queryParagraphStyle(get(paraRef));
+      if (paraStyle)
+        props.put<LayoutParagraphStyle>(paraStyle);
+    }
+
+    // TODO: other layout props: 1: shrink text, 4: columns
   }
 
   style = std::make_shared<IWORKStyle>(props, name, parent);
