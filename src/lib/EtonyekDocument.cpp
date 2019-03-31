@@ -288,7 +288,7 @@ RVNGInputStreamPtr_t queryTopDirStream(const RVNGInputStreamPtr_t &input)
         // initialize top dir
         const char *const pos = std::strchr(path, '/');
         if (pos)
-          top.assign(path, pos - path);
+          top.assign(path, std::size_t(pos - path));
         else
           top = path;
       }
