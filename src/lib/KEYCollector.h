@@ -40,7 +40,7 @@ public:
 
   void collectNote();
 
-  void collectStickyNote();
+  void collectStickyNote() override;
 
   void setSlideStyle(const IWORKStylePtr_t &style);
 
