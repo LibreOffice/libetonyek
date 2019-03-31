@@ -173,7 +173,10 @@ bool probeBinary(DetectionInfo &info)
     case 1 :
       if (header.message(2).uint32(3))
       {
-        const auto dataLen = get(header.message(2).uint32(3));
+        uint32_t dataLen = 0;
+        for (auto const &infoT : header.message(2)) {
+          if (infoT.uint32(3)) dataLen += infoT.uint32(3).get();
+        }
         const IWAMessage data(info.m_input, long(pos + headerLen), long(pos + headerLen + dataLen));
         // keynote: presentation ref in 2
         // number: sheet ref in 1

@@ -13,6 +13,9 @@
 
 #include "IWAMessage.h"
 #include "IWASnappyStream.h"
+#include "IWORKTypes.h"
+
+#include "IWAParser.h"
 
 namespace libetonyek
 {
@@ -47,6 +50,7 @@ IWAObjectIndex::IWAObjectIndex(const RVNGInputStreamPtr_t &fragments, const RVNG
   , m_unparsedFragments()
   , m_fragmentObjectMap()
   , m_fileMap()
+  , m_fileColorMap()
 {
 }
 
@@ -59,7 +63,7 @@ void IWAObjectIndex::parse()
   if (indexIt == m_fragmentObjectMap.end() || !indexIt->second.second.m_stream)
   {
     // TODO: scan all fragment files
-    ETONYEK_DEBUG_MSG(("IWAObjectIndex::parseObjectIndex: object index is broken, nothing will be parsed\n"));
+    ETONYEK_DEBUG_MSG(("IWAObjectIndex::parse: object index is broken, nothing will be parsed\n"));
   }
   else
   {
@@ -97,6 +101,19 @@ void IWAObjectIndex::parse()
           m_fileMap[file.uint32(1).get()] = make_pair(path, RVNGInputStreamPtr_t());
       }
     }
+
+    // search the color id map
+    auto replaceId=objectIndex.uint32(1).optional();
+    boost::optional<unsigned> replaceRef;
+    if (objectIndex.message(10)) replaceRef=objectIndex.message(10).uint32(1).optional();
+    if (replaceRef) {
+      if (replaceId && get(replaceRef)!=get(replaceId)) {
+        ETONYEK_DEBUG_MSG(("IWAObjectIndex::parse: replace id=%d is different from replace ref=%d\n", int(get(replaceId)), int(get(replaceRef))));
+      }
+      scanColorFileMap(get(replaceRef));
+    }
+    else if (replaceId)
+      scanColorFileMap(get(replaceId));
   }
 }
 
@@ -201,6 +218,60 @@ try
 catch (...)
 {
   // just read as much as possible
+}
+
+boost::optional<IWORKColor> IWAObjectIndex::queryFileColor(unsigned id) const
+{
+  auto it=m_fileColorMap.find(id);
+  if (it==m_fileColorMap.end()) {
+    ETONYEK_DEBUG_MSG(("IWAObjectIndex::queryFileColor: can not find color for %d\n", int(id)));
+    return boost::none;
+  }
+  return it->second;
+}
+
+void IWAObjectIndex::scanColorFileMap(unsigned id)
+try
+{
+  const auto indexIt = m_fragmentObjectMap.find(id);
+  if (indexIt == m_fragmentObjectMap.end() || !indexIt->second.second.m_stream)
+  {
+    // TODO: scan all fragment files
+    ETONYEK_DEBUG_MSG(("IWAObjectIndex::scanColorFileMap: can not find object %d\n", int(id)));
+    return;
+  }
+  const ObjectRecord &rec = indexIt->second.second;
+  const IWAMessage objectIndex(rec.m_stream, rec.m_dataRange.first, rec.m_dataRange.second);
+  for (auto const &corr : objectIndex.message(1).repeated()) {
+    auto ref=IWAParser::readRef(corr, 2);
+    if (!corr.uint32(1) || !ref) {
+      ETONYEK_DEBUG_MSG(("IWAObjectIndex::scanColorFileMap: can not parse some correspondances\n"));
+      continue;
+    }
+    auto color=scanColorFileCorrespondance(*ref);
+    if (color) m_fileColorMap[get(corr.uint32(1))]=get(color);
+  }
+}
+catch (...)
+{
+}
+
+boost::optional<IWORKColor> IWAObjectIndex::scanColorFileCorrespondance(unsigned id)
+try {
+  const auto indexIt = m_fragmentObjectMap.find(id);
+  if (indexIt == m_fragmentObjectMap.end() || !indexIt->second.second.m_stream)
+  {
+    // TODO: scan all fragment files
+    ETONYEK_DEBUG_MSG(("IWAObjectIndex::scanColorFileCorrespondance: can not find object %d\n", int(id)));
+    return boost::none;
+  }
+  const ObjectRecord &rec = indexIt->second.second;
+  const IWAMessage objectIndex(rec.m_stream, rec.m_dataRange.first, rec.m_dataRange.second);
+  return IWAParser::readColor(objectIndex, 1);
+}
+catch (...)
+{
+  return boost::none;
 }
 
 }

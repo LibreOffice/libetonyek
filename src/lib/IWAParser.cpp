@@ -459,6 +459,7 @@ bool IWAParser::readFill(const IWAMessage &msg, IWORKFill &fill)
       // find also 16 with no file...
       bitmap.m_data = std::make_shared<IWORKData>();
       bitmap.m_data->m_stream = queryFile(get(fileRef));
+      if (!bitmap.m_data->m_stream && !bitmap.m_fillColor) bitmap.m_fillColor = m_index.queryFileColor(get(fileRef));
     }
     fill = bitmap;
     return true;
