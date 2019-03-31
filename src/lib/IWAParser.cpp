@@ -1902,6 +1902,7 @@ void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
 
   const IWAUInt32Field &numberFormats = get(msg).uint32(15);
   const IWAStringField &bullets = get(msg).string(16);
+  const IWAMessageField &images = get(msg).message(17);
   const IWABoolField &tiered = get(msg).bool_(25);
   for (IWAUInt32Field::const_iterator it = get(msg).uint32(11).begin(); it != get(msg).uint32(11).end(); ++it, ++level)
   {
@@ -1914,9 +1915,33 @@ void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
       // no label
       levelProps[level].put<ListLabelTypeInfo>(true);
       break;
-    case 1 :
-      // TODO: handle image
+    case 1 : {
+      // try to find the image, and revert to a default bullet if we find nothing
+      char const (defBullet[])={char(0xe2), char(0x80), char(0xa2),0};
+      if (level >= images.size()) {
+        // FIXME, in fact, the image is in the parent style...
+        levelProps[level].put<ListLabelTypeInfo>(std::string(defBullet));
+        break;
+      }
+      auto ref=readRef(images[level],3);
+      if (!ref) {
+        ETONYEK_DEBUG_MSG(("parseListStyle: can not find image ref for level %u\n", level));
+        levelProps[level].put<ListLabelTypeInfo>(std::string(defBullet));
+        break;
+      }
+      const IWORKMediaContentPtr_t content = make_shared<IWORKMediaContent>();
+      auto stream = queryFile(get(ref));
+      if (!stream) {
+        // the image is probably in the theme model
+        levelProps[level].put<ListLabelTypeInfo>(std::string(defBullet));
+        break;
+      }
+      const IWORKDataPtr_t data = make_shared<IWORKData>();
+      data->m_stream = stream;
+      content->m_data = data;
+      levelProps[level].put<ListLabelTypeInfo>(content);
       break;
+    }
     case 2 :
       if (level < bullets.size())
         levelProps[level].put<ListLabelTypeInfo>(bullets[level]);
@@ -3197,7 +3222,7 @@ bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
     default:
       if ((get(type)>=1 && get(type)<=15) || get(type)==29)
       {
-        char const *wh[] =
+        char const *(wh[]) =
         {
           nullptr, "+", "-", "*", "/",
           "^", "&", ">", ">=",
