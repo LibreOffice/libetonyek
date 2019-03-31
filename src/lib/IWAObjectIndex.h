@@ -45,11 +45,14 @@ public:
   void queryObject(const unsigned id, unsigned &type, boost::optional<IWAMessage> &msg) const;
   boost::optional<unsigned> getObjectType(const unsigned id) const;
   const RVNGInputStreamPtr_t queryFile(unsigned id) const;
+  boost::optional<IWORKColor> queryFileColor(unsigned id) const;
 
 private:
   void scanFragment(unsigned id);
   void scanFragment(unsigned id, const RVNGInputStreamPtr_t &stream);
 
+  void scanColorFileMap(unsigned id);
+  boost::optional<IWORKColor> scanColorFileCorrespondance(unsigned id);
 private:
   const RVNGInputStreamPtr_t m_fragments;
   const RVNGInputStreamPtr_t m_package;
@@ -57,6 +60,7 @@ private:
   mutable std::map<unsigned, std::string> m_unparsedFragments;
   mutable std::map<unsigned, std::pair<unsigned, ObjectRecord>> m_fragmentObjectMap;
   mutable std::map<unsigned, std::pair<std::string, RVNGInputStreamPtr_t>> m_fileMap;
+  mutable std::map<unsigned, IWORKColor> m_fileColorMap;
 };
 
 }

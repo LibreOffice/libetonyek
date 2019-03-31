@@ -58,7 +58,11 @@ enum
 
   PageMaster = 10011,
   PageMasterData = 10016,
-  HeadersAndFooters = 10143
+  HeadersAndFooters = 10143,
+
+  MetaData = 11006,
+  FileColorMap = 11014,
+  FileColor = 11015
 };
 
 }

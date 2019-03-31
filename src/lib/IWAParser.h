@@ -41,12 +41,15 @@ namespace libetonyek
 {
 
 class IWORKCollector;
+class IWAObjectIndex;
 class IWORKPropertyMap;
 class IWORKTable;
 class IWORKText;
 
 class IWAParser
 {
+  friend class IWAObjectIndex; // for readColor
+
   // disable copying
   IWAParser(const IWAParser &);
   IWAParser &operator=(const IWAParser &);
