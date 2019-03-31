@@ -167,7 +167,7 @@ void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
 {
   if (bool(placeholder))
   {
-    glm::dmat3 trafo;
+    glm::dmat3 trafo(1);
     if (bool(placeholder->m_geometry))
       trafo = makeTransformation(*placeholder->m_geometry);
     trafo *= m_levelStack.top().m_trafo;
@@ -417,7 +417,6 @@ void KEYCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &tra
     double w = boundingBox->m_naturalSize.m_width;
     double h = boundingBox->m_naturalSize.m_height;
     vec = trafo * glm::dvec3(w, h, 0);
-
     if (vec[0]>0)
       props.insert("svg:width", pt2in(vec[0]));
     if (vec[1]>0)
