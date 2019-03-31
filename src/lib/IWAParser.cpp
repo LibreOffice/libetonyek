@@ -2154,18 +2154,61 @@ bool IWAParser::parseImage(const IWAMessage &msg)
   return true;
 }
 
+void IWAParser::parseAuthorInComment(unsigned id)
+{
+  assert(bool(m_currentText));
+  const ObjectMessage msg(*this, id, IWAObjectType::AuthorStorage);
+  if (!msg)
+    return;
+  if (get(msg).string(1))
+  {
+    auto string=get(get(msg).string(1));
+    auto len=string.size();
+    if (len==0) return;
+    IWAText text(string+"\t", m_langManager);
+    std::map<unsigned, IWORKStylePtr_t> spans;
+    IWORKPropertyMap props;
+    // normally yellow, but blue may be better in LO
+    props.put<property::FontColor>(IWORKColor(0,0,1,1));
+    spans[0]=std::make_shared<IWORKStyle>(props, boost::none, nullptr);
+    // reset color to default, if not, comment will be blue colored
+    props.put<property::FontColor>(IWORKColor(0,0,0,1));
+    spans[len]=std::make_shared<IWORKStyle>(props, boost::none, nullptr);
+    text.setSpans(spans);
+    text.parse(*m_currentText);
+  }
+}
+
 void IWAParser::parseComment(const unsigned id)
 {
   assert(bool(m_currentText));
 
-  const ObjectMessage msg(*this, id, IWAObjectType::Comment);
-  if (!msg)
-    return;
-
-  if (get(msg).string(1))
+  unsigned actId=id;
+  std::set<unsigned> seens;
+  while (1)
   {
-    IWAText text(get(get(msg).string(1)), m_langManager);
-    text.parse(*m_currentText);
+    if (seens.find(actId)!=seens.end())
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseComment: find a loop\n"));
+      break;
+    }
+    seens.insert(actId);
+    const ObjectMessage msg(*this, actId, IWAObjectType::Comment);
+    if (!msg)
+      return;
+    auto authorRef=readRef(get(msg), 3);
+    if (authorRef)
+      parseAuthorInComment(*authorRef);
+    // TODO add date which is in position 2
+    if (get(msg).string(1))
+    {
+      IWAText text(get(get(msg).string(1)), m_langManager);
+      text.parse(*m_currentText);
+    }
+
+    auto nextRef=readRef(get(msg), 4);
+    if (!nextRef) break;
+    actId=*nextRef;
   }
 }
 
@@ -2394,7 +2437,7 @@ void IWAParser::parseDataList(const unsigned id, DataList_t &dataList)
         dataList[index]=get(textRef);
       else
       {
-        ETONYEK_DEBUG_MSG(("IWAParser::parseDataList: can not find the ref\n"));
+        ETONYEK_DEBUG_MSG(("IWAParser::parseDataList: can not find the para ref\n"));
       }
       break;
     }
@@ -2403,9 +2446,16 @@ void IWAParser::parseDataList(const unsigned id, DataList_t &dataList)
         dataList[index] = get(it.uint32(9));
       break;
     case 10 :
-      if (it.uint32(10))
-        dataList[index] = get(it.uint32(10));
+    {
+      auto commentRef=readRef(it,10);
+      if (commentRef)
+        dataList[index]=get(commentRef);
+      else
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::parseDataList: can not find the cpmment ref\n"));
+      }
       break;
+    }
     default :
       ETONYEK_DEBUG_MSG(("IWAParser::parseDataList: unknown data list type %u\n", type));
       break;
@@ -2463,6 +2513,7 @@ void IWAParser::parseTile(const unsigned id)
 
       IWORKCellType cellType = IWORK_CELL_TYPE_TEXT;
       IWORKStylePtr_t cellStyle;
+      optional<unsigned> comment;
       IWORKFormulaPtr_t formula;
       optional<Format> format;
       optional<string> text;
@@ -2547,7 +2598,16 @@ void IWAParser::parseTile(const unsigned id)
           }
         }
         if (flags & 0x1000) // comment
-          readU32(input);
+        {
+          const unsigned commentId=readU32(input);
+          auto const commentIt = m_currentTable->m_commentList.find(commentId);
+          if (commentIt !=m_currentTable->m_commentList.end())
+            comment=boost::get<unsigned>(commentIt->second);
+          else
+          {
+            ETONYEK_DEBUG_MSG(("IWAParser::parseTile: can not find comment %d\n", int(commentId)));
+          }
+        }
         if (flags & 0x10) // simple text
         {
           const unsigned textId = readU32(input);
@@ -2635,6 +2695,16 @@ void IWAParser::parseTile(const unsigned id)
         }
       }
       m_currentTable->m_table->insertCell(column, row, text, m_currentText, dateTime, 1, 1, formula, unsigned(row*256+column), cellStyle, cellType);
+      if (comment)
+      {
+        auto currentText=m_currentText;
+        m_currentText = m_collector.createText(m_langManager);
+        parseComment(get(comment));
+        IWORKOutputElements elements;
+        m_currentText->draw(elements);
+        m_currentText=currentText;
+        m_currentTable->m_table->setComment(column, row, elements);
+      }
       m_currentText.reset();
     }
   }

@@ -18,6 +18,7 @@ namespace IWAObjectType
 
 enum
 {
+  AuthorStorage = 212,
   CustomDateTimeFormat = 222,
   // 401: StyleRoot, ie. list of different styles id
   Text = 2001,
