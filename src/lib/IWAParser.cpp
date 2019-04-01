@@ -3222,7 +3222,7 @@ bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
     default:
       if ((get(type)>=1 && get(type)<=15) || get(type)==29)
       {
-        char const *(wh[]) =
+        char const *wh[] =
         {
           nullptr, "+", "-", "*", "/",
           "^", "&", ">", ">=",
