@@ -1681,23 +1681,28 @@ void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
   {
     const IWAMessageField &layout = get(msg).message(11);
     auto vAlign=layout.uint32(2);
-    if (vAlign) {
-      if (get(vAlign)<=2) {
+    if (vAlign)
+    {
+      if (get(vAlign)<=2)
+      {
         IWORKVerticalAlignment const aligns[]=
-          {IWORK_VERTICAL_ALIGNMENT_TOP, IWORK_VERTICAL_ALIGNMENT_MIDDLE,IWORK_VERTICAL_ALIGNMENT_BOTTOM};
+        {IWORK_VERTICAL_ALIGNMENT_TOP, IWORK_VERTICAL_ALIGNMENT_MIDDLE,IWORK_VERTICAL_ALIGNMENT_BOTTOM};
         props.put<VerticalAlignment>(aligns[get(vAlign)]);
       }
-      else {
+      else
+      {
         ETONYEK_DEBUG_MSG(("IWAParser::parseGraphicStyle: unknown vAlign %u\n", get(vAlign)));
       }
     }
-    if (get(layout).message(6)) {
+    if (get(layout).message(6))
+    {
       IWORKPadding padding;
       readPadding(get(get(layout).message(6)), padding);
       props.put<LayoutMargins>(padding);
     }
     const optional<unsigned> &paraRef = readRef(get(layout), 10);
-    if (paraRef) {
+    if (paraRef)
+    {
       const IWORKStylePtr_t &paraStyle = queryParagraphStyle(get(paraRef));
       if (paraStyle)
         props.put<LayoutParagraphStyle>(paraStyle);
@@ -1915,23 +1920,27 @@ void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
       // no label
       levelProps[level].put<ListLabelTypeInfo>(true);
       break;
-    case 1 : {
+    case 1 :
+    {
       // try to find the image, and revert to a default bullet if we find nothing
-      char const defBullet[]={char(0xe2), char(0x80), char(0xa2),0};
-      if (level >= images.size()) {
+      char const defBullet[]= {char(0xe2), char(0x80), char(0xa2),0};
+      if (level >= images.size())
+      {
         // FIXME, in fact, the image is in the parent style...
         levelProps[level].put<ListLabelTypeInfo>(std::string(defBullet));
         break;
       }
       auto ref=readRef(images[level],3);
-      if (!ref) {
+      if (!ref)
+      {
         ETONYEK_DEBUG_MSG(("parseListStyle: can not find image ref for level %u\n", level));
         levelProps[level].put<ListLabelTypeInfo>(std::string(defBullet));
         break;
       }
       const IWORKMediaContentPtr_t content = make_shared<IWORKMediaContent>();
       auto stream = queryFile(get(ref));
-      if (!stream) {
+      if (!stream)
+      {
         // the image is probably in the theme model
         levelProps[level].put<ListLabelTypeInfo>(std::string(defBullet));
         break;

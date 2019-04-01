@@ -796,9 +796,10 @@ void IWORKText::closeLink()
     return;
   }
 
-  if (!m_inLink) {
-      ETONYEK_DEBUG_MSG(("IWORKText::closeLink: unexpected called\n"));
-      return;
+  if (!m_inLink)
+  {
+    ETONYEK_DEBUG_MSG(("IWORKText::closeLink: unexpected called\n"));
+    return;
   }
   if (m_inSpan)
     closeSpan();

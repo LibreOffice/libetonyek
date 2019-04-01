@@ -106,8 +106,10 @@ void IWAObjectIndex::parse()
     auto replaceId=objectIndex.uint32(1).optional();
     boost::optional<unsigned> replaceRef;
     if (objectIndex.message(10)) replaceRef=objectIndex.message(10).uint32(1).optional();
-    if (replaceRef) {
-      if (replaceId && get(replaceRef)!=get(replaceId)) {
+    if (replaceRef)
+    {
+      if (replaceId && get(replaceRef)!=get(replaceId))
+      {
         ETONYEK_DEBUG_MSG(("IWAObjectIndex::parse: replace id=%d is different from replace ref=%d\n", int(get(replaceId)), int(get(replaceRef))));
       }
       scanColorFileMap(get(replaceRef));
@@ -197,8 +199,10 @@ try
     uint64_t dataLen = 0;
     optional<unsigned> type;
     bool ok=true;
-    for (auto const &info : header.message(2)) { // go through all data information
-      if (!info.uint64(3)) {
+    for (auto const &info : header.message(2))   // go through all data information
+    {
+      if (!info.uint64(3))
+      {
         ok=false;
         break;
       }
@@ -223,7 +227,8 @@ catch (...)
 boost::optional<IWORKColor> IWAObjectIndex::queryFileColor(unsigned id) const
 {
   auto it=m_fileColorMap.find(id);
-  if (it==m_fileColorMap.end()) {
+  if (it==m_fileColorMap.end())
+  {
     ETONYEK_DEBUG_MSG(("IWAObjectIndex::queryFileColor: can not find color for %d\n", int(id)));
     return boost::none;
   }
@@ -242,9 +247,11 @@ try
   }
   const ObjectRecord &rec = indexIt->second.second;
   const IWAMessage objectIndex(rec.m_stream, rec.m_dataRange.first, rec.m_dataRange.second);
-  for (auto const &corr : objectIndex.message(1).repeated()) {
+  for (auto const &corr : objectIndex.message(1).repeated())
+  {
     auto ref=IWAParser::readRef(corr, 2);
-    if (!corr.uint32(1) || !ref) {
+    if (!corr.uint32(1) || !ref)
+    {
       ETONYEK_DEBUG_MSG(("IWAObjectIndex::scanColorFileMap: can not parse some correspondances\n"));
       continue;
     }
@@ -257,7 +264,8 @@ catch (...)
 }
 
 boost::optional<IWORKColor> IWAObjectIndex::scanColorFileCorrespondance(unsigned id)
-try {
+try
+{
   const auto indexIt = m_fragmentObjectMap.find(id);
   if (indexIt == m_fragmentObjectMap.end() || !indexIt->second.second.m_stream)
   {
