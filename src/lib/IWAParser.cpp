@@ -1917,7 +1917,7 @@ void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
       break;
     case 1 : {
       // try to find the image, and revert to a default bullet if we find nothing
-      char const (defBullet[])={char(0xe2), char(0x80), char(0xa2),0};
+      char const defBullet[]={char(0xe2), char(0x80), char(0xa2),0};
       if (level >= images.size()) {
         // FIXME, in fact, the image is in the parent style...
         levelProps[level].put<ListLabelTypeInfo>(std::string(defBullet));
