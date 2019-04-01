@@ -1682,7 +1682,7 @@ void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
     const IWAMessageField &layout = get(msg).message(11);
     auto vAlign=layout.uint32(2);
     if (vAlign) {
-      if (get(vAlign)>=0 && get(vAlign)<=2) {
+      if (get(vAlign)<=2) {
         IWORKVerticalAlignment const aligns[]=
           {IWORK_VERTICAL_ALIGNMENT_TOP, IWORK_VERTICAL_ALIGNMENT_MIDDLE,IWORK_VERTICAL_ALIGNMENT_BOTTOM};
         props.put<VerticalAlignment>(aligns[get(vAlign)]);
