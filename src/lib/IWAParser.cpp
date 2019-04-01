@@ -2225,10 +2225,10 @@ void IWAParser::parseAuthorInComment(unsigned id)
     return;
   if (get(msg).string(1))
   {
-    auto string=get(get(msg).string(1));
-    auto len=string.size();
+    auto str=get(get(msg).string(1));
+    auto len=str.size();
     if (len==0) return;
-    IWAText text(string+"\t", m_langManager);
+    IWAText text(str+"\t", m_langManager);
     std::map<unsigned, IWORKStylePtr_t> spans;
     IWORKPropertyMap props;
     // normally yellow, but blue may be better in LO
