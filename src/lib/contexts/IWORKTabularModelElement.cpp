@@ -915,6 +915,16 @@ namespace
 
 struct CellData
 {
+  CellData()
+    : m_content()
+    , m_dateTime()
+    , m_formula()
+    , m_style()
+    , m_type()
+    , m_text()
+  {
+  }
+
   boost::optional<std::string> m_content;
   boost::optional<IWORKDateTimeData> m_dateTime;
   IWORKFormulaPtr_t m_formula;
