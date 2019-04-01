@@ -1683,10 +1683,10 @@ void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
     auto vAlign=layout.uint32(2);
     if (vAlign)
     {
-      if (get(vAlign)<=2)
+      IWORKVerticalAlignment const aligns[]=
+      {IWORK_VERTICAL_ALIGNMENT_TOP, IWORK_VERTICAL_ALIGNMENT_MIDDLE,IWORK_VERTICAL_ALIGNMENT_BOTTOM};
+      if (get(vAlign) < ETONYEK_NUM_ELEMENTS(aligns))
       {
-        IWORKVerticalAlignment const aligns[]=
-        {IWORK_VERTICAL_ALIGNMENT_TOP, IWORK_VERTICAL_ALIGNMENT_MIDDLE,IWORK_VERTICAL_ALIGNMENT_BOTTOM};
         props.put<VerticalAlignment>(aligns[get(vAlign)]);
       }
       else
