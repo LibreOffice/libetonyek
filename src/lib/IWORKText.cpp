@@ -108,9 +108,14 @@ void IWORKText::fillCharPropList(const IWORKStyleStack &style, const IWORKLangua
       break;
     }
   }
-  else if (style.has<BaselineShift>())
+  else if (style.has<BaselineShift>() && (style.get<BaselineShift>()<0 || style.get<BaselineShift>()>0) &&
+           style.has<FontSize>() && style.get<FontSize>()>0)
   {
-    props.insert("style:text-position", style.get<BaselineShift>(), librevenge::RVNG_PERCENT);
+    // the unit is in point => we need to convert it in a percentage of the font size
+    librevenge::RVNGString str;
+    str.sprintf("%.2f", 100*style.get<BaselineShift>()/style.get<FontSize>());
+    str.append("% 100%");
+    props.insert("style:text-position", str.cstr());
   }
 
   if (style.has<Capitalization>())
