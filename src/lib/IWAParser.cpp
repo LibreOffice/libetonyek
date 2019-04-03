@@ -586,10 +586,12 @@ bool IWAParser::parseText(const unsigned id, const std::function<void(unsigned, 
   }
   std::multimap<unsigned, std::function<void(unsigned, bool &)> > attachments;
   const IWAStringField &text = get(msg).string(3);
-  if (text)
+  if (text || (openPageFunction && get(msg).message(17)))
   {
-    IWAText textParser(get(text), m_langManager);
-    const size_t length = get(text).size();
+    // special case, when the document is empty and openPageFunction is
+    //          defined, we still need to retrieve the headers/footers
+    IWAText textParser(get_optional_value_or(text," "), m_langManager);
+    const size_t length = text ? get(text).size() : 1;
 
     if (get(msg).message(5))
     {
