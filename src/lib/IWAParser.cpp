@@ -395,9 +395,20 @@ void IWAParser::readStroke(const IWAMessage &msg, IWORKStroke &stroke)
     stroke.m_pattern.m_type = IWORK_STROKE_TYPE_SOLID;
     if (msg.message(6).uint32(1))
     {
-      const optional<IWORKStrokeType> &strokeType = convert<IWORKStrokeType>(get(msg.message(6).uint32(1)));
-      if (strokeType)
-        stroke.m_pattern.m_type = get(strokeType);
+      switch(get(msg.message(6).uint32(1))) {
+      default :
+        ETONYEK_DEBUG_MSG(("IWAParser::readStroke: unknown stroke value: %u", get(msg.message(6).uint32(1))));
+        ETONYEK_FALLTHROUGH;
+      case 1:
+        stroke.m_pattern.m_type = IWORK_STROKE_TYPE_SOLID;
+        break;
+      case 0:
+        stroke.m_pattern.m_type = IWORK_STROKE_TYPE_DASHED;
+        break;
+      case 2:
+        stroke.m_pattern.m_type = IWORK_STROKE_TYPE_NONE;
+        break;
+      }
     }
     unsigned remaining = 0;
     if (msg.message(6).uint32(3))
