@@ -106,7 +106,7 @@ protected:
 
   bool dispatchShape(unsigned id);
   bool dispatchShapeWithMessage(const IWAMessage &msg, unsigned type);
-  bool parseText(unsigned id, const std::function<void(unsigned, IWORKStylePtr_t)> &openPageSpan=nullptr);
+  bool parseText(unsigned id, bool createNoteAsFootnote=true, const std::function<void(unsigned, IWORKStylePtr_t)> &openPageSpan=nullptr);
   void parseComment(unsigned id);
   void parseAuthorInComment(unsigned id);
   void parseCustomFormat(unsigned id);

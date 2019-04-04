@@ -20,6 +20,7 @@ enum
 {
   Document = 10000,
   PageGroup = 10010,
+  DocumentSettings = 10012,
 };
 
 }

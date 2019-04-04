@@ -71,6 +71,47 @@ bool PAG5Parser::parseGroupRef(unsigned id)
   return true;
 }
 
+bool PAG5Parser::parseDocumentSettingsRef(unsigned id)
+try
+{
+  const ObjectMessage msg(*this, id, PAG5ObjectType::DocumentSettings);
+  if (!msg)
+  {
+    ETONYEK_DEBUG_MSG(("PAG5Parser::parseSettingsRef: can not find %d object\n", int(id)));
+    return false;
+  }
+  PAGPublicationInfo pubInfo;
+  auto const &message=get(msg);
+  if (message.uint32(30))
+  {
+    switch (get(message.uint32(30)))
+    {
+    default :
+      ETONYEK_DEBUG_MSG(("PAG5Parser::parseDocumentSettingsRef: unknown note type %u\n", get(message.uint32(31))));
+      ETONYEK_FALLTHROUGH;
+    case 0 :
+      pubInfo.m_footnoteKind=PAG_FOOTNOTE_KIND_FOOTNOTE;
+      break;
+    case 1 :
+      pubInfo.m_footnoteKind=PAG_FOOTNOTE_KIND_ENDNOTE;
+      break;
+    case 2 :
+      pubInfo.m_footnoteKind=PAG_FOOTNOTE_KIND_SECTION_ENDNOTE;
+      break;
+    }
+  }
+  if (message.sint32(33))
+    pubInfo.m_footnoteGap=double(get(message.sint32(33))); // size in point
+
+  m_collector.collectPublicationInfo(pubInfo);
+  return true;
+}
+catch (...)
+{
+  ETONYEK_DEBUG_MSG(("PAG5Parser::parseSettingsRef: catch exception\n"));
+  return false;
+}
+
 bool PAG5Parser::parseDocument()
 {
   const ObjectMessage msg(*this, 1, PAG5ObjectType::Document);
@@ -99,6 +140,10 @@ bool PAG5Parser::parseDocument()
       printInfo.m_orientation=get(message.uint32(42));
     m_collector.setPageDimensions(printInfo);
 
+    const optional<unsigned> settingsRef(readRef(message, 7));
+    if (settingsRef)
+      parseDocumentSettingsRef(get(settingsRef));
+
     const optional<unsigned> groupRef(readRef(message, 3));
     if (groupRef)
       parseGroupRef(get(groupRef));
@@ -107,7 +152,8 @@ bool PAG5Parser::parseDocument()
     {
       m_currentText = m_collector.createText(m_langManager);
       bool opened=false;
-      parseText(get(textRef), [this,&opened](unsigned pos, IWORKStylePtr_t style)
+      parseText(get(textRef), m_collector.getFootnoteKind() == PAG_FOOTNOTE_KIND_FOOTNOTE,
+                [this,&opened](unsigned pos, IWORKStylePtr_t style)
       {
         if (pos && opened)
         {

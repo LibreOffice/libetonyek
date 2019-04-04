@@ -576,7 +576,7 @@ bool IWAParser::dispatchShapeWithMessage(const IWAMessage &msg, unsigned type)
   return false;
 }
 
-bool IWAParser::parseText(const unsigned id, const std::function<void(unsigned, IWORKStylePtr_t)> &openPageFunction)
+bool IWAParser::parseText(const unsigned id, bool createNoteAsFootnote, const std::function<void(unsigned, IWORKStylePtr_t)> &openPageFunction)
 {
   assert(bool(m_currentText));
   const ObjectMessage msg(*this, id);
@@ -590,7 +590,7 @@ bool IWAParser::parseText(const unsigned id, const std::function<void(unsigned, 
       ETONYEK_DEBUG_MSG(("IWAParser::parseText: can not find the text reference\n"));
       return false;
     }
-    return parseText(get(textRef),openPageFunction);
+    return parseText(get(textRef),createNoteAsFootnote,openPageFunction);
   }
   if (msg.getType()!=IWAObjectType::Text)
   {
@@ -788,16 +788,22 @@ bool IWAParser::parseText(const unsigned id, const std::function<void(unsigned, 
         if (textRef)
         {
           attachments.insert(make_pair(get(it.uint32(1)),
-                                       [this,textRef](unsigned, bool &ignore)
+                                       [this,createNoteAsFootnote,textRef](unsigned, bool &ignore)
           {
             ignore=true;
             auto currentText=m_currentText;
             m_currentText = m_collector.createText(m_langManager);
             parseText(get(textRef));
             IWORKOutputElements elements;
-            elements.addOpenFootnote(librevenge::RVNGPropertyList());
+            if (createNoteAsFootnote)
+              elements.addOpenFootnote(librevenge::RVNGPropertyList());
+            else
+              elements.addOpenEndnote(librevenge::RVNGPropertyList());
             m_currentText->draw(elements);
-            elements.addCloseFootnote();
+            if (createNoteAsFootnote)
+              elements.addCloseFootnote();
+            else
+              elements.addCloseEndnote();
             m_currentText=currentText;
             m_currentText->insertInlineContent(elements);
           }));

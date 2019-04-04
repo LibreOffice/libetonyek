@@ -27,6 +27,7 @@ private:
 
   bool dispatchShape(unsigned id);
   bool parseGroupRef(unsigned id);
+  bool parseDocumentSettingsRef(unsigned id);
 private:
   PAGCollector &m_collector;
 };
