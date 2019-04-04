@@ -696,7 +696,6 @@ void IWORKText::flushParagraph()
     closeSpan();
   if (m_inPara)
     closePara();
-  m_ignoreEmptyPara = false;
 }
 
 void IWORKText::setSpanStyle(const IWORKStylePtr_t &style)

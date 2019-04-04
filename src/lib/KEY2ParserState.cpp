@@ -84,13 +84,13 @@ void KEY2ParserState::openHeadline(int depth)
   if (depth==0)
   {
     if (!m_titleText)
-      m_titleText=m_collector.createText(m_langManager, false);
+      m_titleText=m_collector.createText(m_langManager, true);
     m_currentText=m_titleText;
   }
   else
   {
     if (!m_bodyText)
-      m_bodyText=m_collector.createText(m_langManager, false);
+      m_bodyText=m_collector.createText(m_langManager, true);
     m_currentText=m_bodyText;
   }
 }

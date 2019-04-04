@@ -395,7 +395,8 @@ void IWAParser::readStroke(const IWAMessage &msg, IWORKStroke &stroke)
     stroke.m_pattern.m_type = IWORK_STROKE_TYPE_SOLID;
     if (msg.message(6).uint32(1))
     {
-      switch(get(msg.message(6).uint32(1))) {
+      switch (get(msg.message(6).uint32(1)))
+      {
       default :
         ETONYEK_DEBUG_MSG(("IWAParser::readStroke: unknown stroke value: %u", get(msg.message(6).uint32(1))));
         ETONYEK_FALLTHROUGH;
@@ -417,6 +418,7 @@ void IWAParser::readStroke(const IWAMessage &msg, IWORKStroke &stroke)
     for (auto it = elements.begin(); it != elements.end() && remaining != 0; ++it)
       stroke.m_pattern.m_values.push_back(*it);
   }
+  // todo: check also if there is a picture frame msg.message(8), if yes, use it as border
 }
 
 bool IWAParser::readFill(const IWAMessage &msg, IWORKFill &fill)
