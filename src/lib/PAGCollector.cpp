@@ -226,6 +226,10 @@ void PAGCollector::drawTable()
 {
   assert(bool(m_currentTable));
   assert(!m_levelStack.empty());
+  // FIXME: in .odt files, table can not appear in group
+  int prevGroupLevel=getOpenGroupLevel();
+  for (int level=0; level<prevGroupLevel; ++level)
+    closeGroup();
 
   RVNGPropertyList frameProps;
   librevenge::RVNGPropertyList props;
@@ -260,18 +264,20 @@ void PAGCollector::drawTable()
       fillWrapProps(m_currentTable->getStyle(), frameProps, m_currentTable->getOrder());
   }
 
-  if (m_inAttachments)
+  if (m_inAttachments && !prevGroupLevel)
     m_currentTable->draw(props, m_outputManager.getCurrent(), true);
   else
   {
-    /* in Oasis v1.2, we can add the table directly in a frame, but
-       LibreOffice does not display it, so ...*/
+    frameProps.insert("draw:fill", "none");
+    frameProps.insert("draw:stroke", "none");
     getOutputManager().getCurrent().addOpenFrame(frameProps);
     getOutputManager().getCurrent().addStartTextObject(RVNGPropertyList());
     m_currentTable->draw(props, m_outputManager.getCurrent(), true);
     getOutputManager().getCurrent().addEndTextObject();
     getOutputManager().getCurrent().addCloseFrame();
   }
+  for (int level=0; level<prevGroupLevel; ++level)
+    openGroup();
 }
 
 void PAGCollector::drawShape(const IWORKShapePtr_t &shape)

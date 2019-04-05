@@ -108,6 +108,10 @@ public:
   // really add a group in the final file
   void openGroup();
   void closeGroup();
+  bool getOpenGroupLevel() const
+  {
+    return m_groupOpenLevel;
+  };
 
   void startLevel();
   void endLevel();
@@ -192,6 +196,7 @@ private:
 
   bool m_accumulateTransform;
   int m_groupLevel;
+  int m_groupOpenLevel;
 };
 
 } // namespace libetonyek

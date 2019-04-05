@@ -213,6 +213,7 @@ IWORKCollector::IWORKCollector(IWORKDocumentInterface *const document)
   , m_metadata()
   , m_accumulateTransform(true)
   , m_groupLevel(0)
+  , m_groupOpenLevel(0)
 {
 }
 
@@ -220,7 +221,7 @@ IWORKCollector::~IWORKCollector()
 {
   assert(m_levelStack.empty());
   assert(m_stylesheetStack.empty());
-  assert(0 == m_groupLevel);
+  assert(0 == m_groupLevel && 0 == m_groupOpenLevel);
 
   assert(!m_currentPath);
   assert(!m_currentText);
@@ -526,7 +527,7 @@ void IWORKCollector::endDocument()
 {
   assert(m_levelStack.empty());
   assert(m_pathStack.empty());
-  assert(0 == m_groupLevel);
+  assert(0 == m_groupLevel && 0 == m_groupOpenLevel);
 
   assert(!m_currentPath);
   assert(!m_currentText);
@@ -567,8 +568,8 @@ void IWORKCollector::openGroup()
   }
 
   assert(m_groupLevel > 0);
-  if (!m_inAttachments)
-    m_outputManager.getCurrent().addOpenGroup(librevenge::RVNGPropertyList());
+  m_outputManager.getCurrent().addOpenGroup(librevenge::RVNGPropertyList());
+  ++m_groupOpenLevel;
 }
 
 void IWORKCollector::closeGroup()
@@ -578,9 +579,9 @@ void IWORKCollector::closeGroup()
     m_recorder->closeGroup();
     return;
   }
-  assert(m_groupLevel > 0);
-  if (!m_inAttachments)
-    m_outputManager.getCurrent().addCloseGroup();
+  assert(m_groupLevel > 0 && m_groupOpenLevel > 0);
+  m_outputManager.getCurrent().addCloseGroup();
+  --m_groupOpenLevel;
 }
 
 std::shared_ptr<IWORKTable> IWORKCollector::createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const
