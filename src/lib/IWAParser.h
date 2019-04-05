@@ -112,6 +112,7 @@ protected:
   void parseCustomFormat(unsigned id);
 
   virtual bool parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry);
+  void parseMask(unsigned id, IWORKGeometryPtr_t &geometry, IWORKPathPtr_t &path);
 
   const IWORKStylePtr_t queryCharacterStyle(unsigned id) const;
   const IWORKStylePtr_t queryParagraphStyle(unsigned id) const;

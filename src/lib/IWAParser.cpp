@@ -1491,6 +1491,16 @@ bool IWAParser::parseShapePlacement(const IWAMessage &msg)
   return retval;
 }
 
+void IWAParser::parseMask(unsigned id, IWORKGeometryPtr_t &geometry, IWORKPathPtr_t &/*path*/)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::Mask);
+  if (!msg)
+    return;
+  if (get(msg).message(1))
+    parseShapePlacement(get(get(msg).message(1)), geometry);
+  // if (get(msg).message(2)) same code as parseDrawableShape
+}
+
 void IWAParser::parseObjectIndex()
 {
   m_index.parse();
@@ -2217,11 +2227,31 @@ void IWAParser::parseHeaderAndFooter(unsigned id, IWORKPageMaster &hf)
 bool IWAParser::parseImage(const IWAMessage &msg)
 {
   m_collector.startLevel();
+  IWORKGeometryPtr_t geometry;
   if (msg.message(1))
-    parseShapePlacement(get(msg.message(1)));
+  {
+    parseShapePlacement(get(msg.message(1)), geometry);
+    m_collector.collectGeometry(geometry);
+  }
+
   const optional<unsigned> styleRef = readRef(msg, 3);
   if (styleRef)
     m_collector.setGraphicStyle(queryMediaStyle(get(styleRef)));
+
+  IWORKGeometryPtr_t cropGeometry;
+  const optional<unsigned> cropRef = readRef(msg, 5);
+  if (cropRef)
+  {
+    IWORKPathPtr_t path;
+    parseMask(get(cropRef), cropGeometry, path);
+  }
+  if (cropGeometry && geometry)
+  {
+    // CHANGEME: collector suppose that cropGeometry position is the
+    //   final position but mask is relative to the original picture
+    cropGeometry->m_position.m_x += geometry->m_position.m_x;
+    cropGeometry->m_position.m_y += geometry->m_position.m_y;
+  }
 
   const IWORKMediaContentPtr_t content = make_shared<IWORKMediaContent>();
   // 15: filtered, 11: basic image?, 12: small image, 13: ?
@@ -2241,7 +2271,7 @@ bool IWAParser::parseImage(const IWAMessage &msg)
   if (!content->m_size)
     content->m_size = readSize(msg, 4);
 
-  m_collector.collectMedia(content);
+  m_collector.collectMedia(content, cropGeometry);
   m_collector.endLevel();
 
   return true;

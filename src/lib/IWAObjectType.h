@@ -38,6 +38,7 @@ enum
   DateTimeField = 2034,
   PageField = 2043,
   Image = 3005,
+  Mask = 3006,
   Group = 3008,
   ConnectionLine = 3009,
   MediaStyle = 3016,

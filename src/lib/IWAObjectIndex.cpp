@@ -110,6 +110,7 @@ void IWAObjectIndex::parse()
     {
       if (replaceId && get(replaceRef)!=get(replaceId))
       {
+        // happens in pages file
         ETONYEK_DEBUG_MSG(("IWAObjectIndex::parse: replace id=%d is different from replace ref=%d\n", int(get(replaceId)), int(get(replaceRef))));
       }
       scanColorFileMap(get(replaceRef));
