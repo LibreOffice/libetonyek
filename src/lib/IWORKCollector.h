@@ -143,7 +143,7 @@ protected:
   static void fillWrapProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props,
                             const boost::optional<int> &order);
   static void writeFill(const IWORKFill &fill, librevenge::RVNGPropertyList &props);
-  virtual void drawShape(const IWORKShapePtr_t &shape);
+  void drawShape(const IWORKShapePtr_t &shape);
 
 private:
   void pushStyle(const IWORKStylePtr_t &style);

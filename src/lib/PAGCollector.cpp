@@ -280,45 +280,6 @@ void PAGCollector::drawTable()
     openGroup();
 }
 
-void PAGCollector::drawShape(const IWORKShapePtr_t &shape)
-{
-  if (!m_inAttachment)
-    return IWORKCollector::drawShape(shape);
-
-  if (!bool(shape) || !bool(shape->m_path))
-  {
-    ETONYEK_DEBUG_MSG(("PAGCollector::drawShape: can not find the shape\n"));
-    return;
-  }
-
-  librevenge::RVNGPropertyList styleProps;
-  if (bool(shape->m_style))
-    fillGraphicProps(shape->m_style, styleProps, true, false);
-  if (shape->m_locked) // CHECKME: maybe also content
-    styleProps.insert("style:protect", "position size");
-
-  librevenge::RVNGPropertyList shapeProps;
-  librevenge::RVNGPropertyListVector vec;
-  auto const trafo = m_levelStack.top().m_trafo;
-  auto const path = *shape->m_path * trafo;
-  path.write(vec);
-  shapeProps.insert("svg:d", vec);
-  shapeProps.insert("text:anchor-type", "as-char");
-  shapeProps.insert("style:vertical-pos", "bottom");
-  shapeProps.insert("style:vertical-rel", "text");
-  shapeProps.insert("style:run-through", "foreground");
-  shapeProps.insert("style:wrap","run-through");
-
-  auto &elements = m_outputManager.getCurrent();
-  elements.addSetStyle(styleProps);
-  elements.addDrawPath(shapeProps);
-
-  if (bool(shape->m_text) && !shape->m_text->empty())
-  {
-    ETONYEK_DEBUG_MSG(("PAGCollector::drawShape: sorry sending text in a attachment is not implemented\n"));
-  }
-}
-
 void PAGCollector::drawMedia(const double x, const double y, const librevenge::RVNGPropertyList &data)
 {
   if (!data["office:binary-data"] || !data["librevenge:mime-type"])
@@ -359,10 +320,19 @@ void PAGCollector::drawMedia(const double x, const double y, const librevenge::R
 
 void PAGCollector::fillShapeProperties(librevenge::RVNGPropertyList &props)
 {
-  props.insert("text:anchor-type", "page");
-  props.insert("text:anchor-page-number", m_page);
-  props.insert("style:vertical-pos", "from-top");
-  props.insert("style:vertical-rel", "page");
+  if (m_inAttachments)
+  {
+    props.insert("text:anchor-type", "as-char");
+    props.insert("style:vertical-pos", "bottom");
+    props.insert("style:vertical-rel", "text");
+  }
+  else
+  {
+    props.insert("text:anchor-type", "page");
+    props.insert("text:anchor-page-number", m_page);
+    props.insert("style:vertical-pos", "from-top");
+    props.insert("style:vertical-rel", "page");
+  }
 }
 
 void PAGCollector::drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox, const librevenge::RVNGPropertyList &style)

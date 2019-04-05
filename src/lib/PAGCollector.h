@@ -54,7 +54,6 @@ public:
   PAGFootnoteKind getFootnoteKind() const;
 
 private:
-  void drawShape(const IWORKShapePtr_t &shape) override;
   void drawTable() override;
   void drawMedia(double x, double y, const librevenge::RVNGPropertyList &data) override;
   void fillShapeProperties(librevenge::RVNGPropertyList &props) override;
