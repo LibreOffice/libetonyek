@@ -2179,12 +2179,15 @@ void IWAParser::parsePageMaster(unsigned id, PageMaster &pageMaster)
     if (!hideHeaderOnFirstPage)
       props.put<property::FirstPageMaster>(pMaster);
   }
-  pageMaster.m_style = std::make_shared<IWORKStyle>(props, none, none);
-  auto dataRef=readRef(get(msg),29);
-  if (dataRef)
+  // readRef(get(msg),30); type 10016, field 1 a bool, [field 2] a ref to type 3047
+  const IWAMessageField &background = get(msg).message(30);
+  if (background)
   {
-    // useme: type 10016, field 1 a bool, [field 2] a ref to type 3047
+    IWORKFill fill;
+    if (readFill(get(background), fill))
+      props.put<property::Fill>(fill);
   }
+  pageMaster.m_style = std::make_shared<IWORKStyle>(props, none, none);
 }
 
 void IWAParser::parseHeaderAndFooter(unsigned id, IWORKPageMaster &hf)

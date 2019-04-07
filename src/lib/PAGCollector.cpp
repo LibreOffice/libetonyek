@@ -414,8 +414,19 @@ void PAGCollector::flushPageSpan(const bool writeEmpty)
       props.insert("fo:margin-top", get(page.m_marginTop), librevenge::RVNG_POINT);
     //TODO set also the header/footer height here
   }
-  IWORKOutputElements text;
+  if (m_currentSectionStyle && m_currentSectionStyle->has<property::Fill>())
+  {
+    librevenge::RVNGPropertyList fillProps;
+    writeFill(m_currentSectionStyle->get<property::Fill>(), fillProps);
+    if (fillProps["draw:fill-color"] && fillProps["draw:fill"] && fillProps["draw:fill"]->getStr()=="solid")
+      props.insert("fo:background-color", fillProps["draw:fill-color"]->clone());
+    else
+    {
+      ETONYEK_DEBUG_MSG(("PAGCollector::flushPageSpan: unimplemented background\n"));
+    }
+  }
 
+  IWORKOutputElements text;
   if (bool(m_currentText))
   {
     m_currentText->draw(text);
