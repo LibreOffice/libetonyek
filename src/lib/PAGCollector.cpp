@@ -288,14 +288,7 @@ void PAGCollector::drawMedia(const double x, const double y, const librevenge::R
     return;
   }
   RVNGPropertyList frameProps(data);
-  if (m_inAttachments)
-  {
-    frameProps.insert("text:anchor-type", "as-char");
-    frameProps.insert("style:vertical-pos", "bottom");
-    frameProps.insert("style:vertical-rel", "text");
-  }
-  else
-    fillShapeProperties(frameProps);
+  fillShapeProperties(frameProps);
   if (m_inAttachments && m_attachmentPosition)
   {
     frameProps.insert("svg:x", pt2in(get(m_attachmentPosition).m_x));

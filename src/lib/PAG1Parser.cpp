@@ -19,6 +19,7 @@
 #include "IWORKGroupElement.h"
 #include "IWORKHeaderFooterContext.h"
 #include "IWORKImageElement.h"
+#include "IWORKLineElement.h"
 #include "IWORKMediaElement.h"
 #include "IWORKMetadataElement.h"
 #include "IWORKNumberConverter.h"
@@ -679,6 +680,8 @@ IWORKXMLContextPtr_t PageGroupElement::element(const int name)
     return std::make_shared<PAG1ShapeContext>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::group :
     return std::make_shared<GroupElement>(getState());
+  case IWORKToken::NS_URI_SF | IWORKToken::line :
+    return std::make_shared<IWORKLineElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::image :
     return std::make_shared<IWORKImageElement>(getState());
   case IWORKToken::NS_URI_SF | IWORKToken::media :

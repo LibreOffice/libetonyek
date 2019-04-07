@@ -1071,6 +1071,7 @@ void IWORKCollector::drawLine(const IWORKLinePtr_t &line)
 
   librevenge::RVNGPropertyList points;
   points.insert("svg:points", vertices);
+  fillShapeProperties(points);
 
   elements.addDrawPolyline(points);
 }
