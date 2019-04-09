@@ -1167,8 +1167,26 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)
   if (shape)
   {
     const optional<IWAMessage> &placement = get(shape).message(1).optional();
+    const optional<IWAMessage> &path = get(shape).message(3).optional();
     if (placement)
-      parseShapePlacement(get(placement));
+    {
+      IWORKGeometryPtr_t geometry;
+      parseShapePlacement(get(placement), geometry);
+      if (geometry && (geometry->m_naturalSize.m_width<=0 || geometry->m_naturalSize.m_height<=0) && path)
+      {
+        // try to retrieve the shape's size in the path
+        std::map<unsigned,unsigned> const cIdToSizeId= { { 3, 3}, { 4, 3}, {5, 2}, { 6, 1}, { 8, 2} };
+        for (auto const it : cIdToSizeId)
+        {
+          if (!get(path).message(it.first)) continue;
+          auto const &pathSize=readSize(get(get(path).message(it.first)), it.second);
+          if (!pathSize || pathSize->m_width<=0 || pathSize->m_height<=0) continue;
+          geometry->m_naturalSize=geometry->m_size=get(pathSize);
+          break;
+        }
+      }
+      m_collector.collectGeometry(geometry);
+    }
 
     IWORKStylePtr_t style;
     const optional<unsigned> styleRef = readRef(get(shape), 2);
@@ -1188,7 +1206,6 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)
     if (style)
       m_collector.setGraphicStyle(style);
 
-    const optional<IWAMessage> &path = get(shape).message(3).optional();
     if (path)
     {
       if (get(path).message(3)) // point path
