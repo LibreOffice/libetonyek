@@ -111,8 +111,9 @@ protected:
   void parseAuthorInComment(unsigned id);
   void parseCustomFormat(unsigned id);
 
-  virtual bool parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry);
+  virtual bool parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry, unsigned &flags);
   void parseMask(unsigned id, IWORKGeometryPtr_t &geometry, IWORKPathPtr_t &path);
+  void updateGeometryUsingTextRef(unsigned id, IWORKGeometry &geometry, unsigned flags);
 
   const IWORKStylePtr_t queryCharacterStyle(unsigned id) const;
   const IWORKStylePtr_t queryParagraphStyle(unsigned id) const;

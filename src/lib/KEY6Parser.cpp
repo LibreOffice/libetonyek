@@ -184,7 +184,10 @@ bool KEY6Parser::parsePlaceholder(const unsigned id)
           IWORKGeometryPtr_t geometry;
           const IWAMessageField &placement = get(shape).message(1);
           if (placement)
-            parseShapePlacement(get(placement), geometry);
+          {
+            unsigned flags;
+            parseShapePlacement(get(placement), geometry, flags);
+          }
           assert(!m_currentText);
           m_currentText = m_collector.createText(m_langManager);
           parseText(get(textRef));

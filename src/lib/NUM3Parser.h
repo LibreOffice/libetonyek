@@ -24,7 +24,7 @@ public:
 
 private:
   bool parseDocument() override;
-  bool parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry) override;
+  bool parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry, unsigned &flags) override;
   bool parseStickyNote(const IWAMessage &msg) override;
 
   bool parseSheet(unsigned id);

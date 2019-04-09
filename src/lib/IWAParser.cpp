@@ -576,6 +576,60 @@ bool IWAParser::dispatchShapeWithMessage(const IWAMessage &msg, unsigned type)
   return false;
 }
 
+void IWAParser::updateGeometryUsingTextRef(unsigned id, IWORKGeometry &geometry, unsigned flags)
+{
+  // no horizontal auto resize or width unknown
+  if ((flags&1)==1 || geometry.m_size.m_width<=0) return;
+  const ObjectMessage msg(*this, id);
+  if (!msg)
+    return;
+  if (msg.getType()==IWAObjectType::TextRef)
+  {
+    auto textRef=readRef(get(msg),1);
+    if (!textRef)
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::updateGeometryUsingTextRef: can not find the text reference\n"));
+      return;
+    }
+    updateGeometryUsingTextRef(get(textRef),geometry, flags);
+    return;
+  }
+  if (msg.getType()!=IWAObjectType::Text)
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::updateGeometryUsingTextRef: unexpected object type, type=%d\n", int(msg.getType())));
+    return;
+  }
+  if (!get(msg).message(5))
+    return;
+  // ok, let find the paragraph style for pos=0
+  for (const auto &it : get(msg).message(5).message(1))
+  {
+    if (it.uint32(1) && get(it.uint32(1))!=0) continue;
+    const optional<unsigned> &styleRef = readRef(it, 2);
+    if (!styleRef) return;
+
+    const IWORKStylePtr_t &style = queryParagraphStyle(get(styleRef));
+    if (!bool(style)) return;
+    if (geometry.m_size.m_width>0 && style->has<property::Alignment>())
+    {
+      switch (style->get<property::Alignment>())
+      {
+      case IWORK_ALIGNMENT_RIGHT :
+        geometry.m_position.m_x -= geometry.m_size.m_width;
+        break;
+      case IWORK_ALIGNMENT_CENTER :
+        geometry.m_position.m_x -= geometry.m_size.m_width/2.;
+        break;
+      case IWORK_ALIGNMENT_LEFT :
+      case IWORK_ALIGNMENT_JUSTIFY :
+      case IWORK_ALIGNMENT_AUTOMATIC:
+      default:
+        break;
+      }
+    }
+  }
+}
+
 bool IWAParser::parseText(const unsigned id, bool createNoteAsFootnote, const std::function<void(unsigned, IWORKStylePtr_t)> &openPageFunction)
 {
   assert(bool(m_currentText));
@@ -1164,14 +1218,21 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)
   m_collector.startLevel();
 
   const optional<IWAMessage> &shape = msg.message(1).optional();
+  const optional<unsigned> &textRef = readRef(msg, 2);
+
   if (shape)
   {
     const optional<IWAMessage> &placement = get(shape).message(1).optional();
+    IWORKStylePtr_t style;
+    const optional<unsigned> styleRef = readRef(get(shape), 2);
+    if (styleRef)
+      style=queryGraphicStyle(get(styleRef));
     const optional<IWAMessage> &path = get(shape).message(3).optional();
     if (placement)
     {
       IWORKGeometryPtr_t geometry;
-      parseShapePlacement(get(placement), geometry);
+      unsigned flags=3;
+      parseShapePlacement(get(placement), geometry, flags);
       if (geometry && (geometry->m_naturalSize.m_width<=0 || geometry->m_naturalSize.m_height<=0) && path)
       {
         // try to retrieve the shape's size in the path
@@ -1185,13 +1246,28 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)
           break;
         }
       }
+      if (geometry && (flags&1)==0 && textRef) // correct horizontal position
+        updateGeometryUsingTextRef(get(textRef), *geometry, flags);
+      if (geometry && (flags&2)==0 && geometry->m_size.m_height>0 && style && style->has<property::VerticalAlignment>())
+      {
+        // correct vertical position
+        switch (style->get<property::VerticalAlignment>())
+        {
+        case IWORK_VERTICAL_ALIGNMENT_MIDDLE:
+          geometry->m_position.m_y -= geometry->m_size.m_height/2.;
+          break;
+        case IWORK_VERTICAL_ALIGNMENT_BOTTOM:
+          geometry->m_position.m_y -= geometry->m_size.m_height;
+          break;
+        case IWORK_VERTICAL_ALIGNMENT_TOP:
+        default:
+          break;
+        }
+      }
+
       m_collector.collectGeometry(geometry);
     }
 
-    IWORKStylePtr_t style;
-    const optional<unsigned> styleRef = readRef(get(shape), 2);
-    if (styleRef)
-      style=queryGraphicStyle(get(styleRef));
     // look for arrow Keynote 6
     if (get(shape).message(4) || get(shape).message(5))
     {
@@ -1388,18 +1464,14 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)
     }
   }
   bool hasText=false;
-  if (!isConnectionLine)
+  if (!isConnectionLine && textRef)
   {
-    const optional<unsigned> &textRef = readRef(msg, 2);
-    if (textRef)
+    m_currentText = m_collector.createText(m_langManager, true);
+    parseText(get(textRef));
+    if (!m_currentText->empty())
     {
-      m_currentText = m_collector.createText(m_langManager, true);
-      parseText(get(textRef));
-      if (!m_currentText->empty())
-      {
-        hasText=true;
-        m_collector.collectText(m_currentText);
-      }
+      hasText=true;
+      m_collector.collectText(m_currentText);
     }
   }
 
@@ -1431,9 +1503,10 @@ bool IWAParser::parseGroup(const IWAMessage &msg)
   return true;
 }
 
-bool IWAParser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry)
+bool IWAParser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry, unsigned &flags)
 {
   geometry = make_shared<IWORKGeometry>();
+  flags=3; // no auto resize
 
   const optional<IWAMessage> &g = msg.message(1).optional();
   if (g)
@@ -1446,50 +1519,14 @@ bool IWAParser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &g
       geometry->m_naturalSize = geometry->m_size = get(size);
     if (get(g).uint32(3))
     {
-      switch (get(get(g).uint32(3)))
-      {
-      case 0: // centered x, centered y
-      {
-        // the position is the position of the center of the shape
-        // (often auto grow textboxes)
-        if (pos && size && get(size).m_width>0 && get(size).m_height>0)
-        {
-          geometry->m_position.m_x -= get(size).m_width/2.;
-          geometry->m_position.m_y -= get(size).m_height/2.;
-          break;
-        }
-        static bool first=true;
-        if (first)
-        {
-          ETONYEK_DEBUG_MSG(("IWAParser::parseShapePlacement: Ooops, find some centered shape\n"));
-          first=false;
-        }
-        break;
-      }
-      case 1: // fixed x, centered y
-      {
-        if (pos && size && get(size).m_height>0)
-        {
-          geometry->m_position.m_y -= get(size).m_height/2.;
-          break;
-        }
-        static bool first=true;
-        if (first)
-        {
-          ETONYEK_DEBUG_MSG(("IWAParser::parseShapePlacement: Ooops, find some y centered shape\n"));
-          first=false;
-        }
-        break;
-      }
-      // case 2: centered x, fixed y?
-      case 3 : // normal
-        break;
-      case 7 : // horizontal flip
+      flags=get(get(g).uint32(3));
+      // flags&1 : horizontal position is fixed
+      // flags&2 : vertical position is fixed
+      if (flags&4) // horizontal flip
         geometry->m_horizontalFlip = true;
-        break;
-      default :
-        ETONYEK_DEBUG_MSG(("IWAParser::parseShapePlacement: unknown transformation %u\n", get(get(g).uint32(3))));
-        break;
+      if (flags&0xFFF8)
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::parseShapePlacement: unknown transformation %u\n", flags));
       }
     }
     if (get(g).float_(4))
@@ -1503,7 +1540,8 @@ bool IWAParser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &g
 bool IWAParser::parseShapePlacement(const IWAMessage &msg)
 {
   IWORKGeometryPtr_t geometry;
-  const bool retval = parseShapePlacement(msg, geometry);
+  unsigned flags;
+  const bool retval = parseShapePlacement(msg, geometry, flags);
   m_collector.collectGeometry(geometry);
   return retval;
 }
@@ -1514,7 +1552,10 @@ void IWAParser::parseMask(unsigned id, IWORKGeometryPtr_t &geometry, IWORKPathPt
   if (!msg)
     return;
   if (get(msg).message(1))
-    parseShapePlacement(get(get(msg).message(1)), geometry);
+  {
+    unsigned flags;
+    parseShapePlacement(get(get(msg).message(1)), geometry, flags);
+  }
   // if (get(msg).message(2)) same code as parseDrawableShape
 }
 
@@ -2250,7 +2291,8 @@ bool IWAParser::parseImage(const IWAMessage &msg)
   IWORKGeometryPtr_t geometry;
   if (msg.message(1))
   {
-    parseShapePlacement(get(msg.message(1)), geometry);
+    unsigned flags;
+    parseShapePlacement(get(msg.message(1)), geometry, flags);
     m_collector.collectGeometry(geometry);
   }
 
