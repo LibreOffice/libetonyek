@@ -46,7 +46,7 @@ public:
   void collectPath(const IWORKPathPtr_t &path);
   void collectImage(const IWORKMediaContentPtr_t &image, const IWORKGeometryPtr_t &cropGeometry, const boost::optional<int> &order, bool locked);
   void collectLine(const IWORKLinePtr_t &line);
-  void collectShape(const boost::optional<int> &order, bool locked);
+  void collectShape(const boost::optional<int> &order, const boost::optional<unsigned> &resizeFlags, bool locked);
 
   void collectMedia(const IWORKMediaContentPtr_t &content, const IWORKGeometryPtr_t &cropGeometry, const boost::optional<int> &order);
 

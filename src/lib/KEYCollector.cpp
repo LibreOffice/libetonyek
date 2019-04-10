@@ -142,10 +142,11 @@ void KEYCollector::insertSlide(const KEYSlidePtr_t &slide, bool isMaster, const 
     m_document->endSlide();
 }
 
-KEYPlaceholderPtr_t KEYCollector::collectTextPlaceholder(const IWORKStylePtr_t &style, const bool title)
+KEYPlaceholderPtr_t KEYCollector::collectTextPlaceholder(const IWORKStylePtr_t &style, const bool title, const boost::optional<unsigned> &resizeFlags)
 {
   KEYPlaceholderPtr_t placeholder(new KEYPlaceholder());
   placeholder->m_title = title;
+  placeholder->m_resizeFlags = resizeFlags;
   placeholder->m_style = style;
   if (bool(placeholder->m_style))
   {
@@ -176,6 +177,13 @@ void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
     {
       librevenge::RVNGPropertyList props;
       fillLayoutProps(placeholder->m_style, props);
+      if (placeholder->m_resizeFlags && (get(placeholder->m_resizeFlags)&3)==3 &&
+          placeholder->m_geometry && placeholder->m_geometry->m_naturalSize.m_width>0 && placeholder->m_geometry->m_naturalSize.m_height>0)
+      {
+        props.insert("draw:auto-grow-height",false);
+        props.insert("draw:fit-to-size",true);
+        props.insert("style:shrink-to-fit",true);
+      }
       drawTextBox(placeholder->m_text, trafo, placeholder->m_geometry, props);
     }
   }

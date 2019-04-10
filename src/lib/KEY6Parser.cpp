@@ -183,11 +183,9 @@ bool KEY6Parser::parsePlaceholder(const unsigned id)
           m_collector.startLevel();
           IWORKGeometryPtr_t geometry;
           const IWAMessageField &placement = get(shape).message(1);
+          boost::optional<unsigned> resizeFlags;
           if (placement)
-          {
-            unsigned flags;
-            parseShapePlacement(get(placement), geometry, flags);
-          }
+            parseShapePlacement(get(placement), geometry, resizeFlags);
           assert(!m_currentText);
           m_currentText = m_collector.createText(m_langManager);
           parseText(get(textRef));
@@ -200,7 +198,7 @@ bool KEY6Parser::parsePlaceholder(const unsigned id)
           IWORKStylePtr_t layoutStyle;
           const optional<unsigned> &layoutStyleRef = readRef(get(shape), 2);
           const IWORKStylePtr_t style = make_shared<IWORKStyle>(props, none, layoutStyleRef ? queryGraphicStyle(get(layoutStyleRef)) : nullptr);
-          const KEYPlaceholderPtr_t &placeholder = m_collector.collectTextPlaceholder(style, type == 2);
+          const KEYPlaceholderPtr_t &placeholder = m_collector.collectTextPlaceholder(style, type == 2, resizeFlags);
           m_collector.insertTextPlaceholder(placeholder);
           m_collector.endLevel();
         }

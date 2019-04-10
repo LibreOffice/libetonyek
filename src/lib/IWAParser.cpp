@@ -1219,6 +1219,7 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)
 
   const optional<IWAMessage> &shape = msg.message(1).optional();
   const optional<unsigned> &textRef = readRef(msg, 2);
+  boost::optional<unsigned> resizeFlags;
 
   if (shape)
   {
@@ -1231,8 +1232,7 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)
     if (placement)
     {
       IWORKGeometryPtr_t geometry;
-      unsigned flags=3;
-      parseShapePlacement(get(placement), geometry, flags);
+      parseShapePlacement(get(placement), geometry, resizeFlags);
       if (geometry && (geometry->m_naturalSize.m_width<=0 || geometry->m_naturalSize.m_height<=0) && path)
       {
         // try to retrieve the shape's size in the path
@@ -1246,9 +1246,9 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)
           break;
         }
       }
-      if (geometry && (flags&1)==0 && textRef) // correct horizontal position
-        updateGeometryUsingTextRef(get(textRef), *geometry, flags);
-      if (geometry && (flags&2)==0 && geometry->m_size.m_height>0 && style && style->has<property::VerticalAlignment>())
+      if (geometry && resizeFlags && (get(resizeFlags) &1)==0 && textRef) // correct horizontal position
+        updateGeometryUsingTextRef(get(textRef), *geometry, get(resizeFlags));
+      if (geometry && resizeFlags && (get(resizeFlags)&2)==0 && geometry->m_size.m_height>0 && style && style->has<property::VerticalAlignment>())
       {
         // correct vertical position
         switch (style->get<property::VerticalAlignment>())
@@ -1476,7 +1476,7 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)
   }
 
   if (shape || hasText)
-    m_collector.collectShape();
+    m_collector.collectShape(boost::none, resizeFlags);
   m_currentText.reset();
 
   m_collector.endLevel();
@@ -1503,7 +1503,7 @@ bool IWAParser::parseGroup(const IWAMessage &msg)
   return true;
 }
 
-bool IWAParser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry, unsigned &flags)
+bool IWAParser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry, boost::optional<unsigned> &flags)
 {
   geometry = make_shared<IWORKGeometry>();
   flags=3; // no auto resize
@@ -1522,11 +1522,11 @@ bool IWAParser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &g
       flags=get(get(g).uint32(3));
       // flags&1 : horizontal position is fixed
       // flags&2 : vertical position is fixed
-      if (flags&4) // horizontal flip
+      if (get(flags)&4) // horizontal flip
         geometry->m_horizontalFlip = true;
-      if (flags&0xFFF8)
+      if (get(flags)&0xFFF8)
       {
-        ETONYEK_DEBUG_MSG(("IWAParser::parseShapePlacement: unknown transformation %u\n", flags));
+        ETONYEK_DEBUG_MSG(("IWAParser::parseShapePlacement: unknown transformation %u\n", get(flags)));
       }
     }
     if (get(g).float_(4))
@@ -1540,7 +1540,7 @@ bool IWAParser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &g
 bool IWAParser::parseShapePlacement(const IWAMessage &msg)
 {
   IWORKGeometryPtr_t geometry;
-  unsigned flags;
+  boost::optional<unsigned> flags;
   const bool retval = parseShapePlacement(msg, geometry, flags);
   m_collector.collectGeometry(geometry);
   return retval;
@@ -1553,7 +1553,7 @@ void IWAParser::parseMask(unsigned id, IWORKGeometryPtr_t &geometry, IWORKPathPt
     return;
   if (get(msg).message(1))
   {
-    unsigned flags;
+    boost::optional<unsigned> flags;
     parseShapePlacement(get(get(msg).message(1)), geometry, flags);
   }
   // if (get(msg).message(2)) same code as parseDrawableShape
@@ -2291,7 +2291,7 @@ bool IWAParser::parseImage(const IWAMessage &msg)
   IWORKGeometryPtr_t geometry;
   if (msg.message(1))
   {
-    unsigned flags;
+    boost::optional<unsigned> flags;
     parseShapePlacement(get(msg.message(1)), geometry, flags);
     m_collector.collectGeometry(geometry);
   }

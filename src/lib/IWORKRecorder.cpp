@@ -94,12 +94,14 @@ struct CollectLine
 
 struct CollectShape
 {
-  CollectShape(const boost::optional<int> &order, bool locked)
+  CollectShape(const boost::optional<int> &order, const boost::optional<unsigned> &resizeFlags, bool locked)
     : m_order(order)
+    , m_resizeFlags(resizeFlags)
     , m_locked(locked)
   {
   }
   const boost::optional<int> m_order;
+  const boost::optional<unsigned> m_resizeFlags;
   bool m_locked;
 };
 
@@ -245,7 +247,7 @@ struct Sender : public boost::static_visitor<void>
 
   void operator()(const CollectShape &value) const
   {
-    m_collector.collectShape(value.m_order, value.m_locked);
+    m_collector.collectShape(value.m_order, value.m_resizeFlags, value.m_locked);
   }
 
   void operator()(const CollectMedia &value) const
@@ -396,9 +398,9 @@ void IWORKRecorder::collectLine(const IWORKLinePtr_t &line)
   m_impl->m_elements.push_back(CollectLine(line));
 }
 
-void IWORKRecorder::collectShape(const boost::optional<int> &order, bool locked)
+void IWORKRecorder::collectShape(const boost::optional<int> &order, const boost::optional<unsigned> &resizeFlags, bool locked)
 {
-  m_impl->m_elements.push_back(CollectShape(order,locked));
+  m_impl->m_elements.push_back(CollectShape(order,resizeFlags,locked));
 }
 
 void IWORKRecorder::collectMedia(const IWORKMediaContentPtr_t &content, const IWORKGeometryPtr_t &cropGeometry, const boost::optional<int> &order)

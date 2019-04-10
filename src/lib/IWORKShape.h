@@ -28,6 +28,7 @@ struct IWORKShape
   IWORKGeometryPtr_t m_geometry;
   IWORKStylePtr_t m_style;
   boost::optional<int> m_order;
+  boost::optional<unsigned> m_resizeFlags;
   IWORKPathPtr_t m_path;
   IWORKTextPtr_t m_text;
   bool m_locked;

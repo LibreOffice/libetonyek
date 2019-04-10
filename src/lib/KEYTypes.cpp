@@ -33,6 +33,7 @@ KEYPlaceholder::KEYPlaceholder()
   , m_geometry()
   , m_text()
   , m_visible()
+  , m_resizeFlags()
   , m_bulletIndentations()
 {
 }

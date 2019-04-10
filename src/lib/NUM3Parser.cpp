@@ -42,10 +42,9 @@ bool NUM3Parser::parseSheet(unsigned id)
   return true;
 }
 
-bool NUM3Parser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry, unsigned &flags)
+bool NUM3Parser::parseShapePlacement(const IWAMessage &msg, IWORKGeometryPtr_t &geometry, boost::optional<unsigned> &flags)
 {
   geometry = std::make_shared<IWORKGeometry>();
-  flags=3; // no auto resize
   const boost::optional<IWAMessage> &g = msg.message(1).optional();
   if (g)
   {

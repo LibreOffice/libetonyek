@@ -35,7 +35,7 @@ public:
   void insertLayer(const KEYLayerPtr_t &layer);
   KEYSlidePtr_t collectSlide();
 
-  KEYPlaceholderPtr_t collectTextPlaceholder(const IWORKStylePtr_t &style, bool title);
+  KEYPlaceholderPtr_t collectTextPlaceholder(const IWORKStylePtr_t &style, bool title, const boost::optional<unsigned> &resizeFlags=boost::none);
   void insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder);
 
   void collectNote();

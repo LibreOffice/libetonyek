@@ -46,6 +46,7 @@ struct KEYPlaceholder
   IWORKGeometryPtr_t m_geometry;
   IWORKTextPtr_t m_text;
   boost::optional<bool> m_visible;
+  boost::optional<unsigned> m_resizeFlags;
   std::deque<double> m_bulletIndentations;
 
   KEYPlaceholder();

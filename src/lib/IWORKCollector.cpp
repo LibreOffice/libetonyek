@@ -334,11 +334,11 @@ void IWORKCollector::collectLine(const IWORKLinePtr_t &line)
   drawLine(line);
 }
 
-void IWORKCollector::collectShape(const boost::optional<int> &order, bool locked)
+void IWORKCollector::collectShape(const boost::optional<int> &order, const boost::optional<unsigned> &resizeFlags, bool locked)
 {
   if (bool(m_recorder))
   {
-    m_recorder->collectShape(order, locked);
+    m_recorder->collectShape(order, resizeFlags, locked);
     return;
   }
 
@@ -363,6 +363,7 @@ void IWORKCollector::collectShape(const boost::optional<int> &order, bool locked
   }
 
   shape->m_order = order;
+  shape->m_resizeFlags=resizeFlags;
   shape->m_locked = locked;
   shape->m_style = m_levelStack.top().m_graphicStyle;
   m_levelStack.top().m_graphicStyle.reset();
@@ -1185,6 +1186,13 @@ void IWORKCollector::drawShape(const IWORKShapePtr_t &shape)
     if (!layoutStyle && bool(shape->m_style) && shape->m_style->has<property::LayoutStyle>())
       layoutStyle=shape->m_style->get<property::LayoutStyle>();
     fillLayoutProps(layoutStyle, styleProps);
+    if (shape->m_resizeFlags && (get(shape->m_resizeFlags)&3)==3 &&
+        shape->m_geometry && shape->m_geometry->m_naturalSize.m_width>0 && shape->m_geometry->m_naturalSize.m_height>0)
+    {
+      styleProps.insert("draw:auto-grow-height",false);
+      styleProps.insert("draw:fit-to-size",true);
+      styleProps.insert("style:shrink-to-fit",true);
+    }
     return drawTextBox(shape->m_text, trafo, shape->m_geometry, styleProps);
   }
 
@@ -1204,6 +1212,13 @@ void IWORKCollector::drawShape(const IWORKShapePtr_t &shape)
     if (!layoutStyle && bool(shape->m_style) && shape->m_style->has<property::LayoutStyle>())
       layoutStyle=shape->m_style->get<property::LayoutStyle>();
     fillLayoutProps(layoutStyle, props);
+    if (shape->m_resizeFlags && (get(shape->m_resizeFlags)&3)==3 &&
+        shape->m_geometry && shape->m_geometry->m_naturalSize.m_width>0 && shape->m_geometry->m_naturalSize.m_height>0)
+    {
+      props.insert("draw:auto-grow-height",false);
+      props.insert("draw:fit-to-size",true);
+      props.insert("style:shrink-to-fit",true);
+    }
     drawTextBox(shape->m_text, trafo, shape->m_geometry, props);
   }
 }

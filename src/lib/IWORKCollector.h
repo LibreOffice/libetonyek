@@ -68,7 +68,7 @@ public:
 
   void collectBezier(const IWORKPathPtr_t &path);
   void collectLine(const IWORKLinePtr_t &line);
-  void collectShape(const boost::optional<int> &order=boost::none, bool locked=false);
+  void collectShape(const boost::optional<int> &order=boost::none, const boost::optional<unsigned> &resizeFlags=boost::none, bool locked=false);
 
   void collectBezierPath();
   void collectPolygonPath(const IWORKSize &size, unsigned edges);
