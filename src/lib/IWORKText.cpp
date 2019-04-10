@@ -950,7 +950,7 @@ void IWORKText::handleListLevelChange(const unsigned level)
     fillParaPropList(paraProps, false);
     for (; newLevel > m_inListLevel;)
     {
-      if (m_inListLevel)
+      if (m_inListLevel && !m_inListElement)
         m_elements.addOpenListElement(paraProps);
       ++m_inListLevel;
       RVNGPropertyList listProps;
@@ -959,6 +959,7 @@ void IWORKText::handleListLevelChange(const unsigned level)
         m_elements.addOpenOrderedListLevel(listProps);
       else
         m_elements.addOpenUnorderedListLevel(listProps);
+      m_inListElement=false;
     }
   }
   if (newLevel < m_inListLevel)
@@ -1017,13 +1018,7 @@ void IWORKText::closePara()
   if (m_inLink)
     closeLink();
 
-  // TODO: This is a temporary hack. The use of list element vs. paragraph needs rework.
-  if (m_inListLevel > 0)
-  {
-    m_elements.addCloseListElement();
-    m_inListElement=false;
-  }
-  else
+  if (m_inListLevel == 0)
     m_elements.addCloseParagraph();
   m_inPara = false;
 }
