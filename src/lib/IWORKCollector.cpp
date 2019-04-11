@@ -943,6 +943,26 @@ void IWORKCollector::fillLayoutProps(const IWORKStylePtr_t layoutStyle, libreven
   }
 }
 
+void IWORKCollector::fillTextAutoSizeProps(const boost::optional<unsigned> &resizeFlags, const IWORKGeometryPtr_t &boundingBox, librevenge::RVNGPropertyList &props)
+{
+  if (!resizeFlags) return;
+  unsigned const flags=get(resizeFlags)&3;
+  // checkme: set "draw:auto-grow-width" to true seems to create too many problems
+  if ((flags&1)==1 && boundingBox && boundingBox->m_naturalSize.m_width>0)
+    props.insert("draw:auto-grow-width",false);
+  if ((flags&2)==0)
+    props.insert("draw:auto-grow-height",true);
+  else if (boundingBox && boundingBox->m_naturalSize.m_height>0)
+  {
+    props.insert("draw:auto-grow-height",false);
+    // if ((flags&1)==0) props.insert("draw:auto-grow-width",true); checkme
+
+    // the following seems only use in Impress
+    props.insert("draw:fit-to-size",true);
+    props.insert("style:shrink-to-fit",true);
+  }
+}
+
 void IWORKCollector::fillWrapProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props,
                                    const boost::optional<int> &order)
 {
@@ -1186,13 +1206,7 @@ void IWORKCollector::drawShape(const IWORKShapePtr_t &shape)
     if (!layoutStyle && bool(shape->m_style) && shape->m_style->has<property::LayoutStyle>())
       layoutStyle=shape->m_style->get<property::LayoutStyle>();
     fillLayoutProps(layoutStyle, styleProps);
-    if (shape->m_resizeFlags && (get(shape->m_resizeFlags)&3)==3 &&
-        shape->m_geometry && shape->m_geometry->m_naturalSize.m_width>0 && shape->m_geometry->m_naturalSize.m_height>0)
-    {
-      styleProps.insert("draw:auto-grow-height",false);
-      styleProps.insert("draw:fit-to-size",true);
-      styleProps.insert("style:shrink-to-fit",true);
-    }
+    fillTextAutoSizeProps(shape->m_resizeFlags,shape->m_geometry,styleProps);
     return drawTextBox(shape->m_text, trafo, shape->m_geometry, styleProps);
   }
 
@@ -1212,13 +1226,7 @@ void IWORKCollector::drawShape(const IWORKShapePtr_t &shape)
     if (!layoutStyle && bool(shape->m_style) && shape->m_style->has<property::LayoutStyle>())
       layoutStyle=shape->m_style->get<property::LayoutStyle>();
     fillLayoutProps(layoutStyle, props);
-    if (shape->m_resizeFlags && (get(shape->m_resizeFlags)&3)==3 &&
-        shape->m_geometry && shape->m_geometry->m_naturalSize.m_width>0 && shape->m_geometry->m_naturalSize.m_height>0)
-    {
-      props.insert("draw:auto-grow-height",false);
-      props.insert("draw:fit-to-size",true);
-      props.insert("style:shrink-to-fit",true);
-    }
+    fillTextAutoSizeProps(shape->m_resizeFlags,shape->m_geometry,props);
     drawTextBox(shape->m_text, trafo, shape->m_geometry, props);
   }
 }

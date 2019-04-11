@@ -140,6 +140,7 @@ protected:
   static void fillGraphicProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props,
                                bool isSurface=true, bool isFrame=false);
   static void fillLayoutProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props);
+  static void fillTextAutoSizeProps(const boost::optional<unsigned> &resizeFlags, const IWORKGeometryPtr_t &boundingBox, librevenge::RVNGPropertyList &props);
   static void fillWrapProps(const IWORKStylePtr_t style, librevenge::RVNGPropertyList &props,
                             const boost::optional<int> &order);
   static void writeFill(const IWORKFill &fill, librevenge::RVNGPropertyList &props);

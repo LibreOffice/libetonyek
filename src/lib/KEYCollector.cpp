@@ -177,13 +177,7 @@ void KEYCollector::insertTextPlaceholder(const KEYPlaceholderPtr_t &placeholder)
     {
       librevenge::RVNGPropertyList props;
       fillLayoutProps(placeholder->m_style, props);
-      if (placeholder->m_resizeFlags && (get(placeholder->m_resizeFlags)&3)==3 &&
-          placeholder->m_geometry && placeholder->m_geometry->m_naturalSize.m_width>0 && placeholder->m_geometry->m_naturalSize.m_height>0)
-      {
-        props.insert("draw:auto-grow-height",false);
-        props.insert("draw:fit-to-size",true);
-        props.insert("style:shrink-to-fit",true);
-      }
+      fillTextAutoSizeProps(placeholder->m_resizeFlags,placeholder->m_geometry,props);
       drawTextBox(placeholder->m_text, trafo, placeholder->m_geometry, props);
     }
   }
