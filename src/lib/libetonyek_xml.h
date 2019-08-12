@@ -10,18 +10,19 @@
 #ifndef LIBETONYEK_XML_H_INCLUDED
 #define LIBETONYEK_XML_H_INCLUDED
 
+#include <memory>
 #include <string>
 
 #include <boost/optional.hpp>
 
+#include <libxml/xmlreader.h>
+
 #include "libetonyek_utils.h"
-
-extern "C" int readFromStream(void *context, char *buffer, int len);
-
-extern "C" int closeStream(void * /* context */);
 
 namespace libetonyek
 {
+
+std::unique_ptr<xmlTextReader, void (*)(xmlTextReaderPtr)> xmlReaderForStream(const RVNGInputStreamPtr_t &input);
 
 /** Convert string value to bool.
   *

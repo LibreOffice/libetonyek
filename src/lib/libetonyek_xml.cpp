@@ -53,6 +53,14 @@ extern "C" int closeStream(void * /* context */)
 namespace libetonyek
 {
 
+std::unique_ptr<xmlTextReader, void (*)(xmlTextReaderPtr)> xmlReaderForStream(const RVNGInputStreamPtr_t &input)
+{
+  return std::unique_ptr<xmlTextReader, void (*)(xmlTextReaderPtr)>(
+           xmlReaderForIO(readFromStream, closeStream, input.get(), "", nullptr, 0),
+           xmlFreeTextReader
+         );
+}
+
 bool bool_cast(const char *value)
 {
   return get(try_bool_cast(value));
