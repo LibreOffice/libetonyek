@@ -56,7 +56,7 @@ namespace libetonyek
 std::unique_ptr<xmlTextReader, void (*)(xmlTextReaderPtr)> xmlReaderForStream(const RVNGInputStreamPtr_t &input)
 {
   return std::unique_ptr<xmlTextReader, void (*)(xmlTextReaderPtr)>(
-           xmlReaderForIO(readFromStream, closeStream, input.get(), "", nullptr, 0),
+           xmlReaderForIO(readFromStream, closeStream, input.get(), "", nullptr, XML_PARSE_NONET),
            xmlFreeTextReader
          );
 }
