@@ -38,7 +38,7 @@ void flushText(string &text, IWORKText &collector)
 
 }
 
-IWAText::IWAText(const std::string text, IWORKLanguageManager &langManager)
+IWAText::IWAText(const std::string &text, IWORKLanguageManager &langManager)
   : m_text(text.c_str())
   , m_langManager(langManager)
   , m_pageMasters()

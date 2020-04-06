@@ -28,7 +28,7 @@ namespace
 
 struct CollectStyle
 {
-  CollectStyle(const IWORKStylePtr_t &style)
+  explicit CollectStyle(const IWORKStylePtr_t &style)
     : m_style(style)
   {
   }
@@ -38,7 +38,7 @@ struct CollectStyle
 
 struct SetGraphicStyle
 {
-  SetGraphicStyle(const IWORKStylePtr_t &style)
+  explicit SetGraphicStyle(const IWORKStylePtr_t &style)
     : m_style(style)
   {
   }
@@ -48,7 +48,7 @@ struct SetGraphicStyle
 
 struct CollectGeometry
 {
-  CollectGeometry(const IWORKGeometryPtr_t &geometry)
+  explicit CollectGeometry(const IWORKGeometryPtr_t &geometry)
     : m_geometry(geometry)
   {
   }
@@ -58,7 +58,7 @@ struct CollectGeometry
 
 struct CollectPath
 {
-  CollectPath(const IWORKPathPtr_t &path)
+  explicit CollectPath(const IWORKPathPtr_t &path)
     : m_path(path)
   {
   }
@@ -84,7 +84,7 @@ struct CollectImage
 
 struct CollectLine
 {
-  CollectLine(const IWORKLinePtr_t &line)
+  explicit CollectLine(const IWORKLinePtr_t &line)
     : m_line(line)
   {
   }
@@ -121,7 +121,7 @@ struct CollectMedia
 
 struct CollectStylesheet
 {
-  CollectStylesheet(const IWORKStylesheetPtr_t &stylesheet)
+  explicit CollectStylesheet(const IWORKStylesheetPtr_t &stylesheet)
     : m_stylesheet(stylesheet)
   {
   }
@@ -131,7 +131,7 @@ struct CollectStylesheet
 
 struct CollectTable
 {
-  CollectTable(const std::shared_ptr<IWORKTable> &table)
+  explicit CollectTable(const std::shared_ptr<IWORKTable> &table)
     : m_table(table)
   {
   }
@@ -141,7 +141,7 @@ struct CollectTable
 
 struct CollectText
 {
-  CollectText(const std::shared_ptr<IWORKText> &text)
+  explicit CollectText(const std::shared_ptr<IWORKText> &text)
     : m_text(text)
   {
   }
@@ -152,7 +152,7 @@ struct CollectText
 enum OperationType { Attachment, Attachments, Group, GroupSymbol, Level };
 struct StartOp
 {
-  StartOp(const OperationType &type)
+  explicit StartOp(const OperationType &type)
     : m_type(type)
   {
   }
@@ -162,7 +162,7 @@ struct StartOp
 
 struct EndOp
 {
-  EndOp(OperationType type)
+  explicit EndOp(OperationType type)
     : m_type(type)
   {
   }
@@ -172,7 +172,7 @@ struct EndOp
 
 struct PushStylesheet
 {
-  PushStylesheet(const IWORKStylesheetPtr_t &stylesheet)
+  explicit PushStylesheet(const IWORKStylesheetPtr_t &stylesheet)
     : m_stylesheet(stylesheet)
   {
   }

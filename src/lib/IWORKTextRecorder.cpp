@@ -24,7 +24,7 @@ namespace
 
 struct PushBaseLayoutStyle
 {
-  PushBaseLayoutStyle(const IWORKStylePtr_t &style)
+  explicit PushBaseLayoutStyle(const IWORKStylePtr_t &style)
     : m_style(style)
   {
   }
@@ -34,7 +34,7 @@ struct PushBaseLayoutStyle
 
 struct PushBaseParagraphStyle
 {
-  PushBaseParagraphStyle(const IWORKStylePtr_t &style)
+  explicit PushBaseParagraphStyle(const IWORKStylePtr_t &style)
     : m_style(style)
   {
   }
@@ -44,7 +44,7 @@ struct PushBaseParagraphStyle
 
 struct SetLayoutStyle
 {
-  SetLayoutStyle(const IWORKStylePtr_t &style)
+  explicit SetLayoutStyle(const IWORKStylePtr_t &style)
     : m_style(style)
   {
   }
@@ -58,7 +58,7 @@ struct FlushLayout
 
 struct SetListStyle
 {
-  SetListStyle(const IWORKStylePtr_t &style)
+  explicit SetListStyle(const IWORKStylePtr_t &style)
     : m_style(style)
   {
   }
@@ -68,7 +68,7 @@ struct SetListStyle
 
 struct SetListLevel
 {
-  SetListLevel(const unsigned level)
+  explicit SetListLevel(const unsigned level)
     : m_level(level)
   {
   }
@@ -82,7 +82,7 @@ struct FlushList
 
 struct SetParagraphStyle
 {
-  SetParagraphStyle(const IWORKStylePtr_t &style)
+  explicit SetParagraphStyle(const IWORKStylePtr_t &style)
     : m_style(style)
   {
   }
@@ -96,7 +96,7 @@ struct FlushParagraph
 
 struct SetSpanStyle
 {
-  SetSpanStyle(const IWORKStylePtr_t &style)
+  explicit SetSpanStyle(const IWORKStylePtr_t &style)
     : m_style(style)
   {
   }
@@ -106,7 +106,7 @@ struct SetSpanStyle
 
 struct SetLanguage
 {
-  SetLanguage(const IWORKStylePtr_t &style)
+  explicit SetLanguage(const IWORKStylePtr_t &style)
     : m_style(style)
   {
   }
@@ -120,7 +120,7 @@ struct FlushSpan
 
 struct InsertField
 {
-  InsertField(IWORKFieldType type)
+  explicit InsertField(IWORKFieldType type)
     : m_type(type)
   {
   }
@@ -130,7 +130,7 @@ struct InsertField
 
 struct OpenLink
 {
-  OpenLink(const std::string &url)
+  explicit OpenLink(const std::string &url)
     : m_url(url)
   {
   }
@@ -144,7 +144,7 @@ struct CloseLink
 
 struct InsertText
 {
-  InsertText(const std::string &text)
+  explicit InsertText(const std::string &text)
     : m_text(text)
   {
   }
@@ -162,7 +162,7 @@ struct InsertSpace
 
 struct InsertBreak
 {
-  InsertBreak(IWORKBreakType type)
+  explicit InsertBreak(IWORKBreakType type)
     : m_type(type)
   {
   }

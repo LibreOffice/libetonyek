@@ -67,7 +67,7 @@ struct SetHeaders
 
 struct SetBandedRows
 {
-  SetBandedRows(const bool banded)
+  explicit SetBandedRows(const bool banded)
     : m_banded(banded)
   {
   }
@@ -89,7 +89,7 @@ struct SetRepeated
 
 struct SetOrder
 {
-  SetOrder(const int order)
+  explicit SetOrder(const int order)
     : m_order(order)
   {
   }
@@ -99,7 +99,7 @@ struct SetOrder
 
 struct SetStyle
 {
-  SetStyle(const IWORKStylePtr_t &style)
+  explicit SetStyle(const IWORKStylePtr_t &style)
     : m_style(style)
   {
   }

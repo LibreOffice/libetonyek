@@ -156,7 +156,7 @@ struct PathGrammar : public qi::grammar<Iterator, IWORKPath::Impl(), ascii::spac
     , line()
     , cCurve()
     , qCurve()
-    , close()
+    , close('Z')
   {
     using qi::attr;
     using qi::as;
@@ -171,8 +171,6 @@ struct PathGrammar : public qi::grammar<Iterator, IWORKPath::Impl(), ascii::spac
     qCurve %= 'Q' >> double_ >> double_ >> double_ >> double_;
 
     cCurve %= 'C' >> double_ >> double_ >> double_ >> double_ >> double_ >> double_;
-
-    close = 'Z';
 
     curve %= as<Curve_t>()[move >> +(line | cCurve | qCurve) >> -close];
     path %= as<Path_t>()[+curve >> *(omit[move]) ];

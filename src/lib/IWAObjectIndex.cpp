@@ -142,7 +142,7 @@ boost::optional<unsigned> IWAObjectIndex::getObjectType(const unsigned id) const
 {
   // improve me
   boost::optional<IWAMessage> msg;
-  unsigned type;
+  unsigned type=0; // for g++-7
   queryObject(id, type, msg);
   if (!msg)
     return boost::none;

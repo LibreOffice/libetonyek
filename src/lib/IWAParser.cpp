@@ -3101,7 +3101,6 @@ void IWAParser::parseCustomFormat(unsigned id)
     ETONYEK_DEBUG_MSG(("IWAParser::parseFormat: find unexpected data size\n"));
     return;
   }
-  std::map<uint64_t, std::string> idToFormatMap;
   for (size_t i=0; i<uidLists.size(); ++i)
   {
     auto const &formatMsg=formatList[i];

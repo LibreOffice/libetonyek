@@ -18,7 +18,7 @@ namespace libetonyek
 class IWORKZlibStream : public librevenge::RVNGInputStream
 {
 public:
-  IWORKZlibStream(const RVNGInputStreamPtr_t &stream);
+  explicit IWORKZlibStream(const RVNGInputStreamPtr_t &stream);
   ~IWORKZlibStream() override;
 
   bool isStructured() override;

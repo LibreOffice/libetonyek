@@ -21,7 +21,7 @@ template<typename Type, class Container = std::deque<Type> >
 class IWORKDirectCollector
 {
 public:
-  IWORKDirectCollector(Container &collection)
+  explicit IWORKDirectCollector(Container &collection)
     : m_collection(collection)
   {
   }

@@ -150,7 +150,7 @@ IWORKPathPtr_t makePolyLine(const deque<Point> inputPoints, bool close = true)
 
 struct TransformPoint
 {
-  TransformPoint(const glm::dmat3 &tr)
+  explicit TransformPoint(const glm::dmat3 &tr)
     : m_tr(tr)
   {
   }

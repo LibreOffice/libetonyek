@@ -435,7 +435,7 @@ namespace
 class BasicShapeElement : public KEY1XMLElementContextBase
 {
 public:
-  BasicShapeElement(KEY1ParserState &state);
+  explicit BasicShapeElement(KEY1ParserState &state);
 
 protected:
   void attribute(int name, const char *value) override;

@@ -127,7 +127,7 @@ namespace
 class GroupElement : public PAG1XMLContextBase<IWORKGroupElement>
 {
 public:
-  GroupElement(PAG1ParserState &state);
+  explicit GroupElement(PAG1ParserState &state);
 
 private:
   IWORKXMLContextPtr_t element(int name) override;

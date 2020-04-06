@@ -30,7 +30,7 @@ class IWORKText;
 class IWAText
 {
 public:
-  IWAText(const std::string text, IWORKLanguageManager &langManager);
+  IWAText(const std::string &text, IWORKLanguageManager &langManager);
 
   void setPageMasters(const std::map<unsigned, IWORKStylePtr_t> &pageMasters);
   void setSections(const std::map<unsigned, IWORKStylePtr_t> &sections);

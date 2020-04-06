@@ -239,7 +239,7 @@ namespace
 class AttachmentRef  : public PAG1XMLElementContextBase
 {
 public:
-  AttachmentRef(PAG1ParserState &state);
+  explicit AttachmentRef(PAG1ParserState &state);
 
 private:
   void attribute(const int name, const char *const value) override;
@@ -404,7 +404,7 @@ namespace
 class FootnoteHelper
 {
 public:
-  FootnoteHelper(PAG1ParserState &state);
+  explicit FootnoteHelper(PAG1ParserState &state);
 
   IWORKXMLContextPtr_t element(int name);
   const char *text(const char *value);
@@ -492,7 +492,7 @@ namespace
 class LinkElement : public PAG1XMLContextBase<IWORKLinkElement>
 {
 public:
-  LinkElement(PAG1ParserState &state);
+  explicit LinkElement(PAG1ParserState &state);
 
 private:
   IWORKXMLContextPtr_t element(int name) override;
@@ -652,7 +652,7 @@ namespace
 class SectionElement : public PAG1XMLElementContextBase
 {
 public:
-  SectionElement(PAG1ParserState &state);
+  explicit SectionElement(PAG1ParserState &state);
 
 private:
   void open();

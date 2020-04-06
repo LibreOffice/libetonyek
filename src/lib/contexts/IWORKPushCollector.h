@@ -25,7 +25,7 @@ template<typename Type, class Container = std::deque<Type> >
 class IWORKPushCollector
 {
 public:
-  IWORKPushCollector(Container &collection)
+  explicit IWORKPushCollector(Container &collection)
     : m_collection(collection)
     , m_value()
   {

@@ -30,7 +30,7 @@ class IWORKFormula
 public:
   struct Token;
 
-  IWORKFormula(const boost::optional<unsigned> &hc);
+  explicit IWORKFormula(const boost::optional<unsigned> &hc);
 
   bool parse(const std::string &formula);
   bool parse(const std::vector<Token> &formula);
