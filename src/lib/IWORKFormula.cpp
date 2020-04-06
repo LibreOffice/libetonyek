@@ -65,6 +65,11 @@ std::ostream &operator<<(std::ostream &s, IWORKFormula::Token const &dt)
   case IWORKFormula::Token::String:
     s << "\"" << dt.m_string << "\"";
     break;
+#if !defined(__clang__)
+  default:
+    ETONYEK_DEBUG_MSG(("IWORKFormula::Token::operator<<: unexpected token\n"));
+    break;
+#endif
   }
   return s;
 }
@@ -444,6 +449,11 @@ struct Printer : public boost::static_visitor<void>
     case IWORKFormula::Token::String:
       m_out << val.m_string;
       break;
+#if !defined(__clang__)
+    default:
+      ETONYEK_DEBUG_MSG(("IWORKFormula::Printer::operator(): unexpected token\n"));
+      break;
+#endif
     }
   }
 
@@ -703,6 +713,11 @@ struct Collector : public boost::static_visitor<>
       props.insert("librevenge:text", val.m_string.c_str());
       m_propsVector.append(props);
       break;
+#if !defined(__clang__)
+    default:
+      ETONYEK_DEBUG_MSG(("IWORKFormula::Collector::operator(): unexpected token\n"));
+      break;
+#endif
     }
   }
   void operator()(const recursive_wrapper<PrefixOp> &val) const
