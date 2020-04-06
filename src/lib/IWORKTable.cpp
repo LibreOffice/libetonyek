@@ -872,7 +872,7 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
                   auto const &sizes=wh==0 ? m_columnSizes : m_rowSizes;
                   for (size_t rr=(wh==0 ? c : r); ok && rr<std::min(size_t(wh==0 ? cMax : rMax),sizes.size()); ++rr)
                   {
-                    if (sizes[rr].m_size>0)
+                    if (sizes[rr].m_size && *sizes[rr].m_size>=0)
                       dim+=*sizes[rr].m_size;
                     else
                       ok=false;
