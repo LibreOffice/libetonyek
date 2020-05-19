@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "13ea6076_14845587",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1002636
+      },
+      "writtenOn": "2020-05-19T06:50:00Z",
+      "side": 1,
+      "message": "Could someone please fix the commit message?\n\nWhen I tried to edit it in the browser, I got this:\n\n\u003e An error occurred\n\u003e Error 409: Invalid path: /COMMIT_MSG\n\u003e\n\u003e Endpoint: /changes/*~*/edit/*\n\nThe first line should be:\n\n\u003e add missing include for std::for_each",
+      "revId": "56678f2f48015ae1ca80e853175d1263173ed477",
+      "serverId": "6622c302-437a-49ad-a91d-55ba7dcf1615",
+      "unresolved": true
+    }
+  ]
+}
