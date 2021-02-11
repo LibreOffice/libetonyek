@@ -1237,7 +1237,7 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)
       {
         // try to retrieve the shape's size in the path
         std::map<unsigned,unsigned> const cIdToSizeId= { { 3, 3}, { 4, 3}, {5, 2}, { 6, 1}, { 8, 2} };
-        for (auto const it : cIdToSizeId)
+        for (auto const &it : cIdToSizeId)
         {
           if (!get(path).message(it.first)) continue;
           auto const &pathSize=readSize(get(get(path).message(it.first)), it.second);
@@ -2860,12 +2860,12 @@ void IWAParser::parseTile(const unsigned id)
         cellStyle.reset(new IWORKStyle(props, none, cellStyle));
       }
 
-      bool needText=textRef || (bool(text) && !formula && cellType == IWORK_CELL_TYPE_TEXT);
+      bool needText=bool(textRef) || (bool(text) && !formula && cellType == IWORK_CELL_TYPE_TEXT);
       if (needText)
       {
         assert(!m_currentText);
         m_currentText = m_collector.createText(m_langManager);
-        if (textRef)
+        if (bool(textRef))
           parseText(get(textRef));
         else
         {
@@ -2880,7 +2880,7 @@ void IWAParser::parseTile(const unsigned id)
         }
       }
       m_currentTable->m_table->insertCell(column, row, text, m_currentText, dateTime, 1, 1, formula, unsigned(row*256+column), cellStyle, cellType);
-      if (comment)
+      if (bool(comment))
       {
         auto currentText=m_currentText;
         m_currentText = m_collector.createText(m_langManager);
