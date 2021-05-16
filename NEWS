@@ -1,5 +1,51 @@
 libetonyek 0.1.10
 
+- All formats:
+  + Parse shadow.
+  + Improve detection of the "new" formats. (tdf#123571)
+  + Fix handling of text baseline shift.
+- Keynote 6+:
+  + Parse layout properties of textboxes.
+  + Improve handling of colors.
+  + Parse bullet images.
+  + Fix handling of line stroke.
+  + Avoid adding superfluous empty lines.
+  + Parse image masks.
+  + Improve parsing of shape groups.
+  + Handle fit-to-size in text boxes.
+- Numbers 1-2:
+  + Improve parsing of range addresses.
+  + Parse textboxes.
+  + Parse images.
+  + Handle grouped shapes.
+  + Parse cell comments.
+  + Create a special graphic sheet if needed.
+  + Parse sticky notes.
+- Numbers 3+:
+  + Parse formulas.
+  + Parse cell formats.
+  + Parse sheet references.
+  + Parse cell comments.
+  + Parse shapes (including groups).
+  + Improve parsing of bezier paths.
+  + Parse sticky notes.
+  + Improve handling of colors.
+  + Parse bullet images.
+  + Parse image masks.
+  + Handle fit-to-size in text boxes.
+- Pages 1-4:
+  + Handle text boxes attached as character.
+- Pages 5+:
+  + Improve handling of colors.
+  + Parse bullet images.
+  + Process page headers and footers even if the document is empty.
+  + Fix handling of line stroke.
+  + Parse image masks.
+  + Improve parsing of shape groups.
+  + Handle text boxes attached as character.
+  + Parse page background.
+  + Handle fit-to-size in text boxes.
+
 libetonyek 0.1.9
 
 - Fix spelling of property meta:initial-creator.
