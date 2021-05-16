@@ -104,8 +104,8 @@ void IWORKFormulaTest::testCellReferences()
   CPPUNIT_ASSERT_EQUAL(string("=[.R34]"), formula.str(none));
 
   // table and cell
-  CPPUNIT_ASSERT(formula.parse("=Table1::$B3"));
-  CPPUNIT_ASSERT_EQUAL(string("=[Table1.$B3]"), formula.str(none));
+  CPPUNIT_ASSERT(formula.parse("=SFTGlobalID_Abcd::$B3"));
+  CPPUNIT_ASSERT_EQUAL(string("=[Abcd.$B3]"), formula.str(none));
 
 }
 
@@ -152,8 +152,8 @@ void IWORKFormulaTest::testFunctions()
   // CPPUNIT_ASSERT_EQUAL(string("=SUM([.$B5:.$B16])"), formula.str(none)); // FIXME
 
   //function with address range table and cell
-  CPPUNIT_ASSERT(formula.parse("=SUM(Table1::$B3:Table1::$B20)"));
-  CPPUNIT_ASSERT_EQUAL(string("=SUM([Table1.$B3:Table1.$B20])"), formula.str(none));
+  CPPUNIT_ASSERT(formula.parse("=SUM(SFTGlobalID_Abcd::$B3:SFTGlobalID_Abcd::$B20)"));
+  CPPUNIT_ASSERT_EQUAL(string("=SUM([Abcd.$B3:Abcd.$B20])"), formula.str(none));
 
   // function with multiple arguments
   CPPUNIT_ASSERT(formula.parse("=COUNTIFS(A1:A38,\">100\",A1:A38,\"<=200\")"));
@@ -174,8 +174,8 @@ void IWORKFormulaTest::testExpressions()
   CPPUNIT_ASSERT_EQUAL(string("=IF(([.R1]+[.R2])<45;[.R1]+[.R2];50)"), formula.str(none));
 
   // multiple sheet and table cell operation
-  CPPUNIT_ASSERT(formula.parse("=Table1::B6+Table2::B6-Table3::B6"));
-  CPPUNIT_ASSERT_EQUAL(string("=[Table1.B6]+[Table2.B6]-[Table3.B6]"), formula.str(none));
+  CPPUNIT_ASSERT(formula.parse("=SFTGlobalID_Abcd1::B6+SFTGlobalID_Abcd2::B6-SFTGlobalID_Abcd3::B6"));
+  CPPUNIT_ASSERT_EQUAL(string("=[Abcd1.B6]+[Abcd2.B6]-[Abcd3.B6]"), formula.str(none));
 
   // basic paranthesized
   CPPUNIT_ASSERT(formula.parse("=(23)+$B6"));
