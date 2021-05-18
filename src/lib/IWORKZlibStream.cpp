@@ -71,6 +71,7 @@ RVNGInputStreamPtr_t getInflatedStream(const RVNGInputStreamPtr_t &input)
     strm.opaque = Z_NULL;
     strm.avail_in = (unsigned)numBytesRead;
     strm.next_in = (Bytef *)compressedData;
+    strm.total_in = 0;
     strm.total_out = 0;
 
     ret = inflateInit2(&strm, 16 + MAX_WBITS);
