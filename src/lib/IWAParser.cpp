@@ -2355,10 +2355,10 @@ void IWAParser::parseAuthorInComment(unsigned id)
     IWORKPropertyMap props;
     // normally yellow, but blue may be better in LO
     props.put<property::FontColor>(IWORKColor(0,0,1,1));
-    spans[0]=std::make_shared<IWORKStyle>(props, boost::none, nullptr);
+    spans[0]=std::make_shared<IWORKStyle>(props, boost::none, IWORKStylePtr_t());
     // reset color to default, if not, comment will be blue colored
     props.put<property::FontColor>(IWORKColor(0,0,0,1));
-    spans[unsigned(len)]=std::make_shared<IWORKStyle>(props, boost::none, nullptr);
+    spans[unsigned(len)]=std::make_shared<IWORKStyle>(props, boost::none, IWORKStylePtr_t());
     text.setSpans(spans);
     text.parse(*m_currentText);
   }
