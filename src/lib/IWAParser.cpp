@@ -3403,7 +3403,7 @@ bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
   }
   else
   {
-    formula.reset(new IWORKFormula(0));
+    formula.reset(new IWORKFormula(boost::make_optional(0u)));
     formula->parse(stack[0]);
   }
   return ok;
