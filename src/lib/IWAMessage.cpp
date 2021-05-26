@@ -42,7 +42,8 @@ IWAMessage::IWAMessage(const RVNGInputStreamPtr_t &input, unsigned long length)
   : m_input(input)
   , m_fields()
 {
-  assert(length > 0);
+  if (length == 0)
+    return;
 
   parse(length);
 }
