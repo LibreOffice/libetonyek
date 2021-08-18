@@ -46,7 +46,7 @@ class IWORKTable
     Cell();
   };
 
-  typedef std::deque<Cell> Row_t;
+  typedef std::map<unsigned, Cell> Row_t;
   typedef std::deque<Row_t> Table_t;
 
 public:

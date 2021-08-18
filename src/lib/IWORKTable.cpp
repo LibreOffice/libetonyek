@@ -12,6 +12,7 @@
 #include <cassert>
 #include <ctime>
 #include <iomanip>
+#include <set>
 #include <sstream>
 
 #include <boost/numeric/conversion/cast.hpp>
@@ -566,7 +567,7 @@ void IWORKTable::setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowS
   m_rowSizes = rowSizes;
 
   // init. content table of appropriate dimensions
-  m_table = Table_t(m_rowSizes.size(), Row_t(m_columnSizes.size()));
+  m_table = Table_t(m_rowSizes.size(), Row_t());
 }
 
 void IWORKTable::setBorders(const IWORKGridLineMap_t &verticalLines, const IWORKGridLineMap_t &horizontalLines)
@@ -588,7 +589,7 @@ void IWORKTable::setComment(unsigned column, unsigned row, IWORKOutputElements c
     m_recorder->setComment(column,row,text);
     return;
   }
-  m_commentMap[std::make_pair(column,row)]=text;
+  m_commentMap[std::make_pair(row,column)]=text;
 }
 
 void IWORKTable::setBorders(const IWORKGridLineMap_t &verticalLeftLines, const IWORKGridLineMap_t &verticalRightLines,
@@ -761,6 +762,14 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
   allTableProps.insert(drawAsSimpleTable ? "librevenge:table-columns" : "librevenge:columns", columnSizes);
 
   elements.addOpenTable(allTableProps);
+  unsigned numColumns=unsigned(m_columnSizes.size());
+  std::set<unsigned> colSet;
+  if (drawAsSimpleTable)
+  {
+    // repeat does not work correctly in table, so draw always each cell
+    for (unsigned col=0; col<numColumns; ++col)
+      colSet.insert(col);
+  }
   for (std::size_t r = 0; m_table.size() != r; ++r)
   {
     const Row_t &row = m_table[r];
@@ -775,27 +784,68 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
       rowProps.insert("librevenge:is-header-row", true);
 
     elements.addOpenTableRow(rowProps);
-    for (std::size_t c = 0; row.size() != c; ++c)
+
+    if (!drawAsSimpleTable)
     {
-      const Cell &cell = row[c];
+      // first compute the list of column that we will need to display
+      colSet.clear();
+      colSet.insert(0);
+      for (auto const &cIt : row)   // cells
+      {
+        colSet.insert(cIt.first);
+        colSet.insert(cIt.first+1);
+      }
+      for (auto const &vIt : m_verticalLines)   // vertical lines
+      {
+        colSet.insert(vIt.first);
+        colSet.insert(vIt.first+1);
+      }
+      for (auto const &vIt : m_verticalRightLines)
+      {
+        colSet.insert(vIt.first);
+        colSet.insert(vIt.first+1);
+      }
+      if (bool(m_defaultCellStyles[CELL_TYPE_COLUMN_HEADER]) ||
+          bool(m_defaultLayoutStyles[CELL_TYPE_COLUMN_HEADER]) ||
+          bool(m_defaultParaStyles[CELL_TYPE_COLUMN_HEADER])) // default style
+        colSet.insert(m_headerColumns);
+      auto commentIt=m_commentMap.lower_bound(std::make_pair(r,0));
+      while (commentIt!=m_commentMap.end() && commentIt->first.first==r)   // comments
+      {
+        colSet.insert(commentIt->first.second);
+        colSet.insert(commentIt->first.second+1);
+        ++commentIt;
+      }
+    }
+    Cell const emptyCell;
+    for (auto colIt=colSet.begin(); colIt!=colSet.end();)
+    {
+      unsigned col=*(colIt++);
+      if (col>=numColumns)
+        break;
+      auto const &cIt=row.find(col);
+      const Cell &cell = cIt==row.end() ? emptyCell : cIt->second;
       librevenge::RVNGPropertyList cellProps;
-      cellProps.insert("librevenge:column", numeric_cast<int>(c));
+      cellProps.insert("librevenge:column", numeric_cast<int>(col));
       cellProps.insert("librevenge:row", numeric_cast<int>(r));
+      unsigned numRepeat=colIt!=colSet.end() ? *colIt-col : numColumns-col;
+      if (numRepeat>1)
+        cellProps.insert("table:number-columns-repeated", numeric_cast<int>(numRepeat));
 
       using namespace property;
       unsigned const rMax= unsigned(r+ std::max(unsigned(1),cell.m_rowSpan));
-      unsigned const cMax= unsigned(c+ std::max(unsigned(1),cell.m_columnSpan));
+      unsigned const cMax= unsigned(col+std::max(unsigned(1),cell.m_columnSpan));
       if (m_horizontalLines.find(unsigned(r))!=m_horizontalLines.end())
-        writeBorder(cellProps, "fo:border-top", m_horizontalLines.find(unsigned(r))->second, unsigned(c));
+        writeBorder(cellProps, "fo:border-top", m_horizontalLines.find(unsigned(r))->second, col);
       if (!m_horizontalBottomLines.empty())
       {
         if (m_horizontalBottomLines.find(rMax-1)!=m_horizontalBottomLines.end())
-          writeBorder(cellProps, "fo:border-bottom", m_horizontalBottomLines.find(rMax-1)->second, unsigned(c));
+          writeBorder(cellProps, "fo:border-bottom", m_horizontalBottomLines.find(rMax-1)->second, col);
       }
       else if (m_horizontalLines.find(rMax)!=m_horizontalLines.end())
-        writeBorder(cellProps, "fo:border-bottom", m_horizontalLines.find(rMax)->second, unsigned(c));
-      if (m_verticalLines.find(unsigned(c))!=m_verticalLines.end())
-        writeBorder(cellProps, "fo:border-left", m_verticalLines.find(unsigned(c))->second, unsigned(r));
+        writeBorder(cellProps, "fo:border-bottom", m_horizontalLines.find(rMax)->second, col);
+      if (m_verticalLines.find(col)!=m_verticalLines.end())
+        writeBorder(cellProps, "fo:border-left", m_verticalLines.find(col)->second, unsigned(r));
       if (!m_verticalRightLines.empty())
       {
         if (m_verticalRightLines.find(cMax-1)!=m_verticalRightLines.end())
@@ -816,7 +866,7 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
           cellProps.insert("table:number-rows-spanned", numeric_cast<int>(cell.m_rowSpan));
 
         IWORKStyleStack style;
-        style.push(getDefaultCellStyle(unsigned(c), unsigned(r)));
+        style.push(getDefaultCellStyle(col, unsigned(r)));
         style.push(cell.m_style);
         if (!drawAsSimpleTable)
         {
@@ -829,7 +879,7 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
         writeCellStyle(cellProps, style);
 
         IWORKStyleStack pStyle;
-        pStyle.push(getDefaultParagraphStyle(unsigned(c),unsigned(r)));
+        pStyle.push(getDefaultParagraphStyle(col,unsigned(r)));
         if (style.has<SFTCellStylePropertyParagraphStyle>())
           pStyle.push(style.get<SFTCellStylePropertyParagraphStyle>());
         IWORKText::fillCharPropList(pStyle, m_langManager, cellProps);
@@ -870,7 +920,7 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
                   double dim=0;
                   bool ok=true;
                   auto const &sizes=wh==0 ? m_columnSizes : m_rowSizes;
-                  for (size_t rr=(wh==0 ? c : r); ok && rr<std::min(size_t(wh==0 ? cMax : rMax),sizes.size()); ++rr)
+                  for (size_t rr=(wh==0 ? col : r); ok && rr<std::min(size_t(wh==0 ? cMax : rMax),sizes.size()); ++rr)
                   {
                     if (sizes[rr].m_size && *sizes[rr].m_size>=0)
                       dim+=*sizes[rr].m_size;
@@ -880,14 +930,14 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
                   if (ok)
                     frameProps.insert(wh==0 ? "svg:width" : "svg:height", pt2in(dim));
                 }
-                unsigned col=cMax;
-                std::string column(1, char(col%26+'A'));
-                col /= 26;
-                while (col>0)
+                unsigned col2=cMax;
+                std::string column(1, char(col2%26+'A'));
+                col2 /= 26;
+                while (col2>0)
                 {
-                  --col;
-                  column.insert(0, std::string(1,char(col%26+'A')));
-                  col /= 26;
+                  --col2;
+                  column.insert(0, std::string(1,char(col2%26+'A')));
+                  col2 /= 26;
                 }
                 librevenge::RVNGString endCellName;
                 endCellName.sprintf("%s%d",column.c_str(), int(rMax));
@@ -926,7 +976,7 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
             elements.addCloseParagraph();
           }
         }
-        auto nIt=m_commentMap.find(std::make_pair(c,r));
+        auto nIt=m_commentMap.find(std::make_pair(r,col));
         if (nIt!=m_commentMap.end())
         {
           elements.addOpenComment(librevenge::RVNGPropertyList());
