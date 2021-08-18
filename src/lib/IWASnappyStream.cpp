@@ -150,8 +150,9 @@ RVNGInputStreamPtr_t uncompress(const RVNGInputStreamPtr_t &input)
   while (!input->isEnd())
   {
     readU8(input);
-    const unsigned long blockLength = readU16(input);
-    readU8(input);
+    unsigned long blockLength = readU16(input);
+    // rare, but the blockLength can be greater than 65536, ie. I find 06 00 01 in one file
+    blockLength+=65536*readU8(input);
     if (!uncompressBlock(input, (std::min)(blockLength, getRemainingLength(input)), data))
       throw CompressionException();
   }
