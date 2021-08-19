@@ -204,7 +204,7 @@ private:
 
   void parseTabularModel(unsigned id);
   void parseDataList(unsigned id, DataList_t &dataList);
-  void parseTile(unsigned id);
+  void parseTile(unsigned id, unsigned decalY);
   void parseTableHeaders(unsigned id, TableHeader &header);
   void parseTableGridLines(unsigned id, IWORKGridLineMap_t (&gridLines)[4]);
   void parseTableGridLine(unsigned id, IWORKGridLineMap_t &gridLines);

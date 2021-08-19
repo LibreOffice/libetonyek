@@ -2440,7 +2440,8 @@ void IWAParser::parseTabularModel(const unsigned id)
     }
   }
 
-  optional<unsigned> tileRef;
+  std::map<unsigned,unsigned> idToTileRefMap;
+  std::map<unsigned,unsigned> idToTileDecalRowMap;
 
   if (get(msg).message(4))
   {
@@ -2477,8 +2478,31 @@ void IWAParser::parseTabularModel(const unsigned id)
 
     m_currentTable->m_table->setSizes(makeSizes(m_currentTable->m_columnHeader.m_sizes), makeSizes(m_currentTable->m_rowHeader.m_sizes));
 
-    if (grid.message(3) && grid.message(3).message(1))
-      tileRef = readRef(get(grid.message(3).message(1)), 2);
+    if (grid.message(3))
+    {
+      for (auto const &it : grid.message(3).message(1))
+      {
+        auto tileRef = readRef(it, 2);
+        if (!it.uint32(1) || !bool(tileRef))
+        {
+          ETONYEK_DEBUG_MSG(("IWAParser::parseTabularModel: oops, can not find some tile ref\n"));
+          continue;
+        }
+        idToTileRefMap[get(it.uint32(1))]=get(tileRef);
+      }
+    }
+    if (grid.message(9))
+    {
+      for (auto const &it : grid.message(9).message(1))
+      {
+        if (!it.uint32(1) || !it.uint32(2))
+        {
+          ETONYEK_DEBUG_MSG(("IWAParser::parseTabularModel: oops, can not find some grid decal data\n"));
+          continue;
+        }
+        idToTileDecalRowMap[get(it.uint32(2))]=get(it.uint32(1));
+      }
+    }
   }
   if (get(msg).string(8))
   {
@@ -2551,9 +2575,18 @@ void IWAParser::parseTabularModel(const unsigned id)
     m_currentTable->m_table->setBorders(gridLines[0],gridLines[1],gridLines[2],gridLines[3]);
   }
 
-  // handle table
-  if (tileRef)
-    parseTile(get(tileRef));
+  // handle tables
+  for (auto const &tileIt : idToTileRefMap)
+  {
+    auto const &decalIt=idToTileDecalRowMap.find(tileIt.first);
+    if (decalIt==idToTileDecalRowMap.end())
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseTabularModel: oops, can not find some decal for id=%x, assume 0\n", tileIt.first));
+      parseTile(tileIt.second, 0);
+    }
+    else
+      parseTile(tileIt.second, decalIt->second);
+  }
   m_collector.collectTable(m_currentTable->m_table);
   m_currentTable.reset();
 }
@@ -2648,7 +2681,7 @@ void IWAParser::parseDataList(const unsigned id, DataList_t &dataList)
   }
 }
 
-void IWAParser::parseTile(const unsigned id)
+void IWAParser::parseTile(const unsigned id, const unsigned decalY)
 {
   const ObjectMessage msg(*this, id, IWAObjectType::Tile);
   if (!msg)
@@ -2663,7 +2696,7 @@ void IWAParser::parseTile(const unsigned id)
   {
     if (!it.uint32(1) || !it.bytes(3) || !it.bytes(4))
       continue;
-    const unsigned row = get(it.uint32(1));
+    const unsigned row = get(it.uint32(1))+decalY;
     if (row >= m_currentTable->m_rows)
     {
       ETONYEK_DEBUG_MSG(("IWAParser::parseTile: invalid row: %u\n", row));
