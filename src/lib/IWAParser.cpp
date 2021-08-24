@@ -2473,6 +2473,7 @@ void IWAParser::parseTabularModel(const unsigned id)
     const optional<unsigned> &formulaListRef = readRef(grid, 6);
     if (formulaListRef)
       parseDataList(get(formulaListRef), m_currentTable->m_formulaList);
+    // unsure, maybe we want to read 22
     const optional<unsigned> &formatListRef = readRef(grid, 11);
     if (formatListRef)
       parseDataList(get(formatListRef), m_currentTable->m_formatList);
@@ -2688,19 +2689,17 @@ void IWAParser::parseDataList(const unsigned id, DataList_t &dataList)
   }
 }
 
-void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStreamPtr_t &input, unsigned endPos)
+void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStreamPtr_t &input, unsigned endPos, bool oldFormat)
 {
   IWORKCellType cellType = IWORK_CELL_TYPE_TEXT;
-  IWORKStylePtr_t cellStyle;
-  optional<unsigned> comment;
-  IWORKFormulaPtr_t formula;
+  optional<unsigned> cellStyleId, paragraphStyleId;
+  optional<unsigned> commentId, formulaId, textId, textFormattedId;
   optional<Format> format;
   optional<string> text;
-  optional<IWORKDateTimeData> dateTime;
-  optional<unsigned> textRef;
+  bool numberSet=false;
 
   auto begPos=input->tell();
-  if (begPos+10>endPos)
+  if (begPos+(oldFormat ? 10 : 12)>endPos)
   {
     ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition: the zone seems too short\n"));
     return;
@@ -2716,8 +2715,11 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
     switch (type)
     {
     case 2:
-    case 7: // duration (changeme)
+    case 8: // nan
       cellType=IWORK_CELL_TYPE_NUMBER;
+      break;
+    case 7: // duration
+      cellType=IWORK_CELL_TYPE_DURATION;
       break;
     case 0: // empty (ok)
     case 3: // text (ok)
@@ -2726,365 +2728,173 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
     case 5:
       cellType=IWORK_CELL_TYPE_DATE_TIME;
       break;
-    case 6:
+    case 6: // other: bool, button, menu
       cellType=IWORK_CELL_TYPE_BOOL;
       break;
     default:
       ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition: unknown type %d\n", int(type)));
       break;
     }
-    // 2,3: ?
-    input->seek((long) begPos + 4, librevenge::RVNG_SEEK_SET);
-    const unsigned flags = readU16(input);
-    input->seek(6, librevenge::RVNG_SEEK_CUR);
-    if (flags & 0x2) // cell style
+    if (oldFormat)
     {
-      const unsigned styleId = readU32(input);
-      const DataList_t::const_iterator listIt = m_currentTable->m_cellStyleList.find(styleId);
-      if (listIt != m_currentTable->m_cellStyleList.end())
+      // 2,3: ?
+      input->seek((long) begPos + 4, librevenge::RVNG_SEEK_SET);
+      const unsigned flags = readU16(input);
+      input->seek(6, librevenge::RVNG_SEEK_CUR);
+      if (flags & 0x2) // cell style
+        cellStyleId = readU32(input);
+      if (flags & 0x80)
+        paragraphStyleId=readU32(input);
+      if (flags & 0x800) // condition
+        readU32(input);
+      if (flags & 0x400) // condition 2
+        readU32(input);
+      if (flags & 0x4)   // format
       {
-        if (const unsigned *const ref = boost::get<unsigned>(&listIt->second))
-          cellStyle = queryCellStyle(*ref);
-      }
-    }
-    if (flags & 0x80) // unknown
-      readU32(input);
-    // flags & 0xc00, read 2 int
-    if (flags & 0x4)   // format
-    {
-      const unsigned formatId=readU32(input);
-      auto const formatIt=m_currentTable->m_formatList.find(formatId);
-      if (formatIt !=m_currentTable->m_formatList.end())
-      {
-        if (auto ref = boost::get<Format>(&formatIt->second))
+        const unsigned formatId=readU32(input);
+        auto const formatIt=m_currentTable->m_formatList.find(formatId);
+        if (formatIt !=m_currentTable->m_formatList.end())
         {
-          format=*ref;
-          if (format->m_type && get(format->m_type)==IWORK_CELL_TYPE_NUMBER && cellType!=IWORK_CELL_TYPE_TEXT)
-            format->m_type=cellType;
+          if (auto ref = boost::get<Format>(&formatIt->second))
+          {
+            format=*ref;
+            if (format->m_type && get(format->m_type)==IWORK_CELL_TYPE_NUMBER && cellType!=IWORK_CELL_TYPE_TEXT)
+              format->m_type=cellType;
+          }
+        }
+        else
+        {
+          ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition: can not find format %d\n", int(formatId)));
         }
       }
-      else
+      if (flags & 0x8) // formula
+        formulaId = readU32(input);
+      if (flags & 0x1000) // comment
+        commentId=readU32(input);
+      if (flags & 0x10) // simple text
+        textId = readU32(input);
+      if (flags & 0x20) // number or duration(in second)
       {
-        ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition: can not find format %d\n", int(formatId)));
+        std::stringstream s;
+        s << std::setprecision(12) << readDouble(input);
+        text=s.str();
+        numberSet=true;
       }
+      if (flags & 0x40) // date
+      {
+        std::stringstream s;
+        s << readDouble(input);
+        text=s.str();
+        numberSet=true;
+      }
+      if (flags & 0x200) // formatted text
+        textFormattedId = readU32(input);
     }
-    if (flags & 0x8) // formula
-    {
-      const unsigned formulaId = readU32(input);
-      auto const formulaIt = m_currentTable->m_formulaList.find(formulaId);
-      if (formulaIt !=m_currentTable->m_formulaList.end())
-      {
-        if (auto ref = boost::get<IWORKFormulaPtr_t>(&formulaIt->second))
-          formula=*ref;
-      }
-      else
-      {
-        ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition: can not find formula %d\n", int(formulaId)));
-      }
-    }
-    if (flags & 0x1000) // comment
-    {
-      const unsigned commentId=readU32(input);
-      auto const commentIt = m_currentTable->m_commentList.find(commentId);
-      if (commentIt !=m_currentTable->m_commentList.end())
-        comment=boost::get<unsigned>(commentIt->second);
-      else
-      {
-        ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition: can not find comment %d\n", int(commentId)));
-      }
-    }
-    if (flags & 0x10) // simple text
-    {
-      const unsigned textId = readU32(input);
-      const DataList_t::const_iterator listIt = m_currentTable->m_simpleTextList.find(textId);
-      if (listIt != m_currentTable->m_simpleTextList.end())
-      {
-        if (const string *const s = boost::get<string>(&listIt->second))
-          text = *s;
-      }
-      else
-      {
-        ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition: can not find text %d\n", int(textId)));
-      }
-    }
-    if (flags & 0x20) // number or duration(in second)
-    {
-      std::stringstream s;
-      s << readDouble(input);
-      text=s.str();
-      if (!format)
-      {
-        format=Format();
-        get(format).m_type = cellType==IWORK_CELL_TYPE_TEXT ? IWORK_CELL_TYPE_NUMBER : cellType;
-        get(format).m_format=IWORKNumberFormat();
-      }
-    }
-    if (flags & 0x40) // date
-    {
-      std::stringstream s;
-      s << readDouble(input);
-      text=s.str();
-      if (!format)
-      {
-        format=Format();
-        get(format).m_type=IWORK_CELL_TYPE_DATE_TIME;
-        get(format).m_format=IWORKDateTimeFormat();
-      }
-    }
-    if (flags & 0x200) // formatted text
-    {
-      const unsigned textId = readU32(input);
-      const DataList_t::const_iterator listIt = m_currentTable->m_formattedTextList.find(textId);
-      if (listIt != m_currentTable->m_formattedTextList.end())
-      {
-        if (const unsigned *const ref = boost::get<unsigned>(&listIt->second))
-          textRef = *ref;
-      }
-    }
-  }
-  catch (...)
-  {
-    // ignore failure to read the last record
-  }
-
-  if (format)
-  {
-    if (get(format).m_type) cellType=get(get(format).m_type);
-    IWORKPropertyMap props;
-    if (boost::get<IWORKNumberFormat>(&get(format).m_format))
-      props.put<property::SFTCellStylePropertyNumberFormat>(*boost::get<IWORKNumberFormat>(&get(format).m_format));
-    else if (boost::get<IWORKDateTimeFormat>(&get(format).m_format))
-      props.put<property::SFTCellStylePropertyDateTimeFormat>(*boost::get<IWORKDateTimeFormat>(&get(format).m_format));
-    else if (boost::get<IWORKDurationFormat>(&get(format).m_format))
-      props.put<property::SFTCellStylePropertyDurationFormat>(*boost::get<IWORKDurationFormat>(&get(format).m_format));
-    cellStyle.reset(new IWORKStyle(props, none, cellStyle));
-  }
-
-  bool needText=bool(textRef) || (bool(text) && !formula && cellType == IWORK_CELL_TYPE_TEXT);
-  if (needText)
-  {
-    assert(!m_currentText);
-    m_currentText = m_collector.createText(m_langManager);
-    if (bool(textRef))
-      parseText(get(textRef));
     else
     {
-      m_currentText = m_collector.createText(m_langManager);
-      // update the style
-      m_currentText->pushBaseLayoutStyle(m_currentTable->m_table->getDefaultLayoutStyle(column, row));
-      // do we need to set m_currentTable->m_style->has<property::FontName>() ?
-      m_currentText->pushBaseParagraphStyle(m_currentTable->m_table->getDefaultParagraphStyle(column, row));
-      m_currentText->insertText(get(text));
-      m_currentText->flushSpan();
-      m_currentText->flushParagraph();
-    }
-  }
-  m_currentTable->m_table->insertCell(column, row, text, m_currentText, dateTime, 1, 1, formula, unsigned(row*256+column), cellStyle, cellType);
-  if (bool(comment))
-  {
-    auto currentText=m_currentText;
-    m_currentText = m_collector.createText(m_langManager);
-    parseComment(get(comment));
-    IWORKOutputElements elements;
-    m_currentText->draw(elements);
-    m_currentText=currentText;
-    m_currentTable->m_table->setComment(column, row, elements);
-  }
-  m_currentText.reset();
-
-}
-
-void IWAParser::parseTileDefinitionNew(unsigned row, unsigned column, RVNGInputStreamPtr_t &input, unsigned endPos)
-{
-  IWORKCellType cellType = IWORK_CELL_TYPE_TEXT;
-  IWORKStylePtr_t cellStyle;
-  optional<unsigned> paragraphStyleId;
-  optional<unsigned> comment;
-  IWORKFormulaPtr_t formula;
-  optional<Format> format;
-  optional<string> text;
-  optional<IWORKDateTimeData> dateTime;
-  optional<unsigned> textRef;
-
-  auto begPos=input->tell();
-  if (begPos+12>endPos)
-  {
-    ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinitionNew: the zone seems too short\n"));
-    return;
-  }
-  try
-  {
-    input->seek((long) begPos+1, librevenge::RVNG_SEEK_SET);
-    auto type=readU8(input);
-    switch (type)
-    {
-    case 2:
-    case 7: // duration (changeme)
-    case 8: // nan
-      cellType=IWORK_CELL_TYPE_NUMBER;
-      break;
-    case 0: // empty (ok)
-    case 3: // text (ok)
-    case 9: // text zone
-      break;
-    case 5:
-      cellType=IWORK_CELL_TYPE_DATE_TIME;
-      break;
-    case 6: // button
-      cellType=IWORK_CELL_TYPE_BOOL;
-      break;
-    default:
-      ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition[new]: unknown type %d\n", int(type)));
-      break;
-    }
-    // 2-7?
-    input->seek((long) begPos + 8, librevenge::RVNG_SEEK_SET);
-    const unsigned flags = readU32(input);
-    if (flags & 1)
-    {
-      double mantissa=double(readU64(input));
-      mantissa+=double(65536)*double(65536)*double(65536)*double(65536)*double(readU32(input));
-      input->seek(2, librevenge::RVNG_SEEK_CUR); // checkme: maybe nan
-      auto exponent=readU16(input);
-      if (exponent&0x8000)
+      // 2-7?
+      input->seek((long) begPos + 8, librevenge::RVNG_SEEK_SET);
+      const unsigned flags = readU32(input);
+      if (flags & 1)
       {
-        mantissa*=-1;
-        exponent&=0x7fff;
-      }
-      std::stringstream s;
-      s << std::setprecision(12) << mantissa *std::pow(10, (exponent-12352)/2); // 3040 mean 0
-      text=s.str();
-    }
-    if (flags & 2)   // bool
-    {
-      std::stringstream s;
-      s << readDouble(input);
-      text=s.str();
-    }
-    if (flags & 4)   // date
-    {
-      std::stringstream s;
-      s << readDouble(input);
-      text=s.str();
-    }
-    if (flags & 8)
-    {
-      const unsigned textId = readU32(input);
-      const DataList_t::const_iterator listIt = m_currentTable->m_simpleTextList.find(textId);
-      if (listIt != m_currentTable->m_simpleTextList.end())
-      {
-        if (const string *const s = boost::get<string>(&listIt->second))
-          text = *s;
-      }
-      else
-      {
-        ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinitionNew: can not find text %d\n", int(textId)));
-      }
-    }
-    if (flags & 0x10)
-    {
-      const unsigned textId = readU32(input);
-      const DataList_t::const_iterator listIt = m_currentTable->m_formattedTextList.find(textId);
-      if (listIt != m_currentTable->m_formattedTextList.end())
-      {
-        if (const unsigned *const ref = boost::get<unsigned>(&listIt->second))
-          textRef = *ref;
-      }
-      else
-      {
-        ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinitionNew: can not find formatted text %d\n", int(textId)));
-      }
-    }
-    // cell style
-    if (flags & 0x20)
-    {
-      const unsigned styleId = readU32(input);
-      const DataList_t::const_iterator listIt = m_currentTable->m_cellStyleList.find(styleId);
-      if (listIt != m_currentTable->m_cellStyleList.end())
-      {
-        if (const unsigned *const ref = boost::get<unsigned>(&listIt->second))
-          cellStyle = queryCellStyle(*ref);
-      }
-    }
-    if (flags & 0x40) // cell paragraph style
-      paragraphStyleId=readU32(input);
-    if (flags & 0x80) // conditional
-      input->seek(4, librevenge::RVNG_SEEK_CUR);
-    if (flags & 0x100) // conditional(unknown)
-      input->seek(4, librevenge::RVNG_SEEK_CUR);
-    if (flags & 0x200)
-    {
-      const unsigned formulaId = readU32(input);
-      auto const formulaIt = m_currentTable->m_formulaList.find(formulaId);
-      if (formulaIt !=m_currentTable->m_formulaList.end())
-      {
-        if (auto ref = boost::get<IWORKFormulaPtr_t>(&formulaIt->second))
-          formula=*ref;
-      }
-      else
-      {
-        ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinitionNew: can not find formula %d\n", int(formulaId)));
-      }
-    }
-    if (flags & 0x400) // button menu
-      input->seek(4, librevenge::RVNG_SEEK_CUR);
-    if (flags & 0x800) // unknown: check size
-      input->seek(4, librevenge::RVNG_SEEK_CUR);
-    unsigned resType=0;
-    if (flags & 0x1000)   // type res(useme)
-    {
-      resType=readU32(input);
-      switch (resType)
-      {
-      case 1:
-      case 4: // duration, changeme
-        cellType=IWORK_CELL_TYPE_NUMBER;
-        break;
-      case 3:
-        cellType=IWORK_CELL_TYPE_DATE_TIME;
-        break;
-      case 5:
-        cellType=IWORK_CELL_TYPE_TEXT;
-        break;
-      case 6: // other
-        break;
-      default:
-        ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition[new]: unknown type %d\n", int(resType)));
-        break;
-      }
-    }
-    for (unsigned w=0, hBytes=0x2000; w<6; ++w, hBytes<<=1)
-    {
-      if ((flags & hBytes)==0)
-        continue;
-      const unsigned formatId=readU32(input);
-      if (w+1!=resType)
-        continue;
-      auto const formatIt=m_currentTable->m_formatList.find(formatId);
-      if (formatIt !=m_currentTable->m_formatList.end())
-      {
-        if (auto ref = boost::get<Format>(&formatIt->second))
+        double mantissa=double(readU64(input));
+        mantissa+=double(65536)*double(65536)*double(65536)*double(65536)*double(readU32(input));
+        input->seek(2, librevenge::RVNG_SEEK_CUR); // checkme: maybe nan
+        auto exponent=readU16(input);
+        if (exponent&0x8000)
         {
-          format=*ref;
-          if (format->m_type && get(format->m_type)==IWORK_CELL_TYPE_NUMBER && cellType!=IWORK_CELL_TYPE_TEXT)
-            format->m_type=cellType;
+          mantissa*=-1;
+          exponent&=0x7fff;
+        }
+        std::stringstream s;
+        s << std::setprecision(12) << mantissa *std::pow(10, (exponent-12352)/2); // 3040 mean 0
+        text=s.str();
+        numberSet=true;
+      }
+      if (flags & 2)   // bool
+      {
+        std::stringstream s;
+        s << readDouble(input);
+        text=s.str();
+        numberSet=true;
+      }
+      if (flags & 4)   // date
+      {
+        std::stringstream s;
+        s << std::setprecision(12) << readDouble(input);
+        text=s.str();
+        numberSet=true;
+      }
+      if (flags & 8)
+        textId = readU32(input);
+      if (flags & 0x10)
+        textFormattedId=readU32(input);
+      if (flags & 0x20) // cell style
+        cellStyleId = readU32(input);
+      if (flags & 0x40) // cell paragraph style
+        paragraphStyleId=readU32(input);
+      if (flags & 0x80) // conditional
+        input->seek(4, librevenge::RVNG_SEEK_CUR);
+      if (flags & 0x100) // conditional(unknown)
+        input->seek(4, librevenge::RVNG_SEEK_CUR);
+      if (flags & 0x200)
+        formulaId = readU32(input);
+      if (flags & 0x400) // button menu
+        input->seek(4, librevenge::RVNG_SEEK_CUR);
+      if (flags & 0x800) // unknown: check size
+        input->seek(4, librevenge::RVNG_SEEK_CUR);
+      unsigned resType=0;
+      if (flags & 0x1000)   // type res(useme)
+      {
+        resType=readU32(input);
+        switch (resType)
+        {
+        case 1:
+          cellType=IWORK_CELL_TYPE_NUMBER;
+          break;
+        case 2: // checkme
+          cellType=IWORK_CELL_TYPE_BOOL;
+          break;
+        case 3:
+          cellType=IWORK_CELL_TYPE_DATE_TIME;
+          break;
+        case 4:
+          cellType=IWORK_CELL_TYPE_DURATION;
+          break;
+        case 5:
+          cellType=IWORK_CELL_TYPE_TEXT;
+          break;
+        case 6: // other
+          break;
+        default:
+          ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition[new]: unknown type %d\n", int(resType)));
+          break;
         }
       }
-      else
+      for (unsigned w=0, hBytes=0x2000; w<6; ++w, hBytes<<=1)
       {
-        ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinitionNew: can not find format[%d] %d\n", w, int(formatId)));
+        if ((flags & hBytes)==0)
+          continue;
+        const unsigned formatId=readU32(input);
+        if (w+1!=resType)
+          continue;
+        auto const formatIt=m_currentTable->m_formatList.find(formatId);
+        if (formatIt !=m_currentTable->m_formatList.end())
+        {
+          if (auto ref = boost::get<Format>(&formatIt->second))
+          {
+            format=*ref;
+            if (format->m_type && get(format->m_type)==IWORK_CELL_TYPE_NUMBER && cellType!=IWORK_CELL_TYPE_TEXT)
+              format->m_type=cellType;
+          }
+        }
+        else
+        {
+          ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition[new]: can not find format[%d] %d\n", w, int(formatId)));
+        }
       }
-    }
-    if (flags & 0x80000)
-    {
-      const unsigned commentId=readU32(input);
-      auto const commentIt = m_currentTable->m_commentList.find(commentId);
-      if (commentIt !=m_currentTable->m_commentList.end())
-        comment=boost::get<unsigned>(commentIt->second);
-      else
-      {
-        ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinitionNew: can not find comment %d\n", int(commentId)));
-      }
+      if (flags & 0x80000)
+        commentId=readU32(input);
     }
   }
   catch (...)
@@ -3092,9 +2902,77 @@ void IWAParser::parseTileDefinitionNew(unsigned row, unsigned column, RVNGInputS
     // ignore failure to read the last record
   }
 
+  IWORKFormulaPtr_t formula;
+  if (bool(formulaId))
+  {
+    auto const formulaIt = m_currentTable->m_formulaList.find(get(formulaId));
+    if (formulaIt !=m_currentTable->m_formulaList.end())
+    {
+      if (auto ref = boost::get<IWORKFormulaPtr_t>(&formulaIt->second))
+        formula=*ref;
+    }
+    else
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition: can not find formula %d\n", int(get(formulaId))));
+    }
+  }
+  if (numberSet && cellType == IWORK_CELL_TYPE_TEXT)
+    cellType = IWORK_CELL_TYPE_NUMBER;
+  bool textSet=false;
+  if (bool(textId))
+  {
+    const DataList_t::const_iterator listIt = m_currentTable->m_simpleTextList.find(get(textId));
+    if (listIt != m_currentTable->m_simpleTextList.end())
+    {
+      if (const string *const s = boost::get<string>(&listIt->second))
+      {
+        cellType = IWORK_CELL_TYPE_TEXT;
+        text = *s;
+        textSet=true;
+      }
+    }
+    else
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition[new]: can not find text %d\n", int(get(textId))));
+    }
+  }
+  optional<unsigned> textRef;
+  if (bool(textFormattedId))
+  {
+    const DataList_t::const_iterator listIt = m_currentTable->m_formattedTextList.find(get(textFormattedId));
+    if (listIt != m_currentTable->m_formattedTextList.end())
+    {
+      if (const unsigned *const ref = boost::get<unsigned>(&listIt->second))
+      {
+        cellType = IWORK_CELL_TYPE_TEXT;
+        textRef = *ref;
+        textSet=true;
+      }
+    }
+    else
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition[new]: can not find formatted text %d\n", int(get(textFormattedId))));
+    }
+  }
+
+  IWORKStylePtr_t cellStyle;
+  if (bool(cellStyleId))
+  {
+    const DataList_t::const_iterator listIt = m_currentTable->m_cellStyleList.find(get(cellStyleId));
+    if (listIt != m_currentTable->m_cellStyleList.end())
+    {
+      if (const unsigned *const ref = boost::get<unsigned>(&listIt->second))
+        cellStyle = queryCellStyle(*ref);
+    }
+  }
+
   if (format)
   {
-    if (get(format).m_type) cellType=get(get(format).m_type);
+    if (get(format).m_type && !textSet)
+    {
+      auto type=get(get(format).m_type);
+      if (!numberSet || (type!=IWORK_CELL_TYPE_TEXT && type!=IWORK_CELL_TYPE_NUMBER)) cellType=type;
+    }
     IWORKPropertyMap props;
     if (boost::get<IWORKNumberFormat>(&get(format).m_format))
       props.put<property::SFTCellStylePropertyNumberFormat>(*boost::get<IWORKNumberFormat>(&get(format).m_format));
@@ -3104,16 +2982,18 @@ void IWAParser::parseTileDefinitionNew(unsigned row, unsigned column, RVNGInputS
       props.put<property::SFTCellStylePropertyDurationFormat>(*boost::get<IWORKDurationFormat>(&get(format).m_format));
     cellStyle.reset(new IWORKStyle(props, none, cellStyle));
   }
-
-  if (bool(text) && cellType != IWORK_CELL_TYPE_TEXT)
+  else
   {
-    boost::optional<double> value=try_double_cast(get(text).c_str());
-    if (!value)
-    {
-      ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinitionNew: %s seems incompatible with type=%d\n", get(text).c_str(), int(cellType)));
-      cellType = IWORK_CELL_TYPE_TEXT;
-    }
+    format=Format();
+    get(format).m_type=cellType;
+    if (cellType==IWORK_CELL_TYPE_DATE_TIME)
+      get(format).m_format=IWORKDateTimeFormat();
+    else if (cellType==IWORK_CELL_TYPE_DURATION)
+      get(format).m_format=IWORKDurationFormat();
+    else if (cellType==IWORK_CELL_TYPE_NUMBER)
+      get(format).m_format=IWORKNumberFormat();
   }
+
   bool needText=bool(textRef) || (bool(text) && !formula && cellType == IWORK_CELL_TYPE_TEXT);
   if (needText)
   {
@@ -3137,7 +3017,7 @@ void IWAParser::parseTileDefinitionNew(unsigned row, unsigned column, RVNGInputS
           {
             auto paragraphStyle = queryParagraphStyle(*ref);
             if (paragraphStyle)
-              m_currentText->pushBaseParagraphStyle(paragraphStyle);
+              m_currentText->setParagraphStyle(paragraphStyle);
           }
         }
       }
@@ -3146,18 +3026,29 @@ void IWAParser::parseTileDefinitionNew(unsigned row, unsigned column, RVNGInputS
       m_currentText->flushParagraph();
     }
   }
+  optional<IWORKDateTimeData> dateTime;
   m_currentTable->m_table->insertCell(column, row, text, m_currentText, dateTime, 1, 1, formula, unsigned(row*256+column), cellStyle, cellType);
-  if (bool(comment))
+  if (bool(commentId))
   {
-    auto currentText=m_currentText;
-    m_currentText = m_collector.createText(m_langManager);
-    parseComment(get(comment));
-    IWORKOutputElements elements;
-    m_currentText->draw(elements);
-    m_currentText=currentText;
-    m_currentTable->m_table->setComment(column, row, elements);
+    auto const commentIt = m_currentTable->m_commentList.find(get(commentId));
+    if (commentIt !=m_currentTable->m_commentList.end())
+    {
+      auto currentText=m_currentText;
+      m_currentText = m_collector.createText(m_langManager);
+      parseComment(boost::get<unsigned>(commentIt->second));
+      IWORKOutputElements elements;
+      m_currentText->draw(elements);
+      m_currentText=currentText;
+      m_currentTable->m_table->setComment(column, row, elements);
+    }
+    else
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition[new]: can not find comment %d\n", get(commentId)));
+    }
   }
+
   m_currentText.reset();
+
 }
 
 void IWAParser::parseTile(const unsigned id, const unsigned decalY)
@@ -3195,9 +3086,9 @@ void IWAParser::parseTile(const unsigned id, const unsigned decalY)
       length = 0xffff;
     }
 
-    bool useNewDefinition=false;
+    bool useNewFormat=false;
     map<unsigned,unsigned> offsets;
-    if (!parseColumnOffsets(get(it.second->bytes(4)), length, offsets))
+    if (/*1 || */(!parseColumnOffsets(get(it.second->bytes(4)), length, offsets) && get(it.second->bytes(6))))
     {
       offsets.clear();
 
@@ -3211,7 +3102,7 @@ void IWAParser::parseTile(const unsigned id, const unsigned decalY)
         ETONYEK_DEBUG_MSG(("IWAParser::parseTile: invalid new column data length: %u\n", length));
         length = factor*0xffff;
       }
-      useNewDefinition=true;
+      useNewFormat=true;
       parseColumnOffsets(get(it.second->bytes(7)), length, offsets, factor);
     }
 
@@ -3222,10 +3113,7 @@ void IWAParser::parseTile(const unsigned id, const unsigned decalY)
       ++offIt;
       unsigned endPos=offIt==offsets.end() ? length : offIt->second;
       input->seek((long) begPos, librevenge::RVNG_SEEK_SET);
-      if (!useNewDefinition)
-        parseTileDefinition(it.first, column, input, endPos);
-      else
-        parseTileDefinitionNew(it.first, column, input, endPos);
+      parseTileDefinition(it.first, column, input, endPos, !useNewFormat);
     }
   }
 }

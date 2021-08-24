@@ -205,8 +205,7 @@ private:
   void parseTabularModel(unsigned id);
   void parseDataList(unsigned id, DataList_t &dataList);
   void parseTile(unsigned id, unsigned decalY);
-  void parseTileDefinition(unsigned row, unsigned col, RVNGInputStreamPtr_t &input, unsigned endPos);
-  void parseTileDefinitionNew(unsigned row, unsigned col, RVNGInputStreamPtr_t &input, unsigned endPos);
+  void parseTileDefinition(unsigned row, unsigned col, RVNGInputStreamPtr_t &input, unsigned endPos, bool oldFormat);
   void parseTableHeaders(unsigned id, TableHeader &header);
   void parseTableGridLines(unsigned id, IWORKGridLineMap_t (&gridLines)[4]);
   void parseTableGridLine(unsigned id, IWORKGridLineMap_t &gridLines);
