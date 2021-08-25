@@ -320,6 +320,30 @@ AS_IF([test "x$enable_debug" = "xyes"], [
 ])
 AC_SUBST(DEBUG_CXXFLAGS)
 
+# ====================
+# asan
+# ====================
+AS_IF([test "x$native_win32" = "xyes"], [ enable_asan=no ],
+  [
+     AC_ARG_ENABLE([asan],
+	AC_HELP_STRING([--enable-asan],
+           [Enable Address Sanitizer support]))
+
+     if test "x$enable_asan" = "xyes"; then
+        enable_asan=yes
+        AC_CHECK_LIB([asan], [__asan_init], [asan_lib=asan], # linux
+	  [ AC_CHECK_LIB([clang_rt.asan_osx_dynamic], [__asan_init], [asan_lib=clang_rt.asan_osx_dynamic], # osx and clang
+            [AC_MSG_ERROR([libasan not found, this is required for --enable-asan])
+	  ])
+	])
+        CXXFLAGS="${CXXFLAGS} -fsanitize=address -fno-omit-frame-pointer"
+        LDFLAGS="-l${asan_lib} ${LDFLAGS}"
+     else
+        enable_asan=no
+     fi
+  ]
+)
+
 # ==========
 # Unit tests
 # ==========
@@ -425,6 +449,7 @@ AC_OUTPUT
 AC_MSG_NOTICE([
 ==============================================================================
 Build configuration:
+	asan:            ${enable_asan}
 	debug:           ${enable_debug}
 	docs:            ${build_docs}
 	fuzzers:         ${enable_fuzzers}
