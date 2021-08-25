@@ -94,7 +94,8 @@ void NUMCollector::endWorkSpace(IWORKTableNameMapPtr_t tableNameMap)
   {
     // ok, we must create a empty spreadsheet
     IWORKLanguageManager langManager;
-    IWORKTable table(tableNameMap, langManager);
+    IWORKFormatNameMap formatNameMap;
+    IWORKTable table(tableNameMap, formatNameMap, langManager);
     if (m_workSpaceName && tableNameMap)
     {
       auto tableName=*m_workSpaceName;

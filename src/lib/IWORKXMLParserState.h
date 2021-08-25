@@ -49,6 +49,7 @@ public:
   // When false, nothing should be sent to collector. This is used to
   // gather referenceable entities in skipped parts of the file.
   bool m_enableCollector;
+  IWORKFormatNameMap m_formatNameMap;
   IWORKTableNameMapPtr_t m_tableNameMap;
   IWORKLanguageManager m_langManager;
   std::shared_ptr<IWORKTable> m_currentTable;

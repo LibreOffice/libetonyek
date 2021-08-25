@@ -129,6 +129,7 @@ protected:
   boost::optional<unsigned> getObjectType(unsigned id) const;
 
 protected:
+  IWORKFormatNameMap m_formatNameMap;
   IWORKLanguageManager m_langManager;
   IWORKTableNameMapPtr_t m_tableNameMap;
   std::shared_ptr<IWORKText> m_currentText;

@@ -585,9 +585,9 @@ void IWORKCollector::closeGroup()
   --m_groupOpenLevel;
 }
 
-std::shared_ptr<IWORKTable> IWORKCollector::createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const
+std::shared_ptr<IWORKTable> IWORKCollector::createTable(const IWORKTableNameMapPtr_t &tableNameMap, IWORKFormatNameMap &formatNameMap, const IWORKLanguageManager &langManager) const
 {
-  return shared_ptr<IWORKTable>(new IWORKTable(tableNameMap, langManager));
+  return shared_ptr<IWORKTable>(new IWORKTable(tableNameMap, formatNameMap, langManager));
 }
 
 std::shared_ptr<IWORKText> IWORKCollector::createText(const IWORKLanguageManager &langManager, bool discardEmptyContent, bool allowListInsertion) const

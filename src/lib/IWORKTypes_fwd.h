@@ -29,6 +29,8 @@ typedef unsigned IWORKOutputID_t;
 
 typedef std::unordered_map<ID_t, IWORKOutputID_t> IWORKOutputMap_t;
 
+typedef std::unordered_map<std::string, std::string> IWORKFormatNameMap;
+
 typedef std::unordered_map<std::string, std::string> IWORKTableNameMap_t;
 
 typedef std::shared_ptr<IWORKTableNameMap_t> IWORKTableNameMapPtr_t;

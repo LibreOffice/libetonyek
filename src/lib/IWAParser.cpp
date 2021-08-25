@@ -155,7 +155,8 @@ IWAParser::TableInfo::TableInfo(const shared_ptr<IWORKTable> &table, const unsig
 }
 
 IWAParser::IWAParser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStreamPtr_t &package, IWORKCollector &collector)
-  : m_langManager()
+  : m_formatNameMap()
+  , m_langManager()
   , m_tableNameMap(std::make_shared<IWORKTableNameMap_t>())
   , m_currentText()
   , m_collector(collector)
@@ -2427,7 +2428,7 @@ void IWAParser::parseTabularModel(const unsigned id)
   if (!rows || !columns)
     return;
 
-  m_currentTable = std::make_shared<TableInfo>(m_collector.createTable(m_tableNameMap, m_langManager), get(columns), get(rows));
+  m_currentTable = std::make_shared<TableInfo>(m_collector.createTable(m_tableNameMap, m_formatNameMap, m_langManager), get(columns), get(rows));
   m_currentTable->m_table->setSize(get(columns), get(rows));
 
   IWORKStylePtr_t tableStyle;
@@ -2783,7 +2784,7 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
       if (flags & 0x40) // date
       {
         std::stringstream s;
-        s << readDouble(input);
+        s << std::setprecision(12) << readDouble(input);
         text=s.str();
         numberSet=true;
       }
@@ -2844,7 +2845,7 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
       if (flags & 0x800) // unknown: check size
         input->seek(4, librevenge::RVNG_SEEK_CUR);
       unsigned resType=0;
-      if (flags & 0x1000)   // type res(useme)
+      if (flags & 0x1000)   // type of the result
       {
         resType=readU32(input);
         switch (resType)
@@ -2965,33 +2966,35 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
         cellStyle = queryCellStyle(*ref);
     }
   }
-
-  if (format)
+  IWORKStylePtr_t paragraphStyle;
+  if (bool(paragraphStyleId))
   {
-    if (get(format).m_type && !textSet)
+    const DataList_t::const_iterator listIt = m_currentTable->m_cellStyleList.find(paragraphStyleId.get());
+    if (listIt != m_currentTable->m_cellStyleList.end())
+    {
+      if (const unsigned *const ref = boost::get<unsigned>(&listIt->second))
+        paragraphStyle = queryParagraphStyle(*ref);
+    }
+  }
+  if (format && !textSet)
+  {
+    if (get(format).m_type)
     {
       auto type=get(get(format).m_type);
       if (!numberSet || (type!=IWORK_CELL_TYPE_TEXT && type!=IWORK_CELL_TYPE_NUMBER)) cellType=type;
     }
     IWORKPropertyMap props;
-    if (boost::get<IWORKNumberFormat>(&get(format).m_format))
-      props.put<property::SFTCellStylePropertyNumberFormat>(*boost::get<IWORKNumberFormat>(&get(format).m_format));
-    else if (boost::get<IWORKDateTimeFormat>(&get(format).m_format))
+    bool addProps=true;
+    if (cellType==IWORK_CELL_TYPE_DATE_TIME && boost::get<IWORKDateTimeFormat>(&get(format).m_format))
       props.put<property::SFTCellStylePropertyDateTimeFormat>(*boost::get<IWORKDateTimeFormat>(&get(format).m_format));
-    else if (boost::get<IWORKDurationFormat>(&get(format).m_format))
+    else if (cellType==IWORK_CELL_TYPE_DURATION && boost::get<IWORKDurationFormat>(&get(format).m_format))
       props.put<property::SFTCellStylePropertyDurationFormat>(*boost::get<IWORKDurationFormat>(&get(format).m_format));
-    cellStyle.reset(new IWORKStyle(props, none, cellStyle));
-  }
-  else
-  {
-    format=Format();
-    get(format).m_type=cellType;
-    if (cellType==IWORK_CELL_TYPE_DATE_TIME)
-      get(format).m_format=IWORKDateTimeFormat();
-    else if (cellType==IWORK_CELL_TYPE_DURATION)
-      get(format).m_format=IWORKDurationFormat();
-    else if (cellType==IWORK_CELL_TYPE_NUMBER)
-      get(format).m_format=IWORKNumberFormat();
+    else if (cellType!=IWORK_CELL_TYPE_TEXT && boost::get<IWORKNumberFormat>(&get(format).m_format))
+      props.put<property::SFTCellStylePropertyNumberFormat>(*boost::get<IWORKNumberFormat>(&get(format).m_format));
+    else
+      addProps=false;
+    if (addProps)
+      cellStyle.reset(new IWORKStyle(props, none, cellStyle));
   }
 
   bool needText=bool(textRef) || (bool(text) && !formula && cellType == IWORK_CELL_TYPE_TEXT);
@@ -3006,25 +3009,19 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
       m_currentText = m_collector.createText(m_langManager);
       // update the style
       m_currentText->pushBaseLayoutStyle(m_currentTable->m_table->getDefaultLayoutStyle(column, row));
-      // do we need to set m_currentTable->m_style->has<property::FontName>() ?
       m_currentText->pushBaseParagraphStyle(m_currentTable->m_table->getDefaultParagraphStyle(column, row));
-      if (bool(paragraphStyleId))
-      {
-        const DataList_t::const_iterator listIt = m_currentTable->m_cellStyleList.find(paragraphStyleId.get());
-        if (listIt != m_currentTable->m_cellStyleList.end())
-        {
-          if (const unsigned *const ref = boost::get<unsigned>(&listIt->second))
-          {
-            auto paragraphStyle = queryParagraphStyle(*ref);
-            if (paragraphStyle)
-              m_currentText->setParagraphStyle(paragraphStyle);
-          }
-        }
-      }
+      if (paragraphStyle)
+        m_currentText->setParagraphStyle(paragraphStyle);
       m_currentText->insertText(get(text));
       m_currentText->flushSpan();
       m_currentText->flushParagraph();
     }
+  }
+  else if (paragraphStyle)
+  {
+    IWORKPropertyMap props;
+    props.put<property::SFTCellStylePropertyParagraphStyle>(paragraphStyle);
+    cellStyle.reset(new IWORKStyle(props, none, cellStyle));
   }
   optional<IWORKDateTimeData> dateTime;
   m_currentTable->m_table->insertCell(column, row, text, m_currentText, dateTime, 1, 1, formula, unsigned(row*256+column), cellStyle, cellType);

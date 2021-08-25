@@ -131,7 +131,7 @@ public:
   IWORKOutputManager &getOutputManager();
 
 public:
-  virtual std::shared_ptr<IWORKTable> createTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager) const;
+  virtual std::shared_ptr<IWORKTable> createTable(const IWORKTableNameMapPtr_t &tableNameMap, IWORKFormatNameMap &formatNameMap, const IWORKLanguageManager &langManager) const;
   virtual std::shared_ptr<IWORKText> createText(const IWORKLanguageManager &langManager, bool discardEmptyContent = false, bool allowListInsertion=true) const;
 
 protected:

@@ -410,7 +410,7 @@ void KEY1TableElement::startOfElement()
     getCollector().startLevel();
 
     assert(!getState().m_currentTable);
-    getState().m_currentTable = getCollector().createTable(getState().m_tableNameMap, getState().m_langManager);
+    getState().m_currentTable = getCollector().createTable(getState().m_tableNameMap, getState().m_formatNameMap, getState().m_langManager);
   }
 }
 

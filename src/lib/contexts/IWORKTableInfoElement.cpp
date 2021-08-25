@@ -660,7 +660,7 @@ IWORKTableInfoElement::IWORKTableInfoElement(IWORKXMLParserState &state)
 void IWORKTableInfoElement::startOfElement()
 {
   assert(!getState().m_currentTable);
-  getState().m_currentTable = getCollector().createTable(getState().m_tableNameMap, getState().m_langManager);
+  getState().m_currentTable = getCollector().createTable(getState().m_tableNameMap, getState().m_formatNameMap, getState().m_langManager);
   if (isCollector())
     getCollector().startLevel();
 }

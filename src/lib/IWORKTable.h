@@ -60,7 +60,7 @@ public:
   };
 
 public:
-  explicit IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager);
+  explicit IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap, IWORKFormatNameMap &formatNameMap, const IWORKLanguageManager &langManager);
 
   void setRecorder(const std::shared_ptr<IWORKTableRecorder> &recorder);
   const std::shared_ptr<IWORKTableRecorder> &getRecorder() const;
@@ -109,7 +109,7 @@ private:
 private:
   const IWORKTableNameMapPtr_t m_tableNameMap;
   const IWORKLanguageManager &m_langManager;
-  std::map<librevenge::RVNGString,std::string> m_formatNameMap;
+  IWORKFormatNameMap &m_formatNameMap;
   std::map<std::pair<unsigned, unsigned>, IWORKOutputElements> m_commentMap;
 
   Table_t m_table;

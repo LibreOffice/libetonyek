@@ -443,10 +443,10 @@ IWORKTable::Cell::Cell()
 {
 }
 
-IWORKTable::IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap, const IWORKLanguageManager &langManager)
+IWORKTable::IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap, IWORKFormatNameMap &formatNameMap, const IWORKLanguageManager &langManager)
   : m_tableNameMap(tableNameMap)
   , m_langManager(langManager)
-  , m_formatNameMap()
+  , m_formatNameMap(formatNameMap)
   , m_commentMap()
   , m_table()
   , m_style()
@@ -726,7 +726,7 @@ boost::optional<std::string> IWORKTable::writeFormat(IWORKOutputElements &elemen
   }
   if (props.empty())
     return none;
-  auto hash=props.getPropString();
+  std::string hash=props.getPropString().cstr();
   auto it=m_formatNameMap.find(hash);
   if (it!=m_formatNameMap.end())
     return it->second;
@@ -873,6 +873,9 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
           optional<std::string> valueType;
           auto formatName=writeFormat(elements, cell.m_style, cell.m_type, valueType);
           if (formatName) cellProps.insert("librevenge:numbering-name", get(formatName).c_str());
+          // do not add a 0 value if the cell is empty
+          if (cell.m_type==IWORK_CELL_TYPE_NUMBER && !bool(cell.m_value))
+            valueType.reset();
           writeCellValue(cellProps, cell.m_style ? cell.m_style->getIdent() : none,
                          cell.m_type, valueType, cell.m_value, cell.m_dateTime);
         }
