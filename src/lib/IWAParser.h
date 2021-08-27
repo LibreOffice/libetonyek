@@ -178,6 +178,7 @@ private:
     DataList_t m_formattedTextList;
     DataList_t m_formulaList;
     DataList_t m_formatList;
+    DataList_t m_newFormatList;
     DataList_t m_commentList;
   };
 

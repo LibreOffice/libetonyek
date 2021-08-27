@@ -150,6 +150,7 @@ IWAParser::TableInfo::TableInfo(const shared_ptr<IWORKTable> &table, const unsig
   , m_formattedTextList()
   , m_formulaList()
   , m_formatList()
+  , m_newFormatList()
   , m_commentList()
 {
 }
@@ -2474,7 +2475,6 @@ void IWAParser::parseTabularModel(const unsigned id)
     const optional<unsigned> &formulaListRef = readRef(grid, 6);
     if (formulaListRef)
       parseDataList(get(formulaListRef), m_currentTable->m_formulaList);
-    // unsure, maybe we want to read 22
     const optional<unsigned> &formatListRef = readRef(grid, 11);
     if (formatListRef)
       parseDataList(get(formatListRef), m_currentTable->m_formatList);
@@ -2484,6 +2484,9 @@ void IWAParser::parseTabularModel(const unsigned id)
     const optional<unsigned> &commentListRef = readRef(grid, 19);
     if (commentListRef)
       parseDataList(get(commentListRef), m_currentTable->m_commentList);
+    const optional<unsigned> &newFormatListRef = readRef(grid, 22);
+    if (newFormatListRef)
+      parseDataList(get(newFormatListRef), m_currentTable->m_newFormatList);
 
     m_currentTable->m_table->setSizes(makeSizes(m_currentTable->m_columnHeader.m_sizes), makeSizes(m_currentTable->m_rowHeader.m_sizes));
 
@@ -2693,9 +2696,8 @@ void IWAParser::parseDataList(const unsigned id, DataList_t &dataList)
 void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStreamPtr_t &input, unsigned endPos, bool oldFormat)
 {
   IWORKCellType cellType = IWORK_CELL_TYPE_TEXT;
-  optional<unsigned> cellStyleId, paragraphStyleId;
+  optional<unsigned> cellStyleId, formatId, paragraphStyleId;
   optional<unsigned> commentId, formulaId, textId, textFormattedId;
-  optional<Format> format;
   optional<string> text;
   bool numberSet=false;
 
@@ -2717,6 +2719,7 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
     {
     case 2:
     case 8: // nan
+    case 10: // devise
       cellType=IWORK_CELL_TYPE_NUMBER;
       break;
     case 7: // duration
@@ -2751,23 +2754,7 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
       if (flags & 0x400) // condition 2
         readU32(input);
       if (flags & 0x4)   // format
-      {
-        const unsigned formatId=readU32(input);
-        auto const formatIt=m_currentTable->m_formatList.find(formatId);
-        if (formatIt !=m_currentTable->m_formatList.end())
-        {
-          if (auto ref = boost::get<Format>(&formatIt->second))
-          {
-            format=*ref;
-            if (format->m_type && get(format->m_type)==IWORK_CELL_TYPE_NUMBER && cellType!=IWORK_CELL_TYPE_TEXT)
-              format->m_type=cellType;
-          }
-        }
-        else
-        {
-          ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition: can not find format %d\n", int(formatId)));
-        }
-      }
+        formatId=readU32(input);
       if (flags & 0x8) // formula
         formulaId = readU32(input);
       if (flags & 0x1000) // comment
@@ -2853,8 +2840,8 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
         case 1:
           cellType=IWORK_CELL_TYPE_NUMBER;
           break;
-        case 2: // checkme
-          cellType=IWORK_CELL_TYPE_BOOL;
+        case 2: // devise(changeme)
+          cellType=IWORK_CELL_TYPE_NUMBER;
           break;
         case 3:
           cellType=IWORK_CELL_TYPE_DATE_TIME;
@@ -2876,23 +2863,11 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
       {
         if ((flags & hBytes)==0)
           continue;
-        const unsigned formatId=readU32(input);
+        const unsigned id=readU32(input);
+        // checkme, unclear which format id we need to choose when resType=2 or 6
         if (w+1!=resType)
           continue;
-        auto const formatIt=m_currentTable->m_formatList.find(formatId);
-        if (formatIt !=m_currentTable->m_formatList.end())
-        {
-          if (auto ref = boost::get<Format>(&formatIt->second))
-          {
-            format=*ref;
-            if (format->m_type && get(format->m_type)==IWORK_CELL_TYPE_NUMBER && cellType!=IWORK_CELL_TYPE_TEXT)
-              format->m_type=cellType;
-          }
-        }
-        else
-        {
-          ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition[new]: can not find format[%d] %d\n", w, int(formatId)));
-        }
+        formatId=id;
       }
       if (flags & 0x80000)
         commentId=readU32(input);
@@ -2976,6 +2951,27 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
         paragraphStyle = queryParagraphStyle(*ref);
     }
   }
+  optional<Format> format;
+  if (bool(formatId))
+  {
+    auto const &formatList=oldFormat ? m_currentTable->m_formatList : m_currentTable->m_newFormatList;
+    auto const formatIt=formatList.find(get(formatId));
+    if (formatIt != formatList.end())
+    {
+      if (auto ref = boost::get<Format>(&formatIt->second))
+      {
+        format=*ref;
+        if (format->m_type && get(format->m_type)==IWORK_CELL_TYPE_NUMBER && cellType!=IWORK_CELL_TYPE_TEXT)
+          format->m_type=cellType;
+      }
+    }
+    else
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition: can not find format %d\n", int(get(formatId))));
+    }
+  }
+  IWORKPropertyMap props;
+  bool addPropsToCellStyle=false;
   if (format && !textSet)
   {
     if (get(format).m_type)
@@ -2983,8 +2979,7 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
       auto type=get(get(format).m_type);
       if (!numberSet || (type!=IWORK_CELL_TYPE_TEXT && type!=IWORK_CELL_TYPE_NUMBER)) cellType=type;
     }
-    IWORKPropertyMap props;
-    bool addProps=true;
+    addPropsToCellStyle=true;
     if (cellType==IWORK_CELL_TYPE_DATE_TIME && boost::get<IWORKDateTimeFormat>(&get(format).m_format))
       props.put<property::SFTCellStylePropertyDateTimeFormat>(*boost::get<IWORKDateTimeFormat>(&get(format).m_format));
     else if (cellType==IWORK_CELL_TYPE_DURATION && boost::get<IWORKDurationFormat>(&get(format).m_format))
@@ -2992,9 +2987,7 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
     else if (cellType!=IWORK_CELL_TYPE_TEXT && boost::get<IWORKNumberFormat>(&get(format).m_format))
       props.put<property::SFTCellStylePropertyNumberFormat>(*boost::get<IWORKNumberFormat>(&get(format).m_format));
     else
-      addProps=false;
-    if (addProps)
-      cellStyle.reset(new IWORKStyle(props, none, cellStyle));
+      addPropsToCellStyle=false;
   }
 
   bool needText=bool(textRef) || (bool(text) && !formula && cellType == IWORK_CELL_TYPE_TEXT);
@@ -3019,10 +3012,11 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
   }
   else if (paragraphStyle)
   {
-    IWORKPropertyMap props;
+    addPropsToCellStyle=true;
     props.put<property::SFTCellStylePropertyParagraphStyle>(paragraphStyle);
-    cellStyle.reset(new IWORKStyle(props, none, cellStyle));
   }
+  if (addPropsToCellStyle)
+    cellStyle.reset(new IWORKStyle(props, none, cellStyle));
   optional<IWORKDateTimeData> dateTime;
   m_currentTable->m_table->insertCell(column, row, text, m_currentText, dateTime, 1, 1, formula, unsigned(row*256+column), cellStyle, cellType);
   if (bool(commentId))
@@ -3075,32 +3069,39 @@ void IWAParser::parseTile(const unsigned id, const unsigned decalY)
   // process rows
   for (auto it : rows)
   {
-    RVNGInputStreamPtr_t input = get(it.second->bytes(3));
-    auto length = unsigned(getLength(input));
-    if (length >= 0xffff)
-    {
-      ETONYEK_DEBUG_MSG(("IWAParser::parseTile: invalid column data length: %u\n", length));
-      length = 0xffff;
-    }
-
     bool useNewFormat=false;
     map<unsigned,unsigned> offsets;
-    if (/*1 || */(!parseColumnOffsets(get(it.second->bytes(4)), length, offsets) && get(it.second->bytes(6))))
+    RVNGInputStreamPtr_t input;
+    unsigned length=0;
+
+    /* first check if we can use the new definitions: data=6,offset=7,flag=[8],
+       if this is not possible, use the old definitions: data=3,offset=4 */
+    for (auto wh :
+         {
+           6, 3
+         })
     {
       offsets.clear();
 
-      unsigned factor=1;
-      if (it.second->bool_(8) && get(it.second->bool_(8)))
-        factor=4;
-      input = get(it.second->bytes(6));
+      if (!bool(it.second->bytes(unsigned(wh)+1)))
+        continue;
+      input = get(it.second->bytes(unsigned(wh)));
+      if (!input) continue;
       length = unsigned(getLength(input));
+      unsigned factor=1;
+      if (wh==6 && it.second->bool_(8) && get(it.second->bool_(8)))
+        factor=4;
+
       if (length >= factor*0xffff)
       {
-        ETONYEK_DEBUG_MSG(("IWAParser::parseTile: invalid new column data length: %u\n", length));
+        ETONYEK_DEBUG_MSG(("IWAParser::parseTile: invalid column data length: %u\n", length));
         length = factor*0xffff;
       }
-      useNewFormat=true;
-      parseColumnOffsets(get(it.second->bytes(7)), length, offsets, factor);
+
+      useNewFormat=wh==6;
+      if (!parseColumnOffsets(get(it.second->bytes(unsigned(wh)+1)), length, offsets, factor))
+        continue;
+      break;
     }
 
     for (auto offIt=offsets.begin(); offIt!=offsets.end() ;)
@@ -3220,16 +3221,31 @@ bool IWAParser::parseFormat(const IWAMessage &msg, IWAParser::Format &format)
   auto type=get(msg.uint32(1));
   format.m_type=IWORK_CELL_TYPE_NUMBER;
   IWORKCellNumberType nType=IWORK_CELL_NUMBER_TYPE_DOUBLE;
+  if (type==265)   // check if data's type is defined
+  {
+    if (msg.uint32(24))
+      type=get(msg.uint32(24));
+  }
   switch (type)
   {
   case 1: // automatic
     return true;
   case 263: // checkbox
+    format.m_type=IWORK_CELL_TYPE_BOOL;
+    return true;
   case 264: // stepper
   case 265: // slider
   case 266: // pop-up menu
-  case 267: // star rating
+  case 267:   // star rating
+  {
+    static bool first=true;
+    if (first)
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseFormat: using type=%d is not implemented\n", int(type)));
+      first=false;
+    }
     return false;
+  }
   case 257: // currency
     nType=IWORK_CELL_NUMBER_TYPE_CURRENCY;
     break;
@@ -3293,7 +3309,7 @@ bool IWAParser::parseFormat(const IWAMessage &msg, IWAParser::Format &format)
     return true;
   }
   default:
-    ETONYEK_DEBUG_MSG(("IWAParser::parseFormat: find unknown type\n"));
+    ETONYEK_DEBUG_MSG(("IWAParser::parseFormat: find unknown type=%d\n", int(type)));
     return false;
   }
   IWORKNumberFormat nFormat;
@@ -3561,7 +3577,7 @@ bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
     case 35: // arg end
       break;
     default:
-      if ((get(type)>=1 && get(type)<=15) || get(type)==29)
+      if ((get(type)>=1 && get(type)<=15) || get(type)==29 || get(type)==45)
       {
         char const *wh[] =
         {
@@ -3570,13 +3586,13 @@ bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
           "<", "<=", "=", "<>",
           "-", "+", "%"
         };
-        if (get(type)!=29 && !wh[get(type)])
+        if (get(type)<=15 && !wh[get(type)])
         {
           ETONYEK_DEBUG_MSG(("IWAParser::parseFormula: find unexpected type=%u\n", get(type)));
           ok=false;
           break;
         }
-        size_t numArgs=(get(type)<13 || get(type)==29) ? 2 : 1;
+        size_t numArgs=(get(type)<13 || get(type)>=29) ? 2 : 1;
         size_t numData=stack.size();
         if (numData<numArgs)
         {
@@ -3588,7 +3604,7 @@ bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
         if (numArgs==2)
         {
           child.insert(child.end(), stack[numData-2].begin(),stack[numData-2].end());
-          child.push_back(IWORKFormula::Token(get(type)==29 ? ":" : wh[get(type)], IWORKFormula::Token::Operator));
+          child.push_back(IWORKFormula::Token(get(type)>=29 ? ":" : wh[get(type)], IWORKFormula::Token::Operator));
           child.insert(child.end(), stack[numData-1].begin(),stack[numData-1].end());
         }
         else if (get(type)<15)
