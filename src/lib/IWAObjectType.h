@@ -51,6 +51,7 @@ enum
   CellStyle = 6004,
   DataList = 6005,
   Headers = 6006,
+  ConditionStyle = 6010,
 
   TextRef = 6218,
 

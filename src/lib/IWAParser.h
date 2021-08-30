@@ -159,6 +159,18 @@ private:
 
   typedef std::map<unsigned, boost::variant<std::string, unsigned, IWORKFormulaPtr_t, Format> > DataList_t;
 
+  struct ConditionRule
+  {
+    ConditionRule();
+
+    IWORKFormulaPtr_t m_formula;
+    boost::optional<unsigned> m_cellStyleRef;
+    boost::optional<unsigned> m_paragraphStyleRef;
+  };
+
+  typedef std::deque<ConditionRule> ConditionRule_t;
+  typedef std::map<unsigned, ConditionRule_t> ConditionRuleList_t;
+
   struct TableInfo
   {
     TableInfo(const std::shared_ptr<IWORKTable> &table, unsigned columns, unsigned rows);
@@ -175,6 +187,7 @@ private:
 
     DataList_t m_simpleTextList;
     DataList_t m_cellStyleList;
+    ConditionRuleList_t m_conditionStyleList;
     DataList_t m_formattedTextList;
     DataList_t m_formulaList;
     DataList_t m_formatList;
@@ -214,6 +227,7 @@ private:
   void parseLink(unsigned id, std::string &url);
 
   bool parseAttachment(unsigned id);
+  bool parseConditionRules(unsigned id, ConditionRule_t &rules);
   bool parseDrawableShape(const IWAMessage &msg, bool isConnectionLine=false);
   bool parseGroup(const IWAMessage &msg);
   bool parseShapePlacement(const IWAMessage &msg);

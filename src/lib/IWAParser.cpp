@@ -138,6 +138,13 @@ IWAParser::TableHeader::TableHeader(const unsigned count, float defValue)
 {
 }
 
+IWAParser::ConditionRule::ConditionRule()
+  : m_formula()
+  , m_cellStyleRef()
+  , m_paragraphStyleRef()
+{
+}
+
 IWAParser::TableInfo::TableInfo(const shared_ptr<IWORKTable> &table, const unsigned columns, const unsigned rows)
   : m_table(table)
   , m_columns(columns)
@@ -147,6 +154,7 @@ IWAParser::TableInfo::TableInfo(const shared_ptr<IWORKTable> &table, const unsig
   , m_rowHeader(rows,20)
   , m_simpleTextList()
   , m_cellStyleList()
+  , m_conditionStyleList()
   , m_formattedTextList()
   , m_formulaList()
   , m_formatList()
@@ -2481,6 +2489,21 @@ void IWAParser::parseTabularModel(const unsigned id)
     const optional<unsigned> &paraTextListRef = readRef(grid, 17);
     if (paraTextListRef)
       parseDataList(get(paraTextListRef), m_currentTable->m_formattedTextList);
+    const optional<unsigned> &conditionStyleListRef = readRef(grid, 18);
+    if (conditionStyleListRef)
+    {
+      DataList_t conditionStyles;
+      parseDataList(get(conditionStyleListRef), conditionStyles);
+      for (auto const &it : conditionStyles)
+      {
+        if (auto ref = *boost::get<unsigned>(&it.second))
+        {
+          ConditionRule_t rules;
+          if (parseConditionRules(ref, rules))
+            m_currentTable->m_conditionStyleList[it.first]=rules;
+        }
+      }
+    }
     const optional<unsigned> &commentListRef = readRef(grid, 19);
     if (commentListRef)
       parseDataList(get(commentListRef), m_currentTable->m_commentList);
@@ -2671,10 +2694,13 @@ void IWAParser::parseDataList(const unsigned id, DataList_t &dataList)
       }
       break;
     }
-    case 9 :
-      if (it.uint32(9))
-        dataList[index] = get(it.uint32(9));
+    case 9 :   // condition
+    {
+      auto condRef=readRef(it,4);
+      if (condRef)
+        dataList[index] = get(condRef);
       break;
+    }
     case 10 :
     {
       auto commentRef=readRef(it,10);
@@ -2697,7 +2723,7 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
 {
   IWORKCellType cellType = IWORK_CELL_TYPE_TEXT;
   optional<unsigned> cellStyleId, formatId, paragraphStyleId;
-  optional<unsigned> commentId, formulaId, textId, textFormattedId;
+  optional<unsigned> commentId, conditionId, formulaId, textId, textFormattedId;
   optional<string> text;
   bool numberSet=false;
 
@@ -2750,7 +2776,7 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
       if (flags & 0x80)
         paragraphStyleId=readU32(input);
       if (flags & 0x800) // condition
-        readU32(input);
+        conditionId=readU32(input);
       if (flags & 0x400) // condition 2
         readU32(input);
       if (flags & 0x4)   // format
@@ -2822,7 +2848,7 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
       if (flags & 0x40) // cell paragraph style
         paragraphStyleId=readU32(input);
       if (flags & 0x80) // conditional
-        input->seek(4, librevenge::RVNG_SEEK_CUR);
+        conditionId=readU32(input);
       if (flags & 0x100) // conditional(unknown)
         input->seek(4, librevenge::RVNG_SEEK_CUR);
       if (flags & 0x200)
@@ -3010,11 +3036,12 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
       m_currentText->flushParagraph();
     }
   }
-  else if (paragraphStyle)
+  if (!needText && paragraphStyle)
   {
     addPropsToCellStyle=true;
     props.put<property::SFTCellStylePropertyParagraphStyle>(paragraphStyle);
   }
+  /* TODO: when librevenge will allow to define cell styles, use conditionId */
   if (addPropsToCellStyle)
     cellStyle.reset(new IWORKStyle(props, none, cellStyle));
   optional<IWORKDateTimeData> dateTime;
@@ -3352,6 +3379,30 @@ void IWAParser::parseCustomFormat(unsigned id)
   }
 }
 
+bool IWAParser::parseConditionRules(unsigned id, IWAParser::ConditionRule_t &rules)
+{
+  const ObjectMessage ruleMsg(*this, id, IWAObjectType::ConditionStyle);
+  if (!ruleMsg)
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::parseConditionRules: oops, can not find a condition for id=%x\n", id));
+    return false;
+  }
+  for (const auto &ruleIt : get(ruleMsg).message(2))
+  {
+    ConditionRule rule;
+    auto formulaMsg=ruleIt.message(1);
+    if (!formulaMsg || !get(formulaMsg).message(1) || !parseFormula(get(get(formulaMsg).message(1)), rule.m_formula) || !rule.m_formula)
+    {
+      ETONYEK_DEBUG_MSG(("IWAParser::parseConditionRules: oops, can not read a formula for id=%x\n", id));
+      return false;
+    }
+    rule.m_cellStyleRef=readRef(ruleIt, 2);
+    rule.m_paragraphStyleRef=readRef(ruleIt, 3);
+    rules.push_back(rule);
+  }
+  return true;
+}
+
 bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
 {
   if (!msg.message(1))
@@ -3576,6 +3627,14 @@ bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
     case 34: // arg begin
     case 35: // arg end
       break;
+    case 63:   // current cell, use in condition formula
+    {
+      IWORKFormula::Address address;
+      address.m_row=address.m_column=IWORKFormula::Coord();
+      address.m_table=readUUID(it,28);
+      stack.push_back({IWORKFormula::Token(address)});
+      break;
+    }
     default:
       if ((get(type)>=1 && get(type)<=15) || get(type)==29 || get(type)==45)
       {
