@@ -2541,8 +2541,15 @@ void IWAParser::parseTabularModel(const unsigned id)
   }
   if (get(msg).string(8))
   {
-    auto finalName=get(get(msg).string(8));
-    // also update the table name map?
+    std::string finalName;
+    if (bool(m_collector.getWorkSpaceName()))
+    {
+      std::stringstream s;
+      s << get(m_collector.getWorkSpaceName()) << "_" << get(get(msg).string(8));
+      finalName=s.str();
+    }
+    else
+      finalName=get(get(msg).string(8));
     if (m_tableNameMap->find(finalName)!=m_tableNameMap->end())
     {
       ETONYEK_DEBUG_MSG(("IWAParser::parseTabularModel: a table with name %s already exists\n", finalName.c_str()));
@@ -2811,14 +2818,23 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
       const unsigned flags = readU32(input);
       if (flags & 1)
       {
-        double mantissa=double(readU64(input));
-        mantissa+=double(65536)*double(65536)*double(65536)*double(65536)*double(readU32(input));
-        input->seek(2, librevenge::RVNG_SEEK_CUR); // checkme: maybe nan
+        long double mantissa=0;
+        long double decal=1;
+        for (int i=0; i<7; ++i)
+        {
+          mantissa+=decal*double(readU16(input));
+          decal*=65536;
+        }
         auto exponent=readU16(input);
         if (exponent&0x8000)
         {
           mantissa*=-1;
           exponent&=0x7fff;
+        }
+        if (exponent&1)
+        {
+          mantissa+=decal;
+          exponent&=0x7ffe; // need if exponent<12352
         }
         std::stringstream s;
         s << std::setprecision(12) << mantissa *std::pow(10, (exponent-12352)/2); // 3040 mean 0

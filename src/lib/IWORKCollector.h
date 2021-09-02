@@ -128,6 +128,11 @@ public:
     return m_stylesheetStack.top();
   }
 
+  // use to create the final table name in numbers document
+  virtual boost::optional<std::string> getWorkSpaceName() const
+  {
+    return boost::none;
+  }
   IWORKOutputManager &getOutputManager();
 
 public:

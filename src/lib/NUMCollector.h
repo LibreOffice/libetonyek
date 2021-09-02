@@ -17,7 +17,7 @@ namespace libetonyek
 
 class IWORKDocumentInterface;
 
-class NUMCollector : public IWORKCollector
+class NUMCollector final : public IWORKCollector
 {
 public:
   explicit NUMCollector(IWORKDocumentInterface *document);
@@ -30,17 +30,21 @@ public:
 
   void startWorkSpace(boost::optional<std::string> const &name);
   void endWorkSpace(IWORKTableNameMapPtr_t tableNameMap);
+  boost::optional<std::string> getWorkSpaceName() const final
+  {
+    return m_workSpaceName;
+  }
 
-  void collectStickyNote() override;
+  void collectStickyNote() final;
 private:
-  void drawTable() override;
-  void drawMedia(double x, double y, const librevenge::RVNGPropertyList &data) override;
-  void fillShapeProperties(librevenge::RVNGPropertyList &props) override;
-  bool createFrameStylesForTextBox() const override
+  void drawTable() final;
+  void drawMedia(double x, double y, const librevenge::RVNGPropertyList &data) final;
+  void fillShapeProperties(librevenge::RVNGPropertyList &props) final;
+  bool createFrameStylesForTextBox() const final
   {
     return true;
   }
-  void drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox, const librevenge::RVNGPropertyList &style) override;
+  void drawTextBox(const IWORKTextPtr_t &text, const glm::dmat3 &trafo, const IWORKGeometryPtr_t &boundingBox, const librevenge::RVNGPropertyList &style) final;
 
   bool m_workSpaceOpened;
   boost::optional<std::string> m_workSpaceName;
