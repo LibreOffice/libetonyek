@@ -2818,6 +2818,7 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
       const unsigned flags = readU32(input);
       if (flags & 1)
       {
+        // significand 105 bits, exponent (base 10) 14 bits, sign 1 bits
         long double mantissa=0;
         long double decal=1;
         for (int i=0; i<7; ++i)
@@ -2826,15 +2827,15 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
           decal*=65536;
         }
         auto exponent=readU16(input);
+        if (exponent&1)
+        {
+          mantissa+=decal;
+          exponent&=0xfffe; // need if exponent<12352
+        }
         if (exponent&0x8000)
         {
           mantissa*=-1;
           exponent&=0x7fff;
-        }
-        if (exponent&1)
-        {
-          mantissa+=decal;
-          exponent&=0x7ffe; // need if exponent<12352
         }
         std::stringstream s;
         s << std::setprecision(12) << mantissa *std::pow(10, (exponent-12352)/2); // 3040 mean 0

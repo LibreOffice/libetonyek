@@ -2084,7 +2084,15 @@ void IWORKTabularModelElement::endOfElement()
   if (m_tableName && !get(m_tableName).empty())
   {
     auto &tableMap=*getState().m_tableNameMap;
-    auto finalName=get(m_tableName);
+    std::string finalName;
+    if (bool(getCollector().getWorkSpaceName()))
+    {
+      std::stringstream s;
+      s << get(getCollector().getWorkSpaceName()) << "_" << get(m_tableName);
+      finalName=s.str();
+    }
+    else
+      finalName=get(m_tableName);
     if (tableMap.find(finalName)!=tableMap.end())
     {
       ETONYEK_DEBUG_MSG(("IWORKTabularModelElement::endElement: a table with name %s already exists\n", finalName.c_str()));
