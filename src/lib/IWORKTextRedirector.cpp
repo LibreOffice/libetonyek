@@ -271,7 +271,18 @@ void IWORKTextRedirector::closeTable()
 }
 void IWORKTextRedirector::openFrame(const librevenge::RVNGPropertyList &propList)
 {
-  m_iface->openFrame(propList);
+  if (propList["draw:fill"] && propList["draw:fill"]->getStr()=="none" && !propList["draw:opacity"])
+  {
+    // actually, draw:fill="none" does not imply that the background is transparent
+    // either we modify it here or in libodfgen
+    librevenge::RVNGPropertyList finalPropList(propList);
+    finalPropList.insert("draw:fill", "solid");
+    finalPropList.insert("draw:fill-color", "#000000");
+    finalPropList.insert("draw:opacity", "0%");
+    m_iface->openFrame(finalPropList);
+  }
+  else
+    m_iface->openFrame(propList);
 }
 void IWORKTextRedirector::closeFrame()
 {
