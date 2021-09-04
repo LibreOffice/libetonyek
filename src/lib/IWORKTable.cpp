@@ -1059,11 +1059,11 @@ IWORKStylePtr_t IWORKTable::getDefaultStyle(const unsigned column, const unsigne
 {
   if ((row < m_headerRows) && bool(group[CELL_TYPE_ROW_HEADER]))
     return group[CELL_TYPE_ROW_HEADER];
-  else if (((m_rows - row) < m_footerRows) && bool(group[CELL_TYPE_ROW_FOOTER]))
+  else if (m_footerRows>0 && ((m_rows - row) <= m_footerRows) && bool(group[CELL_TYPE_ROW_FOOTER]))
     return group[CELL_TYPE_ROW_FOOTER];
   else if ((column < m_headerColumns) && bool(group[CELL_TYPE_COLUMN_HEADER]))
     return group[CELL_TYPE_COLUMN_HEADER];
-  else if (m_bandedRows && (row % 2 == 1) && bool(group[CELL_TYPE_ALTERNATE_BODY]))
+  else if (m_bandedRows && ((row-m_headerRows) % 2 == 1) && bool(group[CELL_TYPE_ALTERNATE_BODY]))
     return group[CELL_TYPE_ALTERNATE_BODY];
   else
     return group[CELL_TYPE_BODY];
