@@ -82,6 +82,10 @@ typedef std::shared_ptr<IWORKTableData> IWORKTableDataPtr_t;
 class IWORKTable;
 typedef std::shared_ptr<IWORKTable> IWORKTablePtr_t;
 typedef std::unordered_map<ID_t, IWORKTablePtr_t> IWORKTableMap_t;
+
+struct IWORKDropCap;
+
+typedef std::shared_ptr<IWORKDropCap> IWORKDropCapPtr_t;
 }
 
 #endif //  IWORKTYPES_FWD_H_INCLUDED

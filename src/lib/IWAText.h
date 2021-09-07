@@ -41,6 +41,7 @@ public:
   void setLinks(const std::map<unsigned, std::string> &links);
   void setListLevels(const std::map<unsigned, unsigned> &levels);
   void setLists(const std::map<unsigned, IWORKStylePtr_t> &lists);
+  void setDropCaps(const std::map<unsigned, IWORKStylePtr_t> &dropCaps);
 
   void setAttachments(const std::multimap<unsigned, std::function<void(unsigned, bool &)> > &attachments);
 
@@ -59,6 +60,7 @@ private:
   std::map<unsigned, std::string> m_links;
   std::map<unsigned, IWORKStylePtr_t> m_lists;
   std::map<unsigned, unsigned> m_listLevels;
+  std::map<unsigned, IWORKStylePtr_t> m_dropCaps;
 
   std::multimap<unsigned, std::function<void(unsigned, bool &)> > m_attachments;
 };

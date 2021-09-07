@@ -116,6 +116,7 @@ protected:
   void updateGeometryUsingTextRef(unsigned id, IWORKGeometry &geometry, unsigned flags);
 
   const IWORKStylePtr_t queryCharacterStyle(unsigned id) const;
+  const IWORKStylePtr_t queryDropCapStyle(unsigned id) const;
   const IWORKStylePtr_t queryParagraphStyle(unsigned id) const;
   const IWORKStylePtr_t querySectionStyle(unsigned id) const;
 
@@ -205,6 +206,7 @@ private:
   void parseObjectIndex();
 
   void parseCharacterStyle(unsigned id, IWORKStylePtr_t &style);
+  void parseDropCapStyle(unsigned id, IWORKStylePtr_t &style);
   void parseParagraphStyle(unsigned id, IWORKStylePtr_t &style);
   void parseSectionStyle(unsigned id, IWORKStylePtr_t &style);
 
@@ -241,6 +243,7 @@ private:
   bool parseArrowProperties(const IWAMessage &msg, IWORKPropertyMap &props, bool headArrow);
   void parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props);
   void parseColumnsProperties(const IWAMessage &msg, IWORKPropertyMap &props);
+  void parseDropCapProperties(const IWAMessage &msg, IWORKPropertyMap &props);
 
 private:
   IWORKCollector &m_collector;
@@ -250,6 +253,7 @@ private:
   std::deque<unsigned> m_visited;
 
   mutable StyleMap_t m_charStyles;
+  mutable StyleMap_t m_dropCapStyles;
   mutable StyleMap_t m_paraStyles;
   mutable StyleMap_t m_sectionStyles;
 

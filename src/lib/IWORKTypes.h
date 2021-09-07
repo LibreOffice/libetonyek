@@ -309,6 +309,22 @@ typedef std::unordered_map<ID_t, IWORKGradient> IWORKGradientMap_t;
 typedef boost::variant<IWORKColor, IWORKGradient, IWORKMediaContent> IWORKFill;
 typedef std::unordered_map<ID_t, IWORKFill> IWORKFillMap_t;
 
+struct IWORKDropCap
+{
+  IWORKDropCap();
+
+  bool empty() const
+  {
+    return m_numLines<=1 || m_numCharacters<=0;
+  }
+  unsigned m_numLines;
+  unsigned m_numLinesSpan; // the text begins with numLinesSpan empty lines
+  unsigned m_numCharacters;
+
+  double m_decalParagraphLeft; // in percent, this decals the left position of the text
+  double m_supplementalSpace; // extra space between the drop cap and the text
+};
+
 struct IWORKShadow
 {
   IWORKShadow();

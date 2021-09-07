@@ -172,6 +172,7 @@ IWAParser::IWAParser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStrea
   , m_index(fragments, package)
   , m_visited()
   , m_charStyles()
+  , m_dropCapStyles()
   , m_paraStyles()
   , m_sectionStyles()
   , m_graphicStyles()
@@ -671,6 +672,7 @@ bool IWAParser::parseText(const unsigned id, bool createNoteAsFootnote, const st
   }
   std::multimap<unsigned, std::function<void(unsigned, bool &)> > attachments;
   const IWAStringField &text = get(msg).string(3);
+  // fixme: in Numbers, if text does not exists, the default text string is still displayed
   if (text || (openPageFunction && get(msg).message(17)))
   {
     // special case, when the document is empty and openPageFunction is
@@ -910,6 +912,20 @@ bool IWAParser::parseText(const unsigned id, bool createNoteAsFootnote, const st
       }
       textParser.setLanguages(langs);
     }
+    if (get(msg).message(28))
+    {
+      map<unsigned, IWORKStylePtr_t> dropCaps;
+      for (const auto &it : get(msg).message(28).message(1))
+      {
+        if (!it.uint32(1)) continue;
+        const optional<unsigned> &dropCapRef = readRef(it, 2);
+        if (!dropCapRef) continue;
+        const IWORKStylePtr_t &dropCapStyle = queryDropCapStyle(get(dropCapRef));
+        if (dropCapStyle && dropCapStyle->has<property::DropCap>())
+          dropCaps.insert(dropCaps.end(), make_pair(get(it.uint32(1)), dropCapStyle));
+      }
+      textParser.setDropCaps(dropCaps);
+    }
     if (get(msg).message(23))
     {
       for (const auto &it : get(msg).message(23).message(1))
@@ -948,7 +964,6 @@ bool IWAParser::parseText(const unsigned id, bool createNoteAsFootnote, const st
     textParser.setAttachments(attachments);
     textParser.parse(*m_currentText, openPageFunction);
   }
-
   return true;
 }
 
@@ -968,6 +983,11 @@ const IWORKStylePtr_t IWAParser::queryStyle(const unsigned id, StyleMap_t &style
 const IWORKStylePtr_t IWAParser::queryCharacterStyle(const unsigned id) const
 {
   return queryStyle(id, m_charStyles, bind(&IWAParser::parseCharacterStyle, const_cast<IWAParser *>(this), _1, _2));
+}
+
+const IWORKStylePtr_t IWAParser::queryDropCapStyle(const unsigned id) const
+{
+  return queryStyle(id, m_dropCapStyles, bind(&IWAParser::parseDropCapStyle, const_cast<IWAParser *>(this), _1, _2));
 }
 
 const IWORKStylePtr_t IWAParser::queryParagraphStyle(const unsigned id) const
@@ -1606,6 +1626,30 @@ void IWAParser::parseCharacterStyle(const unsigned id, IWORKStylePtr_t &style)
   style = std::make_shared<IWORKStyle>(props, name, parent);
 }
 
+void IWAParser::parseDropCapStyle(unsigned id, IWORKStylePtr_t &style)
+{
+  const ObjectMessage msg(*this, id, IWAObjectType::DropCapStyle);
+  if (!msg)
+    return;
+  optional<string> name;
+  IWORKStylePtr_t parent;
+  const IWAMessageField &styleInfo = get(msg).message(1);
+  if (styleInfo)
+  {
+    name = styleInfo.string(2).optional();
+    const optional<unsigned> &parentRef = readRef(get(styleInfo), 3);
+    if (parentRef)
+      parent = queryDropCapStyle(get(parentRef));
+  }
+  IWORKPropertyMap props;
+  if (get(msg).message(11))
+    parseCharacterProperties(get(get(msg).message(11)), props);
+  if (get(msg).message(12))
+    parseDropCapProperties(get(get(msg).message(12)), props);
+
+  style = std::make_shared<IWORKStyle>(props, name, parent);
+}
+
 void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
 {
   const ObjectMessage msg(*this, id, IWAObjectType::ParagraphStyle);
@@ -1676,6 +1720,7 @@ void IWAParser::parseParagraphStyle(const unsigned id, IWORKStylePtr_t &style)
       props.put<PageBreakBefore>(get(paraProps.bool_(14)));
     if (paraProps.uint32(15))
       putEnum<ParagraphBorderType>(props, get(paraProps.uint32(15)));
+    // we need also to read the paragraphborder decal : field 17
     if (paraProps.float_(19))
       props.put<RightIndent>(get(paraProps.float_(19)));
     if (paraProps.float_(20))
@@ -2225,6 +2270,29 @@ void IWAParser::parseColumnsProperties(const IWAMessage &msg, IWORKPropertyMap &
     }
     if (!columns.m_columns.empty())
       props.put<property::Columns>(columns);
+  }
+}
+
+void IWAParser::parseDropCapProperties(const IWAMessage &msg, IWORKPropertyMap &props)
+{
+  using namespace property;
+  if (msg.message(1))
+  {
+    auto const &capMsg=get(msg.message(1));
+
+    auto caps=std::make_shared<IWORKDropCap>();
+    if (capMsg.uint32(2))
+      caps->m_numLines=get(capMsg.uint32(2));
+    if (capMsg.uint32(3))
+      caps->m_numLinesSpan=get(capMsg.uint32(3));
+    if (capMsg.uint32(10))
+      caps->m_numCharacters=get(capMsg.uint32(10));
+    if (capMsg.double_(11))
+      caps->m_decalParagraphLeft=get(capMsg.double_(11));
+    if (capMsg.double_(12))
+      caps->m_supplementalSpace=get(capMsg.double_(12));
+
+    props.put<property::DropCap>(caps);
   }
 }
 
@@ -3058,7 +3126,7 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
     addPropsToCellStyle=true;
     props.put<property::SFTCellStylePropertyParagraphStyle>(paragraphStyle);
   }
-  /* TODO: when librevenge will allow to define cell styles, use conditionId */
+  /* TODO: when librevenge will allow to define cell styles, check if conditionId is defined*/
   if (addPropsToCellStyle)
     cellStyle.reset(new IWORKStyle(props, none, cellStyle));
   optional<IWORKDateTimeData> dateTime;

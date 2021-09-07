@@ -50,6 +50,7 @@ IWAText::IWAText(const std::string &text, IWORKLanguageManager &langManager)
   , m_links()
   , m_lists()
   , m_listLevels()
+  , m_dropCaps()
 
   , m_attachments()
 {
@@ -95,6 +96,11 @@ void IWAText::setLists(const std::map<unsigned, IWORKStylePtr_t> &lists)
   m_lists = lists;
 }
 
+void IWAText::setDropCaps(const std::map<unsigned, IWORKStylePtr_t> &dropCaps)
+{
+  m_dropCaps = dropCaps;
+}
+
 void IWAText::setAttachments(const std::multimap<unsigned, std::function<void(unsigned, bool &)> > &attachments)
 {
   m_attachments = attachments;
@@ -105,6 +111,7 @@ void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWO
   auto pageMasterIt = m_pageMasters.begin();
   auto sectionIt = m_sections.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator paraIt = m_paras.begin();
+  map<unsigned, IWORKStylePtr_t>::const_iterator dropCapIt = m_dropCaps.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator spanIt = m_spans.begin();
   map<unsigned, string>::const_iterator langIt = m_langs.begin();
   map<unsigned, string>::const_iterator linkIt = m_links.begin();
@@ -138,6 +145,7 @@ void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWO
     // handle span style change
     IWORKStylePtr_t spanStyle;
     IWORKStylePtr_t langStyle;
+    IWORKStylePtr_t dropCapStyle;
     bool spanChanged = false;
     bool langChanged = false;
     if ((spanIt != m_spans.end()) && (spanIt->first == pos))
@@ -192,10 +200,24 @@ void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWO
       ++linkIt;
     }
 
+    // handle list style change
+    if ((dropCapIt != m_dropCaps.end()) && (dropCapIt->first == pos))
+    {
+      dropCapStyle=dropCapIt->second;
+      ++dropCapIt;
+    }
     // handle paragraph style change
     if ((paraIt != m_paras.end()) && (paraIt->first == pos))
     {
-      collector.setParagraphStyle(paraIt->second);
+      if (dropCapStyle && dropCapStyle->has<property::DropCap>())
+      {
+        // changeme: we must also use the capital's character style
+        IWORKPropertyMap props;
+        props.put<property::DropCap>(dropCapStyle->get<property::DropCap>());
+        collector.setParagraphStyle(std::make_shared<IWORKStyle>(props, boost::none, paraIt->second));
+      }
+      else
+        collector.setParagraphStyle(paraIt->second);
       ++paraIt;
     }
 

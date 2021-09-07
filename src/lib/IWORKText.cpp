@@ -289,6 +289,20 @@ void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props
       break;
     }
   }
+  if (styleStack.has<DropCap>() && styleStack.get<DropCap>())
+  {
+    auto const &dropCap=*styleStack.get<DropCap>();
+    if (!dropCap.empty())
+    {
+      librevenge::RVNGPropertyList cap;
+      cap.insert("style:distance", dropCap.m_supplementalSpace, librevenge::RVNG_POINT);
+      cap.insert("style:length", int(dropCap.m_numCharacters));
+      cap.insert("style:lines", int(dropCap.m_numLines));
+      librevenge::RVNGPropertyListVector capVector;
+      capVector.append(cap);
+      props.insert("style:drop-cap", capVector);
+    }
+  }
 }
 
 struct FillListLabelProps : public boost::static_visitor<bool>

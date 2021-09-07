@@ -60,6 +60,7 @@ enum
 
   PageMaster = 10011,
   PageMasterData = 10016,
+  DropCapStyle = 10024,
   HeadersAndFooters = 10143,
 
   MetaData = 11006,

@@ -242,6 +242,16 @@ IWORKGradient::IWORKGradient()
 {
 }
 
+IWORKDropCap::IWORKDropCap()
+  : m_numLines(1)
+  , m_numLinesSpan(0)
+  , m_numCharacters(1)
+
+  , m_decalParagraphLeft(0)
+  , m_supplementalSpace(0)
+{
+}
+
 IWORKShadow::IWORKShadow()
   : m_visible(true)
   , m_color()
