@@ -123,6 +123,12 @@ void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWO
   bool isLink = false;
   string curText;
 
+  // to handle drop cap's style, we need to set the drop cap style at
+  // the beginning of a pararagraph, and then reset the current style
+  // at the end of the drop cap's letters
+  IWORKStylePtr_t lastSpanStyle;
+  boost::optional<std::size_t> endDropCapPos;
+
   std::size_t pos = 0;
   librevenge::RVNGString::Iter iter(m_text);
   iter.rewind();
@@ -148,9 +154,10 @@ void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWO
     IWORKStylePtr_t dropCapStyle;
     bool spanChanged = false;
     bool langChanged = false;
+    bool isEndDropCap = bool(endDropCapPos) && get(endDropCapPos)==pos;
     if ((spanIt != m_spans.end()) && (spanIt->first == pos))
     {
-      spanStyle = spanIt->second;
+      lastSpanStyle = spanStyle = spanIt->second;
       spanChanged = true;
       ++spanIt;
     }
@@ -173,13 +180,16 @@ void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWO
       langChanged = true;
       ++langIt;
     }
-    if (spanChanged || langChanged)
+    if (spanChanged || langChanged || isEndDropCap)
     {
       flushText(curText, collector);
       if (pos != 0)
         collector.flushSpan();
-      if (spanChanged)
-        collector.setSpanStyle(spanStyle);
+      if (spanChanged || isEndDropCap)
+      {
+        collector.setSpanStyle(spanChanged ? spanStyle : lastSpanStyle);
+        endDropCapPos.reset();
+      }
       if (langChanged)
         collector.setLanguage(langStyle);
     }
@@ -211,9 +221,14 @@ void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWO
     {
       if (dropCapStyle && dropCapStyle->has<property::DropCap>())
       {
-        // changeme: we must also use the capital's character style
+        auto const &dropCap=dropCapStyle->get<property::DropCap>();
+        if (!dropCap.empty() && dropCap.m_style)
+        {
+          collector.setSpanStyle(dropCap.m_style);
+          endDropCapPos=pos+dropCap.m_numCharacters;
+        }
         IWORKPropertyMap props;
-        props.put<property::DropCap>(dropCapStyle->get<property::DropCap>());
+        props.put<property::DropCap>(dropCap);
         collector.setParagraphStyle(std::make_shared<IWORKStyle>(props, boost::none, paraIt->second));
       }
       else
@@ -247,6 +262,16 @@ void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWO
       continue;
     // handle text
     const char *const u8Char = iter();
+
+    if (unsigned(u8Char[0])<=0x1f && bool(endDropCapPos))
+    {
+      // a special character, better to force a span style reset
+      flushText(curText, collector);
+      collector.flushSpan();
+      collector.setSpanStyle(lastSpanStyle);
+      endDropCapPos.reset();
+    }
+
     switch (u8Char[0])
     {
     case char(4): // new section(ok)

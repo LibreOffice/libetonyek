@@ -323,6 +323,8 @@ struct IWORKDropCap
 
   double m_decalParagraphLeft; // in percent, this decals the left position of the text
   double m_supplementalSpace; // extra space between the drop cap and the text
+
+  IWORKStylePtr_t m_style; // the caps style (if known)
 };
 
 struct IWORKShadow

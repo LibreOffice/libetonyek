@@ -103,6 +103,7 @@ protected:
   static void readGradient(const IWAMessage &msg, IWORKGradient &gradient);
   static void readShadow(const IWAMessage &msg, IWORKShadow &shadow);
   static void readPadding(const IWAMessage &msg, IWORKPadding &padding);
+  static void readDropCap(const IWAMessage &msg, IWORKDropCap &cap);
 
   bool dispatchShape(unsigned id);
   bool dispatchShapeWithMessage(const IWAMessage &msg, unsigned type);
@@ -243,7 +244,6 @@ private:
   bool parseArrowProperties(const IWAMessage &msg, IWORKPropertyMap &props, bool headArrow);
   void parseCharacterProperties(const IWAMessage &msg, IWORKPropertyMap &props);
   void parseColumnsProperties(const IWAMessage &msg, IWORKPropertyMap &props);
-  void parseDropCapProperties(const IWAMessage &msg, IWORKPropertyMap &props);
 
 private:
   IWORKCollector &m_collector;

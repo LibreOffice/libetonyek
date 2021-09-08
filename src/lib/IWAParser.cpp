@@ -558,6 +558,26 @@ void IWAParser::readPadding(const IWAMessage &msg, IWORKPadding &padding)
   padding.m_bottom = msg.float_(4).optional();
 }
 
+void IWAParser::readDropCap(const IWAMessage &msg, IWORKDropCap &cap)
+{
+  using namespace property;
+  if (msg.message(1))
+  {
+    auto const &capMsg=get(msg.message(1));
+
+    if (capMsg.uint32(2))
+      cap.m_numLines=get(capMsg.uint32(2));
+    if (capMsg.uint32(3))
+      cap.m_numLinesSpan=get(capMsg.uint32(3));
+    if (capMsg.uint32(10))
+      cap.m_numCharacters=get(capMsg.uint32(10));
+    if (capMsg.double_(11))
+      cap.m_decalParagraphLeft=get(capMsg.double_(11));
+    if (capMsg.double_(12))
+      cap.m_supplementalSpace=get(capMsg.double_(12));
+  }
+}
+
 bool IWAParser::dispatchShape(const unsigned id)
 {
   const ObjectMessage msg(*this, id);
@@ -1641,12 +1661,20 @@ void IWAParser::parseDropCapStyle(unsigned id, IWORKStylePtr_t &style)
     if (parentRef)
       parent = queryDropCapStyle(get(parentRef));
   }
-  IWORKPropertyMap props;
+  IWORKDropCap cap;
+  if (parent && parent->has<property::DropCap>())
+    cap=parent->get<property::DropCap>();
   if (get(msg).message(11))
+  {
+    IWORKPropertyMap props;
     parseCharacterProperties(get(get(msg).message(11)), props);
+    cap.m_style=std::make_shared<IWORKStyle>(props, boost::none, cap.m_style);
+  }
   if (get(msg).message(12))
-    parseDropCapProperties(get(get(msg).message(12)), props);
+    readDropCap(get(get(msg).message(12)), cap);
 
+  IWORKPropertyMap props;
+  props.put<property::DropCap>(cap);
   style = std::make_shared<IWORKStyle>(props, name, parent);
 }
 
@@ -2270,29 +2298,6 @@ void IWAParser::parseColumnsProperties(const IWAMessage &msg, IWORKPropertyMap &
     }
     if (!columns.m_columns.empty())
       props.put<property::Columns>(columns);
-  }
-}
-
-void IWAParser::parseDropCapProperties(const IWAMessage &msg, IWORKPropertyMap &props)
-{
-  using namespace property;
-  if (msg.message(1))
-  {
-    auto const &capMsg=get(msg.message(1));
-
-    auto caps=std::make_shared<IWORKDropCap>();
-    if (capMsg.uint32(2))
-      caps->m_numLines=get(capMsg.uint32(2));
-    if (capMsg.uint32(3))
-      caps->m_numLinesSpan=get(capMsg.uint32(3));
-    if (capMsg.uint32(10))
-      caps->m_numCharacters=get(capMsg.uint32(10));
-    if (capMsg.double_(11))
-      caps->m_decalParagraphLeft=get(capMsg.double_(11));
-    if (capMsg.double_(12))
-      caps->m_supplementalSpace=get(capMsg.double_(12));
-
-    props.put<property::DropCap>(caps);
   }
 }
 

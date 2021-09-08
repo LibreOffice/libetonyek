@@ -249,6 +249,8 @@ IWORKDropCap::IWORKDropCap()
 
   , m_decalParagraphLeft(0)
   , m_supplementalSpace(0)
+
+  , m_style()
 {
 }
 
