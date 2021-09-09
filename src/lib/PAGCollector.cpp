@@ -436,6 +436,12 @@ void PAGCollector::flushPageSpan(const bool writeEmpty)
       writeHeadersFooters(m_document, m_currentSectionStyle, m_footers, pickFooter,
                           &IWORKDocumentInterface::openFooter, &IWORKDocumentInterface::closeFooter);
     }
+    if (text.empty())
+    {
+      // let force an empty paragraph to be inserted
+      text.addOpenParagraph(librevenge::RVNGPropertyList());
+      text.addCloseParagraph();
+    }
     text.write(m_document);
     m_document->closePageSpan();
   }

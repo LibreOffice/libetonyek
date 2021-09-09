@@ -91,7 +91,12 @@ void IWORKText::fillCharPropList(const IWORKStyleStack &style, const IWORKLangua
   if (style.has<Outline>() && style.get<Outline>())
     props.insert("style:text-outline", true);
   if (style.has<Tracking>())
-    props.insert("fo:letter-spacing", 1 + style.get<Tracking>(), librevenge::RVNG_PERCENT);
+  {
+    if (style.has<FontSize>())  // the unit is in percent => if we can convert it in point
+      props.insert("fo:letter-spacing", style.get<Tracking>()*style.get<FontSize>(), librevenge::RVNG_POINT);
+    else
+      props.insert("fo:letter-spacing", 1 + style.get<Tracking>(), librevenge::RVNG_PERCENT);
+  }
 
   if (style.has<Baseline>())
   {

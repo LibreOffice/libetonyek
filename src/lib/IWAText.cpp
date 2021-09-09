@@ -137,7 +137,11 @@ void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWO
     // first the page master change
     if ((pageMasterIt != m_pageMasters.end()) && (pageMasterIt->first == pos))
     {
-      if (openPageSpan) openPageSpan(unsigned(pos), pageMasterIt->second);
+      if (openPageSpan)
+      {
+        flushText(curText, collector);
+        openPageSpan(unsigned(pos), pageMasterIt->second);
+      }
       ++pageMasterIt;
     }
     // first handle section change
@@ -275,6 +279,13 @@ void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWO
     switch (u8Char[0])
     {
     case char(4): // new section(ok)
+      // be sure to send the last section, even if it has no content
+      if (openPageSpan && pos+1==size_t(m_text.len()) && (pageMasterIt != m_pageMasters.end()) && (pageMasterIt->first == pos+1))
+      {
+        flushText(curText, collector);
+        openPageSpan(unsigned(pos), pageMasterIt->second);
+      }
+      break;
     case char(14): // footnote: normally already ignored
       break;
     case char(5):
