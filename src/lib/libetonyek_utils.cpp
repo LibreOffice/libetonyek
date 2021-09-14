@@ -318,24 +318,33 @@ void writeBorder(const IWORKStroke &stroke, const char *const name, librevenge::
 namespace
 {
 
+const unsigned char SIGNATURE_BMP[] = { 'B', 'M' };
+const unsigned char SIGNATURE_GIF87[] = { 'G', 'I', 'F', '8', '7', 'a' };
+const unsigned char SIGNATURE_GIF89[] = { 'G', 'I', 'F', '8', '9', 'a' };
+const unsigned char SIGNATURE_JPEG[] = { 0xff, 0xd8 };
+const unsigned char SIGNATURE_JPEG2000[] = { 0, 0, 0, 0xc, 'j', 'P', ' ', ' ' };
 const unsigned char SIGNATURE_PDF[] = { '%', 'P', 'D', 'F' };
 const unsigned char SIGNATURE_PNG[] = { 0x89, 'P', 'N', 'G', 0x0d, 0x0a, 0x1a, 0x0a };
-const unsigned char SIGNATURE_JPEG[] = { 0xff, 0xd8 };
 const unsigned char SIGNATURE_QUICKTIME[] = { 'm', 'o', 'o', 'v' };
 const unsigned char SIGNATURE_TIFF_1[] = { 0x49, 0x49, 0x2a, 0x00 };
 const unsigned char SIGNATURE_TIFF_2[] = { 0x4d, 0x4d, 0x00, 0x2a };
 }
 
 std::string detectMimetype(const RVNGInputStreamPtr_t &stream)
+try
 {
   stream->seek(0, librevenge::RVNG_SEEK_SET);
 
   unsigned long numBytesRead = 0;
   const unsigned char *const sig = stream->read(8, numBytesRead);
 
-  if (8 != numBytesRead)
+  if (!sig || 8 != numBytesRead)
     // looks like the binary is broken anyway: just bail out
     return std::string();
+
+  if (0 == std::memcmp(sig, SIGNATURE_GIF87, ETONYEK_NUM_ELEMENTS(SIGNATURE_GIF87)) ||
+      0 == std::memcmp(sig, SIGNATURE_GIF89, ETONYEK_NUM_ELEMENTS(SIGNATURE_GIF89)))
+    return std::string("image/gif");
 
   if (0 == std::memcmp(sig, SIGNATURE_PNG, ETONYEK_NUM_ELEMENTS(SIGNATURE_PNG)))
     return std::string("image/png");
@@ -353,6 +362,12 @@ std::string detectMimetype(const RVNGInputStreamPtr_t &stream)
   if (0 == std::memcmp(sig, SIGNATURE_JPEG, ETONYEK_NUM_ELEMENTS(SIGNATURE_JPEG)))
     return std::string("image/jpeg");
 
+  if (0 == std::memcmp(sig, SIGNATURE_JPEG2000, ETONYEK_NUM_ELEMENTS(SIGNATURE_JPEG2000)))
+    return std::string("image/jpx");
+
+  if (0 == std::memcmp(sig, SIGNATURE_BMP, ETONYEK_NUM_ELEMENTS(SIGNATURE_BMP)))
+    return std::string("image/bmp");
+
   // FIXME: add code to detect apple pict file, ie. MathType can generate some
   static bool first=true;
   if (first)
@@ -362,6 +377,236 @@ std::string detectMimetype(const RVNGInputStreamPtr_t &stream)
   }
   return std::string();
 }
+catch (...)
+{
+  return std::string();
+}
+
+
+bool detectImageDimension(const RVNGInputStreamPtr_t &stream, double &width, double &height)
+try
+{
+  width=height=0;
+  stream->seek(0, librevenge::RVNG_SEEK_SET);
+
+  unsigned long numBytesRead = 0;
+  const unsigned char *const sig = stream->read(8, numBytesRead);
+  if (!sig && numBytesRead!=8)
+    return false;
+  if (0 == std::memcmp(sig, SIGNATURE_GIF87, ETONYEK_NUM_ELEMENTS(SIGNATURE_GIF87)) ||
+      0 == std::memcmp(sig, SIGNATURE_GIF89, ETONYEK_NUM_ELEMENTS(SIGNATURE_GIF89)))
+  {
+    stream->seek(6, librevenge::RVNG_SEEK_SET);
+    width=double(readU16(stream, false));
+    height=double(readU16(stream, false));
+  }
+  else if (0 == std::memcmp(sig, SIGNATURE_PNG, ETONYEK_NUM_ELEMENTS(SIGNATURE_PNG)))
+  {
+    stream->seek(8, librevenge::RVNG_SEEK_SET);
+    unsigned len=readU32(stream, true);
+    unsigned type=readU32(stream, true);
+    if (type!=0x49484452 || len<8) // IHDR
+      return false;
+    width=double(readU32(stream, true));
+    height=double(readU32(stream, true));
+    if (stream->seek(len-8+4, librevenge::RVNG_SEEK_CUR)!=0)
+      return false;
+    while (!stream->isEnd())
+    {
+      len=readU32(stream, true);
+      type=readU32(stream, true);
+      if (type==0x49454e44) // IEND
+        break;
+      if (type!=0x70485973)   // pHYs
+      {
+        if (stream->seek(len+4, librevenge::RVNG_SEEK_CUR)!=0)
+          return false;
+        continue;
+      }
+      if (len>=9)
+      {
+        unsigned xPixels=readU32(stream, true);
+        unsigned yPixels=readU32(stream, true);
+        unsigned unit=readU8(stream);
+        if (unit==1)   // unit is meter 1 inch=0.0254 meters.
+        {
+          const double factor[]= {std::floor(0.0254*xPixels+0.5)/72, std::floor(0.0254*yPixels+0.5)/72};
+          if (factor[0]<=0 || factor[1]<=0)
+            return false;
+          width/=factor[0];
+          height/=factor[1];
+        }
+        else
+          return false;
+      }
+      break;
+    }
+  }
+  else if (0 == std::memcmp(sig, SIGNATURE_JPEG, ETONYEK_NUM_ELEMENTS(SIGNATURE_JPEG)))
+  {
+    stream->seek(0, librevenge::RVNG_SEEK_SET);
+    unsigned size=2, type=0;
+    double factor[]= {1,1};
+    while (true)
+    {
+      unsigned nextPos=unsigned(stream->tell())+size;
+      if (type==0xc0 || type==0xc2)
+      {
+        stream->seek(1, librevenge::RVNG_SEEK_CUR);
+        height=double(readU16(stream, true))/factor[1];
+        width=double(readU16(stream, true))/factor[0];
+        break;
+      }
+      else if (type==0xd9)
+        break;
+      else if (type==0xe0)
+      {
+        if (readU32(stream, true)==0x4a464946)   // JFIG
+        {
+          stream->seek(3, librevenge::RVNG_SEEK_CUR);
+          unsigned unit=readU8(stream);
+          unsigned xPixels=readU16(stream, true);
+          unsigned yPixels=readU16(stream, true);
+          if (unit==1)   // by inch
+          {
+            factor[0]=double(xPixels)/72;
+            factor[1]=double(yPixels)/72;
+          }
+          else if (unit==2)   // by cm
+          {
+            factor[0]=std::floor(2.54*xPixels+0.5)/72;
+            factor[1]=std::floor(2.54*yPixels+0.5)/72;
+          }
+          if (factor[0]<=0 || factor[1]<=0)
+            return false;
+        }
+      }
+      if (stream->seek(nextPos, librevenge::RVNG_SEEK_SET)!=0)
+        return false;
+      if (stream->isEnd())
+        break;
+      type=readU8(stream, true);
+      while (type==0xff)
+        type=readU8(stream, true);
+      if (type>=0xd0 && type<=0xd8)
+        size=0;
+      else
+      {
+        size=readU16(stream, true);
+        if (size<2)
+          return false;
+        size-=2;
+      }
+    }
+  }
+#if 0
+  else if (0 == std::memcmp(sig, SIGNATURE_JPEG2000, ETONYEK_NUM_ELEMENTS(SIGNATURE_JPEG2000)))
+  {
+    // fixme: this format can store images with different resolutions
+    stream->seek(48, librevenge::RVNG_SEEK_SET);
+    height=double(readU32(stream, true));
+    width=double(readU32(stream, true));
+  }
+#endif
+#if 0
+  else if ((0 == std::memcmp(sig, SIGNATURE_TIFF_1, ETONYEK_NUM_ELEMENTS(SIGNATURE_TIFF_1))) ||
+           (0 == std::memcmp(sig, SIGNATURE_TIFF_2, ETONYEK_NUM_ELEMENTS(SIGNATURE_TIFF_2))))
+  {
+    // fixme: the code seems ok, but LibreOffice seems to compute the image's dimensions differently :-~
+    bool bigEndian=std::memcmp(sig, SIGNATURE_TIFF_2, ETONYEK_NUM_ELEMENTS(SIGNATURE_TIFF_2))==0;
+    stream->seek(4, librevenge::RVNG_SEEK_SET);
+    if (stream->seek(readU32(stream, bigEndian), librevenge::RVNG_SEEK_SET)!=0 || stream->isEnd())
+      return false;
+    unsigned N=readU16(stream, bigEndian);
+    unsigned unit=2;
+    double factor[]= {0, 0};
+    for (unsigned n=0; n<N; ++n)
+    {
+      unsigned tag=readU16(stream, bigEndian);
+      unsigned type=readU16(stream, bigEndian);
+      if (stream->seek(4, librevenge::RVNG_SEEK_CUR)!=0)
+        return false;
+      unsigned nextPos=unsigned(stream->tell())+4;
+      if (tag==256 || tag==257)
+      {
+        double &wh=tag==256 ? width : height;
+        if (type==3)
+          wh=double(readU16(stream, bigEndian));
+        else if (type==4)
+          wh=double(readU32(stream, bigEndian));
+        else
+          return false;
+      }
+      if (tag==296 && type==3)
+        unit=readU16(stream, bigEndian);
+      if ((tag==282 || tag==283) && type==5)
+      {
+        if (stream->seek(readU32(stream, bigEndian), librevenge::RVNG_SEEK_SET)!=0)
+          return false;
+        unsigned numer=readU32(stream, bigEndian);
+        unsigned denom=readU32(stream, bigEndian);
+        if (!denom)
+          return false;
+        factor[tag==282 ? 0 : 1]=double(numer)/double(denom);
+      }
+      if (stream->seek(nextPos, librevenge::RVNG_SEEK_SET)!=0)
+        return false;
+    }
+    if (unit==2)   // inch
+    {
+      factor[0]/=72;
+      factor[1]/=72;
+    }
+    else if (unit==3)   // cm
+    {
+      factor[0]=std::floor(2.54*factor[0]+0.5)/72;
+      factor[1]=std::floor(2.54*factor[1]+0.5)/72;
+    }
+    if (factor[0]>0 && factor[1]>0)
+    {
+      width /= factor[0];
+      height /= factor[1];
+    }
+  }
+#endif
+  else if (0 == std::memcmp(sig, SIGNATURE_BMP, ETONYEK_NUM_ELEMENTS(SIGNATURE_BMP)))
+  {
+    stream->seek(14, librevenge::RVNG_SEEK_SET);
+    unsigned headerSz=readU32(stream, false);
+    if (headerSz==12)
+    {
+      width=double(readU16(stream, false));
+      height=double(readU16(stream, false));
+    }
+    else
+    {
+      width=double(readU32(stream, false));
+      height=double(std::abs<int32_t>(int32_t(readU32(stream, false))));
+      if (headerSz>=46)
+      {
+        stream->seek(38, librevenge::RVNG_SEEK_SET);
+        // resolution unit meters
+        double factor[2];
+        factor[0]=std::floor(0.0254*readU32(stream, false)+0.5)/72;
+        factor[1]=std::floor(0.0254*readU32(stream, false)+0.5)/72;
+        if (factor[0]<=0 || factor[1]<=0)
+          return false;
+        width/=factor[0];
+        height/=factor[1];
+      }
+    }
+  }
+  else
+    return false;
+  if (width<10 || width>3000 || height<10 || height>3000)
+    return false;
+  return true;
+}
+catch (...)
+{
+  return false;
+}
+
 
 }
 

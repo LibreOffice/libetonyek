@@ -1127,11 +1127,45 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
       glm::dvec3 dim = trafo * glm::dvec3(media->m_geometry->m_size.m_width, media->m_geometry->m_size.m_height, 0);
       if (media->m_cropGeometry)
       {
-        /* cropping seems to pose problem to LibreOffice because
-           sometimes it does not use the real picture size to clip
-           the picture (or I make some mistakes).
+        /* cropping is difficult:
+           - LibreOffice uses the data's picture dimension to clip the picture (or I make some mistakes),
+           - iWorks defines the clipping using the final picture position on a page
+             (as it can store an image with different resolutions).
+           Thus, in order to do the conversion, we need to also
+           retrieve the data's picture dimension.
 
-           So for now, we only reset the origin and resize the picture to its final size */
+           So for now, we always reset the origin and resize the
+           picture to its final size and define the cropping only when
+           we can retrieve the image size and there is no
+           symetry, ...*/
+        double w, h;
+        if (detectImageDimension(input, w, h) && dim[0]>0 && dim[1]>0 &&
+            media->m_geometry->m_size.m_width>0 && media->m_geometry->m_size.m_height>0 && w>0 && h>0)
+        {
+          double decalBegin[]= {media->m_cropGeometry->m_position.m_x-media->m_geometry->m_position.m_x,
+                                media->m_cropGeometry->m_position.m_y-media->m_geometry->m_position.m_y
+                               };
+          if (decalBegin[0]<0) decalBegin[0]=0;
+          if (decalBegin[1]<1) decalBegin[1]=0;
+          double decalEnd[]= {media->m_geometry->m_position.m_x+media->m_geometry->m_size.m_width
+                              -media->m_cropGeometry->m_position.m_x-media->m_cropGeometry->m_size.m_width,
+                              media->m_geometry->m_position.m_y+media->m_geometry->m_size.m_height
+                              -media->m_cropGeometry->m_position.m_y-media->m_cropGeometry->m_size.m_height,
+                             };
+          if (decalEnd[0]<0) decalEnd[0]=0;
+          if (decalEnd[1]<1) decalEnd[1]=0;
+          if (decalBegin[0]>0 || decalBegin[1]>0 || decalEnd[0]>0 || decalEnd[1]>0)
+          {
+            const double factor[]= { double(w)/media->m_geometry->m_size.m_width,
+                                     double(h)/media->m_geometry->m_size.m_height
+                                   };
+            std::stringstream s; // TRBL
+            s << "rect(" << pt2in(factor[1]*decalBegin[1]) << "in, " << pt2in(factor[0]*decalEnd[0]) << "in, "
+              << pt2in(factor[1]*decalEnd[1]) << "in, " << pt2in(factor[0]*decalBegin[0]) << "in)";
+            props.insert("fo:clip", s.str().c_str());
+          }
+        }
+
         pos = glm::dvec3(media->m_cropGeometry->m_position.m_x, media->m_cropGeometry->m_position.m_y, 1);
         dim = glm::dvec3(media->m_cropGeometry->m_size.m_width, media->m_cropGeometry->m_size.m_height, 0);
         if (m_accumulateTransform)
