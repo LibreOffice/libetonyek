@@ -1125,6 +1125,7 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
       librevenge::RVNGPropertyList props;
       glm::dvec3 pos = trafo * glm::dvec3(0, 0, 1);
       glm::dvec3 dim = trafo * glm::dvec3(media->m_geometry->m_size.m_width, media->m_geometry->m_size.m_height, 0);
+
       if (media->m_cropGeometry)
       {
         /* cropping is difficult:
@@ -1136,15 +1137,15 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
 
            So for now, we always reset the origin and resize the
            picture to its final size and define the cropping only when
-           we can retrieve the image size and there is no
-           symetry, ...*/
+           we can retrieve the image size. */
         double w, h;
-        if (detectImageDimension(input, w, h) && dim[0]>0 && dim[1]>0 &&
+        if (detectImageDimension(input, w, h) &&
             media->m_geometry->m_size.m_width>0 && media->m_geometry->m_size.m_height>0 && w>0 && h>0)
         {
           double decalBegin[]= {media->m_cropGeometry->m_position.m_x-media->m_geometry->m_position.m_x,
                                 media->m_cropGeometry->m_position.m_y-media->m_geometry->m_position.m_y
                                };
+          // assume for simplicity that the mask only contains a portion of the picture, ie. not empty zone
           if (decalBegin[0]<0) decalBegin[0]=0;
           if (decalBegin[1]<1) decalBegin[1]=0;
           double decalEnd[]= {media->m_geometry->m_position.m_x+media->m_geometry->m_size.m_width
@@ -1166,13 +1167,9 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
           }
         }
 
-        pos = glm::dvec3(media->m_cropGeometry->m_position.m_x, media->m_cropGeometry->m_position.m_y, 1);
-        dim = glm::dvec3(media->m_cropGeometry->m_size.m_width, media->m_cropGeometry->m_size.m_height, 0);
-        if (m_accumulateTransform)
-        {
-          pos = m_levelStack.top().m_previousTrafo * pos;
-          dim = trafo * dim;
-        }
+        pos = trafo * glm::dvec3(media->m_cropGeometry->m_position.m_x-media->m_geometry->m_position.m_x,
+                                 media->m_cropGeometry->m_position.m_y-media->m_geometry->m_position.m_y, 1);
+        dim = trafo * glm::dvec3(media->m_cropGeometry->m_size.m_width, media->m_cropGeometry->m_size.m_height, 0);
       }
 
       // check if the image is flipped, ...
