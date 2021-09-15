@@ -467,7 +467,12 @@ try
           unsigned unit=readU8(stream);
           unsigned xPixels=readU16(stream, true);
           unsigned yPixels=readU16(stream, true);
-          if (unit==1)   // by inch
+          if (unit==0)   // unsure, but this seems more compatible with LibreOffice
+          {
+            factor[0]=1.44*double(xPixels)/72;
+            factor[1]=1.44*double(yPixels)/72;
+          }
+          else if (unit==1)   // by inch
           {
             factor[0]=double(xPixels)/72;
             factor[1]=double(yPixels)/72;

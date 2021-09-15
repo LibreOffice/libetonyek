@@ -483,6 +483,8 @@ bool IWAParser::readFill(const IWAMessage &msg, IWORKFill &fill)
       }
     }
     bitmap.m_fillColor = readColor(get(msg.message(3)), 3);
+    if (!bitmap.m_fillColor) // a least in new KeyNote files, the field 9 can also store a color
+      bitmap.m_fillColor = readColor(get(msg.message(3)), 9);
     bitmap.m_size = readSize(get(msg.message(3)), 4);
     if (!bitmap.m_size) bitmap.m_size=IWORKSize(); // to do not change result from previous code
     const optional<unsigned> &fileRef = readRef(get(msg.message(3)), 6);
