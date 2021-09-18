@@ -205,6 +205,7 @@ bool KEY6Parser::parsePlaceholder(const unsigned id)
       }
       break;
     }
+    // 4: drawable shape
     default :
       ETONYEK_DEBUG_MSG(("KEY6Parser::parsePlaceholder: unhandled placeholder type %u\n", type));
       break;

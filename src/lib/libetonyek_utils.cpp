@@ -415,8 +415,13 @@ try
     {
       len=readU32(stream, true);
       type=readU32(stream, true);
-      if (type==0x49454e44) // IEND
+      if (type==0x49454e44)   // IEND
+      {
+        // unsure we need to divide by something like 1.7... to be more compatible with LibreOffice
+        width /= 1.7;
+        height /= 1.7;
         break;
+      }
       if (type!=0x70485973)   // pHYs
       {
         if (stream->seek(len+4, librevenge::RVNG_SEEK_CUR)!=0)
@@ -435,6 +440,7 @@ try
             return false;
           width/=factor[0];
           height/=factor[1];
+          break;
         }
         else
           return false;
@@ -467,8 +473,9 @@ try
           unsigned unit=readU8(stream);
           unsigned xPixels=readU16(stream, true);
           unsigned yPixels=readU16(stream, true);
-          if (unit==0)   // unsure, but this seems more compatible with LibreOffice
+          if (unit==0)
           {
+            // unsure, but this seems more compatible with LibreOffice
             factor[0]=1.44*double(xPixels)/72;
             factor[1]=1.44*double(yPixels)/72;
           }
@@ -517,7 +524,11 @@ try
   else if ((0 == std::memcmp(sig, SIGNATURE_TIFF_1, ETONYEK_NUM_ELEMENTS(SIGNATURE_TIFF_1))) ||
            (0 == std::memcmp(sig, SIGNATURE_TIFF_2, ETONYEK_NUM_ELEMENTS(SIGNATURE_TIFF_2))))
   {
-    // fixme: the code seems ok, but LibreOffice seems to compute the image's dimensions differently :-~
+    // fixme: the code seems ok, but sometimes, LibreOffice seems to
+    // compute the image's dimensions differently :-~ In fact, it does
+    // not display some TIFF correctly, so as this code is used for
+    // retrieving cropping, the display of the picture can become
+    // weirder
     bool bigEndian=std::memcmp(sig, SIGNATURE_TIFF_2, ETONYEK_NUM_ELEMENTS(SIGNATURE_TIFF_2))==0;
     stream->seek(4, librevenge::RVNG_SEEK_SET);
     if (stream->seek(readU32(stream, bigEndian), librevenge::RVNG_SEEK_SET)!=0 || stream->isEnd())
