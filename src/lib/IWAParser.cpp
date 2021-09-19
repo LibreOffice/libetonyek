@@ -2810,7 +2810,7 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
   bool numberSet=false;
 
   auto begPos=input->tell();
-  if (begPos+(oldFormat ? 10 : 12)>endPos)
+  if (begPos+(oldFormat ? 10 : 12)>long(endPos))
   {
     ETONYEK_DEBUG_MSG(("IWAParser::parseTileDefinition: the zone seems too short\n"));
     return;
@@ -3330,7 +3330,7 @@ bool IWAParser::parseFormat(const IWAMessage &msg, IWAParser::Format &format)
     auto it= m_uidFormatMap.find(get(uid));
     if (it==m_uidFormatMap.end())
     {
-      ETONYEK_DEBUG_MSG(("IWAParser::parseFormat: can not find the format %llx\n", get(uid)));
+      ETONYEK_DEBUG_MSG(("IWAParser::parseFormat: can not find the format %x\n", unsigned(get(uid))));
       return false;
     }
     format=it->second;

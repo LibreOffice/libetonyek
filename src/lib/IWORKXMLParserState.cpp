@@ -25,6 +25,7 @@ IWORKXMLParserState::IWORKXMLParserState(IWORKParser &parser, IWORKCollector &co
   : m_tableData()
   , m_stylesheet()
   , m_enableCollector(true)
+  , m_formatNameMap()
   , m_tableNameMap(std::make_shared<IWORKTableNameMap_t>())
   , m_langManager()
   , m_currentTable()

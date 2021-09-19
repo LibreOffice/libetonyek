@@ -11,7 +11,9 @@
 
 #include <cmath>
 #include <cstdarg>
+#include <cstdint>
 #include <cstdio>
+#include <cstdlib>
 #include <limits>
 #include <stdexcept>
 
@@ -597,7 +599,7 @@ try
     else
     {
       width=double(readU32(stream, false));
-      height=double(std::abs<int32_t>(int32_t(readU32(stream, false))));
+      height=static_cast<double>(std::abs(int32_t(readU32(stream, false))));
       if (headerSz>=46)
       {
         stream->seek(38, librevenge::RVNG_SEEK_SET);
