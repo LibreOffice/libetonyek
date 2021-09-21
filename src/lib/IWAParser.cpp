@@ -934,6 +934,19 @@ bool IWAParser::parseText(const unsigned id, bool createNoteAsFootnote, const st
       }
       textParser.setLanguages(langs);
     }
+    if (get(msg).message(24))
+    {
+      map<unsigned, bool> rtls;
+      for (const auto &it : get(msg).message(24).message(1))
+      {
+        if (it.uint32(1) && (get(it.uint32(1)) < length))
+        {
+          if (it.bool_(2))
+            rtls[get(it.uint32(1))]=get(it.bool_(2));
+        }
+      }
+      textParser.setRTLs(rtls);
+    }
     if (get(msg).message(28))
     {
       map<unsigned, IWORKStylePtr_t> dropCaps;

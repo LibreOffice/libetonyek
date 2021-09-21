@@ -51,6 +51,7 @@ IWAText::IWAText(const std::string &text, IWORKLanguageManager &langManager)
   , m_lists()
   , m_listLevels()
   , m_dropCaps()
+  , m_rtls()
 
   , m_attachments()
 {
@@ -101,6 +102,11 @@ void IWAText::setDropCaps(const std::map<unsigned, IWORKStylePtr_t> &dropCaps)
   m_dropCaps = dropCaps;
 }
 
+void IWAText::setRTLs(const std::map<unsigned, bool> &rtls)
+{
+  m_rtls = rtls;
+}
+
 void IWAText::setAttachments(const std::multimap<unsigned, std::function<void(unsigned, bool &)> > &attachments)
 {
   m_attachments = attachments;
@@ -112,6 +118,7 @@ void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWO
   auto sectionIt = m_sections.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator paraIt = m_paras.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator dropCapIt = m_dropCaps.begin();
+  map<unsigned, bool>::const_iterator rtlIt = m_rtls.begin();
   map<unsigned, IWORKStylePtr_t>::const_iterator spanIt = m_spans.begin();
   map<unsigned, string>::const_iterator langIt = m_langs.begin();
   map<unsigned, string>::const_iterator linkIt = m_links.begin();
@@ -128,6 +135,7 @@ void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWO
   // at the end of the drop cap's letters
   IWORKStylePtr_t lastSpanStyle;
   boost::optional<std::size_t> endDropCapPos;
+  bool rtl=false;
 
   std::size_t pos = 0;
   librevenge::RVNGString::Iter iter(m_text);
@@ -220,6 +228,11 @@ void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWO
       dropCapStyle=dropCapIt->second;
       ++dropCapIt;
     }
+    if ((rtlIt != m_rtls.end()) && (rtlIt->first==pos))
+    {
+      rtl=rtlIt->second;
+      ++rtlIt;
+    }
     // handle paragraph style change
     if ((paraIt != m_paras.end()) && (paraIt->first == pos))
     {
@@ -233,6 +246,14 @@ void IWAText::parse(IWORKText &collector, const std::function<void(unsigned, IWO
         }
         IWORKPropertyMap props;
         props.put<property::DropCap>(dropCap);
+        if (rtl)
+          props.put<property::WritingMode>("rl-tb");
+        collector.setParagraphStyle(std::make_shared<IWORKStyle>(props, boost::none, paraIt->second));
+      }
+      else if (rtl)
+      {
+        IWORKPropertyMap props;
+        props.put<property::WritingMode>("rl-tb");
         collector.setParagraphStyle(std::make_shared<IWORKStyle>(props, boost::none, paraIt->second));
       }
       else

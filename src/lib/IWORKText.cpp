@@ -235,6 +235,8 @@ void fillParaPropList(const IWORKStyleStack &styleStack, RVNGPropertyList &props
   props.insert("fo:widows", enableWidows ? "0" : "2");
   if (styleStack.has<Hyphenate>())
     props.insert("fo:hyphenate", styleStack.get<Hyphenate>());
+  if (styleStack.has<WritingMode>() && !styleStack.get<WritingMode>().empty())
+    props.insert("style:writing-mode", styleStack.get<WritingMode>().c_str());
 
   if (styleStack.has<Tabs>())
   {
