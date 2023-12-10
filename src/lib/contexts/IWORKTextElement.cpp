@@ -30,13 +30,13 @@ void IWORKTextElement::attribute(const int name, const char *value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID : // TODO: storeme ?
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID : // TODO: storeme ?
     IWORKXMLElementContextBase::attribute(name, value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
+  case +IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
     m_layoutStyleRef = value;
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::tscale : // find one time with value 90
+  case +IWORKToken::NS_URI_SF | IWORKToken::tscale : // find one time with value 90
     break;
   default:
     ETONYEK_DEBUG_MSG(("IWORKTextElement::attribute: find some unknown attribute\n"));
@@ -47,7 +47,7 @@ IWORKXMLContextPtr_t IWORKTextElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::text_storage :
+  case +IWORKToken::NS_URI_SF | IWORKToken::text_storage :
     return std::make_shared<IWORKTextStorageElement>(getState(), m_stylesheet);
   default:
     ETONYEK_DEBUG_MSG(("IWORKTextElement::element: find some unknown element\n"));

@@ -45,13 +45,13 @@ void PathElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::ID | IWORKToken::NS_URI_SFA :
+  case +IWORKToken::ID | IWORKToken::NS_URI_SFA :
     m_id=value;
     break;
-  case IWORKToken::path | IWORKToken::NS_URI_SFA :
+  case +IWORKToken::path | IWORKToken::NS_URI_SFA :
     m_value=value;
     break;
-  case IWORKToken::version | IWORKToken::NS_URI_SFA :
+  case +IWORKToken::version | IWORKToken::NS_URI_SFA :
     break;
   default :
     ETONYEK_DEBUG_MSG(("PathElement::attribute[IWORKLineEndElement]: find unknown attribute\n"));
@@ -78,21 +78,21 @@ void IWORKLineEndElement::attribute(int name, const char *value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID :
     /* checkme: do we need to store this element in the dictionary ?
        I never seen sf:line-end-ref so maybe not
      */
     m_id=value;
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::filled :
+  case +IWORKToken::NS_URI_SF | IWORKToken::filled :
     m_value->m_filled = bool_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::identifier : // needed ?
+  case +IWORKToken::NS_URI_SF | IWORKToken::identifier : // needed ?
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::scale :
+  case +IWORKToken::NS_URI_SF | IWORKToken::scale :
     m_value->m_scale = double_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::path_join :
+  case +IWORKToken::NS_URI_SF | IWORKToken::path_join :
     m_value->m_pathJoin = int_cast(value);
     break;
   default:
@@ -104,9 +104,9 @@ IWORKXMLContextPtr_t IWORKLineEndElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::path :
+  case +IWORKToken::NS_URI_SF | IWORKToken::path :
     return std::make_shared<PathElement>(getState(), m_value->m_path);
-  case IWORKToken::NS_URI_SF | IWORKToken::end_point :
+  case +IWORKToken::NS_URI_SF | IWORKToken::end_point :
     return std::make_shared<IWORKPositionElement>(getState(), m_value->m_endPoint);
   default:
     break;

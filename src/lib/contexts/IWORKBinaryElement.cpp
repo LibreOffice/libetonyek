@@ -33,9 +33,9 @@ IWORKXMLContextPtr_t IWORKBinaryElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::data :
+  case +IWORKToken::NS_URI_SF | IWORKToken::data :
     return std::make_shared<IWORKDataElement>(getState(), m_data, m_fillColor);
-  case IWORKToken::NS_URI_SF | IWORKToken::size :
+  case +IWORKToken::NS_URI_SF | IWORKToken::size :
     return std::make_shared<IWORKSizeElement>(getState(), m_size);
   default:
     break;

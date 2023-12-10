@@ -36,7 +36,7 @@ namespace libetonyek
 
 namespace
 {
-typedef IWORKStyleContainer<IWORKToken::NS_URI_SF | IWORKToken::table_style, IWORKToken::NS_URI_SF | IWORKToken::table_style_ref> TableStyleContext;
+typedef IWORKStyleContainer<+IWORKToken::NS_URI_SF | IWORKToken::table_style, +IWORKToken::NS_URI_SF | IWORKToken::table_style_ref> TableStyleContext;
 }
 
 namespace
@@ -66,7 +66,7 @@ void TableCellContentElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::ID | IWORKToken::NS_URI_SFA :
+  case +IWORKToken::ID | IWORKToken::NS_URI_SFA :
     IWORKXMLElementContextBase::attribute(name, value);
     break;
   default :
@@ -79,7 +79,7 @@ IWORKXMLContextPtr_t TableCellContentElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::text_storage | IWORKToken::NS_URI_SF :
+  case +IWORKToken::text_storage | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_type = IWORK_CELL_TYPE_TEXT;
     return std::make_shared<IWORKTextStorageElement>(getState());
   default :
@@ -124,7 +124,7 @@ IWORKXMLContextPtr_t TableCellValueElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::number | IWORKToken::NS_URI_SF :
+  case +IWORKToken::number | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
     return std::make_shared<IWORKNumberElement<double> >(getState(), m_value);
   default:
@@ -177,10 +177,10 @@ void TableCellElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::tableCellPreferredHeight | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableCellPreferredHeight | IWORKToken::NS_URI_SF :
     get(m_value).m_preferredHeight=try_double_cast(value);
     break;
-  case IWORKToken::ID | IWORKToken::NS_URI_SFA : // must we store this element ?
+  case +IWORKToken::ID | IWORKToken::NS_URI_SFA : // must we store this element ?
     IWORKXMLEmptyContextBase::attribute(name, value);
     break;
   default :
@@ -193,21 +193,21 @@ IWORKXMLContextPtr_t TableCellElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::tableCellStyle_ref | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableCellStyle_ref | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKRefContext>(getState(), m_styleRef);
-  case IWORKToken::tableCellMinXSide_ref | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableCellMinXSide_ref | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKRefContext>(getState(), m_minXBorderRef);
-  case IWORKToken::tableCellMaxXSide_ref | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableCellMaxXSide_ref | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKRefContext>(getState(), m_maxXBorderRef);
-  case IWORKToken::tableCellMinYSide_ref | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableCellMinYSide_ref | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKRefContext>(getState(), m_minYBorderRef);
-  case IWORKToken::tableCellMaxYSide_ref | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableCellMaxYSide_ref | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKRefContext>(getState(), m_maxYBorderRef);
-  case IWORKToken::tableCellContent | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableCellContent | IWORKToken::NS_URI_SF :
     return std::make_shared<TableCellContentElement>(getState());
-  case IWORKToken::tableCellFormula | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableCellFormula | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKTableCellFormulaElement>(getState());
-  case IWORKToken::tableCellValue | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableCellValue | IWORKToken::NS_URI_SF :
     return std::make_shared<TableCellValueElement>(getState());
   default:
     ETONYEK_DEBUG_MSG(("TableCellElement::element[IWORKTableInfoElement.cpp]: find some unknown element\n"));
@@ -341,7 +341,7 @@ void TableCellElement::emitCell()
 
 namespace
 {
-typedef IWORKMutableArrayElement<IWORKTableCell, TableCellElement, IWORKPushCollector, IWORKToken::NS_URI_SF | IWORKToken::table_cell, IWORKToken::NS_URI_SF | IWORKToken::table_cell_ref> TableCellArrayElement;
+typedef IWORKMutableArrayElement<IWORKTableCell, TableCellElement, IWORKPushCollector, +IWORKToken::NS_URI_SF | IWORKToken::table_cell, +IWORKToken::NS_URI_SF | IWORKToken::table_cell_ref> TableCellArrayElement;
 }
 
 namespace
@@ -371,9 +371,9 @@ IWORKXMLContextPtr_t TableModelCellsElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::tableCellArrayCellsByColumn | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableCellArrayCellsByColumn | IWORKToken::NS_URI_SF :
     return std::make_shared<TableCellArrayElement>(getState(), m_dict, getState().getDictionary().m_tableCells, m_columnsCell);
-  case IWORKToken::tableCellArrayCellsByRow | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableCellArrayCellsByRow | IWORKToken::NS_URI_SF :
     return std::make_shared<TableCellArrayElement>(getState(), m_dict, getState().getDictionary().m_tableCells, m_rowsCell);
   default:
     ETONYEK_DEBUG_MSG(("TableModelCellsElement::element[IWORKTableInfoElement.cpp]: find some unknown element\n"));
@@ -414,19 +414,19 @@ void TableVectorElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::tableVectorAlong | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableVectorAlong | IWORKToken::NS_URI_SF :
     get(m_value).m_along=try_double_cast(value);
     break;
-  case IWORKToken::tableVectorAxis | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableVectorAxis | IWORKToken::NS_URI_SF :
     get(m_value).m_axis=try_int_cast(value);
     break;
-  case IWORKToken::tableVectorBegin | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableVectorBegin | IWORKToken::NS_URI_SF :
     get(m_value).m_beginCell=try_int_cast(value);
     break;
-  case IWORKToken::tableVectorEnd | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableVectorEnd | IWORKToken::NS_URI_SF :
     get(m_value).m_endCell=try_int_cast(value);
     break;
-  case IWORKToken::ID | IWORKToken::NS_URI_SFA :
+  case +IWORKToken::ID | IWORKToken::NS_URI_SFA :
     IWORKXMLEmptyContextBase::attribute(name, value);
     break;
   default :
@@ -439,7 +439,7 @@ IWORKXMLContextPtr_t TableVectorElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::tableVectorStyle_ref | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableVectorStyle_ref | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKRefContext>(getState(), m_styleRef);
   default:
     ETONYEK_DEBUG_MSG(("TableVectorElement::element[IWORKTableInfoElement.cpp]: find some unknown element\n"));
@@ -459,7 +459,7 @@ void TableVectorElement::endOfElement()
 
 namespace
 {
-typedef IWORKMutableArrayElement<IWORKTableVector, TableVectorElement, IWORKPushCollector, IWORKToken::NS_URI_SF | IWORKToken::table_vector> TableVectorArrayElement;
+typedef IWORKMutableArrayElement<IWORKTableVector, TableVectorElement, IWORKPushCollector, +IWORKToken::NS_URI_SF | IWORKToken::table_vector> TableVectorArrayElement;
 }
 
 namespace
@@ -489,9 +489,9 @@ IWORKXMLContextPtr_t TableModelVectorsElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::tableVectorArrayColumnVectors | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableVectorArrayColumnVectors | IWORKToken::NS_URI_SF :
     return std::make_shared<TableVectorArrayElement>(getState(), m_dict, getState().getDictionary().m_tableVectors, m_columnsVector);
-  case IWORKToken::tableVectorArrayRowVectors | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableVectorArrayRowVectors | IWORKToken::NS_URI_SF :
     return std::make_shared<TableVectorArrayElement>(getState(), m_dict, getState().getDictionary().m_tableVectors, m_rowsVector);
   default:
     ETONYEK_DEBUG_MSG(("TableModelVectorsElement::element[IWORKTableInfoElement.cpp]: find some unknown element\n"));
@@ -592,13 +592,13 @@ void TableInfoTableElement::attribute(const int name, const char *value)
 {
   switch (name)
   {
-  case IWORKToken::ID | IWORKToken::NS_URI_SFA :
+  case +IWORKToken::ID | IWORKToken::NS_URI_SFA :
     m_id=value;
     break;
-  case IWORKToken::tableModelIsHeaderColumn | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableModelIsHeaderColumn | IWORKToken::NS_URI_SF :
     m_hasHeaderColumn =bool_cast(value);
     break;
-  case IWORKToken::tableModelIsHeaderRow | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableModelIsHeaderRow | IWORKToken::NS_URI_SF :
     m_hasHeaderRow =bool_cast(value);
     break;
   default:
@@ -616,15 +616,15 @@ IWORKXMLContextPtr_t TableInfoTableElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::tableModelStyle_ref | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableModelStyle_ref | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKRefContext>(getState(), m_styleRef);
-  case IWORKToken::tableModelPartitionSource | IWORKToken::NS_URI_SF : // contains id + frame data
+  case +IWORKToken::tableModelPartitionSource | IWORKToken::NS_URI_SF : // contains id + frame data
     break;
-  case IWORKToken::tableModelVectors | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableModelVectors | IWORKToken::NS_URI_SF :
     return std::make_shared<TableModelVectorsElement>(getState(), m_columnsVector, m_rowsVector);
-  case IWORKToken::tableModelCells | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableModelCells | IWORKToken::NS_URI_SF :
     return std::make_shared<TableModelCellsElement>(getState(), m_columnsCell, m_rowsCell);
-  case IWORKToken::tableModelTableID | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableModelTableID | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKStringElement>(getState(), m_tableId);
   default:
     ETONYEK_DEBUG_MSG(("TableInfoTableElement::element[IWORKTableInfoElement.cpp]: find some unknown element\n"));
@@ -669,13 +669,13 @@ IWORKXMLContextPtr_t IWORKTableInfoElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::geometry | IWORKToken::NS_URI_SF :
+  case +IWORKToken::geometry | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKGeometryElement>(getState());
-  case IWORKToken::style | IWORKToken::NS_URI_SF :
+  case +IWORKToken::style | IWORKToken::NS_URI_SF :
     return std::make_shared<TableStyleContext>(getState(), m_style, getState().getDictionary().m_tableStyles);
-  case IWORKToken::tableInfoTable | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tableInfoTable | IWORKToken::NS_URI_SF :
     return std::make_shared<TableInfoTableElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::wrap : // USEME
+  case +IWORKToken::NS_URI_SF | IWORKToken::wrap : // USEME
     return std::make_shared<IWORKWrapElement>(getState(), m_wrap);
   default:
     ETONYEK_DEBUG_MSG(("IWORKTableInfoElement::element: find some unknown element\n"));

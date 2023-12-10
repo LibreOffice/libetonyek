@@ -17,9 +17,9 @@ namespace libetonyek
 {
 
 template<class Property, int TokenId2=0>
-class IWORKNumericPropertyContext : public IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, IWORKToken::NS_URI_SF | IWORKToken::number, TokenId2>
+class IWORKNumericPropertyContext : public IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, +IWORKToken::NS_URI_SF | IWORKToken::number, TokenId2>
 {
-  typedef IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, IWORKToken::NS_URI_SF | IWORKToken::number, TokenId2> Parent_t;
+  typedef IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, +IWORKToken::NS_URI_SF | IWORKToken::number, TokenId2> Parent_t;
 
 public:
   IWORKNumericPropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);

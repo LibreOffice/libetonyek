@@ -32,20 +32,20 @@ namespace libetonyek
 namespace
 {
 template<class Property>
-class NumericPropertyContext : public IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, IWORKToken::NS_URI_SF | IWORKToken::number, KEY2Token::NS_URI_KEY | KEY2Token::number>
+class NumericPropertyContext : public IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, +IWORKToken::NS_URI_SF | IWORKToken::number, +KEY2Token::NS_URI_KEY | KEY2Token::number>
 {
-  typedef IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, IWORKToken::NS_URI_SF | IWORKToken::number, KEY2Token::NS_URI_KEY | KEY2Token::number> Parent_t;
+  typedef IWORKPropertyContext<Property, IWORKNumberElement<typename IWORKPropertyInfo<Property>::ValueType>, +IWORKToken::NS_URI_SF | IWORKToken::number, +KEY2Token::NS_URI_KEY | KEY2Token::number> Parent_t;
 
 public:
   NumericPropertyContext(IWORKXMLParserState &state, IWORKPropertyMap &propMap);
 };
 
-typedef IWORKValueContext<bool, IWORKNumberElement<bool>, IWORKToken::NS_URI_SF | IWORKToken::number, KEY2Token::NS_URI_KEY | KEY2Token::number> BoolProperty;
-typedef IWORKValueContext<double, IWORKNumberElement<double>, IWORKToken::NS_URI_SF | IWORKToken::number, KEY2Token::NS_URI_KEY | KEY2Token::number> DoubleProperty;
-typedef IWORKValueContext<int, IWORKNumberElement<int>, IWORKToken::NS_URI_SF | IWORKToken::number, KEY2Token::NS_URI_KEY | KEY2Token::number> IntProperty;
-typedef IWORKNumericPropertyContext<property::AnimationAutoPlay, KEY2Token::NS_URI_KEY | KEY2Token::number> AnimationAutoPlayPropertyElement;
-typedef IWORKNumericPropertyContext<property::AnimationDelay, KEY2Token::NS_URI_KEY | KEY2Token::number> AnimationDelayPropertyElement;
-typedef IWORKNumericPropertyContext<property::AnimationDuration, KEY2Token::NS_URI_KEY | KEY2Token::number> AnimationDurationPropertyElement;
+typedef IWORKValueContext<bool, IWORKNumberElement<bool>, +IWORKToken::NS_URI_SF | IWORKToken::number, +KEY2Token::NS_URI_KEY | KEY2Token::number> BoolProperty;
+typedef IWORKValueContext<double, IWORKNumberElement<double>, +IWORKToken::NS_URI_SF | IWORKToken::number, +KEY2Token::NS_URI_KEY | KEY2Token::number> DoubleProperty;
+typedef IWORKValueContext<int, IWORKNumberElement<int>, +IWORKToken::NS_URI_SF | IWORKToken::number, +KEY2Token::NS_URI_KEY | KEY2Token::number> IntProperty;
+typedef IWORKNumericPropertyContext<property::AnimationAutoPlay, +KEY2Token::NS_URI_KEY | KEY2Token::number> AnimationAutoPlayPropertyElement;
+typedef IWORKNumericPropertyContext<property::AnimationDelay, +KEY2Token::NS_URI_KEY | KEY2Token::number> AnimationDelayPropertyElement;
+typedef IWORKNumericPropertyContext<property::AnimationDuration, +KEY2Token::NS_URI_KEY | KEY2Token::number> AnimationDurationPropertyElement;
 }
 
 namespace
@@ -74,10 +74,10 @@ void TransitionAttributesElement::attribute(int name, const char *value)
 {
   switch (name)
   {
-  case IWORKToken::ID | IWORKToken::NS_URI_SFA :
+  case +IWORKToken::ID | IWORKToken::NS_URI_SFA :
     KEY2XMLElementContextBase::attribute(name, value);
     break;
-  case KEY2Token::type | KEY2Token::NS_URI_KEY :
+  case +KEY2Token::type | KEY2Token::NS_URI_KEY :
   {
     std::string val(value);
     if (val=="none")
@@ -108,18 +108,18 @@ IWORKXMLContextPtr_t TransitionAttributesElement::element(const int name)
   // find <animationAuto/animationDelay/animationDuration... in Keynote 5 files
   switch (name)
   {
-  case KEY2Token::NS_URI_KEY | KEY2Token::animationAuto :
-  case KEY2Token::animationAuto :
+  case +KEY2Token::NS_URI_KEY | KEY2Token::animationAuto :
+  case +KEY2Token::animationAuto :
     return std::make_shared<BoolProperty>(getState(), get(m_transition).m_automatic);
-  case KEY2Token::animationDelay :
-  case KEY2Token::NS_URI_KEY | KEY2Token::animationDelay :
+  case +KEY2Token::animationDelay :
+  case +KEY2Token::NS_URI_KEY | KEY2Token::animationDelay :
     return std::make_shared<DoubleProperty>(getState(), get(m_transition).m_delay);
-  case KEY2Token::animationDuration :
-  case KEY2Token::NS_URI_KEY | KEY2Token::animationDuration :
+  case +KEY2Token::animationDuration :
+  case +KEY2Token::NS_URI_KEY | KEY2Token::animationDuration :
     return std::make_shared<DoubleProperty>(getState(), get(m_transition).m_duration);
-  case KEY2Token::NS_URI_KEY | KEY2Token::direction :
+  case +KEY2Token::NS_URI_KEY | KEY2Token::direction :
     return std::make_shared<IntProperty>(getState(), get(m_transition).m_direction);
-  case KEY2Token::NS_URI_KEY | KEY2Token::BGBuildDurationProperty :
+  case +KEY2Token::NS_URI_KEY | KEY2Token::BGBuildDurationProperty :
     break;
   default:
   {
@@ -173,7 +173,7 @@ IWORKXMLContextPtr_t TransitionElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::transition_attributes :
+  case +IWORKToken::NS_URI_SF | IWORKToken::transition_attributes :
     return std::make_shared<TransitionAttributesElement>(getState(), m_transition);
   default:
     ETONYEK_DEBUG_MSG(("TransitionElement::element[KEY2StyleContext.cpp]: found unexpected element %d\n", name));
@@ -214,16 +214,16 @@ IWORKXMLContextPtr_t PropertyMapElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::animationAutoPlay :
-  case KEY2Token::NS_URI_KEY | KEY2Token::animationAutoPlay :
+  case +IWORKToken::NS_URI_SF | IWORKToken::animationAutoPlay :
+  case +KEY2Token::NS_URI_KEY | KEY2Token::animationAutoPlay :
     return std::make_shared<AnimationAutoPlayPropertyElement>(getState(), m_propMap);
-  case IWORKToken::NS_URI_SF | IWORKToken::animationDelay :
-  case KEY2Token::NS_URI_KEY | KEY2Token::animationDelay :
+  case +IWORKToken::NS_URI_SF | IWORKToken::animationDelay :
+  case +KEY2Token::NS_URI_KEY | KEY2Token::animationDelay :
     return std::make_shared<AnimationDelayPropertyElement>(getState(), m_propMap);
-  case IWORKToken::NS_URI_SF | IWORKToken::animationDuration :
-  case KEY2Token::NS_URI_KEY | KEY2Token::animationDuration :
+  case +IWORKToken::NS_URI_SF | IWORKToken::animationDuration :
+  case +KEY2Token::NS_URI_KEY | KEY2Token::animationDuration :
     return std::make_shared<AnimationDurationPropertyElement>(getState(), m_propMap);
-  case IWORKToken::NS_URI_SF | IWORKToken::transition :
+  case +IWORKToken::NS_URI_SF | IWORKToken::transition :
     return std::make_shared<TransitionElement>(getState(), m_transition);
   default:
     break;
@@ -252,10 +252,10 @@ void KEY2StyleContext::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::ident :
+  case +IWORKToken::NS_URI_SF | IWORKToken::ident :
     m_ident = value;
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::parent_ident :
+  case +IWORKToken::NS_URI_SF | IWORKToken::parent_ident :
     m_parentIdent = value;
     break;
   default :
@@ -270,7 +270,7 @@ IWORKXMLContextPtr_t KEY2StyleContext::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::property_map :
+  case +IWORKToken::NS_URI_SF | IWORKToken::property_map :
     return std::make_shared<PropertyMapElement>(getState(), m_props);
   default:
     ETONYEK_DEBUG_MSG(("KEY2StyleContext::element: found unexpected element %d\n", name));

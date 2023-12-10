@@ -265,7 +265,7 @@ IWORKXMLContextPtr_t BulletCharacterStyleElement::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::bullet_characters | KEY1Token::NS_URI_KEY : // README
+  case +KEY1Token::bullet_characters | KEY1Token::NS_URI_KEY : // README
     break;
   default :
     ETONYEK_DEBUG_MSG(("BulletCharacterStyleElement::element[KEY1Parser.cpp]: unknown element\n"));
@@ -347,12 +347,12 @@ IWORKXMLContextPtr_t BulletElement::element(const int name)
   ensureOpened();
   switch (name)
   {
-  case KEY1Token::character_bullet_style | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::character_bullet_style | KEY1Token::NS_URI_KEY :
     return std::make_shared<BulletCharacterStyleElement>(getState());
-  case KEY1Token::image_bullet_style | KEY1Token::NS_URI_KEY : // README
-  case KEY1Token::sequence_bullet_style | KEY1Token::NS_URI_KEY : // README
+  case +KEY1Token::image_bullet_style | KEY1Token::NS_URI_KEY : // README
+  case +KEY1Token::sequence_bullet_style | KEY1Token::NS_URI_KEY : // README
     break;
-  case KEY1Token::content | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::content | KEY1Token::NS_URI_KEY :
     return std::make_shared<KEY1ContentElement>(getState());
   default :
     ETONYEK_DEBUG_MSG(("BulletElement::element[KEY1Parser.cpp]: unknown element\n"));
@@ -411,7 +411,7 @@ IWORKXMLContextPtr_t BulletsElement::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::bullet | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::bullet | KEY1Token::NS_URI_KEY :
     return std::make_shared<BulletElement>(getState());
   default :
     ETONYEK_DEBUG_MSG(("BulletsElement::element[KEY1Parser.cpp]: unknown element\n"));
@@ -493,7 +493,7 @@ IWORKXMLContextPtr_t BasicShapeElement::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::styles | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::styles | KEY1Token::NS_URI_KEY :
     return std::make_shared<KEY1StylesContext>(getState(), m_style, IWORKStylePtr_t());
   default :
     ETONYEK_DEBUG_MSG(("BasicShapeElement::element[KEY1Parser.cpp]: unknown element\n"));
@@ -929,7 +929,7 @@ IWORKXMLContextPtr_t PlaceholderElement::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::text_attributes | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::text_attributes | KEY1Token::NS_URI_KEY :
     return std::make_shared<TextAttributesElement>(getState(), m_spanStyle, m_paragraphStyle);
   default:
     break;
@@ -1117,7 +1117,7 @@ IWORKXMLContextPtr_t TextboxElement::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::content | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::content | KEY1Token::NS_URI_KEY :
     return std::make_shared<KEY1ContentElement>(getState());
   default:
     break;
@@ -1202,18 +1202,18 @@ IWORKXMLContextPtr_t PluginDataElement::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::array  | KEY1Token::NS_URI_KEY : // with list of number
-  case KEY1Token::chart_prototype  | KEY1Token::NS_URI_KEY :
-  case KEY1Token::color  | KEY1Token::NS_URI_KEY :
-  case KEY1Token::content  | KEY1Token::NS_URI_KEY :
-  case KEY1Token::dict  | KEY1Token::NS_URI_KEY : // with child size, rect, ...
-  case KEY1Token::dash_style  | KEY1Token::NS_URI_KEY :
-  case KEY1Token::fill_style  | KEY1Token::NS_URI_KEY :
-  case KEY1Token::number  | KEY1Token::NS_URI_KEY :
-  case KEY1Token::reference  | KEY1Token::NS_URI_KEY : // style reference
-  case KEY1Token::string  | KEY1Token::NS_URI_KEY : // with value dictionary, root
+  case +KEY1Token::array  | KEY1Token::NS_URI_KEY : // with list of number
+  case +KEY1Token::chart_prototype  | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::color  | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::content  | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::dict  | KEY1Token::NS_URI_KEY : // with child size, rect, ...
+  case +KEY1Token::dash_style  | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::fill_style  | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::number  | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::reference  | KEY1Token::NS_URI_KEY : // style reference
+  case +KEY1Token::string  | KEY1Token::NS_URI_KEY : // with value dictionary, root
     break;
-  case KEY1Token::table  | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::table  | KEY1Token::NS_URI_KEY :
     return std::make_shared<KEY1TableElement>(getState(), m_size);
   default:
     ETONYEK_DEBUG_MSG(("PluginDataElement::element[KEY1Parser.cpp]: unknown element\n"));
@@ -1275,9 +1275,9 @@ IWORKXMLContextPtr_t PluginElement::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::plugin_data  | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::plugin_data  | KEY1Token::NS_URI_KEY :
     return std::make_shared<PluginDataElement>(getState(), m_size, false);
-  case KEY1Token::prototype_data  | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::prototype_data  | KEY1Token::NS_URI_KEY :
     return std::make_shared<PluginDataElement>(getState(), m_size, true);
   default :
     return BasicShapeElement::element(name);
@@ -1348,19 +1348,19 @@ IWORKXMLContextPtr_t GroupElement::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::g | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::g | KEY1Token::NS_URI_KEY :
     return std::make_shared<GroupElement>(getState());
-  case KEY1Token::image | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::image | KEY1Token::NS_URI_KEY :
     return std::make_shared<ImageElement>(getState());
-  case KEY1Token::line | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::line | KEY1Token::NS_URI_KEY :
     return std::make_shared<LineElement>(getState());
-  case KEY1Token::page_number | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::page_number | KEY1Token::NS_URI_KEY :
     return std::make_shared<PageNumberElement>(getState());
-  case KEY1Token::plugin | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::plugin | KEY1Token::NS_URI_KEY :
     return std::make_shared<PluginElement>(getState());
-  case KEY1Token::shape | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::shape | KEY1Token::NS_URI_KEY :
     return std::make_shared<ShapeElement>(getState());
-  case KEY1Token::textbox | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::textbox | KEY1Token::NS_URI_KEY :
     return std::make_shared<TextboxElement>(getState());
   default :
     return BasicShapeElement::element(name);
@@ -1403,23 +1403,23 @@ IWORKXMLContextPtr_t DrawablesElement::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::body | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::body | KEY1Token::NS_URI_KEY :
     return std::make_shared<BodyElement>(getState());
-  case KEY1Token::g | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::g | KEY1Token::NS_URI_KEY :
     return std::make_shared<GroupElement>(getState());
-  case KEY1Token::image | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::image | KEY1Token::NS_URI_KEY :
     return std::make_shared<ImageElement>(getState());
-  case KEY1Token::line | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::line | KEY1Token::NS_URI_KEY :
     return std::make_shared<LineElement>(getState());
-  case KEY1Token::page_number | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::page_number | KEY1Token::NS_URI_KEY :
     return std::make_shared<PageNumberElement>(getState());
-  case KEY1Token::plugin | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::plugin | KEY1Token::NS_URI_KEY :
     return std::make_shared<PluginElement>(getState());
-  case KEY1Token::shape | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::shape | KEY1Token::NS_URI_KEY :
     return std::make_shared<ShapeElement>(getState());
-  case KEY1Token::textbox | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::textbox | KEY1Token::NS_URI_KEY :
     return std::make_shared<TextboxElement>(getState());
-  case KEY1Token::title | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::title | KEY1Token::NS_URI_KEY :
     return std::make_shared<TitleElement>(getState());
   default :
     ETONYEK_DEBUG_MSG(("DrawablesElement::element[KEY1Parser.cpp]: unknown element\n"));
@@ -1470,7 +1470,7 @@ IWORKXMLContextPtr_t PluginsElement::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::prototype_plugin | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::prototype_plugin | KEY1Token::NS_URI_KEY :
     return std::make_shared<PluginElement>(getState());
   default :
     ETONYEK_DEBUG_MSG(("PluginsElement::element[KEY1Parser.cpp]: unknown element\n"));
@@ -1564,25 +1564,25 @@ IWORKXMLContextPtr_t SlideElement::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::bullets | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::bullets | KEY1Token::NS_URI_KEY :
     return std::make_shared<BulletsElement>(getState(), false);
-  case KEY1Token::drawables | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::drawables | KEY1Token::NS_URI_KEY :
     return std::make_shared<DrawablesElement>(getState(), false);
-  case KEY1Token::guides | KEY1Token::NS_URI_KEY : // list of guide, safe to ignore?
+  case +KEY1Token::guides | KEY1Token::NS_URI_KEY : // list of guide, safe to ignore?
     break;
-  case KEY1Token::notes | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::notes | KEY1Token::NS_URI_KEY :
     return std::make_shared<CDATAElement>(getState(), m_notes);
-  case KEY1Token::prototype_bullets | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::prototype_bullets | KEY1Token::NS_URI_KEY :
     return std::make_shared<BulletsElement>(getState(), true);
-  case KEY1Token::prototype_drawables | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::prototype_drawables | KEY1Token::NS_URI_KEY :
     return std::make_shared<DrawablesElement>(getState(), true);
-  case KEY1Token::prototype_plugins | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::prototype_plugins | KEY1Token::NS_URI_KEY :
     return std::make_shared<PluginsElement>(getState(), true);
-  case KEY1Token::background_fill_style | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::background_fill_style | KEY1Token::NS_URI_KEY :
     return std::make_shared<KEY1FillElement>(getState(), m_background);
-  case KEY1Token::transition_style | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::transition_style | KEY1Token::NS_URI_KEY :
     return std::make_shared<TransitionStyleElement>(getState());
-  case KEY1Token::thumbnails | KEY1Token::NS_URI_KEY : // ok to ignore
+  case +KEY1Token::thumbnails | KEY1Token::NS_URI_KEY : // ok to ignore
     break;
   default :
     ETONYEK_DEBUG_MSG(("SlideElement::element[KEY1Parser.cpp]: unknown element\n"));
@@ -1693,7 +1693,7 @@ IWORKXMLContextPtr_t SlideListElement::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::slide | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::slide | KEY1Token::NS_URI_KEY :
     return std::make_shared<SlideElement>(getState(), false);
   default :
     ETONYEK_DEBUG_MSG(("SlideListElement::element[KEY1Parser.cpp]: unexpected element\n"));
@@ -1740,7 +1740,7 @@ IWORKXMLContextPtr_t MasterSlidesElement::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::master_slide | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::master_slide | KEY1Token::NS_URI_KEY :
     return std::make_shared<SlideElement>(getState(), true);
   default :
     ETONYEK_DEBUG_MSG(("MasterSlidesElement::element[KEY1Parser.cpp]: unexpected element\n"));
@@ -1799,13 +1799,13 @@ IWORKXMLContextPtr_t ThemeElement::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::description | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::description | KEY1Token::NS_URI_KEY :
     return std::make_shared<CDATAElement>(getState(), m_description);
-  case KEY1Token::prototype_drawables | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::prototype_drawables | KEY1Token::NS_URI_KEY :
     return std::make_shared<DrawablesElement>(getState(), true);
-  case KEY1Token::prototype_plugins | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::prototype_plugins | KEY1Token::NS_URI_KEY :
     return std::make_shared<PluginsElement>(getState(), true);
-  case KEY1Token::master_slides | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::master_slides | KEY1Token::NS_URI_KEY :
     return std::make_shared<MasterSlidesElement>(getState());
   default :
     ETONYEK_DEBUG_MSG(("ThemeElement::element[KEY1Parser.cpp]: unexpected element\n"));
@@ -1862,13 +1862,13 @@ IWORKXMLContextPtr_t PresentationElement::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::metadata | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::metadata | KEY1Token::NS_URI_KEY :
     return std::make_shared<MetadataElement>(getState());
-  case KEY1Token::theme | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::theme | KEY1Token::NS_URI_KEY :
     return std::make_shared<ThemeElement>(getState());
-  case KEY1Token::slide_list | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::slide_list | KEY1Token::NS_URI_KEY :
     return std::make_shared<SlideListElement>(getState());
-  case KEY1Token::ui_state | KEY1Token::NS_URI_KEY : // safe to ignore
+  case +KEY1Token::ui_state | KEY1Token::NS_URI_KEY : // safe to ignore
     break;
   default :
     ETONYEK_DEBUG_MSG(("PresentationElement::element[KEY1Parser.cpp]: unexpected element\n"));
@@ -1910,7 +1910,7 @@ IWORKXMLContextPtr_t XMLDocument::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::presentation | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::presentation | KEY1Token::NS_URI_KEY :
     return std::make_shared<PresentationElement>(m_state);
   default:
     ETONYEK_DEBUG_MSG(("XMLDocument::element[KEY1Parser.cpp]: unexpected element\n"));

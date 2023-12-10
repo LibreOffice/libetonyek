@@ -139,17 +139,17 @@ bool probeXML(DetectionInfo &info)
 
   const char *const name = char_cast(xmlTextReaderConstLocalName(reader.get()));
   const char *const ns = char_cast(xmlTextReaderConstNamespaceUri(reader.get()));
-  if (probeXMLFormat(FORMAT_XML2, EtonyekDocument::TYPE_KEYNOTE, KEY2Token::NS_URI_KEY | KEY2Token::presentation,
+  if (probeXMLFormat(FORMAT_XML2, EtonyekDocument::TYPE_KEYNOTE, +KEY2Token::NS_URI_KEY | KEY2Token::presentation,
                      KEY2Token::getTokenizer(), name, ns, info))
     return true;
-  if (probeXMLFormat(FORMAT_XML2, EtonyekDocument::TYPE_NUMBERS, NUM1Token::NS_URI_LS | NUM1Token::document,
+  if (probeXMLFormat(FORMAT_XML2, EtonyekDocument::TYPE_NUMBERS, +NUM1Token::NS_URI_LS | NUM1Token::document,
                      NUM1Token::getTokenizer(), name, ns, info))
     return true;
-  if (probeXMLFormat(FORMAT_XML2, EtonyekDocument::TYPE_PAGES, PAG1Token::NS_URI_SL | PAG1Token::document,
+  if (probeXMLFormat(FORMAT_XML2, EtonyekDocument::TYPE_PAGES, +PAG1Token::NS_URI_SL | PAG1Token::document,
                      PAG1Token::getTokenizer(), name, ns, info))
     return true;
   // Keynote 1 files define the document type with <!DOCTYPE APXL>
-  if (probeXMLFormat(FORMAT_XML1, EtonyekDocument::TYPE_KEYNOTE, KEY1Token::NS_URI_KEY | KEY1Token::presentation,
+  if (probeXMLFormat(FORMAT_XML1, EtonyekDocument::TYPE_KEYNOTE, +KEY1Token::NS_URI_KEY | KEY1Token::presentation,
                      KEY1Token::getTokenizer(), name, (ns||!checkAPXL) ? ns : "http://developer.apple.com/schemas/APXL", info))
     return true;
   return false;

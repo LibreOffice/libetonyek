@@ -30,7 +30,7 @@ namespace libetonyek
 
 namespace
 {
-typedef IWORKStyleContainer<IWORKToken::NS_URI_SF | IWORKToken::graphic_style, IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref> GraphicStyleContext;
+typedef IWORKStyleContainer<+IWORKToken::NS_URI_SF | IWORKToken::graphic_style, +IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref> GraphicStyleContext;
 }
 
 IWORKShapeContext::IWORKShapeContext(IWORKXMLParserState &state)
@@ -46,12 +46,12 @@ void IWORKShapeContext::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::sfclass | IWORKToken::NS_URI_SFA : // shape
+  case +IWORKToken::sfclass | IWORKToken::NS_URI_SFA : // shape
     break;
-  case IWORKToken::locked | IWORKToken::NS_URI_SF :
+  case +IWORKToken::locked | IWORKToken::NS_URI_SF :
     m_locked=bool_cast(value);
     break;
-  case IWORKToken::ID | IWORKToken::NS_URI_SFA :
+  case +IWORKToken::ID | IWORKToken::NS_URI_SFA :
     IWORKXMLElementContextBase::attribute(name, value);
     break;
   default :
@@ -82,15 +82,15 @@ IWORKXMLContextPtr_t IWORKShapeContext::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::geometry :
+  case +IWORKToken::NS_URI_SF | IWORKToken::geometry :
     return std::make_shared<IWORKGeometryElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::path :
+  case +IWORKToken::NS_URI_SF | IWORKToken::path :
     return std::make_shared<IWORKPathElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::style :
     return std::make_shared<GraphicStyleContext>(getState(), m_style, getState().getDictionary().m_graphicStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::text :
+  case +IWORKToken::NS_URI_SF | IWORKToken::text :
     return std::make_shared<IWORKTextElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::wrap : // USEME
+  case +IWORKToken::NS_URI_SF | IWORKToken::wrap : // USEME
     return std::make_shared<IWORKWrapElement>(getState(), m_wrap);
   default:
     ETONYEK_DEBUG_MSG(("IWORKShapeContext::element: find some unknown element\n"));

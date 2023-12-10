@@ -22,7 +22,7 @@ IWORKStringElement::IWORKStringElement(IWORKXMLParserState &state, boost::option
 
 void IWORKStringElement::attribute(const int name, const char *const value)
 {
-  if ((IWORKToken::NS_URI_SFA | IWORKToken::string) == name)
+  if ((+IWORKToken::NS_URI_SFA | IWORKToken::string) == name)
     m_string = value;
 }
 

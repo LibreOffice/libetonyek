@@ -30,13 +30,13 @@ void IWORKListLabelGeometryElement::attribute(const int name, const char *const 
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::scale :
+  case +IWORKToken::NS_URI_SF | IWORKToken::scale :
     m_scale = try_double_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::offset :
+  case +IWORKToken::NS_URI_SF | IWORKToken::offset :
     m_offset = try_double_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::scale_with_text :
+  case +IWORKToken::NS_URI_SF | IWORKToken::scale_with_text :
     m_scaleWithText = try_bool_cast(value);
     break;
   default:

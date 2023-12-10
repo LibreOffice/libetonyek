@@ -23,7 +23,7 @@ namespace libetonyek
 
 namespace
 {
-typedef IWORKMutableArrayElement<double, IWORKNumberElement<double>, IWORKPushCollector, IWORKToken::NS_URI_SF | IWORKToken::number> MutableArrayElement;
+typedef IWORKMutableArrayElement<double, IWORKNumberElement<double>, IWORKPushCollector, +IWORKToken::NS_URI_SF | IWORKToken::number> MutableArrayElement;
 }
 
 IWORKListTextIndentsProperty::IWORKListTextIndentsProperty(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
@@ -38,11 +38,11 @@ IWORKXMLContextPtr_t IWORKListTextIndentsProperty::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::array :
-  case IWORKToken::NS_URI_SF | IWORKToken::mutable_array :
+  case +IWORKToken::NS_URI_SF | IWORKToken::array :
+  case +IWORKToken::NS_URI_SF | IWORKToken::mutable_array :
     return std::make_shared<MutableArrayElement>(getState(), getState().getDictionary().m_doubleArrays, m_elements);
-  case IWORKToken::NS_URI_SF | IWORKToken::array_ref :
-  case IWORKToken::NS_URI_SF | IWORKToken::mutable_array_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::array_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::mutable_array_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_ref);
   default:
     break;

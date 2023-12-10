@@ -35,10 +35,10 @@ void IWORKDataElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::displayname :
+  case +IWORKToken::NS_URI_SF | IWORKToken::displayname :
     m_displayName = value;
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::hfs_type :
+  case +IWORKToken::NS_URI_SF | IWORKToken::hfs_type :
   {
     switch (getState().getTokenizer().getId(value))
     {
@@ -62,7 +62,7 @@ void IWORKDataElement::attribute(const int name, const char *const value)
     }
     break;
   }
-  case IWORKToken::NS_URI_SF | IWORKToken::path :
+  case +IWORKToken::NS_URI_SF | IWORKToken::path :
     m_stream.reset(getState().getParser().getPackage()->getSubStreamByName(value));
     if (!m_stream)
     {

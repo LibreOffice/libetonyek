@@ -60,25 +60,25 @@ void IWORKGeometryElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::angle :
+  case +IWORKToken::NS_URI_SF | IWORKToken::angle :
     m_angle = -deg2rad(lexical_cast<double>(value));
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::aspectRatioLocked :
+  case +IWORKToken::NS_URI_SF | IWORKToken::aspectRatioLocked :
     m_aspectRatioLocked = bool_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::horizontalFlip :
+  case +IWORKToken::NS_URI_SF | IWORKToken::horizontalFlip :
     m_horizontalFlip = bool_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::shearXAngle :
+  case +IWORKToken::NS_URI_SF | IWORKToken::shearXAngle :
     m_shearXAngle = deg2rad(lexical_cast<double>(value));
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::shearYAngle :
+  case +IWORKToken::NS_URI_SF | IWORKToken::shearYAngle :
     m_shearYAngle = deg2rad(lexical_cast<double>(value));
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::sizesLocked :
+  case +IWORKToken::NS_URI_SF | IWORKToken::sizesLocked :
     m_sizesLocked = bool_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::verticalFlip :
+  case +IWORKToken::NS_URI_SF | IWORKToken::verticalFlip :
     m_verticalFlip = bool_cast(value);
     break;
   default :
@@ -91,11 +91,11 @@ IWORKXMLContextPtr_t IWORKGeometryElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::naturalSize :
+  case +IWORKToken::NS_URI_SF | IWORKToken::naturalSize :
     return std::make_shared<IWORKSizeElement>(getState(), m_naturalSize);
-  case IWORKToken::NS_URI_SF | IWORKToken::position :
+  case +IWORKToken::NS_URI_SF | IWORKToken::position :
     return std::make_shared<IWORKPositionElement>(getState(), m_pos);
-  case IWORKToken::NS_URI_SF | IWORKToken::size :
+  case +IWORKToken::NS_URI_SF | IWORKToken::size :
     return std::make_shared<IWORKSizeElement>(getState(), m_size);
   default:
     ETONYEK_DEBUG_MSG(("IWORKGeometryElement::element: find unknown element\n"));

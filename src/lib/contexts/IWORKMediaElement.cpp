@@ -62,11 +62,11 @@ IWORKXMLContextPtr_t ImageMediaElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::alpha_mask_path : // README
+  case +IWORKToken::NS_URI_SF | IWORKToken::alpha_mask_path : // README
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::filtered_image :
+  case +IWORKToken::NS_URI_SF | IWORKToken::filtered_image :
     return std::make_shared<IWORKFilteredImageElement>(getState(), m_content);
-  case IWORKToken::NS_URI_SF | IWORKToken::traced_path : // README
+  case +IWORKToken::NS_URI_SF | IWORKToken::traced_path : // README
     break;
   default:
     ETONYEK_DEBUG_MSG(("ImageMediaElement::element[IWORKMediaElement.cpp]: unknown element %d\n", name));
@@ -107,9 +107,9 @@ IWORKXMLContextPtr_t OtherDatasElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::data :
+  case +IWORKToken::NS_URI_SF | IWORKToken::data :
     return std::make_shared<IWORKDataElement>(getState(), m_data, m_fillColor);
-  case IWORKToken::NS_URI_SF | IWORKToken::data_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::data_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_dataRef);
   default:
     ETONYEK_DEBUG_MSG(("OtherDatasElement::element[IWORKMediaElement.cpp]: unknown element %d\n", name));
@@ -166,11 +166,11 @@ IWORKXMLContextPtr_t SelfContainedMovieElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::main_movie :
+  case +IWORKToken::NS_URI_SF | IWORKToken::main_movie :
     return std::make_shared<IWORKDataElement>(getState(), m_data, m_fillColor);
-  case IWORKToken::NS_URI_SF | IWORKToken::main_movie_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::main_movie_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_mainMovieRef);
-  case IWORKToken::NS_URI_SF | IWORKToken::other_datas :
+  case +IWORKToken::NS_URI_SF | IWORKToken::other_datas :
     return std::make_shared<OtherDatasElement>(getState(), m_otherData);
   default:
     ETONYEK_DEBUG_MSG(("SelfContainedMovieElement::element[IWORKMediaElement.cpp]: unknown element %d\n", name));
@@ -234,13 +234,13 @@ IWORKXMLContextPtr_t MovieMediaElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::audio_only_image :
+  case +IWORKToken::NS_URI_SF | IWORKToken::audio_only_image :
     return std::make_shared<IWORKBinaryElement>(getState(), m_audioOnlyImage);
-  case IWORKToken::NS_URI_SF | IWORKToken::audio_only_image_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::audio_only_image_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_audioOnlyImageRef);
-  case IWORKToken::NS_URI_SF | IWORKToken::poster_image :
+  case +IWORKToken::NS_URI_SF | IWORKToken::poster_image :
     return std::make_shared<IWORKBinaryElement>(getState(), m_posterImage);
-  case IWORKToken::NS_URI_SF | IWORKToken::self_contained_movie :
+  case +IWORKToken::NS_URI_SF | IWORKToken::self_contained_movie :
     return std::make_shared<SelfContainedMovieElement>(getState(), m_data);
   default:
     ETONYEK_DEBUG_MSG(("MovieMediaElement::element[IWORKMediaElement.cpp]: unknown element %d\n", name));
@@ -305,9 +305,9 @@ IWORKXMLContextPtr_t ContentElement::element(const int name)
 
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::image_media :
+  case +IWORKToken::NS_URI_SF | IWORKToken::image_media :
     return std::make_shared<ImageMediaElement>(getState(), m_content);
-  case IWORKToken::NS_URI_SF | IWORKToken::movie_media :
+  case +IWORKToken::NS_URI_SF | IWORKToken::movie_media :
     return std::make_shared<MovieMediaElement>(getState(), m_content);
   default:
     ETONYEK_DEBUG_MSG(("ContentElement::element[IWORKMediaElement.cpp]: unknown element %d\n", name));
@@ -320,7 +320,7 @@ IWORKXMLContextPtr_t ContentElement::element(const int name)
 
 namespace
 {
-typedef IWORKStyleContainer<IWORKToken::NS_URI_SF | IWORKToken::graphic_style, IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref> GraphicStyleContext;
+typedef IWORKStyleContainer<+IWORKToken::NS_URI_SF | IWORKToken::graphic_style, +IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref> GraphicStyleContext;
 }
 
 IWORKMediaElement::IWORKMediaElement(IWORKXMLParserState &state)
@@ -342,7 +342,7 @@ void IWORKMediaElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case PAG1Token::order | PAG1Token::NS_URI_SL :
+  case +PAG1Token::order | PAG1Token::NS_URI_SL :
     m_order=try_int_cast(value);
     break;
   default:
@@ -360,17 +360,17 @@ IWORKXMLContextPtr_t IWORKMediaElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::audio_only_image :
+  case +IWORKToken::NS_URI_SF | IWORKToken::audio_only_image :
     return std::make_shared<IWORKBinaryElement>(getState(), m_audioOnlyImage);
-  case IWORKToken::NS_URI_SF | IWORKToken::audio_only_image_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::audio_only_image_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_audioOnlyImageRef);
-  case IWORKToken::NS_URI_SF | IWORKToken::content :
+  case +IWORKToken::NS_URI_SF | IWORKToken::content :
     return std::make_shared<ContentElement>(getState(), m_content);
-  case IWORKToken::NS_URI_SF | IWORKToken::crop_geometry :
+  case +IWORKToken::NS_URI_SF | IWORKToken::crop_geometry :
     return std::make_shared<IWORKGeometryElement>(getState(), m_cropGeometry);
-  case IWORKToken::NS_URI_SF | IWORKToken::geometry :
+  case +IWORKToken::NS_URI_SF | IWORKToken::geometry :
     return std::make_shared<IWORKGeometryElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::masking_shape_path_source :
+  case +IWORKToken::NS_URI_SF | IWORKToken::masking_shape_path_source :
   {
     static bool first=true;
     if (first)
@@ -380,15 +380,15 @@ IWORKXMLContextPtr_t IWORKMediaElement::element(const int name)
     }
     break;
   }
-  case IWORKToken::NS_URI_SF | IWORKToken::placeholder_size : // USEME
+  case +IWORKToken::NS_URI_SF | IWORKToken::placeholder_size : // USEME
     return std::make_shared<IWORKSizeElement>(getState(),m_placeholderSize);
-  case IWORKToken::NS_URI_SF | IWORKToken::poster_image :
+  case +IWORKToken::NS_URI_SF | IWORKToken::poster_image :
     return std::make_shared<IWORKBinaryElement>(getState(), m_posterImage);
-  case IWORKToken::NS_URI_SF | IWORKToken::self_contained_movie :
+  case +IWORKToken::NS_URI_SF | IWORKToken::self_contained_movie :
     return std::make_shared<SelfContainedMovieElement>(getState(), m_movieData);
-  case IWORKToken::NS_URI_SF | IWORKToken::style : // USEME
+  case +IWORKToken::NS_URI_SF | IWORKToken::style : // USEME
     return std::make_shared<GraphicStyleContext>(getState(), m_style, getState().getDictionary().m_graphicStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::wrap : // USEME
+  case +IWORKToken::NS_URI_SF | IWORKToken::wrap : // USEME
     return std::make_shared<IWORKWrapElement>(getState(), m_wrap);
   default:
     ETONYEK_DEBUG_MSG(("IWORKMediaElement::element: find some unknown elements\n"));

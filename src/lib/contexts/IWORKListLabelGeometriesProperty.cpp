@@ -25,7 +25,7 @@ namespace libetonyek
 namespace
 {
 
-typedef IWORKMutableArrayElement<IWORKListLabelGeometry, IWORKListLabelGeometryElement, IWORKPushCollector, IWORKToken::NS_URI_SF | IWORKToken::list_label_geometry, IWORKToken::NS_URI_SF | IWORKToken::list_label_geometry_ref> MutableArrayElement;
+typedef IWORKMutableArrayElement<IWORKListLabelGeometry, IWORKListLabelGeometryElement, IWORKPushCollector, +IWORKToken::NS_URI_SF | IWORKToken::list_label_geometry, +IWORKToken::NS_URI_SF | IWORKToken::list_label_geometry_ref> MutableArrayElement;
 }
 
 IWORKListLabelGeometriesProperty::IWORKListLabelGeometriesProperty(IWORKXMLParserState &state, IWORKPropertyMap &propMap)
@@ -40,13 +40,13 @@ IWORKXMLContextPtr_t IWORKListLabelGeometriesProperty::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::array:
-  case IWORKToken::NS_URI_SF | IWORKToken::mutable_array :
+  case +IWORKToken::NS_URI_SF | IWORKToken::array:
+  case +IWORKToken::NS_URI_SF | IWORKToken::mutable_array :
     return std::make_shared<MutableArrayElement>(getState(), getState().getDictionary().m_listLabelGeometriesArrays,
                                                  getState().getDictionary().m_listLabelGeometries,
                                                  m_elements);
-  case IWORKToken::NS_URI_SF | IWORKToken::array_ref:
-  case IWORKToken::NS_URI_SF | IWORKToken::mutable_array_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::array_ref:
+  case +IWORKToken::NS_URI_SF | IWORKToken::mutable_array_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_ref);
   default:
     break;

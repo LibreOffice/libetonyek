@@ -45,7 +45,7 @@ StringContext::StringContext(IWORKXMLParserState &state, optional<string> &value
 
 IWORKXMLContextPtr_t StringContext::element(const int name)
 {
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::string))
+  if (name == (+IWORKToken::NS_URI_SF | IWORKToken::string))
     return std::make_shared<IWORKStringElement>(getState(), m_value);
   return IWORKXMLContextPtr_t();
 }
@@ -65,16 +65,16 @@ IWORKXMLContextPtr_t IWORKMetadataElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::authors :
+  case +IWORKToken::NS_URI_SF | IWORKToken::authors :
     return std::make_shared<StringContext>(getState(), m_author);
-  case IWORKToken::NS_URI_SF | IWORKToken::comment :
+  case +IWORKToken::NS_URI_SF | IWORKToken::comment :
     return std::make_shared<StringContext>(getState(), m_comment);
-  case IWORKToken::NS_URI_SF | IWORKToken::keywords :
+  case +IWORKToken::NS_URI_SF | IWORKToken::keywords :
     return std::make_shared<StringContext>(getState(), m_keywords);
-  case IWORKToken::NS_URI_SF | IWORKToken::title :
+  case +IWORKToken::NS_URI_SF | IWORKToken::title :
     return std::make_shared<StringContext>(getState(), m_title);
-  case IWORKToken::NS_URI_SF | IWORKToken::copyright :
-  case IWORKToken::NS_URI_SF | IWORKToken::projects :
+  case +IWORKToken::NS_URI_SF | IWORKToken::copyright :
+  case +IWORKToken::NS_URI_SF | IWORKToken::projects :
     // TODO: retrieve them as generic metadata
     return IWORKXMLContextPtr_t();
   default:

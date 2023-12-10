@@ -42,28 +42,28 @@ IWORKXMLContextPtr_t IWORKGroupElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::geometry :
+  case +IWORKToken::NS_URI_SF | IWORKToken::geometry :
     return std::make_shared<IWORKGeometryElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::group :
+  case +IWORKToken::NS_URI_SF | IWORKToken::group :
     ensureClosed(); // checkme: creating a group in a group must be often possible
     return std::make_shared<IWORKGroupElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::image :
+  case +IWORKToken::NS_URI_SF | IWORKToken::image :
     ensureOpened();
     return std::make_shared<IWORKImageElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::line :
+  case +IWORKToken::NS_URI_SF | IWORKToken::line :
     ensureOpened();
     return std::make_shared<IWORKLineElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::media :
+  case +IWORKToken::NS_URI_SF | IWORKToken::media :
     ensureOpened();
     return std::make_shared<IWORKMediaElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::drawable_shape :
-  case IWORKToken::NS_URI_SF | IWORKToken::shape :
+  case +IWORKToken::NS_URI_SF | IWORKToken::drawable_shape :
+  case +IWORKToken::NS_URI_SF | IWORKToken::shape :
     ensureOpened();
     return std::make_shared<IWORKShapeContext>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::table_info :
+  case +IWORKToken::NS_URI_SF | IWORKToken::table_info :
     ensureClosed();
     return std::make_shared<IWORKTableInfoElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
+  case +IWORKToken::NS_URI_SF | IWORKToken::tabular_info :
     ensureClosed();
     return std::make_shared<IWORKTabularInfoElement>(getState());
   default:

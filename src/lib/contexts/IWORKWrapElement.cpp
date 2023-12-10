@@ -48,7 +48,7 @@ void PathElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SFA | IWORKToken::path :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::path :
     try
     {
       m_path = std::make_shared<IWORKPath>(value);
@@ -58,10 +58,10 @@ void PathElement::attribute(const int name, const char *const value)
       ETONYEK_DEBUG_MSG(("PathElement::attribute[IWORKWrapElement.cpp]: '%s' is not a valid path\n", value));
     }
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID : // USEME
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID : // USEME
     IWORKXMLEmptyContextBase::attribute(name, value);
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::version :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::version :
     break;
   default:
     ETONYEK_DEBUG_MSG(("PathElement::attribute[IWORKWrapElement.cpp]: unexpected attribute\n"));
@@ -73,7 +73,7 @@ IWORKXMLContextPtr_t PathElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::bezier :
+  case +IWORKToken::NS_URI_SF | IWORKToken::bezier :
     return std::make_shared<IWORKBezierElement>(getState(), m_path);
   default:
     ETONYEK_DEBUG_MSG(("PathElement::element[IWORKWrapElement.cpp]: find unknown element\n"));
@@ -97,10 +97,10 @@ void IWORKExternalTextWrapElement::attribute(int name, const char *value)
   {
     switch (name)
     {
-    case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+    case +IWORKToken::NS_URI_SFA | IWORKToken::ID :
       IWORKXMLElementContextBase::attribute(name, value);
       break;
-    case IWORKToken::NS_URI_SF | IWORKToken::attachment_wrap_type :
+    case +IWORKToken::NS_URI_SF | IWORKToken::attachment_wrap_type :
       switch (getState().getTokenizer().getId(value))
       {
       case IWORKToken::aligned:
@@ -114,10 +114,10 @@ void IWORKExternalTextWrapElement::attribute(int name, const char *value)
         break;
       }
       break;
-    case IWORKToken::NS_URI_SF | IWORKToken::alpha_threshold :
+    case +IWORKToken::NS_URI_SF | IWORKToken::alpha_threshold :
       get(m_wrap).m_alphaThreshold=double_cast(value);
       break;
-    case IWORKToken::NS_URI_SF | IWORKToken::direction :
+    case +IWORKToken::NS_URI_SF | IWORKToken::direction :
       switch (getState().getTokenizer().getId(value))
       {
       case IWORKToken::both :
@@ -134,10 +134,10 @@ void IWORKExternalTextWrapElement::attribute(int name, const char *value)
         break;
       }
       break;
-    case IWORKToken::NS_URI_SF | IWORKToken::floating_wrap_enabled :
+    case +IWORKToken::NS_URI_SF | IWORKToken::floating_wrap_enabled :
       get(m_wrap).m_floatingWrapEnabled=bool_cast(value);
       break;
-    case IWORKToken::NS_URI_SF | IWORKToken::floating_wrap_type :
+    case +IWORKToken::NS_URI_SF | IWORKToken::floating_wrap_type :
       switch (getState().getTokenizer().getId(value))
       {
       case IWORKToken::directional:
@@ -154,13 +154,13 @@ void IWORKExternalTextWrapElement::attribute(int name, const char *value)
         break;
       }
       break;
-    case IWORKToken::NS_URI_SF | IWORKToken::inline_wrap_enabled :
+    case +IWORKToken::NS_URI_SF | IWORKToken::inline_wrap_enabled :
       get(m_wrap).m_inlineWrapEnabled=bool_cast(value);
       break;
-    case IWORKToken::NS_URI_SF | IWORKToken::margin :
+    case +IWORKToken::NS_URI_SF | IWORKToken::margin :
       get(m_wrap).m_margin=double_cast(value);
       break;
-    case IWORKToken::NS_URI_SF | IWORKToken::wrap_style :
+    case +IWORKToken::NS_URI_SF | IWORKToken::wrap_style :
       switch (getState().getTokenizer().getId(value))
       {
       case IWORKToken::regular :
@@ -219,9 +219,9 @@ IWORKXMLContextPtr_t IWORKWrapElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::path :
+  case +IWORKToken::NS_URI_SF | IWORKToken::path :
     return std::make_shared<PathElement>(getState(), get(m_wrap).m_path);
-  case IWORKToken::NS_URI_SF | IWORKToken::geometry :
+  case +IWORKToken::NS_URI_SF | IWORKToken::geometry :
     return std::make_shared<IWORKGeometryElement>(getState(), get(m_wrap).m_geometry);
   default:
     ETONYEK_DEBUG_MSG(("IWORKWrapElement::element: find unknown element\n"));

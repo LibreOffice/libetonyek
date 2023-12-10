@@ -44,34 +44,34 @@ void IWORKColorElement::attribute(const int name, const char *const value)
     switch (name)
     {
     // TODO: check xsi:type too
-    case IWORKToken::NS_URI_SFA | IWORKToken::a :
+    case +IWORKToken::NS_URI_SFA | IWORKToken::a :
       m_a = lexical_cast<double>(value);
       break;
-    case IWORKToken::NS_URI_SFA | IWORKToken::b :
+    case +IWORKToken::NS_URI_SFA | IWORKToken::b :
       m_b = lexical_cast<double>(value);
       break;
-    case IWORKToken::NS_URI_SFA | IWORKToken::c :
+    case +IWORKToken::NS_URI_SFA | IWORKToken::c :
       m_c = lexical_cast<double>(value);
       break;
-    case IWORKToken::NS_URI_SFA | IWORKToken::g :
+    case +IWORKToken::NS_URI_SFA | IWORKToken::g :
       m_g = lexical_cast<double>(value);
       break;
-    case IWORKToken::NS_URI_SFA | IWORKToken::k :
+    case +IWORKToken::NS_URI_SFA | IWORKToken::k :
       m_k = lexical_cast<double>(value);
       break;
-    case IWORKToken::NS_URI_SFA | IWORKToken::m :
+    case +IWORKToken::NS_URI_SFA | IWORKToken::m :
       m_m = lexical_cast<double>(value);
       break;
-    case IWORKToken::NS_URI_SFA | IWORKToken::r :
+    case +IWORKToken::NS_URI_SFA | IWORKToken::r :
       m_r = lexical_cast<double>(value);
       break;
-    case IWORKToken::NS_URI_SFA | IWORKToken::w :
+    case +IWORKToken::NS_URI_SFA | IWORKToken::w :
       m_w = lexical_cast<double>(value);
       break;
-    case IWORKToken::NS_URI_SFA | IWORKToken::y :
+    case +IWORKToken::NS_URI_SFA | IWORKToken::y :
       m_y = lexical_cast<double>(value);
       break;
-    case IWORKToken::NS_URI_XSI | IWORKToken::type :
+    case +IWORKToken::NS_URI_XSI | IWORKToken::type :
       m_type = value;
       break;
     default:
@@ -88,7 +88,7 @@ IWORKXMLContextPtr_t IWORKColorElement::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::custom_space_color | IWORKToken::NS_URI_SFA :
+  case +IWORKToken::custom_space_color | IWORKToken::NS_URI_SFA :
   {
     static bool first=true;
     if (first)

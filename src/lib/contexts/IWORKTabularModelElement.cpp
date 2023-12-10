@@ -64,10 +64,10 @@ void CellCoordinates::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::column | IWORKToken::NS_URI_SF :
+  case +IWORKToken::column | IWORKToken::NS_URI_SF :
     m_column=lexical_cast<unsigned>(value);
     break;
-  case IWORKToken::row | IWORKToken::NS_URI_SF :
+  case +IWORKToken::row | IWORKToken::NS_URI_SF :
     m_row=lexical_cast<unsigned>(value);
     break;
   default : // none
@@ -103,7 +103,7 @@ IWORKXMLContextPtr_t CellCommentMappingKey::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::cell_coordinates | IWORKToken::NS_URI_SF :
+  case +IWORKToken::cell_coordinates | IWORKToken::NS_URI_SF :
     return std::make_shared<CellCoordinates>(getState(), m_coordinates);
   default:
     return IWORKXMLEmptyContextBase::element(name);
@@ -134,9 +134,9 @@ IWORKXMLContextPtr_t CellCommentMappingPair::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::value_ref | IWORKToken::NS_URI_SFA : // attributes: sfa:IDREF and sfa:class
+  case +IWORKToken::value_ref | IWORKToken::NS_URI_SFA : // attributes: sfa:IDREF and sfa:class
     return std::make_shared<IWORKRefContext>(getState(), m_ref);
-  case IWORKToken::key | IWORKToken::NS_URI_SFA :
+  case +IWORKToken::key | IWORKToken::NS_URI_SFA :
     return std::make_shared<CellCommentMappingKey>(getState(), m_coordinates);
   default:
     return IWORKXMLEmptyContextBase::element(name);
@@ -172,7 +172,7 @@ IWORKXMLContextPtr_t CellCommentMapping::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::pair | IWORKToken::NS_URI_SFA :
+  case +IWORKToken::pair | IWORKToken::NS_URI_SFA :
     return std::make_shared<CellCommentMappingPair>(getState(), m_coordinateCommentRefMap);
   default:
     return IWORKXMLEmptyContextBase::element(name);
@@ -210,9 +210,9 @@ void CfElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::implicit_format_type | IWORKToken::NS_URI_SF : // find 256|261|269
+  case +IWORKToken::implicit_format_type | IWORKToken::NS_URI_SF : // find 256|261|269
     break;
-  case IWORKToken::ID | IWORKToken::NS_URI_SFA : // must we store this element ?
+  case +IWORKToken::ID | IWORKToken::NS_URI_SFA : // must we store this element ?
     IWORKXMLEmptyContextBase::attribute(name, value);
     break;
   default :
@@ -225,11 +225,11 @@ IWORKXMLContextPtr_t CfElement::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::date_format | IWORKToken::NS_URI_SF : // USEME
+  case +IWORKToken::date_format | IWORKToken::NS_URI_SF : // USEME
     return std::make_shared<IWORKDateTimeFormatElement>(getState(), m_dateTimeFormat);
-  case IWORKToken::duration_format | IWORKToken::NS_URI_SF : // USEME
+  case +IWORKToken::duration_format | IWORKToken::NS_URI_SF : // USEME
     return std::make_shared<IWORKDurationFormatElement>(getState(), m_durationFormat);
-  case IWORKToken::number_format | IWORKToken::NS_URI_SF : // USEME
+  case +IWORKToken::number_format | IWORKToken::NS_URI_SF : // USEME
     return std::make_shared<IWORKNumberFormatElement>(getState(), m_numberFormat);
   default:
     ETONYEK_DEBUG_MSG(("CfElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
@@ -267,23 +267,23 @@ void CellContextBase::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::col_span | IWORKToken::NS_URI_SF :
+  case +IWORKToken::col_span | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_columnSpan = lexical_cast<unsigned>(value);
     break;
-  case IWORKToken::ct | IWORKToken::NS_URI_SF :
+  case +IWORKToken::ct | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_cellMove = lexical_cast<unsigned>(value);
     break;
-  case IWORKToken::row_span | IWORKToken::NS_URI_SF :
+  case +IWORKToken::row_span | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_rowSpan = lexical_cast<unsigned>(value);
     break;
-  case IWORKToken::s | IWORKToken::NS_URI_SF :
+  case +IWORKToken::s | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_style = getState().getStyleByName(value, getState().getDictionary().m_cellStyles);
     break;
-  case IWORKToken::f | IWORKToken::NS_URI_SF : // format?
-  case IWORKToken::h | IWORKToken::NS_URI_SF : // height
-  case IWORKToken::w | IWORKToken::NS_URI_SF : // width
+  case +IWORKToken::f | IWORKToken::NS_URI_SF : // format?
+  case +IWORKToken::h | IWORKToken::NS_URI_SF : // height
+  case +IWORKToken::w | IWORKToken::NS_URI_SF : // width
     break;
-  case IWORKToken::ID | IWORKToken::NS_URI_SFA : // can appear in result, store me?
+  case +IWORKToken::ID | IWORKToken::NS_URI_SFA : // can appear in result, store me?
     IWORKXMLEmptyContextBase::attribute(name,value);
     break;
   default:
@@ -295,9 +295,9 @@ IWORKXMLContextPtr_t CellContextBase::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::cf | IWORKToken::NS_URI_SF :
+  case +IWORKToken::cf | IWORKToken::NS_URI_SF :
     return std::make_shared<CfElement>(getState());
-  case IWORKToken::cf_ref | IWORKToken::NS_URI_SF:
+  case +IWORKToken::cf_ref | IWORKToken::NS_URI_SF:
     return std::make_shared<IWORKRefContext>(getState(), m_ref);
   default:
     ETONYEK_DEBUG_MSG(("CellContextBase::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
@@ -399,14 +399,14 @@ void GridColumnElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::fitting_width | IWORKToken::NS_URI_SF :
-  case IWORKToken::nc | IWORKToken::NS_URI_SF : // look like the number of cells in column
-  case IWORKToken::ncoc | IWORKToken::NS_URI_SF :
-  case IWORKToken::nsc | IWORKToken::NS_URI_SF : // look like the number of special cells in column, ie covered cell
-  case IWORKToken::manually_sized | IWORKToken::NS_URI_SF :
-  case IWORKToken::preferred_width | IWORKToken::NS_URI_SF :
+  case +IWORKToken::fitting_width | IWORKToken::NS_URI_SF :
+  case +IWORKToken::nc | IWORKToken::NS_URI_SF : // look like the number of cells in column
+  case +IWORKToken::ncoc | IWORKToken::NS_URI_SF :
+  case +IWORKToken::nsc | IWORKToken::NS_URI_SF : // look like the number of special cells in column, ie covered cell
+  case +IWORKToken::manually_sized | IWORKToken::NS_URI_SF :
+  case +IWORKToken::preferred_width | IWORKToken::NS_URI_SF :
     break;
-  case IWORKToken::width | IWORKToken::NS_URI_SF :
+  case +IWORKToken::width | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_columnSizes.push_back(IWORKColumnRowSize(lexical_cast<double>(value)));
     break;
   default :
@@ -419,7 +419,7 @@ IWORKXMLContextPtr_t GridColumnElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::grouping_display | IWORKToken::NS_URI_SF :
+  case +IWORKToken::grouping_display | IWORKToken::NS_URI_SF :
   {
     static bool first=true;
     if (first)
@@ -459,7 +459,7 @@ IWORKXMLContextPtr_t ColumnsElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::grid_column | IWORKToken::NS_URI_SF :
+  case +IWORKToken::grid_column | IWORKToken::NS_URI_SF :
     return std::make_shared<GridColumnElement>(getState());
   default:
     ETONYEK_DEBUG_MSG(("ColumnsElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
@@ -491,7 +491,7 @@ void CbElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::v | IWORKToken::NS_URI_SF :
+  case +IWORKToken::v | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
     break;
   default :
@@ -523,7 +523,7 @@ void DElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::cell_date | IWORKToken::NS_URI_SF :
+  case +IWORKToken::cell_date | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
     break;
   default :
@@ -554,7 +554,7 @@ void DuElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::du | IWORKToken::NS_URI_SF :
+  case +IWORKToken::du | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
     getState().m_tableData->m_type = IWORK_CELL_TYPE_DURATION;
     break;
@@ -587,8 +587,8 @@ void CtElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::s | IWORKToken::NS_URI_SFA :
-  case IWORKToken::string | IWORKToken::NS_URI_SFA :
+  case +IWORKToken::s | IWORKToken::NS_URI_SFA :
+  case +IWORKToken::string | IWORKToken::NS_URI_SFA :
     getState().m_tableData->m_content = value;
     getState().m_tableData->m_type = IWORK_CELL_TYPE_TEXT;
     break;
@@ -602,8 +602,8 @@ IWORKXMLContextPtr_t CtElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::so | IWORKToken::NS_URI_SF :
-  case IWORKToken::cell_storage | IWORKToken::NS_URI_SF :
+  case +IWORKToken::so | IWORKToken::NS_URI_SF :
+  case +IWORKToken::cell_storage | IWORKToken::NS_URI_SF :
     if (getState().m_tableData->m_content)
     {
       ETONYEK_DEBUG_MSG(("found a text cell with both simple and formatted content\n"));
@@ -641,7 +641,7 @@ void NElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::v | IWORKToken::NS_URI_SF :
+  case +IWORKToken::v | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
     break;
   default :
@@ -672,7 +672,7 @@ void OElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::ho | IWORKToken::NS_URI_SF : // horizontal overlap?
+  case +IWORKToken::ho | IWORKToken::NS_URI_SF : // horizontal overlap?
     break;
   default :
     CellContextBase::attribute(name, value);
@@ -717,7 +717,7 @@ IWORKXMLContextPtr_t TElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::ct | IWORKToken::NS_URI_SF :
+  case +IWORKToken::ct | IWORKToken::NS_URI_SF :
     if (m_isResult && !getState().m_currentText)
       getState().m_currentText = getCollector().createText(getState().m_langManager, false);
     return std::make_shared<CtElement>(getState());
@@ -751,7 +751,7 @@ void RbElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::v | IWORKToken::NS_URI_SF :
+  case +IWORKToken::v | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
     break;
   default :
@@ -781,16 +781,16 @@ IWORKXMLContextPtr_t RElement::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::rb | IWORKToken::NS_URI_SF :
+  case +IWORKToken::rb | IWORKToken::NS_URI_SF :
     return std::make_shared<RbElement>(getState());
     break;
-  case IWORKToken::rd | IWORKToken::NS_URI_SF :
+  case +IWORKToken::rd | IWORKToken::NS_URI_SF :
     return std::make_shared<DElement>(getState(), true);
     break;
-  case IWORKToken::rn | IWORKToken::NS_URI_SF :
+  case +IWORKToken::rn | IWORKToken::NS_URI_SF :
     return std::make_shared<NElement>(getState(), true);
     break;
-  case IWORKToken::rt | IWORKToken::NS_URI_SF :
+  case +IWORKToken::rt | IWORKToken::NS_URI_SF :
     return std::make_shared<TElement>(getState(), true);
     break;
   default:
@@ -824,11 +824,11 @@ IWORKXMLContextPtr_t FElement::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::fo | IWORKToken::NS_URI_SF :
+  case +IWORKToken::fo | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKFoElement>(getState());
-  case IWORKToken::of | IWORKToken::NS_URI_SF :
+  case +IWORKToken::of | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKOfElement>(getState());
-  case IWORKToken::r | IWORKToken::NS_URI_SF :
+  case +IWORKToken::r | IWORKToken::NS_URI_SF :
     return std::make_shared<RElement>(getState());
   default:
     break;
@@ -877,9 +877,9 @@ void GroupingElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::group_formula_string | IWORKToken::NS_URI_SF : // value
-  case IWORKToken::group_formula_value | IWORKToken::NS_URI_SF : // value
-  case IWORKToken::group_formula_value_valid | IWORKToken::NS_URI_SF : // true or false
+  case +IWORKToken::group_formula_string | IWORKToken::NS_URI_SF : // value
+  case +IWORKToken::group_formula_value | IWORKToken::NS_URI_SF : // value
+  case +IWORKToken::group_formula_value_valid | IWORKToken::NS_URI_SF : // true or false
     break;
   default :
     CellContextBase::attribute(name, value);
@@ -890,7 +890,7 @@ IWORKXMLContextPtr_t GroupingElement::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::groupings_element | IWORKToken::NS_URI_SF :
+  case +IWORKToken::groupings_element | IWORKToken::NS_URI_SF :
   {
     static bool first=true;
     if (first)
@@ -900,7 +900,7 @@ IWORKXMLContextPtr_t GroupingElement::element(int name)
     }
     return IWORKXMLContextPtr_t();
   }
-  case IWORKToken::fo | IWORKToken::NS_URI_SF :
+  case +IWORKToken::fo | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKFoElement>(getState());
   default:
     break;
@@ -1026,7 +1026,7 @@ MenuChoicesElement::MenuChoicesElement(IWORKXMLParserState &state, std::map<ID_t
 
 IWORKXMLContextPtr_t MenuChoicesElement::element(int name)
 {
-  if (name == (IWORKToken::t | IWORKToken::NS_URI_SF))
+  if (name == (+IWORKToken::t | IWORKToken::NS_URI_SF))
     return std::make_shared<TElementInMenu>(getState(), m_contentMap);
 
   return IWORKXMLContextPtr_t();
@@ -1040,10 +1040,10 @@ IWORKXMLContextPtr_t PmElement::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::menu_choices | IWORKToken::NS_URI_SF :
+  case +IWORKToken::menu_choices | IWORKToken::NS_URI_SF :
     return std::make_shared<MenuChoicesElement>(getState(), m_contentMap);
     break;
-  case IWORKToken::proxied_cell_ref | IWORKToken::NS_URI_SF :
+  case +IWORKToken::proxied_cell_ref | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKRefContext>(getState(), m_ref);
     break;
   default:
@@ -1101,11 +1101,11 @@ void SElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::ct | IWORKToken::NS_URI_SF :
+  case +IWORKToken::ct | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_cellMove = lexical_cast<unsigned>(value);
     break;
-  case IWORKToken::ho | IWORKToken::NS_URI_SF : // offset to main cell
-  case IWORKToken::vo | IWORKToken::NS_URI_SF :
+  case +IWORKToken::ho | IWORKToken::NS_URI_SF : // offset to main cell
+  case +IWORKToken::vo | IWORKToken::NS_URI_SF :
     break;
   default :
     CellContextBase::attribute(name,value);
@@ -1141,14 +1141,14 @@ void SlElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::v | IWORKToken::NS_URI_SF :
+  case +IWORKToken::v | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
     break;
-  case IWORKToken::increment | IWORKToken::NS_URI_SF :
-  case IWORKToken::min_value | IWORKToken::NS_URI_SF :
-  case IWORKToken::max_value | IWORKToken::NS_URI_SF :
-  case IWORKToken::slider_orientation | IWORKToken::NS_URI_SF :
-  case IWORKToken::slider_position | IWORKToken::NS_URI_SF :
+  case +IWORKToken::increment | IWORKToken::NS_URI_SF :
+  case +IWORKToken::min_value | IWORKToken::NS_URI_SF :
+  case +IWORKToken::max_value | IWORKToken::NS_URI_SF :
+  case +IWORKToken::slider_orientation | IWORKToken::NS_URI_SF :
+  case +IWORKToken::slider_position | IWORKToken::NS_URI_SF :
     break;
   default :
     CellContextBase::attribute(name, value);
@@ -1179,12 +1179,12 @@ void StElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::v | IWORKToken::NS_URI_SF :
+  case +IWORKToken::v | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_content = value;
     break;
-  case IWORKToken::increment | IWORKToken::NS_URI_SF :
-  case IWORKToken::min_value | IWORKToken::NS_URI_SF :
-  case IWORKToken::max_value | IWORKToken::NS_URI_SF :
+  case +IWORKToken::increment | IWORKToken::NS_URI_SF :
+  case +IWORKToken::min_value | IWORKToken::NS_URI_SF :
+  case +IWORKToken::max_value | IWORKToken::NS_URI_SF :
     break;
   default :
     CellContextBase::attribute(name, value);
@@ -1214,8 +1214,8 @@ void ContentSizeElement::attribute(const int name, const char *const /*value*/)
 {
   switch (name)
   {
-  case IWORKToken::h | IWORKToken::NS_URI_SFA : // horizontal size
-  case IWORKToken::w | IWORKToken::NS_URI_SFA : // vertical size
+  case +IWORKToken::h | IWORKToken::NS_URI_SFA : // horizontal size
+  case +IWORKToken::w | IWORKToken::NS_URI_SFA : // vertical size
     break;
   default :
     ETONYEK_DEBUG_MSG(("ContentSizeElement::attribute[IWORKTabularModelElement.cpp]: found unexpected attribute\n"));
@@ -1267,25 +1267,25 @@ void GenericCellElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::ID | IWORKToken::NS_URI_SFA :
+  case +IWORKToken::ID | IWORKToken::NS_URI_SFA :
     if (!m_isResult)
     {
       ETONYEK_DEBUG_MSG(("GenericCellElement::attribute: found unexpected id field\n"));
     }
     m_id=value;
     break;
-  case IWORKToken::col | IWORKToken::NS_URI_SF :
+  case +IWORKToken::col | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_column = (unsigned) int_cast(value);
     break;
-  case IWORKToken::flags | IWORKToken::NS_URI_SF : // find 4 ?
+  case +IWORKToken::flags | IWORKToken::NS_URI_SF : // find 4 ?
     break;
-  case IWORKToken::row | IWORKToken::NS_URI_SF :
+  case +IWORKToken::row | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_row = (unsigned) int_cast(value);
     break;
-  case IWORKToken::col_span | IWORKToken::NS_URI_SF :
+  case +IWORKToken::col_span | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_columnSpan = lexical_cast<unsigned>(value);
     break;
-  case IWORKToken::row_span | IWORKToken::NS_URI_SF :
+  case +IWORKToken::row_span | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_rowSpan = lexical_cast<unsigned>(value);
     break;
   default :
@@ -1297,9 +1297,9 @@ IWORKXMLContextPtr_t GenericCellElement::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_styleRef);
-  case IWORKToken::NS_URI_SF | IWORKToken::content_size :
+  case +IWORKToken::NS_URI_SF | IWORKToken::content_size :
     return std::make_shared<ContentSizeElement>(getState());
   default:
     break;
@@ -1383,7 +1383,7 @@ void BoolCellElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::value | IWORKToken::NS_URI_SF :
+  case +IWORKToken::value | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_type = IWORK_CELL_TYPE_BOOL;
     getState().m_tableData->m_content = value;
     break;
@@ -1416,7 +1416,7 @@ void DateCellElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::cell_date | IWORKToken::NS_URI_SF :
+  case +IWORKToken::cell_date | IWORKToken::NS_URI_SF :
   {
     IWORKDateTimeData time;
     if (value && sscanf(value,"%d-%d-%dT%d:%d:%f",&time.m_year, &time.m_month, &time.m_day, &time.m_hour, &time.m_minute, &time.m_second)==6)
@@ -1458,7 +1458,7 @@ void NumberCellElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::value | IWORKToken::NS_URI_SF :
+  case +IWORKToken::value | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_type = IWORK_CELL_TYPE_NUMBER;
     getState().m_tableData->m_content = value;
     break;
@@ -1489,8 +1489,8 @@ void SpanCellElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::horizontal_offset | IWORKToken::NS_URI_SF :
-  case IWORKToken::vertical_offset | IWORKToken::NS_URI_SF :
+  case +IWORKToken::horizontal_offset | IWORKToken::NS_URI_SF :
+  case +IWORKToken::vertical_offset | IWORKToken::NS_URI_SF :
     break;
   default:
     return GenericCellElement::attribute(name,value);
@@ -1534,7 +1534,7 @@ IWORKXMLContextPtr_t TextCellElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::cell_text | IWORKToken::NS_URI_SF :
+  case +IWORKToken::cell_text | IWORKToken::NS_URI_SF :
     return std::make_shared<CtElement>(getState());
   default:
     break;
@@ -1568,13 +1568,13 @@ IWORKXMLContextPtr_t ResultCellElement::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::result_bool_cell | IWORKToken::NS_URI_SF :
+  case +IWORKToken::result_bool_cell | IWORKToken::NS_URI_SF :
     return std::make_shared<BoolCellElement>(getState(), true);
-  case IWORKToken::result_date_cell | IWORKToken::NS_URI_SF :
+  case +IWORKToken::result_date_cell | IWORKToken::NS_URI_SF :
     return std::make_shared<DateCellElement>(getState(), true);
-  case IWORKToken::result_number_cell | IWORKToken::NS_URI_SF :
+  case +IWORKToken::result_number_cell | IWORKToken::NS_URI_SF :
     return std::make_shared<NumberCellElement>(getState(), true);
-  case IWORKToken::result_text_cell | IWORKToken::NS_URI_SF :
+  case +IWORKToken::result_text_cell | IWORKToken::NS_URI_SF :
     return std::make_shared<TextCellElement>(getState(), true);
   default:
     break;
@@ -1605,9 +1605,9 @@ IWORKXMLContextPtr_t FormulaCellElement::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::formula | IWORKToken::NS_URI_SF :
+  case +IWORKToken::formula | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKFormulaElement>(getState());
-  case IWORKToken::result_cell | IWORKToken::NS_URI_SF :
+  case +IWORKToken::result_cell | IWORKToken::NS_URI_SF :
     return std::make_shared<ResultCellElement>(getState());
   default:
     break;
@@ -1651,43 +1651,43 @@ IWORKXMLContextPtr_t DatasourceElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::cb | IWORKToken::NS_URI_SF :
+  case +IWORKToken::cb | IWORKToken::NS_URI_SF :
     return std::make_shared<CbElement>(getState());
-  case IWORKToken::d | IWORKToken::NS_URI_SF :
+  case +IWORKToken::d | IWORKToken::NS_URI_SF :
     return std::make_shared<DElement>(getState());
-  case IWORKToken::du | IWORKToken::NS_URI_SF :
+  case +IWORKToken::du | IWORKToken::NS_URI_SF :
     return std::make_shared<DuElement>(getState());
-  case IWORKToken::f | IWORKToken::NS_URI_SF :
+  case +IWORKToken::f | IWORKToken::NS_URI_SF :
     return std::make_shared<FElement>(getState());
-  case IWORKToken::g | IWORKToken::NS_URI_SF :
+  case +IWORKToken::g | IWORKToken::NS_URI_SF :
     return std::make_shared<GElement>(getState());
-  case IWORKToken::grouping | IWORKToken::NS_URI_SF :
+  case +IWORKToken::grouping | IWORKToken::NS_URI_SF :
     return std::make_shared<GroupingElement>(getState());
-  case IWORKToken::n | IWORKToken::NS_URI_SF :
+  case +IWORKToken::n | IWORKToken::NS_URI_SF :
     return std::make_shared<NElement>(getState());
-  case IWORKToken::o | IWORKToken::NS_URI_SF :
+  case +IWORKToken::o | IWORKToken::NS_URI_SF :
     return std::make_shared<OElement>(getState());
-  case IWORKToken::pm | IWORKToken::NS_URI_SF :
+  case +IWORKToken::pm | IWORKToken::NS_URI_SF :
     return std::make_shared<PmElement>(getState());
-  case IWORKToken::s | IWORKToken::NS_URI_SF :
+  case +IWORKToken::s | IWORKToken::NS_URI_SF :
     return std::make_shared<SElement>(getState());
-  case IWORKToken::sl | IWORKToken::NS_URI_SF :
+  case +IWORKToken::sl | IWORKToken::NS_URI_SF :
     return std::make_shared<SlElement>(getState());
-  case IWORKToken::st | IWORKToken::NS_URI_SF :
+  case +IWORKToken::st | IWORKToken::NS_URI_SF :
     return std::make_shared<StElement>(getState());
-  case IWORKToken::t | IWORKToken::NS_URI_SF :
+  case +IWORKToken::t | IWORKToken::NS_URI_SF :
     return std::make_shared<TElement>(getState());
-  case IWORKToken::date_cell | IWORKToken::NS_URI_SF :
+  case +IWORKToken::date_cell | IWORKToken::NS_URI_SF :
     return std::make_shared<DateCellElement>(getState());
-  case IWORKToken::generic_cell | IWORKToken::NS_URI_SF :
+  case +IWORKToken::generic_cell | IWORKToken::NS_URI_SF :
     return std::make_shared<GenericCellElement>(getState());
-  case IWORKToken::formula_cell | IWORKToken::NS_URI_SF :
+  case +IWORKToken::formula_cell | IWORKToken::NS_URI_SF :
     return std::make_shared<FormulaCellElement>(getState());
-  case IWORKToken::number_cell | IWORKToken::NS_URI_SF :
+  case +IWORKToken::number_cell | IWORKToken::NS_URI_SF :
     return std::make_shared<NumberCellElement>(getState());
-  case IWORKToken::span_cell | IWORKToken::NS_URI_SF :
+  case +IWORKToken::span_cell | IWORKToken::NS_URI_SF :
     return std::make_shared<SpanCellElement>(getState());
-  case IWORKToken::text_cell | IWORKToken::NS_URI_SF :
+  case +IWORKToken::text_cell | IWORKToken::NS_URI_SF :
     return std::make_shared<TextCellElement>(getState());
   default:
     break;
@@ -1729,10 +1729,10 @@ void VectorStyleRefElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::start_index :
+  case +IWORKToken::NS_URI_SF | IWORKToken::start_index :
     m_startIndex = int_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::stop_index :
+  case +IWORKToken::NS_URI_SF | IWORKToken::stop_index :
     m_stopIndex = int_cast(value);
     break;
   default:
@@ -1784,10 +1784,10 @@ void StyleRunElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::gridline_index :
+  case +IWORKToken::NS_URI_SF | IWORKToken::gridline_index :
     m_gridlineIndex_=int_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::count : // number of element
+  case +IWORKToken::NS_URI_SF | IWORKToken::count : // number of element
     m_count=int_cast(value);
     break;
   default :
@@ -1800,7 +1800,7 @@ IWORKXMLContextPtr_t StyleRunElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::vector_style_ref | IWORKToken::NS_URI_SF :
+  case +IWORKToken::vector_style_ref | IWORKToken::NS_URI_SF :
     return std::make_shared<VectorStyleRefElement>(getState(), m_line);
   default:
     ETONYEK_DEBUG_MSG(("StyleRunElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
@@ -1862,7 +1862,7 @@ IWORKXMLContextPtr_t GridlineElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::style_run | IWORKToken::NS_URI_SF :
+  case +IWORKToken::style_run | IWORKToken::NS_URI_SF :
     return std::make_shared<StyleRunElement>(getState(), m_gridLines, m_maxLines);
   default:
     ETONYEK_DEBUG_MSG(("GridlineElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
@@ -1894,15 +1894,15 @@ void GridRowElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::height | IWORKToken::NS_URI_SF :
+  case +IWORKToken::height | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_rowSizes.push_back(IWORKColumnRowSize(lexical_cast<double>(value)));
     break;
-  case IWORKToken::fitting_height | IWORKToken::NS_URI_SF :
-  case IWORKToken::manually_sized | IWORKToken::NS_URI_SF :
-  case IWORKToken::nc | IWORKToken::NS_URI_SF : // look like the number of cells in row...
-  case IWORKToken::ncoc | IWORKToken::NS_URI_SF :
-  case IWORKToken::nsc | IWORKToken::NS_URI_SF : // look like the number of special cells in row, ie covered cell
-  case IWORKToken::preferred_height | IWORKToken::NS_URI_SF :
+  case +IWORKToken::fitting_height | IWORKToken::NS_URI_SF :
+  case +IWORKToken::manually_sized | IWORKToken::NS_URI_SF :
+  case +IWORKToken::nc | IWORKToken::NS_URI_SF : // look like the number of cells in row...
+  case +IWORKToken::ncoc | IWORKToken::NS_URI_SF :
+  case +IWORKToken::nsc | IWORKToken::NS_URI_SF : // look like the number of special cells in row, ie covered cell
+  case +IWORKToken::preferred_height | IWORKToken::NS_URI_SF :
     break;
   default :
     ETONYEK_DEBUG_MSG(("GridRowElement::attribute[IWORKTabularModelElement.cpp]: find some unknown attribute\n"));
@@ -1934,7 +1934,7 @@ IWORKXMLContextPtr_t RowsElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::grid_row | IWORKToken::NS_URI_SF :
+  case +IWORKToken::grid_row | IWORKToken::NS_URI_SF :
     return std::make_shared<GridRowElement>(getState());
   default:
     ETONYEK_DEBUG_MSG(("RowsElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
@@ -1967,10 +1967,10 @@ void GridElement::attribute(const int name, const char *value)
 {
   switch (name)
   {
-  case IWORKToken::numcols | IWORKToken::NS_URI_SF :
+  case +IWORKToken::numcols | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_numColumns = (unsigned) int_cast(value);
     break;
-  case IWORKToken::numrows | IWORKToken::NS_URI_SF :
+  case +IWORKToken::numrows | IWORKToken::NS_URI_SF :
     getState().m_tableData->m_numRows = (unsigned) int_cast(value);
     break;
   default :
@@ -1983,15 +1983,15 @@ IWORKXMLContextPtr_t GridElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::columns | IWORKToken::NS_URI_SF :
+  case +IWORKToken::columns | IWORKToken::NS_URI_SF :
     return std::make_shared<ColumnsElement>(getState());
-  case IWORKToken::datasource | IWORKToken::NS_URI_SF :
+  case +IWORKToken::datasource | IWORKToken::NS_URI_SF :
     return std::make_shared<DatasourceElement>(getState());
-  case IWORKToken::rows | IWORKToken::NS_URI_SF :
+  case +IWORKToken::rows | IWORKToken::NS_URI_SF :
     return std::make_shared<RowsElement>(getState());
-  case IWORKToken::vertical_gridline_styles | IWORKToken::NS_URI_SF :
+  case +IWORKToken::vertical_gridline_styles | IWORKToken::NS_URI_SF :
     return std::make_shared<GridlineElement>(getState(), getState().m_tableData->m_verticalLines, getState().m_tableData->m_numRows);
-  case IWORKToken::horizontal_gridline_styles | IWORKToken::NS_URI_SF :
+  case +IWORKToken::horizontal_gridline_styles | IWORKToken::NS_URI_SF :
     return std::make_shared<GridlineElement>(getState(), getState().m_tableData->m_horizontalLines, getState().m_tableData->m_numColumns);
   default:
     ETONYEK_DEBUG_MSG(("GridElement::element[IWORKTabularModelElement.cpp]: find some unknown element\n"));
@@ -2020,22 +2020,22 @@ void IWORKTabularModelElement::attribute(const int name, const char *value)
 {
   switch (name)
   {
-  case IWORKToken::ID | IWORKToken::NS_URI_SFA :
+  case +IWORKToken::ID | IWORKToken::NS_URI_SFA :
     m_id=value;
     break;
-  case IWORKToken::name | IWORKToken::NS_URI_SF :
+  case +IWORKToken::name | IWORKToken::NS_URI_SF :
     m_tableName = value;
     break;
-  case IWORKToken::num_footer_rows | IWORKToken::NS_URI_SF :
+  case +IWORKToken::num_footer_rows | IWORKToken::NS_URI_SF :
     m_footerRows = try_int_cast(value);
     break;
-  case IWORKToken::num_header_columns | IWORKToken::NS_URI_SF :
+  case +IWORKToken::num_header_columns | IWORKToken::NS_URI_SF :
     m_headerColumns = try_int_cast(value);
     break;
-  case IWORKToken::num_header_rows | IWORKToken::NS_URI_SF :
+  case +IWORKToken::num_header_rows | IWORKToken::NS_URI_SF :
     m_headerRows = try_int_cast(value);
     break;
-  case IWORKToken::id | IWORKToken::NS_URI_SF :
+  case +IWORKToken::id | IWORKToken::NS_URI_SF :
     m_tableId = "SFTGlobalID_" + string(value);
     break;
   default:
@@ -2058,18 +2058,18 @@ IWORKXMLContextPtr_t IWORKTabularModelElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::grid | IWORKToken::NS_URI_SF :
+  case +IWORKToken::grid | IWORKToken::NS_URI_SF :
     return std::make_shared<GridElement>(getState());
-  case IWORKToken::tabular_style_ref | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tabular_style_ref | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKRefContext>(getState(), m_styleRef);
 
-  case IWORKToken::cell_comment_mapping | IWORKToken::NS_URI_SF :
+  case +IWORKToken::cell_comment_mapping | IWORKToken::NS_URI_SF :
     return std::make_shared<CellCommentMapping>(getState(), m_coordinateCommentRefMap);
-  case IWORKToken::error_warning_mapping | IWORKToken::NS_URI_SF :
-  case IWORKToken::filterset | IWORKToken::NS_URI_SF :
-  case IWORKToken::grouping_order | IWORKToken::NS_URI_SF :
-  case IWORKToken::grouping_state | IWORKToken::NS_URI_SF :
-  case IWORKToken::sort | IWORKToken::NS_URI_SF :
+  case +IWORKToken::error_warning_mapping | IWORKToken::NS_URI_SF :
+  case +IWORKToken::filterset | IWORKToken::NS_URI_SF :
+  case +IWORKToken::grouping_order | IWORKToken::NS_URI_SF :
+  case +IWORKToken::grouping_state | IWORKToken::NS_URI_SF :
+  case +IWORKToken::sort | IWORKToken::NS_URI_SF :
     break;
   default:
     ETONYEK_DEBUG_MSG(("IWORKTabularModelElement::element: find some unknown element\n"));

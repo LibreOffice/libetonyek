@@ -48,9 +48,9 @@ IWORKXMLContextPtr_t KEY1ContentElement::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::div | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::div | KEY1Token::NS_URI_KEY :
     return std::make_shared<KEY1DivElement>(getState(), m_spanStyle.getStyle(), m_divStyle.getStyle(), m_delayedLineBreak);
-  case KEY1Token::span | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::span | KEY1Token::NS_URI_KEY :
     return std::make_shared<KEY1SpanElement>(getState(), m_spanStyle.getStyle(), m_delayedLineBreak);
   default:
     ETONYEK_DEBUG_MSG(("KEY1ContentElement::element: unknown element\n"));

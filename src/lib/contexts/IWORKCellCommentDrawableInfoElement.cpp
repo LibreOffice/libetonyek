@@ -49,16 +49,16 @@ IWORKXMLContextPtr_t IWORKCellCommentDrawableInfoElement::element(const int name
 {
   switch (name)
   {
-  case IWORKToken::geometry | IWORKToken::NS_URI_SF :
+  case +IWORKToken::geometry | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKGeometryElement>(getState());
-  case IWORKToken::path | IWORKToken::NS_URI_SF :
+  case +IWORKToken::path | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKPathElement>(getState());
-  case IWORKToken::style | IWORKToken::NS_URI_SF :
+  case +IWORKToken::style | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_cellCommentStyles);
-  case IWORKToken::bubble_cellid | IWORKToken::NS_URI_SF : // sf:row sf:column
-  case IWORKToken::bubble_offset | IWORKToken::NS_URI_SF : // sfa:h and sfa:w
+  case +IWORKToken::bubble_cellid | IWORKToken::NS_URI_SF : // sf:row sf:column
+  case +IWORKToken::bubble_offset | IWORKToken::NS_URI_SF : // sfa:h and sfa:w
     return IWORKXMLContextPtr_t();
-  case IWORKToken::NS_URI_SF | IWORKToken::text :
+  case +IWORKToken::NS_URI_SF | IWORKToken::text :
     return std::make_shared<IWORKTextElement>(getState());
   default:
     break;

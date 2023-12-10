@@ -49,21 +49,21 @@ void IWORKStyleContext::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::ident :
+  case +IWORKToken::NS_URI_SF | IWORKToken::ident :
     m_ident = value;
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::parent_ident :
+  case +IWORKToken::NS_URI_SF | IWORKToken::parent_ident :
     m_parentIdent = value;
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID :
     IWORKXMLElementContextBase::attribute(name, value);
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::sfclass :
-  case IWORKToken::NS_URI_SF | IWORKToken::cell_style_default_line_height : // attribute of cell-style USEME
-  case IWORKToken::NS_URI_SF | IWORKToken::locked : // attribute of graphic-style
-  case IWORKToken::NS_URI_SF | IWORKToken::name :
-  case IWORKToken::NS_URI_SF | IWORKToken::seriesIndex : // attribute of chart-series-style
-  case IWORKToken::NS_URI_SF | IWORKToken::tabular_style_name_internal : // attribute of tabular-style
+  case +IWORKToken::NS_URI_SFA | IWORKToken::sfclass :
+  case +IWORKToken::NS_URI_SF | IWORKToken::cell_style_default_line_height : // attribute of cell-style USEME
+  case +IWORKToken::NS_URI_SF | IWORKToken::locked : // attribute of graphic-style
+  case +IWORKToken::NS_URI_SF | IWORKToken::name :
+  case +IWORKToken::NS_URI_SF | IWORKToken::seriesIndex : // attribute of chart-series-style
+  case +IWORKToken::NS_URI_SF | IWORKToken::tabular_style_name_internal : // attribute of tabular-style
     break;
   default :
     ETONYEK_DEBUG_MSG(("IWORKStyleContext::attribute: find some unknown attribute\n"));
@@ -76,7 +76,7 @@ IWORKXMLContextPtr_t IWORKStyleContext::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::property_map :
+  case +IWORKToken::NS_URI_SF | IWORKToken::property_map :
     return std::make_shared<IWORKPropertyMapElement>(getState(), m_props);
   default :
     ETONYEK_DEBUG_MSG(("IWORKStyleContext::element: find some unknown element\n"));

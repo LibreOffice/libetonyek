@@ -38,10 +38,10 @@ void IWORKDateTimeFormatElement::attribute(const int name, const char *const val
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::fmt:
+  case +IWORKToken::NS_URI_SF | IWORKToken::fmt:
     get(m_value).m_format = value;
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID :
     IWORKXMLEmptyContextBase::attribute(name, value);
     break;
   default:
@@ -67,10 +67,10 @@ void IWORKDurationFormatElement::attribute(const int name, const char *const val
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::fmt:
+  case +IWORKToken::NS_URI_SF | IWORKToken::fmt:
     get(m_value).m_format = value;
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID :
     IWORKXMLEmptyContextBase::attribute(name, value);
     break;
   default:
@@ -96,44 +96,44 @@ void IWORKNumberFormatElement::attribute(const int name, const char *const value
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::format_base :
+  case +IWORKToken::NS_URI_SF | IWORKToken::format_base :
     get(m_value).m_base = int_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_base_places :
+  case +IWORKToken::NS_URI_SF | IWORKToken::format_base_places :
     get(m_value).m_basePlaces = int_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_base_use_minus_sign :
+  case +IWORKToken::NS_URI_SF | IWORKToken::format_base_use_minus_sign :
     get(m_value).m_baseUseMinusSign = bool_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_currency_code :
+  case +IWORKToken::NS_URI_SF | IWORKToken::format_currency_code :
     get(m_value).m_currencyCode = value;
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_decimal_places :
+  case +IWORKToken::NS_URI_SF | IWORKToken::format_decimal_places :
     get(m_value).m_decimalPlaces = int_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_fraction_accuracy :
+  case +IWORKToken::NS_URI_SF | IWORKToken::format_fraction_accuracy :
     get(m_value).m_fractionAccuracy = int_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_negative_style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::format_negative_style :
     get(m_value).m_negativeStyle = int_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_show_thousands_separator :
+  case +IWORKToken::NS_URI_SF | IWORKToken::format_show_thousands_separator :
     get(m_value).m_thousandsSeparator = bool_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_string :
+  case +IWORKToken::NS_URI_SF | IWORKToken::format_string :
     get(m_value).m_string = value;
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_type :
+  case +IWORKToken::NS_URI_SF | IWORKToken::format_type :
     get(m_value).m_type = get(IWORKNumberConverter<IWORKCellNumberType>::convert(value));
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format_use_accounting_style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::format_use_accounting_style :
     get(m_value).m_accountingStyle = bool_cast(value);
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID :
     IWORKXMLEmptyContextBase::attribute(name, value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::custom :
-  case IWORKToken::NS_URI_SF | IWORKToken::format_name :
+  case +IWORKToken::NS_URI_SF | IWORKToken::custom :
+  case +IWORKToken::NS_URI_SF | IWORKToken::format_name :
     break;
   default:
     ETONYEK_DEBUG_MSG(("IWORKNumberFormatElement::attribute[IWORKFormatElement.cpp]: find unknown attribute\n"));

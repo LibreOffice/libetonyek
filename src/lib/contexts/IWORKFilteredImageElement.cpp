@@ -43,16 +43,16 @@ IWORKXMLContextPtr_t IWORKFilteredImageElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::unfiltered :
+  case +IWORKToken::NS_URI_SF | IWORKToken::unfiltered :
     return std::make_shared<IWORKUnfilteredElement>(getState(), m_unfiltered);
-  case IWORKToken::NS_URI_SF | IWORKToken::unfiltered_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::unfiltered_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_unfilteredId);
-  case IWORKToken::NS_URI_SF | IWORKToken::filtered :
+  case +IWORKToken::NS_URI_SF | IWORKToken::filtered :
     return std::make_shared<IWORKFilteredElement>(getState(), m_filtered);
-  case IWORKToken::NS_URI_SF | IWORKToken::leveled :
+  case +IWORKToken::NS_URI_SF | IWORKToken::leveled :
     return std::make_shared<LeveledElement>(getState(), m_leveled);
-  case IWORKToken::NS_URI_SF | IWORKToken::extent : // TODO readme
-  case IWORKToken::NS_URI_SF | IWORKToken::filter_properties :
+  case +IWORKToken::NS_URI_SF | IWORKToken::extent : // TODO readme
+  case +IWORKToken::NS_URI_SF | IWORKToken::filter_properties :
     break;
   default:
     ETONYEK_DEBUG_MSG(("IWORKFilteredImageElement::element: unknown element\n"));

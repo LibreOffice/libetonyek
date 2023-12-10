@@ -29,7 +29,7 @@ void PAG1AnnotationElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID : // annotation
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID : // annotation
     m_id = value;
     break;
   default:

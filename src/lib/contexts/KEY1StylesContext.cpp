@@ -246,15 +246,15 @@ IWORKXMLContextPtr_t KEY1StylesContext::element(const int name)
 {
   switch (name)
   {
-  case KEY1Token::dash_style | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::dash_style | KEY1Token::NS_URI_KEY :
     return std::make_shared<PatternStyleElement>(getState(), m_pattern);
-  case KEY1Token::fill_style | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::fill_style | KEY1Token::NS_URI_KEY :
     return std::make_shared<KEY1FillElement>(getState(), m_fill);
-  case KEY1Token::line_head_style | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::line_head_style | KEY1Token::NS_URI_KEY :
     return std::make_shared<MarkerStyleElement>(getState(), m_lineHead);
-  case KEY1Token::line_tail_style | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::line_tail_style | KEY1Token::NS_URI_KEY :
     return std::make_shared<MarkerStyleElement>(getState(), m_lineTail);
-  case KEY1Token::shadow_style | KEY1Token::NS_URI_KEY :
+  case +KEY1Token::shadow_style | KEY1Token::NS_URI_KEY :
     return std::make_shared<ShadowStyleElement>(getState(), m_shadow);
   default :
     ETONYEK_DEBUG_MSG(("KEY1StylesContext::element[KEY1StylesContext.cpp]: unknown element\n"));

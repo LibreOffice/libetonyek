@@ -30,10 +30,10 @@ void IWORKFieldElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::val | IWORKToken::NS_URI_SF : // date-time
+  case +IWORKToken::val | IWORKToken::NS_URI_SF : // date-time
     m_val=value;
     break;
-  case IWORKToken::value | IWORKToken::NS_URI_SF : // page-count, page-number
+  case +IWORKToken::value | IWORKToken::NS_URI_SF : // page-count, page-number
     m_value=int_cast(value);
     break;
   default:
@@ -50,7 +50,7 @@ IWORKXMLContextPtr_t IWORKFieldElement::element(const int name)
 
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::span :
+  case +IWORKToken::NS_URI_SF | IWORKToken::span :
     return std::make_shared<IWORKSpanElement>(getState());
   default:
     break;

@@ -33,7 +33,7 @@ namespace libetonyek
 
 namespace
 {
-typedef IWORKStyleContainer<IWORKToken::NS_URI_SF | IWORKToken::tabular_style, IWORKToken::NS_URI_SF | IWORKToken::tabular_style_ref> TabularStyleContext;
+typedef IWORKStyleContainer<+IWORKToken::NS_URI_SF | IWORKToken::tabular_style, +IWORKToken::NS_URI_SF | IWORKToken::tabular_style_ref> TabularStyleContext;
 }
 
 IWORKTabularInfoElement::IWORKTabularInfoElement(IWORKXMLParserState &state)
@@ -49,7 +49,7 @@ void IWORKTabularInfoElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case PAG1Token::order | PAG1Token::NS_URI_SL :
+  case +PAG1Token::order | PAG1Token::NS_URI_SL :
     m_order=try_int_cast(value);
     break;
   default:
@@ -70,15 +70,15 @@ IWORKXMLContextPtr_t IWORKTabularInfoElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::geometry | IWORKToken::NS_URI_SF :
+  case +IWORKToken::geometry | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKGeometryElement>(getState());
-  case IWORKToken::style | IWORKToken::NS_URI_SF :
+  case +IWORKToken::style | IWORKToken::NS_URI_SF :
     return std::make_shared<TabularStyleContext>(getState(), m_style, getState().getDictionary().m_tabularStyles);
-  case IWORKToken::tabular_model | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tabular_model | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKTabularModelElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::tabular_model_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::tabular_model_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_tableRef);
-  case IWORKToken::NS_URI_SF | IWORKToken::wrap : // USEME
+  case +IWORKToken::NS_URI_SF | IWORKToken::wrap : // USEME
     return std::make_shared<IWORKWrapElement>(getState(), m_wrap);
   default:
     ETONYEK_DEBUG_MSG(("IWORKTabularInfoElement::element: find some unknown element\n"));

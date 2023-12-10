@@ -28,7 +28,7 @@ IWORKLayoutElement::IWORKLayoutElement(IWORKXMLParserState &state)
 
 void IWORKLayoutElement::attribute(const int name, const char *const value)
 {
-  if ((IWORKToken::NS_URI_SF | IWORKToken::style) == name)
+  if ((+IWORKToken::NS_URI_SF | IWORKToken::style) == name)
     m_style=getState().getStyleByName(value, getState().getDictionary().m_layoutStyles);
   else // also sfa:ID
   {
@@ -41,7 +41,7 @@ IWORKXMLContextPtr_t IWORKLayoutElement::element(const int name)
   if (!m_opened)
     open();
 
-  if ((IWORKToken::NS_URI_SF | IWORKToken::p) == name)
+  if ((+IWORKToken::NS_URI_SF | IWORKToken::p) == name)
     return std::make_shared<IWORKPElement>(getState());
 
   return IWORKXMLContextPtr_t();

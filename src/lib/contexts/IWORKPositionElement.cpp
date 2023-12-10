@@ -30,10 +30,10 @@ void IWORKPositionElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SFA | IWORKToken::x :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::x :
     m_x = try_double_cast(value);
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::y :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::y :
     m_y = try_double_cast(value);
     break;
   default:

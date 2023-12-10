@@ -35,7 +35,7 @@ IWORKXMLContextElement::IWORKXMLContextElement(IWORKXMLParserState &)
 
 void IWORKXMLContextElement::attribute(const int name, const char *const value)
 {
-  if ((IWORKToken::NS_URI_SFA | IWORKToken::ID) == name)
+  if ((+IWORKToken::NS_URI_SFA | IWORKToken::ID) == name)
     m_id = value;
 }
 
@@ -81,10 +81,10 @@ void IWORKXMLContextEmpty::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID :
     m_id = value;
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::IDREF :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::IDREF :
     m_ref = value;
     break;
   default:

@@ -37,7 +37,7 @@ void IWORKHeaderFooterContext::startOfElement()
 
 void IWORKHeaderFooterContext::attribute(const int name, const char *const value)
 {
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::name))
+  if (name == (+IWORKToken::NS_URI_SF | IWORKToken::name))
     m_name = value;
   else
     IWORKXMLElementContextBase::attribute(name, value);
@@ -45,7 +45,7 @@ void IWORKHeaderFooterContext::attribute(const int name, const char *const value
 
 IWORKXMLContextPtr_t IWORKHeaderFooterContext::element(const int name)
 {
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::text_storage))
+  if (name == (+IWORKToken::NS_URI_SF | IWORKToken::text_storage))
     return std::make_shared<IWORKTextStorageElement>(getState());
   return IWORKXMLContextPtr_t();
 }

@@ -64,13 +64,13 @@ void GradientStopElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::fraction :
+  case +IWORKToken::NS_URI_SF | IWORKToken::fraction :
     m_fraction = double_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::inflection :
+  case +IWORKToken::NS_URI_SF | IWORKToken::inflection :
     m_inflection = double_cast(value);
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID :
     IWORKXMLElementContextBase::attribute(name, value);
     break;
   default:
@@ -82,7 +82,7 @@ IWORKXMLContextPtr_t GradientStopElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::color :
+  case +IWORKToken::NS_URI_SF | IWORKToken::color :
     return std::make_shared<IWORKColorElement>(getState(), m_color);
   default:
     ETONYEK_DEBUG_MSG(("GradientStopElement::element[IWORKFillElement.cpp]: find unknown element\n"));
@@ -110,7 +110,7 @@ void GradientStopElement::endOfElement()
 namespace
 {
 
-typedef IWORKContainerContext<IWORKGradientStop, GradientStopElement, IWORKDirectCollector, IWORKToken::NS_URI_SF | IWORKToken::gradient_stop, IWORKToken::NS_URI_SF | IWORKToken::gradient_stop_ref> StopsElement;
+typedef IWORKContainerContext<IWORKGradientStop, GradientStopElement, IWORKDirectCollector, +IWORKToken::NS_URI_SF | IWORKToken::gradient_stop, +IWORKToken::NS_URI_SF | IWORKToken::gradient_stop_ref> StopsElement;
 
 }
 
@@ -149,13 +149,13 @@ void AngleGradientElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::angle :
+  case +IWORKToken::NS_URI_SF | IWORKToken::angle :
     m_angle = double_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::opacity :
+  case +IWORKToken::NS_URI_SF | IWORKToken::opacity :
     m_opacity = double_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::type :
+  case +IWORKToken::NS_URI_SF | IWORKToken::type :
     switch (getState().getTokenizer().getId(value))
     {
     case IWORKToken::linear :
@@ -168,7 +168,7 @@ void AngleGradientElement::attribute(const int name, const char *const value)
       ETONYEK_DEBUG_MSG(("AngleGradientElement::attribute[IWORKFillElement.cpp]: unknown type attribute\n"));
     }
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID :
     IWORKXMLElementContextBase::attribute(name, value);
     break;
   default:
@@ -180,7 +180,7 @@ IWORKXMLContextPtr_t AngleGradientElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::stops :
+  case +IWORKToken::NS_URI_SF | IWORKToken::stops :
     return std::make_shared<StopsElement>(getState(), getState().getDictionary().m_gradientStops, m_stops);
   default:
     ETONYEK_DEBUG_MSG(("AngleGradientElement::element[IWORKFillElement.cpp]: unknown element\n"));
@@ -244,10 +244,10 @@ void TransformGradientElement::attribute(const int name, const char *const value
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::opacity :
+  case +IWORKToken::NS_URI_SF | IWORKToken::opacity :
     m_opacity = double_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::type :
+  case +IWORKToken::NS_URI_SF | IWORKToken::type :
     switch (getState().getTokenizer().getId(value))
     {
     case IWORKToken::linear :
@@ -260,7 +260,7 @@ void TransformGradientElement::attribute(const int name, const char *const value
       ETONYEK_DEBUG_MSG(("TransformGradientElement::attribute[IWORKFillElement.cpp]: unknown type\n"));
     }
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID :
     IWORKXMLElementContextBase::attribute(name, value);
     break;
   default:
@@ -272,13 +272,13 @@ IWORKXMLContextPtr_t TransformGradientElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::baseSize :
+  case +IWORKToken::NS_URI_SF | IWORKToken::baseSize :
     return std::make_shared<IWORKSizeElement>(getState(), m_baseSize);
-  case IWORKToken::NS_URI_SF | IWORKToken::end :
+  case +IWORKToken::NS_URI_SF | IWORKToken::end :
     return std::make_shared<IWORKPositionElement>(getState(), m_endPosition);
-  case IWORKToken::NS_URI_SF | IWORKToken::stops :
+  case +IWORKToken::NS_URI_SF | IWORKToken::stops :
     return std::make_shared<StopsElement>(getState(), getState().getDictionary().m_gradientStops, m_stops);
-  case IWORKToken::NS_URI_SF | IWORKToken::start :
+  case +IWORKToken::NS_URI_SF | IWORKToken::start :
     return std::make_shared<IWORKPositionElement>(getState(), m_startPosition);
   default:
     ETONYEK_DEBUG_MSG(("TransformGradientElement::element[IWORKFillElement.cpp]: unknown element\n"));
@@ -337,9 +337,9 @@ void TexturedFillElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_XSI | IWORKToken::type :
+  case +IWORKToken::NS_URI_XSI | IWORKToken::type :
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::technique :
+  case +IWORKToken::NS_URI_SF | IWORKToken::technique :
     switch (getState().getTokenizer().getId(value))
     {
     case IWORKToken::natural :
@@ -362,7 +362,7 @@ void TexturedFillElement::attribute(const int name, const char *const value)
       break;
     }
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID :
     IWORKXMLElementContextBase::attribute(name, value);
     break;
   default:
@@ -375,15 +375,15 @@ IWORKXMLContextPtr_t TexturedFillElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::color :
+  case +IWORKToken::NS_URI_SF | IWORKToken::color :
     return std::make_shared<IWORKColorElement>(getState(), m_color);
-  case IWORKToken::NS_URI_SF | IWORKToken::filtered_image :
+  case +IWORKToken::NS_URI_SF | IWORKToken::filtered_image :
     return std::make_shared<IWORKFilteredImageElement>(getState(), m_content);
-  case IWORKToken::NS_URI_SF | IWORKToken::filtered_image_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::filtered_image_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_filteredImageRef);
-  case IWORKToken::NS_URI_SF | IWORKToken::image :
+  case +IWORKToken::NS_URI_SF | IWORKToken::image :
     return std::make_shared<IWORKImageElement>(getState(), m_content);
-  case IWORKToken::NS_URI_SF | IWORKToken::image_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::image_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_imageRef);
   default:
     ETONYEK_DEBUG_MSG(("TexturedFillElement::element[IWORKFillElement.cpp]: unknown element\n"));
@@ -443,22 +443,22 @@ IWORKXMLContextPtr_t IWORKFillElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::angle_gradient :
+  case +IWORKToken::NS_URI_SF | IWORKToken::angle_gradient :
     return std::make_shared<AngleGradientElement>(getState(), m_gradient);
-  case IWORKToken::NS_URI_SF | IWORKToken::angle_gradient_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::angle_gradient_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_gradientRef);
-  case IWORKToken::NS_URI_SF | IWORKToken::color :
+  case +IWORKToken::NS_URI_SF | IWORKToken::color :
     return std::make_shared<IWORKColorElement>(getState(), m_color);
-  case IWORKToken::NS_URI_SF | IWORKToken::texture_fill : // CHECKME: a dictionary
-  case IWORKToken::NS_URI_SF | IWORKToken::texture_fill_ref : // CHECKME: ref to previous element
+  case +IWORKToken::NS_URI_SF | IWORKToken::texture_fill : // CHECKME: a dictionary
+  case +IWORKToken::NS_URI_SF | IWORKToken::texture_fill_ref : // CHECKME: ref to previous element
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::textured_fill :
+  case +IWORKToken::NS_URI_SF | IWORKToken::textured_fill :
     return std::make_shared<TexturedFillElement>(getState(), m_bitmap);
-  case IWORKToken::NS_URI_SF | IWORKToken::textured_fill_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::textured_fill_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_texturedFillRef);
-  case IWORKToken::NS_URI_SF | IWORKToken::transform_gradient :
+  case +IWORKToken::NS_URI_SF | IWORKToken::transform_gradient :
     return std::make_shared<TransformGradientElement>(getState(), m_gradient);
-  case IWORKToken::NS_URI_SF | IWORKToken::null :
+  case +IWORKToken::NS_URI_SF | IWORKToken::null :
     break;
   default:
     ETONYEK_DEBUG_MSG(("IWORKFillElement::element: unknown element\n"));

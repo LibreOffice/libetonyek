@@ -30,10 +30,10 @@ void IWORKSizeElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SFA | IWORKToken::w :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::w :
     m_width = try_double_cast(value);
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::h :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::h :
     m_height = try_double_cast(value);
     break;
   default:

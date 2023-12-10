@@ -32,7 +32,7 @@ void IWORKSpanElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::style :
     m_style=getState().getStyleByName(value, getState().getDictionary().m_characterStyles);
     break;
   default:
@@ -45,35 +45,35 @@ IWORKXMLContextPtr_t IWORKSpanElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::br : // ok to ignore ?
+  case +IWORKToken::NS_URI_SF | IWORKToken::br : // ok to ignore ?
     return IWORKXMLContextPtr_t();
-  case IWORKToken::NS_URI_SF | IWORKToken::crbr :
-  case IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
-  case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
+  case +IWORKToken::NS_URI_SF | IWORKToken::crbr :
+  case +IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
+  case +IWORKToken::NS_URI_SF | IWORKToken::lnbr :
     ensureOpened();
     return std::make_shared<IWORKBrContext>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::contbr :
+  case +IWORKToken::NS_URI_SF | IWORKToken::contbr :
     m_delayedBreak=IWORK_BREAK_COLUMN;
     return IWORKXMLContextPtr_t();
-  case IWORKToken::NS_URI_SF | IWORKToken::pgbr :
+  case +IWORKToken::NS_URI_SF | IWORKToken::pgbr :
     m_delayedBreak=IWORK_BREAK_PAGE;
     return IWORKXMLContextPtr_t();
-  case IWORKToken::NS_URI_SF | IWORKToken::tab :
+  case +IWORKToken::NS_URI_SF | IWORKToken::tab :
     ensureOpened();
     return std::make_shared<IWORKTabElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::date_time :
+  case +IWORKToken::NS_URI_SF | IWORKToken::date_time :
     ensureOpened();
     return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_DATETIME);
-  case IWORKToken::NS_URI_SF | IWORKToken::filename :
+  case +IWORKToken::NS_URI_SF | IWORKToken::filename :
     ensureOpened();
     return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_FILENAME);
-  case IWORKToken::NS_URI_SF | IWORKToken::page_count :
+  case +IWORKToken::NS_URI_SF | IWORKToken::page_count :
     ensureOpened();
     return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_PAGECOUNT);
-  case IWORKToken::NS_URI_SF | IWORKToken::page_number :
+  case +IWORKToken::NS_URI_SF | IWORKToken::page_number :
     ensureOpened();
     return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_PAGENUMBER);
-  case IWORKToken::NS_URI_SF | IWORKToken::insertion_point :
+  case +IWORKToken::NS_URI_SF | IWORKToken::insertion_point :
     return IWORKXMLContextPtr_t();
   default:
     ETONYEK_DEBUG_MSG(("IWORKSpanElement::element: find some unknown element\n"));

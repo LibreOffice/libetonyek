@@ -48,7 +48,7 @@ void TabstopElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::align :
+  case +IWORKToken::NS_URI_SF | IWORKToken::align :
     switch (getState().getTokenizer().getId(value))
     {
     case IWORKToken::center :
@@ -67,7 +67,7 @@ void TabstopElement::attribute(const int name, const char *const value)
       ETONYEK_DEBUG_MSG(("TabstopElement::attribute: unknown alignment %s\n", value));
     }
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::pos :
+  case +IWORKToken::NS_URI_SF | IWORKToken::pos :
     get(m_tab).m_pos = double_cast(value);
     break;
   default :
@@ -92,7 +92,7 @@ IWORKXMLContextPtr_t IWORKTabsElement::element(const int name)
     m_current.reset();
   }
 
-  if ((IWORKToken::NS_URI_SF | IWORKToken::tabstop) == name)
+  if ((+IWORKToken::NS_URI_SF | IWORKToken::tabstop) == name)
     return std::make_shared<TabstopElement>(getState(), m_current);
 
   return IWORKXMLContextPtr_t();

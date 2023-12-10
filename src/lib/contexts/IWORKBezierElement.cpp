@@ -30,7 +30,7 @@ void IWORKBezierElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SFA | IWORKToken::path :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::path :
     try
     {
       m_path = std::make_shared<IWORKPath>(value);

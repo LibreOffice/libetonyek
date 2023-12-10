@@ -60,9 +60,9 @@ IWORKXMLContextPtr_t ConnectionPathElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::point :
+  case +IWORKToken::NS_URI_SF | IWORKToken::point :
     return std::make_shared<IWORKPositionElement>(getState(), m_point);
-  case IWORKToken::NS_URI_SF | IWORKToken::size :
+  case +IWORKToken::NS_URI_SF | IWORKToken::size :
     return std::make_shared<IWORKSizeElement>(getState(), m_size);
   default:
     ETONYEK_DEBUG_MSG(("ConnectionPathElement::element[IWORKPathElement.cpp]: find unknown element\n"));
@@ -118,7 +118,7 @@ void PointPathElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::type :
+  case +IWORKToken::NS_URI_SF | IWORKToken::type :
   {
     switch (getToken(value))
     {
@@ -146,9 +146,9 @@ IWORKXMLContextPtr_t PointPathElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::point :
+  case +IWORKToken::NS_URI_SF | IWORKToken::point :
     return std::make_shared<IWORKPositionElement>(getState(), m_point);
-  case IWORKToken::NS_URI_SF | IWORKToken::size :
+  case +IWORKToken::NS_URI_SF | IWORKToken::size :
     return std::make_shared<IWORKSizeElement>(getState(), m_size);
   default:
     ETONYEK_DEBUG_MSG(("PointPathElement::element[IWORKPathElement.cpp]: find unknown element\n"));
@@ -215,10 +215,10 @@ void ScalarPathElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::scalar :
+  case +IWORKToken::NS_URI_SF | IWORKToken::scalar :
     m_value = double_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::type :
+  case +IWORKToken::NS_URI_SF | IWORKToken::type :
   {
     switch (getToken(value))
     {
@@ -243,7 +243,7 @@ IWORKXMLContextPtr_t ScalarPathElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::size :
+  case +IWORKToken::NS_URI_SF | IWORKToken::size :
     return std::make_shared<IWORKSizeElement>(getState(), m_size);
   default:
     ETONYEK_DEBUG_MSG(("ScalarPathElement::element[IWORKPathElement.cpp]: find unknown element\n"));
@@ -296,9 +296,9 @@ IWORKXMLContextPtr_t BezierPathElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::bezier :
+  case +IWORKToken::NS_URI_SF | IWORKToken::bezier :
     return std::make_shared<IWORKBezierElement>(getState(), m_path);
-  case IWORKToken::NS_URI_SF | IWORKToken::bezier_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::bezier_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_ref);
   default:
     ETONYEK_DEBUG_MSG(("BezierPathElement::element[IWORKPathElement.cpp]: find unknown element\n"));
@@ -364,19 +364,19 @@ void Callout2PathElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::cornerRadius :
+  case +IWORKToken::NS_URI_SF | IWORKToken::cornerRadius :
     m_cornerRadius = double_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::tailAtCenter :
+  case +IWORKToken::NS_URI_SF | IWORKToken::tailAtCenter :
     m_tailAtCenter = bool_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::tailPositionX :
+  case +IWORKToken::NS_URI_SF | IWORKToken::tailPositionX :
     m_tailPosX = double_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::tailPositionY :
+  case +IWORKToken::NS_URI_SF | IWORKToken::tailPositionY :
     m_tailPosY = double_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::tailSize :
+  case +IWORKToken::NS_URI_SF | IWORKToken::tailSize :
     m_tailSize = double_cast(value);
     break;
   default :
@@ -389,7 +389,7 @@ IWORKXMLContextPtr_t Callout2PathElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::size :
+  case +IWORKToken::NS_URI_SF | IWORKToken::size :
     return std::make_shared<IWORKSizeElement>(getState(), m_size);
   default:
     ETONYEK_DEBUG_MSG(("Callout2PathElement::element[IWORKPathElement.cpp]: find unknown element\n"));
@@ -415,16 +415,16 @@ IWORKXMLContextPtr_t IWORKPathElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::bezier_path :
-  case IWORKToken::NS_URI_SF | IWORKToken::editable_bezier_path :
+  case +IWORKToken::NS_URI_SF | IWORKToken::bezier_path :
+  case +IWORKToken::NS_URI_SF | IWORKToken::editable_bezier_path :
     return std::make_shared<BezierPathElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::callout2_path :
+  case +IWORKToken::NS_URI_SF | IWORKToken::callout2_path :
     return std::make_shared<Callout2PathElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::connection_path :
+  case +IWORKToken::NS_URI_SF | IWORKToken::connection_path :
     return std::make_shared<ConnectionPathElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::point_path :
+  case +IWORKToken::NS_URI_SF | IWORKToken::point_path :
     return std::make_shared<PointPathElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::scalar_path :
+  case +IWORKToken::NS_URI_SF | IWORKToken::scalar_path :
     return std::make_shared<ScalarPathElement>(getState());
   default:
     ETONYEK_DEBUG_MSG(("IWORKPathElement::element: find unknown element\n"));

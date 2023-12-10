@@ -62,13 +62,13 @@ void PagemasterElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case PAG1Token::NS_URI_SL | PAG1Token::footer :
+  case +PAG1Token::NS_URI_SL | PAG1Token::footer :
     m_footer = value;
     break;
-  case PAG1Token::NS_URI_SL | PAG1Token::header :
+  case +PAG1Token::NS_URI_SL | PAG1Token::header :
     m_header = value;
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID : // store me?
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID : // store me?
     IWORKXMLEmptyContextBase::attribute(name, value);
     break;
   default :
@@ -96,9 +96,9 @@ void PagemasterElement::endOfElement()
 namespace
 {
 
-typedef IWORKPropertyContext<property::EvenPageMaster, PagemasterElement, IWORKToken::NS_URI_SF | IWORKToken::pagemaster> EvenPageMasterElement;
-typedef IWORKPropertyContext<property::FirstPageMaster, PagemasterElement, IWORKToken::NS_URI_SF | IWORKToken::pagemaster> FirstPageMasterElement;
-typedef IWORKPropertyContext<property::OddPageMaster, PagemasterElement, IWORKToken::NS_URI_SF | IWORKToken::pagemaster> OddPageMasterElement;
+typedef IWORKPropertyContext<property::EvenPageMaster, PagemasterElement, +IWORKToken::NS_URI_SF | IWORKToken::pagemaster> EvenPageMasterElement;
+typedef IWORKPropertyContext<property::FirstPageMaster, PagemasterElement, +IWORKToken::NS_URI_SF | IWORKToken::pagemaster> FirstPageMasterElement;
+typedef IWORKPropertyContext<property::OddPageMaster, PagemasterElement, +IWORKToken::NS_URI_SF | IWORKToken::pagemaster> OddPageMasterElement;
 
 }
 
@@ -129,11 +129,11 @@ IWORKXMLContextPtr_t PropertyMapElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::evenPageMaster :
+  case +IWORKToken::NS_URI_SF | IWORKToken::evenPageMaster :
     return std::make_shared<EvenPageMasterElement>(getState(), m_propMap);
-  case IWORKToken::NS_URI_SF | IWORKToken::firstPageMaster :
+  case +IWORKToken::NS_URI_SF | IWORKToken::firstPageMaster :
     return std::make_shared<FirstPageMasterElement>(getState(), m_propMap);
-  case IWORKToken::NS_URI_SF | IWORKToken::oddPageMaster :
+  case +IWORKToken::NS_URI_SF | IWORKToken::oddPageMaster :
     return std::make_shared<OddPageMasterElement>(getState(), m_propMap);
   default:
     break;
@@ -157,10 +157,10 @@ void PAG1StyleContext::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::ident :
+  case +IWORKToken::NS_URI_SF | IWORKToken::ident :
     m_ident = value;
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::parent_ident :
+  case +IWORKToken::NS_URI_SF | IWORKToken::parent_ident :
     m_parentIdent = value;
     break;
   default :
@@ -175,7 +175,7 @@ IWORKXMLContextPtr_t PAG1StyleContext::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::property_map :
+  case +IWORKToken::NS_URI_SF | IWORKToken::property_map :
     return std::make_shared<PropertyMapElement>(getState(), m_props);
   default:
     ETONYEK_DEBUG_MSG(("PAG1StyleContext::element: found unexpected element %d\n", name));

@@ -37,9 +37,9 @@ IWORKXMLContextPtr_t IWORKStylesheetBase::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::styles :
+  case +IWORKToken::NS_URI_SF | IWORKToken::styles :
     return std::make_shared<IWORKStylesContext>(getState(), false);
-  case IWORKToken::NS_URI_SF | IWORKToken::anon_styles :
+  case +IWORKToken::NS_URI_SF | IWORKToken::anon_styles :
     return std::make_shared<IWORKStylesContext>(getState(), true);
   default:
     ETONYEK_DEBUG_MSG(("IWORKStylesContext::element: find some unknown element\n"));

@@ -41,9 +41,9 @@ IWORKXMLContextPtr_t IWORKTextStorageElement::element(const int name)
 
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::stylesheet_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::stylesheet_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_stylesheetId);
-  case IWORKToken::NS_URI_SF | IWORKToken::text_body :
+  case +IWORKToken::NS_URI_SF | IWORKToken::text_body :
     return std::make_shared<IWORKTextBodyElement>(getState());
   default:
     ETONYEK_DEBUG_MSG(("IWORKTextStorageElement::element: find some unknown element\n"));

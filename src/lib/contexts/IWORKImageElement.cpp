@@ -29,7 +29,7 @@ namespace libetonyek
 
 namespace
 {
-typedef IWORKStyleContainer<IWORKToken::NS_URI_SF | IWORKToken::graphic_style, IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref> GraphicStyleContext;
+typedef IWORKStyleContainer<+IWORKToken::NS_URI_SF | IWORKToken::graphic_style, +IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref> GraphicStyleContext;
 }
 
 IWORKImageElement::IWORKImageElement(IWORKXMLParserState &state, IWORKMediaContentPtr_t &content)
@@ -74,9 +74,9 @@ void IWORKImageElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SFA | IWORKToken::version :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::version :
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::locked :
+  case +IWORKToken::NS_URI_SF | IWORKToken::locked :
     m_locked = bool_cast(value);
     break;
   default :
@@ -89,19 +89,19 @@ IWORKXMLContextPtr_t IWORKImageElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::binary :
+  case +IWORKToken::NS_URI_SF | IWORKToken::binary :
     return std::make_shared<IWORKBinaryElement>(getState(), m_content);
-  case IWORKToken::NS_URI_SF | IWORKToken::binary_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::binary_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_binaryRef);
-  case IWORKToken::NS_URI_SF | IWORKToken::crop_geometry :
+  case +IWORKToken::NS_URI_SF | IWORKToken::crop_geometry :
     return std::make_shared<IWORKGeometryElement>(getState(), m_cropGeometry);
-  case IWORKToken::NS_URI_SF | IWORKToken::data :
+  case +IWORKToken::NS_URI_SF | IWORKToken::data :
     return std::make_shared<IWORKDataElement>(getState(), m_data, m_fillColor);
-  case IWORKToken::NS_URI_SF | IWORKToken::filtered_image :
+  case +IWORKToken::NS_URI_SF | IWORKToken::filtered_image :
     return std::make_shared<IWORKFilteredImageElement>(getState(), m_filteredImage);
-  case IWORKToken::NS_URI_SF | IWORKToken::geometry :
+  case +IWORKToken::NS_URI_SF | IWORKToken::geometry :
     return std::make_shared<IWORKGeometryElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::masking_shape_path_source :
+  case +IWORKToken::NS_URI_SF | IWORKToken::masking_shape_path_source :
   {
     static bool first=true;
     if (first)
@@ -111,11 +111,11 @@ IWORKXMLContextPtr_t IWORKImageElement::element(const int name)
     }
     break;
   }
-  case IWORKToken::NS_URI_SF | IWORKToken::placeholder_size : // USEME
+  case +IWORKToken::NS_URI_SF | IWORKToken::placeholder_size : // USEME
     return std::make_shared<IWORKSizeElement>(getState(),m_placeholderSize);
-  case IWORKToken::NS_URI_SF | IWORKToken::size :
+  case +IWORKToken::NS_URI_SF | IWORKToken::size :
     return std::make_shared<IWORKSizeElement>(getState(),m_size);
-  case IWORKToken::NS_URI_SF | IWORKToken::style : // USEME
+  case +IWORKToken::NS_URI_SF | IWORKToken::style : // USEME
     return std::make_shared<GraphicStyleContext>(getState(), m_style, getState().getDictionary().m_graphicStyles);
   default:
     ETONYEK_DEBUG_MSG(("IWORKImageElement::element: find some unknown element\n"));

@@ -37,7 +37,7 @@ IWORKListLabelTypeinfoElement::IWORKListLabelTypeinfoElement(IWORKXMLParserState
 
 void IWORKListLabelTypeinfoElement::attribute(const int name, const char *const value)
 {
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::type))
+  if (name == (+IWORKToken::NS_URI_SF | IWORKToken::type))
   {
     switch (getState().getTokenizer().getId(value))
     {
@@ -62,13 +62,13 @@ IWORKXMLContextPtr_t IWORKListLabelTypeinfoElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::binary :
+  case +IWORKToken::NS_URI_SF | IWORKToken::binary :
     return std::make_shared<IWORKBinaryElement>(getState(), m_image);
-  case IWORKToken::NS_URI_SF | IWORKToken::binary_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::binary_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_imageRef);
-  case IWORKToken::NS_URI_SF | IWORKToken::text_label :
+  case +IWORKToken::NS_URI_SF | IWORKToken::text_label :
     return std::make_shared<IWORKTextLabelElement>(getState(), m_text);
-  case IWORKToken::NS_URI_SF | IWORKToken::text_label_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::text_label_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_textRef);
   default:
     break;

@@ -28,68 +28,68 @@ IWORKXMLContextPtr_t IWORKStylesContext::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::connection_style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::connection_style :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_graphicStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::headline_style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::headline_style :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_headlineStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
+  case +IWORKToken::NS_URI_SF | IWORKToken::liststyle :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_listStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::cell_style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::cell_style :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_cellStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::chart_style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::chart_style :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_chartStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::chart_series_style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::chart_series_style :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_chartSeriesStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::graphic_style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::graphic_style :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_graphicStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::characterstyle :
+  case +IWORKToken::NS_URI_SF | IWORKToken::characterstyle :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_characterStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
+  case +IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_layoutStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
+  case +IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_paragraphStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::table_style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::table_style :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_tableStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::table_cell_style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::table_cell_style :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_tableCellStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::table_vector_style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::table_vector_style :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_tableVectorStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::tabular_style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::tabular_style :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_tabularStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::tocstyle :
+  case +IWORKToken::NS_URI_SF | IWORKToken::tocstyle :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_tocStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::vector_style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::vector_style :
     return std::make_shared<IWORKStyleContext>(getState(), &getState().getDictionary().m_vectorStyles);
 
-  case IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::cell_style_ref :
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_cellStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::characterstyle_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::characterstyle_ref :
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_characterStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::chart_style_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::chart_style_ref :
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_chartStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::chart_series_style_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::chart_series_style_ref :
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_chartSeriesStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::connection_style_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::connection_style_ref :
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_graphicStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref :
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_graphicStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::layoutstyle_ref :
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_layoutStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::liststyle_ref :
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_listStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle_ref :
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_paragraphStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::table_style_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::table_style_ref :
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_tableStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::table_cell_style_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::table_cell_style_ref :
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_tableCellStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::table_vector_style_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::table_vector_style_ref :
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_tableVectorStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::tabular_style_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::tabular_style_ref :
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_tabularStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::tocstyle_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::tocstyle_ref :
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_tocStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::vector_style_ref :
     return std::make_shared<IWORKStyleRefContext>(getState(), getState().getDictionary().m_vectorStyles);
   default:
     ETONYEK_DEBUG_MSG(("IWORKStylesContext::element: find some unknown element %d\n", int(name)));

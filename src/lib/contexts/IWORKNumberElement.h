@@ -42,11 +42,11 @@ void IWORKNumberElement<T>::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SFA | IWORKToken::number :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::number :
     m_value = IWORKNumberConverter<T>::convert(value);
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::sfclass : // with value number
-  case IWORKToken::NS_URI_SFA | IWORKToken::type :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::sfclass : // with value number
+  case +IWORKToken::NS_URI_SFA | IWORKToken::type :
     break;
   default:
     ETONYEK_DEBUG_MSG(("IWORKNumberElement<...>::attribute: found unexpected attribute\n"));

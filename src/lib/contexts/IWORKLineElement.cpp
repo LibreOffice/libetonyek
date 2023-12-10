@@ -22,7 +22,7 @@ namespace libetonyek
 {
 namespace
 {
-typedef IWORKStyleContainer<IWORKToken::NS_URI_SF | IWORKToken::graphic_style, IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref> GraphicStyleContext;
+typedef IWORKStyleContainer<+IWORKToken::NS_URI_SF | IWORKToken::graphic_style, +IWORKToken::NS_URI_SF | IWORKToken::graphic_style_ref> GraphicStyleContext;
 }
 
 IWORKLineElement::IWORKLineElement(IWORKXMLParserState &state)
@@ -43,13 +43,13 @@ IWORKXMLContextPtr_t IWORKLineElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::geometry :
+  case +IWORKToken::NS_URI_SF | IWORKToken::geometry :
     return std::make_shared<IWORKGeometryElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::head :
+  case +IWORKToken::NS_URI_SF | IWORKToken::head :
     return std::make_shared<IWORKPositionElement>(getState(), m_head);
-  case IWORKToken::NS_URI_SF | IWORKToken::style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::style :
     return std::make_shared<GraphicStyleContext>(getState(), m_style, getState().getDictionary().m_graphicStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::tail :
+  case +IWORKToken::NS_URI_SF | IWORKToken::tail :
     return std::make_shared<IWORKPositionElement>(getState(), m_tail);
   default:
     break;

@@ -47,10 +47,10 @@ void GhostTextElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::localize | IWORKToken::NS_URI_SF : // a bool
+  case +IWORKToken::localize | IWORKToken::NS_URI_SF : // a bool
     break;
-  case IWORKToken::ID | IWORKToken::NS_URI_SFA :
-  case IWORKToken::IDREF | IWORKToken::NS_URI_SFA :
+  case +IWORKToken::ID | IWORKToken::NS_URI_SFA :
+  case +IWORKToken::IDREF | IWORKToken::NS_URI_SFA :
     /* storeme? */
     IWORKXMLEmptyContextBase::attribute(name, value);
     break;
@@ -64,27 +64,27 @@ IWORKXMLContextPtr_t GhostTextElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::br : // ok to ignore?
+  case +IWORKToken::NS_URI_SF | IWORKToken::br : // ok to ignore?
     return IWORKXMLContextPtr_t();
-  case IWORKToken::NS_URI_SF | IWORKToken::crbr :
-  case IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
-  case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
+  case +IWORKToken::NS_URI_SF | IWORKToken::crbr :
+  case +IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
+  case +IWORKToken::NS_URI_SF | IWORKToken::lnbr :
     return std::make_shared<IWORKBrContext>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::pgbr :
+  case +IWORKToken::NS_URI_SF | IWORKToken::pgbr :
     return IWORKXMLContextPtr_t();
-  case IWORKToken::NS_URI_SF | IWORKToken::span :
+  case +IWORKToken::NS_URI_SF | IWORKToken::span :
     return std::make_shared<IWORKSpanElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::tab :
+  case +IWORKToken::NS_URI_SF | IWORKToken::tab :
     return std::make_shared<IWORKTabElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::link :
+  case +IWORKToken::NS_URI_SF | IWORKToken::link :
     return std::make_shared<IWORKLinkElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::date_time :
+  case +IWORKToken::NS_URI_SF | IWORKToken::date_time :
     return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_DATETIME);
-  case IWORKToken::NS_URI_SF | IWORKToken::filename :
+  case +IWORKToken::NS_URI_SF | IWORKToken::filename :
     return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_FILENAME);
-  case IWORKToken::NS_URI_SF | IWORKToken::page_count :
+  case +IWORKToken::NS_URI_SF | IWORKToken::page_count :
     return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_PAGECOUNT);
-  case IWORKToken::NS_URI_SF | IWORKToken::page_number :
+  case +IWORKToken::NS_URI_SF | IWORKToken::page_number :
     return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_PAGENUMBER);
   default:
     ETONYEK_DEBUG_MSG(("GhostTextElement::element[IWORKPElement.cpp]: find unknown element\n"));
@@ -119,13 +119,13 @@ void IWORKPElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::list_level :
+  case +IWORKToken::NS_URI_SF | IWORKToken::list_level :
     m_listLevel = try_int_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::restart_list :
+  case +IWORKToken::NS_URI_SF | IWORKToken::restart_list :
     m_restartList = try_bool_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::style :
     m_style = getState().getStyleByName(value, getState().getDictionary().m_paragraphStyles);
     break;
   default:
@@ -140,34 +140,34 @@ IWORKXMLContextPtr_t IWORKPElement::element(const int name)
 
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::br : // ok to ignore?
+  case +IWORKToken::NS_URI_SF | IWORKToken::br : // ok to ignore?
     return IWORKXMLContextPtr_t();
-  case IWORKToken::NS_URI_SF | IWORKToken::crbr :
-  case IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
-  case IWORKToken::NS_URI_SF | IWORKToken::lnbr :
+  case +IWORKToken::NS_URI_SF | IWORKToken::crbr :
+  case +IWORKToken::NS_URI_SF | IWORKToken::intratopicbr :
+  case +IWORKToken::NS_URI_SF | IWORKToken::lnbr :
     return std::make_shared<IWORKBrContext>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::pgbr :
+  case +IWORKToken::NS_URI_SF | IWORKToken::pgbr :
     m_delayedPageBreak=true;
     return IWORKXMLContextPtr_t();
-  case IWORKToken::NS_URI_SF | IWORKToken::span :
+  case +IWORKToken::NS_URI_SF | IWORKToken::span :
     return std::make_shared<IWORKSpanElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::tab :
+  case +IWORKToken::NS_URI_SF | IWORKToken::tab :
     return std::make_shared<IWORKTabElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::link :
+  case +IWORKToken::NS_URI_SF | IWORKToken::link :
     return std::make_shared<IWORKLinkElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::date_time :
+  case +IWORKToken::NS_URI_SF | IWORKToken::date_time :
     return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_DATETIME);
-  case IWORKToken::NS_URI_SF | IWORKToken::filename :
+  case +IWORKToken::NS_URI_SF | IWORKToken::filename :
     return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_FILENAME);
-  case IWORKToken::NS_URI_SF | IWORKToken::ghost_text :
-  case IWORKToken::NS_URI_SF | IWORKToken::ghost_text_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::ghost_text :
+  case +IWORKToken::NS_URI_SF | IWORKToken::ghost_text_ref :
     /* checkme: sf:ghost-text and sf:ghost-text-ref seems similar, but maybe
        sf:ghost-text-ref can also be called without the text data...
      */
     return std::make_shared<GhostTextElement>(getState());
-  case IWORKToken::NS_URI_SF | IWORKToken::page_count :
+  case +IWORKToken::NS_URI_SF | IWORKToken::page_count :
     return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_PAGECOUNT);
-  case IWORKToken::NS_URI_SF | IWORKToken::page_number :
+  case +IWORKToken::NS_URI_SF | IWORKToken::page_number :
     return std::make_shared<IWORKFieldElement>(getState(),IWORK_FIELD_PAGENUMBER);
   default:
     ETONYEK_DEBUG_MSG(("IWORKPElement::element: find unknown element\n"));

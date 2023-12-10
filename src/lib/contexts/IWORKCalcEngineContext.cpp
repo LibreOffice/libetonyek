@@ -42,7 +42,7 @@ IWORKXMLContextPtr_t CalcEngineEntities::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::tabular_model | IWORKToken::NS_URI_SF :
+  case +IWORKToken::tabular_model | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKTabularModelElement>(getState(), true);
   default:
     break;
@@ -62,7 +62,7 @@ IWORKXMLContextPtr_t IWORKCalcEngineContext::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::calc_engine_entities | IWORKToken::NS_URI_SF :
+  case +IWORKToken::calc_engine_entities | IWORKToken::NS_URI_SF :
     return std::make_shared<CalcEngineEntities>(getState());
   default:
     break;

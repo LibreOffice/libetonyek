@@ -46,7 +46,7 @@ ElementElement::ElementElement(IWORKXMLParserState &state, boost::optional<doubl
 
 void ElementElement::attribute(const int name, const char *const value)
 {
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::val))
+  if (name == (+IWORKToken::NS_URI_SF | IWORKToken::val))
     m_value = double_cast(value);
 }
 
@@ -78,7 +78,7 @@ PatternContainerElement::PatternContainerElement(IWORKXMLParserState &state, std
 
 IWORKXMLContextPtr_t PatternContainerElement::element(const int name)
 {
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::element))
+  if (name == (+IWORKToken::NS_URI_SF | IWORKToken::element))
   {
     if (m_element)
     {
@@ -128,7 +128,7 @@ void PatternElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::type:
+  case +IWORKToken::NS_URI_SF | IWORKToken::type:
     switch (getState().getTokenizer().getId(value))
     {
     case IWORKToken::empty :
@@ -145,9 +145,9 @@ void PatternElement::attribute(const int name, const char *const value)
       break;
     }
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::phase:
+  case +IWORKToken::NS_URI_SF | IWORKToken::phase:
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID:
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID:
     return IWORKXMLElementContextBase::attribute(name, value);
   default:
     ETONYEK_DEBUG_MSG(("PatternElement::attribute[IWORKStrokeContext.cpp]: unknown attribute\n"));
@@ -156,7 +156,7 @@ void PatternElement::attribute(const int name, const char *const value)
 
 IWORKXMLContextPtr_t PatternElement::element(const int name)
 {
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::pattern))
+  if (name == (+IWORKToken::NS_URI_SF | IWORKToken::pattern))
     return std::make_shared<PatternContainerElement>(getState(), m_pattern->m_values);
   return IWORKXMLContextPtr_t();
 }
@@ -250,7 +250,7 @@ void StrokeElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::cap :
+  case +IWORKToken::NS_URI_SF | IWORKToken::cap :
     switch (getState().getTokenizer().getId(value))
     {
     case IWORKToken::butt :
@@ -263,7 +263,7 @@ void StrokeElement::attribute(const int name, const char *const value)
       ETONYEK_DEBUG_MSG(("StrokeElement::attribute[IWORKStrokeContext.cpp]: find unknown cap\n"));
     }
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::join :
+  case +IWORKToken::NS_URI_SF | IWORKToken::join :
     switch (getState().getTokenizer().getId(value))
     {
     case IWORKToken::miter :
@@ -276,10 +276,10 @@ void StrokeElement::attribute(const int name, const char *const value)
       ETONYEK_DEBUG_MSG(("StrokeElement::attribute[IWORKStrokeContext.cpp]: find unknown join\n"));
     }
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::width :
+  case +IWORKToken::NS_URI_SF | IWORKToken::width :
     m_width = double_cast(value);
     break;
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID :
     IWORKXMLElementContextBase::attribute(name, value);
     break;
   default:
@@ -292,13 +292,13 @@ IWORKXMLContextPtr_t StrokeElement::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::color :
+  case +IWORKToken::NS_URI_SF | IWORKToken::color :
     return std::make_shared<IWORKColorElement>(getState(), m_color);
-  case IWORKToken::NS_URI_SF | IWORKToken::parameters : // in calligraphy-stroke defines angle, chisel, scale
+  case +IWORKToken::NS_URI_SF | IWORKToken::parameters : // in calligraphy-stroke defines angle, chisel, scale
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::pattern :
+  case +IWORKToken::NS_URI_SF | IWORKToken::pattern :
     return std::make_shared<PatternElement>(getState(), m_pattern);
-  case IWORKToken::NS_URI_SF | IWORKToken::pattern_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::pattern_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_patternRef);
   default:
     ETONYEK_DEBUG_MSG(("StrokeElement::element[IWORKStrokeContext.cpp]: find unknown element\n"));
@@ -345,15 +345,15 @@ IWORKXMLContextPtr_t IWORKStrokeContext::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::frame :
+  case +IWORKToken::NS_URI_SF | IWORKToken::frame :
     return std::make_shared<FrameElement>(getState(), m_value);
-  case IWORKToken::NS_URI_SF | IWORKToken::calligraphy_stroke :
-  case IWORKToken::NS_URI_SF | IWORKToken::manipulated_stroke :
-  case IWORKToken::NS_URI_SF | IWORKToken::stroke :
+  case +IWORKToken::NS_URI_SF | IWORKToken::calligraphy_stroke :
+  case +IWORKToken::NS_URI_SF | IWORKToken::manipulated_stroke :
+  case +IWORKToken::NS_URI_SF | IWORKToken::stroke :
     return std::make_shared<StrokeElement>(getState(), m_value);
-  case IWORKToken::NS_URI_SF | IWORKToken::stroke_ref :
+  case +IWORKToken::NS_URI_SF | IWORKToken::stroke_ref :
     return std::make_shared<IWORKRefContext>(getState(), m_ref);
-  case IWORKToken::NS_URI_SF | IWORKToken::null :
+  case +IWORKToken::NS_URI_SF | IWORKToken::null :
     break;
   default:
     ETONYEK_DEBUG_MSG(("IWORKStrokeContext::element: unknown element\n"));

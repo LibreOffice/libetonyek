@@ -82,7 +82,7 @@ IWORKXMLContextPtr_t IWORKStyleContainer<TokenId, RefTokenId, TokenId2, RefToken
     return m_context;
   case RefTokenId :
     return std::make_shared<IWORKRefContext>(getState(), m_ref);
-  case IWORKToken::NS_URI_SF | IWORKToken::null:
+  case +IWORKToken::NS_URI_SF | IWORKToken::null:
     return IWORKXMLContextPtr_t();
   case IWORKToken::INVALID_TOKEN: // TokenId2 and RefTokenId2 are optional, so avoid unintentional match
     break;

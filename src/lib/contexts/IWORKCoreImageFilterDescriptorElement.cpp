@@ -25,7 +25,7 @@ IWORKCoreImageFilterDescriptorElement::IWORKCoreImageFilterDescriptorElement(IWO
 
 void IWORKCoreImageFilterDescriptorElement::attribute(const int name, const char *const value)
 {
-  if ((IWORKToken::NS_URI_SF | IWORKToken::filterClassName) == name)
+  if ((+IWORKToken::NS_URI_SF | IWORKToken::filterClassName) == name)
     m_isShadow = getState().getTokenizer().getId(value) == IWORKToken::SFIUDropShadow;
   else
     IWORKXMLEmptyContextBase::attribute(name, value);

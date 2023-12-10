@@ -75,10 +75,10 @@ void HostCellIdElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::column | IWORKToken::NS_URI_SF:
+  case +IWORKToken::column | IWORKToken::NS_URI_SF:
     m_col = int_cast(value);
     break;
-  case IWORKToken::row | IWORKToken::NS_URI_SF:
+  case +IWORKToken::row | IWORKToken::NS_URI_SF:
     m_row = int_cast(value);
     break;
   default :
@@ -122,10 +122,10 @@ void CellAddressElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::x_coordinate | IWORKToken::NS_URI_SF:
+  case +IWORKToken::x_coordinate | IWORKToken::NS_URI_SF:
     m_x = int_cast(value);
     break;
-  case IWORKToken::y_coordinate | IWORKToken::NS_URI_SF:
+  case +IWORKToken::y_coordinate | IWORKToken::NS_URI_SF:
     m_y = int_cast(value);
     break;
   default :
@@ -162,16 +162,16 @@ void IWORKFoElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID:
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID:
     m_id = value;
     break;
-  case IWORKToken::fs | IWORKToken::NS_URI_SF :
+  case +IWORKToken::fs | IWORKToken::NS_URI_SF :
     m_formula=value;
     break;
-  case IWORKToken::hc | IWORKToken::NS_URI_SF :
+  case +IWORKToken::hc | IWORKToken::NS_URI_SF :
     m_hc=int_cast(value);
     break;
-  case IWORKToken::ht | IWORKToken::NS_URI_SF : // big string
+  case +IWORKToken::ht | IWORKToken::NS_URI_SF : // big string
     break;
   default :
     IWORKXMLEmptyContextBase::attribute(name, value);
@@ -183,7 +183,7 @@ IWORKXMLContextPtr_t IWORKFoElement::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::fm | IWORKToken::NS_URI_SF :
+  case +IWORKToken::fm | IWORKToken::NS_URI_SF :
     return std::make_shared<FmElement>(getState());
     break;
   default:
@@ -219,7 +219,7 @@ void IWORKOfElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::hc | IWORKToken::NS_URI_SF :
+  case +IWORKToken::hc | IWORKToken::NS_URI_SF :
     m_hc=int_cast(value);
     break;
   default :
@@ -232,10 +232,10 @@ IWORKXMLContextPtr_t IWORKOfElement::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::fm | IWORKToken::NS_URI_SF :
+  case +IWORKToken::fm | IWORKToken::NS_URI_SF :
     return std::make_shared<FmElement>(getState());
     break;
-  case IWORKToken::mf_ref | IWORKToken::NS_URI_SF :
+  case +IWORKToken::mf_ref | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKRefContext>(getState(), m_ref);
   default:
     break;
@@ -280,7 +280,7 @@ void IWORKFormulaElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID:
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID:
     m_id = value;
     break;
   default :
@@ -293,11 +293,11 @@ IWORKXMLContextPtr_t IWORKFormulaElement::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::formula_string | IWORKToken::NS_URI_SF :
+  case +IWORKToken::formula_string | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKStringElement>(getState(), m_formula);
-  case IWORKToken::host_cell_ID | IWORKToken::NS_URI_SF :
+  case +IWORKToken::host_cell_ID | IWORKToken::NS_URI_SF :
     return std::make_shared<HostCellIdElement>(getState());
-  case IWORKToken::host_table_ID | IWORKToken::NS_URI_SF :
+  case +IWORKToken::host_table_ID | IWORKToken::NS_URI_SF :
     break;
   default:
     ETONYEK_DEBUG_MSG(("IWORKFormulaElement::element: find unknown element %d\n", name));
@@ -336,7 +336,7 @@ void IWORKTableCellFormulaElement::attribute(const int name, const char *const v
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID:
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID:
     m_id = value;
     break;
   default :
@@ -349,11 +349,11 @@ IWORKXMLContextPtr_t IWORKTableCellFormulaElement::element(int name)
 {
   switch (name)
   {
-  case IWORKToken::formula_string | IWORKToken::NS_URI_SF :
+  case +IWORKToken::formula_string | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKStringElement>(getState(), m_formula);
-  case IWORKToken::cell_address | IWORKToken::NS_URI_SF :
+  case +IWORKToken::cell_address | IWORKToken::NS_URI_SF :
     return std::make_shared<CellAddressElement>(getState());
-  case IWORKToken::host_table_ID | IWORKToken::NS_URI_SF :
+  case +IWORKToken::host_table_ID | IWORKToken::NS_URI_SF :
     return std::make_shared<IWORKStringElement>(getState(), m_tableId);
   default:
     ETONYEK_DEBUG_MSG(("IWORKTableCellFormulaElement::element: find unknown element %d\n", name));

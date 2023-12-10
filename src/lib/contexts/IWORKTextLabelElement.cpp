@@ -83,16 +83,16 @@ void IWORKTextLabelElement::attribute(const int name, const char *const value)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SFA | IWORKToken::ID :
+  case +IWORKToken::NS_URI_SFA | IWORKToken::ID :
     IWORKXMLEmptyContextBase::attribute(name, value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::first :
+  case +IWORKToken::NS_URI_SF | IWORKToken::first :
     m_first = try_int_cast(value);
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::format :
+  case +IWORKToken::NS_URI_SF | IWORKToken::format :
     m_format = value;
     break;
-  case IWORKToken::NS_URI_SF | IWORKToken::type :
+  case +IWORKToken::NS_URI_SF | IWORKToken::type :
     switch (getState().getTokenizer().getId(value))
     {
     case IWORKToken::bullet :

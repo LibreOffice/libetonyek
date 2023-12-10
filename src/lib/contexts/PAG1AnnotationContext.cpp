@@ -37,7 +37,7 @@ void PAG1AnnotationContext::startOfElement()
 
 void PAG1AnnotationContext::attribute(const int name, const char *const value)
 {
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::target))
+  if (name == (+IWORKToken::NS_URI_SF | IWORKToken::target))
     m_target = value;
   else
     PAG1XMLElementContextBase::attribute(name, value);
@@ -45,7 +45,7 @@ void PAG1AnnotationContext::attribute(const int name, const char *const value)
 
 IWORKXMLContextPtr_t PAG1AnnotationContext::element(const int name)
 {
-  if (name == (IWORKToken::NS_URI_SF | IWORKToken::text))
+  if (name == (+IWORKToken::NS_URI_SF | IWORKToken::text))
     return std::make_shared<IWORKTextElement>(getState());
   return IWORKXMLContextPtr_t();
 }

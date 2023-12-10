@@ -82,41 +82,41 @@ IWORKXMLContextPtr_t IWORKDiscardContext::element(const int name)
 {
   switch (name)
   {
-  case IWORKToken::NS_URI_SF | IWORKToken::bezier :
+  case +IWORKToken::NS_URI_SF | IWORKToken::bezier :
     return std::make_shared<IWORKBezierElement>(m_state, m_data->m_path);
-  case IWORKToken::NS_URI_SF | IWORKToken::binary :
+  case +IWORKToken::NS_URI_SF | IWORKToken::binary :
     return std::make_shared<IWORKBinaryElement>(m_state, m_data->m_mediaContent);
-  case IWORKToken::NS_URI_SF | IWORKToken::cell_style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::cell_style :
     return std::make_shared<IWORKStyleContext>(m_state, &m_state.getDictionary().m_cellStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::characterstyle :
+  case +IWORKToken::NS_URI_SF | IWORKToken::characterstyle :
     return std::make_shared<IWORKStyleContext>(m_state, &m_state.getDictionary().m_characterStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::core_image_filter_descriptor :
+  case +IWORKToken::NS_URI_SF | IWORKToken::core_image_filter_descriptor :
     return std::make_shared<IWORKCoreImageFilterDescriptorElement>(m_state, m_data->m_isShadow);
-  case IWORKToken::NS_URI_SF | IWORKToken::data :
+  case +IWORKToken::NS_URI_SF | IWORKToken::data :
     m_data->m_data.reset();
     return std::make_shared<IWORKDataElement>(m_state, m_data->m_data, m_data->m_fillColor);
-  case IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
+  case +IWORKToken::NS_URI_SF | IWORKToken::layoutstyle :
     return std::make_shared<IWORKStyleContext>(m_state, &m_state.getDictionary().m_layoutStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::liststyle :
+  case +IWORKToken::NS_URI_SF | IWORKToken::liststyle :
     return std::make_shared<IWORKStyleContext>(m_state, &m_state.getDictionary().m_listStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::listLabelIndents :
+  case +IWORKToken::NS_URI_SF | IWORKToken::listLabelIndents :
     return std::make_shared<IWORKListLabelIndentsProperty>(m_state, m_data->m_propertyMap);
-  case IWORKToken::NS_URI_SF | IWORKToken::list_label_geometry :
+  case +IWORKToken::NS_URI_SF | IWORKToken::list_label_geometry :
     return std::make_shared<IWORKListLabelGeometryElement>(m_state, m_data->m_listLabelGeometry);
-  case IWORKToken::NS_URI_SF | IWORKToken::list_label_typeinfo :
+  case +IWORKToken::NS_URI_SF | IWORKToken::list_label_typeinfo :
     return std::make_shared<IWORKListLabelTypeinfoElement>(m_state, m_data->m_listLabelTypeInfo);
-  case IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
+  case +IWORKToken::NS_URI_SF | IWORKToken::paragraphstyle :
     return std::make_shared<IWORKStyleContext>(m_state, &m_state.getDictionary().m_paragraphStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::slide_style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::slide_style :
     return std::make_shared<IWORKStyleContext>(m_state, &m_state.getDictionary().m_slideStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::tabs :
+  case +IWORKToken::NS_URI_SF | IWORKToken::tabs :
     m_data->m_tabStops.clear();
     return std::make_shared<IWORKTabsElement>(m_state, m_data->m_tabStops);
-  case IWORKToken::NS_URI_SF | IWORKToken::tabular_style :
+  case +IWORKToken::NS_URI_SF | IWORKToken::tabular_style :
     return std::make_shared<IWORKStyleContext>(m_state, &m_state.getDictionary().m_tabularStyles);
-  case IWORKToken::NS_URI_SF | IWORKToken::text_label :
+  case +IWORKToken::NS_URI_SF | IWORKToken::text_label :
     return std::make_shared<IWORKTextLabelElement>(m_state, m_data->m_listLabelTypeInfo);
-  case IWORKToken::NS_URI_SF | IWORKToken::unfiltered :
+  case +IWORKToken::NS_URI_SF | IWORKToken::unfiltered :
     m_data->m_mediaContent.reset();
     return std::make_shared<IWORKUnfilteredElement>(m_state, m_data->m_mediaContent);
   default:
