@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cmath>
 #include <deque>
+#include <iterator>
 
 #include <glm/glm.hpp>
 #include <memory>

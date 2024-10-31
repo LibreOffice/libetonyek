@@ -18,7 +18,7 @@ IWORKXMLContext::~IWORKXMLContext()
 {
 }
 
-void IWORKXMLContext::CDATA(const char */*value*/)
+void IWORKXMLContext::CDATA(const char * /*value*/)
 {
   ETONYEK_DEBUG_MSG(("IWORKXMLContext::cData: find unexpected CDATA block\n"));
 }

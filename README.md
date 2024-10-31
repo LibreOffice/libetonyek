@@ -12,7 +12,7 @@ Which elements can be saved as a reference? What do all these 1-3 letter element
 
 These and a lot of other questions remain unanswered. And that is just the first incarnation of the version 2 format; nobody knows what has changed since then.
 
-Based on the previous paragraph, it should be clear that most of the code in this library is based on guesses, sample presentations created in `Keynote '09` and "real-life" presentations collected on the Internet.
+Based on the previous paragraph, it should be clear that most of the code in this library is based on guesses, sample presentations created in Keynote '09 and "real-life" presentations collected on the Internet.
 
 ## Building the code
 
@@ -21,16 +21,16 @@ and `zlib` to build.
 
 For Ubuntu you need to install:
 
-  sudo apt install libboost-dev libboost-filesystem-dev libglm-dev gperf liblangtag-dev librevenge-dev libxml2 libmdds-dev doxygen
+    sudo apt install libboost-dev libboost-filesystem-dev libglm-dev gperf liblangtag-dev librevenge-dev libxml2 libmdds-dev doxygen
 
 `doxygen` is optional for documentation building and can be disabled by passing `--without-docs` to configure.
 
 Once you have the source code and the dependencies, you can proceed to build. To do that, run the customary sequence of commands in the source code directory:
 
-  ./autogen.sh ''# only needed for building from git''
-  ./configure
-  make
-  make install
+    ./autogen.sh # only needed for building from git
+    ./configure
+    make
+    make install
 
 The information how to contribute to project is available [here](HACKING.md).
 
