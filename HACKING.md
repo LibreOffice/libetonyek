@@ -61,11 +61,11 @@ Remember, the important thing is to have fun. :-) These rules are a means, not a
 
 ### Main entities
 
-* *Parser: a parser :-) Passes raw data to collector for further processing.
-* *Collector: an output producer; uses the data passed to it from parser.
-* IWORKPropertyMap: a type-safe property map. A property map is typically not used directly, except in the parser. Instead, it is wrapped in an IWORKStyle.
-* IWORKStyleStack: a hierarchy of currently applied styles. It allows lookup of properties without checking multiple styles explicitly.
-* IWORKDocumentInterface: an amalgamation of librevenge document interfaces, to allow common handling of some parts of the file format.
+* `*Parser`: a parser :-) Passes raw data to collector for further processing.
+* `*Collector`: an output producer; uses the data passed to it from parser.
+* `IWORKPropertyMap`: a type-safe property map. A property map is typically not used directly, except in the parser. Instead, it is wrapped in an `IWORKStyle`.
+* `IWORKStyleStack`: a hierarchy of currently applied styles. It allows lookup of properties without checking multiple styles explicitly.
+* `IWORKDocumentInterface`: an amalgamation of librevenge document interfaces, to allow common handling of some parts of the file format.
 
 See the documentation for concrete classes for more details.
 
