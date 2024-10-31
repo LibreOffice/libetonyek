@@ -24,8 +24,8 @@ AC_LANG([C++])
 # Configure options
 # =================
 AC_ARG_WITH([mdds],
-            AS_HELP_STRING([--with-mdds=1.5|1.4|1.2|1.0|0.x], [Specify which version of mdds to use (1.5 is the default)]),
-            [], [with_mdds="1.5"])
+            AS_HELP_STRING([--with-mdds=2.1|2.0|1.5|1.4|1.2|1.0|0.x], [Specify which version of mdds to use (2.1 is the default)]),
+            [], [with_mdds="2.1"])
 
 # ===========================
 # Find required base packages
