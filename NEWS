@@ -1,3 +1,17 @@
+
+libetonyek 0.1.11
+
+- Upgrade m4 macros.
+- Fix compiler warnings.
+- Update documentation and convert it to MarkDown.
+- Make image dimensions more compatible with LibreOffice
+- Retrieve more background colors.
+- Add support for simple image cropping.
+- Pages: Fixes for retrieving page styles.
+- Numbers: Use workspace name to create sheet's name.
+- Numbers: Read more that 256 rows.
+- Fix build with MSVC.
+
 libetonyek 0.1.10
 
 - All formats:
