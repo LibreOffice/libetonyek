@@ -9,9 +9,9 @@ SUBDIRS = build inc src docs
 EXTRA_DIST = \
 	AUTHORS \
 	COPYING \
-	FEATURES \
+	FEATURES.md \
 	NEWS \
-	README \
+	README.md \
 	autogen.sh \
 	libetonyek.pc.in
 
