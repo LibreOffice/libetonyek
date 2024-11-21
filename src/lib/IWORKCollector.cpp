@@ -1138,7 +1138,11 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
            So for now, we always reset the origin and resize the
            picture to its final size and define the cropping only when
            we can retrieve the image size. */
+#if 0
         double w, h;
+        /* FIXME detectImageDimension is causing error in Libreoffice (Windows) with:
+              writerperfect/qa/unit/data/impress/libetonyek/pass/Keynote_5.key
+        */
         if (detectImageDimension(input, w, h) &&
             media->m_geometry->m_size.m_width>0 && media->m_geometry->m_size.m_height>0 && w>0 && h>0)
         {
@@ -1166,7 +1170,7 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
             props.insert("fo:clip", s.str().c_str());
           }
         }
-
+#endif
         pos = trafo * glm::dvec3(media->m_cropGeometry->m_position.m_x-media->m_geometry->m_position.m_x,
                                  media->m_cropGeometry->m_position.m_y-media->m_geometry->m_position.m_y, 1);
         dim = trafo * glm::dvec3(media->m_cropGeometry->m_size.m_width, media->m_cropGeometry->m_size.m_height, 0);
