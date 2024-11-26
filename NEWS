@@ -1,3 +1,6 @@
+libetonyek 0.1.12
+
+- Fix detectImageDimension causing error in Libreoffice
 
 libetonyek 0.1.11
 
