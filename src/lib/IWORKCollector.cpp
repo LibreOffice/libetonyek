@@ -1140,7 +1140,7 @@ void IWORKCollector::drawMedia(const IWORKMediaPtr_t &media)
            we can retrieve the image size. */
 #if 0
         double w, h;
-        /* FIXME detectImageDimension is causing error in Libreoffice (Windows) with:
+        /* FIXME detectImageDimension is causing error in Libreoffice with:
               writerperfect/qa/unit/data/impress/libetonyek/pass/Keynote_5.key
         */
         if (detectImageDimension(input, w, h) &&
