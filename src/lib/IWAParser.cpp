@@ -3593,7 +3593,16 @@ bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
           {285, "Union.Ranges"},
           {286, "SeriesSum"}, {287, "Polynomial"}, {288, "WeiBull"},
           {297, "PlainText"}, {298, "Stock"}, {299, "StockH"}, {300, "Currency"},
-          {301, "CurrencyH"}, {302, "CurrencyConvert"}, {303, "CurrencyCode"}
+          {301, "CurrencyH"}, {302, "CurrencyConvert"}, {303, "CurrencyCode"},
+	  {304, "IsNumber"}, {305, "IsText"}, {306, "IsDate"},
+	  {309, "MaxIfs"}, {310, "MinIfs"}, {311, "XIRR"}, {312, "XNPV"}, {313, "Ifs"},
+	  {314, "XLookup"}, {315, "XMatch"}, {316, "Subtotal"}, {317, "CountMatches"},
+	  {318, "TextBefore"}, {319, "TextBetween"}, {320, "TextAfter"},
+	  {321, "Regex"}, {322, "Reference.Name"}, {323, "FormulaText"}, {324, "Regex.Extract"},
+	  {325, "GetPivotData"}, {328, "TextJoin"}, {329, "Concat"},
+	  {330, "BitAnd"}, {331, "BitOr"}, {332, "BitXor"}, {333, "BitLShift"}, {334, "BitRShift"},
+	  {335, "ISOWeekNum"}, {336, "Switch"}
+
         };
         Formula child;
         std::ostringstream s;
