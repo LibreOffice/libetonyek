@@ -102,7 +102,7 @@ AC_CHECK_HEADERS(
         boost/none.hpp \
         boost/numeric/conversion/cast.hpp \
         boost/optional.hpp \
-        boost/spirit/include/phoenix.hpp \
+        boost/phoenix.hpp \
         boost/spirit/include/qi.hpp \
         boost/variant/recursive_variant.hpp \
         boost/variant/variant.hpp \

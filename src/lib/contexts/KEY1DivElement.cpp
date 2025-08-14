@@ -8,7 +8,7 @@
  */
 
 #include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix.hpp>
+#include <boost/phoenix.hpp>
 #include <memory>
 
 #include "KEY1DivElement.h"
