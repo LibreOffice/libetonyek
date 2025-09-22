@@ -1,6 +1,6 @@
 # Process this file with autoconf to create configure.
 
-AC_PREREQ([2.65])
+AC_PREREQ([2.71])
 
 # ====================
 # Version informations
@@ -15,7 +15,7 @@ m4_define([libetonyek_version],[libetonyek_version_major.libetonyek_version_mino
 # =============
 AC_INIT([libetonyek],[libetonyek_version])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([1.11 foreign dist-xz dist-bzip2 subdir-objects])
 AM_SILENT_RULES([yes])
 AC_LANG([C++])
@@ -221,7 +221,7 @@ AS_IF([test "x$platform_win32" = "xyes"],
         AC_MSG_CHECKING([for -fvisibility=hidden compiler flag])
         saved_CXXFLAGS="$CXXFLAGS"
         CXXFLAGS="$CXXFLAGS -fvisibility=hidden"
-        AC_TRY_COMPILE([], [], [have_visibility=yes], [have_visibility=no])
+        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[have_visibility=yes],[have_visibility=no])
         AC_MSG_RESULT([$have_visibility])
         CXXFLAGS="$saved_CXXFLAGS"
         AX_GCC_FUNC_ATTRIBUTE([visibility])
@@ -326,8 +326,7 @@ AC_SUBST(DEBUG_CXXFLAGS)
 AS_IF([test "x$native_win32" = "xyes"], [ enable_asan=no ],
   [
      AC_ARG_ENABLE([asan],
-	AC_HELP_STRING([--enable-asan],
-           [Enable Address Sanitizer support]))
+	AS_HELP_STRING([--enable-asan],[Enable Address Sanitizer support]))
 
      if test "x$enable_asan" = "xyes"; then
         enable_asan=yes
