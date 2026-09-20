@@ -123,9 +123,13 @@ int IWORKMemoryStream::seek(const long offset, librevenge::RVNG_SEEK_TYPE seekTy
     pos = offset;
     break;
   case librevenge::RVNG_SEEK_CUR :
+    if ((offset < -m_pos) || (offset > m_length - m_pos))
+      return 1;
     pos = offset + m_pos;
     break;
   case librevenge::RVNG_SEEK_END :
+    if ((offset < -m_length) || (offset > 0))
+      return 1;
     pos = offset + m_length;
     break;
   default :
