@@ -3227,6 +3227,8 @@ void IWAParser::parseTile(const unsigned id, const unsigned decalY)
 
       if (!bool(it.second->bytes(unsigned(wh)+1)))
         continue;
+      const RVNGInputStreamPtr_t offsetInput = get(it.second->bytes(unsigned(wh)+1));
+      if (!offsetInput) continue;
       input = get(it.second->bytes(unsigned(wh)));
       if (!input) continue;
       length = unsigned(getLength(input));
@@ -3241,7 +3243,7 @@ void IWAParser::parseTile(const unsigned id, const unsigned decalY)
       }
 
       useNewFormat=wh==6;
-      if (!parseColumnOffsets(get(it.second->bytes(unsigned(wh)+1)), length, offsets, factor))
+      if (!parseColumnOffsets(offsetInput, length, offsets, factor))
         continue;
       break;
     }
