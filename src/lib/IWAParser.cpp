@@ -1256,6 +1256,11 @@ bool IWAParser::parsePath(const IWAMessage &msg, IWORKPathPtr_t &path)
           const optional<float> &y1 = positions[1].float_(2).optional();
           const optional<float> &x2 = positions[2].float_(1).optional();
           const optional<float> &y2 = positions[2].float_(2).optional();
+          if (path->empty())
+          {
+            ETONYEK_DEBUG_MSG(("IWAParser::parsePath: missing prior MoveTo subsequent CurveTo\n"));
+            return false;
+          }
           path->appendCCurveTo(get_optional_value_or(x, 0), get_optional_value_or(y, 0),
                                get_optional_value_or(x1, 0), get_optional_value_or(y1, 0),
                                get_optional_value_or(x2, 0), get_optional_value_or(y2, 0));
@@ -1269,6 +1274,11 @@ bool IWAParser::parsePath(const IWAMessage &msg, IWORKPathPtr_t &path)
       break;
     }
     case 5 :
+      if (path->empty())
+      {
+        ETONYEK_DEBUG_MSG(("IWAParser::parsePath: missing prior MoveTo subsequent Close\n"));
+        return false;
+      }
       path->appendClose();
       closed = true;
       break;
