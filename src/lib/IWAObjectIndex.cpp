@@ -196,6 +196,9 @@ try
     // scan a single object
     const uint64_t headerLen = readUVar(stream);
     const long start = stream->tell();
+    const uint64_t remaining = getRemainingLength(stream);
+    if (headerLen > remaining)
+      break;
     const IWAMessage header(stream, headerLen);
     uint64_t dataLen = 0;
     optional<unsigned> type;
@@ -203,6 +206,11 @@ try
     for (auto const &info : header.message(2))   // go through all data information
     {
       if (!info.uint64(3))
+      {
+        ok=false;
+        break;
+      }
+      if (info.uint64(3).get() > remaining - headerLen - dataLen)
       {
         ok=false;
         break;
