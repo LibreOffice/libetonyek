@@ -9,6 +9,7 @@
 
 #include <libetonyek/libetonyek.h>
 
+#include <algorithm>
 #include <cassert>
 #include <cstring>
 #include <memory>
@@ -22,6 +23,7 @@
 #include "libetonyek_xml.h"
 #include "IWAMessage.h"
 #include "IWASnappyStream.h"
+#include "IWORKMemoryStream.h"
 #include "IWORKPresentationRedirector.h"
 #include "IWORKSpreadsheetRedirector.h"
 #include "IWORKSubDirStream.h"
@@ -115,7 +117,14 @@ void handleError(void * /*arg*/, const char * /*msg*/, xmlParserSeverities /*sev
 
 bool probeXML(DetectionInfo &info)
 {
-  const auto reader = xmlReaderForStream(info.m_input);
+  // The root element comes at the start of a document, so its first part is enough to find it
+  const unsigned long maxProbeLength = 1024 * 1024;
+  const unsigned long probeLength = std::min(getRemainingLength(info.m_input), maxProbeLength);
+  if (probeLength == 0)
+    return false;
+  const RVNGInputStreamPtr_t probeInput = std::make_shared<IWORKMemoryStream>(info.m_input, unsigned(probeLength));
+
+  const auto reader = xmlReaderForStream(probeInput);
   if (!reader)
     return false;
 
