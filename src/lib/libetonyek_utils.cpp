@@ -241,9 +241,8 @@ double deg2rad(double value)
 double rad2deg(double value)
 {
   // normalize range
-  while (etonyek_two_pi <= value)
-    value -= etonyek_two_pi;
-  while (0 > value)
+  value = std::fmod(value, etonyek_two_pi);
+  if (value < 0)
     value += etonyek_two_pi;
 
   // convert
