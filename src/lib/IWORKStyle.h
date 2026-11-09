@@ -84,6 +84,9 @@ protected:
   const IWORKStylePtr_t getParent() const;
 
 private:
+  /// Returns true if style is this style, or one this style holds through parents or properties
+  bool reaches(const IWORKStyle *style) const;
+
   IWORKPropertyMap m_props;
 
   const boost::optional<std::string> m_ident;

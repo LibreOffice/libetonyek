@@ -9,6 +9,9 @@
 
 #include "IWORKStyle.h"
 
+#include <unordered_set>
+#include <vector>
+
 #include "libetonyek_utils.h"
 #include "IWORKStyleStack.h"
 
@@ -52,11 +55,35 @@ bool IWORKStyle::link(const IWORKStylesheetPtr_t &stylesheet)
     ETONYEK_DEBUG_MSG(("IWORKStyle::find: can not find parent %s\n", m_parentIdent.get().c_str()));
     return false;
   }
-  m_parent=currentStylesheet->find(m_parentIdent.get());
+  const IWORKStylePtr_t parent=currentStylesheet->find(m_parentIdent.get());
+  if (parent && parent->reaches(this))
+  {
+    ETONYEK_DEBUG_MSG(("IWORKStyle::link: parent %s already holds this style\n", m_parentIdent.get().c_str()));
+    return false;
+  }
+  m_parent=parent;
   if (m_parent)
     m_props.setParent(&m_parent->getPropertyMap());
 
   return bool(m_parent);
+}
+
+bool IWORKStyle::reaches(const IWORKStyle *const style) const
+{
+  std::unordered_set<const IWORKStyle *> seen;
+  std::vector<const IWORKStyle *> toVisit(1, this);
+  while (!toVisit.empty())
+  {
+    const IWORKStyle *const current = toVisit.back();
+    toVisit.pop_back();
+    if (!current || !seen.insert(current).second)
+      continue;
+    if (current == style)
+      return true;
+    toVisit.push_back(current->m_parent.get());
+    current->m_props.collectStyles(toVisit);
+  }
+  return false;
 }
 
 void IWORKStyle::flatten()

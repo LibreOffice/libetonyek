@@ -9,6 +9,9 @@
 
 #include "IWORKPropertyMap.h"
 
+#include "IWORKStyle.h"
+#include "IWORKTypes.h"
+
 namespace libetonyek
 {
 
@@ -47,6 +50,23 @@ void IWORKPropertyMap::swap(IWORKPropertyMap &other)
 void IWORKPropertyMap::setParent(const IWORKPropertyMap *const parent)
 {
   m_parent = parent;
+}
+
+void IWORKPropertyMap::collectStyles(std::vector<const IWORKStyle *> &styles) const
+{
+  for (const auto &it : m_map)
+  {
+    const boost::any &value = it.second;
+    if (value.type() == typeid(IWORKStylePtr_t))
+      styles.push_back(boost::any_cast<const IWORKStylePtr_t &>(value).get());
+    else if (value.type() == typeid(IWORKListLevels_t))
+    {
+      for (const auto &level : boost::any_cast<const IWORKListLevels_t &>(value))
+        styles.push_back(level.second.get());
+    }
+    else if (value.type() == typeid(IWORKDropCap))
+      styles.push_back(boost::any_cast<const IWORKDropCap &>(value).m_style.get());
+  }
 }
 
 }

@@ -11,10 +11,12 @@
 #define IWORKPROPERTYMAP_H_INCLUDED
 
 #include <unordered_map>
+#include <vector>
 
 #include <boost/any.hpp>
 
 #include "IWORKPropertyInfo.h"
+#include "IWORKStyle_fwd.h"
 
 namespace libetonyek
 {
@@ -64,6 +66,12 @@ public:
     * @arg[in] parent the new parent
     */
   void setParent(const IWORKPropertyMap *parent);
+
+  /** Add the styles that the properties of this map hold, not looking in the parent map.
+    *
+    * @arg[inout] styles the list to add to
+    */
+  void collectStyles(std::vector<const IWORKStyle *> &styles) const;
 
   /** Check for the presence of a property.
     *
