@@ -35,6 +35,8 @@ public:
   RVNGInputStreamPtr_t getInput() const;
   RVNGInputStreamPtr_t &getPackage();
   RVNGInputStreamPtr_t getPackage() const;
+  /// Returns the package stream with this name, or nullptr if there is no such stream or no package
+  librevenge::RVNGInputStream *getPackageSubStream(const char *name) const;
 
   virtual const IWORKTokenizer &getTokenizer() const = 0;
 

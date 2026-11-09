@@ -63,7 +63,7 @@ void IWORKDataElement::attribute(const int name, const char *const value)
     break;
   }
   case +IWORKToken::NS_URI_SF | IWORKToken::path :
-    m_stream.reset(getState().getParser().getPackage()->getSubStreamByName(value));
+    m_stream.reset(getState().getParser().getPackageSubStream(value));
     if (!m_stream)
     {
       // basic theme files can be absent, try to recover some

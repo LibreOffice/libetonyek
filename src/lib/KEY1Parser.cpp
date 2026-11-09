@@ -603,7 +603,7 @@ void ImageElement::endOfElement()
   {
     content = std::make_shared<IWORKMediaContent>();
     content->m_data = std::make_shared<IWORKData>();
-    content->m_data->m_stream.reset(getState().getParser().getPackage()->getSubStreamByName(get(m_imageName).c_str()));
+    content->m_data->m_stream.reset(getState().getParser().getPackageSubStream(get(m_imageName).c_str()));
     content->m_size=m_naturalSize;
   }
   IWORKGeometryPtr_t geometry;

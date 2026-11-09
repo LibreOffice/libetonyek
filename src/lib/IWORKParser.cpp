@@ -170,6 +170,13 @@ RVNGInputStreamPtr_t IWORKParser::getPackage() const
   return m_package;
 }
 
+librevenge::RVNGInputStream *IWORKParser::getPackageSubStream(const char *const name) const
+{
+  if (!m_package)
+    return nullptr;
+  return m_package->getSubStreamByName(name);
+}
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
