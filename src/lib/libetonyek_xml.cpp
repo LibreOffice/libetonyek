@@ -57,7 +57,7 @@ std::unique_ptr<xmlTextReader, void (*)(xmlTextReaderPtr)> xmlReaderForStream(co
 {
   return std::unique_ptr<xmlTextReader, void (*)(xmlTextReaderPtr)>(
            xmlReaderForIO(readFromStream, closeStream, input.get(), "", nullptr,
-                          XML_PARSE_NOBLANKS | XML_PARSE_NONET | XML_PARSE_RECOVER),
+                          XML_PARSE_NOBLANKS | XML_PARSE_NONET),
            xmlFreeTextReader
          );
 }
