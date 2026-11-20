@@ -392,7 +392,7 @@ try
 
   unsigned long numBytesRead = 0;
   const unsigned char *const sig = stream->read(8, numBytesRead);
-  if (!sig && numBytesRead!=8)
+  if (!sig || numBytesRead!=8)
     return false;
   if (0 == std::memcmp(sig, SIGNATURE_GIF87, ETONYEK_NUM_ELEMENTS(SIGNATURE_GIF87)) ||
       0 == std::memcmp(sig, SIGNATURE_GIF89, ETONYEK_NUM_ELEMENTS(SIGNATURE_GIF89)))
