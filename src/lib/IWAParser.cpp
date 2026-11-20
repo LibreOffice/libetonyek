@@ -1462,7 +1462,7 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)
           {
             const deque<IWAMessage> &elements = get(bezier).message(1).repeated();
             int pos=0;
-            for (auto it : elements)
+            for (const auto &it : elements)
             {
               // normally first point (type 1) followed by 2 points (type 2)
               // const auto &type = it.uint32(1).optional();
@@ -3640,7 +3640,7 @@ bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
         }
         child.push_back(IWORKFormula::Token(")", IWORKFormula::Token::Operator));
         stack.resize(numData-numArgs);
-        stack.push_back(child);
+        stack.push_back(std::move(child));
       }
       else
       {
@@ -3803,7 +3803,7 @@ bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
           child.push_back(IWORKFormula::Token(wh[get(type)], IWORKFormula::Token::Operator));
         }
         stack.resize(numData-numArgs);
-        stack.push_back(child);
+        stack.push_back(std::move(child));
         break;
       }
       ETONYEK_DEBUG_MSG(("IWAParser::parseFormula: find unexpected type=%u\n", get(type)));

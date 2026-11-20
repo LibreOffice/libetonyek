@@ -1227,9 +1227,9 @@ void SlideElement::endOfElement()
       }
     }
     if (!m_isMasterSlide)
-      getState().getDictionary().m_slides.push_back(slide);
+      getState().getDictionary().m_slides.push_back(std::move(slide));
     else if (getId())
-      getState().getDictionary().m_masterSlides[get(getId())]=slide;
+      getState().getDictionary().m_masterSlides[get(getId())]=std::move(slide);
     else
     {
       ETONYEK_DEBUG_MSG(("SlideElement::endOfElement[KEY2Parser.cpp]: can not find a master id\n"));
