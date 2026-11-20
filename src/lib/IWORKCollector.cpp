@@ -404,7 +404,7 @@ void IWORKCollector::collectArrowPath(const IWORKSize &size, const double headWi
   if (bool(m_recorder))
     m_recorder->collectPath(path);
   else
-    m_currentPath = path;
+    m_currentPath = std::move(path);
 }
 
 void IWORKCollector::collectStarPath(const IWORKSize &size, const unsigned points, const double innerRadius)
@@ -435,7 +435,7 @@ void IWORKCollector::collectCalloutPath(const IWORKSize &size, const double radi
   if (bool(m_recorder))
     m_recorder->collectPath(path);
   else
-    m_currentPath = path;
+    m_currentPath = std::move(path);
 }
 
 void IWORKCollector::collectMedia(const IWORKMediaContentPtr_t &content, const IWORKGeometryPtr_t &cropGeometry, const boost::optional<int> &order)
@@ -907,7 +907,7 @@ void IWORKCollector::fillGraphicProps(const IWORKStylePtr_t style, librevenge::R
   }
 }
 
-void IWORKCollector::fillLayoutProps(const IWORKStylePtr_t layoutStyle, librevenge::RVNGPropertyList &props)
+void IWORKCollector::fillLayoutProps(const IWORKStylePtr_t &layoutStyle, librevenge::RVNGPropertyList &props)
 {
   if (!layoutStyle) return;
   if (layoutStyle->has<property::VerticalAlignment>())

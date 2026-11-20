@@ -204,7 +204,7 @@ void IWORKFoElement::endOfElement()
   getState().m_tableData->m_formula = formula;
   getState().m_tableData->m_formulaHC = m_hc;
   if (getId())
-    getState().getDictionary().m_formulas[get(getId())]=formula;
+    getState().getDictionary().m_formulas[get(getId())]=std::move(formula);
 }
 
 // OfElement
@@ -315,7 +315,7 @@ void IWORKFormulaElement::endOfElement()
     return;
   getState().m_tableData->m_formula = formula;
   if (getId())
-    getState().getDictionary().m_formulas[get(getId())]=formula;
+    getState().getDictionary().m_formulas[get(getId())]=std::move(formula);
 }
 
 // TableCellFormula
@@ -371,7 +371,7 @@ void IWORKTableCellFormulaElement::endOfElement()
     return;
   getState().m_tableData->m_formula = formula;
   if (getId())
-    getState().getDictionary().m_formulas[get(getId())]=formula;
+    getState().getDictionary().m_formulas[get(getId())]=std::move(formula);
 }
 }
 

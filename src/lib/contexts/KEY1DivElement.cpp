@@ -28,7 +28,7 @@ namespace libetonyek
 KEY1DivStyle::KEY1DivStyle(KEY1ParserState &state, IWORKStylePtr_t parentStyle)
   : m_state(state)
   , m_style()
-  , m_parentStyle(parentStyle)
+  , m_parentStyle(std::move(parentStyle))
   , m_propMap()
 {
 }
@@ -132,8 +132,8 @@ IWORKStylePtr_t KEY1DivStyle::getStyle()
 
 KEY1DivElement::KEY1DivElement(KEY1ParserState &state, IWORKStylePtr_t spanStyle, IWORKStylePtr_t parentStyle, bool &delayedLineBreak)
   : KEY1XMLElementContextBase(state)
-  , m_spanStyle(state, spanStyle)
-  , m_style(state, parentStyle)
+  , m_spanStyle(state, std::move(spanStyle))
+  , m_style(state, std::move(parentStyle))
   , m_opened(false)
   , m_delayedLineBreak(delayedLineBreak)
 {

@@ -1745,7 +1745,7 @@ void VectorStyleRefElement::endOfElement()
   if (getRef() && m_startIndex && m_stopIndex)
   {
     IWORKStylePtr_t style= getState().getStyleByName(get(getRef()).c_str(), getState().getDictionary().m_vectorStyles);
-    if (style) m_line.insert_back(m_startIndex.get(), m_stopIndex.get(), style);
+    if (style) m_line.insert_back(m_startIndex.get(), m_stopIndex.get(), std::move(style));
   }
 }
 

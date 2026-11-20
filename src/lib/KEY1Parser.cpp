@@ -948,7 +948,7 @@ KEYPlaceholderPtr_t PlaceholderElement::getPlaceholder()
     IWORKGeometryPtr_t geometry(new IWORKGeometry);
     geometry->m_position=get(m_location);
     geometry->m_naturalSize=geometry->m_size=get(m_size);
-    res->m_geometry=geometry;
+    res->m_geometry=std::move(geometry);
   }
   res->m_visible=m_visible;
 
@@ -1006,7 +1006,7 @@ void BodyElement::endOfElement()
   KEYPlaceholderPtr_t placeHolder=getPlaceholder();
   if (!placeHolder) return;
   placeHolder->m_bulletIndentations=m_indents;
-  getState().getDictionary().storeBodyPlaceholder(placeHolder);
+  getState().getDictionary().storeBodyPlaceholder(std::move(placeHolder));
 }
 }
 
@@ -1650,9 +1650,9 @@ void SlideElement::endOfElement()
       }
     }
     if (!m_isMasterSlide)
-      getState().getDictionary().m_slides.push_back(slide);
+      getState().getDictionary().m_slides.push_back(std::move(slide));
     else if (getId())
-      getState().getDictionary().m_masterSlides[get(getId())]=slide;
+      getState().getDictionary().m_masterSlides[get(getId())]=std::move(slide);
     else
     {
       ETONYEK_DEBUG_MSG(("SlideElement::endOfElement[KEY1Parser.cpp]: can not find a master id\n"));

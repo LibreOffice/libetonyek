@@ -67,22 +67,22 @@ void KEY1Dictionary::linkStylesContext(const boost::optional<std::string> &maste
 
 void KEY1Dictionary::storeImageStyle(IWORKStylePtr_t style, bool definition)
 {
-  getCurrentStylesContext().m_imageContext.storeStyle(style, definition);
+  getCurrentStylesContext().m_imageContext.storeStyle(std::move(style), definition);
 }
 
 void KEY1Dictionary::storeLineStyle(IWORKStylePtr_t style, bool definition)
 {
-  getCurrentStylesContext().m_lineContext.storeStyle(style, definition);
+  getCurrentStylesContext().m_lineContext.storeStyle(std::move(style), definition);
 }
 
 void KEY1Dictionary::storeShapeStyle(IWORKStylePtr_t style, bool definition)
 {
-  getCurrentStylesContext().m_shapeContext.storeStyle(style, definition);
+  getCurrentStylesContext().m_shapeContext.storeStyle(std::move(style), definition);
 }
 
 void KEY1Dictionary::storeTextboxStyle(IWORKStylePtr_t style, bool definition)
 {
-  getCurrentStylesContext().m_textboxContext.storeStyle(style, definition);
+  getCurrentStylesContext().m_textboxContext.storeStyle(std::move(style), definition);
 }
 
 KEYPlaceholderPtr_t KEY1Dictionary::getBodyPlaceholder()
@@ -102,17 +102,17 @@ KEYPlaceholderPtr_t KEY1Dictionary::getTitlePlaceholder()
 
 void KEY1Dictionary::storeBodyPlaceholder(KEYPlaceholderPtr_t placeHolder)
 {
-  getCurrentStylesContext().m_bodyPlaceholder=placeHolder;
+  getCurrentStylesContext().m_bodyPlaceholder=std::move(placeHolder);
 }
 
 void KEY1Dictionary::storePageNumberPlaceholder(KEYPlaceholderPtr_t placeHolder)
 {
-  getCurrentStylesContext().m_pageNumberPlaceholder=placeHolder;
+  getCurrentStylesContext().m_pageNumberPlaceholder=std::move(placeHolder);
 }
 
 void KEY1Dictionary::storeTitlePlaceholder(KEYPlaceholderPtr_t placeHolder)
 {
-  getCurrentStylesContext().m_titlePlaceholder=placeHolder;
+  getCurrentStylesContext().m_titlePlaceholder=std::move(placeHolder);
 }
 
 KEY1Dictionary::StyleContext::StyleContext()
@@ -125,9 +125,9 @@ void KEY1Dictionary::StyleContext::storeStyle(IWORKStylePtr_t style, bool defini
 {
   if (!style) return;
   if (definition)
-    m_style=style;
+    m_style=std::move(style);
   else
-    m_styles.push_back(style);
+    m_styles.push_back(std::move(style));
 }
 
 void KEY1Dictionary::StyleContext::link(const KEY1Dictionary::StyleContext &parentContext)

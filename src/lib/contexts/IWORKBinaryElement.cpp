@@ -55,7 +55,7 @@ void IWORKBinaryElement::endOfElement()
     binary->m_size = m_size;
   }
 
-  m_value = binary;
+  m_value = std::move(binary);
   if (getId())
     getState().getDictionary().m_binaries[get(getId())] = m_value;
 }

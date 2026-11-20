@@ -108,7 +108,7 @@ deque<Point> drawArrowHalf(const double headWidth, const double stemThickness)
   return points;
 }
 
-IWORKPathPtr_t makePolyLine(const deque<Point> inputPoints, bool close = true)
+IWORKPathPtr_t makePolyLine(const deque<Point> &inputPoints, bool close = true)
 {
   IWORKPathPtr_t path;
 

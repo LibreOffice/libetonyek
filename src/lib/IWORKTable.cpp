@@ -643,7 +643,7 @@ void IWORKTable::insertCell(const unsigned column, const unsigned row, const boo
   cell.m_type = type;
   cell.m_value = value;
   cell.m_dateTime = dateTime;
-  m_table[row][column] = cell;
+  m_table[row][column] = std::move(cell);
 }
 
 void IWORKTable::insertCoveredCell(const unsigned column, const unsigned row)
@@ -659,7 +659,7 @@ void IWORKTable::insertCoveredCell(const unsigned column, const unsigned row)
 
   Cell cell;
   cell.m_covered = true;
-  m_table[row][column] = cell;
+  m_table[row][column] = std::move(cell);
 }
 
 boost::optional<std::string> IWORKTable::writeFormat(IWORKOutputElements &elements, const IWORKStylePtr_t &style, const IWORKCellType type, boost::optional<std::string> &rvngValueType)

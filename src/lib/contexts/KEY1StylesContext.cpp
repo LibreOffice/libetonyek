@@ -233,7 +233,7 @@ KEY1StylesContext::KEY1StylesContext(KEY1ParserState &state, IWORKStylePtr_t &st
   : KEY1XMLElementContextBase(state)
   , m_style(style)
   , m_propMap()
-  , m_parentStyle(parentStyle)
+  , m_parentStyle(std::move(parentStyle))
   , m_fill()
   , m_lineHead()
   , m_lineTail()

@@ -150,7 +150,7 @@ KEYSlidePtr_t KEY6Parser::parseSlide(const unsigned id, const bool master)
 
   if (slide)
   {
-    slide->m_masterSlide=masterSlide;
+    slide->m_masterSlide=std::move(masterSlide);
     if (!master)
       m_slides.push_back(slide);
     else

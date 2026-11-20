@@ -329,7 +329,7 @@ void StrokeElement::endOfElement()
     if (m_pattern) value.m_pattern=get(m_pattern);
     m_value=value;
     if (getId())
-      getState().getDictionary().m_strokes[get(getId())]=value;
+      getState().getDictionary().m_strokes[get(getId())]=std::move(value);
   }
 }
 }

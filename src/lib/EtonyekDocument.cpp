@@ -266,7 +266,7 @@ bool detectBinary(RVNGInputStreamPtr_t input, DetectionInfo &info)
   {
     RVNGInputStreamPtr_t zipInput = getSubStream(input, "Index.zip");
     if (bool(zipInput))
-      input = zipInput;
+      input = std::move(zipInput);
   }
 
   const bool hasDocument = input->existsSubStream("Index/Document.iwa");
@@ -331,7 +331,7 @@ bool detect(const RVNGInputStreamPtr_t &input, DetectionInfo &info)
       {
         RVNGInputStreamPtr_t dir = queryTopDirStream(input);
         if (dir)
-          detectBinary(dir, info);
+          detectBinary(std::move(dir), info);
       }
     }
 

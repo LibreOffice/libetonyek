@@ -25,7 +25,7 @@ namespace libetonyek
 {
 KEY1SpanStyle::KEY1SpanStyle(KEY1ParserState &/*state*/, IWORKStylePtr_t parentStyle)
   : m_style()
-  , m_parentStyle(parentStyle)
+  , m_parentStyle(std::move(parentStyle))
   , m_propMap()
 {
 }
@@ -117,7 +117,7 @@ IWORKStylePtr_t KEY1SpanStyle::getStyle()
 
 KEY1SpanElement::KEY1SpanElement(KEY1ParserState &state, IWORKStylePtr_t parentStyle, bool &delayedLineBreak)
   : KEY1XMLElementContextBase(state)
-  , m_style(state, parentStyle)
+  , m_style(state, std::move(parentStyle))
   , m_opened(false)
   , m_delayedLineBreak(delayedLineBreak)
 {

@@ -126,7 +126,7 @@ void IWORKGeometryElement::endOfElement()
   geometry->m_sizesLocked = m_sizesLocked;
 
   if (m_geometry)
-    *m_geometry = geometry;
+    *m_geometry = std::move(geometry);
   else if (isCollector())
     getCollector().collectGeometry(geometry);
 }

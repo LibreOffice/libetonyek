@@ -900,7 +900,7 @@ bool IWAParser::parseText(const unsigned id, bool createNoteAsFootnote, const st
               elements.addCloseFootnote();
             else
               elements.addCloseEndnote();
-            m_currentText=currentText;
+            m_currentText=std::move(currentText);
             m_currentText->insertInlineContent(elements);
           }));
         }
@@ -986,7 +986,7 @@ bool IWAParser::parseText(const unsigned id, bool createNoteAsFootnote, const st
             elements.addOpenComment(librevenge::RVNGPropertyList());
             m_currentText->draw(elements);
             elements.addCloseComment();
-            m_currentText=currentText;
+            m_currentText=std::move(currentText);
             m_currentText->insertInlineContent(elements);
           }));
         }
@@ -1083,9 +1083,9 @@ bool IWAParser::parseAttachment(const unsigned id)
 
   IWORKPosition position;
   // 2: false
-  auto x=get(msg).float_(3);
+  const auto &x=get(msg).float_(3);
   // 4: false
-  auto y=get(msg).float_(5);
+  const auto &y=get(msg).float_(5);
   if (x && !std::isnan(get(x))) position.m_x=get(x);
   else
   {
@@ -1140,7 +1140,7 @@ bool IWAParser::parseAttachment(const unsigned id)
   }
   }
   auto cId=collector->getOutputManager().save();
-  auto content = collector->getOutputManager().get(cId);
+  const auto &content = collector->getOutputManager().get(cId);
   collector->getOutputManager().pop();
   collector->endAttachment();
   collector->endAttachments();
@@ -1153,7 +1153,7 @@ bool IWAParser::parseAttachment(const unsigned id)
     else
       currentText->insertInlineContent(content);
   }
-  m_currentText=currentText;
+  m_currentText=std::move(currentText);
   return ok;
 }
 
@@ -1196,7 +1196,7 @@ bool IWAParser::parsePath(const IWAMessage &msg, IWORKPathPtr_t &path)
   bool closed = false;
   bool closingMove = false;
   path.reset(new IWORKPath());
-  for (auto it : elements)
+  for (const auto &it : elements)
   {
     const auto &type = it.uint32(1).optional();
     if (!type)
@@ -1501,7 +1501,7 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)
           const IWAMessageField &points = pathPoints.message(1);
           std::vector<IWORKPosition> positions;
           // cubic bezier patch, [prev pt dir], pt, [next pt dir]
-          for (auto it : points)
+          for (const auto &it : points)
           {
             const optional<IWORKPosition> &point1 = readPosition(it, 1);
             const optional<IWORKPosition> &point2 = readPosition(it, 2);
@@ -1885,7 +1885,7 @@ void IWAParser::parseGraphicStyle(const unsigned id, IWORKStylePtr_t &style)
   if (get(msg).message(11))
   {
     const IWAMessageField &layout = get(msg).message(11);
-    auto vAlign=layout.uint32(2);
+    const auto &vAlign=layout.uint32(2);
     if (vAlign)
     {
       IWORKVerticalAlignment const aligns[]=
@@ -2151,7 +2151,7 @@ void IWAParser::parseListStyle(const unsigned id, IWORKStylePtr_t &style)
         break;
       }
       const IWORKDataPtr_t data = make_shared<IWORKData>();
-      data->m_stream = stream;
+      data->m_stream = std::move(stream);
       content->m_data = data;
       levelProps[level].put<ListLabelTypeInfo>(content);
       break;
@@ -2290,12 +2290,12 @@ void IWAParser::parseColumnsProperties(const IWAMessage &msg, IWORKPropertyMap &
   // 4 float 0
   if (msg.message(7))
   {
-    auto columnsMsg=get(msg.message(7));
+    const auto &columnsMsg=get(msg.message(7));
     IWORKColumns columns;
     columns.m_columns.clear();
     if (columnsMsg.message(1))   // same columns size
     {
-      auto columnDef=get(columnsMsg.message(1));
+      const auto &columnDef=get(columnsMsg.message(1));
       columns.m_equal=true;
       auto n=get_optional_value_or(columnDef.uint32(1).optional(),0);
       auto s=get_optional_value_or(columnDef.float_(2).optional(),0.f);
@@ -2309,7 +2309,7 @@ void IWAParser::parseColumnsProperties(const IWAMessage &msg, IWORKPropertyMap &
     }
     else if (columnsMsg.message(2))
     {
-      auto columnsDef=get(columnsMsg.message(2));
+      const auto &columnsDef=get(columnsMsg.message(2));
       columns.m_equal=false;
       IWORKColumns::Column column;
       column.m_width=get_optional_value_or(columnsDef.float_(1).optional(),0.f);
@@ -2390,7 +2390,7 @@ void IWAParser::parseHeaderAndFooter(unsigned id, IWORKPageMaster &hf)
           m_collector.collectFooter(name.str());
         empty=false;
       }
-      m_currentText=currentText;
+      m_currentText=std::move(currentText);
     }
     if (empty) continue;
     if (wh==0)
@@ -2441,7 +2441,7 @@ bool IWAParser::parseImage(const IWAMessage &msg)
     auto stream = queryFile(get(ref));
     if (!stream) continue;
     const IWORKDataPtr_t data = make_shared<IWORKData>();
-    data->m_stream = stream;
+    data->m_stream = std::move(stream);
     content->m_data = data;
     break;
   }
@@ -2463,7 +2463,7 @@ void IWAParser::parseAuthorInComment(unsigned id)
     return;
   if (get(msg).string(1))
   {
-    auto str=get(get(msg).string(1));
+    const auto &str=get(get(msg).string(1));
     auto len=str.size();
     if (len==0) return;
     IWAText text(str+"\t", m_langManager);
@@ -2598,7 +2598,7 @@ void IWAParser::parseTabularModel(const unsigned id)
         {
           ConditionRule_t rules;
           if (parseConditionRules(ref, rules))
-            m_currentTable->m_conditionStyleList[it.first]=rules;
+            m_currentTable->m_conditionStyleList[it.first]=std::move(rules);
         }
       }
     }
@@ -3171,7 +3171,7 @@ void IWAParser::parseTileDefinition(unsigned row, unsigned column, RVNGInputStre
       parseComment(boost::get<unsigned>(commentIt->second));
       IWORKOutputElements elements;
       m_currentText->draw(elements);
-      m_currentText=currentText;
+      m_currentText=std::move(currentText);
       m_currentTable->m_table->setComment(column, row, elements);
     }
     else
@@ -3324,7 +3324,7 @@ void IWAParser::parseTableGridLine(unsigned id, IWORKGridLineMap_t &gridLine)
   if (gridLine.find(pos1)==gridLine.end())
     gridLine.insert(IWORKGridLineMap_t::value_type(pos1,IWORKGridLine_t(0,4096,nullptr)));
   auto &flatSegments=gridLine.find(pos1)->second;
-  for (auto it : lines)
+  for (const auto &it : lines)
   {
     if (!it.uint32(1) || !it.uint32(2))
     {
@@ -3507,7 +3507,7 @@ bool IWAParser::parseConditionRules(unsigned id, IWAParser::ConditionRule_t &rul
   for (const auto &ruleIt : get(ruleMsg).message(2))
   {
     ConditionRule rule;
-    auto formulaMsg=ruleIt.message(1);
+    const auto &formulaMsg=ruleIt.message(1);
     if (!formulaMsg || !get(formulaMsg).message(1) || !parseFormula(get(get(formulaMsg).message(1)), rule.m_formula) || !rule.m_formula)
     {
       ETONYEK_DEBUG_MSG(("IWAParser::parseConditionRules: oops, can not read a formula for id=%x\n", id));
@@ -3515,7 +3515,7 @@ bool IWAParser::parseConditionRules(unsigned id, IWAParser::ConditionRule_t &rul
     }
     rule.m_cellStyleRef=readRef(ruleIt, 2);
     rule.m_paragraphStyleRef=readRef(ruleIt, 3);
-    rules.push_back(rule);
+    rules.push_back(std::move(rule));
   }
   return true;
 }
@@ -3532,7 +3532,7 @@ bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
   typedef std::vector<IWORKFormula::Token> Formula;
   std::vector<Formula> stack;
   bool ok=true;
-  for (auto it : tokens)
+  for (const auto &it : tokens)
   {
     auto type=it.uint32(1).optional();
     if (!type)
@@ -3711,7 +3711,7 @@ bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
         }
         child.push_back(IWORKFormula::Token(")", IWORKFormula::Token::Operator));
         stack.resize(numData-numArgs);
-        stack.push_back(child);
+        stack.push_back(std::move(child));
       }
       else
       {
@@ -3727,7 +3727,7 @@ bool IWAParser::parseFormula(const IWAMessage &msg, IWORKFormulaPtr_t &formula)
       IWORKFormula::Address address;
       for (unsigned i=0; i<2; ++i)
       {
-        auto pos=it.message(26+i);
+        const auto &pos=it.message(26+i);
         if (!pos) continue;
         if (!get(pos).sint32(1))
         {
