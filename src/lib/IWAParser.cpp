@@ -3247,6 +3247,8 @@ void IWAParser::parseTile(const unsigned id, const unsigned decalY)
         continue;
       break;
     }
+    if (!input)
+      continue;
 
     for (auto offIt=offsets.begin(); offIt!=offsets.end() ;)
     {
