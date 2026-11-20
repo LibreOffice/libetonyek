@@ -74,12 +74,13 @@ const double etonyek_root_two(1.414213562373095048801688724209698078569671875376
 // Apple Numbers timestamp starts from 01 Jan 2001 00:00:00
 const unsigned ETONYEK_EPOCH_BEGIN(978307200);
 
-struct EtonyekDummyDeleter
-{
-  void operator()(void *) {}
-};
-
 typedef std::shared_ptr<librevenge::RVNGInputStream> RVNGInputStreamPtr_t;
+
+// The result points at input but owns nothing, so the caller keeps input alive.
+inline RVNGInputStreamPtr_t makeUnownedStreamPtr(librevenge::RVNGInputStream *const input)
+{
+  return RVNGInputStreamPtr_t(RVNGInputStreamPtr_t(), input);
+}
 
 uint8_t readU8(const RVNGInputStreamPtr_t &input, bool = false);
 uint16_t readU16(const RVNGInputStreamPtr_t &input, bool bigEndian=false);

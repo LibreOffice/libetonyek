@@ -440,7 +440,7 @@ ETONYEKAPI EtonyekDocument::Confidence EtonyekDocument::isSupported(librevenge::
 
   DetectionInfo info;
 
-  if (detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), info))
+  if (detect(makeUnownedStreamPtr(input), info))
   {
     if (type)
       *type = info.m_type;
@@ -461,7 +461,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   DetectionInfo info(EtonyekDocument::TYPE_KEYNOTE);
 
-  if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), info))
+  if (!detect(makeUnownedStreamPtr(input), info))
     return false;
 
   info.m_input->seek(0, librevenge::RVNG_SEEK_SET);
@@ -502,7 +502,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   DetectionInfo info(EtonyekDocument::TYPE_NUMBERS);
 
-  if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), info))
+  if (!detect(makeUnownedStreamPtr(input), info))
     return false;
 
   info.m_input->seek(0, librevenge::RVNG_SEEK_SET);
@@ -536,7 +536,7 @@ ETONYEKAPI bool EtonyekDocument::parse(librevenge::RVNGInputStream *const input,
 
   DetectionInfo info(EtonyekDocument::TYPE_PAGES);
 
-  if (!detect(RVNGInputStreamPtr_t(input, EtonyekDummyDeleter()), info))
+  if (!detect(makeUnownedStreamPtr(input), info))
     return false;
 
   info.m_input->seek(0, librevenge::RVNG_SEEK_SET);
