@@ -120,6 +120,8 @@ typedef std::deque<IWORKTabStop> IWORKTabStops_t;
 typedef std::unordered_map<ID_t, IWORKTabStops_t> IWORKTabStopsMap_t;
 typedef mdds::flat_segment_tree<unsigned, IWORKStylePtr_t> IWORKGridLine_t;
 typedef std::map<unsigned,IWORKGridLine_t> IWORKGridLineMap_t;
+// the line at pos, a new empty line from 0 to maxPos if there is none yet
+IWORKGridLine_t &getGridLine(IWORKGridLineMap_t &lines, unsigned pos, unsigned maxPos);
 typedef std::shared_ptr<IWORKFormula> IWORKFormulaPtr_t;
 typedef std::unordered_map<ID_t, IWORKFormulaPtr_t> IWORKFormulaMap_t;
 

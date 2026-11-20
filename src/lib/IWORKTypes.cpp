@@ -374,6 +374,14 @@ IWORKTextLabelFormat::IWORKTextLabelFormat()
 {
 }
 
+IWORKGridLine_t &getGridLine(IWORKGridLineMap_t &lines, unsigned pos, unsigned maxPos)
+{
+  IWORKGridLineMap_t::iterator it = lines.find(pos);
+  if (it == lines.end())
+    it = lines.insert(IWORKGridLineMap_t::value_type(pos, IWORKGridLine_t(0, maxPos, IWORKStylePtr_t()))).first;
+  return it->second;
+}
+
 IWORKTextLabel::IWORKTextLabel()
   : m_format()
   , m_tiered(false)

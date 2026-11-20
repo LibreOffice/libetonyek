@@ -3321,9 +3321,7 @@ void IWAParser::parseTableGridLine(unsigned id, IWORKGridLineMap_t &gridLine)
   }
   auto pos1=get(get(msg).uint32(1));
   const deque<IWAMessage> &lines = get(msg).message(2).repeated();
-  if (gridLine.find(pos1)==gridLine.end())
-    gridLine.insert(IWORKGridLineMap_t::value_type(pos1,IWORKGridLine_t(0,4096,nullptr)));
-  auto &flatSegments=gridLine.find(pos1)->second;
+  auto &flatSegments=getGridLine(gridLine, pos1, 4096);
   for (const auto &it : lines)
   {
     if (!it.uint32(1) || !it.uint32(2))

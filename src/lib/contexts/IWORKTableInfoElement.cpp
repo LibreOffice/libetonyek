@@ -296,30 +296,22 @@ void TableCellElement::emitCell()
     // finally update the grid
     if (rowSpan && cell.m_minXBorder.m_style)
     {
-      if (tableData->m_verticalLines.find(column)==tableData->m_verticalLines.end())
-        tableData->m_verticalLines.insert(IWORKGridLineMap_t::value_type(column,IWORKGridLine_t(0, numRows+1, IWORKStylePtr_t())));
-      IWORKGridLine_t &cLine=tableData->m_verticalLines.find(column)->second;
+      IWORKGridLine_t &cLine=getGridLine(tableData->m_verticalLines, column, numRows+1);
       cLine.insert_back(row, row+rowSpan, cell.m_minXBorder.m_style);
     }
     if (rowSpan && columnSpan && cell.m_maxXBorder.m_style)
     {
-      if (tableData->m_verticalLines.find(column+columnSpan)==tableData->m_verticalLines.end())
-        tableData->m_verticalLines.insert(IWORKGridLineMap_t::value_type(column+columnSpan,IWORKGridLine_t(0, numRows+1, IWORKStylePtr_t())));
-      IWORKGridLine_t &cLine=tableData->m_verticalLines.find(column+columnSpan)->second;
+      IWORKGridLine_t &cLine=getGridLine(tableData->m_verticalLines, column+columnSpan, numRows+1);
       cLine.insert_back(row, row+rowSpan, cell.m_maxXBorder.m_style);
     }
     if (columnSpan && cell.m_minYBorder.m_style)
     {
-      if (tableData->m_horizontalLines.find(row)==tableData->m_horizontalLines.end())
-        tableData->m_horizontalLines.insert(IWORKGridLineMap_t::value_type(row,IWORKGridLine_t(0, numColumns+1, IWORKStylePtr_t())));
-      IWORKGridLine_t &cLine=tableData->m_horizontalLines.find(row)->second;
+      IWORKGridLine_t &cLine=getGridLine(tableData->m_horizontalLines, row, numColumns+1);
       cLine.insert_back(column, column+columnSpan, cell.m_minYBorder.m_style);
     }
     if (rowSpan && columnSpan && cell.m_maxYBorder.m_style)
     {
-      if (tableData->m_horizontalLines.find(row+rowSpan)==tableData->m_horizontalLines.end())
-        tableData->m_horizontalLines.insert(IWORKGridLineMap_t::value_type(row+rowSpan,IWORKGridLine_t(0, numColumns+1, IWORKStylePtr_t())));
-      IWORKGridLine_t &cLine=tableData->m_horizontalLines.find(row+rowSpan)->second;
+      IWORKGridLine_t &cLine=getGridLine(tableData->m_horizontalLines, row+rowSpan, numColumns+1);
       cLine.insert_back(column, column+columnSpan, cell.m_maxYBorder.m_style);
     }
   }
