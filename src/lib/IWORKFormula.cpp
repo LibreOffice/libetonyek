@@ -10,6 +10,7 @@
 #include "IWORKFormula.h"
 
 #include <algorithm>
+#include <cstring>
 #include <iterator>
 #include <sstream>
 #include <utility>
@@ -219,6 +220,22 @@ unsigned parseRowName(const vector<char> &columnName)
   return columnNumber;
 }
 
+// The grammar recurses for each operator and each opening bracket, and once more for spaces after
+// one, so this count bounds the depth of the parse and of the expression tree built from it.
+unsigned countNestingTokens(const string &formula)
+{
+  unsigned count = 0;
+  bool inString = false;
+  for (const char c : formula)
+  {
+    if (c == '"')
+      inString = !inString;
+    else if (!inString && std::strchr("(+-*/^=<>%", c))
+      ++count;
+  }
+  return count;
+}
+
 Expression makeInfixOp(const Expression &left, const string &op, const Expression &right)
 {
   InfixOp infixOp;
@@ -356,7 +373,7 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
     // The term is parsed once and an operator after it is looked for next. Each nesting level of
     // brackets is then parsed once, and the time stays linear in the length of the formula.
     expression =
-      lit(' ') >> expression[_val = _1]
+      +lit(' ') >> expression[_val = _1]
       | term[_val = _1] >> -(
         (infixLit >> expression)[_val = bind(makeInfixOp, _val, _1, _2)]
         | postfixLit[_val = bind(makePostfixOp, _val, _1)])
@@ -836,6 +853,11 @@ IWORKFormula::IWORKFormula(const boost::optional<unsigned> &hc)
 
 bool IWORKFormula::parse(const std::string &formula)
 {
+  if (countNestingTokens(formula) > 256)
+  {
+    ETONYEK_DEBUG_MSG(("IWORKFormula::parse: formula nested too deep\n"));
+    return false;
+  }
   FormulaGrammar<string::const_iterator> grammar;
   string::const_iterator it = formula.begin();
   string::const_iterator end = formula.end();

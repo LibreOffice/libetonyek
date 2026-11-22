@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <string>
+
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -247,6 +249,14 @@ void IWORKFormulaTest::testInvalid()
   CPPUNIT_ASSERT(!formula.parse("=SUM(C2:9)"));
   CPPUNIT_ASSERT(!formula.parse("=SUM(B:7)"));
   CPPUNIT_ASSERT(!formula.parse("=SUM(9:B)"));
+
+  // nested too deep
+  CPPUNIT_ASSERT(formula.parse("=" + std::string(255, '(') + "1" + std::string(255, ')')));
+  CPPUNIT_ASSERT(!formula.parse("=" + std::string(256, '(') + "1" + std::string(256, ')')));
+  // brackets inside a string do not nest
+  CPPUNIT_ASSERT(formula.parse("=\"" + std::string(500, '(') + "\""));
+  // spaces do not nest
+  CPPUNIT_ASSERT(formula.parse("=" + std::string(100000, ' ') + "1"));
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(IWORKFormulaTest);
