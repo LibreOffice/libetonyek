@@ -10,6 +10,7 @@
 #include "IWAMessage.h"
 
 #include <cassert>
+#include <limits>
 #include <memory>
 
 namespace libetonyek
@@ -84,7 +85,7 @@ void IWAMessage::parse(const unsigned long length) try
     {
       const uint64_t len = readUVar(m_input);
       start = m_input->tell(); // the field parser expects just the actual data
-      if (m_input->seek((long) len, librevenge::RVNG_SEEK_CUR) != 0)
+      if (len > static_cast<uint64_t>(std::numeric_limits<long>::max()) || m_input->seek(long(len), librevenge::RVNG_SEEK_CUR) != 0)
         throw ParseError();
       break;
     }

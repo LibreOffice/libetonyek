@@ -178,7 +178,11 @@ void IWAMessageTest::testPacked()
 
 void IWAMessageTest::testInvalidInput()
 {
-  // TODO: add
+  // a string field whose length is too large for a seek ends the message
+  const IWAMessage msg(makeStream(BYTES("\x8\x4" "\x1a\xf5\xff\xff\xff\xff\xff\xff\xff\xff\x1")), 13);
+  CPPUNIT_ASSERT(msg.uint32(1));
+  CPPUNIT_ASSERT_EQUAL(uint32_t(4), msg.uint32(1).get());
+  CPPUNIT_ASSERT(!msg.string(3));
 }
 
 void IWAMessageTest::testNestedMessageWithTrailingData()
