@@ -384,6 +384,18 @@ catch (...)
 }
 
 
+namespace
+{
+
+bool skipForward(const RVNGInputStreamPtr_t &stream, const unsigned long length)
+{
+  if (length > static_cast<unsigned long>(std::numeric_limits<long>::max()))
+    return false;
+  return stream->seek(long(length), librevenge::RVNG_SEEK_CUR) == 0;
+}
+
+}
+
 bool detectImageDimension(const RVNGInputStreamPtr_t &stream, double &width, double &height)
 try
 {
@@ -410,7 +422,7 @@ try
       return false;
     width=double(readU32(stream, true));
     height=double(readU32(stream, true));
-    if (stream->seek(len-8+4, librevenge::RVNG_SEEK_CUR)!=0)
+    if (!skipForward(stream, len-8+4))
       return false;
     while (!stream->isEnd())
     {
@@ -425,7 +437,7 @@ try
       }
       if (type!=0x70485973)   // pHYs
       {
-        if (stream->seek(len+4, librevenge::RVNG_SEEK_CUR)!=0)
+        if (!skipForward(stream, static_cast<unsigned long>(len)+4))
           return false;
         continue;
       }
