@@ -53,6 +53,10 @@ using std::string;
 
 namespace
 {
+// Documents nest at most about ten objects deep, and each level of nesting takes about 1 KB of
+// stack
+const std::size_t MAX_OBJECT_DEPTH = 128;
+
 bool samePoint(const optional<IWORKPosition> &point1, const optional<IWORKPosition> &point2)
 {
   if (point1 && point2)
@@ -197,6 +201,11 @@ IWAParser::ObjectMessage::ObjectMessage(IWAParser &parser, const unsigned id, co
   , m_id(id)
   , m_type(0)
 {
+  if (m_parser.m_visited.size() >= MAX_OBJECT_DEPTH)
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::ObjectMessage::ObjectMessage: object %u is nested too deep\n", id));
+    return;
+  }
   std::deque<unsigned>::const_iterator it = find(m_parser.m_visited.begin(), m_parser.m_visited.end(), m_id);
   if (it == m_parser.m_visited.end())
   {
