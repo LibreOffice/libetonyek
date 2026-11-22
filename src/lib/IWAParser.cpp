@@ -2594,10 +2594,11 @@ void IWAParser::parseTabularModel(const unsigned id)
       parseDataList(get(conditionStyleListRef), conditionStyles);
       for (auto const &it : conditionStyles)
       {
-        if (auto ref = *boost::get<unsigned>(&it.second))
+        const unsigned *const ref = boost::get<unsigned>(&it.second);
+        if (ref && *ref)
         {
           ConditionRule_t rules;
-          if (parseConditionRules(ref, rules))
+          if (parseConditionRules(*ref, rules))
             m_currentTable->m_conditionStyleList[it.first]=std::move(rules);
         }
       }
