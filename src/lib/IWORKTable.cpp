@@ -25,7 +25,6 @@
 #include "IWORKProperties.h"
 #include "IWORKStyle.h"
 #include "IWORKStyleStack.h"
-#include "IWORKTableRecorder.h"
 #include "IWORKText.h"
 #include "IWORKTypes.h"
 
@@ -466,18 +465,7 @@ IWORKTable::IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap, IWORKFormatNa
   , m_bandedRows(false)
   , m_headerRowsRepeated(false)
   , m_headerColumnsRepeated(false)
-  , m_recorder()
 {
-}
-
-void IWORKTable::setRecorder(const std::shared_ptr<IWORKTableRecorder> &recorder)
-{
-  m_recorder = recorder;
-}
-
-const std::shared_ptr<IWORKTableRecorder> &IWORKTable::getRecorder() const
-{
-  return m_recorder;
 }
 
 void IWORKTable::setName(std::string const &name)
@@ -487,24 +475,12 @@ void IWORKTable::setName(std::string const &name)
 
 void IWORKTable::setSize(const unsigned columns, const unsigned rows)
 {
-  if (bool(m_recorder))
-  {
-    m_recorder->setSize(columns, rows);
-    return;
-  }
-
   m_columns = columns;
   m_rows = rows;
 }
 
 void IWORKTable::setHeaders(const unsigned headerColumns, const unsigned headerRows, const unsigned footerRows)
 {
-  if (bool(m_recorder))
-  {
-    m_recorder->setHeaders(headerColumns, headerRows, footerRows);
-    return;
-  }
-
   m_headerColumns = headerColumns;
   m_headerRows = headerRows;
   m_footerRows = footerRows;
@@ -512,57 +488,27 @@ void IWORKTable::setHeaders(const unsigned headerColumns, const unsigned headerR
 
 void IWORKTable::setBandedRows(const bool banded)
 {
-  if (bool(m_recorder))
-  {
-    m_recorder->setBandedRows(banded);
-    return;
-  }
-
   m_bandedRows = banded;
 }
 
 void IWORKTable::setRepeated(const bool columns, const bool rows)
 {
-  if (bool(m_recorder))
-  {
-    m_recorder->setRepeated(columns, rows);
-    return;
-  }
-
   m_headerColumnsRepeated = columns;
   m_headerRowsRepeated = rows;
 }
 
 void IWORKTable::setOrder(int order)
 {
-  if (bool(m_recorder))
-  {
-    m_recorder->setOrder(order);
-    return;
-  }
-
   m_order = order;
 }
 
 void IWORKTable::setStyle(const IWORKStylePtr_t &style)
 {
-  if (bool(m_recorder))
-  {
-    m_recorder->setStyle(style);
-    return;
-  }
-
   m_style = style;
 }
 
 void IWORKTable::setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowSizes_t &rowSizes)
 {
-  if (bool(m_recorder))
-  {
-    m_recorder->setSizes(columnSizes, rowSizes);
-    return;
-  }
-
   m_columnSizes = columnSizes;
   m_rowSizes = rowSizes;
 
@@ -572,35 +518,18 @@ void IWORKTable::setSizes(const IWORKColumnSizes_t &columnSizes, const IWORKRowS
 
 void IWORKTable::setBorders(const IWORKGridLineMap_t &verticalLines, const IWORKGridLineMap_t &horizontalLines)
 {
-  if (bool(m_recorder))
-  {
-    m_recorder->setBorders(verticalLines, horizontalLines);
-    return;
-  }
-
   m_verticalLines = verticalLines;
   m_horizontalLines = horizontalLines;
 }
 
 void IWORKTable::setComment(unsigned column, unsigned row, IWORKOutputElements const &text)
 {
-  if (bool(m_recorder))
-  {
-    m_recorder->setComment(column,row,text);
-    return;
-  }
   m_commentMap[std::make_pair(row,column)]=text;
 }
 
 void IWORKTable::setBorders(const IWORKGridLineMap_t &verticalLeftLines, const IWORKGridLineMap_t &verticalRightLines,
                             const IWORKGridLineMap_t &horizontalTopLines, const IWORKGridLineMap_t &horizontalBottomLines)
 {
-  if (bool(m_recorder))
-  {
-    m_recorder->setBorders(verticalLeftLines, verticalRightLines, horizontalTopLines, horizontalBottomLines);
-    return;
-  }
-
   m_verticalLines = verticalLeftLines;
   m_verticalRightLines = verticalRightLines;
   m_horizontalLines = horizontalTopLines;
@@ -609,12 +538,6 @@ void IWORKTable::setBorders(const IWORKGridLineMap_t &verticalLeftLines, const I
 
 void IWORKTable::insertCell(const unsigned column, const unsigned row, const boost::optional<std::string> &value, const std::shared_ptr<IWORKText> &text, const boost::optional<IWORKDateTimeData> &dateTime, const unsigned columnSpan, const unsigned rowSpan, const IWORKFormulaPtr_t &formula, const boost::optional<unsigned> &formulaHC, const IWORKStylePtr_t &style, const IWORKCellType type)
 {
-  if (bool(m_recorder))
-  {
-    m_recorder->insertCell(column, row, value, text, dateTime, columnSpan, rowSpan, formula, formulaHC, style, type);
-    return;
-  }
-
   if ((m_rowSizes.size() <= row) || (m_columnSizes.size() <= column))
     return;
 
@@ -648,12 +571,6 @@ void IWORKTable::insertCell(const unsigned column, const unsigned row, const boo
 
 void IWORKTable::insertCoveredCell(const unsigned column, const unsigned row)
 {
-  if (bool(m_recorder))
-  {
-    m_recorder->insertCoveredCell(column, row);
-    return;
-  }
-
   if ((m_rowSizes.size() <= row) || (m_columnSizes.size() <= column))
     return;
 
@@ -740,8 +657,6 @@ boost::optional<std::string> IWORKTable::writeFormat(IWORKOutputElements &elemen
 
 void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutputElements &elements, bool drawAsSimpleTable)
 {
-  assert(!m_recorder);
-
   librevenge::RVNGPropertyList allTableProps(tableProps);
   if (m_name)
     allTableProps.insert("librevenge:sheet-name", get(m_name).c_str());
@@ -996,36 +911,18 @@ void IWORKTable::draw(const librevenge::RVNGPropertyList &tableProps, IWORKOutpu
 
 void IWORKTable::setDefaultCellStyle(const CellType type, const IWORKStylePtr_t &style)
 {
-  if (bool(m_recorder))
-  {
-    m_recorder->setDefaultCellStyle(type, style);
-    return;
-  }
-
   assert(type < ETONYEK_NUM_ELEMENTS(m_defaultCellStyles));
   m_defaultCellStyles[type] = style;
 }
 
 void IWORKTable::setDefaultLayoutStyle(const CellType type, const IWORKStylePtr_t &style)
 {
-  if (bool(m_recorder))
-  {
-    m_recorder->setDefaultLayoutStyle(type, style);
-    return;
-  }
-
   assert(type < ETONYEK_NUM_ELEMENTS(m_defaultLayoutStyles));
   m_defaultLayoutStyles[type] = style;
 }
 
 void IWORKTable::setDefaultParagraphStyle(const CellType type, const IWORKStylePtr_t &style)
 {
-  if (bool(m_recorder))
-  {
-    m_recorder->setDefaultParagraphStyle(type, style);
-    return;
-  }
-
   assert(type < ETONYEK_NUM_ELEMENTS(m_defaultParaStyles));
   m_defaultParaStyles[type] = style;
 }

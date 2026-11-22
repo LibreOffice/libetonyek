@@ -14,9 +14,7 @@
 #include <boost/variant.hpp>
 
 #include "IWORKCollector.h"
-#include "IWORKTableRecorder.h"
 #include "IWORKText.h"
-#include "IWORKTextRecorder.h"
 
 namespace libetonyek
 {
@@ -262,19 +260,11 @@ struct Sender : public boost::static_visitor<void>
 
   void operator()(const CollectTable &value) const
   {
-    const shared_ptr<IWORKTableRecorder> recorder(value.m_table->getRecorder());
-    value.m_table->setRecorder(shared_ptr<IWORKTableRecorder>());
-    if (bool(recorder))
-      recorder->replay(*value.m_table);
     m_collector.collectTable(value.m_table);
   }
 
   void operator()(const CollectText &value) const
   {
-    const shared_ptr<IWORKTextRecorder> recorder(value.m_text->getRecorder());
-    value.m_text->setRecorder(shared_ptr<IWORKTextRecorder>());
-    if (bool(recorder))
-      recorder->replay(*value.m_text);
     m_collector.collectText(value.m_text);
   }
 

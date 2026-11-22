@@ -28,16 +28,12 @@ namespace libetonyek
 {
 
 class IWORKLanguageManager;
-class IWORKTextRecorder;
 
 class IWORKText
 {
 public:
   IWORKText(const IWORKLanguageManager &langManager, bool discardEmptyContent, bool allowListInsertion);
   ~IWORKText();
-
-  void setRecorder(const std::shared_ptr<IWORKTextRecorder> &recorder);
-  const std::shared_ptr<IWORKTextRecorder> &getRecorder() const;
 
   /// Set style used as base for all layout styles in this text.
   void pushBaseLayoutStyle(const IWORKStylePtr_t &style);
@@ -142,8 +138,6 @@ private:
   bool m_inSpan;
 
   IWORKStylePtr_t m_oldSpanStyle;
-
-  std::shared_ptr<IWORKTextRecorder> m_recorder;
 };
 
 }

@@ -106,12 +106,8 @@ libetonyek_internal_la_SOURCES = \
 	IWORKSubDirStream.h \
 	IWORKTable.cpp \
 	IWORKTable.h \
-	IWORKTableRecorder.cpp \
-	IWORKTableRecorder.h \
 	IWORKText.cpp \
 	IWORKText.h \
-	IWORKTextRecorder.cpp \
-	IWORKTextRecorder.h \
 	IWORKTextRedirector.cpp \
 	IWORKTextRedirector.h \
 	IWORKText_fwd.h \

@@ -26,7 +26,6 @@ namespace libetonyek
 
 class IWORKLanguageManager;
 class IWORKText;
-class IWORKTableRecorder;
 
 class IWORKTable
 {
@@ -61,9 +60,6 @@ public:
 
 public:
   explicit IWORKTable(const IWORKTableNameMapPtr_t &tableNameMap, IWORKFormatNameMap &formatNameMap, const IWORKLanguageManager &langManager);
-
-  void setRecorder(const std::shared_ptr<IWORKTableRecorder> &recorder);
-  const std::shared_ptr<IWORKTableRecorder> &getRecorder() const;
 
   void setName(std::string const &name);
   void setSize(unsigned columns, unsigned rows);
@@ -135,8 +131,6 @@ private:
   IWORKStylePtr_t m_defaultCellStyles[5];
   IWORKStylePtr_t m_defaultLayoutStyles[5];
   IWORKStylePtr_t m_defaultParaStyles[5];
-
-  std::shared_ptr<IWORKTableRecorder> m_recorder;
 };
 
 }
