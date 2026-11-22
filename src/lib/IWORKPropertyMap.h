@@ -85,26 +85,24 @@ public:
   template<class Property>
   bool has(bool lookInParent = false) const
   {
-    const auto it = m_map.find(IWORKPropertyInfo<Property>::id);
-    if (m_map.end() != it)
-      return !it->second.empty();
-
-    if (lookInParent && m_parent)
-      return m_parent->has<Property>(lookInParent);
-
+    for (const IWORKPropertyMap *map = this; map; map = lookInParent ? map->m_parent : nullptr)
+    {
+      const auto it = map->m_map.find(IWORKPropertyInfo<Property>::id);
+      if (map->m_map.end() != it)
+        return !it->second.empty();
+    }
     return false;
   }
 
   template<class Property>
   bool clears(bool lookInParent = false) const
   {
-    const auto it = m_map.find(IWORKPropertyInfo<Property>::id);
-    if (m_map.end() != it)
-      return it->second.empty();
-
-    if (lookInParent && m_parent)
-      return m_parent->clears<Property>(lookInParent);
-
+    for (const IWORKPropertyMap *map = this; map; map = lookInParent ? map->m_parent : nullptr)
+    {
+      const auto it = map->m_map.find(IWORKPropertyInfo<Property>::id);
+      if (map->m_map.end() != it)
+        return it->second.empty();
+    }
     return false;
   }
 
@@ -120,17 +118,16 @@ public:
   template<class Property>
   const typename IWORKPropertyInfo<Property>::ValueType &get(bool lookInParent = false) const
   {
-    const auto it = m_map.find(IWORKPropertyInfo<Property>::id);
-    if (m_map.end() != it)
+    for (const IWORKPropertyMap *map = this; map; map = lookInParent ? map->m_parent : nullptr)
     {
-      if (!it->second.empty())
-        return boost::any_cast<const typename IWORKPropertyInfo<Property>::ValueType &>(it->second);
+      const auto it = map->m_map.find(IWORKPropertyInfo<Property>::id);
+      if (map->m_map.end() != it)
+      {
+        if (!it->second.empty())
+          return boost::any_cast<const typename IWORKPropertyInfo<Property>::ValueType &>(it->second);
+        break;
+      }
     }
-    else if (lookInParent && m_parent)
-    {
-      return m_parent->get<Property>(lookInParent);
-    }
-
     throw NotFoundException();
   }
 
