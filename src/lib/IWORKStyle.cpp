@@ -10,6 +10,7 @@
 #include "IWORKStyle.h"
 
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "libetonyek_utils.h"
@@ -36,6 +37,14 @@ IWORKStyle::IWORKStyle(const IWORKPropertyMap &props, const boost::optional<std:
 {
   if (m_parent)
     m_props.setParent(&m_parent->getPropertyMap());
+}
+
+IWORKStyle::~IWORKStyle()
+{
+  // A chain of parents held only by this style is released in a loop, one style at a time.
+  IWORKStylePtr_t parent = std::move(m_parent);
+  while (parent && parent.use_count() == 1)
+    parent = std::move(parent->m_parent);
 }
 
 bool IWORKStyle::link(const IWORKStylesheetPtr_t &stylesheet)

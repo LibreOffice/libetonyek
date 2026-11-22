@@ -10,6 +10,7 @@
 #include "IWORKStylesheet.h"
 
 #include <set>
+#include <utility>
 
 #include "libetonyek_utils.h"
 
@@ -20,6 +21,14 @@ IWORKStylesheet::IWORKStylesheet()
   : parent()
   , m_styles()
 {
+}
+
+IWORKStylesheet::~IWORKStylesheet()
+{
+  // A chain of parents held only by this stylesheet is released in a loop, one at a time.
+  IWORKStylesheetPtr_t current = std::move(parent);
+  while (current && current.use_count() == 1)
+    current = std::move(current->parent);
 }
 
 IWORKStylePtr_t IWORKStylesheet::find(const std::string &name) const
