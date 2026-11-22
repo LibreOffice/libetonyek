@@ -219,6 +219,23 @@ unsigned parseRowName(const vector<char> &columnName)
   return columnNumber;
 }
 
+Expression makeInfixOp(const Expression &left, const string &op, const Expression &right)
+{
+  InfixOp infixOp;
+  infixOp.m_op = op;
+  infixOp.m_left = left;
+  infixOp.m_right = right;
+  return infixOp;
+}
+
+Expression makePostfixOp(const Expression &expr, const char op)
+{
+  PostfixOp postfixOp;
+  postfixOp.m_op = op;
+  postfixOp.m_expr = expr;
+  return postfixOp;
+}
+
 #if defined _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4100) // unreferenced formal parameter in boost
@@ -249,8 +266,6 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
     , infixLit()
     , trueOrFalseFunctionLit()
     , prefixOp()
-    , infixOp()
-    , postfixOp()
     , prefixLit()
     , postfixLit()
     , mappedName()
@@ -260,6 +275,7 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
     using boost::none;
     using phoenix::bind;
     using qi::_1;
+    using qi::_2;
     using qi::_a;
     using qi::_val;
     using qi::alpha;
@@ -318,9 +334,7 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
       ;
 
     prefixOp %= prefixLit >> term;
-    infixOp %= term >> infixLit >> expression;
     trueOrFalseFunction %= trueOrFalseFunctionLit;
-    postfixOp %= term >> postfixLit;
 
     function %= (no_case[mappedName] | +alnum) >> '(' >> -(expression % ',') >> ')';
 
@@ -339,11 +353,13 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
       | pExpr
       ;
 
-    expression %=
-      lit(' ') >> expression
-      | infixOp
-      | postfixOp
-      | term
+    // The term is parsed once and an operator after it is looked for next. Each nesting level of
+    // brackets is then parsed once, and the time stays linear in the length of the formula.
+    expression =
+      lit(' ') >> expression[_val = _1]
+      | term[_val = _1] >> -(
+        (infixLit >> expression)[_val = bind(makeInfixOp, _val, _1, _2)]
+        | postfixLit[_val = bind(makePostfixOp, _val, _1)])
       ;
 
     formula %= lit('=') >> expression;
@@ -352,7 +368,6 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
     str.name("str");
     trueOrFalseFunction.name("trueOrFalseFunction");
     prefixOp.name("prefixOp");
-    infixOp.name("infixOp");
     row.name("row");
     column.name("column");
     columnName.name("columnName");
@@ -381,8 +396,6 @@ struct FormulaGrammar : public qi::grammar<Iterator, Expression()>
   qi::rule<Iterator, double()> number;
   qi::rule<Iterator, string()> str, table, infixLit, trueOrFalseFunctionLit;
   qi::rule<Iterator, PrefixOp()> prefixOp;
-  qi::rule<Iterator, InfixOp()> infixOp;
-  qi::rule<Iterator, PostfixOp()> postfixOp;
   qi::rule<Iterator, char()> prefixLit, postfixLit;
 
   qi::symbols<char, string> mappedName;
