@@ -9,6 +9,7 @@
 
 #include "IWORKText.h"
 
+#include <algorithm>
 #include <cassert>
 #include <memory>
 #include <string>
@@ -36,6 +37,8 @@ namespace libetonyek
 
 namespace
 {
+
+const unsigned MAX_LIST_LEVEL = 10;
 
 void fillSectionPropList(const IWORKStyleStack &style, RVNGPropertyList &props)
 {
@@ -627,7 +630,7 @@ void IWORKText::setListStyle(const IWORKStylePtr_t &style)
 
 void IWORKText::setListLevel(const unsigned level)
 {
-  m_listLevel = level;
+  m_listLevel = std::min(level, MAX_LIST_LEVEL);
 }
 
 void IWORKText::flushList()
