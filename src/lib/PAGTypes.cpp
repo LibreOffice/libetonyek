@@ -24,7 +24,7 @@ PAGFootnoteState::PAGFootnoteState()
   , m_pending(false)
   , m_mark()
   , m_footnotes()
-  , m_nextFootnote(m_footnotes.end())
+  , m_nextFootnote(0)
 {
 }
 

@@ -43,7 +43,7 @@ struct PAGFootnoteState
   std::string m_mark;
 
   std::deque<IWORKOutputElements> m_footnotes;
-  std::deque<IWORKOutputElements>::const_iterator m_nextFootnote;
+  std::size_t m_nextFootnote;
 };
 
 struct PAGAttachment

@@ -329,11 +329,12 @@ FootnoteElement::FootnoteElement(PAG1ParserState &state)
 
 void FootnoteElement::endOfElement()
 {
-  if (getState().m_footnoteState.m_nextFootnote != getState().m_footnoteState.m_footnotes.end())
+  PAGFootnoteState &fs = getState().m_footnoteState;
+  if (fs.m_nextFootnote < fs.m_footnotes.size())
   {
     if (bool(getState().m_currentText))
-      getState().m_currentText->insertInlineContent(*getState().m_footnoteState.m_nextFootnote);
-    ++getState().m_footnoteState.m_nextFootnote;
+      getState().m_currentText->insertInlineContent(fs.m_footnotes[fs.m_nextFootnote]);
+    ++fs.m_nextFootnote;
   }
 }
 
@@ -587,10 +588,7 @@ void PElement::endOfElement()
   if (getState().m_footnoteState.m_pending)
   {
     PAGFootnoteState &fs = getState().m_footnoteState;
-    const bool firstFootnote = fs.m_footnotes.empty();
     fs.m_footnotes.push_back(IWORKOutputElements());
-    if (firstFootnote) // We can init. insertion iterator now
-      fs.m_nextFootnote = fs.m_footnotes.begin();
     librevenge::RVNGPropertyList props;
     if (!fs.m_mark.empty())
       props.insert("text:label", fs.m_mark.c_str());
