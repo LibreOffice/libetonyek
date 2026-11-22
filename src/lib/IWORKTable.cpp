@@ -397,6 +397,11 @@ librevenge::RVNGString convertCellValueInText(const IWORKStyleStack &style, cons
       }
       const auto t = std::time_t(ETONYEK_EPOCH_BEGIN + get(seconds));
       struct tm *const time = gmtime(&t);
+      if (!time)
+      {
+        ETONYEK_DEBUG_MSG(("convertCellValueInText: can not convert seconds in time\n"));
+        break;
+      }
       librevenge::RVNGString res;
       if (time->tm_hour)
         res.sprintf("%d/%d/%d %d:%d", time->tm_mon + 1, time->tm_mday, time->tm_year + 1900, time->tm_hour, time->tm_min);
