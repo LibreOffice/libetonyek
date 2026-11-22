@@ -56,6 +56,8 @@ namespace
 // Documents nest at most about ten objects deep, and each level of nesting takes about 1 KB of
 // stack
 const std::size_t MAX_OBJECT_DEPTH = 128;
+// Documents open each object about once, so this many opens for each object in the index is plenty
+const std::size_t MAX_OPENS_PER_OBJECT = 16;
 
 bool samePoint(const optional<IWORKPosition> &point1, const optional<IWORKPosition> &point2)
 {
@@ -175,6 +177,8 @@ IWAParser::IWAParser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStrea
   , m_collector(collector)
   , m_index(fragments, package)
   , m_visited()
+  , m_openedObjects(0)
+  , m_maxOpenedObjects(0)
   , m_charStyles()
   , m_dropCapStyles()
   , m_paraStyles()
@@ -192,6 +196,7 @@ IWAParser::IWAParser(const RVNGInputStreamPtr_t &fragments, const RVNGInputStrea
 bool IWAParser::parse()
 {
   parseObjectIndex();
+  m_maxOpenedObjects = MAX_OPENS_PER_OBJECT * std::max<std::size_t>(m_index.getObjectCount(), 1000);
   return parseDocument();
 }
 
@@ -206,6 +211,11 @@ IWAParser::ObjectMessage::ObjectMessage(IWAParser &parser, const unsigned id, co
     ETONYEK_DEBUG_MSG(("IWAParser::ObjectMessage::ObjectMessage: object %u is nested too deep\n", id));
     return;
   }
+  if (m_parser.m_openedObjects >= m_parser.m_maxOpenedObjects)
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::ObjectMessage::ObjectMessage: too many objects opened\n"));
+    return;
+  }
   std::deque<unsigned>::const_iterator it = find(m_parser.m_visited.begin(), m_parser.m_visited.end(), m_id);
   if (it == m_parser.m_visited.end())
   {
@@ -217,6 +227,7 @@ IWAParser::ObjectMessage::ObjectMessage(IWAParser &parser, const unsigned id, co
       {
         m_message = msg;
         m_parser.m_visited.push_back(m_id);
+        ++m_parser.m_openedObjects;
       }
       else
       {

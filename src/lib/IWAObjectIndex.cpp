@@ -149,6 +149,11 @@ boost::optional<unsigned> IWAObjectIndex::getObjectType(const unsigned id) const
   return type;
 }
 
+std::size_t IWAObjectIndex::getObjectCount() const
+{
+  return m_fragmentObjectMap.size();
+}
+
 const RVNGInputStreamPtr_t IWAObjectIndex::queryFile(const unsigned id) const
 {
   const auto it = m_fileMap.find(id);

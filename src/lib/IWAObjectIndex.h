@@ -45,6 +45,7 @@ public:
   void queryObject(const unsigned id, unsigned &type, boost::optional<IWAMessage> &msg) const;
   boost::optional<unsigned> getObjectType(const unsigned id) const;
   const RVNGInputStreamPtr_t queryFile(unsigned id) const;
+  std::size_t getObjectCount() const;
   boost::optional<IWORKColor> queryFileColor(unsigned id) const;
 
 private:

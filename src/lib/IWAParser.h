@@ -251,6 +251,8 @@ private:
   IWAObjectIndex m_index;
 
   std::deque<unsigned> m_visited;
+  std::size_t m_openedObjects;
+  std::size_t m_maxOpenedObjects;
 
   mutable StyleMap_t m_charStyles;
   mutable StyleMap_t m_dropCapStyles;
