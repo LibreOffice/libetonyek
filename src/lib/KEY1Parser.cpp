@@ -1292,6 +1292,7 @@ void PluginElement::endOfElement()
   // CHANGEME: check the plugin-data has created a table, if so, send it
   if (getState().m_currentTable)
   {
+    getCollector().startLevel();
     getCollector().setGraphicStyle(style);
     if (m_transformation && m_size)
     {
@@ -1303,6 +1304,7 @@ void PluginElement::endOfElement()
       getCollector().collectGeometry(geometry);
     }
     getCollector().collectTable(getState().m_currentTable);
+    getCollector().endLevel();
     getState().m_currentTable.reset();
   }
 }
