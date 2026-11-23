@@ -535,7 +535,11 @@ void IWORKCollector::endDocument()
   assert(m_pathStack.empty());
   assert(0 == m_groupLevel && 0 == m_groupOpenLevel);
 
-  assert(!m_currentPath);
+  if (m_currentPath)
+  {
+    ETONYEK_DEBUG_MSG(("IWORKCollector::endDocument: a path was collected without a shape\n"));
+    m_currentPath.reset();
+  }
   assert(!m_currentText);
 
   m_document->endDocument();
