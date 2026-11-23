@@ -1224,9 +1224,9 @@ bool IWAParser::parsePath(const IWAMessage &msg, IWORKPathPtr_t &path)
       ETONYEK_DEBUG_MSG(("IWAParser::parsePath: can not read the type\n"));
       continue;
     }
-    if (closed && closingMove)
+    if (closed && (closingMove || get(type) != 1))
     {
-      ETONYEK_DEBUG_MSG(("IWAParser::parsePath: unexpected element %c after the closing move\n", get(type)));
+      ETONYEK_DEBUG_MSG(("IWAParser::parsePath: unexpected element %u after the close\n", get(type)));
       break;
     }
     switch (get(type))
