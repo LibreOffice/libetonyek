@@ -1,3 +1,11 @@
+libetonyek 0.1.14
+
+- Fix several problems found by oss-fuzz and Coverity.
+- Limit the work done for malformed documents.
+- Fix build with mdds 3.0.
+- Add fuzzers for Pages and Numbers.
+- Install all documentation files doxygen generates.
+
 libetonyek 0.1.13
 
 - Add missing Numbers function names (tdf#151166)
