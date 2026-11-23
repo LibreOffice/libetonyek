@@ -2554,6 +2554,11 @@ void IWAParser::parseTabularModel(const unsigned id)
   const IWAUInt32Field &columns = get(msg).uint32(7);
   if (!rows || !columns)
     return;
+  if (get(rows) > ETONYEK_MAX_TABLE_ROWS || get(columns) > ETONYEK_MAX_TABLE_COLUMNS)
+  {
+    ETONYEK_DEBUG_MSG(("IWAParser::parseTabularModel: a table of %u rows and %u columns is too large\n", get(rows), get(columns)));
+    return;
+  }
 
   m_currentTable = std::make_shared<TableInfo>(m_collector.createTable(m_tableNameMap, m_formatNameMap, m_langManager), get(columns), get(rows));
   m_currentTable->m_table->setSize(get(columns), get(rows));

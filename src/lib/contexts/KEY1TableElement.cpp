@@ -449,6 +449,12 @@ void KEY1TableElement::endOfElement()
       xPosSet.insert(pIt->second.m_x);
       yPosSet.insert(pIt->second.m_y);
     }
+    if (yPosSet.size() > ETONYEK_MAX_TABLE_ROWS || xPosSet.size() > ETONYEK_MAX_TABLE_COLUMNS)
+    {
+      ETONYEK_DEBUG_MSG(("KEY1TableElement::endOfElement: a table of %u rows and %u columns is too large\n", unsigned(yPosSet.size()), unsigned(xPosSet.size())));
+      getState().m_currentTable.reset();
+      return;
+    }
     std::deque<IWORKColumnRowSize> columnSizes, rowSizes;
     std::unordered_map<double, unsigned> xPosToLineMap, yPosToLineMap;
     unsigned line=0;
