@@ -10,6 +10,7 @@
 #ifndef PAG1TEXTSTORAGEELEMENT_H_INCLUDED
 #define PAG1TEXTSTORAGEELEMENT_H_INCLUDED
 
+#include "IWORKText_fwd.h"
 #include "PAGEnum.h"
 
 #include "PAG1XMLContextBase.h"
@@ -26,12 +27,14 @@ public:
   PAG1TextStorageElement(PAG1ParserState &state, IWORKStylesheetPtr_t &mainMap, const PAGTextStorageKind kind=PAG_TEXTSTORAGE_KIND_BASIC);
 
 private:
+  void startOfElement() override;
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
 
 private:
   PAGTextStorageKind m_kind;
   bool m_textOpened;
+  IWORKTextPtr_t m_savedText;
 };
 
 }

@@ -596,7 +596,8 @@ void PElement::endOfElement()
       fs.m_footnotes.back().addOpenFootnote(props);
     else
       fs.m_footnotes.back().addOpenEndnote(props);
-    getState().m_currentText->draw(fs.m_footnotes.back());
+    if (getState().m_currentText)
+      getState().m_currentText->draw(fs.m_footnotes.back());
     // prepare for possible next footnote
     // TODO: introduce IN_FOOTNOTES state and move this to startOfElement
     getState().m_currentText = getCollector().createText(getState().m_langManager, false, false);
@@ -819,6 +820,7 @@ PAG1TextStorageElement::PAG1TextStorageElement(PAG1ParserState &state, PAGTextSt
   : PAG1XMLContextBase<IWORKTextStorageElement>(state)
   , m_kind(kind)
   , m_textOpened(false)
+  , m_savedText()
 {
   if (m_kind==PAG_TEXTSTORAGE_KIND_TEXTBOX)
   {
@@ -834,6 +836,7 @@ PAG1TextStorageElement::PAG1TextStorageElement(PAG1ParserState &state, IWORKStyl
   : PAG1XMLContextBase<IWORKTextStorageElement>(state)
   , m_kind(kind)
   , m_textOpened(false)
+  , m_savedText()
 {
   PAG1XMLContextBase<IWORKTextStorageElement>::m_stylesheet=&sheetmap;
   if (m_kind==PAG_TEXTSTORAGE_KIND_TEXTBOX)
@@ -843,6 +846,15 @@ PAG1TextStorageElement::PAG1TextStorageElement(PAG1ParserState &state, IWORKStyl
     {
       ETONYEK_DEBUG_MSG(("PAG1TextStorageElement::PAG1TextStorageElement: called in textbox without current tetx\n"));
     }
+  }
+}
+
+void PAG1TextStorageElement::startOfElement()
+{
+  if (m_kind!=PAG_TEXTSTORAGE_KIND_TEXTBOX)
+  {
+    m_savedText=getState().m_currentText;
+    getState().m_currentText.reset();
   }
 }
 
@@ -881,7 +893,7 @@ void PAG1TextStorageElement::endOfElement()
     getCollector().collectTextBody();
   }
   if (m_kind!=PAG_TEXTSTORAGE_KIND_TEXTBOX)
-    getState().m_currentText.reset();
+    getState().m_currentText=m_savedText;
 
   PAG1XMLContextBase<IWORKTextStorageElement>::endOfElement();
 }
