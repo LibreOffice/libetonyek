@@ -330,6 +330,11 @@ FootnoteElement::FootnoteElement(PAG1ParserState &state)
 void FootnoteElement::endOfElement()
 {
   PAGFootnoteState &fs = getState().m_footnoteState;
+  if (fs.m_inNotes)
+  {
+    ETONYEK_DEBUG_MSG(("FootnoteElement::endOfElement: a footnote inside a footnote\n"));
+    return;
+  }
   if (fs.m_nextFootnote < fs.m_footnotes.size())
   {
     if (bool(getState().m_currentText))
@@ -821,6 +826,7 @@ PAG1TextStorageElement::PAG1TextStorageElement(PAG1ParserState &state, PAGTextSt
   , m_kind(kind)
   , m_textOpened(false)
   , m_savedText()
+  , m_savedInNotes(false)
 {
   if (m_kind==PAG_TEXTSTORAGE_KIND_TEXTBOX)
   {
@@ -837,6 +843,7 @@ PAG1TextStorageElement::PAG1TextStorageElement(PAG1ParserState &state, IWORKStyl
   , m_kind(kind)
   , m_textOpened(false)
   , m_savedText()
+  , m_savedInNotes(false)
 {
   PAG1XMLContextBase<IWORKTextStorageElement>::m_stylesheet=&sheetmap;
   if (m_kind==PAG_TEXTSTORAGE_KIND_TEXTBOX)
@@ -851,6 +858,9 @@ PAG1TextStorageElement::PAG1TextStorageElement(PAG1ParserState &state, IWORKStyl
 
 void PAG1TextStorageElement::startOfElement()
 {
+  m_savedInNotes = getState().m_footnoteState.m_inNotes;
+  if (m_kind==PAG_TEXTSTORAGE_KIND_NOTE)
+    getState().m_footnoteState.m_inNotes = true;
   if (m_kind!=PAG_TEXTSTORAGE_KIND_TEXTBOX)
   {
     m_savedText=getState().m_currentText;
@@ -894,6 +904,7 @@ void PAG1TextStorageElement::endOfElement()
   }
   if (m_kind!=PAG_TEXTSTORAGE_KIND_TEXTBOX)
     getState().m_currentText=m_savedText;
+  getState().m_footnoteState.m_inNotes = m_savedInNotes;
 
   PAG1XMLContextBase<IWORKTextStorageElement>::endOfElement();
 }

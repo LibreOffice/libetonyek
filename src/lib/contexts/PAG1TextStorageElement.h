@@ -35,6 +35,7 @@ private:
   PAGTextStorageKind m_kind;
   bool m_textOpened;
   IWORKTextPtr_t m_savedText;
+  bool m_savedInNotes;
 };
 
 }

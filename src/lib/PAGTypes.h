@@ -40,6 +40,7 @@ struct PAGFootnoteState
 
   bool m_firstTextAfterMark;
   bool m_pending;
+  bool m_inNotes;
   std::string m_mark;
 
   std::deque<IWORKOutputElements> m_footnotes;
