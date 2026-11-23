@@ -490,6 +490,11 @@ void IWORKCollector::collectFooter(const std::string &name)
 
 void IWORKCollector::collectTable(const std::shared_ptr<IWORKTable> &table)
 {
+  if (!table)
+  {
+    ETONYEK_DEBUG_MSG(("IWORKCollector::collectTable: no table\n"));
+    return;
+  }
   if (bool(m_recorder))
   {
     m_recorder->collectTable(table);
