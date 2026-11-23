@@ -1547,27 +1547,14 @@ class DiscardContext : public KEY2XMLContextBase<IWORKDiscardContext>
 {
 public:
   explicit DiscardContext(KEY2ParserState &state);
-  ~DiscardContext() override;
 
 private:
   IWORKXMLContextPtr_t element(int name) override;
-
-private:
-  KEY2ParserState &m_state;
-  IWORKStylesheetPtr_t m_savedStylesheet;
 };
 
 DiscardContext::DiscardContext(KEY2ParserState &state)
   : KEY2XMLContextBase<IWORKDiscardContext>(state)
-  , m_state(state)
-  , m_savedStylesheet()
 {
-}
-
-DiscardContext::~DiscardContext()
-{
-  if (bool(m_savedStylesheet))
-    m_state.m_stylesheet = m_savedStylesheet;
 }
 
 IWORKXMLContextPtr_t DiscardContext::element(const int name)
@@ -1580,12 +1567,6 @@ IWORKXMLContextPtr_t DiscardContext::element(const int name)
   case +IWORKToken::NS_URI_SF | IWORKToken::slide_style : // v2-v4
     return std::make_shared<KEY2StyleContext>(getState(), &getState().getDictionary().m_slideStyles);
   case +KEY2Token::NS_URI_KEY | KEY2Token::stylesheet :
-    if (!m_savedStylesheet)
-    {
-      // this can only happen in a broken document
-      m_savedStylesheet = m_state.m_stylesheet;
-      m_state.m_stylesheet.reset();
-    }
     return std::make_shared<StylesheetElement>(getState());
   default:
     break;

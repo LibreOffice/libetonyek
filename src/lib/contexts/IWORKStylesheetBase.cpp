@@ -23,13 +23,13 @@ namespace libetonyek
 
 IWORKStylesheetBase::IWORKStylesheetBase(IWORKXMLParserState &state)
   : IWORKXMLElementContextBase(state)
+  , m_savedStylesheet()
 {
 }
 
 void IWORKStylesheetBase::startOfElement()
 {
-  assert(!getState().m_stylesheet);
-
+  m_savedStylesheet = getState().m_stylesheet;
   getState().m_stylesheet = std::make_shared<IWORKStylesheet>();
 }
 
@@ -56,7 +56,7 @@ void IWORKStylesheetBase::endOfElement()
     getState().getDictionary().m_stylesheets[get(getId())] = getState().m_stylesheet;
   if (isCollector())
     getCollector().collectStylesheet(getState().m_stylesheet);
-  getState().m_stylesheet.reset();
+  getState().m_stylesheet = m_savedStylesheet;
 }
 
 }

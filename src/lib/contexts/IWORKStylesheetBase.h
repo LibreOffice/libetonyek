@@ -10,6 +10,7 @@
 #ifndef IWORKSTYLESHEETBASE_H_INCLUDED
 #define IWORKSTYLESHEETBASE_H_INCLUDED
 
+#include "IWORKStylesheet.h"
 #include "IWORKXMLContextBase.h"
 
 namespace libetonyek
@@ -24,6 +25,9 @@ protected:
   void startOfElement() override;
   IWORKXMLContextPtr_t element(int name) override;
   void endOfElement() override;
+
+private:
+  IWORKStylesheetPtr_t m_savedStylesheet;
 };
 
 }
