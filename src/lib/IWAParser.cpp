@@ -1402,7 +1402,8 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)
             m_collector.collectArrowPath(get(size), get(point).m_x, get(point).m_y, get(type) == 10);
             break;
           case 100 :
-            m_collector.collectStarPath(get(size), unsigned(get(point).m_x+0.4), get(point).m_y);
+            if (isValidPointCount(get(point).m_x))
+              m_collector.collectStarPath(get(size), unsigned(get(point).m_x+0.4), get(point).m_y);
             break;
           default :
             ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unknown point path type %u\n", get(type)));
@@ -1424,7 +1425,8 @@ bool IWAParser::parseDrawableShape(const IWAMessage &msg, bool isConnectionLine)
             m_collector.collectRoundedRectanglePath(get(size), get(value));
             break;
           case 1 :
-            m_collector.collectPolygonPath(get(size), unsigned(get(value)+0.4));
+            if (isValidPointCount(get(value)))
+              m_collector.collectPolygonPath(get(size), unsigned(get(value)+0.4));
             break;
           default :
             ETONYEK_DEBUG_MSG(("IWAParser::parseDrawableShape: unknown scalar path type %u\n", get(type)));

@@ -11,7 +11,6 @@
 
 #include <utility>
 
-#include <boost/numeric/conversion/cast.hpp>
 #include <boost/optional.hpp>
 
 #include "libetonyek_xml.h"
@@ -29,7 +28,6 @@
 namespace libetonyek
 {
 
-using boost::numeric_cast;
 using boost::optional;
 
 namespace
@@ -168,7 +166,10 @@ void PointPathElement::endOfElement()
     if (m_star)
     {
       if (m_point)
-        getCollector().collectStarPath(size, numeric_cast<unsigned>(get(m_point).m_x), get(m_point).m_y);
+      {
+        if (isValidPointCount(get(m_point).m_x))
+          getCollector().collectStarPath(size, unsigned(get(m_point).m_x), get(m_point).m_y);
+      }
       else
         getCollector().collectStarPath(size, 5, 0.5);
     }
@@ -261,7 +262,10 @@ void ScalarPathElement::endOfElement()
   if (isCollector())
   {
     if (m_polygon)
-      getCollector().collectPolygonPath(size, numeric_cast<unsigned>(m_value));
+    {
+      if (isValidPointCount(m_value))
+        getCollector().collectPolygonPath(size, unsigned(m_value));
+    }
     else
       getCollector().collectRoundedRectanglePath(size, m_value);
   }

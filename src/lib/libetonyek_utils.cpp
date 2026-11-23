@@ -214,6 +214,11 @@ unsigned long getLength(const RVNGInputStreamPtr_t &input)
   return static_cast<unsigned long>(end);
 }
 
+bool isValidPointCount(const double count)
+{
+  return count >= 0 && count <= ETONYEK_MAX_SHAPE_POINTS;
+}
+
 unsigned long getRemainingLength(const RVNGInputStreamPtr_t &input)
 {
   return getLength(input) - static_cast<unsigned long>(input->tell());

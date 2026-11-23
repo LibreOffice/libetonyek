@@ -80,6 +80,8 @@ const unsigned long ETONYEK_MAX_UNCOMPRESSED_SIZE(256 * 1024 * 1024);
 const unsigned ETONYEK_MAX_TABLE_ROWS(1000000);
 const unsigned ETONYEK_MAX_TABLE_COLUMNS(1000);
 
+const unsigned ETONYEK_MAX_SHAPE_POINTS(1000);
+
 typedef std::shared_ptr<librevenge::RVNGInputStream> RVNGInputStreamPtr_t;
 
 // The result points at input but owns nothing, so the caller keeps input alive.
@@ -101,6 +103,8 @@ float readFloat(const RVNGInputStreamPtr_t &input);
 
 unsigned long getLength(const RVNGInputStreamPtr_t &input);
 unsigned long getRemainingLength(const RVNGInputStreamPtr_t &input);
+
+bool isValidPointCount(double count);
 
 /** Test two floating point numbers for equality.
   *
