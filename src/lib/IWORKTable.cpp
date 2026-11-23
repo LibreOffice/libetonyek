@@ -165,9 +165,22 @@ void parseDateTimeFormat(std::string const &format, librevenge::RVNGPropertyList
     props.insert("librevenge:format", propVect);
 }
 
+// mdds 3.0 renamed is_tree_valid to valid_tree
+template<typename T>
+auto isTreeValid(const T &tree, int) -> decltype(tree.valid_tree())
+{
+  return tree.valid_tree();
+}
+
+template<typename T>
+bool isTreeValid(const T &tree, long)
+{
+  return tree.is_tree_valid();
+}
+
 void writeBorder(librevenge::RVNGPropertyList &props, const char *name, IWORKGridLine_t &line, unsigned index)
 {
-  if (!line.valid_tree())
+  if (!isTreeValid(line, 0))
     line.build_tree();
 
   IWORKStylePtr_t style;
