@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <limits>
 
 #include "libetonyek_utils.h"
 
@@ -44,10 +45,10 @@ IWORKMemoryStream::IWORKMemoryStream(const RVNGInputStreamPtr_t &input, const un
 
 IWORKMemoryStream::IWORKMemoryStream(const std::vector<unsigned char> &data)
   : m_data()
-  , m_length(long(data.size()))
+  , m_length(0)
   , m_pos(0)
 {
-  if (data.empty())
+  if (data.empty() || data.size() > std::numeric_limits<unsigned>::max())
     throw GenericException();
 
   assign(&data[0], (unsigned) data.size());
@@ -55,7 +56,7 @@ IWORKMemoryStream::IWORKMemoryStream(const std::vector<unsigned char> &data)
 
 IWORKMemoryStream::IWORKMemoryStream(const unsigned char *const data, const unsigned length)
   : m_data(nullptr)
-  , m_length(long(length))
+  , m_length(0)
   , m_pos(0)
 {
   if (0 == length)
@@ -160,9 +161,12 @@ bool IWORKMemoryStream::isEnd()
 void IWORKMemoryStream::assign(const unsigned char *const data, const unsigned length)
 {
   assert(0 != length);
+  if (static_cast<unsigned long>(length) > static_cast<unsigned long>(std::numeric_limits<long>::max()))
+    throw GenericException();
 
   m_data.reset(new unsigned char[length]);
   std::copy(data, data + length, m_data.get());
+  m_length = long(length);
 }
 
 void IWORKMemoryStream::read(const RVNGInputStreamPtr_t &input, const unsigned length)
@@ -177,7 +181,6 @@ void IWORKMemoryStream::read(const RVNGInputStreamPtr_t &input, const unsigned l
   if (length != readBytes)
     throw EndOfStreamException();
 
-  m_length = (long) length;
   assign(data, length);
 }
 
