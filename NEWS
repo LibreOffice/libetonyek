@@ -1,3 +1,8 @@
+libetonyek 0.1.15
+
+- Fix several problems found in an audit.
+- Limit the work done for malformed documents.
+
 libetonyek 0.1.14
 
 - Fix several problems found by oss-fuzz and Coverity.
