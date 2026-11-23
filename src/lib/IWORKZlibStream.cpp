@@ -96,6 +96,11 @@ RVNGInputStreamPtr_t getInflatedStream(const RVNGInputStreamPtr_t &input)
         throw ZlibStreamException();
       }
 
+      if (data.size() + compressedSize > ETONYEK_MAX_UNCOMPRESSED_SIZE)
+      {
+        (void)inflateEnd(&strm);
+        throw ZlibStreamException();
+      }
       data.resize(data.size() + compressedSize);
     }
 

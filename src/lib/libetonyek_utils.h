@@ -74,6 +74,8 @@ const double etonyek_root_two(1.414213562373095048801688724209698078569671875376
 // Apple Numbers timestamp starts from 01 Jan 2001 00:00:00
 const unsigned ETONYEK_EPOCH_BEGIN(978307200);
 
+const unsigned long ETONYEK_MAX_UNCOMPRESSED_SIZE(256 * 1024 * 1024);
+
 typedef std::shared_ptr<librevenge::RVNGInputStream> RVNGInputStreamPtr_t;
 
 // The result points at input but owns nothing, so the caller keeps input alive.

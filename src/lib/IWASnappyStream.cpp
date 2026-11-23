@@ -84,6 +84,8 @@ bool uncompressBlock(const RVNGInputStreamPtr_t &input, const unsigned long leng
 
   while (!input->isEnd() && (input->tell() < blockEnd))
   {
+    if (data.m_data.size() > ETONYEK_MAX_UNCOMPRESSED_SIZE)
+      return false;
     const unsigned char c = readU8(input);
     switch (c & 0x3)
     {
