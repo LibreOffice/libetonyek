@@ -195,7 +195,8 @@ void AngleGradientElement::endOfElement()
   {
     IWORKGradient value;
     value.m_type = get(m_type);
-    value.m_angle = get(m_angle);
+    if (m_angle)
+      value.m_angle = get(m_angle);
     value.m_stops = m_stops;
     m_value = value;
     if (getId())
