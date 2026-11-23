@@ -1307,7 +1307,7 @@ bool IWAParser::parsePath(const IWAMessage &msg, IWORKPathPtr_t &path)
       return false;
     }
   }
-  return true;
+  return !path->empty();
 }
 
 bool IWAParser::parseStickyNote(const IWAMessage &/*msg*/)
